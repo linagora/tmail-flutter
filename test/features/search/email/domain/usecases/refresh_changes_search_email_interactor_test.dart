@@ -16,38 +16,53 @@ import 'refresh_changes_search_email_interactor_test.mocks.dart';
 @GenerateNiceMocks([MockSpec<ThreadRepository>()])
 void main() {
   final threadRepository = MockThreadRepository();
-  final refreshChangesSearchEmailInteractor = RefreshChangesSearchEmailInteractor(
-    threadRepository);
+  final interactor = RefreshChangesSearchEmailInteractor(threadRepository);
 
-  group('refresh changes search email interactor test:', () {
-    test(
-      'should return list of presentation emails '
-      'when threadRepository.searchEmails returns list of emails',
+  group('refresh changes search email interactor test:',
+    () => _refreshChangesSearchEmailTests(threadRepository, interactor));
+}
+
+void _stubSearchEmails(
+  MockThreadRepository repo, {
+  List<SearchEmail>? returns,
+  Object? throws,
+}) {
+  final stub = when(repo.searchEmails(
+    any,
+    any,
+    limit: anyNamed('limit'),
+    sort: anyNamed('sort'),
+    filter: anyNamed('filter'),
+    collapseThreads: anyNamed('collapseThreads'),
+    properties: anyNamed('properties'),
+  ));
+  if (throws != null) {
+    stub.thenThrow(throws);
+  } else {
+    stub.thenAnswer((_) async => returns ?? []);
+  }
+}
+
+void _refreshChangesSearchEmailTests(
+  MockThreadRepository threadRepository,
+  RefreshChangesSearchEmailInteractor interactor,
+) {
+  test(
+    'should return list of presentation emails '
+    'when threadRepository.searchEmails returns list of emails',
     () {
-      // arrange
       final searchEmail = SearchEmail(
         searchSnippetSubject: 'searchSnippetSubject',
         searchSnippetPreview: 'searchSnippetPreview',
       );
-      when(
-        threadRepository.searchEmails(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          properties: anyNamed('properties'),
-        ),
-      ).thenAnswer((_) async => [searchEmail]);
-      
-      // act
-      final result = refreshChangesSearchEmailInteractor.execute(
+      _stubSearchEmails(threadRepository, returns: [searchEmail]);
+
+      final result = interactor.execute(
         SessionFixtures.aliceSession,
         AccountFixtures.aliceAccountId,
         filter: EmailFilterCondition(text: 'test'),
       );
-      
-      // assert
+
       expect(
         result,
         emitsInOrder([
@@ -58,41 +73,29 @@ void main() {
           )])),
         ])
       );
-    });
+    },
+  );
 
-    test(
-      'should return failure '
-      'when threadRepository.searchEmails throw exception',
-      () {
-        // arrange
-        final exception = Exception();
-        when(
-          threadRepository.searchEmails(
-            any,
-            any,
-            limit: anyNamed('limit'),
-            sort: anyNamed('sort'),
-            filter: anyNamed('filter'),
-            properties: anyNamed('properties'),
-          ),
-        ).thenThrow(exception);
-        
-        // act
-        final result = refreshChangesSearchEmailInteractor.execute(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          filter: EmailFilterCondition(text: 'test'),
-        );
-        
-        // assert
-        expect(
-          result,
-          emitsInOrder([
-            Right(RefreshingChangeSearchEmailState()),
-            Left(RefreshChangesSearchEmailFailure(exception)),
-          ])
-        );
-      },
-    );
-  });
+  test(
+    'should return failure '
+    'when threadRepository.searchEmails throw exception',
+    () {
+      final exception = Exception();
+      _stubSearchEmails(threadRepository, throws: exception);
+
+      final result = interactor.execute(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        filter: EmailFilterCondition(text: 'test'),
+      );
+
+      expect(
+        result,
+        emitsInOrder([
+          Right(RefreshingChangeSearchEmailState()),
+          Left(RefreshChangesSearchEmailFailure(exception)),
+        ])
+      );
+    },
+  );
 }

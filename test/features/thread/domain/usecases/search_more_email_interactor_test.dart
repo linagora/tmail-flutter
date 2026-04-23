@@ -19,36 +19,53 @@ import 'search_more_email_interactor_test.mocks.dart';
 void main() {
   final threadRepository = MockThreadRepository();
   final searchMoreEmailInteractor = SearchMoreEmailInteractor(threadRepository);
-  group('search more email interactor test:', () {
-    test(
-      'should return list of presentation emails '
-      'when threadRepository.searchEmails returns list of emails',
+
+  group('search more email interactor test:',
+    () => _searchMoreEmailTests(threadRepository, searchMoreEmailInteractor));
+}
+
+void _stubSearchEmails(
+  MockThreadRepository repo, {
+  List<SearchEmail>? returns,
+  Object? throws,
+}) {
+  final stub = when(repo.searchEmails(
+    any,
+    any,
+    limit: anyNamed('limit'),
+    sort: anyNamed('sort'),
+    filter: anyNamed('filter'),
+    collapseThreads: anyNamed('collapseThreads'),
+    properties: anyNamed('properties'),
+  ));
+  if (throws != null) {
+    stub.thenThrow(throws);
+  } else {
+    stub.thenAnswer((_) async => returns ?? []);
+  }
+}
+
+void _searchMoreEmailTests(
+  MockThreadRepository threadRepository,
+  SearchMoreEmailInteractor searchMoreEmailInteractor,
+) {
+  test(
+    'should return list of presentation emails '
+    'when threadRepository.searchEmails returns list of emails',
     () {
-      // arrange
       final searchEmail = SearchEmail(
         id: EmailId(Id('someId')),
         searchSnippetSubject: 'searchSnippetSubject',
         searchSnippetPreview: 'searchSnippetPreview',
       );
-      when(
-        threadRepository.searchEmails(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          properties: anyNamed('properties'),
-        ),
-      ).thenAnswer((_) async => [searchEmail]);
+      _stubSearchEmails(threadRepository, returns: [searchEmail]);
 
-      // act
       final result = searchMoreEmailInteractor.execute(
         SessionFixtures.aliceSession,
         AccountFixtures.aliceAccountId,
         filter: EmailFilterCondition(text: 'test'),
       );
 
-      // assert
       expect(
         result,
         emitsInOrder([
@@ -61,33 +78,22 @@ void main() {
           )),
         ]),
       );
-    });
+    },
+  );
 
-    test(
-      'should return failure '
-      'when threadRepository.searchEmails throw exception',
+  test(
+    'should return failure '
+    'when threadRepository.searchEmails throw exception',
     () {
-      // arrange
       final exception = Exception();
-      when(
-        threadRepository.searchEmails(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          properties: anyNamed('properties'),
-        ),
-      ).thenThrow(exception);
-      
-      // act
+      _stubSearchEmails(threadRepository, throws: exception);
+
       final result = searchMoreEmailInteractor.execute(
         SessionFixtures.aliceSession,
         AccountFixtures.aliceAccountId,
         filter: EmailFilterCondition(text: 'test'),
       );
-      
-      // assert
+
       expect(
         result,
         emitsInOrder([
@@ -95,6 +101,6 @@ void main() {
           Left(SearchMoreEmailFailure(exception)),
         ]),
       );
-    });
-  });
+    },
+  );
 }

@@ -487,6 +487,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -503,6 +504,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
@@ -515,6 +517,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -550,6 +553,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         lastEmailId: anyNamed('lastEmailId'),
       ));
@@ -567,6 +571,7 @@ void main() {
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         position: searchController.searchEmailFilter.value.position,
         filter: filterInJMapRequest,
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -622,6 +627,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -638,6 +644,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
@@ -650,6 +657,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -689,6 +697,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         lastEmailId: anyNamed('lastEmailId'),
       ));
@@ -706,6 +715,7 @@ void main() {
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         position: searchController.searchEmailFilter.value.position,
         filter: filterInJMapRequest,
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -764,6 +774,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -780,6 +791,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
@@ -792,6 +804,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -838,6 +851,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -871,6 +885,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -926,6 +941,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -942,6 +958,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
@@ -954,6 +971,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -1004,6 +1022,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -1037,6 +1056,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -1115,6 +1135,7 @@ void main() {
         position: anyNamed('position'),
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
         properties: anyNamed('properties'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -1148,6 +1169,7 @@ void main() {
         position: searchController.searchEmailFilter.value.position,
         sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: false,
         properties: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,

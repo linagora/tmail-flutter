@@ -24,6 +24,7 @@ class QuickSearchEmailInteractor {
       UnsignedInt? limit,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties,
     }
   ) async {
@@ -34,6 +35,7 @@ class QuickSearchEmailInteractor {
         limit: limit,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
 
       final presentationEmailList = emailList
