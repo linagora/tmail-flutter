@@ -1,64 +1,101 @@
 #!/bin/bash
+# CI integration test script.
+# The Android emulator is managed by reactivecircus/android-emulator-runner
+# and is already running when this script executes.
+#
+# Usage:
+#   ./scripts/patrol-integration-test-with-docker.sh
+set -e
 
-# Install ngrok
-echo "Installing ngrok..."
-curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null &&
-    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list &&
-    sudo apt update && sudo apt install ngrok
-
-# Install patrol CLI
 echo "Installing patrol CLI..."
 dart pub global activate patrol_cli 4.3.1
-flutter build apk --config-only
-
-# Forward traffic to tmail-backend
-ngrok http http://localhost:80 --log=stdout >/dev/null &
-until [[ $(curl localhost:4040/api/status | jq -r ".status") == "online" ]]; do
-    echo "Waiting for ngrok to connect..."
-    sleep 2
-done
-
-export BASIC_AUTH_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
 
 cd backend-docker
 
-# Generate keys for tmail backend
-echo "Generating keys for tmail-backend..."
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
-openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey 2>/dev/null
+openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>/dev/null
 
-# Replace content of jmap.properties with url.prefix=$BASIC_AUTH_URL
-# and websocket.url.prefix=ws${BASIC_AUTH_URL:4}
-sed -i "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=ws${BASIC_AUTH_URL:4}|" jmap.properties
+# 10.0.2.2 is the QEMU alias for the host machine inside the Android emulator.
+sed -i "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
+sed -i "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
 
-echo "Starting services and adding users..."
-docker compose up -d
-# Wait till the service is started to add users
-until (docker compose logs tmail-backend | grep -i "JAMES server started"); do
-    echo "Waiting for tmail-backend to start..."
+echo "Starting tmail-backend..."
+docker compose up -d tmail-backend --quiet-pull 2>/dev/null
+
+until docker compose logs tmail-backend 2>/dev/null | grep -qi "JAMES server started"; do
+    echo "Waiting for tmail-backend..."
     sleep 2
 done
+
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
 
-docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
+docker exec tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
 
 cd ..
 
-echo "Building the app and running tests..."
-flutter build apk --config-only
-patrol build android -v \
+export BASIC_AUTH_URL="http://10.0.2.2"
+export RESET_PORT=9999
+
+RESET_SERVER_LOG="/tmp/backend-reset-server.log"
+echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
+WORK_DIR="$(pwd)" RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
+RESET_SERVER_PID=$!
+
+cleanup() {
+    echo "Cleaning up..."
+    kill "$ADB_WATCHDOG_PID" 2>/dev/null || true
+    kill "$RESET_SERVER_PID" 2>/dev/null || true
+    cd backend-docker
+    docker compose down --remove-orphans 2>/dev/null
+    cd ..
+    # Stop the emulator before it can respawn crashpad_handler during its own
+    # graceful-shutdown sequence — that respawn is the root cause of the hang.
+    adb emu kill 2>/dev/null || true
+    sleep 2
+    # crashpad_handler ignores SIGTERM; use SIGKILL directly. Retry a few
+    # times to catch any instance that was mid-spawn when the emulator died.
+    for _i in 1 2 3; do
+        pkill -SIGKILL crashpad_handler 2>/dev/null || break
+        sleep 1
+    done
+}
+trap cleanup EXIT
+
+adb_watchdog() {
+    local fail_count=0
+    while sleep 5; do
+        if ! adb -s emulator-5554 shell echo ok >/dev/null 2>&1; then
+            (( fail_count++ )) || true
+            # Require 2 consecutive failures (~10s) before acting to avoid
+            # killing on a transient ADB blip during heavy test execution.
+            if (( fail_count >= 2 )); then
+                echo "ADB watchdog: emulator-5554 gone for $((fail_count * 5))s."
+                echo "ADB watchdog: killing Gradle JVM to unblock patrol teardown..."
+                # "adb uninstall" runs inside the Gradle JVM via DDMLIB (not a
+                # separate adb process), so we must kill Gradle directly.
+                pkill -SIGKILL -f "GradleMain" 2>/dev/null || true
+                pkill -SIGKILL -f "GradleDaemon" 2>/dev/null || true
+                # One-shot: break so the watchdog doesn't keep firing after acting.
+                break
+            fi
+        else
+            fail_count=0
+        fi
+    done
+}
+adb_watchdog &
+ADB_WATCHDOG_PID=$!
+
+echo "Running Patrol tests..."
+flutter build apk --config-only --quiet
+patrol test \
+    --exclude-tags=web \
+    --hide-test-steps \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
-    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL"
-gcloud firebase test android run \
-    --type instrumentation \
-    --app build/app/outputs/apk/debug/app-debug.apk \
-    --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-    --device 'model=MediumPhone.arm,version=33,locale=en,orientation=portrait' \
-    --use-orchestrator \
-    --environment-variables clearPackageData=true
+    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
+    --dart-define=RESET_SERVER_URL="http://10.0.2.2:$RESET_PORT"

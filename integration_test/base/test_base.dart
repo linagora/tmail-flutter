@@ -6,6 +6,7 @@ import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
+import '../utils/backend_reset_client.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -29,7 +30,7 @@ class TestBase {
       description,
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
-        visibleTimeout: Duration(seconds: 30),
+        visibleTimeout: Duration(seconds: 10),
         printLogs: true,
       ),
       tags: tags.map((t) => t.name).toList(),
@@ -60,5 +61,6 @@ class TestBase {
 
   Future<void> _tearDown() async {
     PlatformInfo.isIntegrationTesting = false;
+    await BackendResetClient.reset();
   }
 }

@@ -8,31 +8,24 @@ on:
 env:
   JAVA_VERSION: 17
   FLUTTER_VERSION: 3.38.9
+  API_LEVEL: 30
+  TARGET: default
+  ARCH: x86_64
+  PROFILE: pixel_6
 
 jobs:
   mobile_integration_test:
-    permissions:
-      contents: "read"
-      id-token: "write"
-
-    name: Run integration tests for mobile apps
+    name: Run integration tests
     runs-on: ubuntu-latest
-    concurrency:
-      group: ngrok
-      cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@v2"
-        with:
-          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.GOOGLE_CLOUD_WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT }}
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -47,10 +40,24 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
-      - name: Test
-        env:
-          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-        run: ./scripts/patrol-integration-test-with-docker.sh
+      - name: Run integration tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.API_LEVEL }}
+          target: ${{ env.TARGET }}
+          arch: ${{ env.ARCH }}
+          profile: ${{ env.PROFILE }}
+          force-avd-creation: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          emulator-boot-timeout: 900
+          pre-emulator-launch-script: |
+            adb kill-server
+            adb start-server
+          script: ./scripts/patrol-integration-test-with-docker.sh

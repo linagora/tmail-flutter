@@ -1,40 +1,36 @@
 #!/bin/bash
 
 ## Pre-requisites
-# Install ngrok
-# Install patrol CLI
-# Open android emulator
+#   - patrol_cli installed: dart pub global activate patrol_cli 4.3.1
+#   - ADB installed (Android SDK platform-tools)
+#   - A local Android emulator running (e.g. via Android Studio AVD)
+#
+# Usage:
+#   ./scripts/patrol-local-integration-test-with-docker.sh
 
-# Stoping previous environment if any
-killall ngrok || true
+# Stop previous backend environment if any
 cd backend-docker
 docker compose down || true
 cd ..
 
-# Forward traffic to tmail-backend
-ngrok http http://localhost:80 --log=stdout >/dev/null &
-until [[ $(curl localhost:4040/api/status | jq -r ".status") == "online" ]]; do
-    echo "Waiting for ngrok to connect..."
-    sleep 2
-done
-
-export BASIC_AUTH_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-
 cd backend-docker
 
-# Generate keys for tmail backend
-echo "Generating keys for tmail-backend..."
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
-openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+# Generate JWT keys if not already present
+if [[ ! -f jwt_privatekey ]]; then
+    echo "Generating keys for tmail-backend..."
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
+    openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+fi
 
-# Replace content of jmap.properties with url.prefix=$BASIC_AUTH_URL
-# and websocket.url.prefix=ws${BASIC_AUTH_URL:4}
-sed -i '' "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=ws${BASIC_AUTH_URL:4}|" jmap.properties
+# 10.0.2.2 is the QEMU alias for the host machine — the Android emulator uses this
+# to reach tmail-backend which is bound to host port 80.
+sed -i '' "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
+sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
 
-echo "Starting services and adding users..."
-docker compose up -d
-# Wait till the service is started to add users
+echo "Starting tmail-backend via Docker..."
+docker compose up -d tmail-backend
+
+# Wait for tmail-backend
 until (docker compose logs tmail-backend | grep -i "JAMES server started"); do
     echo "Waiting for tmail-backend to start..."
     sleep 2
@@ -43,22 +39,35 @@ export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
 
-docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
+docker exec tmail-backend ./root/conf/integration_test/provisioning.sh >/dev/null 2>&1
 
 cd ..
 
+# 10.0.2.2 is QEMU's hardcoded alias for the host — reaches tmail-backend on port 80
+export BASIC_AUTH_URL="http://10.0.2.2"
+export RESET_PORT=9999
+
+RESET_SERVER_LOG="/tmp/backend-reset-server.log"
+echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
+WORK_DIR="$(pwd)" RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
+RESET_SERVER_PID=$!
+
+cleanup() {
+    echo "Cleaning up test environment..."
+    kill "$RESET_SERVER_PID" 2>/dev/null || true
+    cd backend-docker
+    docker compose down
+    cd ..
+}
+trap cleanup EXIT
+
 echo "Building the app and running tests..."
 flutter build apk --config-only
-patrol test -v \
+patrol test \
+    --hide-test-steps \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
-    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL"
-
-# Clean up
-echo "Cleaning up test environment..."
-killall ngrok
-cd backend-docker
-docker compose down
-cd ..
+    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
+    --dart-define=RESET_SERVER_URL="http://10.0.2.2:$RESET_PORT"

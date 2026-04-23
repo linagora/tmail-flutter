@@ -1,4 +1,5 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:model/oidc/oidc_configuration.dart';
@@ -69,6 +70,7 @@ mixin AuthenticationClientInteractionMixin {
       scopes: scopes,
       externalUserAgent: getExternalUserAgent(),
       loginHint: loginHint,
+      allowInsecureConnections: BuildUtils.isDebugMode,
     );
   }
 
