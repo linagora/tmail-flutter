@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -55,9 +54,10 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class IdentitiesController extends ReloadableController implements BeforeReconnectHandler {
-
-  final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+class IdentitiesController extends ReloadableController
+    implements BeforeReconnectHandler {
+  final accountDashBoardController =
+      Get.find<ManageAccountDashBoardController>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -88,7 +88,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     this._createNewDefaultIdentityInteractor,
     this._editDefaultIdentityInteractor,
     this._transformListSignatureInteractor,
-    this._saveIdentityCacheOnWebInteractor
+    this._saveIdentityCacheOnWebInteractor,
   );
 
   @override
@@ -112,7 +112,8 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void handleSuccessViewState(Success success) {
     if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
-    } if (success is GetAllIdentitiesLoading) {
+    }
+    if (success is GetAllIdentitiesLoading) {
       identitiesViewState.value = Right(success);
     } else if (success is CreateNewIdentitySuccess) {
       _createNewIdentitySuccess(success);
@@ -158,14 +159,16 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   }
 
   void _registerObxStreamListener() {
-    ever(accountDashBoardController.accountId, (accountId) {
-      final session = accountDashBoardController.sessionCurrent;
-      if (accountId != null && session != null) {
-        _getAllIdentities(session, accountId);
-        _injectCleanUpPublicAssetsInteractorBindings(session, accountId);
-        _handleIdentityCache();
-      }
-    });
+    trackWorker(
+      ever(accountDashBoardController.accountId, (accountId) {
+        final session = accountDashBoardController.sessionCurrent;
+        if (accountId != null && session != null) {
+          _getAllIdentities(session, accountId);
+          _injectCleanUpPublicAssetsInteractorBindings(session, accountId);
+          _handleIdentityCache();
+        }
+      }),
+    );
   }
 
   void _getAllIdentities(Session session, AccountId accountId) {
@@ -187,7 +190,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     identitiesViewState.value = Right(success);
 
     final listIdentities = success.identities ?? [];
-    accountDashBoardController.updateOwnEmailAddressFromIdentities(listIdentities);
+    accountDashBoardController.updateOwnEmailAddressFromIdentities(
+      listIdentities,
+    );
 
     final newListIdentities = listIdentities.where(_validateIdentity).toList();
 
@@ -207,15 +212,17 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
   void _transformSignature() {
     final listIdentitySignature = listAllIdentities.toListIdentitySignature();
-    consumeState(_transformListSignatureInteractor.execute(listIdentitySignature));
+    consumeState(
+      _transformListSignatureInteractor.execute(listIdentitySignature),
+    );
   }
 
   void _syncMapIdentitySignatures(List<IdentitySignature> identitySignatures) {
     mapIdentitySignatures.value = Map.fromEntries(
-      identitySignatures.map((identitySignature) => MapEntry(
-        identitySignature.identityId,
-        identitySignature.signature,
-      )),
+      identitySignatures.map(
+        (identitySignature) =>
+            MapEntry(identitySignature.identityId, identitySignature.signature),
+      ),
     );
   }
 
@@ -230,8 +237,11 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       );
 
       newIdentityArguments = PlatformInfo.isWeb
-        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
-        : await push(AppRoutes.identityCreator, arguments: arguments);
+          ? await DialogRouter().pushGeneralDialog(
+              routeName: AppRoutes.identityCreator,
+              arguments: arguments,
+            )
+          : await push(AppRoutes.identityCreator, arguments: arguments);
 
       if (newIdentityArguments is CreateNewIdentityRequest) {
         _createNewIdentityAction(session, accountId, newIdentityArguments);
@@ -243,13 +253,25 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
   void _createNewIdentityAction(
     Session session,
-    AccountId accountId, 
-    CreateNewIdentityRequest identityRequest
+    AccountId accountId,
+    CreateNewIdentityRequest identityRequest,
   ) async {
     if (identityRequest.isDefaultIdentity) {
-      consumeState(_createNewDefaultIdentityInteractor.execute(session, accountId, identityRequest));
+      consumeState(
+        _createNewDefaultIdentityInteractor.execute(
+          session,
+          accountId,
+          identityRequest,
+        ),
+      );
     } else {
-      consumeState(_createNewIdentityInteractor.execute(session, accountId, identityRequest));
+      consumeState(
+        _createNewIdentityInteractor.execute(
+          session,
+          accountId,
+          identityRequest,
+        ),
+      );
     }
   }
 
@@ -259,35 +281,46 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).you_have_created_a_new_identity);
+        AppLocalizations.of(currentContext!).you_have_created_a_new_identity,
+      );
     }
 
     _cleanUpPublicAssets(
       success.newIdentity.id,
       IdentityActionType.create,
-      success.publicAssetsInIdentityArguments);
+      success.publicAssetsInIdentityArguments,
+    );
 
     _refreshAllIdentities();
   }
 
-  void _createNewDefaultIdentitySuccess(CreateNewDefaultIdentitySuccess success) {
+  void _createNewDefaultIdentitySuccess(
+    CreateNewDefaultIdentitySuccess success,
+  ) {
     _removeIdentityCache();
 
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity);
+        AppLocalizations.of(
+          currentContext!,
+        ).you_have_created_a_new_default_identity,
+      );
     }
 
     _cleanUpPublicAssets(
       success.newIdentity.id,
       IdentityActionType.create,
-      success.publicAssetsInIdentityArguments);
+      success.publicAssetsInIdentityArguments,
+    );
 
     _refreshAllIdentities();
   }
 
-  void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
+  void openConfirmationDialogDeleteIdentityAction(
+    BuildContext context,
+    Identity identity,
+  ) {
     final appLocalizations = AppLocalizations.of(context);
     MessageDialogActionManager().showConfirmDialogAction(
       context,
@@ -295,7 +328,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       appLocalizations.delete,
       key: const Key('confirm_dialog_delete_identity'),
       showAsBottomSheet: responsiveUtils.isMobile(context),
-      outsideDialogPadding: EdgeInsets.only(bottom: PlatformInfo.isWeb ? 42 : 16),
+      outsideDialogPadding: EdgeInsets.only(
+        bottom: PlatformInfo.isWeb ? 42 : 16,
+      ),
       title: appLocalizations.delete_identity,
       cancelTitle: appLocalizations.cancel,
       onCloseButtonAction: popBack,
@@ -307,41 +342,49 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null && session != null) {
-      consumeState(_deleteIdentityInteractor.execute(session, accountId, identityId));
+      consumeState(
+        _deleteIdentityInteractor.execute(session, accountId, identityId),
+      );
     } else {
       consumeState(Stream.value(Left(DeleteIdentityFailure(null))));
     }
   }
 
-  Future<void> _dereferencePublicAssets(
-    Identity identity
-  ) async {
+  Future<void> _dereferencePublicAssets(Identity identity) async {
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId.value;
     final identityId = identity.id;
 
-    final publicAssetIds = identity
-      .signatureAsString
-      .publicAssetIdsFromHtmlContent;
-    final removeIdentityFromPublicAssetsInteractor = getBinding<RemoveIdentityFromPublicAssetsInteractor>(
-      tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag);
+    final publicAssetIds =
+        identity.signatureAsString.publicAssetIdsFromHtmlContent;
+    final removeIdentityFromPublicAssetsInteractor =
+        getBinding<RemoveIdentityFromPublicAssetsInteractor>(
+          tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag,
+        );
 
     // if there is no identityId, even the delete action will fail
     if (identityId == null) return;
 
-    if (session == null
-      || accountId == null
-      || removeIdentityFromPublicAssetsInteractor == null
-      || publicAssetIds.isEmpty) 
-    {
-      consumeState(Stream.value(Left(RemoveIdentityFromPublicAssetsFailureState(identityId: identityId))));
+    if (session == null ||
+        accountId == null ||
+        removeIdentityFromPublicAssetsInteractor == null ||
+        publicAssetIds.isEmpty) {
+      consumeState(
+        Stream.value(
+          Left(
+            RemoveIdentityFromPublicAssetsFailureState(identityId: identityId),
+          ),
+        ),
+      );
     } else {
-      consumeState(removeIdentityFromPublicAssetsInteractor.execute(
-        session,
-        accountId,
-        identityId: identityId,
-        publicAssetIds: publicAssetIds
-      ));
+      consumeState(
+        removeIdentityFromPublicAssetsInteractor.execute(
+          session,
+          accountId,
+          identityId: identityId,
+          publicAssetIds: publicAssetIds,
+        ),
+      );
     }
   }
 
@@ -350,7 +393,8 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).identity_has_been_deleted,
-        leadingSVGIcon: imagePaths.icDeleteToast);
+        leadingSVGIcon: imagePaths.icDeleteToast,
+      );
     }
 
     _refreshAllIdentities();
@@ -379,11 +423,15 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
         session,
         accountDashBoardController.ownEmailAddress.value,
         identity: identity,
-        actionType: IdentityActionType.edit);
+        actionType: IdentityActionType.edit,
+      );
 
       newIdentityArguments = PlatformInfo.isWeb
-        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
-        : await push(AppRoutes.identityCreator, arguments: arguments);
+          ? await DialogRouter().pushGeneralDialog(
+              routeName: AppRoutes.identityCreator,
+              arguments: arguments,
+            )
+          : await push(AppRoutes.identityCreator, arguments: arguments);
 
       if (newIdentityArguments is CreateNewIdentityRequest) {
         _createNewIdentityAction(session, accountId, newIdentityArguments);
@@ -396,12 +444,24 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void editIdentityAction(
     Session session,
     AccountId accountId,
-    EditIdentityRequest editIdentityRequest
+    EditIdentityRequest editIdentityRequest,
   ) async {
     if (editIdentityRequest.isDefaultIdentity) {
-      consumeState(_editDefaultIdentityInteractor.execute(session, accountId, editIdentityRequest));
+      consumeState(
+        _editDefaultIdentityInteractor.execute(
+          session,
+          accountId,
+          editIdentityRequest,
+        ),
+      );
     } else {
-      consumeState(_editIdentityInteractor.execute(session, accountId, editIdentityRequest));
+      consumeState(
+        _editIdentityInteractor.execute(
+          session,
+          accountId,
+          editIdentityRequest,
+        ),
+      );
     }
   }
 
@@ -423,39 +483,52 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
   bool get isSignatureShow => identitySelected.value != null;
 
-  void _injectCleanUpPublicAssetsInteractorBindings(Session? session, AccountId? accountId) {
+  void _injectCleanUpPublicAssetsInteractorBindings(
+    Session? session,
+    AccountId? accountId,
+  ) {
     try {
-      requireCapability(session!, accountId!, [CapabilityIdentifier.jmapPublicAsset]);
+      requireCapability(session!, accountId!, [
+        CapabilityIdentifier.jmapPublicAsset,
+      ]);
       CleanUpPublicAssetsInteractorBindings().dependencies();
-    } catch(e) {
-      logWarning('$runtimeType::injectCleanUpPublicAssetsInteractorBindings(): exception: $e');
+    } catch (e) {
+      logWarning(
+        '$runtimeType::injectCleanUpPublicAssetsInteractorBindings(): exception: $e',
+      );
     }
   }
 
   void _cleanUpPublicAssets(
     IdentityId? identityId,
     IdentityActionType? identityActionType,
-    PublicAssetsInIdentityArguments? publicAssetsInIdentityArguments) {
+    PublicAssetsInIdentityArguments? publicAssetsInIdentityArguments,
+  ) {
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId.value;
 
-    if (session == null
-      || accountId == null
-      || identityId == null
-      || identityActionType == null
-      || publicAssetsInIdentityArguments == null) {
+    if (session == null ||
+        accountId == null ||
+        identityId == null ||
+        identityActionType == null ||
+        publicAssetsInIdentityArguments == null) {
       return;
     }
-    
-    final cleanUpPublicAssetsInteractor = getBinding<CleanUpPublicAssetsInteractor>(
-      tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag);
+
+    final cleanUpPublicAssetsInteractor =
+        getBinding<CleanUpPublicAssetsInteractor>(
+          tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag,
+        );
     if (cleanUpPublicAssetsInteractor == null) return;
-    consumeState(cleanUpPublicAssetsInteractor.execute(
-      session,
-      accountId,
-      identityId: identityId,
-      identityActionType: identityActionType,
-      publicAssetsInIdentityArguments: publicAssetsInIdentityArguments));
+    consumeState(
+      cleanUpPublicAssetsInteractor.execute(
+        session,
+        accountId,
+        identityId: identityId,
+        identityActionType: identityActionType,
+        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
+      ),
+    );
   }
 
   @override
@@ -464,7 +537,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     _handleIdentityCache();
   }
 
-  Future<void> _openIdentityEditorFromCache(GetIdentityCacheOnWebSuccess success) async {
+  Future<void> _openIdentityEditorFromCache(
+    GetIdentityCacheOnWebSuccess success,
+  ) async {
     final identityCache = success.identityCache;
     final accountId = accountDashBoardController.accountId.value;
     final session = accountDashBoardController.sessionCurrent;
@@ -476,12 +551,17 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       accountDashBoardController.ownEmailAddress.value,
       identity: identityCache.identity,
       isDefault: identityCache.isDefault,
-      publicAssetsInIdentityArguments: identityCache.publicAssetsInIdentityArguments,
-      actionType: identityCache.identityActionType);
+      publicAssetsInIdentityArguments:
+          identityCache.publicAssetsInIdentityArguments,
+      actionType: identityCache.identityActionType,
+    );
 
     newIdentityArguments = PlatformInfo.isWeb
-      ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
-      : await push(AppRoutes.identityCreator, arguments: arguments);
+        ? await DialogRouter().pushGeneralDialog(
+            routeName: AppRoutes.identityCreator,
+            arguments: arguments,
+          )
+        : await push(AppRoutes.identityCreator, arguments: arguments);
 
     if (newIdentityArguments == null) {
       _removeIdentityCache();
@@ -497,24 +577,29 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void _handleIdentityCache() {
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId;
-    if (session == null
-      || accountId.value == null
-      || !PlatformInfo.isWeb) {
+    if (session == null || accountId.value == null || !PlatformInfo.isWeb) {
       return;
     }
-    
-    final getIdentityCacheOnWebInteractor = getBinding<GetIdentityCacheOnWebInteractor>(
-      tag: BindingTag.restoreIdentityCacheInteractorBindingsTag);
+
+    final getIdentityCacheOnWebInteractor =
+        getBinding<GetIdentityCacheOnWebInteractor>(
+          tag: BindingTag.restoreIdentityCacheInteractorBindingsTag,
+        );
     if (getIdentityCacheOnWebInteractor == null) return;
 
-    consumeState(getIdentityCacheOnWebInteractor.execute(
-      accountId.value!,
-      session.username));
+    consumeState(
+      getIdentityCacheOnWebInteractor.execute(
+        accountId.value!,
+        session.username,
+      ),
+    );
   }
 
   void _removeIdentityCache() {
-    final removeIdentityCacheOnWebInteractor = getBinding<RemoveIdentityCacheOnWebInteractor>(
-      tag: BindingTag.restoreIdentityCacheInteractorBindingsTag);
+    final removeIdentityCacheOnWebInteractor =
+        getBinding<RemoveIdentityCacheOnWebInteractor>(
+          tag: BindingTag.restoreIdentityCacheInteractorBindingsTag,
+        );
     if (removeIdentityCacheOnWebInteractor == null) return;
     consumeState(removeIdentityCacheOnWebInteractor.execute());
   }
@@ -532,30 +617,39 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
           identity: createNewIdentityRequest.newIdentity,
           identityActionType: IdentityActionType.create,
           isDefault: createNewIdentityRequest.isDefaultIdentity,
-          publicAssetsInIdentityArguments: createNewIdentityRequest.publicAssetsInIdentityArguments);
+          publicAssetsInIdentityArguments:
+              createNewIdentityRequest.publicAssetsInIdentityArguments,
+        );
         break;
       case (EditIdentityRequest editIdentityRequest):
         identityCache = IdentityCache(
-          identity: editIdentityRequest.identityRequest.toIdentityWithId(editIdentityRequest.identityId),
+          identity: editIdentityRequest.identityRequest.toIdentityWithId(
+            editIdentityRequest.identityId,
+          ),
           identityActionType: IdentityActionType.edit,
           isDefault: editIdentityRequest.isDefaultIdentity,
-          publicAssetsInIdentityArguments: editIdentityRequest.publicAssetsInIdentityArguments);
+          publicAssetsInIdentityArguments:
+              editIdentityRequest.publicAssetsInIdentityArguments,
+        );
         break;
       default:
         break;
     }
 
     if (identityCache == null) return;
-  
-    consumeState(_saveIdentityCacheOnWebInteractor.execute(
-      accountId.value!,
-      session!.username,
-      identityCache: identityCache
-    ));
+
+    consumeState(
+      _saveIdentityCacheOnWebInteractor.execute(
+        accountId.value!,
+        session!.username,
+        identityCache: identityCache,
+      ),
+    );
   }
 
   @override
-  Future<void> onBeforeReconnect() => _saveIdentityCacheOnWebAction(newIdentityArguments);
+  Future<void> onBeforeReconnect() =>
+      _saveIdentityCacheOnWebAction(newIdentityArguments);
 
   @override
   void onClose() {

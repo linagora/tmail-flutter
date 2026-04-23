@@ -17,12 +17,19 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/m
 abstract class PushBaseController {
   Session? session;
   AccountId? accountId;
+  final _stateSubscriptions =
+      <Object, StreamSubscription<Either<Failure, Success>>>{};
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    newStateStream.listen(
+    final subscriptionKey = Object();
+    final subscription = newStateStream.listen(
       _handleStateStream,
       onError: handleErrorViewState,
+      onDone: () {
+        scheduleMicrotask(() => _stateSubscriptions.remove(subscriptionKey));
+      },
     );
+    _stateSubscriptions[subscriptionKey] = subscription;
   }
 
   void _handleStateStream(Either<Failure, Success> newState) {
@@ -34,7 +41,9 @@ abstract class PushBaseController {
   void handleSuccessViewState(Success success);
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {
-    logWarning('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
+    logWarning(
+      'PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace',
+    );
   }
 
   void initialize({AccountId? accountId, Session? session}) {
@@ -42,7 +51,12 @@ abstract class PushBaseController {
     this.session = session;
   }
 
-  void onClose() {}
+  void onClose() {
+    for (final subscription in _stateSubscriptions.values.toList()) {
+      subscription.cancel();
+    }
+    _stateSubscriptions.clear();
+  }
 
   void mappingTypeStateToAction(
     Map<String, dynamic> mapTypeState,
@@ -51,32 +65,59 @@ abstract class PushBaseController {
     bool isForeground = true,
     Session? session,
     required EmailChangeListener emailChangeListener,
-    required MailboxChangeListener mailboxChangeListener
+    required MailboxChangeListener mailboxChangeListener,
   }) {
-    log('PushBaseController::mappingTypeStateToAction():mapTypeState: $mapTypeState');
+    log(
+      'PushBaseController::mappingTypeStateToAction():mapTypeState: $mapTypeState',
+    );
     final listTypeName = mapTypeState.keys
-      .map((value) => TypeName(value))
-      .toList();
+        .map((value) => TypeName(value))
+        .toList();
 
     final listEmailActions = listTypeName
-      .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
-      .nonNulls
-      .toList();
+        .where(
+          (typeName) =>
+              typeName == TypeName.emailType ||
+              typeName == TypeName.emailDelivery,
+        )
+        .map(
+          (typeName) => _toPushNotificationAction(
+            typeName,
+            accountId,
+            userName,
+            mapTypeState,
+            isForeground,
+            session: session,
+          ),
+        )
+        .nonNulls
+        .toList();
 
-    log('PushBaseController::mappingTypeStateToAction():listEmailActions: $listEmailActions');
+    log(
+      'PushBaseController::mappingTypeStateToAction():listEmailActions: $listEmailActions',
+    );
 
     if (listEmailActions.isNotEmpty) {
-       emailChangeListener.dispatchActions(listEmailActions);
+      emailChangeListener.dispatchActions(listEmailActions);
     }
 
     final listMailboxActions = listTypeName
-      .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
-      .nonNulls
-      .toList();
+        .where((typeName) => typeName == TypeName.mailboxType)
+        .map(
+          (typeName) => _toPushNotificationAction(
+            typeName,
+            accountId,
+            userName,
+            mapTypeState,
+            isForeground,
+          ),
+        )
+        .nonNulls
+        .toList();
 
-    log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
+    log(
+      'PushBaseController::mappingTypeStateToAction():listMailboxActions: $listMailboxActions',
+    );
 
     if (listMailboxActions.isNotEmpty) {
       mailboxChangeListener.dispatchActions(listMailboxActions);
@@ -88,28 +129,59 @@ abstract class PushBaseController {
     AccountId accountId,
     UserName userName,
     Map<String, dynamic> mapTypeState,
-    isForeground,
-    {Session? session}
-  ) {
+    isForeground, {
+    Session? session,
+  }) {
     final newState = jmap.State(mapTypeState[typeName.value]);
     switch (typeName) {
       case TypeName.emailType:
         return isForeground
-            ? SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session)
-            : StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
+            ? SynchronizeEmailOnForegroundAction(
+                typeName,
+                newState,
+                accountId,
+                session,
+              )
+            : StoreEmailStateToRefreshAction(
+                typeName,
+                newState,
+                accountId,
+                userName,
+                session,
+              );
       case TypeName.emailDelivery:
         // Handle emailDelivery in both foreground and background
         // In foreground: sync the email list to show new emails
         // In background: show push notification
         if (isForeground) {
-          return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
+          return SynchronizeEmailOnForegroundAction(
+            typeName,
+            newState,
+            accountId,
+            session,
+          );
         } else {
-          return PushNotificationAction(typeName, newState, session, accountId, userName);
+          return PushNotificationAction(
+            typeName,
+            newState,
+            session,
+            accountId,
+            userName,
+          );
         }
       case TypeName.mailboxType:
         return isForeground
-            ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)
-            : StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
+            ? SynchronizeMailboxOnForegroundAction(
+                typeName,
+                newState,
+                accountId,
+              )
+            : StoreMailboxStateToRefreshAction(
+                typeName,
+                newState,
+                accountId,
+                userName,
+              );
     }
     return null;
   }

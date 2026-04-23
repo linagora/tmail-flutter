@@ -49,20 +49,29 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   );
 
   void setBasicAuthorization(UserName userName, Password password) {
-    _authorization = base64Encode(utf8.encode('${userName.value}:${password.value}'));
+    _authorization = base64Encode(
+      utf8.encode('${userName.value}:${password.value}'),
+    );
     _authenticationType = AuthenticationType.basic;
   }
 
-  void setTokenAndAuthorityOidc({TokenOIDC? newToken, OIDCConfiguration? newConfig}) {
+  void setTokenAndAuthorityOidc({
+    TokenOIDC? newToken,
+    OIDCConfiguration? newConfig,
+  }) {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
+    log(
+      'AuthorizationInterceptors::setTokenAndAuthorityOidc: tokenIdHash = ${newToken?.tokenIdHash} | expiredTime = ${newToken?.expiredTime}',
+    );
     _scheduleTokenRefresh();
   }
 
   void _updateNewToken(TokenOIDC newToken) {
-    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
+    log(
+      'AuthorizationInterceptors::_updateNewToken: tokenIdHash = ${newToken.tokenIdHash} | expiredTime = ${newToken.expiredTime}',
+    );
     _token = newToken;
     _scheduleTokenRefresh();
   }
@@ -74,7 +83,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// Returns the current access token for WebSocket authentication.
   /// Returns null if not using OIDC or token is invalid.
   String? get currentToken {
-    if (_authenticationType == AuthenticationType.oidc && _token?.isTokenValid() == true) {
+    if (_authenticationType == AuthenticationType.oidc &&
+        _token?.isTokenValid() == true) {
       return _token?.token;
     }
     return null;
@@ -91,27 +101,35 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    switch(_authenticationType) {
+    switch (_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
-          options.headers[HttpHeaders.authorizationHeader] = _getAuthorizationAsBasicHeader(_authorization);
+          options.headers[HttpHeaders.authorizationHeader] =
+              _getAuthorizationAsBasicHeader(_authorization);
         }
         break;
       case AuthenticationType.oidc:
         if (_token != null && _token?.isTokenValid() == true) {
-          options.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
+          options.headers[HttpHeaders.authorizationHeader] =
+              _getTokenAsBearerHeader(_token!.token);
         }
         break;
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
+    log(
+      'AuthorizationInterceptors::onRequest(): ${options.method} ${options.uri}',
+    );
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    logWarning('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    logWarning(
+      'AuthorizationInterceptors::onError(): '
+      'type = ${err.type} | statusCode = ${err.response?.statusCode} | '
+      'url = ${err.requestOptions.uri}',
+    );
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -119,22 +137,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
       final hasAttemptedRefresh = extraInRequest[_refreshAttemptedKey] == true;
 
-      if (!hasAttemptedRefresh && validateToRetryTheRequestWithNewToken(
-        responseStatusCode: err.response?.statusCode,
-        authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
-        tokenOIDC: _token
-      )) {
-        log('AuthorizationInterceptors::onError: Request using old token, retry with updated token');
+      if (!hasAttemptedRefresh &&
+          validateToRetryTheRequestWithNewToken(
+            responseStatusCode: err.response?.statusCode,
+            authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
+            tokenOIDC: _token,
+          )) {
+        log(
+          'AuthorizationInterceptors::onError: Request using old token, retry with updated token',
+        );
         isRetryRequest = true;
-      } else if (!hasAttemptedRefresh && validateToRefreshToken(
-        responseStatusCode: err.response?.statusCode,
-        tokenOIDC: _token
-      )) {
+      } else if (!hasAttemptedRefresh &&
+          validateToRefreshToken(
+            responseStatusCode: err.response?.statusCode,
+            tokenOIDC: _token,
+          )) {
         try {
           log('AuthorizationInterceptors::onError: Perform get New Token');
           final newTokenOidc = PlatformInfo.isIOS
-            ? await _getNewTokenForIOSPlatform()
-            : await _getNewTokenForOtherPlatform();
+              ? await _getNewTokenForIOSPlatform()
+              : await _getNewTokenForOtherPlatform();
 
           if (newTokenOidc.token == _token?.token) {
             log('AuthorizationInterceptors::onError: Token duplicated');
@@ -142,10 +164,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           }
           _updateNewToken(newTokenOidc);
 
-          final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+          final personalAccount = await _updateCurrentAccount(
+            tokenOIDC: newTokenOidc,
+          );
 
           if (PlatformInfo.isIOS) {
-            await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+            await _iosSharingManager.saveKeyChainSharingSession(
+              personalAccount,
+            );
           }
 
           requestOptions.extra[_refreshAttemptedKey] = true;
@@ -214,10 +240,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             'AuthorizationInterceptors::onError: '
             'Retry failed with error=$retryError',
           );
-          return super.onError(
-            err.copyWith(error: retryError),
-            handler,
-          );
+          return super.onError(err.copyWith(error: retryError), handler);
         }
       } else {
         return super.onError(err, handler);
@@ -246,9 +269,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       if (filePath?.isNotEmpty == true) {
         return File(filePath!).openRead();
       } else {
-        return mapUploadExtra[FileUploader.streamDataExtraKey] as Stream<List<int>>?;
+        return mapUploadExtra[FileUploader.streamDataExtraKey]
+            as Stream<List<int>>?;
       }
-    } catch(e) {
+    } catch (e) {
       logWarning(
         'AuthorizationInterceptors::_getDataUploadRequest: Exception = $e',
       );
@@ -258,23 +282,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   bool _isTokenExpired(TokenOIDC? tokenOIDC) => tokenOIDC?.isExpired == true;
 
-  bool _isAuthenticationOidcValid() => _authenticationType == AuthenticationType.oidc && _configOIDC != null;
+  bool _isAuthenticationOidcValid() =>
+      _authenticationType == AuthenticationType.oidc && _configOIDC != null;
 
-  bool _isTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.token.isNotEmpty == true;
+  bool _isTokenNotEmpty(TokenOIDC? tokenOIDC) =>
+      tokenOIDC?.token.isNotEmpty == true;
 
-  bool _isRefreshTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.refreshToken.isNotEmpty == true;
+  bool _isRefreshTokenNotEmpty(TokenOIDC? tokenOIDC) =>
+      tokenOIDC?.refreshToken.isNotEmpty == true;
 
-  bool validateToRefreshToken(
-      {required int? responseStatusCode, required TokenOIDC? tokenOIDC}) {
+  bool validateToRefreshToken({
+    required int? responseStatusCode,
+    required TokenOIDC? tokenOIDC,
+  }) {
     final isStatusCode401 = responseStatusCode == 401;
     final isLoginWithOIDC = _isAuthenticationOidcValid();
     final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
     final hasRefreshToken = _isRefreshTokenNotEmpty(tokenOIDC);
 
-    final canProceedRefresh = isStatusCode401 &&
-        isLoginWithOIDC &&
-        hasAccessToken &&
-        hasRefreshToken;
+    final canProceedRefresh =
+        isStatusCode401 && isLoginWithOIDC && hasAccessToken && hasRefreshToken;
 
     logTrace(
       'AuthorizationInterceptors::validateToRefreshToken: '
@@ -289,10 +316,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return canProceedRefresh;
   }
 
-  bool validateToRetryTheRequestWithNewToken(
-      {required int? responseStatusCode,
-      required String? authHeader,
-      required TokenOIDC? tokenOIDC}) {
+  bool validateToRetryTheRequestWithNewToken({
+    required int? responseStatusCode,
+    required String? authHeader,
+    required TokenOIDC? tokenOIDC,
+  }) {
     final isStatusCode401 = responseStatusCode == 401;
     final hasAuthHeader = authHeader != null;
     final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
@@ -300,7 +328,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final isTokenUpdated =
         tokenOIDC != null && authHeader?.contains(tokenOIDC.token) != true;
 
-    final shouldRetry = isStatusCode401 &&
+    final shouldRetry =
+        isStatusCode401 &&
         hasAuthHeader &&
         hasAccessToken &&
         isTokenStillValid &&
@@ -320,11 +349,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return shouldRetry;
   }
 
-  String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';
+  String _getAuthorizationAsBasicHeader(String? authorization) =>
+      'Basic $authorization';
 
   String _getTokenAsBearerHeader(String token) => 'Bearer $token';
 
-  Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+  Future<PersonalAccount> _updateCurrentAccount({
+    required TokenOIDC tokenOIDC,
+  }) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
@@ -337,7 +369,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       isSelected: true,
       accountId: currentAccount.accountId,
       apiUrl: currentAccount.apiUrl,
-      userName: currentAccount.userName
+      userName: currentAccount.userName,
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
 
@@ -350,7 +382,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       return null;
     }
 
-    final keychainSharingSession = await _iosSharingManager.getKeychainSharingSession(currentAccount.accountId!);
+    final keychainSharingSession = await _iosSharingManager
+        .getKeychainSharingSession(currentAccount.accountId!);
     if (keychainSharingSession == null) {
       return null;
     }
@@ -370,13 +403,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       _configOIDC!.redirectUrl,
       _configOIDC!.discoveryUrl,
       _configOIDC!.scopes,
-      _token!.refreshToken
+      _token!.refreshToken,
     );
   }
 
   Future<TokenOIDC> _getNewTokenForIOSPlatform() async {
     final tokenInKeychain = await _getTokenInKeychain(_token!);
-    log('AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform: KeychainTokenId = ${tokenInKeychain?.tokenIdHash} | isTokenExpired = ${_isTokenExpired(tokenInKeychain)}');
+    log(
+      'AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform: KeychainTokenId = ${tokenInKeychain?.tokenIdHash} | isTokenExpired = ${_isTokenExpired(tokenInKeychain)}',
+    );
     if (tokenInKeychain == null || _isTokenExpired(tokenInKeychain)) {
       return _invokeRefreshTokenFromServer();
     } else {
@@ -397,7 +432,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         _token == null ||
         _token!.expiredTime == null ||
         _token!.refreshToken.isEmpty) {
-      log('AuthorizationInterceptors::_scheduleTokenRefresh: Skipping - not OIDC or missing token/expiry/refreshToken');
+      log(
+        'AuthorizationInterceptors::_scheduleTokenRefresh: Skipping - not OIDC or missing token/expiry/refreshToken',
+      );
       return;
     }
 
@@ -405,13 +442,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final expiryTime = _token!.expiredTime!;
 
     if (expiryTime.isBefore(now)) {
-      log('AuthorizationInterceptors::_scheduleTokenRefresh: Token already expired, not scheduling');
+      log(
+        'AuthorizationInterceptors::_scheduleTokenRefresh: Token already expired, not scheduling',
+      );
       return;
     }
 
     final totalLifetime = expiryTime.difference(now);
     final refreshAt80Percent = Duration(
-      milliseconds: (totalLifetime.inMilliseconds * _refreshThresholdPercent).round()
+      milliseconds: (totalLifetime.inMilliseconds * _refreshThresholdPercent)
+          .round(),
     );
     final refreshWithBuffer = totalLifetime - _minimumRefreshBuffer;
 
@@ -422,12 +462,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
     // Ensure we don't schedule with negative or zero delay
     if (refreshDelay.inSeconds <= 0) {
-      log('AuthorizationInterceptors::_scheduleTokenRefresh: Token about to expire, refreshing immediately');
+      log(
+        'AuthorizationInterceptors::_scheduleTokenRefresh: Token about to expire, refreshing immediately',
+      );
       _proactivelyRefreshToken();
       return;
     }
 
-    log('AuthorizationInterceptors::_scheduleTokenRefresh: Scheduling refresh in ${refreshDelay.inSeconds} seconds (token expires in ${totalLifetime.inSeconds} seconds)');
+    log(
+      'AuthorizationInterceptors::_scheduleTokenRefresh: Scheduling refresh in ${refreshDelay.inSeconds} seconds (token expires in ${totalLifetime.inSeconds} seconds)',
+    );
 
     _tokenRefreshTimer = Timer(refreshDelay, _proactivelyRefreshToken);
   }
@@ -435,7 +479,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// Proactively refreshes the token before it expires.
   Future<void> _proactivelyRefreshToken() async {
     if (_isRefreshing) {
-      log('AuthorizationInterceptors::_proactivelyRefreshToken: Already refreshing, skipping');
+      log(
+        'AuthorizationInterceptors::_proactivelyRefreshToken: Already refreshing, skipping',
+      );
       return;
     }
 
@@ -443,12 +489,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         _token == null ||
         _token!.refreshToken.isEmpty ||
         _configOIDC == null) {
-      log('AuthorizationInterceptors::_proactivelyRefreshToken: Cannot refresh - missing configuration');
+      log(
+        'AuthorizationInterceptors::_proactivelyRefreshToken: Cannot refresh - missing configuration',
+      );
       return;
     }
 
     _isRefreshing = true;
-    log('AuthorizationInterceptors::_proactivelyRefreshToken: Starting proactive token refresh');
+    log(
+      'AuthorizationInterceptors::_proactivelyRefreshToken: Starting proactive token refresh',
+    );
 
     try {
       final newTokenOidc = PlatformInfo.isIOS
@@ -456,22 +506,30 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           : await _getNewTokenForOtherPlatform();
 
       if (newTokenOidc.token == _token?.token) {
-        log('AuthorizationInterceptors::_proactivelyRefreshToken: Token unchanged after refresh');
+        log(
+          'AuthorizationInterceptors::_proactivelyRefreshToken: Token unchanged after refresh',
+        );
         _isRefreshing = false;
         _scheduleTokenRefresh();
         return;
       }
 
-      log('AuthorizationInterceptors::_proactivelyRefreshToken: Got new token, updating');
+      log(
+        'AuthorizationInterceptors::_proactivelyRefreshToken: Got new token, updating',
+      );
       _token = newTokenOidc;
 
-      final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+      final personalAccount = await _updateCurrentAccount(
+        tokenOIDC: newTokenOidc,
+      );
 
       if (PlatformInfo.isIOS) {
         await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
       }
 
-      log('AuthorizationInterceptors::_proactivelyRefreshToken: Token refresh successful, new expiry: ${newTokenOidc.expiredTime}');
+      log(
+        'AuthorizationInterceptors::_proactivelyRefreshToken: Token refresh successful, new expiry: ${newTokenOidc.expiredTime}',
+      );
       _scheduleTokenRefresh();
     } catch (e, stackTrace) {
       logError(
@@ -480,7 +538,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         stackTrace: stackTrace,
       );
       // Schedule retry after a short delay if refresh fails
-      _tokenRefreshTimer = Timer(const Duration(seconds: 30), _proactivelyRefreshToken);
+      _tokenRefreshTimer = Timer(
+        const Duration(seconds: 30),
+        _proactivelyRefreshToken,
+      );
     } finally {
       _isRefreshing = false;
     }
@@ -506,7 +567,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final timeUntilExpiry = expiryTime.difference(now);
 
       if (timeUntilExpiry <= _minimumRefreshBuffer) {
-        log('AuthorizationInterceptors::checkAndRefreshTokenIfNeeded: Token expired or expiring soon, refreshing');
+        log(
+          'AuthorizationInterceptors::checkAndRefreshTokenIfNeeded: Token expired or expiring soon, refreshing',
+        );
         await _proactivelyRefreshToken();
       } else {
         // Reschedule the timer in case it was cancelled
@@ -526,10 +589,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final retryDio = _createRetryDio();
 
     if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
-      log('AuthorizationInterceptors::_retryRequest: '
-          'Retry upload request with TokenId = ${_token?.tokenIdHash}');
-      final uploadExtra =
-          extraInRequest[FileUploader.uploadAttachmentExtraKey];
+      log(
+        'AuthorizationInterceptors::_retryRequest: '
+        'Retry upload request with TokenId = ${_token?.tokenIdHash}',
+      );
+      final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
       return retryDio.request(
         requestOptions.path,
@@ -542,16 +606,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
       );
     } else {
-      log('AuthorizationInterceptors::_retryRequest: '
-          'Retry request with TokenId = ${_token?.tokenIdHash}');
+      log(
+        'AuthorizationInterceptors::_retryRequest: '
+        'Retry request with TokenId = ${_token?.tokenIdHash}',
+      );
       return retryDio.fetch(requestOptions);
     }
   }
 
   /// Creates a separate Dio instance without interceptors for retry requests.
   /// This avoids deadlock when retrying inside [onError] of [QueuedInterceptorsWrapper].
-  Dio _createRetryDio() => Dio(_dio.options)
-    ..httpClientAdapter = _dio.httpClientAdapter;
+  Dio _createRetryDio() =>
+      Dio(_dio.options)..httpClientAdapter = _dio.httpClientAdapter;
 
   void clear() {
     _cancelTokenRefreshTimer();

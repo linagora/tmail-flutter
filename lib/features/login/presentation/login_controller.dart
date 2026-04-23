@@ -70,18 +70,22 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class LoginController extends ReloadableController {
-
   final AuthenticationInteractor _authenticationInteractor;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
-  final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
+  final AuthenticateOidcOnBrowserInteractor
+  _authenticateOidcOnBrowserInteractor;
   final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
-  final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
+  final GetStoredOidcConfigurationInteractor
+  _getStoredOidcConfigurationInteractor;
   final SaveLoginUrlOnMobileInteractor _saveLoginUrlOnMobileInteractor;
-  final GetAllRecentLoginUrlOnMobileInteractor _getAllRecentLoginUrlOnMobileInteractor;
-  final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
-  final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
+  final GetAllRecentLoginUrlOnMobileInteractor
+  _getAllRecentLoginUrlOnMobileInteractor;
+  final SaveLoginUsernameOnMobileInteractor
+  _saveLoginUsernameOnMobileInteractor;
+  final GetAllRecentLoginUsernameOnMobileInteractor
+  _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
   final TryGuessingWebFingerInteractor _tryGuessingWebFingerInteractor;
@@ -140,8 +144,8 @@ class LoginController extends ReloadableController {
     if (arguments is LoginArguments) {
       loginFormType.value =
           arguments.loginFormType == LoginFormType.passwordForm
-              ? LoginFormType.dnsLookupForm
-              : arguments.loginFormType;
+          ? LoginFormType.dnsLookupForm
+          : arguments.loginFormType;
 
       if (hasPreviousCompanyServerLogin(arguments)) {
         autoFillPreviousCompanyServerMail(arguments.loginInfo!);
@@ -166,12 +170,12 @@ class LoginController extends ReloadableController {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        failure is SignInTwakeWorkplaceFailure
-    ) {
+        failure is SignInTwakeWorkplaceFailure) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
-      _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+      _handleNoSuitableBrowserOIDC(
+        failure,
+      ).map((stillFailed) => _handleCommonOIDCFailure());
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -190,7 +194,9 @@ class LoginController extends ReloadableController {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+    log(
+      '$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}',
+    );
     if (success is GetAuthenticationInfoSuccess) {
       _getStoredOidcConfiguration();
     } else if (success is GetStoredOidcConfigurationSuccess) {
@@ -224,19 +230,21 @@ class LoginController extends ReloadableController {
 
   @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
-    logWarning('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
+    logWarning(
+      'LoginController::handleUrgentException:Exception: $exception | Failure: $failure',
+    );
     if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetOIDCConfigurationFromBaseUrlFailure) {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        failure is SignInTwakeWorkplaceFailure
-    ) {
+        failure is SignInTwakeWorkplaceFailure) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
-      _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+      _handleNoSuitableBrowserOIDC(
+        failure,
+      ).map((stillFailed) => _handleCommonOIDCFailure());
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
@@ -275,28 +283,35 @@ class LoginController extends ReloadableController {
   void _handleDNSLookupToGetJmapUrlFailure(
     DNSLookupToGetJmapUrlFailure failure,
   ) {
-    consumeState(_tryGuessingWebFingerInteractor.execute(
-      generateOidcGuessingUrls(failure.email),
-    ));
+    consumeState(
+      _tryGuessingWebFingerInteractor.execute(
+        generateOidcGuessingUrls(failure.email),
+      ),
+    );
   }
 
   void _registerDeepLinks() {
     _deepLinksManager = getBinding<DeepLinksManager>();
     _deepLinksManager?.clearPendingDeepLinkData();
     _deepLinkDataStreamSubscription = _deepLinksManager
-        ?.pendingDeepLinkData.stream
+        ?.pendingDeepLinkData
+        .stream
         .listen(_handlePendingDeepLinkDataStream);
   }
 
   void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
-    log('LoginController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
+    log(
+      'LoginController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData',
+    );
     _deepLinksManager?.handleDeepLinksWhenAppRunning(
       deepLinkData: deepLinkData,
       onSuccessCallback: (deepLinkData) {
         if (deepLinkData is! OpenAppDeepLinkData) return;
 
         if (currentContext != null) {
-          SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+          SmartDialog.showLoading(
+            msg: AppLocalizations.of(currentContext!).loadingPleaseWait,
+          );
         }
 
         _deepLinksManager?.autoSignInViaDeepLink(
@@ -308,7 +323,9 @@ class LoginController extends ReloadableController {
     );
   }
 
-  void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+  void _handleAutoSignInViaDeepLinkSuccess(
+    AutoSignInViaDeepLinkSuccess success,
+  ) {
     if (PlatformInfo.isMobile) {
       removeCompanyServerLoginInfo();
     }
@@ -324,7 +341,9 @@ class LoginController extends ReloadableController {
       featureFailure = failure;
       tryGetOIDCConfigurationFromBaseUrl(_currentBaseUrl!);
     } catch (e) {
-      logWarning('LoginController::_handleCheckOIDCIsAvailableFailure:Exception = $e');
+      logWarning(
+        'LoginController::_handleCheckOIDCIsAvailableFailure:Exception = $e',
+      );
       handleOIDCIsNotAvailable(failure);
     }
   }
@@ -367,19 +386,21 @@ class LoginController extends ReloadableController {
     if (_currentBaseUrl == null) {
       dispatchState(Left(CheckOIDCIsAvailableFailure(CanNotFoundBaseUrl())));
     } else {
-      consumeState(_checkOIDCIsAvailableInteractor.execute(
-        OIDCRequest(
-          baseUrl: _currentBaseUrl!.toString(),
-          resourceUrl: _currentBaseUrl!.origin
-        )
-      ));
+      consumeState(
+        _checkOIDCIsAvailableInteractor.execute(
+          OIDCRequest(
+            baseUrl: _currentBaseUrl!.toString(),
+            resourceUrl: _currentBaseUrl!.origin,
+          ),
+        ),
+      );
     }
   }
 
   void handleBackButtonAction(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
     clearState();
-    switch(loginFormType.value) {
+    switch (loginFormType.value) {
       case LoginFormType.dnsLookupForm:
       case LoginFormType.baseUrlForm:
         navigateToTwakeWelcomePage();
@@ -411,15 +432,24 @@ class LoginController extends ReloadableController {
 
   void handleLoginPressed(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-    log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
+    log(
+      'LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | hasPassword: ${_password != null}',
+    );
     if (_currentBaseUrl == null) {
-      consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
+      consumeState(
+        Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))),
+      );
     } else if (_username == null) {
-      consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
+      consumeState(
+        Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))),
+      );
     } else if (_password == null) {
-      consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundPassword()))));
+      consumeState(
+        Stream.value(Left(AuthenticationUserFailure(CanNotFoundPassword()))),
+      );
     } else {
-      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm) {
+      if (PlatformInfo.isMobile &&
+          loginFormType.value == LoginFormType.credentialForm) {
         TextInput.finishAutofillContext();
         if (_username!.value.isEmail) {
           _storeUsernameToCache(_username!.value);
@@ -430,8 +460,8 @@ class LoginController extends ReloadableController {
         _authenticationInteractor.execute(
           baseUrl: _currentBaseUrl!,
           userName: _username!,
-          password: _password!
-        )
+          password: _password!,
+        ),
       );
     }
   }
@@ -459,10 +489,12 @@ class LoginController extends ReloadableController {
 
   void _getTokenOIDCOnSaaSPlatform(OIDCConfiguration oidcConfiguration) {
     if (_currentBaseUrl != null) {
-      consumeState(_signInTwakeWorkplaceInteractor.execute(
-        baseUri: _currentBaseUrl!,
-        oidcConfiguration: oidcConfiguration,
-      ));
+      consumeState(
+        _signInTwakeWorkplaceInteractor.execute(
+          baseUri: _currentBaseUrl!,
+          oidcConfiguration: oidcConfiguration,
+        ),
+      );
     } else {
       dispatchState(Left(GetTokenOIDCFailure(CanNotFoundBaseUrl())));
     }
@@ -503,7 +535,10 @@ class LoginController extends ReloadableController {
     dynamicUrlInterceptors.setJmapUrl(_currentBaseUrl?.toString());
     dynamicUrlInterceptors.changeBaseUrl(_currentBaseUrl?.toString());
     authorizationInterceptors.setBasicAuthorization(_username!, _password!);
-    authorizationIsolateInterceptors.setBasicAuthorization(_username!, _password!);
+    authorizationIsolateInterceptors.setBasicAuthorization(
+      _username!,
+      _password!,
+    );
     getSessionAction();
   }
 
@@ -519,19 +554,25 @@ class LoginController extends ReloadableController {
     _saveLoginUrlOnMobileInteractor.execute(RecentLoginUrl.now(uri.toString()));
   }
 
-  Future<List<RecentLoginUrl>> getAllRecentLoginUrlAction(String pattern) async {
+  Future<List<RecentLoginUrl>> getAllRecentLoginUrlAction(
+    String pattern,
+  ) async {
     return await _getAllRecentLoginUrlOnMobileInteractor
         .execute(pattern: pattern)
-        .then((result) => result.fold(
+        .then(
+          (result) => result.fold(
             (failure) => <RecentLoginUrl>[],
             (success) => success is GetAllRecentLoginUrlLatestSuccess
                 ? success.listRecentLoginUrl
-                : <RecentLoginUrl>[]
-        ));
+                : <RecentLoginUrl>[],
+          ),
+        );
   }
 
   void selectUsernameFromSuggestion(RecentLoginUsername recentLoginUsername) {
-    log('LoginController::selectUsernameFromSuggestion():recentLoginUsername: $recentLoginUsername');
+    log(
+      'LoginController::selectUsernameFromSuggestion():recentLoginUsername: $recentLoginUsername',
+    );
     usernameInputController.text = recentLoginUsername.username;
     _username = UserName(recentLoginUsername.username);
 
@@ -542,34 +583,43 @@ class LoginController extends ReloadableController {
 
   void _storeUsernameToCache(String userName) {
     log('LoginController::_storeUsername():userName: $userName');
-    _saveLoginUsernameOnMobileInteractor.execute(RecentLoginUsername.now(userName));
+    _saveLoginUsernameOnMobileInteractor.execute(
+      RecentLoginUsername.now(userName),
+    );
   }
 
-  Future<List<RecentLoginUsername>> getAllRecentLoginUsernameAction({String? pattern}) async {
+  Future<List<RecentLoginUsername>> getAllRecentLoginUsernameAction({
+    String? pattern,
+  }) async {
     return await _getAllRecentLoginUsernameOnMobileInteractor
         .execute(pattern: pattern)
-        .then((result) => result.fold(
+        .then(
+          (result) => result.fold(
             (failure) => <RecentLoginUsername>[],
             (success) => success is GetAllRecentLoginUsernameLatestSuccess
                 ? success.listRecentLoginUsername
-                : <RecentLoginUsername>[]
-        ));
+                : <RecentLoginUsername>[],
+          ),
+        );
   }
 
-  Uri? get _currentBaseUrl => PlatformInfo.isWeb
-    ? Uri.tryParse(AppConfig.baseUrl)
-    : _baseUri;
+  Uri? get _currentBaseUrl =>
+      PlatformInfo.isWeb ? Uri.tryParse(AppConfig.baseUrl) : _baseUri;
 
   void invokeDNSLookupToGetJmapUrl() {
     log('LoginController::invokeDNSLookupToGetJmapUrl:_username $_username');
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (_username == null) {
-      consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
+      consumeState(
+        Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))),
+      );
     } else {
       if (_username!.value.isEmail) {
         _storeUsernameToCache(_username!.value);
-        consumeState(_dnsLookupToGetJmapUrlInteractor.execute(_username!.value));
+        consumeState(
+          _dnsLookupToGetJmapUrlInteractor.execute(_username!.value),
+        );
       } else {
         _username = null;
         _clearTextInputField();
@@ -578,7 +628,9 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _handleDNSLookupToGetJmapUrlSuccess(DNSLookupToGetJmapUrlSuccess success) {
+  void _handleDNSLookupToGetJmapUrlSuccess(
+    DNSLookupToGetJmapUrlSuccess success,
+  ) {
     onBaseUrlChange(success.jmapUrl);
     _checkOIDCIsAvailable();
   }
@@ -588,7 +640,8 @@ class LoginController extends ReloadableController {
       removeCompanyServerLoginInfo();
     }
 
-    if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.dnsLookupForm) {
+    if (PlatformInfo.isMobile &&
+        loginFormType.value == LoginFormType.dnsLookupForm) {
       _showPasswordForm();
     } else {
       _showCredentialForm();
@@ -653,9 +706,9 @@ class LoginController extends ReloadableController {
   }
 
   bool get isBackButtonActivated =>
-    loginFormType.value == LoginFormType.dnsLookupForm ||
-    loginFormType.value == LoginFormType.passwordForm ||
-    loginFormType.value == LoginFormType.credentialForm;
+      loginFormType.value == LoginFormType.dnsLookupForm ||
+      loginFormType.value == LoginFormType.passwordForm ||
+      loginFormType.value == LoginFormType.credentialForm;
 
   @override
   void onClose() {

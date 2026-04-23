@@ -7,12 +7,12 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
 abstract class HiveCacheClient<T> {
-
   String get tableName;
 
   bool get encryption => false;
 
-  Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
+  Future<Uint8List?> _getEncryptionKey() =>
+      HiveCacheConfig.instance.getEncryptionKey();
 
   Future<IsolatedBox<T>> openIsolatedBox() async {
     if (IsolatedHive.isBoxOpen(tableName)) {
@@ -22,8 +22,9 @@ abstract class HiveCacheClient<T> {
         final encryptionKey = await _getEncryptionKey();
         return IsolatedHive.openBox<T>(
           tableName,
-          encryptionCipher:
-              encryptionKey != null ? HiveAesCipher(encryptionKey) : null,
+          encryptionCipher: encryptionKey != null
+              ? HiveAesCipher(encryptionKey)
+              : null,
         );
       } else {
         return IsolatedHive.openBox<T>(tableName);
@@ -39,8 +40,9 @@ abstract class HiveCacheClient<T> {
         final encryptionKey = await _getEncryptionKey();
         return Hive.openBox<T>(
           tableName,
-          encryptionCipher:
-              encryptionKey != null ? HiveAesCipher(encryptionKey) : null,
+          encryptionCipher: encryptionKey != null
+              ? HiveAesCipher(encryptionKey)
+              : null,
         );
       } else {
         return Hive.openBox<T>(tableName);
@@ -48,12 +50,10 @@ abstract class HiveCacheClient<T> {
     }
   }
 
-  Future<void> insertItem(
-    String key,
-    T newObject, {
-    bool isolated = true,
-  }) {
-    log('$runtimeType::insertItem:encryption: $encryption - key = $key - isolated = $isolated');
+  Future<void> insertItem(String key, T newObject, {bool isolated = true}) {
+    log(
+      '$runtimeType::insertItem:encryption: $encryption - key = $key - isolated = $isolated',
+    );
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
@@ -84,10 +84,7 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<T?> getItem(
-    String key, {
-    bool isolated = true,
-  }) {
+  Future<T?> getItem(String key, {bool isolated = true}) {
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
@@ -107,10 +104,10 @@ abstract class HiveCacheClient<T> {
 
       if (isolated) {
         final boxItem = await openIsolatedBox();
-         items = await boxItem.values;
+        items = await boxItem.values;
       } else {
         final boxItem = await openBox();
-         items = boxItem.values;
+        items = boxItem.values;
       }
       log('$runtimeType::getAll: Length of items is ${items.length}');
       return items.toList();
@@ -130,17 +127,16 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         mapItems = boxItem.toMap();
       }
-      log('$runtimeType::getMapItems: Length of mapItems is ${mapItems.length}');
+      log(
+        '$runtimeType::getMapItems: Length of mapItems is ${mapItems.length}',
+      );
       return mapItems.map((key, value) => MapEntry(key.toString(), value));
     }).catchError((error) {
       throw error;
     });
   }
 
-  Future<List<T>> getListByNestedKey(
-    String nestedKey, {
-    bool isolated = true,
-  }) {
+  Future<List<T>> getListByNestedKey(String nestedKey, {bool isolated = true}) {
     return Future.sync(() async {
       late Map<dynamic, T> mapItems;
 
@@ -152,11 +148,14 @@ abstract class HiveCacheClient<T> {
         mapItems = boxItem.toMap();
       }
 
+      final decodedNestedKey = _decodeTupleKey(nestedKey);
       final listItem = mapItems
-        .where((key, value) => _matchedNestedKey(key, nestedKey))
-        .values
-        .toList();
-      log('$runtimeType::getListByNestedKey: Length of listItem is ${listItem.length}');
+          .where((key, value) => _matchedNestedKey(key, decodedNestedKey))
+          .values
+          .toList();
+      log(
+        '$runtimeType::getListByNestedKey: Length of listItem is ${listItem.length}',
+      );
       return listItem;
     }).catchError((error) {
       throw error;
@@ -179,25 +178,42 @@ abstract class HiveCacheClient<T> {
       }
 
       return mapItems
-        .where((key, value) => listKeys.contains(key))
-        .values
-        .toList();
+          .where((key, value) => listKeys.contains(key))
+          .values
+          .toList();
     }).catchError((error) {
       throw error;
     });
   }
 
-  bool _matchedNestedKey(String key, String nestedKey) {
-    final decodedKey = CacheUtils.decodeKey(key);
-    final decodedNestedKey = CacheUtils.decodeKey(nestedKey);
-    return decodedKey.contains(decodedNestedKey);
+  TupleKey? _decodeTupleKey(Object? key) {
+    if (key is! String) return null;
+    try {
+      return TupleKey.fromString(CacheUtils.decodeKey(key));
+    } catch (error) {
+      logWarning('$runtimeType::_decodeTupleKey: invalid key');
+      return null;
+    }
   }
 
-  Future<void> updateItem(
-    String key,
-    T newObject, {
-    bool isolated = true,
-  }) {
+  bool _matchedNestedKey(Object? key, TupleKey? nestedKey) {
+    final decodedKey = _decodeTupleKey(key);
+    if (decodedKey == null || nestedKey == null) return false;
+
+    final keyParts = decodedKey.parts;
+    final nestedKeyParts = nestedKey.parts;
+    if (nestedKeyParts.length > keyParts.length) return false;
+
+    final offset = keyParts.length - nestedKeyParts.length;
+    for (var i = 0; i < nestedKeyParts.length; i++) {
+      if (keyParts[offset + i] != nestedKeyParts[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<void> updateItem(String key, T newObject, {bool isolated = true}) {
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
@@ -228,10 +244,7 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<void> deleteItem(
-    String key, {
-    bool isolated = true,
-  }) {
+  Future<void> deleteItem(String key, {bool isolated = true}) {
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
@@ -262,10 +275,7 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<bool> isExistItem(
-    String key, {
-    bool isolated = true,
-  }) {
+  Future<bool> isExistItem(String key, {bool isolated = true}) {
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
@@ -309,17 +319,24 @@ abstract class HiveCacheClient<T> {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         final mapItems = await boxItem.toMap();
+        final decodedNestedKey = _decodeTupleKey(nestedKey);
         final listKeys = mapItems
-            .where((key, value) => _matchedNestedKey(key, nestedKey))
+            .where((key, value) => _matchedNestedKey(key, decodedNestedKey))
             .keys;
-        log('$runtimeType::clearAllDataContainKey: Length of keys is ${listKeys.length}');
+        log(
+          '$runtimeType::clearAllDataContainKey: Length of keys is ${listKeys.length}',
+        );
         return boxItem.deleteAll(listKeys);
       } else {
         final boxItem = await openBox();
-        final listKeys = boxItem.toMap()
-            .where((key, value) => _matchedNestedKey(key, nestedKey))
+        final decodedNestedKey = _decodeTupleKey(nestedKey);
+        final listKeys = boxItem
+            .toMap()
+            .where((key, value) => _matchedNestedKey(key, decodedNestedKey))
             .keys;
-        log('$runtimeType::clearAllDataContainKey: Length of keys is ${listKeys.length}');
+        log(
+          '$runtimeType::clearAllDataContainKey: Length of keys is ${listKeys.length}',
+        );
         return boxItem.deleteAll(listKeys);
       }
     }).catchError((error) {
