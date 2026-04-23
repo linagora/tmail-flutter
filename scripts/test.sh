@@ -2,6 +2,7 @@
 
 set -eux
 
+# MODULES=default runs the root suite; any other value targets that package path.
 if [[ "$MODULES" == "default" ]]; then
     flutter test -r json > test-report-"$MODULES".json
 else
