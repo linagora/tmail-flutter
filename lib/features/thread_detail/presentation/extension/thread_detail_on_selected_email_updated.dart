@@ -18,9 +18,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     PresentationEmail? selectedEmail,
     BuildContext? context,
   ) {
-    if (!mailboxDashBoardController.isEmailOpened) return;
-
-    if (selectedEmail?.id == null) {
+    if (selectedEmail?.id == null && mailboxDashBoardController.isEmailOpened) {
       closeThreadDetailAction();
       return;
     }
