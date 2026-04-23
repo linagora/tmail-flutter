@@ -46,6 +46,14 @@ jobs:
           cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
+      - name: Cache Pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-
+
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
@@ -55,6 +63,7 @@ jobs:
         run: ./scripts/prebuild.sh
 
       - name: Analyze
+        if: matrix.modules == 'default'
         run: |
           # Run dart analyze and capture output
           # Exit codes: 0 = no issues, 1 = errors, 2 = warnings/infos only
