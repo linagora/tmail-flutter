@@ -17,7 +17,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// issue-grouping fidelity in Sentry dashboards.
 ///
 /// [SentryReporter] is injected via constructor for testability.
-class SentryEventHandler implements LogHandler {
+class SentryEventHandler extends LogHandler {
   final SentryReporter _sentry;
 
   const SentryEventHandler(this._sentry);

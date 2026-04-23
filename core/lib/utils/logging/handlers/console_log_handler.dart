@@ -18,7 +18,7 @@ const _appLogName = '[TwakeMail]';
 ///
 /// The [formatter] is injected via constructor (Dependency Inversion Principle),
 /// allowing platform-specific formatting without branching inside this class.
-class ConsoleLogHandler implements LogHandler {
+class ConsoleLogHandler extends LogHandler {
   final LogFormatter formatter;
 
   const ConsoleLogHandler({required this.formatter});

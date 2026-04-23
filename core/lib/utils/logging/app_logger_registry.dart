@@ -1,6 +1,7 @@
 import 'package:core/utils/logging/log_handler.dart';
 import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
+import 'package:flutter/material.dart';
 
 /// Dispatch orchestrator for the logger handler pipeline.
 ///
@@ -10,9 +11,10 @@ import 'package:core/utils/logging/log_record.dart';
 /// Uses a static singleton (not GetX) because the logger must be
 /// available before GetX initialises.
 ///
-/// **Idempotency:** [registerHandler] checks by [runtimeType] before adding.
-/// Registering the same handler type twice is a no-op — prevents duplicate
-/// output on hot restart or repeated bootstrap calls.
+/// **Idempotency:** [registerHandler] deduplicates by [LogHandler.handlerKey].
+/// By default the key is [runtimeType.toString()], so registering the same
+/// concrete class twice replaces the first instance. Override [handlerKey]
+/// on a handler to allow multiple instances of the same class to coexist.
 class AppLoggerRegistry {
   AppLoggerRegistry._();
 
@@ -20,13 +22,15 @@ class AppLoggerRegistry {
 
   final List<LogHandler> _handlers = [];
 
-  /// Registers [handler], replacing any existing handler of the same [runtimeType].
+  /// Registers [handler], replacing any existing handler with the same [LogHandler.handlerKey].
   ///
   /// This ensures that re-registering with a new configuration (e.g. a different
   /// [LogFormatter]) takes effect rather than silently keeping the stale instance.
+  /// To allow multiple instances of the same concrete class, override [LogHandler.handlerKey]
+  /// with a distinct value per instance.
   void registerHandler(LogHandler handler) {
     final existingIndex = _handlers.indexWhere(
-      (h) => h.runtimeType == handler.runtimeType,
+      (h) => h.handlerKey == handler.handlerKey,
     );
 
     if (existingIndex == -1) {
@@ -57,6 +61,7 @@ class AppLoggerRegistry {
   /// Clears all registered handlers.
   ///
   /// **For test isolation only.** Must never be called in production code.
+  @visibleForTesting
   void resetForTesting() {
     _handlers.clear();
   }
