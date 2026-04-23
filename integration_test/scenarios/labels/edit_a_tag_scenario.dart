@@ -36,6 +36,7 @@ class EditATagScenario extends BaseTestScenario
     const newLabelName = 'New edit tag 1';
     await createLabelModalRobot.enterNewLabelName(newLabelName);
     await createLabelModalRobot.tapPositiveActionButton(LabelActionType.edit);
+    await threadRobot.openMailbox();
     await _expectLabelWithNewNameUpdated(newLabelName);
   }
 
@@ -48,6 +49,8 @@ class EditATagScenario extends BaseTestScenario
   }
 
   Future<void> _expectLabelWithNewNameUpdated(String name) async {
+    await $.waitUntilExists($(name));
+    await $(name).scrollTo();
     await expectViewVisible($(name));
   }
 }

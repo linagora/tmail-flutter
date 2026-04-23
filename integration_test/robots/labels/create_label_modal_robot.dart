@@ -1,5 +1,6 @@
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 
@@ -21,10 +22,13 @@ class CreateLabelModalRobot extends CoreRobot {
   }
 
   Future<void> tapPositiveActionButton(LabelActionType actionType) async {
+    late final PatrolFinder button;
     if (actionType == LabelActionType.create) {
-      await $(CreateNewLabelModal).$(#create_label_button_action).tap();
+      button = $(CreateNewLabelModal).$(#create_label_button_action);
     } else {
-      await $(CreateNewLabelModal).$(#save_label_button_action).tap();
+      button = $(CreateNewLabelModal).$(#save_label_button_action);
     }
+    await button.scrollTo();
+    await button.tap();
   }
 }

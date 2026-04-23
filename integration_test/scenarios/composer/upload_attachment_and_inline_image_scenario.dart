@@ -31,7 +31,6 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
     await _expectAttachment(pngName);
 
     await composerRobot.addInline(png);
-    await $.pumpAndSettle(duration: const Duration(seconds: 1));
     await _expectInline();
 
     await composerRobot.addAttachment(png);
@@ -42,6 +41,17 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
   }
 
   Future<void> _expectInline() async {
+    int retry = 0;
+    while (retry < 3) {
+      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
+      final currentHtmlContent = await Get
+        .find<ComposerController>()
+        .getContentInEditor();
+      if (currentHtmlContent.contains(TestImages.base64)) {
+        break;
+      }
+      retry++;
+    }
     final currentHtmlContent = await Get
       .find<ComposerController>()
       .getContentInEditor();

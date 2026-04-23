@@ -39,7 +39,7 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
       ),
       requestReadReceipt: false,
     );
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+    await $.waitUntilVisible($(EmailTileBuilder));
 
     await threadRobot.openMailbox();
     await _expectLabelListViewVisible();
@@ -67,6 +67,15 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     required int emailCount,
   }) async {
     final tagDisplayName = label.safeDisplayName;
+    await $(EmailTileBuilder).waitUntilVisible();
+    for (int i = 0; i < 5; i++) {
+      final count = $.tester.widgetList<EmailTileBuilder>(
+        $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
+            widget.presentationEmail.subject?.contains(tagDisplayName) == true),
+      ).length;
+      if (count >= emailCount) break;
+      await $.pump(const Duration(seconds: 1));
+    }
 
     final listEmailTileWithTag = $.tester.widgetList<EmailTileBuilder>(
       $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>

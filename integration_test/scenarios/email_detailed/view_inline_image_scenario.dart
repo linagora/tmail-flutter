@@ -61,7 +61,6 @@ class ViewInlineImageScenario extends BaseTestScenario {
       base64Data: ImageResources.base64,
     );
     await composerRobot.addInlineImageFromFile(imageFile);
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
     await _expectInlineImageVisible();
 
@@ -74,13 +73,22 @@ class ViewInlineImageScenario extends BaseTestScenario {
   Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
 
   Future<void> _expectInlineImageVisible() async {
-    final currentHtmlContent = await getBinding<ComposerController>()?.getContentInEditor() ?? '';
-    expect(
-      currentHtmlContent.contains('data:image/') &&
-          currentHtmlContent.contains(';base64') &&
-          currentHtmlContent.contains('cid:'),
-      isTrue,
-    );
+    String currentHtmlContent = '';
+    bool conditionPassed() =>
+        currentHtmlContent.contains('data:image/') &&
+        currentHtmlContent.contains(';base64') &&
+        currentHtmlContent.contains('cid:');
+    int retry = 0;
+    while (retry < 3) {
+      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
+      currentHtmlContent =
+          await getBinding<ComposerController>()?.getContentInEditor() ?? '';
+      if (conditionPassed()) {
+        break;
+      }
+      retry++;
+    }
+    expect(conditionPassed(), isTrue);
   }
 
   Future<void> _expectEmailWithInlineImageVisible(String emailSubject) async {

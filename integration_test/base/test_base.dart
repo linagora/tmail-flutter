@@ -30,7 +30,9 @@ class TestBase {
       description,
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
+        existsTimeout: Duration(seconds: 10),
         visibleTimeout: Duration(seconds: 10),
+        settleTimeout: Duration(seconds: 10),
         printLogs: true,
       ),
       tags: tags.map((t) => t.name).toList(),

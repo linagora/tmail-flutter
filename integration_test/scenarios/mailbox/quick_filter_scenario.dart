@@ -41,7 +41,7 @@ class QuickFilterScenario extends BaseTestScenario {
       starredEmail,
       attachmentEmail,
     ]);
-    await $.pumpAndSettle(); 
+    await $.waitUntilVisible($(unreadEmail.subject));
 
     await simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient(
       subjects: ['quick filter read email'],

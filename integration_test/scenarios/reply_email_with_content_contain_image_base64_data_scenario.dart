@@ -56,10 +56,8 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
 
     await composerRobot.sendEmail(imagePaths);
     await _expectSendEmailSuccessToast(appLocalizations);
-    await Future.delayed(const Duration(seconds: 3));
 
     await emailRobot.onTapBackButton();
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
     await searchRobot.tapBackButton();
     await _expectEmailCidWithSubject(emailSubject);
 
@@ -94,7 +92,7 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
 
   Future<void> _expectSendEmailSuccessToast(AppLocalizations appLocalizations) async {
     await expectViewVisible(
-      $(find.text(appLocalizations.message_has_been_sent_successfully)),
+      $(appLocalizations.message_has_been_sent_successfully),
     );
   }
 

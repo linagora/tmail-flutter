@@ -55,16 +55,22 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
   }
 
   Future<void> _expectEmailViewWithLongContent() async {
-    expect(
-      $(HtmlContentViewer).which<HtmlContentViewer>((view) {
-        return view.contentHtml.contains('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
-      }),
-      findsOneWidget,
-    );
+    final view = $(HtmlContentViewer).which<HtmlContentViewer>((view) {
+      return view.contentHtml
+          .contains('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+    });
+    await $.waitUntilExists(view);
+    expect(view, findsOneWidget);
   }
 
   Future<void> _expectEmailViewScrollableWithLongContent() async {
     expect($(EmailSubjectWidget).visible, isTrue);
+    int retry = 0;
+    while (retry < 3 &&
+        $(#integration_testing_email_detailed_divider).hitTestable().exists) {
+      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
+      retry++;
+    }
 
     await $.scrollUntilVisible(
       finder: $(#integration_testing_email_detailed_divider),

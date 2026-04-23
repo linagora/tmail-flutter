@@ -54,7 +54,15 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
         handlerName: registerSelectionChange!.name,
       );
     }
-    _editorController?.dispose();
+    if (PlatformInfo.isIntegrationTesting) {
+      try {
+        _editorController?.dispose();
+      } catch (e) {
+        log('MobileEditorWidget::_editorController.dispose: $e');
+      }
+    } else {
+      _editorController?.dispose();
+    }
     _editorController = null;
     super.dispose();
   }

@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_content_height_exceeded_extension.dart';
@@ -284,7 +285,7 @@ class ComposerView extends GetWidget<ComposerController> {
         ),
       ),
       tablet: TabletContainerView(
-        keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
+        keyboardRichTextController: controller.richTextMobileTabletController?.richTextController ?? RichTextController(),
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: controller.clearFocus,
         childBuilder: (_, constraints) => ColoredBox(

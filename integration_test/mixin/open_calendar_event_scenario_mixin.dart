@@ -58,7 +58,7 @@ mixin OpenCalendarEventScenarioMixin on BaseScenario {
   ) async {
     final mailToAttendeesButton =
         $(CalendarEventActionButtonWidget).$(appLocalizations.mailToAttendees);
-    await mailToAttendeesButton.scrollTo();
+    await mailToAttendeesButton.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(mailToAttendeesButton);
   }
 

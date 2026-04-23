@@ -30,6 +30,10 @@ class ChangeLanguageScenario extends BaseTestScenario {
     await _expectLanguageMenuItemVisible();
     await settingRobot.openLanguageMenuItem();
     await $.pumpAndSettle(duration: seconds(1));
+
+    await languageRobot.openLanguageContextMenu();
+    await languageRobot.selectLanguage(const Locale('en'), appLocalizations);
+    await $.pumpAndSettle(duration: seconds(1));
     await _expectLanguageViewWithEnglishTitleVisible();
 
     await languageRobot.openLanguageContextMenu();

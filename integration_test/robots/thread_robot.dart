@@ -128,18 +128,23 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> longPressEmailWithSubject(String subject) async {
-    await $(subject).longPress();
+    int retry = 0;
+    while (retry < 3) {
+      await $(subject).longPress();
+      if ($(#moreAction_selected_email_button).exists) {
+        break;
+      } else {
+        retry++;
+      }
+    }
   }
 
   Future<void> moveEmailToMailboxWithName(String mailboxName) async {
     await $(#moreAction_selected_email_button).tap();
-    await $.pumpAndTrySettle();
 
     await $(#moveToMailbox_action).tap();
-    await $.pumpAndTrySettle();
 
     await $(mailboxName).tap();
-    await $.pumpAndTrySettle();
   }
 
   Future<void> moveEmailToTrash() async {

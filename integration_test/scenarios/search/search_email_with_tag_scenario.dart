@@ -37,7 +37,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
         requestReadReceipt: false,
       );
     }
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+    await $(EmailTileBuilder).waitUntilVisible();
 
     await threadRobot.openSearchView();
     await _expectSearchViewVisible();
@@ -70,12 +70,26 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     required String tagDisplayName,
     required int emailCount,
   }) async {
+    await $(EmailTileBuilder).waitUntilVisible();
+    for (int i = 0; i < 3; i++) {
+      final count = $.tester.widgetList<EmailTileBuilder>(
+        $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
+            widget.subjectContains(tagDisplayName)),
+      ).length;
+      if (count >= emailCount) break;
+      await $.pump(const Duration(seconds: 1));
+    }
+
     // Emails provisioned by buildEmailsForLabel include the tag name in the subject
-    final listEmailTileWithTag = $.tester.widgetList<EmailTileBuilder>(
-      $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
-          widget.presentationEmail.subject?.contains(tagDisplayName) == true),
-    );
+    final listEmailTileWithTag = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
+        widget.subjectContains(tagDisplayName)).allCandidates;
 
     expect(listEmailTileWithTag.length, greaterThanOrEqualTo(emailCount));
+  }
+}
+
+extension on EmailTileBuilder {
+  bool subjectContains(String text) {
+    return presentationEmail.subject?.contains(text) == true;
   }
 }

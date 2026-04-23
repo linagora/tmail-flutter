@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
@@ -26,6 +25,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../base/core_robot.dart';
+import '../extensions/patrol_file_extensions.dart';
 import '../extensions/patrol_finder_extension.dart';
 
 class ComposerRobot extends CoreRobot {
@@ -58,6 +58,7 @@ class ComposerRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
+    await $.pumpAndTrySettle();
     await finder.enterTextWithoutTapAction(subject);
   }
 
@@ -75,7 +76,7 @@ class ComposerRobot extends CoreRobot {
 
     await composerController?.htmlEditorApi?.requestFocusLastChild();
 
-    await composerController!.htmlEditorApi!.insertHtml('$content <br><br>');
+    await composerController?.htmlEditorApi?.insertHtml('$content <br><br>');
   }
 
   Future<void> sendEmail(ImagePaths imagePaths) async {
@@ -141,13 +142,10 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> addAttachment(File file) async {
     final controller = Get.find<ComposerController>();
+    final fileInfo = await file.toFileInfo();
     controller.uploadController.justUploadAttachmentsAction(
       uploadFiles: [
-        FileInfo(
-          fileName: file.path.split('/').last,
-          fileSize: await file.length(),
-          filePath: file.path,
-        )
+        fileInfo,
       ],
       uploadUri:
           controller.mailboxDashBoardController.sessionCurrent!.getUploadUri(
@@ -159,11 +157,8 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> addInline(File file) async {
     final controller = Get.find<ComposerController>();
-    controller.handleSuccessViewState(LocalImagePickerSuccess(FileInfo(
-      filePath: file.path,
-      fileSize: await file.length(),
-      fileName: file.path.split('/').last,
-    )));
+    final fileInfo = await file.toFileInfo();
+    controller.handleSuccessViewState(LocalImagePickerSuccess(fileInfo));
     await controller.viewState.stream.firstWhere((state) => state.fold(
       (failure) => false,
       (success) => success is DownloadImageAsBase64Success,
@@ -178,16 +173,8 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> addInlineImageFromFile(File file) async {
     final controller = getBinding<ComposerController>();
+    final fileInfo = await file.toFileInfo();
 
-    final filePath = file.path;
-    final fileSize = await file.length();
-    final fileName = filePath.split('/').last;
-
-    final fileInfo = FileInfo(
-      filePath: filePath,
-      fileSize: fileSize,
-      fileName: fileName,
-    );
     controller?.handleSuccessViewState(LocalImagePickerSuccess(fileInfo));
   }
 
