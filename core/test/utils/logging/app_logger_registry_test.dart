@@ -4,7 +4,7 @@ import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeHandler implements LogHandler {
+class _FakeHandler extends LogHandler {
   final List<LogRecord> received = [];
   final bool Function(Level) _handles;
 
@@ -20,6 +20,33 @@ class _FakeHandler implements LogHandler {
 
 class _OtherFakeHandler extends _FakeHandler {
   _OtherFakeHandler() : super(handles: (_) => true);
+}
+
+class _ThrowingHandlesHandler extends LogHandler {
+  @override
+  bool handles(Level level) => throw Exception('handles() exploded');
+
+  @override
+  void handle(LogRecord record) {}
+}
+
+class _ThrowingHandleHandler extends LogHandler {
+  @override
+  bool handles(Level level) => true;
+
+  @override
+  void handle(LogRecord record) => throw Exception('handle() exploded');
+}
+
+/// Same concrete type as [_FakeHandler] but with a distinct [handlerKey],
+/// used to verify that two instances of the same class can coexist in the registry.
+class _KeyedFakeHandler extends _FakeHandler {
+  final String _key;
+
+  _KeyedFakeHandler(this._key);
+
+  @override
+  String get handlerKey => _key;
 }
 
 void main() {
@@ -40,7 +67,7 @@ void main() {
       expect(registry.handlerCount, 1);
     });
 
-    test('is idempotent — same runtimeType registered twice stays as one', () {
+    test('is idempotent — same handlerKey registered twice stays as one', () {
       registry.registerHandler(_FakeHandler());
       registry.registerHandler(_FakeHandler());
       expect(registry.handlerCount, 1);
@@ -50,6 +77,37 @@ void main() {
       registry.registerHandler(_FakeHandler());
       registry.registerHandler(_OtherFakeHandler());
       expect(registry.handlerCount, 2);
+    });
+
+    test('two instances of same class with different handlerKey coexist', () {
+      registry.registerHandler(_KeyedFakeHandler('key-a'));
+      registry.registerHandler(_KeyedFakeHandler('key-b'));
+      expect(registry.handlerCount, 2);
+    });
+
+    test('re-registering same handlerKey replaces the existing handler', () {
+      final first = _KeyedFakeHandler('key-a');
+      final second = _KeyedFakeHandler('key-a');
+      registry.registerHandler(first);
+      registry.registerHandler(second);
+      expect(registry.handlerCount, 1);
+
+      const record = LogRecord(level: Level.info, rawMessage: 'x');
+      registry.dispatch(record);
+      expect(second.received, hasLength(1));
+      expect(first.received, isEmpty);
+    });
+
+    test('both keyed handlers receive dispatched records', () {
+      final handlerA = _KeyedFakeHandler('key-a');
+      final handlerB = _KeyedFakeHandler('key-b');
+      registry.registerHandler(handlerA);
+      registry.registerHandler(handlerB);
+
+      const record = LogRecord(level: Level.info, rawMessage: 'hello');
+      registry.dispatch(record);
+      expect(handlerA.received, hasLength(1));
+      expect(handlerB.received, hasLength(1));
     });
   });
 
@@ -93,6 +151,28 @@ void main() {
         () => registry.dispatch(const LogRecord(level: Level.info, rawMessage: 'x')),
         returnsNormally,
       );
+    });
+
+    test('handles() throwing does not crash dispatch; other handlers still receive the record', () {
+      final throwing = _ThrowingHandlesHandler();
+      final good = _OtherFakeHandler();
+      registry.registerHandler(throwing);
+      registry.registerHandler(good);
+
+      const record = LogRecord(level: Level.info, rawMessage: 'test');
+      expect(() => registry.dispatch(record), returnsNormally);
+      expect(good.received, hasLength(1));
+    });
+
+    test('handle() throwing does not crash dispatch; other handlers still receive the record', () {
+      final throwing = _ThrowingHandleHandler();
+      final good = _OtherFakeHandler();
+      registry.registerHandler(throwing);
+      registry.registerHandler(good);
+
+      const record = LogRecord(level: Level.info, rawMessage: 'test');
+      expect(() => registry.dispatch(record), returnsNormally);
+      expect(good.received, hasLength(1));
     });
   });
 

@@ -105,6 +105,18 @@ void main() {
       expect(reporter.capturedExceptions.first.level, SentryLevel.error);
       expect(reporter.capturedMessages, isEmpty);
     });
+
+    test('maps critical level to SentryLevel.fatal', () {
+      final record = LogRecord(
+        level: Level.critical,
+        rawMessage: 'system down',
+        exception: Exception('fatal error'),
+      );
+
+      handler.handle(record);
+
+      expect(reporter.capturedExceptions.first.level, SentryLevel.fatal);
+    });
   });
 
   group('SentryEventHandler.handle — without exception', () {
@@ -132,6 +144,17 @@ void main() {
       handler.handle(record);
 
       expect(reporter.capturedMessages.first.extras, {'a': 1});
+    });
+
+    test('maps critical level to SentryLevel.fatal when no exception', () {
+      const record = LogRecord(
+        level: Level.critical,
+        rawMessage: 'system down',
+      );
+
+      handler.handle(record);
+
+      expect(reporter.capturedMessages.first.level, SentryLevel.fatal);
     });
   });
 }
