@@ -81,31 +81,31 @@ void main() {
     });
   });
 
-  group('SentryBreadcrumbHandler.handles', () {
+  group('SentryBreadcrumbHandler.canHandle', () {
     test('handles trace record', () {
       expect(
-        handler.handles(const LogRecord(level: Level.trace, rawMessage: '')),
+        handler.canHandle(const LogRecord(level: Level.trace, rawMessage: '')),
         isTrue,
       );
     });
 
     test('does not handle error record', () {
       expect(
-        handler.handles(const LogRecord(level: Level.error, rawMessage: '')),
+        handler.canHandle(const LogRecord(level: Level.error, rawMessage: '')),
         isFalse,
       );
     });
   });
 
-  group('SentryBreadcrumbHandler — acceptsLevel/handles contract', () {
-    test('handles() is consistent with acceptsLevel() for all levels', () {
+  group('SentryBreadcrumbHandler — acceptsLevel/canHandle contract', () {
+    test('canHandle() is consistent with acceptsLevel() for all levels', () {
       for (final level in Level.values) {
         final record = LogRecord(level: level, rawMessage: '');
         if (!handler.acceptsLevel(level)) {
           expect(
-            handler.handles(record),
+            handler.canHandle(record),
             isFalse,
-            reason: 'handles() must return false when acceptsLevel() is false — level: $level',
+            reason: 'canHandle() must return false when acceptsLevel() is false — level: $level',
           );
         }
       }

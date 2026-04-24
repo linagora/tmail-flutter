@@ -33,12 +33,12 @@ abstract class LogHandler {
   /// [handles] must also return false for all records at that level.
   bool acceptsLevel(Level level) => true;
 
-  /// Returns true if this handler should process [record].
+  /// Returns true if this handler can process [record].
   ///
   /// The default delegates to [acceptsLevel] — sufficient for level-pure
   /// handlers that do not need per-record fields. Override when per-record
   /// fields (e.g. [LogRecord.webConsoleEnabled]) must influence the decision.
-  bool handles(LogRecord record) => acceptsLevel(record.level);
+  bool canHandle(LogRecord record) => acceptsLevel(record.level);
 
   /// Process the given [record]. Called only when [handles] returns true.
   void handle(LogRecord record);

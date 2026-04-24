@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// Dispatch orchestrator for the logger handler pipeline.
 ///
 /// Holds a list of [LogHandler]s and routes each [LogRecord] to every
-/// handler whose [LogHandler.handles] returns true.
+/// handler whose [LogHandler.canHandle] returns true.
 ///
 /// Uses a static singleton (not GetX) because the logger must be
 /// available before GetX initialises.
@@ -55,7 +55,7 @@ class AppLoggerRegistry {
   void dispatch(LogRecord record) {
     for (final handler in _handlers) {
       try {
-        if (handler.handles(record)) {
+        if (handler.canHandle(record)) {
           handler.handle(record);
         }
       } catch (_) {
