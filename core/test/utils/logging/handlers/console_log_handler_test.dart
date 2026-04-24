@@ -29,8 +29,6 @@ void main() {
     PlatformInfo.isTestingForWeb = false;
   });
 
-  // ─── acceptsLevel ──────────────────────────────────────────────────────────
-
   group('ConsoleLogHandler.acceptsLevel — non-web (debug mode)', () {
     // In test environment kDebugMode is always true.
     test('accepts all levels', () {
@@ -49,8 +47,6 @@ void main() {
       }
     });
   });
-
-  // ─── handles ───────────────────────────────────────────────────────────────
 
   group('ConsoleLogHandler.handles — non-web (debug mode)', () {
     test('accepts record regardless of webConsoleEnabled', () {
@@ -91,8 +87,6 @@ void main() {
     });
   });
 
-  // ─── acceptsLevel / handles contract ──────────────────────────────────────
-
   group('ConsoleLogHandler — acceptsLevel/handles contract', () {
     test('if acceptsLevel returns false then handles also returns false', () {
       // acceptsLevel is always true in test (debug mode / web), so we can only
@@ -111,8 +105,6 @@ void main() {
       }
     });
   });
-
-  // ─── handle ────────────────────────────────────────────────────────────────
 
   group('ConsoleLogHandler.handle — formatter delegation', () {
     test('calls formatter.format with correct level and rawMessage', () {
