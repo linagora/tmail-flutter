@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: ae92f5d747aee634b87f89d9946000c2de774be1d6ac3e58268224348cd0101a
+      sha256: "0b2f2bd91ba804e53a61d757b986f89f1f9eaed5b11e4b2f5a2468d86d6c9fc7"
       url: "https://pub.dev"
     source: hosted
-    version: "61.0.0"
+    version: "67.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: ea3d8652bda62982addfd92fdc2d0214e5f82e43325104990d4f4c4a2a313562
+      sha256: "37577842a27e4338429a1cbc32679d508836510b056f1eedf0c8d20e39c1383d"
       url: "https://pub.dev"
     source: hosted
-    version: "5.13.0"
+    version: "6.4.1"
   archive:
     dependency: transitive
     description:
@@ -672,11 +672,11 @@ packages:
     dependency: "direct dev"
     description:
       path: "."
-      ref: master
-      resolved-ref: "20ca4d1c3ed3a7e9e2e86700af928ded9db4ff11"
+      ref: "flutter/3.38.9"
+      resolved-ref: "83cdb4bd1ea6a23ea0681a705b8e305ccd7e60b3"
       url: "https://github.com/linagora/intl_generator.git"
     source: git
-    version: "0.4.1"
+    version: "0.4.2"
   io:
     dependency: transitive
     description:
@@ -689,11 +689,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "8e2bd9cb1bbd8236be895aa04bf0d0da8e2ff3b2"
+      ref: "flutter/3.38.9"
+      resolved-ref: a6d0126e9d899ee3472b1623a74f12f09ae7cdbf
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.3.6"
+    version: "0.3.7"
   jni:
     dependency: transitive
     description:
@@ -714,18 +714,18 @@ packages:
     dependency: "direct main"
     description:
       name: json_annotation
-      sha256: c33da08e136c3df0190bd5bbe51ae1df4a7d96e7954d1d7249fea2968a72d317
+      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.0"
+    version: "4.9.0"
   json_serializable:
     dependency: "direct dev"
     description:
       name: json_serializable
-      sha256: dadc08bd61f72559f938dd08ec20dbfec6c709bba83515085ea943d2078d187a
+      sha256: ea1432d167339ea9b5bb153f0571d0039607a873d6e04e0117af043f14a1fd4b
       url: "https://pub.dev"
     source: hosted
-    version: "6.6.1"
+    version: "6.8.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -1397,5 +1397,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
+  dart: ">=3.10.8 <4.0.0"
   flutter: ">=3.32.0"

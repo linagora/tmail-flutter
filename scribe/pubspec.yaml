@@ -21,7 +21,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: flutter/3.38.9
 
   ### Dependencies from pub.dev ###
   dartz: 0.10.1
@@ -36,7 +36,7 @@ dependencies:
 
   lottie: 3.3.1
 
-  json_annotation: 4.8.0
+  json_annotation: 4.9.0
 
   flutter_svg: 2.1.0
 
@@ -48,21 +48,20 @@ dev_dependencies:
 
   build_runner: 2.4.10
 
-  json_serializable: 6.6.1
+  json_serializable: 6.8.0
 
   ### Original dependency is abandoned, so we use fork
   ### https://github.com/linagora/intl_generator/pull/1
   intl_generator:
     git:
       url: https://github.com/linagora/intl_generator.git
-      ref: master
+      ref: flutter/3.38.9
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   uses-material-design: true
 
   # To add assets to your package, add an assets section, like this:
