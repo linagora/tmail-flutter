@@ -461,6 +461,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         final countLabels = labelController.labels.length;
 
         return LabelsBarWidget(
+          key: labelController.labelAppBarKey,
           imagePaths: controller.imagePaths,
           isDesktop: isDesktop,
           height: isDesktop ? 48 : 40,
@@ -505,6 +506,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       if (isLabelAvailable) {
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final labels = labelController.labels;
+        final shouldAskReadOnly = labelController.shouldAskReadOnly;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 400),
@@ -513,6 +515,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                   labels: labels,
                   imagePaths: controller.imagePaths,
                   isDesktop: isDesktop,
+                  shouldAskReadOnly: shouldAskReadOnly,
                   labelIdSelected: labelIdSelected,
                   isMobileResponsive: isMobileResponsive,
                   onOpenLabelCallback: (label) => controller.openMailbox(

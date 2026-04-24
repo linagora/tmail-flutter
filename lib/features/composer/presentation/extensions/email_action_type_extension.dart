@@ -7,29 +7,28 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/utc_date_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension EmailActionTypeExtension on EmailActionType {
   String getSubjectComposer(BuildContext? context, String subject) {
-    switch(this) {
+    final l10n = context != null ? AppLocalizations.of(context) : null;
+
+    switch (this) {
       case EmailActionType.reply:
       case EmailActionType.replyToList:
       case EmailActionType.replyAll:
-        if (subject.toLowerCase().startsWith('re:')) {
-          return subject;
-        } else {
-          return context != null
-            ? '${AppLocalizations.of(context).prefix_reply_email} $subject'
-            : 'Re: $subject';
-        }
+        return EmailUtils.applyPrefix(
+          subject: subject,
+          defaultPrefix: EmailUtils.defaultReplyPrefix,
+          localizedPrefix: l10n?.prefix_reply_email,
+        );
       case EmailActionType.forward:
-        if (subject.toLowerCase().startsWith('fwd:')) {
-          return subject;
-        } else {
-          return context != null
-            ? '${AppLocalizations.of(context).prefix_forward_email} $subject'
-            : 'Fwd: $subject';
-        }
+        return EmailUtils.applyPrefix(
+          subject: subject,
+          defaultPrefix: EmailUtils.defaultForwardPrefix,
+          localizedPrefix: l10n?.prefix_forward_email,
+        );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
       case EmailActionType.reopenComposerBrowser:

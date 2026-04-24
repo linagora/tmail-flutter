@@ -16,6 +16,7 @@ class LabelListItem extends StatefulWidget {
   final ImagePaths imagePaths;
   final bool isDesktop;
   final bool isSelected;
+  final bool shouldAskReadOnly;
   final bool isMobileResponsive;
   final OnOpenLabelCallback onOpenLabelCallback;
   final OnOpenLabelContextMenuAction? onOpenContextMenu;
@@ -28,6 +29,7 @@ class LabelListItem extends StatefulWidget {
     required this.onOpenLabelCallback,
     this.isDesktop = false,
     this.isSelected = false,
+    this.shouldAskReadOnly = false,
     this.isMobileResponsive = false,
     this.onOpenContextMenu,
     this.onLongPressLabelItemAction,
@@ -75,7 +77,26 @@ class _LabelListItemState extends State<LabelListItem> {
         : MailboxItemWidgetStyles.mobileLabelIconSpace;
   }
 
-  bool get _isMenuButtonVisible => _isContextMenuVisible || _isItemHovered;
+  bool get _isMenuButtonVisible {
+    final isActive = _isContextMenuVisible || _isItemHovered;
+
+    if (!widget.shouldAskReadOnly) {
+      return isActive;
+    }
+
+    return isActive && !widget.label.isReadOnly;
+  }
+
+  bool get _isOnLongPressActive {
+    final isTouchPlatform =
+        PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile;
+
+    if (!widget.shouldAskReadOnly) {
+      return isTouchPlatform;
+    }
+
+    return isTouchPlatform && !widget.label.isReadOnly;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +106,7 @@ class _LabelListItemState extends State<LabelListItem> {
         borderRadius: _borderRadius,
         onHover: _handleHoverChanged,
         onTap: () => widget.onOpenLabelCallback(widget.label),
-        onLongPress: PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile
+        onLongPress: _isOnLongPressActive
           ? () => widget.onLongPressLabelItemAction?.call(widget.label)
           : null,
         child: Container(

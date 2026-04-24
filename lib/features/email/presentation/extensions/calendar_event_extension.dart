@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/recurrence_rule/recurrence_rule.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -493,6 +494,14 @@ extension CalendarEventExtension on CalendarEvent {
       extensionFields: extensionFields ?? this.extensionFields,
       recurrenceRules: recurrenceRules ?? this.recurrenceRules,
       excludedCalendarEvents: excludedCalendarEvents ?? this.excludedCalendarEvents,
+    );
+  }
+
+  String getMailToAttendeesEventTitle(AppLocalizations appLocalizations) {
+    return EmailUtils.applyPrefix(
+      subject: title ?? '',
+      defaultPrefix: EmailUtils.defaultReplyPrefix,
+      localizedPrefix: appLocalizations.prefix_reply_email,
     );
   }
 }

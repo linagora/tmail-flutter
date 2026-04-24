@@ -9,6 +9,7 @@ class LabelListView extends StatelessWidget {
   final List<Label> labels;
   final ImagePaths imagePaths;
   final bool isDesktop;
+  final bool shouldAskReadOnly;
   final Id? labelIdSelected;
   final OnOpenLabelCallback onOpenLabelCallback;
   final bool isMobileResponsive;
@@ -21,6 +22,7 @@ class LabelListView extends StatelessWidget {
     required this.imagePaths,
     required this.onOpenLabelCallback,
     this.isDesktop = false,
+    this.shouldAskReadOnly = false,
     this.labelIdSelected,
     this.isMobileResponsive = false,
     this.onOpenContextMenu,
@@ -42,6 +44,7 @@ class LabelListView extends StatelessWidget {
           imagePaths: imagePaths,
           isSelected: label.id == labelIdSelected,
           isDesktop: isDesktop,
+          shouldAskReadOnly: shouldAskReadOnly,
           onOpenLabelCallback: onOpenLabelCallback,
           isMobileResponsive: isMobileResponsive,
           onOpenContextMenu: onOpenContextMenu,

@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -814,14 +815,12 @@ void main() {
           when(
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
-              currentDefaultTree: anyNamed('currentDefaultTree'),
-              currentPersonalTree: anyNamed('currentPersonalTree'),
-              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
             ),
           ).thenAnswer(
-            (_) async => (
+            (_) async => MailboxCollection(
               allMailboxes: currentMailboxList,
               defaultTree: defaultTree,
               personalTree: personalTree,
@@ -863,9 +862,7 @@ void main() {
           verify(
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
-              currentDefaultTree: anyNamed('currentDefaultTree'),
-              currentPersonalTree: anyNamed('currentPersonalTree'),
-              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
             ),
@@ -956,14 +953,12 @@ void main() {
           when(
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
-              currentDefaultTree: anyNamed('currentDefaultTree'),
-              currentPersonalTree: anyNamed('currentPersonalTree'),
-              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
             ),
           ).thenAnswer(
-            (_) async => (
+            (_) async => MailboxCollection(
               allMailboxes: currentMailboxList,
               defaultTree: defaultTree,
               personalTree: personalTree,
@@ -1006,9 +1001,7 @@ void main() {
           verify(
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
-              currentDefaultTree: anyNamed('currentDefaultTree'),
-              currentPersonalTree: anyNamed('currentPersonalTree'),
-              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
             ),

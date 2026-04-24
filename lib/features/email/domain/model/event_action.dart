@@ -24,6 +24,21 @@ enum EventActionType {
     }
   }
 
+  Key getKeyButton() {
+    switch (this) {
+      case EventActionType.yes:
+        return const Key('yes_event_action_button');
+      case EventActionType.acceptCounter:
+        return const Key('acceptCounter_event_action_button');
+      case EventActionType.maybe:
+        return const Key('maybe_event_action_button');
+      case EventActionType.no:
+        return const Key('no_event_action_button');
+      case EventActionType.mailToAttendees:
+        return const Key('mailToAttendees_event_action_button');
+    }
+  }
+
   String getToastMessageSuccess(BuildContext context) {
     switch(this) {
       case EventActionType.yes:

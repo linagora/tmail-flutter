@@ -8,6 +8,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 
 import 'mailbox_node.dart';
 import 'mailbox_tree.dart';
@@ -37,16 +38,9 @@ class TreeBuilder {
     return tree;
   }
 
-  Future<({
-    List<PresentationMailbox> allMailboxes,
-    MailboxTree defaultTree,
-    MailboxTree personalTree,
-    MailboxTree teamMailboxTree
-  })> generateMailboxTreeInUI({
+  Future<MailboxCollection> generateMailboxTreeInUI({
     required List<PresentationMailbox> allMailboxes,
-    required MailboxTree currentDefaultTree,
-    required MailboxTree currentPersonalTree,
-    required MailboxTree currentTeamMailboxTree,
+    required MailboxCollection currentCollection,
     MailboxId? mailboxIdSelected,
     MailboxId? mailboxIdExpanded,
   }) async {
@@ -61,9 +55,7 @@ class TreeBuilder {
     for (var mailbox in allMailboxes) {
       final currentMailboxNode = findExistingNode(
         id: mailbox.id,
-        currentDefaultTree: currentDefaultTree,
-        currentPersonalTree: currentPersonalTree,
-        currentTeamMailboxTree: currentTeamMailboxTree,
+        currentCollection: currentCollection,
       );
 
       final isDeactivated = mailbox.id == mailboxIdSelected;
@@ -85,19 +77,12 @@ class TreeBuilder {
       final parentNode = parentId != null ? mailboxDictionary[parentId] : null;
 
       if (parentNode != null) {
-        if (parentNode.nodeState == MailboxState.deactivated) {
-          currentNode.updateItem(mailbox.withMailboxSate(MailboxState.deactivated));
-          currentNode.updateNodeState(MailboxState.deactivated);
-        }
+        _propagateDeactivationIfNeeded(parentNode, currentNode, mailbox);
         parentNode.addChildNode(currentNode);
-
         sortByMailboxNameNodeChildren(parentNode);
       } else {
-        final targetTree = mailbox.hasRole()
-          ? newDefaultTree
-          : (mailbox.isPersonal ? newPersonalTree : newTeamMailboxTree);
+        final targetTree = _resolveTargetTree(mailbox, newDefaultTree, newPersonalTree, newTeamMailboxTree);
         targetTree.root.addChildNode(currentNode);
-
         sortByMailboxNameNodeChildren(targetTree.root);
       }
 
@@ -106,7 +91,7 @@ class TreeBuilder {
 
     sortNodeChildren(newDefaultTree.root);
 
-    return (
+    return MailboxCollection(
       allMailboxes: newAllMailboxes,
       defaultTree: newDefaultTree,
       personalTree: newPersonalTree,
@@ -114,15 +99,9 @@ class TreeBuilder {
     );
   }
 
-  Future<({
-    MailboxTree defaultTree,
-    MailboxTree personalTree,
-    MailboxTree teamMailboxTree
-  })> generateMailboxTreeInUIAfterRefreshChanges({
+  Future<MailboxCollection> generateMailboxTreeInUIAfterRefreshChanges({
     required List<PresentationMailbox> allMailboxes,
-    required MailboxTree currentDefaultTree,
-    required MailboxTree currentPersonalTree,
-    required MailboxTree currentTeamMailboxTree,
+    required MailboxCollection currentCollection,
   }) async {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
@@ -133,9 +112,7 @@ class TreeBuilder {
     for (var mailbox in allMailboxes) {
       final currentMailboxNode = findExistingNode(
         id: mailbox.id,
-        currentDefaultTree: currentDefaultTree,
-        currentPersonalTree: currentPersonalTree,
-        currentTeamMailboxTree: currentTeamMailboxTree,
+        currentCollection: currentCollection,
       );
 
       final newMailboxNode = MailboxNode(
@@ -158,18 +135,16 @@ class TreeBuilder {
         parentNode.addChildNode(currentNode);
         sortByMailboxNameNodeChildren(parentNode);
       } else {
-        final targetTree = mailbox.hasRole()
-          ? newDefaultTree
-          : (mailbox.isPersonal ? newPersonalTree : newTeamMailboxTree);
+        final targetTree = _resolveTargetTree(mailbox, newDefaultTree, newPersonalTree, newTeamMailboxTree);
         targetTree.root.addChildNode(currentNode);
-
         sortByMailboxNameNodeChildren(targetTree.root);
       }
     }
 
     sortNodeChildren(newDefaultTree.root);
 
-    return (
+    return MailboxCollection(
+      allMailboxes: allMailboxes,
       defaultTree: newDefaultTree,
       personalTree: newPersonalTree,
       teamMailboxTree: newTeamMailboxTree,
@@ -189,12 +164,30 @@ class TreeBuilder {
 
   MailboxNode? findExistingNode({
     required MailboxId id,
-    required MailboxTree currentDefaultTree,
-    required MailboxTree currentPersonalTree,
-    required MailboxTree currentTeamMailboxTree,
+    required MailboxCollection currentCollection,
   }) {
-    return currentDefaultTree.findNode((node) => node.item.id == id) ??
-      currentPersonalTree.findNode((node) => node.item.id == id) ??
-      currentTeamMailboxTree.findNode((node) => node.item.id == id);
+    return currentCollection.defaultTree.findNode((node) => node.item.id == id) ??
+      currentCollection.personalTree.findNode((node) => node.item.id == id) ??
+      currentCollection.teamMailboxTree.findNode((node) => node.item.id == id);
+  }
+
+  MailboxTree _resolveTargetTree(
+    PresentationMailbox mailbox,
+    MailboxTree defaultTree,
+    MailboxTree personalTree,
+    MailboxTree teamMailboxTree,
+  ) {
+    if (mailbox.hasRole()) return defaultTree;
+    return mailbox.isPersonal ? personalTree : teamMailboxTree;
+  }
+
+  void _propagateDeactivationIfNeeded(
+    MailboxNode parentNode,
+    MailboxNode currentNode,
+    PresentationMailbox mailbox,
+  ) {
+    if (parentNode.nodeState != MailboxState.deactivated) return;
+    currentNode.updateItem(mailbox.withMailboxSate(MailboxState.deactivated));
+    currentNode.updateNodeState(MailboxState.deactivated);
   }
 }

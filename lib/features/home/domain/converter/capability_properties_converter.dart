@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/capability/submission_capability.dart
 import 'package:jmap_dart_client/jmap/core/capability/vacation_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/web_socket_ticket_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
+import 'package:labels/model/labels_capability.dart';
 import 'package:model/saas/saas_account_capability.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_capability.dart';
@@ -40,6 +41,8 @@ class CapabilityPropertiesConverter {
     } else if (properties is SaaSAccountCapability) {
       return properties.toJson();
     } else if (properties is AICapability) {
+      return properties.toJson();
+    } else if (properties is LabelsCapability) {
       return properties.toJson();
     } else if (properties is DefaultCapability) {
       return properties.properties;

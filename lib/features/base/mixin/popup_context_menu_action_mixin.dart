@@ -52,10 +52,12 @@ mixin PopupContextMenuActionMixin {
             key: key,
             color: Colors.white,
             padding: const EdgeInsetsDirectional.only(bottom: 24),
-            child: ContextMenuDialogView(
-              actions: itemActions,
-              onContextMenuActionClick: onContextMenuActionClick,
-              useGroupedActions: useGroupedActions,
+            child: SafeArea(
+              child: ContextMenuDialogView(
+                actions: itemActions,
+                onContextMenuActionClick: onContextMenuActionClick,
+                useGroupedActions: useGroupedActions,
+              ),
             ),
           ),
         );

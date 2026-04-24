@@ -12,6 +12,8 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:labels/model/labels_capability.dart';
+import 'package:labels/utils/labels_constants.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
@@ -36,6 +38,7 @@ extension SessionExtensions on Session {
     capabilityServerSettings: SettingsCapability.deserialize,
     linagoraSaaSCapability: SaaSAccountCapability.deserialize,
     AiScribeConstants.aiCapability: AICapability.fromJson,
+    LabelsConstants.labelsCapability: LabelsCapability.fromJson,
   };
 
   Map<String, dynamic> toJson() {
@@ -196,6 +199,24 @@ extension SessionExtensions on Session {
       return aiCapability;
     } catch (e, st) {
       logWarning('SessionExtensions::getAICapability():[Exception] ${e.runtimeType}\n$st');
+      return null;
+    }
+  }
+
+  LabelsCapability? getLabelsCapability(AccountId accountId) {
+    try {
+      if (!LabelsConstants.labelsCapability.isSupported(this, accountId)) {
+        return null;
+      }
+
+      final labelsCapability = getCapabilityProperties<LabelsCapability>(
+        accountId,
+        LabelsConstants.labelsCapability,
+      );
+      log('SessionExtensions::getLabelsCapability:labelsCapability = $labelsCapability');
+      return labelsCapability;
+    } catch (e) {
+      logWarning('SessionExtensions::getLabelsCapability():[Exception] $e');
       return null;
     }
   }

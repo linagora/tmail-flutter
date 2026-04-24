@@ -263,7 +263,7 @@ dependencies:
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
-      ref: update/flutter-3.32.8
+      ref: main
 
   lottie_native: 0.1.4
 

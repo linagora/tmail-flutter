@@ -1,23 +1,23 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:labels/extensions/list_label_extension.dart';
-import 'package:labels/model/label.dart';
-import 'package:labels/utils/labels_constants.dart';
+import 'package:labels/labels.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
@@ -34,18 +34,29 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);
+  final isLabelsLoaded = RxBool(false);
+  final GlobalKey labelAppBarKey = GlobalKey();
 
   GetAllLabelInteractor? _getAllLabelInteractor;
   CreateNewLabelInteractor? _createNewLabelInteractor;
   GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
   EditLabelInteractor? _editLabelInteractor;
   DeleteALabelInteractor? _deleteALabelInteractor;
+  LabelsCapability? _labelsCapability;
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
   }
 
-  void checkLabelSettingState(AccountId accountId) {
+  LabelsCapability? get labelsCapability => _labelsCapability;
+
+  bool get shouldAskReadOnly {
+    final labelVersion = labelsCapability?.version;
+    return labelVersion != null && labelVersion >= 1;
+  }
+
+  void checkLabelSettingState(Session session, AccountId accountId) {
+    _labelsCapability = session.getLabelsCapability(accountId);
     _getLabelSettingStateInteractor =
         getBinding<GetLabelSettingStateInteractor>();
     if (_getLabelSettingStateInteractor != null) {
@@ -53,11 +64,17 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     } else {
       isLabelSettingEnabled.value = false;
       _clearLabelData();
+      setLabelLoaded();
     }
+  }
+
+  void setLabelLoaded() {
+    isLabelsLoaded.value = true;
   }
 
   void _clearLabelData() {
     labels.clear();
+    isLabelsLoaded.value = false;
   }
 
   void injectLabelsBindings() {
@@ -73,7 +90,11 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   DeleteALabelInteractor? get deleteALabelInteractor => _deleteALabelInteractor;
 
   void getAllLabels(AccountId accountId) {
-    if (_getAllLabelInteractor == null) return;
+    if (_getAllLabelInteractor == null) {
+      labels.value = [];
+      setLabelLoaded();
+      return;
+    }
 
     consumeState(_getAllLabelInteractor!.execute(accountId));
   }
@@ -132,6 +153,9 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     if (isEnabled) {
       injectLabelsBindings();
       getAllLabels(accountId);
+    } else {
+      _clearLabelData();
+      setLabelLoaded();
     }
   }
 
@@ -139,6 +163,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
+      setLabelLoaded();
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
@@ -156,11 +181,13 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
       labels.value = [];
+      setLabelLoaded();
     } else if (failure is CreateNewLabelFailure) {
       _handleCreateNewLabelFailure(failure);
     } else if (failure is GetLabelSettingStateFailure) {
       isLabelSettingEnabled.value = false;
       _clearLabelData();
+      setLabelLoaded();
     } else if (failure is EditLabelFailure) {
       handleEditLabelFailure(failure);
     } else if (failure is DeleteALabelFailure) {
@@ -177,6 +204,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     _editLabelInteractor = null;
     _deleteALabelInteractor = null;
     _getLabelSettingStateInteractor = null;
+    _labelsCapability = null;
     super.onClose();
   }
 }
