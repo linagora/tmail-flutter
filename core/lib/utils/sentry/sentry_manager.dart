@@ -83,26 +83,15 @@ class SentryManager implements SentryReporter {
     SentryLevel level,
   ) async {
     try {
-      final hasExtras = extras != null && extras.isNotEmpty;
-      final hasMessage = message != null && message.isNotEmpty;
-
-      if (hasExtras || hasMessage) {
-        await Sentry.captureException(
-          exception,
-          stackTrace: stackTrace,
-          withScope: (scope) {
-            if (hasExtras) scope.setContexts('extras', extras);
-            if (hasMessage) scope.setTag('message', message);
-            scope.level = level;
-          },
-        );
-      } else {
-        await Sentry.captureException(
-          exception,
-          stackTrace: stackTrace,
-          withScope: (scope) => scope.level = level,
-        );
-      }
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+        withScope: (scope) {
+          scope.level = level;
+          if (extras != null && extras.isNotEmpty) scope.setContexts('extras', extras);
+          if (message != null && message.isNotEmpty) scope.setTag('message', message);
+        },
+      );
     } catch (e) {
       logWarning('[SentryManager] Capture exception failed: $e');
     }
