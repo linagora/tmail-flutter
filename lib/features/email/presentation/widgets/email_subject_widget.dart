@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.dart';
-import 'package:tmail_ui_user/features/labels/presentation/widgets/ai_action_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
 
 typedef OnDeleteLabelAction = void Function(Label label);
 typedef OnDeleteNeedsAction = void Function();
@@ -36,8 +36,9 @@ class EmailSubjectWidget extends StatefulWidget {
 class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   String get _title => widget.emailSubject;
 
-  bool get _hasLabels =>
-      (_currentLabels?.isNotEmpty == true) || widget.showNeedsAction;
+  bool get _hasLabels => (_currentLabels?.isNotEmpty == true);
+
+  bool get _hasNeedsAction => widget.showNeedsAction;
 
   List<Label>? _currentLabels;
 
@@ -61,7 +62,7 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
         ? EmailSubjectStyles.mobilePadding
         : EmailSubjectStyles.padding;
 
-    if (_title.isEmpty && !_hasLabels) {
+    if (_title.isEmpty && !_hasLabels && !_hasNeedsAction) {
       return const SizedBox.shrink();
     }
 
@@ -74,13 +75,18 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   Widget _buildContent() {
     final hasTitle = _title.isNotEmpty;
     final hasLabels = _hasLabels;
+    final hasNeedsAction = _hasNeedsAction;
 
-    if (hasTitle && !hasLabels) {
+    if (hasTitle && !(hasLabels || hasNeedsAction)) {
       return _buildTitle();
     }
 
-    if (!hasTitle && hasLabels) {
+    if (!hasTitle && hasLabels && !hasNeedsAction) {
       return _buildLabels();
+    }
+
+    if (!hasTitle && !hasLabels && hasNeedsAction) {
+      return _buildNeedsActionWidget(context);
     }
 
     return Wrap(
@@ -98,8 +104,7 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   Widget _buildNeedsActionWidget(BuildContext context) {
     final canRemove = widget.onDeleteNeedsAction != null;
 
-    return AiActionWidget(
-      horizontalPadding: 6,
+    return AiActionTagWidget(
       actionWidget: canRemove ? _buildRemoveNeedsActionWidget() : null,
       padding:
           canRemove ? const EdgeInsetsDirectional.only(start: 4, end: 2) : null,

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
+import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_loaded_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
@@ -24,7 +27,8 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     required bool isSelected,
   }) {
     if (emailId == null) {
-      logWarning('HandleLabelForEmailExtension::onToggleLabelAction: Email id is null');
+      logWarning(
+          'HandleLabelForEmailExtension::onToggleLabelAction: Email id is null');
       return;
     }
     mailboxDashBoardController.toggleLabelToEmail(
@@ -135,19 +139,61 @@ extension HandleLabelForEmailExtension on SingleEmailController {
 
   void createNewLabelToEmail(BuildContext context, EmailId? emailId) {
     if (emailId == null) {
-      logWarning('HandleLabelForEmailExtension::createNewLabelToEmail: Email id is null');
+      logWarning(
+          'HandleLabelForEmailExtension::createNewLabelToEmail: Email id is null');
       return;
     }
 
     mailboxDashBoardController.labelController.handleLabelActionType(
       actionType: LabelActionType.create,
       accountId: accountId,
-      onLabelActionCallback: (label) =>
-          onToggleLabelAction(
-            emailId: emailId,
-            label: label,
-            isSelected: true,
-          ),
+      onLabelActionCallback: (label) => onToggleLabelAction(
+        emailId: emailId,
+        label: label,
+        isSelected: true,
+      ),
+    );
+  }
+
+  void onRemoveNeedsActionKeyword(EmailId? emailId,
+      {required String labelDisplay}) {
+    if (emailId == null) {
+      logWarning(
+          'HandleLabelForEmailExtension::onRemoveNeedsActionKeyword: Email id is null');
+      return;
+    }
+
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final interactor =
+        mailboxDashBoardController.removeALabelFromAnEmailInteractor;
+
+    if (session == null) {
+      toastManager.showMessageFailure(
+          RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
+      return;
+    }
+    if (accountId == null) {
+      toastManager.showMessageFailure(
+          RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
+      return;
+    }
+    if (interactor == null) {
+      toastManager.showMessageFailure(
+          RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
+      return;
+    }
+
+    log('remove needs-action: session=${session.apiUrl} accountId=$accountId emailId=$emailId keyword= ${KeyWordIdentifierExtension.needsActionMail} labelDisplay=$labelDisplay');
+
+    mailboxDashBoardController.consumeState(
+      interactor.execute(
+        session,
+        accountId,
+        emailId,
+        KeyWordIdentifierExtension.needsActionMail,
+        labelDisplay,
+      ),
     );
   }
 }
