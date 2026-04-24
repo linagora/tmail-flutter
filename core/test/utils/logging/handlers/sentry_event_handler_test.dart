@@ -83,38 +83,38 @@ void main() {
     });
   });
 
-  group('SentryEventHandler.handles', () {
+  group('SentryEventHandler.canHandle', () {
     test('handles error record', () {
       expect(
-        handler.handles(const LogRecord(level: Level.error, rawMessage: '')),
+        handler.canHandle(const LogRecord(level: Level.error, rawMessage: '')),
         isTrue,
       );
     });
 
     test('handles critical record', () {
       expect(
-        handler.handles(const LogRecord(level: Level.critical, rawMessage: '')),
+        handler.canHandle(const LogRecord(level: Level.critical, rawMessage: '')),
         isTrue,
       );
     });
 
     test('does not handle info record', () {
       expect(
-        handler.handles(const LogRecord(level: Level.info, rawMessage: '')),
+        handler.canHandle(const LogRecord(level: Level.info, rawMessage: '')),
         isFalse,
       );
     });
   });
 
-  group('SentryEventHandler — acceptsLevel/handles contract', () {
-    test('handles() is consistent with acceptsLevel() for all levels', () {
+  group('SentryEventHandler — acceptsLevel/canHandle contract', () {
+    test('canHandle() is consistent with acceptsLevel() for all levels', () {
       for (final level in Level.values) {
         final record = LogRecord(level: level, rawMessage: '');
         if (!handler.acceptsLevel(level)) {
           expect(
-            handler.handles(record),
+            handler.canHandle(record),
             isFalse,
-            reason: 'handles() must return false when acceptsLevel() is false — level: $level',
+            reason: 'canHandle() must return false when acceptsLevel() is false — level: $level',
           );
         }
       }

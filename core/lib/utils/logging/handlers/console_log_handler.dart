@@ -32,7 +32,7 @@ class ConsoleLogHandler extends LogHandler {
   }
 
   @override
-  bool handles(LogRecord record) {
+  bool canHandle(LogRecord record) {
     if (PlatformInfo.isWeb) {
       return record.webConsoleEnabled || BuildUtils.isDebugMode;
     }

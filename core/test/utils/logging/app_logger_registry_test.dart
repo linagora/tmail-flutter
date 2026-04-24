@@ -15,7 +15,7 @@ class _FakeHandler extends LogHandler {
   bool acceptsLevel(Level level) => _acceptsLevel(level);
 
   @override
-  bool handles(LogRecord record) => _acceptsLevel(record.level);
+  bool canHandle(LogRecord record) => _acceptsLevel(record.level);
 
   @override
   void handle(LogRecord record) => received.add(record);
@@ -27,7 +27,7 @@ class _OtherFakeHandler extends _FakeHandler {
 
 class _ThrowingHandlesHandler extends LogHandler {
   @override
-  bool handles(LogRecord record) => throw Exception('handles() exploded');
+  bool canHandle(LogRecord record) => throw Exception('handles() exploded');
 
   @override
   void handle(LogRecord record) {}
@@ -35,7 +35,7 @@ class _ThrowingHandlesHandler extends LogHandler {
 
 class _ThrowingHandleHandler extends LogHandler {
   @override
-  bool handles(LogRecord record) => true;
+  bool canHandle(LogRecord record) => true;
 
   @override
   void handle(LogRecord record) => throw Exception('handle() exploded');
@@ -172,7 +172,7 @@ void main() {
       );
     });
 
-    test('handles() throwing does not crash dispatch; other handlers still receive the record', () {
+    test('canHandle() throwing does not crash dispatch; other handlers still receive the record', () {
       final throwing = _ThrowingHandlesHandler();
       final good = _OtherFakeHandler();
       registry.registerHandler(throwing);

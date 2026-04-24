@@ -48,10 +48,10 @@ void main() {
     });
   });
 
-  group('ConsoleLogHandler.handles — non-web (debug mode)', () {
+  group('ConsoleLogHandler.canHandle — non-web (debug mode)', () {
     test('accepts record regardless of webConsoleEnabled', () {
       const record = LogRecord(level: Level.info, rawMessage: 'msg');
-      expect(handler.handles(record), isTrue);
+      expect(handler.canHandle(record), isTrue);
     });
 
     test('accepts record with webConsoleEnabled=true', () {
@@ -60,11 +60,11 @@ void main() {
         rawMessage: 'msg',
         webConsoleEnabled: true,
       );
-      expect(handler.handles(record), isTrue);
+      expect(handler.canHandle(record), isTrue);
     });
   });
 
-  group('ConsoleLogHandler.handles — web', () {
+  group('ConsoleLogHandler.canHandle — web', () {
     setUp(() => PlatformInfo.isTestingForWeb = true);
 
     test('accepts when webConsoleEnabled=true', () {
@@ -73,7 +73,7 @@ void main() {
         rawMessage: 'msg',
         webConsoleEnabled: true,
       );
-      expect(handler.handles(record), isTrue);
+      expect(handler.canHandle(record), isTrue);
     });
 
     test('accepts when isDebugMode=true (always true in test)', () {
@@ -82,24 +82,24 @@ void main() {
         rawMessage: 'msg',
         webConsoleEnabled: false,
       );
-      // kDebugMode is true in test environment → handles() returns true
-      expect(handler.handles(record), isTrue);
+      // kDebugMode is true in test environment → canHandle() returns true
+      expect(handler.canHandle(record), isTrue);
     });
   });
 
-  group('ConsoleLogHandler — acceptsLevel/handles contract', () {
-    test('if acceptsLevel returns false then handles also returns false', () {
+  group('ConsoleLogHandler — acceptsLevel/canHandle contract', () {
+    test('if acceptsLevel returns false then canHandle also returns false', () {
       // acceptsLevel is always true in test (debug mode / web), so we can only
-      // verify the positive direction: acceptsLevel true does not imply handles false.
+      // verify the positive direction: acceptsLevel true does not imply canHandle false.
       // The negative direction is validated by the non-web release-mode path which
       // cannot be exercised in unit tests because kDebugMode is a compile-time const.
       for (final level in Level.values) {
         final record = LogRecord(level: level, rawMessage: '');
         if (!handler.acceptsLevel(level)) {
           expect(
-            handler.handles(record),
+            handler.canHandle(record),
             isFalse,
-            reason: 'handles() must respect acceptsLevel() contract for $level',
+            reason: 'canHandle() must respect acceptsLevel() contract for $level',
           );
         }
       }

@@ -35,17 +35,17 @@ Refactor `app_logger.dart` to a **handler pipeline**. Each log destination becom
 ```dart
 // log_handler.dart
 abstract interface class LogHandler {
-  bool handles(Level level);
+  bool canHandle(LogRecord record);
   void handle(LogRecord record);
 }
 ```
 
-`AppLoggerRegistry` holds a list of handlers and dispatches each `LogRecord` to all handlers where `handles()` returns `true`. The `_shouldReportToSentry` function is deleted — each handler owns its own filter rule.
+`AppLoggerRegistry` holds a list of handlers and dispatches each `LogRecord` to all handlers where `canHandle()` returns `true`. The `_shouldReportToSentry` function is deleted — each handler owns its own filter rule.
 
 ### Handlers
 
-| Handler | `handles()` | Behaviour |
-|---------|-------------|-----------|
+| Handler | `canHandle()` | Behaviour |
+|---------|--------------|-----------|
 | `ConsoleLogHandler` | all levels | `print()` or `html.window.console.*` (filtered by debug mode / `webConsoleEnabled`) |
 | `SentryEventHandler` | `error`, `critical` | `captureException` if exception present; `captureMessage` otherwise |
 | `SentryBreadcrumbHandler` | `trace` | `Sentry.addBreadcrumb()` — zero quota cost; attached to next error event |
