@@ -1,5 +1,6 @@
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/utils/logging/log_level.dart';
+import 'package:core/utils/logging/log_record.dart';
 
 export 'package:core/utils/logging/log_level.dart' show Level;
 
@@ -91,7 +92,8 @@ void _dispatch(
   Map<String, dynamic>? extras,
   bool webConsoleEnabled = false,
 }) {
-  final record = buildLogRecord(
+  if (!AppLoggerRegistry.instance.hasHandlerFor(level)) return;
+  final record = LogRecord.build(
     level: level,
     message: message,
     exception: exception,

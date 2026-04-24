@@ -40,7 +40,14 @@ class AppLoggerRegistry {
     }
   }
 
-  /// Dispatches [record] to all handlers that accept its level.
+  /// Returns true if at least one registered handler may accept records at [level].
+  ///
+  /// This is a fast pre-screen based on [LogHandler.acceptsLevel] — it avoids
+  /// building a full [LogRecord] when no handler is interested in the level.
+  bool hasHandlerFor(Level level) =>
+      _handlers.any((h) => h.acceptsLevel(level));
+
+  /// Dispatches [record] to all handlers that accept it.
   ///
   /// Handler exceptions are swallowed so that a broken destination cannot
   /// crash callers or prevent other handlers from receiving the record.
@@ -48,7 +55,7 @@ class AppLoggerRegistry {
   void dispatch(LogRecord record) {
     for (final handler in _handlers) {
       try {
-        if (handler.handles(record.level)) {
+        if (handler.handles(record)) {
           handler.handle(record);
         }
       } catch (_) {
@@ -70,38 +77,4 @@ class AppLoggerRegistry {
   ///
   /// Exposed for testing purposes only.
   int get handlerCount => _handlers.length;
-}
-
-/// Builds a [LogRecord] from the given log call parameters.
-LogRecord buildLogRecord({
-  required Level level,
-  String? message,
-  Object? exception,
-  StackTrace? stackTrace,
-  Map<String, dynamic>? extras,
-  bool webConsoleEnabled = false,
-}) {
-  final rawMessage = _buildRawMessage(message, exception, extras, stackTrace);
-  return LogRecord(
-    level: level,
-    rawMessage: rawMessage,
-    exception: exception,
-    stackTrace: stackTrace,
-    extras: extras,
-    webConsoleEnabled: webConsoleEnabled,
-  );
-}
-
-String _buildRawMessage(
-  String? message,
-  Object? exception,
-  Map<String, dynamic>? extras,
-  StackTrace? stackTrace,
-) {
-  final parts = <String>[];
-  if (message?.isNotEmpty == true) parts.add(message!);
-  if (exception != null) parts.add('exception: $exception');
-  if (extras != null && extras.isNotEmpty) parts.add('extras: $extras');
-  if (stackTrace != null) parts.add('stackTrace: $stackTrace');
-  return parts.join(' | ');
 }
