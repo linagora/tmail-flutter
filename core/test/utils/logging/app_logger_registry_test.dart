@@ -6,25 +6,28 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeHandler extends LogHandler {
   final List<LogRecord> received = [];
-  final bool Function(Level) _handles;
+  final bool Function(Level) _acceptsLevel;
 
-  _FakeHandler({bool Function(Level)? handles})
-      : _handles = (handles ?? (_) => true);
+  _FakeHandler({bool Function(Level)? acceptsLevel})
+      : _acceptsLevel = (acceptsLevel ?? (_) => true);
 
   @override
-  bool handles(Level level) => _handles(level);
+  bool acceptsLevel(Level level) => _acceptsLevel(level);
+
+  @override
+  bool handles(LogRecord record) => _acceptsLevel(record.level);
 
   @override
   void handle(LogRecord record) => received.add(record);
 }
 
 class _OtherFakeHandler extends _FakeHandler {
-  _OtherFakeHandler() : super(handles: (_) => true);
+  _OtherFakeHandler() : super(acceptsLevel: (_) => true);
 }
 
 class _ThrowingHandlesHandler extends LogHandler {
   @override
-  bool handles(Level level) => throw Exception('handles() exploded');
+  bool handles(LogRecord record) => throw Exception('handles() exploded');
 
   @override
   void handle(LogRecord record) {}
@@ -32,7 +35,7 @@ class _ThrowingHandlesHandler extends LogHandler {
 
 class _ThrowingHandleHandler extends LogHandler {
   @override
-  bool handles(Level level) => true;
+  bool handles(LogRecord record) => true;
 
   @override
   void handle(LogRecord record) => throw Exception('handle() exploded');
@@ -111,9 +114,25 @@ void main() {
     });
   });
 
+  group('AppLoggerRegistry.hasHandlerFor', () {
+    test('returns true when a handler accepts the level', () {
+      registry.registerHandler(_FakeHandler(acceptsLevel: (l) => l == Level.error));
+      expect(registry.hasHandlerFor(Level.error), isTrue);
+    });
+
+    test('returns false when no handler accepts the level', () {
+      registry.registerHandler(_FakeHandler(acceptsLevel: (l) => l == Level.error));
+      expect(registry.hasHandlerFor(Level.debug), isFalse);
+    });
+
+    test('returns false when no handlers are registered', () {
+      expect(registry.hasHandlerFor(Level.info), isFalse);
+    });
+  });
+
   group('AppLoggerRegistry.dispatch', () {
     test('dispatches record to handler that handles the level', () {
-      final handler = _FakeHandler(handles: (l) => l == Level.error);
+      final handler = _FakeHandler(acceptsLevel: (l) => l == Level.error);
       registry.registerHandler(handler);
 
       const record = LogRecord(level: Level.error, rawMessage: 'oops');
@@ -124,7 +143,7 @@ void main() {
     });
 
     test('does not dispatch record to handler that rejects the level', () {
-      final handler = _FakeHandler(handles: (l) => l == Level.error);
+      final handler = _FakeHandler(acceptsLevel: (l) => l == Level.error);
       registry.registerHandler(handler);
 
       const record = LogRecord(level: Level.trace, rawMessage: 'verbose');
@@ -184,14 +203,14 @@ void main() {
     });
   });
 
-  group('buildLogRecord', () {
+  group('LogRecord.build', () {
     test('builds rawMessage from message only', () {
-      final record = buildLogRecord(level: Level.info, message: 'hello');
+      final record = LogRecord.build(level: Level.info, message: 'hello');
       expect(record.rawMessage, 'hello');
     });
 
     test('appends exception to rawMessage', () {
-      final record = buildLogRecord(
+      final record = LogRecord.build(
         level: Level.error,
         message: 'fail',
         exception: Exception('boom'),
@@ -201,7 +220,7 @@ void main() {
     });
 
     test('appends extras to rawMessage', () {
-      final record = buildLogRecord(
+      final record = LogRecord.build(
         level: Level.error,
         message: 'fail',
         extras: {'key': 'value'},
@@ -211,7 +230,7 @@ void main() {
 
     test('appends stackTrace to rawMessage', () {
       final stack = StackTrace.current;
-      final record = buildLogRecord(
+      final record = LogRecord.build(
         level: Level.error,
         message: 'fail',
         stackTrace: stack,
@@ -220,7 +239,7 @@ void main() {
     });
 
     test('rawMessage is empty string when message is null and no extras', () {
-      final record = buildLogRecord(level: Level.info, message: null);
+      final record = LogRecord.build(level: Level.info, message: null);
       expect(record.rawMessage, isEmpty);
     });
 
@@ -228,7 +247,7 @@ void main() {
       final ex = Exception('err');
       final st = StackTrace.current;
       final extras = {'a': 1};
-      final record = buildLogRecord(
+      final record = LogRecord.build(
         level: Level.error,
         message: 'msg',
         exception: ex,
