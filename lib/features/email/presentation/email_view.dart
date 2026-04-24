@@ -273,6 +273,8 @@ class EmailView extends GetWidget<SingleEmailController> {
 
             List<Label>? emailLabels;
 
+            final showNeedsAction = controller.mailboxDashBoardController.isAINeedsActionEnabled && presentationEmail.hasNeedAction;
+
             if (isLabelAvailable) {
               emailLabels = presentationEmail.getLabelList(listLabels);
             }
@@ -281,18 +283,11 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
-              showNeedsAction: controller
-                      .mailboxDashBoardController.isAINeedsActionEnabled &&
-                  presentationEmail.hasNeedAction,
+              showNeedsAction: showNeedsAction,
               onDeleteNeedsAction: () {
-                final context = Get.context;
-                final labelDisplay = context == null
-                    ? 'Action Required'
-                    : AppLocalizations.of(context).actionRequired;
-
                 controller.onRemoveNeedsActionKeyword(
                   presentationEmail.id,
-                  labelDisplay: labelDisplay,
+                  labelDisplay: AppLocalizations.of(context).actionRequired
                 );
               },
               onDeleteLabelAction: (label) => controller.onToggleLabelAction(
