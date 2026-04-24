@@ -24,10 +24,18 @@ class ConsoleLogHandler extends LogHandler {
   const ConsoleLogHandler({required this.formatter});
 
   @override
-  bool handles(Level level) {
-    // Always accept on web — final filtering happens in handle() because
-    // per-record webConsoleEnabled may override the debug-mode gate.
+  bool acceptsLevel(Level level) {
+    // On web, webConsoleEnabled can enable any level regardless of debug mode,
+    // so we cannot filter by level alone — defer to handles().
     if (PlatformInfo.isWeb) return true;
+    return BuildUtils.isDebugMode;
+  }
+
+  @override
+  bool handles(LogRecord record) {
+    if (PlatformInfo.isWeb) {
+      return record.webConsoleEnabled || BuildUtils.isDebugMode;
+    }
     return BuildUtils.isDebugMode;
   }
 
@@ -36,9 +44,7 @@ class ConsoleLogHandler extends LogHandler {
     final formatted = formatter.format(record.level, record.rawMessage);
 
     if (PlatformInfo.isWeb) {
-      if (record.webConsoleEnabled || BuildUtils.isDebugMode) {
-        _printToWebConsole(record.level, formatted);
-      }
+      _printToWebConsole(record.level, formatted);
     } else {
       // ignore: avoid_print
       print('$_appLogName $formatted');

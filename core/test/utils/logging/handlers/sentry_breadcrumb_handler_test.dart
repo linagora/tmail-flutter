@@ -55,29 +55,60 @@ void main() {
     handler = SentryBreadcrumbHandler(reporter);
   });
 
+  group('SentryBreadcrumbHandler.acceptsLevel', () {
+    test('accepts trace level', () {
+      expect(handler.acceptsLevel(Level.trace), isTrue);
+    });
+
+    test('rejects error', () {
+      expect(handler.acceptsLevel(Level.error), isFalse);
+    });
+
+    test('rejects critical', () {
+      expect(handler.acceptsLevel(Level.critical), isFalse);
+    });
+
+    test('rejects warning', () {
+      expect(handler.acceptsLevel(Level.warning), isFalse);
+    });
+
+    test('rejects info', () {
+      expect(handler.acceptsLevel(Level.info), isFalse);
+    });
+
+    test('rejects debug', () {
+      expect(handler.acceptsLevel(Level.debug), isFalse);
+    });
+  });
+
   group('SentryBreadcrumbHandler.handles', () {
-    test('handles trace level', () {
-      expect(handler.handles(Level.trace), isTrue);
+    test('handles trace record', () {
+      expect(
+        handler.handles(const LogRecord(level: Level.trace, rawMessage: '')),
+        isTrue,
+      );
     });
 
-    test('does not handle error', () {
-      expect(handler.handles(Level.error), isFalse);
+    test('does not handle error record', () {
+      expect(
+        handler.handles(const LogRecord(level: Level.error, rawMessage: '')),
+        isFalse,
+      );
     });
+  });
 
-    test('does not handle critical', () {
-      expect(handler.handles(Level.critical), isFalse);
-    });
-
-    test('does not handle warning', () {
-      expect(handler.handles(Level.warning), isFalse);
-    });
-
-    test('does not handle info', () {
-      expect(handler.handles(Level.info), isFalse);
-    });
-
-    test('does not handle debug', () {
-      expect(handler.handles(Level.debug), isFalse);
+  group('SentryBreadcrumbHandler — acceptsLevel/handles contract', () {
+    test('handles() is consistent with acceptsLevel() for all levels', () {
+      for (final level in Level.values) {
+        final record = LogRecord(level: level, rawMessage: '');
+        if (!handler.acceptsLevel(level)) {
+          expect(
+            handler.handles(record),
+            isFalse,
+            reason: 'handles() must return false when acceptsLevel() is false — level: $level',
+          );
+        }
+      }
     });
   });
 

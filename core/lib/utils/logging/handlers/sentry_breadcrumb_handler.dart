@@ -21,7 +21,7 @@ class SentryBreadcrumbHandler extends LogHandler {
   const SentryBreadcrumbHandler(this._sentry);
 
   @override
-  bool handles(Level level) => level == Level.trace;
+  bool acceptsLevel(Level level) => level == Level.trace;
 
   @override
   void handle(LogRecord record) {

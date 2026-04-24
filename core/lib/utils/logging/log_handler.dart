@@ -23,9 +23,23 @@ abstract class LogHandler {
   /// to register multiple instances of the same concrete class.
   String get handlerKey => runtimeType.toString();
 
-  /// Returns true if this handler should process records at [level].
-  bool handles(Level level);
+  /// Fast level-only pre-screen used by the registry before building a [LogRecord].
+  ///
+  /// Return false when this handler will *never* accept records at [level],
+  /// regardless of any per-record fields. The default is true (conservative:
+  /// no records are skipped at this stage).
+  ///
+  /// This must be a superset of [handles]: if [acceptsLevel] returns false,
+  /// [handles] must also return false for all records at that level.
+  bool acceptsLevel(Level level) => true;
 
-  /// Process the given [record].
+  /// Returns true if this handler should process [record].
+  ///
+  /// The default delegates to [acceptsLevel] — sufficient for level-pure
+  /// handlers that do not need per-record fields. Override when per-record
+  /// fields (e.g. [LogRecord.webConsoleEnabled]) must influence the decision.
+  bool handles(LogRecord record) => acceptsLevel(record.level);
+
+  /// Process the given [record]. Called only when [handles] returns true.
   void handle(LogRecord record);
 }

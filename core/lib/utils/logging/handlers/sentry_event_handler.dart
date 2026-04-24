@@ -23,7 +23,7 @@ class SentryEventHandler extends LogHandler {
   const SentryEventHandler(this._sentry);
 
   @override
-  bool handles(Level level) =>
+  bool acceptsLevel(Level level) =>
       level == Level.error || level == Level.critical;
 
   @override
@@ -47,14 +47,10 @@ class SentryEventHandler extends LogHandler {
     }
   }
 
-  SentryLevel _toSentryLevel(Level level) {
-    switch (level) {
-      case Level.critical:
-        return SentryLevel.fatal;
-      case Level.error:
-        return SentryLevel.error;
-      default:
-        return SentryLevel.info;
-    }
-  }
+  SentryLevel _toSentryLevel(Level level) => switch (level) {
+    Level.critical => SentryLevel.fatal,
+    Level.error    => SentryLevel.error,
+    // unreachable — acceptsLevel() ensures only error/critical enter here
+    _              => SentryLevel.error,
+  };
 }
