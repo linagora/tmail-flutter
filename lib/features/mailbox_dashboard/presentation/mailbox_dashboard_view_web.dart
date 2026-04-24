@@ -757,6 +757,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
       final listHasKeywordFiltered = controller.searchController.listHasKeywordFiltered;
       final unreadFiltered = controller.searchController.unreadFiltered;
+      final notIncludeEventsFiltered = controller.searchController.notIncludeEventsFiltered;
 
       final isSelected = searchFilter.isSelected(
         context,
@@ -776,7 +777,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           receiveTimeType != EmailReceiveTimeType.allTime ||
           mailbox != null ||
           listHasKeywordFiltered.contains(KeyWordIdentifier.emailFlagged.value) ||
-          unreadFiltered;
+          unreadFiltered ||
+          notIncludeEventsFiltered;
 
       return SearchFilterButton(
         key: Key('${searchFilter.name}_search_filter_button'),

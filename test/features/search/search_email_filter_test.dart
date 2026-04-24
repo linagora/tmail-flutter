@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -388,6 +389,201 @@ void main() {
           emailConditions.any((c) => c.notKeyword == KeyWordIdentifierExtension.eventsMail.value),
           isTrue,
         );
+      });
+
+      test('SHOULD combine events-exclusion with hasAttachment in AND WHEN notIncludeEvents is true and hasAttachment is true', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          hasAttachment: true,
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // hasAttachment goes into the shared condition.
+        // Result: AND(sharedCond(hasAttachment=true), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final sharedCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.hasAttachment == true);
+        expect(sharedCond.hasAttachment, isTrue);
+      });
+
+      test('SHOULD combine events-exclusion with subject in AND WHEN notIncludeEvents is true and subject is given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          subject: 'Meeting notes',
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // subject goes into the shared condition.
+        // Result: AND(sharedCond(subject='Meeting notes'), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final sharedCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.subject != null);
+        expect(sharedCond.subject, 'Meeting notes');
+      });
+
+      test('SHOULD combine events-exclusion with label hasKeyword in AND WHEN notIncludeEvents is true and label is given', () {
+        // Arrange
+        // label adds a SEPARATE EmailFilterCondition(hasKeyword: label.keyword.value),
+        // distinct from the shared base condition.
+        final labelKeyword = KeyWordIdentifier(r'$label-work');
+        final filter = SearchEmailFilter(
+          label: Label(keyword: labelKeyword),
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // Result: AND(EmailFilterCondition(hasKeyword=label.keyword), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final labelCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.hasKeyword != null);
+        expect(labelCond.hasKeyword, labelKeyword.value);
+      });
+
+      test('SHOULD combine events-exclusion with single hasKeyword in shared condition WHEN notIncludeEvents is true and one hasKeyword is given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          hasKeyword: {KeyWordIdentifier.emailFlagged.value},
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // Single hasKeyword goes into the shared condition (hasKeyword: hasKeyword.first).
+        // Result: AND(sharedCond(hasKeyword=emailFlagged), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final sharedCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.hasKeyword != null);
+        expect(sharedCond.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+      });
+
+      test('SHOULD combine events-exclusion with multi-hasKeyword AND operator WHEN notIncludeEvents is true and multiple hasKeywords are given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          hasKeyword: {'kw1', 'kw2'},
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // Multiple hasKeywords produce a separate AND(hasKeyword=kw1, hasKeyword=kw2).
+        // Result: AND(AND(kw1, kw2), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final innerAnd = andFilter.conditions
+            .whereType<LogicFilterOperator>()
+            .first;
+        expect(innerAnd.operator, equals(Operator.AND));
+        expect(innerAnd.conditions.length, equals(2));
+        expect(
+          innerAnd.conditions
+              .whereType<EmailFilterCondition>()
+              .every((c) => c.hasKeyword != null),
+          isTrue,
+        );
+      });
+
+      test('SHOULD combine events-exclusion with single from in shared condition WHEN notIncludeEvents is true and one from address is given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          from: {'sender@example.com'},
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // Single from goes into the shared condition (from: from.first).
+        // Result: AND(sharedCond(from='sender@example.com'), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final sharedCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.from != null);
+        expect(sharedCond.from, 'sender@example.com');
+      });
+
+      test('SHOULD combine events-exclusion with single "to" OR-condition WHEN notIncludeEvents is true and one to address is given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          to: {'recipient@example.com'},
+          notIncludeEvents: true,
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // Single "to" spreads one OR(to:x, cc:x, bcc:x) into the condition set.
+        // Result: AND(OR(to, cc, bcc), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final toOrFilter = andFilter.conditions
+            .whereType<LogicFilterOperator>()
+            .first;
+        expect(toOrFilter.operator, equals(Operator.OR));
+        expect(toOrFilter.conditions.length, equals(3));
+        expect(
+          toOrFilter.conditions
+              .whereType<EmailFilterCondition>()
+              .any((c) => c.to == 'recipient@example.com'),
+          isTrue,
+        );
+      });
+
+      test('SHOULD combine events-exclusion with inMailboxOtherThan WHEN notIncludeEvents is true and trashSpamMailboxIds are passed', () {
+        // Arrange
+        // No mailbox set → _getInMailboxOtherThanField returns trashSpamMailboxIds,
+        // adding inMailboxOtherThan to the shared condition. This mirrors every real
+        // production call from ThreadController / SearchEmailController.
+        final trashId = MailboxId(Id('trash-id'));
+        final spamId = MailboxId(Id('spam-id'));
+        final filter = SearchEmailFilter(notIncludeEvents: true);
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: {trashId, spamId},
+        );
+
+        // Assert
+        // Result: AND(sharedCond(inMailboxOtherThan={trashId, spamId}), eventsExclusion) — 2 conditions.
+        final andFilter = _assertAndOperator(result, 2);
+        _assertEventsExclusionInAnd(andFilter);
+
+        final sharedCond = andFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .firstWhere((c) => c.inMailboxOtherThan != null);
+        expect(sharedCond.inMailboxOtherThan, containsAll([trashId, spamId]));
       });
 
       test('SHOULD combine events-exclusion with moreFilterCondition in AND WHEN notIncludeEvents is true and no other conditions', () {

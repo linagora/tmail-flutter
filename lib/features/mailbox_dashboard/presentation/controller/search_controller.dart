@@ -189,6 +189,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   bool get unreadFiltered => searchEmailFilter.value.unread;
 
+  bool get notIncludeEventsFiltered => searchEmailFilter.value.notIncludeEvents;
+
   EmailSortOrderType get sortOrderFiltered => searchEmailFilter.value.sortOrderType;
 
   bool isSearchActive() =>
