@@ -142,8 +142,17 @@ class SentryManager implements SentryReporter {
   }) {
     if (!_isSentryAvailable) return;
 
+    unawaited(_addBreadcrumbInternal(message, extras: extras, level: level, category: category));
+  }
+
+  Future<void> _addBreadcrumbInternal(
+    String message, {
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.debug,
+    String? category,
+  }) async {
     try {
-      Sentry.addBreadcrumb(
+      await Sentry.addBreadcrumb(
         Breadcrumb(
           message: message,
           data: extras,
