@@ -40,6 +40,6 @@ abstract class LogHandler {
   /// fields (e.g. [LogRecord.webConsoleEnabled]) must influence the decision.
   bool canHandle(LogRecord record) => acceptsLevel(record.level);
 
-  /// Process the given [record]. Called only when [handles] returns true.
+  /// Process the given [record]. Called only when [canHandle] returns true.
   void handle(LogRecord record);
 }

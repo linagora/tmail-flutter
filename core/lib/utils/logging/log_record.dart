@@ -51,7 +51,7 @@ class LogRecord {
     StackTrace? stackTrace,
   ) {
     // Fast path: most log calls carry only a message — avoid list allocation.
-    if (exception == null && extras == null && stackTrace == null) {
+    if (exception == null && (extras == null || extras.isEmpty) && stackTrace == null) {
       return message ?? '';
     }
     final parts = <String>[];

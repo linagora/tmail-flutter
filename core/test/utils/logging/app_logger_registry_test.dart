@@ -128,6 +128,15 @@ void main() {
     test('returns false when no handlers are registered', () {
       expect(registry.hasHandlerFor(Level.info), isFalse);
     });
+
+    test('returns true when at least one of multiple handlers accepts the level', () {
+      // _FakeHandler: error-only; _OtherFakeHandler: all levels.
+      // hasHandlerFor(trace) must be true because OtherFakeHandler accepts it,
+      // even though FakeHandler does not — verifying OR semantics of hasHandlerFor.
+      registry.registerHandler(_FakeHandler(acceptsLevel: (l) => l == Level.error));
+      registry.registerHandler(_OtherFakeHandler());
+      expect(registry.hasHandlerFor(Level.trace), isTrue);
+    });
   });
 
   group('AppLoggerRegistry.dispatch', () {

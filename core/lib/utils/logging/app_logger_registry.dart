@@ -1,7 +1,7 @@
 import 'package:core/utils/logging/log_handler.dart';
 import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// Dispatch orchestrator for the logger handler pipeline.
 ///
@@ -74,7 +74,6 @@ class AppLoggerRegistry {
   }
 
   /// Returns the number of currently registered handlers.
-  ///
-  /// Exposed for testing purposes only.
+  @visibleForTesting
   int get handlerCount => _handlers.length;
 }
