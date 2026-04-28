@@ -10,13 +10,13 @@ abstract interface class SentryReporter {
     StackTrace? stackTrace,
     String? message,
     Map<String, dynamic>? extras,
-    SentryLevel level,
+    SentryLevel level = SentryLevel.error,
   });
 
   void captureMessage(
     String message, {
     Map<String, dynamic>? extras,
-    SentryLevel level,
+    SentryLevel level = SentryLevel.info,
   });
 
   void addBreadcrumb(

@@ -26,7 +26,7 @@ class ConsoleLogHandler extends LogHandler {
   @override
   bool acceptsLevel(Level level) {
     // On web, webConsoleEnabled can enable any level regardless of debug mode,
-    // so we cannot filter by level alone — defer to handles().
+    // so we cannot filter by level alone — defer to canHandle().
     if (PlatformInfo.isWeb) return true;
     return BuildUtils.isDebugMode;
   }
