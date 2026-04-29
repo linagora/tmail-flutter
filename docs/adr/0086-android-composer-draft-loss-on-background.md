@@ -231,6 +231,191 @@ final composerAutoSaveProvider =
 );
 ```
 
+### Implementation Diagrams
+
+#### Component Map
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         composer_controller.dart (modified)                 │
+│                                                                             │
+│  ComposerController (GetX)                                                  │
+│  ├── _mobileSessionId: String          ← UUID generated in onInit()         │
+│  ├── _lastKnownContent: String?        ← updated by Timer.periodic(30s)     │
+│  ├── _isSavingToDraftInProgress: bool  ← deduplication guard               │
+│  └── _lifecycle: AppLifecycleListener  ← onInactive / onResumed            │
+│       │                                                                     │
+│       └── (via HandleMobileAutoSaveExtension)                               │
+│            ├── _onAppInactive()     ─────────────────────────────────┐      │
+│            ├── _checkAndRestoreComposerCache()   ────────────────┐   │      │
+│            └── _closeComposerAction() → markCleanClose()   ──┐   │   │      │
+└──────────────────────────────────────────────────────────────┼───┼───┼──────┘
+                                                               │   │   │
+          ┌────────────────────────────────────────────────────┼───┘   │
+          │         ┌─────────────────────────────────────────┼────────┘
+          │         │                                         │
+          ▼         ▼                                         ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│                  handle_mobile_auto_save_extension.dart (new)             │
+│                                                                           │
+│  extension HandleMobileAutoSaveExtension on ComposerController            │
+│  ├── _onAppInactive()                                                     │
+│  │    ├── [300ms guard] cancel if state → active (system dialog)          │
+│  │    ├── htmlEditorApi.getText().timeout(2s) ?? _lastKnownContent        │
+│  │    ├── ── Layer 1 ──► saveLocally(snapshot)                            │
+│  │    └── ── Layer 2 ──► _saveToDraftSilently()                           │
+│  │                           └── CreateNewAndSaveEmailsToDraftsInteractor │
+│  │                               [fire-and-forget + Sentry breadcrumb]    │
+│  ├── _checkAndRestoreComposerCache()   ← Layer 3 (RC1)                    │
+│  │    └── restore(_mobileSessionId) → inject into editor                  │
+│  └── _closedComposerAction()          ← mark isCleanClose = true          │
+└──────────────────────┬────────────────────────────────────────────────────┘
+                       │ appProviderContainer.read(composerAutoSaveProvider)
+                       ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│               composer_auto_save_notifier.dart (new)                     │
+│                                                                          │
+│  composerAutoSaveProvider  (StateNotifierProvider — appProviderContainer) │
+│  ComposerAutoSaveNotifier  (StateNotifier)                               │
+│  ├── saveLocally(id, SavedComposerSnapshot)                              │
+│  ├── restore(id) → SavedComposerSnapshot?  [filter: !clean, age < 24h]  │
+│  ├── markCleanClose(id)                                                  │
+│  └── clearCache(id)                                                      │
+└──────────────────────┬───────────────────────────────────────────────────┘
+                       │ read / write JSON string
+                       ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│              composer_mobile_cache_client.dart (new)                     │
+│                                                                          │
+│  ComposerMobileCacheClient extends HiveCacheClient<String>               │
+│  ├── tableName: "composerMobileCache"                                    │
+│  └── encryption: true  ← HiveAesCipher via HiveCacheConfig              │
+│                                                                          │
+│              ┌───────────────────────────────────┐                       │
+│              │  Hive Box: composerMobileCache     │                       │
+│              │  key: _mobileSessionId (UUID)      │                       │
+│              │  val: SavedComposerSnapshot (JSON) │                       │
+│              │  cipher: AES-256                   │                       │
+│              └───────────────────────────────────┘                       │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Save Flow — Layer 1 + Layer 2 (triggered at `onInactive`)
+
+```text
+Android OS                Flutter                ComposerController            Cache / Network
+    │                        │                          │                             │
+    │── app backgrounded ───►│                          │                             │
+    │                        │── AppLifecycleState ────►│                             │
+    │                        │   .inactive              │                             │
+    │                        │                          │── _onAppInactive()          │
+    │                        │                          │                             │
+    │                        │                          │  [300ms guard]              │
+    │                        │   (system dialog?)       │                             │
+    │                        │── .active ──────────────►│── cancel, skip save         │
+    │                        │                          │                             │
+    │                        │                          │── getText().timeout(2s)     │
+    │                        │                          │◄─ htmlContent / fallback ──│
+    │                        │                          │   _lastKnownContent         │
+    │                        │                          │                             │
+    │                        │           ╔══════════════╧══════════════╗             │
+    │                        │           ║  LAYER 1 — Local Cache      ║             │
+    │                        │           ╚══════════════╤══════════════╝             │
+    │                        │                          │── saveLocally(snapshot) ──►│
+    │                        │                          │                   insertItem│
+    │                        │                          │◄─────────────── done ──────│
+    │                        │                          │                             │
+    │                        │           ╔══════════════╧══════════════╗             │
+    │                        │           ║  LAYER 2 — Server Save      ║             │
+    │                        │           ╚══════════════╤══════════════╝             │
+    │                        │                          │  _isSavingInProgress=true   │
+    │                        │                          │── CreateNewAndSave ────────►│
+    │                        │                          │   ToDraftsInteractor        │ (JMAP)
+    │                        │                          │   [fire-and-forget]         │
+    │                        │                          │                  ┌──────────┤
+    │                        │                          │◄─ success ───────┘          │
+    │                        │                          │── clearCache(id) ──────────►│
+    │                        │                          │◄─ failure ─── Sentry        │
+    │                        │                          │   breadcrumb (info)         │
+    │                        │                          │  _isSavingInProgress=false  │
+```
+
+#### Recovery Flow — Layer 3 (RC1) + Layer 4 (RC2)
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│  LAYER 3 — RC1 Recovery (renderer killed, app process still alive)               │
+│                                                                                  │
+│  ┌─ Scenario A: onReady (fresh composer open after renderer kill) ─────────────┐ │
+│  │  ComposerController.onReady()                                               │ │
+│  │       └── _checkAndRestoreComposerCache()                                   │ │
+│  │              └── restore(_mobileSessionId)                                  │ │
+│  │                     ├── [found, !cleanClose, age < 24h]                     │ │
+│  │                     │       └── inject HTML into editor                     │ │
+│  │                     │           restore recipients, subject, attachments    │ │
+│  │                     │           clearCache(_mobileSessionId)                │ │
+│  │                     └── [not found / expired] → normal flow                 │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                                  │
+│  ┌─ Scenario B: onResumed (user returns, editor blank) ───────────────────────┐  │
+│  │  AppLifecycleState.resumed                                                  │  │
+│  │       └── editor blank? + cache entry exists?                               │  │
+│  │              └── re-inject _lastKnownContent into htmlEditorApi             │  │
+│  └─────────────────────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│  LAYER 4 — RC2 Recovery (full app process killed)                                │
+│                                                                                  │
+│  App restart                                                                     │
+│       │                                                                          │
+│       ▼                                                                          │
+│  MailboxDashBoardController.onReady()                                            │
+│       │                                                                          │
+│       ├── read all entries from ComposerMobileCacheClient                        │
+│       │   filter: isCleanClose = false  AND  age < 24h                          │
+│       │                                                                          │
+│       ├── [entries found]                                                        │
+│       │       └── openComposer(ComposerArguments.fromSnapshot(snapshot))         │
+│       │                   │                                                      │
+│       │                   ▼                                                      │
+│       │           ComposerController.onReady()                                   │
+│       │                   └── Layer 3 Scenario A above ──► inject + clearCache  │
+│       │                                                                          │
+│       └── [no entries / all clean] → normal startup flow                        │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Files Map
+
+```text
+lib/
+├── main/
+│   └── providers/
+│       └── app_provider_container.dart                    [existing]
+│
+└── features/
+    ├── caching/
+    │   └── clients/
+    │       └── composer_mobile_cache_client.dart          [NEW]
+    │
+    ├── composer/
+    │   └── presentation/
+    │       ├── composer_controller.dart                   [modified]
+    │       ├── composer_bindings.dart                     [modified]
+    │       ├── model/
+    │       │   └── saved_composer_snapshot.dart           [NEW]
+    │       ├── providers/
+    │       │   └── composer_auto_save_notifier.dart       [NEW]
+    │       └── extensions/
+    │           └── handle_mobile_auto_save_extension.dart [NEW]
+    │
+    └── mailbox_dashboard/
+        └── presentation/
+            └── controller/
+                └── mailbox_dashboard_controller.dart      [modified]
+```
+
 ### Files introduced
 
 | File | Role |
