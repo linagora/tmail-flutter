@@ -113,7 +113,9 @@ After Layer 1 completes (still within `onInactive`), trigger `CreateNewAndSaveEm
 
 **Why `inactive` and not `paused`**: at `AppLifecycleState.paused`, Android Doze mode and app-standby buckets may throttle or block outbound network traffic before the request completes. `inactive` is before the compositor is frozen, giving the network call the best chance of completing while the renderer is still alive.
 
-This is **fire-and-forget** — failure is logged to console and reported as a Sentry breadcrumb (severity: info) for monitoring purposes, but not surfaced to the user. The draft will appear in the Drafts folder on success.
+This is **fire-and-forget** — failure is logged to console and reported via `SentryManager.instance.captureException(exception, level: SentryLevel.warning)` for monitoring purposes, but not surfaced to the user. The draft will appear in the Drafts folder on success.
+
+> **Why `captureException` and not `addBreadcrumb`**: breadcrumbs are only uploaded to Sentry when a subsequent error event is captured. A silent fire-and-forget failure never triggers such an event, so the breadcrumb would be silently lost. `captureException` sends the event immediately and independently, guaranteeing visibility.
 
 **Deduplication guard**: a boolean `_isSavingToDraftInProgress` flag on `ComposerController` ensures only one server-side save runs at a time. If `onInactive` fires again (e.g., user rapidly switches apps back and forth) while a save is still in flight, the duplicate trigger is silently skipped. The flag is cleared on completion (success or failure).
 
@@ -265,7 +267,7 @@ final composerAutoSaveProvider =
 │  │    ├── ── Layer 1 ──► saveLocally(snapshot)                            │
 │  │    └── ── Layer 2 ──► _saveToDraftSilently()                           │
 │  │                           └── CreateNewAndSaveEmailsToDraftsInteractor │
-│  │                               [fire-and-forget + Sentry breadcrumb]    │
+│  │                               [fire-and-forget + Sentry captureException] │
 │  ├── _checkAndRestoreComposerCache()   ← Layer 3 (RC1)                    │
 │  │    └── restore(_mobileSessionId) → inject into editor                  │
 │  └── _closedComposerAction()          ← mark isCleanClose = true          │
@@ -335,8 +337,8 @@ Android OS                Flutter                ComposerController            C
     │                        │                          │                  ┌──────────┤
     │                        │                          │◄─ success ───────┘          │
     │                        │                          │── clearCache(id) ──────────►│
-    │                        │                          │◄─ failure ─── Sentry        │
-    │                        │                          │   breadcrumb (info)         │
+    │                        │                          │◄─ failure                   │
+    │                        │                          │   captureException(warning) │
     │                        │                          │  _isSavingInProgress=false  │
 ```
 
