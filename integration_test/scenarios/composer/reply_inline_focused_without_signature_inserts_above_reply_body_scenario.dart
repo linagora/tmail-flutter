@@ -1,0 +1,44 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+
+import '../../base/base_test_scenario.dart';
+import '../../models/provisioning_email.dart';
+import '../../robots/email_robot.dart';
+import '../../robots/thread_robot.dart';
+
+class ReplyInlineFocusedWithoutSignatureInsertsAboveReplyBodyScenario
+    extends BaseTestScenario {
+  const ReplyInlineFocusedWithoutSignatureInsertsAboveReplyBodyScenario(
+      super.$, super.robots);
+
+  @override
+  Future<void> runTestLogic() async {
+    const subject = 'reply inline no signature';
+    final threadRobot = ThreadRobot($);
+    final emailRobot = EmailRobot($);
+    final png = await preparingPngWithName('inline-png');
+
+    await provisionEmail([
+      ProvisioningEmail(
+        toEmail: const String.fromEnvironment('BASIC_AUTH_EMAIL'),
+        subject: subject,
+        content: 'body',
+      ),
+    ], requestReadReceipt: false);
+
+    await threadRobot.openEmailWithSubject(subject);
+    await emailRobot.onTapReplyEmail();
+    await robots.composerRobot().expectComposerViewVisible();
+    await robots.composerRobot().grantContactPermission();
+    await robots.composerRobot().focusEditorAboveReplyBody();
+    await robots.composerRobot().addInlineAtCursorPosition(png);
+
+    await _expectInlineAboveBlockquote();
+  }
+
+  Future<void> _expectInlineAboveBlockquote() async {
+    final html = await Get.find<ComposerController>().getContentInEditor();
+    expect(html.indexOf('data:image/'), lessThan(html.indexOf('<blockquote')));
+  }
+}
