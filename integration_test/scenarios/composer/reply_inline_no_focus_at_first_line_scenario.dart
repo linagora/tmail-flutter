@@ -37,6 +37,10 @@ class ReplyInlineNoFocusAtFirstLineScenario extends BaseTestScenario {
 
   Future<void> _expectInlineAboveBlockquote() async {
     final html = await Get.find<ComposerController>().getContentInEditor();
-    expect(html.indexOf('data:image/'), lessThan(html.indexOf('<blockquote')));
+    final imgIdx = html.indexOf('data:image/');
+    final bqIdx = html.indexOf('<blockquote');
+    expect(imgIdx, greaterThan(-1));
+    expect(bqIdx, greaterThan(-1));
+    expect(imgIdx, lessThan(bqIdx));
   }
 }
