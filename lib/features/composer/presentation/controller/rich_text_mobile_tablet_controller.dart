@@ -33,7 +33,7 @@ class RichTextMobileTabletController extends GetxController {
     }
   }
 
-  void insertImage(InlineImage inlineImage) async {
+  Future<void> insertImage(InlineImage inlineImage) async {
     await restoreMobileEditorFocus();
     if (inlineImage.base64Uri?.isNotEmpty == true) {
       await htmlEditorApi?.insertHtml('${inlineImage.base64Uri ?? ''}<br/><br/>');
@@ -51,7 +51,7 @@ class RichTextMobileTabletController extends GetxController {
         await htmlEditorApi?.requestFocusFirstChild();
       }
     } catch (e) {
-      log('RichTextMobileTabletController::insertImage(): $e');
+      log('RichTextMobileTabletController::restoreMobileEditorFocus(): $e');
     }
   }
 
