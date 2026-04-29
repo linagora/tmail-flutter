@@ -495,11 +495,11 @@ packages:
     source: path
     version: "1.0.0+1"
   enough_html_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "hotfix/editor-selection"
-      resolved-ref: "9ebc9d980f994b32a26df3bc37fd0ad0d820d5d8"
+      ref: master
+      resolved-ref: e1302796a79e8689e09de65544f343db2b798dff
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.1.6"
