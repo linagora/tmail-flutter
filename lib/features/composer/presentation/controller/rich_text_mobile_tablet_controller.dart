@@ -33,14 +33,25 @@ class RichTextMobileTabletController extends GetxController {
     }
   }
 
-  void insertImage(InlineImage inlineImage) async {
-    final isFocused = await isEditorFocused;
-    log('RichTextMobileTabletController::insertImage: isEditorFocused = $isFocused');
-    if (!isFocused) {
-      await htmlEditorApi?.requestFocusLastChild();
-    }
+  Future<void> insertImage(InlineImage inlineImage) async {
+    await restoreMobileEditorFocus();
     if (inlineImage.base64Uri?.isNotEmpty == true) {
       await htmlEditorApi?.insertHtml('${inlineImage.base64Uri ?? ''}<br/><br/>');
+    }
+  }
+
+  Future<void> restoreMobileEditorFocus() async {
+    if (!PlatformInfo.isMobile) return;
+    try {
+      final selectionRangeAvailable =
+          await htmlEditorApi?.isSelectionRangeAvailable();
+      if (selectionRangeAvailable == true) {
+        await htmlEditorApi?.restoreSelectionRange();
+      } else {
+        await htmlEditorApi?.requestFocusFirstChild();
+      }
+    } catch (e) {
+      log('RichTextMobileTabletController::restoreMobileEditorFocus(): $e');
     }
   }
 

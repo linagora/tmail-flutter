@@ -1690,13 +1690,22 @@ class ComposerController extends BaseController
     }
   }
 
-  void insertImage(BuildContext context, double maxWith) {
+  Future<void> insertImage(BuildContext context, double maxWith) async {
+    if (PlatformInfo.isMobile) {
+      try {
+        await htmlEditorApi?.storeSelectionRange();
+      } catch (e) {
+        log('ComposerController::insertImage(): $e');
+      }
+    }
     clearFocus();
 
-    if (responsiveUtils.isMobile(context)) {
-      maxWithEditor = maxWith - 40;
-    } else {
-      maxWithEditor = maxWith - 70;
+    if (context.mounted) {
+      if (responsiveUtils.isMobile(context)) {
+        maxWithEditor = maxWith - 40;
+      } else {
+        maxWithEditor = maxWith - 70;
+      }
     }
 
     consumeState(_localImagePickerInteractor.execute());
