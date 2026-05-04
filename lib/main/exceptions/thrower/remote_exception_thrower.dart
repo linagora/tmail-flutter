@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
