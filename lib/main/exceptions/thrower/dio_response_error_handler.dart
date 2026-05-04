@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/main/exceptions/remote/server_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 
 class DioResponseErrorHandler {
-  void handle(Response response) {
+  void handle(Response response, [StackTrace? stackTrace]) {
     final statusCode = response.statusCode;
     switch (statusCode) {
       case HttpStatus.unauthorized:
@@ -24,12 +24,12 @@ class DioResponseErrorHandler {
           code: statusCode,
           message: response.statusMessage,
         );
-        _logUnhandledStatusCode(statusCode, exception);
+        _logUnhandledStatusCode(statusCode, exception, stackTrace);
         throw exception;
     }
   }
 
-  void _logUnhandledStatusCode(int? statusCode, UnknownRemoteException exception) {
+  void _logUnhandledStatusCode(int? statusCode, UnknownRemoteException exception, [StackTrace? stackTrace]) {
     final is4xx = statusCode != null && statusCode >= 400 && statusCode < 500;
     final is5xx = statusCode != null && statusCode >= 500;
     if (is4xx) {
@@ -40,6 +40,7 @@ class DioResponseErrorHandler {
       logError(
         'RemoteExceptionThrower: unknown HTTP status $statusCode',
         exception: exception,
+        stackTrace: stackTrace,
       );
     }
   }

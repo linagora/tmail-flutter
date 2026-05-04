@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -23,13 +25,13 @@ class RemoteExceptionThrower extends ExceptionThrower {
       logWarning('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
       throw const NoNetworkError();
     } else {
-      handleDioError(error);
+      handleDioError(error, stackTrace);
     }
   }
 
-  void handleDioError(dynamic error) {
+  void handleDioError(dynamic error, [StackTrace? stackTrace]) {
     if (error is DioException) {
-      _handleDioException(error);
+      _handleDioException(error, stackTrace);
       return;
     }
 
@@ -41,11 +43,12 @@ class RemoteExceptionThrower extends ExceptionThrower {
     logError(
       'RemoteExceptionThrower::handleDioError(): unrecognised error',
       exception: error,
+      stackTrace: stackTrace,
     );
     throw error;
   }
 
-  void _handleDioException(DioException error) {
+  void _handleDioException(DioException error, [StackTrace? stackTrace]) {
     logWarning(
       'RemoteExceptionThrower::_handleDioException(): type=${error.type}'
       ' status=${error.response?.statusCode}'
@@ -58,10 +61,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
     final response = error.response;
     if (response != null) {
-      return _responseHandler.handle(response);
+      return _responseHandler.handle(response, stackTrace);
     }
 
-    return _noResponseHandler.handle(error);
+    return _noResponseHandler.handle(error, stackTrace);
   }
 
   void _handleMethodResponseException(ErrorMethodResponseException error) {

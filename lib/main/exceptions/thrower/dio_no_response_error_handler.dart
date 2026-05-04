@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 
 class DioNoResponseErrorHandler {
-  void handle(DioException error) {
+  void handle(DioException error, [StackTrace? stackTrace]) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
@@ -18,11 +18,11 @@ class DioNoResponseErrorHandler {
         logWarning('RemoteExceptionThrower: connection error');
         throw ConnectionError(message: error.message);
       default:
-        _handleUnknownUnderlying(error.error);
+        _handleUnknownUnderlying(error.error, stackTrace);
     }
   }
 
-  void _handleUnknownUnderlying(dynamic underlyingError) {
+  void _handleUnknownUnderlying(dynamic underlyingError, [StackTrace? stackTrace]) {
     if (underlyingError is SocketException) {
       logWarning('RemoteExceptionThrower: socket error');
       throw const SocketError();
@@ -30,18 +30,19 @@ class DioNoResponseErrorHandler {
     if (underlyingError is OAuthAuthorizationError) {
       throw underlyingError;
     }
-    _throwUnknownRemoteException(underlyingError);
+    _throwUnknownRemoteException(underlyingError, stackTrace);
   }
 
-  void _throwUnknownRemoteException(dynamic underlyingError) {
+  void _throwUnknownRemoteException(dynamic underlyingError, [StackTrace? stackTrace]) {
     if (underlyingError != null) {
       logError(
         'RemoteExceptionThrower: unrecognised underlying error',
         exception: underlyingError,
+        stackTrace: stackTrace,
       );
       throw UnknownRemoteException(error: underlyingError);
     }
-    logError('RemoteExceptionThrower: unrecognised DioException with no response or underlying error');
+    logError('RemoteExceptionThrower: unrecognised DioException with no response or underlying error', stackTrace: stackTrace);
     throw const UnknownRemoteException();
   }
 }
