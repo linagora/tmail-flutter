@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -239,6 +240,19 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           menuItem: AccountMenuItem.signOut,
           appLocalizations: appLocalizations,
         ),
+        // TODO(sentry-test): Remove after Sentry source-map verification
+        if (PlatformInfo.isWeb)
+          ...[
+            divider,
+            ListTile(
+              leading: const Icon(Icons.bug_report, color: Colors.orange),
+              title: const Text(
+                '[DEV] Test Sentry source maps',
+                style: TextStyle(color: Colors.orange),
+              ),
+              onTap: () => controller.triggerSentryTest(),
+            ),
+          ],
       ]),
     );
   }
