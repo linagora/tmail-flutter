@@ -85,7 +85,7 @@ done
 
 wait
 
-# For test team mailbox — create first, then add members sequentially
+# For test team mailbox — create first, then add members in parallel
 curl -XPUT http://localhost:8000/domains/example.com/team-mailboxes/bob-guests
 curl -XPUT "http://localhost:8000/domains/example.com/team-mailboxes/bob-guests/members/bob@example.com?role=member" &
 curl -XPUT "http://localhost:8000/domains/example.com/team-mailboxes/bob-guests/members/alice@example.com?role=member" &

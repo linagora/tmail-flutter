@@ -20,9 +20,15 @@ sed -i "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
 sed -i "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
 
 echo "Starting tmail-backend..."
-docker compose up -d tmail-backend --quiet-pull 2>/dev/null
-
+docker compose up -d tmail-backend --quiet-pull
+# Cap the wait so a stuck backend fails fast instead of consuming the runner timeout.
+deadline=$(( SECONDS + 180 ))
 until docker compose logs tmail-backend 2>/dev/null | grep -qi "JAMES server started"; do
+    if (( SECONDS >= deadline )); then
+        echo "tmail-backend did not start within 180s; recent logs:"
+        docker compose logs --tail=200 tmail-backend
+        exit 1
+    fi
     echo "Waiting for tmail-backend..."
     sleep 2
 done
