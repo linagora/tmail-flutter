@@ -1,3 +1,20 @@
+## [0.28.9] - 2026-05-05
+
+### Added
+- TF-4269 Integrate Sentry into iOS NSE with automated dSYM upload
+- TF-4363 [Thread] Display by collapsed thread in search
+- [ADR-0078] Unified logging pipeline with Sentry handlers and breadcrumbs
+- [ADR-0080] Patrol web integration test setup
+- [ADR-0081] Patrol web test architecture
+- [ADR-0082] Patrol web test migration guide
+- [ADR-0083] Patrol web test migration plan
+- [ADR-0084] Sentry release version strategy for mobile
+- [ADR-0086] Android composer draft loss on background
+
+### Fixed
+- TF-4475 Fix mobile misplaced inline when picked
+- [ADR-0076] Reduce Sentry noise with targeted error reporting
+
 ## [0.28.3] - 2026-04-17
 
 ### Added
