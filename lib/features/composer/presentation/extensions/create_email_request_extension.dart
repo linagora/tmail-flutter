@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/identity
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -230,6 +231,23 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       accountId,
       createEmailRequest(emailObject: emailObject),
       createMailboxRequest()
+    );
+  }
+
+  ComposerCache generateComposerCache({
+    required Email emailCreated,
+  }) {
+    return ComposerCache(
+      email: emailCreated,
+      hasRequestReadReceipt: hasRequestReadReceipt,
+      isMarkAsImportant: isMarkAsImportant,
+      displayMode: displayMode,
+      composerIndex: composerIndex,
+      composerId: composerId,
+      draftHash: savedDraftHash,
+      actionType: savedActionType,
+      draftEmailId: draftsEmailId,
+      templateEmailId: templateEmailId,
     );
   }
 }

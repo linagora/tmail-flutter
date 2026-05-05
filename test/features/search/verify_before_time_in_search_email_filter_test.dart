@@ -47,11 +47,11 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cach
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
@@ -146,7 +146,7 @@ const fallbackGenerators = {
   MockSpec<MarkAsEmailReadInteractor>(),
   MockSpec<DeleteEmailPermanentlyInteractor>(),
   MockSpec<MarkAsMailboxReadInteractor>(),
-  MockSpec<GetComposerCacheOnWebInteractor>(),
+  MockSpec<GetAllComposerCacheInteractor>(),
   MockSpec<MarkAsMultipleEmailReadInteractor>(),
   MockSpec<MarkAsStarMultipleEmailInteractor>(),
   MockSpec<MoveMultipleEmailToMailboxInteractor>(),
@@ -163,8 +163,8 @@ const fallbackGenerators = {
   MockSpec<RestoredDeletedMessageInteractor>(),
   MockSpec<GetRestoredDeletedMessageInterator>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
-  MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
-  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
+  MockSpec<RemoveAllComposerCacheInteractor>(),
+  MockSpec<RemoveComposerCacheByIdInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
@@ -228,7 +228,7 @@ void main() {
   late MockMoveToMailboxInteractor moveToMailboxInteractor;
   late MockDeleteEmailPermanentlyInteractor deleteEmailPermanentlyInteractor;
   late MockMarkAsMailboxReadInteractor markAsMailboxReadInteractor;
-  late MockGetComposerCacheOnWebInteractor getEmailCacheOnWebInteractor;
+  late MockGetAllComposerCacheInteractor getAllComposerCacheInteractor;
   late MockGetIdentityCacheOnWebInteractor getIdentityCacheOnWebInteractor;
   late MockMarkAsEmailReadInteractor markAsEmailReadInteractor;
   late MockMarkAsStarEmailInteractor markAsStarEmailInteractor;
@@ -247,8 +247,8 @@ void main() {
   late MockUnsubscribeEmailInteractor unsubscribeEmailInteractor;
   late MockRestoredDeletedMessageInteractor restoreDeletedMessageInteractor;
   late MockGetRestoredDeletedMessageInterator getRestoredDeletedMessageInteractor;
-  late MockRemoveAllComposerCacheOnWebInteractor removeAllComposerCacheOnWebInteractor;
-  late MockRemoveComposerCacheByIdOnWebInteractor removeComposerCacheByIdOnWebInteractor;
+  late MockRemoveAllComposerCacheInteractor removeAllComposerCacheInteractor;
+  late MockRemoveComposerCacheByIdInteractor removeComposerCacheByIdOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
   late MockClearMailboxInteractor clearMailboxInteractor;
   late MockGetAuthenticationInfoInteractor getAuthenticationInfoInteractor;
@@ -325,7 +325,7 @@ void main() {
     moveToMailboxInteractor = MockMoveToMailboxInteractor();
     deleteEmailPermanentlyInteractor = MockDeleteEmailPermanentlyInteractor();
     markAsMailboxReadInteractor = MockMarkAsMailboxReadInteractor();
-    getEmailCacheOnWebInteractor = MockGetComposerCacheOnWebInteractor();
+    getAllComposerCacheInteractor = MockGetAllComposerCacheInteractor();
     getIdentityCacheOnWebInteractor = MockGetIdentityCacheOnWebInteractor();
     markAsEmailReadInteractor = MockMarkAsEmailReadInteractor();
     markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
@@ -344,8 +344,8 @@ void main() {
     unsubscribeEmailInteractor = MockUnsubscribeEmailInteractor();
     restoreDeletedMessageInteractor = MockRestoredDeletedMessageInteractor();
     getRestoredDeletedMessageInteractor = MockGetRestoredDeletedMessageInterator();
-    removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
-    removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
+    removeAllComposerCacheInteractor = MockRemoveAllComposerCacheInteractor();
+    removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     clearMailboxInteractor = MockClearMailboxInteractor();
     getAuthenticationInfoInteractor = MockGetAuthenticationInfoInteractor();
@@ -379,7 +379,7 @@ void main() {
       moveToMailboxInteractor,
       deleteEmailPermanentlyInteractor,
       markAsMailboxReadInteractor,
-      getEmailCacheOnWebInteractor,
+      getAllComposerCacheInteractor,
       getIdentityCacheOnWebInteractor,
       markAsEmailReadInteractor,
       markAsStarEmailInteractor,
@@ -399,7 +399,7 @@ void main() {
       unsubscribeEmailInteractor,
       restoreDeletedMessageInteractor,
       getRestoredDeletedMessageInteractor,
-      removeAllComposerCacheOnWebInteractor,
+      removeAllComposerCacheInteractor,
       removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
       clearMailboxInteractor,

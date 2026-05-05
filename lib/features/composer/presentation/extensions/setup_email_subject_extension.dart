@@ -8,37 +8,24 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 extension SetupEmailSubjectExtension on ComposerController {
 
   void setupEmailSubject(ComposerArguments arguments) {
-    String subject = '';
-
-    switch(currentEmailActionType!) {
-      case EmailActionType.editAsNewEmail:
-      case EmailActionType.editDraft:
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-      case EmailActionType.forward:
-      case EmailActionType.reopenComposerBrowser:
-        subject = arguments.presentationEmail!.getEmailTitle().trim();
-        break;
-      case EmailActionType.editSendingEmail:
-        subject = arguments.sendingEmail!.presentationEmail.getEmailTitle().trim();
-        break;
-      case EmailActionType.composeFromMailtoUri:
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-        subject = arguments.subject ?? '';
-        break;
-      default:
-        break;
-    }
-
-    final newSubject = currentEmailActionType!.getSubjectComposer(
-      currentContext,
-      subject,
-    );
-
+    final actionType = currentEmailActionType;
+    if (actionType == null) return;
+    final subject = _resolveRawSubject(arguments, actionType);
+    final newSubject = actionType.getSubjectComposer(currentContext, subject);
     if (newSubject.isNotEmpty) {
       setSubjectEmail(newSubject);
       subjectEmailInputController.text = newSubject;
     }
+  }
+
+  String _resolveRawSubject(ComposerArguments arguments, EmailActionType actionType) {
+    if (actionType == EmailActionType.editSendingEmail) {
+      return arguments.sendingEmail?.presentationEmail.getEmailTitle().trim() ?? '';
+    }
+    if (actionType == EmailActionType.composeFromMailtoUri ||
+        actionType == EmailActionType.composeFromUnsubscribeMailtoLink) {
+      return arguments.subject ?? '';
+    }
+    return arguments.presentationEmail?.getEmailTitle().trim() ?? '';
   }
 }

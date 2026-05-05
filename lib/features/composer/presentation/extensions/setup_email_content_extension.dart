@@ -5,6 +5,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
@@ -17,150 +19,180 @@ import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/download/domain/exceptions/download_attachment_exceptions.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension SetupEmailContentExtension on ComposerController {
 
   Future<void> setupEmailContent(ComposerArguments arguments) async {
-    switch(currentEmailActionType) {
-      case EmailActionType.editAsNewEmail:
-      case EmailActionType.editDraft:
-        await _getEmailContent(
-          arguments,
-          transformConfiguration: TransformConfiguration.forEditDraftsEmail(),
-          additionalProperties: Properties({
-            IndividualHeaderIdentifier.identityHeader.value,
-          }),
-        );
-        break;
-      case EmailActionType.editSendingEmail:
-        final sendingEmail = arguments.sendingEmail;
-        final successState = GetEmailContentSuccess(
-          htmlEmailContent: sendingEmail?.presentationEmail.emailContentList.asHtmlString ?? '',
-          emailCurrent: arguments.sendingEmail?.email,
-        );
-        if (PlatformInfo.isWeb) {
-          setTextEditorWeb(successState.htmlEmailContent);
-        }
-        emailContentsViewState.value = Right(successState);
-        break;
-      case EmailActionType.composeFromContentShared:
-        final successState = GetEmailContentSuccess(htmlEmailContent: arguments.emailContents ?? '');
-        if (PlatformInfo.isWeb) {
-          setTextEditorWeb(successState.htmlEmailContent);
-        }
-        emailContentsViewState.value = Right(successState);
-        break;
-      case EmailActionType.composeFromMailtoUri:
-        final successState = GetEmailContentSuccess(htmlEmailContent: arguments.body ?? '');
-        if (PlatformInfo.isWeb) {
-          setTextEditorWeb(successState.htmlEmailContent);
-        }
-        emailContentsViewState.value = Right(successState);
-        break;
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-      case EmailActionType.forward:
-        if (arguments.emailContents?.trim().isNotEmpty != true) {
-          await _getEmailContent(
-            arguments,
-            transformConfiguration: TransformConfiguration.forReplyForwardEmptyEmail(),
-          );
-        } else {
-          final resultState = await transformHtmlEmailContentInteractor.execute(
-            arguments.emailContents ?? '',
-            TransformConfiguration.forReplyForwardEmail(),
-          ).last;
-
-          final uiState = resultState.fold((failure) => failure, (success) => success);
-
-          if (uiState is TransformHtmlEmailContentSuccess) {
-            final emailContent = uiState.htmlContent;
-
-            if (PlatformInfo.isWeb &&
-                currentContext != null &&
-                arguments.presentationEmail != null) {
-              final emailContentQuoted = getEmailContentQuotedAsHtml(
-                locale: Localizations.localeOf(currentContext!),
-                appLocalizations: AppLocalizations.of(currentContext!),
-                emailContent: emailContent,
-                emailActionType: currentEmailActionType!,
-                presentationEmail: arguments.presentationEmail!,
-              );
-
-              setTextEditorWeb(emailContentQuoted);
-            }
-
-            final successState = GetEmailContentSuccess(htmlEmailContent: emailContent);
-            emailContentsViewState.value = Right(successState);
-          } else if (uiState is TransformHtmlEmailContentFailure) {
-            emailContentsViewState.value = Left(GetEmailContentFailure(uiState.exception));
-            consumeState(Stream.value(Left(GetEmailContentFailure(uiState.exception))));
-          } else {
-            emailContentsViewState.value = Right(LoadEmailContentCompleted());
-          }
-        }
-        break;
-      case EmailActionType.reopenComposerBrowser:
-        final inlineImages = arguments.inlineImages ?? [];
-        final content = arguments.emailContents ?? '';
-        final displayMode = arguments.displayMode;
-
-        if (content.trim().isEmpty) {
-          emailContentsViewState.value = Left(GetEmailContentFailure(EmptyEmailContentException()));
-        } else if (displayMode.isNotContentVisible() && inlineImages.isEmpty) {
-          final successState = GetEmailContentSuccess(htmlEmailContent: content);
-          setTextEditorWeb(content);
-          emailContentsViewState.value = Right(successState);
-        } else {
-          final accountId = mailboxDashBoardController.accountId.value;
-          final downloadUrl = mailboxDashBoardController.baseDownloadUrl;
-
-          if (restoreEmailInlineImagesInteractor == null ||
-              accountId == null ||
-              downloadUrl.isEmpty) {
-            emailContentsViewState.value = Left(GetEmailContentFailure(NotFoundAccountIdException()));
-            return;
-          }
-
-          final resultState = await restoreEmailInlineImagesInteractor!.execute(
-            htmlContent: content,
-            transformConfiguration: TransformConfiguration.forRestoreEmail(),
-            mapUrlDownloadCID: inlineImages.toMapCidImageDownloadUrl(
-              accountId: accountId,
-              downloadUrl: downloadUrl,
-            ),
-          ).last;
-
-          final uiState = resultState.fold((failure) => failure, (success) => success);
-
-          if (uiState is RestoreEmailInlineImagesSuccess) {
-            final emailContent = uiState.emailContent;
-            final successState = GetEmailContentSuccess(htmlEmailContent: emailContent);
-            setTextEditorWeb(emailContent);
-            emailContentsViewState.value = Right(successState);
-          } else if (uiState is RestoreEmailInlineImagesFailure) {
-            emailContentsViewState.value = Left(GetEmailContentFailure(uiState.exception));
-            consumeState(Stream.value(Left(GetEmailContentFailure(uiState.exception))));
-          } else {
-            emailContentsViewState.value = Right(LoadEmailContentCompleted());
-          }
-        }
-        break;
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-        final successState = GetEmailContentSuccess(htmlEmailContent: arguments.body ?? '');
-        if (PlatformInfo.isWeb) {
-          setTextEditorWeb(successState.htmlEmailContent);
-        }
-        emailContentsViewState.value = Right(successState);
-        break;
-      default:
-        emailContentsViewState.value = Right(LoadEmailContentCompleted());
-        break;
+    if (_isEditDraftContentAction) {
+      await _getEmailContent(
+        arguments,
+        transformConfiguration: TransformConfiguration.forEditDraftsEmail(),
+        additionalProperties: Properties({IndividualHeaderIdentifier.identityHeader.value}),
+      );
+    } else if (currentEmailActionType == EmailActionType.editSendingEmail) {
+      _loadSendingEmailContent(arguments);
+    } else if (currentEmailActionType == EmailActionType.composeFromContentShared) {
+      _loadSimpleEmailContent(arguments.emailContents ?? '');
+    } else if (_isMailtoContentAction) {
+      _loadSimpleEmailContent(arguments.body ?? '');
+    } else if (_isReplyForwardContentAction) {
+      await _loadReplyForwardEmailContent(arguments);
+    } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+      await _loadReopenBrowserEmailContent(arguments);
+    } else {
+      emailContentsViewState.value = Right(LoadEmailContentCompleted());
     }
+  }
+
+  bool get _isEditDraftContentAction => const {
+    EmailActionType.editAsNewEmail,
+    EmailActionType.editDraft,
+  }.contains(currentEmailActionType);
+
+  bool get _isMailtoContentAction => const {
+    EmailActionType.composeFromMailtoUri,
+    EmailActionType.composeFromUnsubscribeMailtoLink,
+  }.contains(currentEmailActionType);
+
+  bool get _isReplyForwardContentAction => const {
+    EmailActionType.reply,
+    EmailActionType.replyToList,
+    EmailActionType.replyAll,
+    EmailActionType.forward,
+  }.contains(currentEmailActionType);
+
+  void _loadSendingEmailContent(ComposerArguments arguments) {
+    final sendingEmail = arguments.sendingEmail;
+    final htmlContent = sendingEmail?.presentationEmail.emailContentList.asHtmlString ?? '';
+    final successState = GetEmailContentSuccess(
+      htmlEmailContent: htmlContent,
+      emailCurrent: sendingEmail?.email,
+    );
+    if (PlatformInfo.isWeb) setTextEditorWeb(htmlContent);
+    emailContentsViewState.value = Right(successState);
+  }
+
+  void _loadSimpleEmailContent(String content) {
+    if (PlatformInfo.isWeb) setTextEditorWeb(content);
+    emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: content));
+  }
+
+  Future<void> _loadReplyForwardEmailContent(ComposerArguments arguments) async {
+    if (arguments.emailContents?.trim().isEmpty ?? true) {
+      await _getEmailContent(
+        arguments,
+        transformConfiguration: TransformConfiguration.forReplyForwardEmptyEmail(),
+      );
+      return;
+    }
+
+    final resultState = await transformHtmlEmailContentInteractor.execute(
+      arguments.emailContents ?? '',
+      TransformConfiguration.forReplyForwardEmail(),
+    ).last;
+
+    final uiState = resultState.fold((f) => f, (s) => s);
+
+    if (uiState is TransformHtmlEmailContentSuccess) {
+      _applyTransformedReplyContent(uiState.htmlContent, arguments);
+    } else if (uiState is TransformHtmlEmailContentFailure) {
+      _setEmailContentFailure(GetEmailContentFailure(uiState.exception));
+    } else {
+      emailContentsViewState.value = Right(LoadEmailContentCompleted());
+    }
+  }
+
+  void _applyTransformedReplyContent(String emailContent, ComposerArguments arguments) {
+    _applyWebQuotingIfNeeded(emailContent, arguments);
+    emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: emailContent));
+  }
+
+  void _applyWebQuotingIfNeeded(String emailContent, ComposerArguments arguments) {
+    if (!PlatformInfo.isWeb) return;
+    bool cannotApplyQuoting = currentContext == null ||
+        arguments.presentationEmail == null ||
+        currentEmailActionType == null;
+    if (cannotApplyQuoting) {
+      return;
+    }
+    final emailContentQuoted = getEmailContentQuotedAsHtml(
+      locale: Localizations.localeOf(currentContext!),
+      appLocalizations: AppLocalizations.of(currentContext!),
+      emailContent: emailContent,
+      emailActionType: currentEmailActionType!,
+      presentationEmail: arguments.presentationEmail!,
+    );
+    setTextEditorWeb(emailContentQuoted);
+  }
+
+  Future<void> _loadReopenBrowserEmailContent(ComposerArguments arguments) async {
+    final content = arguments.emailContents ?? '';
+    final inlineImages = arguments.inlineImages ?? [];
+    final displayMode = arguments.displayMode;
+
+    if (content.trim().isEmpty) {
+      emailContentsViewState.value = Left(GetEmailContentFailure(EmptyEmailContentException()));
+      return;
+    }
+
+    final canSkipInlineRestoration = displayMode.isNotContentVisible() && inlineImages.isEmpty;
+    if (canSkipInlineRestoration) {
+      setTextEditorWeb(content);
+      emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: content));
+      return;
+    }
+
+    await _restoreInlineImages(content, inlineImages);
+  }
+
+  Future<void> _restoreInlineImages(String content, List<Attachment> inlineImages) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final downloadUrl = mailboxDashBoardController.baseDownloadUrl;
+
+    if (restoreEmailInlineImagesInteractor == null) {
+      emailContentsViewState.value = Left(GetEmailContentFailure(const InteractorNotInitialized()));
+      return;
+    }
+
+    if (accountId == null) {
+      emailContentsViewState.value = Left(GetEmailContentFailure(NotFoundAccountIdException()));
+      return;
+    }
+
+    if (downloadUrl.isEmpty) {
+      emailContentsViewState.value = Left(GetEmailContentFailure(DownloadUrlIsNullException()));
+      return;
+    }
+
+    final resultState = await restoreEmailInlineImagesInteractor!.execute(
+      htmlContent: content,
+      transformConfiguration: TransformConfiguration.forRestoreEmail(),
+      mapUrlDownloadCID: inlineImages.toMapCidImageDownloadUrl(
+        accountId: accountId,
+        downloadUrl: downloadUrl,
+      ),
+    ).last;
+
+    final uiState = resultState.fold((f) => f, (s) => s);
+
+    if (uiState is RestoreEmailInlineImagesSuccess) {
+      setTextEditorWeb(uiState.emailContent);
+      emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: uiState.emailContent));
+    } else if (uiState is RestoreEmailInlineImagesFailure) {
+      _setEmailContentFailure(GetEmailContentFailure(uiState.exception));
+    } else {
+      emailContentsViewState.value = Right(LoadEmailContentCompleted());
+    }
+  }
+
+  void _setEmailContentFailure(GetEmailContentFailure failure) {
+    emailContentsViewState.value = Left(failure);
+    consumeState(Stream.value(Left(failure)));
   }
 
   Future<void> _getEmailContent(
@@ -196,47 +228,46 @@ extension SetupEmailContentExtension on ComposerController {
       additionalProperties: additionalProperties,
     ).last;
 
-    final uiState = resultState.fold((failure) => failure, (success) => success);
+    final uiState = resultState.fold((f) => f, (s) => s);
 
     if (uiState is GetEmailContentSuccess) {
-      initAttachmentsAndInlineImages(
+      _setupEmailContentState(
         attachments: uiState.attachments,
         inlineImages: uiState.inlineImages,
+        hasRequestReadReceipt: uiState.emailCurrent?.hasRequestReadReceipt,
+        identityIdFromHeader: uiState.emailCurrent?.identityIdFromHeader,
       );
-
-      if (currentEmailActionType == EmailActionType.editDraft ||
-          currentEmailActionType == EmailActionType.editAsNewEmail) {
-        setupEmailRequestReadReceiptFlag(
-          uiState.emailCurrent!.hasRequestReadReceipt,
-        );
-        setupSelectedIdentityForEditDraft(
-          uiState.emailCurrent!.identityIdFromHeader,
-        );
-      }
-
       emailContentsViewState.value = Right(uiState);
     } else if (uiState is GetEmailContentFromCacheSuccess) {
-      initAttachmentsAndInlineImages(
+      _setupEmailContentState(
         attachments: uiState.attachments,
         inlineImages: uiState.inlineImages,
+        hasRequestReadReceipt: uiState.emailCurrent.hasRequestReadReceipt,
+        identityIdFromHeader: uiState.emailCurrent.identityIdFromHeader,
       );
-
-      if (currentEmailActionType == EmailActionType.editDraft
-          || currentEmailActionType == EmailActionType.editAsNewEmail) {
-        setupEmailRequestReadReceiptFlag(
-          uiState.emailCurrent.hasRequestReadReceipt,
-        );
-        setupSelectedIdentityForEditDraft(
-          uiState.emailCurrent.identityIdFromHeader,
-        );
-      }
-
       emailContentsViewState.value = Right(uiState);
     } else if (uiState is GetEmailContentFailure) {
-      emailContentsViewState.value = Left(uiState);
-      consumeState(Stream.value(Left(uiState)));
+      _setEmailContentFailure(uiState);
     } else {
       emailContentsViewState.value = Right(LoadEmailContentCompleted());
+    }
+  }
+
+  void _setupEmailContentState({
+    required List<Attachment>? attachments,
+    required List<Attachment>? inlineImages,
+    bool? hasRequestReadReceipt,
+    IdentityId? identityIdFromHeader,
+  }) {
+    initAttachmentsAndInlineImages(
+      attachments: attachments,
+      inlineImages: inlineImages,
+    );
+    if (_isEditDraftContentAction) {
+      if (hasRequestReadReceipt != null) {
+        setupEmailRequestReadReceiptFlag(hasRequestReadReceipt);
+      }
+      setupSelectedIdentityForEditDraft(identityIdFromHeader);
     }
   }
 }
