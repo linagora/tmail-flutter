@@ -41,6 +41,7 @@ extension EmailActionTypeExtension on EmailActionType {
     EmailActionType.editDraft,
     EmailActionType.editSendingEmail,
     EmailActionType.reopenComposerBrowser,
+    EmailActionType.restoreComposerFromPersistentCache,
     EmailActionType.editAsNewEmail,
     EmailActionType.composeFromMailtoUri,
     EmailActionType.composeFromUnsubscribeMailtoLink,

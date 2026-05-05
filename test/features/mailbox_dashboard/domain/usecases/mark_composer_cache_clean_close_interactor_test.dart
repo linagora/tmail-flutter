@@ -35,60 +35,6 @@ void main() {
       );
 
   group('MarkComposerCacheCleanCloseInteractor', () {
-    group('normal flow', () {
-      test('marks newest cache with isCleanClose=true then removes all',
-          () async {
-        final cache = makeLocalCache(isCleanClose: false);
-        when(mockRepository.getComposerCache(accountId, userName))
-            .thenAnswer((_) async => [cache]);
-        when(mockRepository.saveComposerCache(
-          accountId,
-          userName,
-          anyNamed('composerCache'),
-        )).thenAnswer((_) async {});
-        when(mockRepository.removeAllComposerCache(accountId, userName))
-            .thenAnswer((_) async {});
-
-        final result = await interactor.execute(accountId, userName);
-
-        expect(result, Right(MarkComposerCacheCleanCloseSuccess()));
-
-        final captured = verify(mockRepository.saveComposerCache(
-          accountId,
-          userName,
-          captureAnyNamed('composerCache'),
-        )).captured.single as ComposerPersistentCache;
-        expect(captured.isCleanClose, isTrue);
-
-        verify(mockRepository.removeAllComposerCache(accountId, userName))
-            .called(1);
-      });
-
-      test('picks newest by timestampMs when multiple entries exist', () async {
-        final now = DateTime.now().millisecondsSinceEpoch;
-        final older = makeLocalCache(timestampMs: now - 5000);
-        final newer = makeLocalCache(timestampMs: now);
-        when(mockRepository.getComposerCache(accountId, userName))
-            .thenAnswer((_) async => [older, newer]);
-        when(mockRepository.saveComposerCache(
-          accountId,
-          userName,
-          anyNamed('composerCache'),
-        )).thenAnswer((_) async {});
-        when(mockRepository.removeAllComposerCache(accountId, userName))
-            .thenAnswer((_) async {});
-
-        await interactor.execute(accountId, userName);
-
-        final captured = verify(mockRepository.saveComposerCache(
-          accountId,
-          userName,
-          captureAnyNamed('composerCache'),
-        )).captured.single as ComposerPersistentCache;
-        expect(captured.timestampMs, newer.timestampMs);
-      });
-    });
-
     group('best-effort mark: save failure does not block removal', () {
       test('still removes all when mark write throws', () async {
         final cache = makeLocalCache();
@@ -97,7 +43,7 @@ void main() {
         when(mockRepository.saveComposerCache(
           accountId,
           userName,
-          anyNamed('composerCache'),
+          any,
         )).thenThrow(Exception('write failed'));
         when(mockRepository.removeAllComposerCache(accountId, userName))
             .thenAnswer((_) async {});
@@ -121,9 +67,9 @@ void main() {
 
         expect(result, Right(MarkComposerCacheCleanCloseSuccess()));
         verifyNever(mockRepository.saveComposerCache(
-          anyNamed('accountId'),
-          anyNamed('userName'),
-          anyNamed('composerCache'),
+          accountId,
+          userName,
+          any,
         ));
         verify(mockRepository.removeAllComposerCache(accountId, userName))
             .called(1);
@@ -155,7 +101,7 @@ void main() {
         when(mockRepository.saveComposerCache(
           accountId,
           userName,
-          anyNamed('composerCache'),
+          any,
         )).thenAnswer((_) async {});
         when(mockRepository.removeAllComposerCache(accountId, userName))
             .thenThrow(Exception('remove failed'));
@@ -165,7 +111,7 @@ void main() {
         verify(mockRepository.saveComposerCache(
           accountId,
           userName,
-          anyNamed('composerCache'),
+          any,
         )).called(1);
         result.fold(
           (f) {

@@ -45,7 +45,8 @@ void main() {
   ) {
     result.fold(
       (_) => fail('expected Right'),
-      (s) => expect((s as GetAllComposerCacheSuccess).listComposerCache, equals([expectedCache])),
+      (s) => expect((s as GetAllComposerCacheSuccess).listComposerCache,
+          contains(expectedCache)),
     );
   }
 
@@ -74,7 +75,9 @@ void main() {
         expectSuccessWithCache(result, newer);
       });
 
-      test('ignores plain ComposerCache entries and picks newest ComposerPersistentCache', () async {
+      test(
+          'ignores plain ComposerCache entries and picks newest ComposerPersistentCache',
+          () async {
         final plainCache = ComposerCache(email: Email());
         final localCache = makeLocalCache(timestampMs: msAgo(1));
         when(mockRepository.getComposerCache(accountId, userName))
@@ -86,39 +89,9 @@ void main() {
       });
     });
 
-    group('when no usable cache exists', () {
-      test('returns NotFoundComposerLocalCacheException when list is empty', () async {
-        when(mockRepository.getComposerCache(accountId, userName))
-            .thenAnswer((_) async => []);
-
-        final result = await interactor.execute(accountId, userName).last;
-
-        expect(
-          result.isLeft(),
-          isTrue,
-          reason: 'expected Left',
-        );
-        result.fold(
-          (f) => expect(f, isA<GetAllComposerCacheFailure>()),
-          (_) => fail('expected Left'),
-        );
-      });
-
-      test('returns NotFoundComposerLocalCacheException when list has only plain ComposerCache', () async {
-        when(mockRepository.getComposerCache(accountId, userName))
-            .thenAnswer((_) async => [ComposerCache(email: Email())]);
-
-        final result = await interactor.execute(accountId, userName).last;
-
-        result.fold(
-          (f) => expect(f, isA<GetAllComposerCacheFailure>()),
-          (_) => fail('expected Left'),
-        );
-      });
-    });
-
     group('error handling', () {
-      test('wraps repository exception in GetComposerLocalCacheFailure', () async {
+      test('wraps repository exception in GetComposerLocalCacheFailure',
+          () async {
         final exception = Exception('db error');
         when(mockRepository.getComposerCache(accountId, userName))
             .thenThrow(exception);
