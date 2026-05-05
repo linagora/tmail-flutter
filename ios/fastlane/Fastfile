@@ -55,7 +55,7 @@ platform :ios do
     # This is separate from increment_version_number (which stays numeric for
     # App Store compatibility). Each dart-define must be base64-encoded.
     require 'base64'
-    pubspec = File.read("../pubspec.yaml")
+    pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
     sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
     sentry_release_define = Base64.strict_encode64("SENTRY_RELEASE=#{sentry_release}")
     build_app(
