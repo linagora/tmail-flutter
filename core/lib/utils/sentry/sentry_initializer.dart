@@ -90,7 +90,31 @@ class SentryInitializer {
     Hint? hint,
   ) async {
     event.request = _sanitizeRequest(event.request);
+    event.exceptions = _deminifyExceptions(event.exceptions);
     return event;
+  }
+
+  static List<SentryException>? _deminifyExceptions(
+    List<SentryException>? exceptions,
+  ) {
+    if (exceptions == null) return null;
+
+    return exceptions.map((e) {
+      if (e.type?.startsWith('minified:') == true) {
+        final rawValue = e.value?.trim() ?? '';
+        final extractedType = RegExp(r'^([A-Za-z_][A-Za-z0-9_]*)\s*:')
+                .firstMatch(rawValue)
+                ?.group(1) ??
+            RegExp(r"Instance of '([^']+)'").firstMatch(rawValue)?.group(1);
+        if (extractedType != null &&
+            extractedType.isNotEmpty &&
+            extractedType != 'minified' &&
+            !extractedType.startsWith('minified:')) {
+          e.type = extractedType;
+        }
+      }
+      return e;
+    }).toList();
   }
 
   static SentryRequest? _sanitizeRequest(SentryRequest? req) {

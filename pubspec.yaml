@@ -455,7 +455,7 @@ patrol:
 sentry:
   upload_debug_symbols: false
   upload_source_maps: true
-  upload_sources: false
+  upload_sources: true
   wait_for_processing: true
   log_level: debug
   ignore_missing: true
