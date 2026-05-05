@@ -241,19 +241,19 @@ w=w.a
 v=A.r(p).h("V.S")
 v.a(w.get(p)).toString
 A.z(d,C.e,n).toString
-u=B.cQX(!0,"assets/images/ic_jmap_standard.svg",E.pt,48,A.u("JMAP standard",o,"jmapStandard",o,o),$.aQ().bh(C.n,24,C.C))
+u=B.cQX(!0,"assets/images/ic_jmap_standard.svg",E.pu,48,A.u("JMAP standard",o,"jmapStandard",o,o),$.aQ().bh(C.n,24,C.C))
 A.w(p)
 v.a(w.get(p)).toString
 A.z(d,C.e,n).toString
-t=B.cQX(!0,"assets/images/ic_encrypted.svg",E.pt,48,A.u("Encrypted mailbox",o,"encryptedMailbox",o,o),$.aQ().bh(C.n,24,C.C))
+t=B.cQX(!0,"assets/images/ic_encrypted.svg",E.pu,48,A.u("Encrypted mailbox",o,"encryptedMailbox",o,o),$.aQ().bh(C.n,24,C.C))
 A.w(p)
 v.a(w.get(p)).toString
 A.z(d,C.e,n).toString
-s=B.cQX(!0,"assets/images/ic_team.svg",E.pt,48,A.u("Manage email as a team",o,"manageEmailAsATeam",o,o),$.aQ().bh(C.n,24,C.C))
+s=B.cQX(!0,"assets/images/ic_team.svg",E.pu,48,A.u("Manage email as a team",o,"manageEmailAsATeam",o,o),$.aQ().bh(C.n,24,C.C))
 A.w(p)
 v.a(w.get(p)).toString
 A.z(d,C.e,n).toString
-r=B.cQX(!0,"assets/images/ic_integration.svg",E.pt,48,A.u("Multiple integrations",o,"multipleIntegrations",o,o),$.aQ().bh(C.n,24,C.C))
+r=B.cQX(!0,"assets/images/ic_integration.svg",E.pu,48,A.u("Multiple integrations",o,"multipleIntegrations",o,o),$.aQ().bh(C.n,24,C.C))
 A.w(p)
 v.a(w.get(p)).toString
 q=y.p
@@ -287,7 +287,7 @@ t=q.e
 s=q.f
 if(s==null)s=$.aQ().eN(C.i2,16)
 r=q.r
-return A.iT(p,p,p,r==null?D.apN:r,p,p,p,p,!0,o,p,C.nH,p,p,p,C.fO,!0,p,C.l4,p,p,x,p,p,p,p,p,p,p,p,s,t,p,p,p,p,p,p,p,u,v,!0,!0,p,p,p,p,p,w,p,p,p,p,p,p,p,p)}}
+return A.iT(p,p,p,r==null?D.apN:r,p,p,p,p,!0,o,p,C.nI,p,p,p,C.fO,!0,p,C.l5,p,p,x,p,p,p,p,p,p,p,p,s,t,p,p,p,p,p,p,p,u,v,!0,!0,p,p,p,p,p,w,p,p,p,p,p,p,p,p)}}
 B.a3_.prototype={
 t(d){var x,w,v=null,u=A.z(d,C.e,y.J)
 u.toString
@@ -323,18 +323,18 @@ $.aQ().bh(C.a_,16,C.C)
 s.Q=$.aQ().bh(C.dK,13,C.C)
 s.y=C.wf
 s.w=D.YX
-s.x=C.nH
+s.x=C.nI
 v=A.c([A.dZ9(!1,p,w,s.cv(),t,q,m,n,o,x,v)],y.p)
 r.a.toString
 p=r.f?"assets/images/ic_eye.svg":"assets/images/ic_eye_off.svg"
-v.push(A.bM(C.t,q,20,q,q,q,p,q,18,q,C.mD,1/0,q,new B.dit(r),q,q,q))
+v.push(A.bM(C.t,q,20,q,q,q,p,q,18,q,C.mE,1/0,q,new B.dit(r),q,q,q))
 return new A.cv(C.fE,q,C.Z,C.F,v,q)},
 p(){this.a.toString
 this.aF()}}
 B.auq.prototype={
 t(d){var x=null
 A.z(d,C.e,y.J).toString
-return A.ij(x,C.I,10,x,x,G.u_,1/0,x,1/0,0,x,this.c,C.kT,A.u("Try again",x,"tryAgain",x,x),C.ac,$.aQ().eN(C.m,16),x,A.Q(d,C.w,y.w).w.a.a)}}
+return A.ij(x,C.I,10,x,x,G.u_,1/0,x,1/0,0,x,this.c,C.kU,A.u("Try again",x,"tryAgain",x,x),C.ac,$.aQ().eN(C.m,16),x,A.Q(d,C.w,y.w).w.a.a)}}
 var z=a.updateTypes(["a3_()","Tj<ir>(R,ir)"])
 B.d7M.prototype={
 $1(d){return d.ab()},
@@ -523,7 +523,7 @@ D.Z1=new A.Y(C.hv,D.aTE,null)
 D.ajf=new A.F(0.23921568627450981,0.7372549019607844,0.7372549019607844,0.7372549019607844,C.j)
 D.aaj=new A.c7(2,C.U,D.ajf,C.eg,40)
 D.axM=x([D.aaj],A.ap("N<c7>"))
-D.aUW=new A.eb(C.kq,C.M)
+D.aUW=new A.eb(C.kr,C.M)
 D.aX9=new A.iJ(C.m,null,null,D.axM,D.aUW)
 D.b8p=new A.b1("login_loading_icon",y.O)
 D.aYQ=new A.b3(40,40,C.H7,D.b8p)
@@ -532,4 +532,4 @@ D.b7M=new A.b1("credential_input_form",y.O)
 D.b8o=new A.b1("loginSubmitForm",y.O)
 D.b8q=new A.b1("login_password_input",y.O)
 D.b8r=new A.b1("login_username_input",y.O)})()};
-(a=>{a["dn2heJ+YaY+zikoMGfb/GMIBqLI="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["1SsWgDiUhyKSK4V6lysSDZsQt7M="]=a.current})($__dart_deferred_initializers__);
