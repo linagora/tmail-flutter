@@ -91,30 +91,7 @@ class SentryInitializer {
   ) async {
     event.request = _sanitizeRequest(event.request);
     event.exceptions = _deminifyExceptions(event.exceptions);
-
     return event;
-  }
-
-  static SentryRequest? _sanitizeRequest(SentryRequest? req) {
-    if (req == null) return null;
-
-    return SentryRequest(
-      url: req.url,
-      method: req.method,
-      headers: _sanitizeHeaders(req.headers),
-      queryString: req.queryString,
-      cookies: null,
-      data: null,
-    );
-  }
-
-  static Map<String, String> _sanitizeHeaders(Map<String, String> headers) {
-    return Map<String, String>.from(headers)
-      ..removeWhere(
-        (key, _) => _blockedHeaderPatterns.any(
-          (pattern) => key.toLowerCase().contains(pattern),
-        ),
-      );
   }
 
   static List<SentryException>? _deminifyExceptions(
@@ -139,4 +116,27 @@ class SentryInitializer {
       return e;
     }).toList();
   }
+
+  static SentryRequest? _sanitizeRequest(SentryRequest? req) {
+    if (req == null) return null;
+
+    return SentryRequest(
+      url: req.url,
+      method: req.method,
+      headers: _sanitizeHeaders(req.headers),
+      queryString: req.queryString,
+      cookies: null,
+      data: null,
+    );
+  }
+
+  static Map<String, String> _sanitizeHeaders(Map<String, String> headers) {
+    return Map<String, String>.from(headers)
+      ..removeWhere(
+        (key, _) => _blockedHeaderPatterns.any(
+          (pattern) => key.toLowerCase().contains(pattern),
+        ),
+      );
+  }
+
 }
