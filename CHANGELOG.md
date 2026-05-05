@@ -1,3 +1,9 @@
+## [0.28.12] - 2026-05-05
+
+### Changed
+- Upgrade to Xcode 26
+- Fix the fastlane for Android + iOS
+
 ## [0.28.9] - 2026-05-05
 
 ### Added
