@@ -7,62 +7,76 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 extension SetupEmailRecipientsExtension on ComposerController {
 
   void setupEmailRecipients(ComposerArguments arguments) {
-    switch(currentEmailActionType) {
-      case EmailActionType.editAsNewEmail:
-      case EmailActionType.editDraft:
-      case EmailActionType.reopenComposerBrowser:
-        initEmailAddress(
-          presentationEmail: arguments.presentationEmail!,
-          actionType: currentEmailActionType!,
-        );
-        break;
-      case EmailActionType.editSendingEmail:
-        initEmailAddress(
-          presentationEmail: arguments.sendingEmail!.presentationEmail,
-          actionType: currentEmailActionType!,
-        );
-        break;
-      case EmailActionType.composeFromEmailAddress:
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-        final emailAddressOfTo = arguments.listEmailAddress ?? [];
-        if (emailAddressOfTo.isNotEmpty) {
-          listToEmailAddress.addAll(emailAddressOfTo);
-          isInitialRecipient.value = true;
-        }
-        break;
-      case EmailActionType.composeFromMailtoUri:
-        final emailAddressOfTo = arguments.listEmailAddress ?? [];
-        final emailAddressOfCc = arguments.cc ?? [];
-        final emailAddressOfBc = arguments.bcc ?? [];
-
-        if (emailAddressOfTo.isNotEmpty) {
-          listToEmailAddress.addAll(emailAddressOfTo);
-          isInitialRecipient.value = true;
-        }
-
-        if (emailAddressOfCc.isNotEmpty) {
-          listCcEmailAddress = emailAddressOfCc;
-          ccRecipientState.value = PrefixRecipientState.enabled;
-        }
-
-        if (emailAddressOfBc.isNotEmpty) {
-          listBccEmailAddress = emailAddressOfBc;
-          bccRecipientState.value = PrefixRecipientState.enabled;
-        }
-        break;
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-        initEmailAddress(
-          presentationEmail: arguments.presentationEmail!,
-          actionType: currentEmailActionType!,
-          listPost: arguments.listPost,
-        );
-        break;
-      default:
-        break;
+    if (_isDraftLikeRecipientsAction) {
+      initEmailAddress(
+        presentationEmail: arguments.presentationEmail!,
+        actionType: currentEmailActionType!,
+      );
+    } else if (currentEmailActionType == EmailActionType.editSendingEmail) {
+      initEmailAddress(
+        presentationEmail: arguments.sendingEmail!.presentationEmail,
+        actionType: currentEmailActionType!,
+      );
+    } else if (_isDirectToAddressAction) {
+      _setupToAddressOnly(arguments);
+    } else if (_isFullAddressAction) {
+      _setupFullAddressRecipients(arguments);
+    } else if (_isReplyLikeRecipientsAction) {
+      initEmailAddress(
+        presentationEmail: arguments.presentationEmail!,
+        actionType: currentEmailActionType!,
+        listPost: arguments.listPost,
+      );
     }
 
     updateStatusEmailSendButton();
+  }
+
+  bool get _isDraftLikeRecipientsAction => const {
+    EmailActionType.editAsNewEmail,
+    EmailActionType.editDraft,
+    EmailActionType.reopenComposerBrowser,
+  }.contains(currentEmailActionType);
+
+  bool get _isDirectToAddressAction => const {
+    EmailActionType.composeFromEmailAddress,
+    EmailActionType.composeFromUnsubscribeMailtoLink,
+  }.contains(currentEmailActionType);
+
+  bool get _isFullAddressAction => const {
+    EmailActionType.composeFromMailtoUri,
+  }.contains(currentEmailActionType);
+
+  bool get _isReplyLikeRecipientsAction => const {
+    EmailActionType.reply,
+    EmailActionType.replyToList,
+    EmailActionType.replyAll,
+  }.contains(currentEmailActionType);
+
+  void _setupToAddressOnly(ComposerArguments arguments) {
+    final emailAddressOfTo = arguments.listEmailAddress ?? [];
+    if (emailAddressOfTo.isNotEmpty) {
+      listToEmailAddress.addAll(emailAddressOfTo);
+      isInitialRecipient.value = true;
+    }
+  }
+
+  void _setupFullAddressRecipients(ComposerArguments arguments) {
+    final emailAddressOfTo = arguments.listEmailAddress ?? [];
+    final emailAddressOfCc = arguments.cc ?? [];
+    final emailAddressOfBcc = arguments.bcc ?? [];
+
+    if (emailAddressOfTo.isNotEmpty) {
+      listToEmailAddress.addAll(emailAddressOfTo);
+      isInitialRecipient.value = true;
+    }
+    if (emailAddressOfCc.isNotEmpty) {
+      listCcEmailAddress = List.from(emailAddressOfCc);
+      ccRecipientState.value = PrefixRecipientState.enabled;
+    }
+    if (emailAddressOfBcc.isNotEmpty) {
+      listBccEmailAddress = List.from(emailAddressOfBcc);
+      bccRecipientState.value = PrefixRecipientState.enabled;
+    }
   }
 }

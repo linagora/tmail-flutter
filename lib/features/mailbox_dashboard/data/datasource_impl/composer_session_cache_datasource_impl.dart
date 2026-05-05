@@ -7,23 +7,25 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:universal_html/html.dart' as html;
 
-class SessionStorageComposerDatasourceImpl
-    extends SessionStorageComposerDatasource {
-  SessionStorageComposerDatasourceImpl(this._htmlTransform, this._exceptionThrower);
-
+class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
   final HtmlTransform _htmlTransform;
   final ExceptionThrower _exceptionThrower;
 
+  ComposerSessionCacheDatasourceImpl(
+    this._htmlTransform,
+    this._exceptionThrower,
+  );
+
   @override
-  Future<List<ComposerCache>> getComposerCacheOnWeb(
+  Future<List<ComposerCache>> getComposerCache(
     AccountId accountId,
-    UserName userName
-  ) async {
+    UserName userName,
+  ) {
     return Future.sync(() async {
       final keyWithIdentity = TupleKey(
         EmailActionType.reopenComposerBrowser.name,
@@ -45,11 +47,11 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> saveComposerCacheOnWeb({
-    required AccountId accountId,
-    required UserName userName,
-    required ComposerCache composerCache,
-  }) async {
+  Future<void> saveComposerCache(
+    AccountId accountId,
+    UserName userName,
+    ComposerCache composerCache,
+  ) {
     return Future.sync(() {
       final composerCacheKey = TupleKey(
         EmailActionType.reopenComposerBrowser.name,
@@ -57,10 +59,7 @@ class SessionStorageComposerDatasourceImpl
         userName.value,
         composerCache.composerId,
       ).toString();
-      Map<String, String> entries = {
-        composerCacheKey: jsonEncode(composerCache.toJson())
-      };
-      html.window.sessionStorage.addAll(entries);
+      html.window.sessionStorage[composerCacheKey] = jsonEncode(composerCache.toJson());
     }).catchError(_exceptionThrower.throwException);
   }
   
@@ -78,29 +77,39 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> removeAllComposerCacheOnWeb(AccountId accountId, UserName userName) {
+  Future<void> removeAllComposerCache(AccountId accountId, UserName userName) {
     return Future.sync(() {
-      final keyWithIdentity = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value,
-      ).toString();
-
+      final keyWithIdentity = _buildKeyPrefix(accountId, userName);
       html.window.sessionStorage.removeWhere((key, value) => key.startsWith(keyWithIdentity));
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> removeComposerCacheByIdOnWeb(AccountId accountId, UserName userName, String composerId) {
+  Future<void> removeComposerCacheById(AccountId accountId, UserName userName, String composerId) {
     return Future.sync(() {
-      final keyWithIdentity = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value,
-        composerId,
-      ).toString();
-
-      html.window.sessionStorage.removeWhere((key, value) => key == keyWithIdentity);
+      final composerCacheKey = _buildComposerKey(accountId, userName, composerId);
+      html.window.sessionStorage.remove(composerCacheKey);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  String _buildKeyPrefix(AccountId accountId, UserName userName) {
+    return TupleKey(
+      EmailActionType.reopenComposerBrowser.name,
+      accountId.asString,
+      userName.value,
+    ).toString();
+  }
+
+  String _buildComposerKey(
+    AccountId accountId,
+    UserName userName,
+    String composerId,
+  ) {
+    return TupleKey(
+      EmailActionType.reopenComposerBrowser.name,
+      accountId.asString,
+      userName.value,
+      composerId,
+    ).toString();
   }
 }

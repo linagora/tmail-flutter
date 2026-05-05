@@ -111,16 +111,16 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_stored_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_text_formatting_menu_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_text_formatting_menu_state_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
@@ -267,7 +267,7 @@ class MailboxDashBoardController extends ReloadableController
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
-  final GetComposerCacheOnWebInteractor _getEmailCacheOnWebInteractor;
+  final GetAllComposerCacheInteractor _getAllComposerCacheInteractor;
   final GetIdentityCacheOnWebInteractor _getIdentityCacheOnWebInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -287,8 +287,8 @@ class MailboxDashBoardController extends ReloadableController
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
-  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
-  final RemoveAllComposerCacheOnWebInteractor _removeAllComposerCacheOnWebInteractor;
+  final RemoveComposerCacheByIdInteractor _removeComposerCacheByIdInteractor;
+  final RemoveAllComposerCacheInteractor _removeAllComposerCacheInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final ClearMailboxInteractor clearMailboxInteractor;
   final StoreEmailSortOrderInteractor storeEmailSortOrderInteractor;
@@ -376,7 +376,7 @@ class MailboxDashBoardController extends ReloadableController
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
-    this._getEmailCacheOnWebInteractor,
+    this._getAllComposerCacheInteractor,
     this._getIdentityCacheOnWebInteractor,
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -396,8 +396,8 @@ class MailboxDashBoardController extends ReloadableController
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
-    this._removeAllComposerCacheOnWebInteractor,
-    this._removeComposerCacheByIdOnWebInteractor,
+    this._removeAllComposerCacheInteractor,
+    this._removeComposerCacheByIdInteractor,
     this._getAllIdentitiesInteractor,
     this.clearMailboxInteractor,
     this.storeEmailSortOrderInteractor,
@@ -449,7 +449,7 @@ class MailboxDashBoardController extends ReloadableController
     if (accountId.value == null || sessionCurrent == null) return;
 
     consumeState(
-      _getEmailCacheOnWebInteractor.execute(
+      _getAllComposerCacheInteractor.execute(
         accountId.value!,
         sessionCurrent!.username));
   }
@@ -537,8 +537,8 @@ class MailboxDashBoardController extends ReloadableController
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
-    } else if (success is GetComposerCacheSuccess) {
-      handleGetComposerCacheSuccess(success);
+    } else if (success is GetAllComposerCacheSuccess) {
+      handleGetAllComposerCacheSuccess(success);
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
     } else if (success is MarkAsStarEmailSuccess) {
@@ -604,7 +604,7 @@ class MailboxDashBoardController extends ReloadableController
       _handleEmptyTrashFolderFailure(failure);
     } else if (failure is MoveMultipleEmailToMailboxFailure) {
       toastManager.showMessageFailure(failure);
-    } else if (failure is GetComposerCacheFailure) {
+    } else if (failure is GetAllComposerCacheFailure) {
       _handleIdentityCache();
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
@@ -3339,20 +3339,20 @@ class MailboxDashBoardController extends ReloadableController
     isRecoveringDeletedMessage.value = true;
   }
 
-  Future<void> removeComposerCacheByIdOnWeb(String composerId) async {
+  Future<void> removeComposerCacheById(String composerId) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
-    await _removeComposerCacheByIdOnWebInteractor.execute(
+    await _removeComposerCacheByIdInteractor.execute(
       accountId.value!,
       sessionCurrent!.username,
       composerId,
     );
   }
 
-  Future<void> removeAllComposerCacheOnWeb() async {
+  Future<void> removeAllComposerCache() async {
     if (accountId.value == null || sessionCurrent == null) return;
 
-    await _removeAllComposerCacheOnWebInteractor.execute(
+    await _removeAllComposerCacheInteractor.execute(
       accountId.value!,
       sessionCurrent!.username,
     );

@@ -13,41 +13,49 @@ import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_e
 extension SetupEmailAttachmentsExtension on ComposerController {
 
   void setupEmailAttachments(ComposerArguments arguments) {
-    List<Attachment>? attachments;
-    List<Attachment>? inlineImages;
-
-    switch(currentEmailActionType) {
-      case EmailActionType.editSendingEmail:
-        final sendingEmail = arguments.sendingEmail;
-        final allAttachments = sendingEmail?.email.allAttachments;
-        attachments = allAttachments?.getListAttachmentsDisplayedOutside(
-          sendingEmail?.email.htmlBodyAttachments ?? [],
-        );
-        inlineImages = allAttachments?.listAttachmentsDisplayedInContent;
-        break;
-      case EmailActionType.composeFromFileShared:
-        _uploadAttachmentFromFileShare(arguments.listSharedMediaFile!);
-        break;
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-      case EmailActionType.forward:
-        attachments = arguments.attachments;
-        inlineImages = arguments.inlineImages;
-        break;
-      case EmailActionType.reopenComposerBrowser:
-        attachments = arguments.attachments;
-        inlineImages = arguments.inlineImages;
-        break;
-      default:
-        break;
+    if (currentEmailActionType == EmailActionType.composeFromFileShared) {
+      final sharedFiles = arguments.listSharedMediaFile;
+      if (sharedFiles != null && sharedFiles.isNotEmpty) {
+        _uploadAttachmentFromFileShare(sharedFiles);
+      }
+      return;
     }
 
     initAttachmentsAndInlineImages(
-      attachments: attachments,
-      inlineImages: inlineImages,
+      attachments: _getAttachmentsFromArguments(arguments),
+      inlineImages: _getInlineImagesFromArguments(arguments),
     );
   }
+
+  List<Attachment>? _getAttachmentsFromArguments(ComposerArguments arguments) {
+    if (currentEmailActionType == EmailActionType.editSendingEmail) {
+      final sendingEmail = arguments.sendingEmail;
+      if (sendingEmail == null) return null;
+      return sendingEmail.email.allAttachments.getListAttachmentsDisplayedOutside(
+        sendingEmail.email.htmlBodyAttachments,
+      );
+    }
+    if (_shouldPreserveAttachments) return arguments.attachments;
+    return null;
+  }
+
+  List<Attachment>? _getInlineImagesFromArguments(ComposerArguments arguments) {
+    if (currentEmailActionType == EmailActionType.editSendingEmail) {
+      final sendingEmail = arguments.sendingEmail;
+      if (sendingEmail == null) return null;
+      return sendingEmail.email.allAttachments.listAttachmentsDisplayedInContent;
+    }
+    if (_shouldPreserveAttachments) return arguments.inlineImages;
+    return null;
+  }
+
+  bool get _shouldPreserveAttachments => const {
+    EmailActionType.reply,
+    EmailActionType.replyToList,
+    EmailActionType.replyAll,
+    EmailActionType.forward,
+    EmailActionType.reopenComposerBrowser,
+  }.contains(currentEmailActionType);
 
   void _uploadAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
     final listFileInfo = listSharedMediaFile.toListFileInfo(isShared: true);

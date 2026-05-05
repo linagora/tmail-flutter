@@ -12,34 +12,39 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension EmailActionTypeExtension on EmailActionType {
   String getSubjectComposer(BuildContext? context, String subject) {
+    if (_isIdentitySubjectAction) return subject;
     final l10n = context != null ? AppLocalizations.of(context) : null;
-
-    switch (this) {
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-        return EmailUtils.applyPrefix(
-          subject: subject,
-          defaultPrefix: EmailUtils.defaultReplyPrefix,
-          localizedPrefix: l10n?.prefix_reply_email,
-        );
-      case EmailActionType.forward:
-        return EmailUtils.applyPrefix(
-          subject: subject,
-          defaultPrefix: EmailUtils.defaultForwardPrefix,
-          localizedPrefix: l10n?.prefix_forward_email,
-        );
-      case EmailActionType.editDraft:
-      case EmailActionType.editSendingEmail:
-      case EmailActionType.reopenComposerBrowser:
-      case EmailActionType.editAsNewEmail:
-      case EmailActionType.composeFromMailtoUri:
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-        return subject;
-      default:
-        return '';
+    if (_isPrefixReplyAction) {
+      return EmailUtils.applyPrefix(
+        subject: subject,
+        defaultPrefix: EmailUtils.defaultReplyPrefix,
+        localizedPrefix: l10n?.prefix_reply_email,
+      );
     }
+    if (this == EmailActionType.forward) {
+      return EmailUtils.applyPrefix(
+        subject: subject,
+        defaultPrefix: EmailUtils.defaultForwardPrefix,
+        localizedPrefix: l10n?.prefix_forward_email,
+      );
+    }
+    return '';
   }
+
+  bool get _isPrefixReplyAction => const {
+    EmailActionType.reply,
+    EmailActionType.replyToList,
+    EmailActionType.replyAll,
+  }.contains(this);
+
+  bool get _isIdentitySubjectAction => const {
+    EmailActionType.editDraft,
+    EmailActionType.editSendingEmail,
+    EmailActionType.reopenComposerBrowser,
+    EmailActionType.editAsNewEmail,
+    EmailActionType.composeFromMailtoUri,
+    EmailActionType.composeFromUnsubscribeMailtoLink,
+  }.contains(this);
 
   String getToastMessageMoveToMailboxSuccess(BuildContext context, {String? destinationPath}) {
     switch(this) {

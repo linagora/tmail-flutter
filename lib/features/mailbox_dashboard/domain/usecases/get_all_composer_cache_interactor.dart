@@ -4,22 +4,22 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 
-class GetComposerCacheOnWebInteractor {
-  final ComposerCacheRepository composerCacheRepository;
+class GetAllComposerCacheInteractor {
+  final ComposerCacheRepository _composerCacheRepository;
 
-  GetComposerCacheOnWebInteractor(this.composerCacheRepository);
+  GetAllComposerCacheInteractor(this._composerCacheRepository);
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async* {
     try {
-      final listComposerCache = await composerCacheRepository.getComposerCacheOnWeb(
+      final listComposerCache = await _composerCacheRepository.getComposerCache(
         accountId,
         userName,
       );
-      yield Right(GetComposerCacheSuccess(listComposerCache));
+      yield Right(GetAllComposerCacheSuccess(listComposerCache));
     } catch (exception) {
-      yield Left(GetComposerCacheFailure(exception));
+      yield Left(GetAllComposerCacheFailure(exception));
     }
   }
 }
