@@ -148,12 +148,12 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
   ) {
     return Obx(
       () => CustomIconLabeledCheckbox(
-        label: AppLocalizations.of(context).events,
+        label: AppLocalizations.of(context).notIncludeEvents,
         svgIconPath: controller.imagePaths.icCheckboxUnselected,
         selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
         focusNode: currentFocusNode,
         gap: 8.0,
-        value: controller.hasEvents.value,
+        value: controller.notIncludeEvents.value,
         onChanged: controller.onEventsCheckboxChanged,
       ),
     );

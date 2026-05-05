@@ -35,7 +35,7 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final isStarred = false.obs;
   final isUnread = false.obs;
-  final hasEvents = false.obs;
+  final notIncludeEvents = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
@@ -123,6 +123,7 @@ class AdvancedFilterController extends BaseController {
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<bool>? unreadOption,
+    Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -141,6 +142,7 @@ class AdvancedFilterController extends BaseController {
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
       unreadOption: unreadOption,
+      notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
@@ -185,9 +187,10 @@ class AdvancedFilterController extends BaseController {
 
     final unreadOption = Some(isUnread.value);
 
+    final notIncludeEventsOption = Some(notIncludeEvents.value);
+
     final listKeywords = {
-      if(isStarred.isTrue) KeyWordIdentifier.emailFlagged.value,
-      if(hasEvents.isTrue) KeyWordIdentifierExtension.eventsMail.value,
+      if (isStarred.isTrue) KeyWordIdentifier.emailFlagged.value,
     };
     final hasKeywordOption =
         optionOf(listKeywords.isNotEmpty ? listKeywords : null);
@@ -205,6 +208,7 @@ class AdvancedFilterController extends BaseController {
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
       unreadOption: unreadOption,
+      notIncludeEventsOption: notIncludeEventsOption,
       hasKeywordOption: hasKeywordOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
@@ -291,8 +295,7 @@ class AdvancedFilterController extends BaseController {
     isStarred.value = _memorySearchFilter.hasKeyword
         .contains(KeyWordIdentifier.emailFlagged.value);
 
-    hasEvents.value = _memorySearchFilter.hasKeyword
-        .contains(KeyWordIdentifierExtension.eventsMail.value);
+    notIncludeEvents.value = _memorySearchFilter.notIncludeEvents;
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -477,7 +480,7 @@ class AdvancedFilterController extends BaseController {
     hasAttachment.value = false;
     isUnread.value = false;
     isStarred.value = false;
-    hasEvents.value = false;
+    notIncludeEvents.value = false;
     destinationMailboxSelected.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
@@ -585,10 +588,9 @@ class AdvancedFilterController extends BaseController {
   }
 
   void onEventsCheckboxChanged(bool? isChecked) {
-    hasEvents.value = isChecked ?? false;
-    _updateKeywordsSearchFilter(
-      hasEvents.isTrue,
-      KeyWordIdentifierExtension.eventsMail,
+    notIncludeEvents.value = isChecked ?? false;
+    _updateMemorySearchFilter(
+      notIncludeEventsOption: notIncludeEvents.isTrue ? const Some(true) : const None(),
     );
   }
 

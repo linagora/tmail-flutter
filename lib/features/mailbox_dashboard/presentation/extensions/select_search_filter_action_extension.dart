@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
-import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -21,6 +20,11 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     dispatchAction(StartSearchEmailAction());
   }
 
+  void selectNotIncludeEventsSearchFilter() {
+    searchController.updateFilterEmail(notIncludeEventsOption: const Some(true));
+    dispatchAction(StartSearchEmailAction());
+  }
+
   void deleteStarredSearchFilter() {
     final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
     listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
@@ -33,12 +37,8 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     searchController.updateFilterEmail(unreadOption: const None());
   }
 
-  void deleteEventsSearchFilter() {
-    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.remove(KeyWordIdentifierExtension.eventsMail.value);
-    searchController.updateFilterEmail(
-      hasKeywordOption: Some(listHasKeywordFiltered),
-    );
+  void deleteNotIncludeEventsSearchFilter() {
+    searchController.updateFilterEmail(notIncludeEventsOption: const None());
   }
 
   void deleteQuickSearchFilter({required QuickSearchFilter filter}) {
@@ -53,7 +53,7 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
         deleteUnreadSearchFilter();
         break;
       case QuickSearchFilter.events:
-        deleteEventsSearchFilter();
+        deleteNotIncludeEventsSearchFilter();
         break;
       default:
         break;

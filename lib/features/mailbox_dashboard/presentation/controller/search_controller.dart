@@ -141,6 +141,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<bool>? unreadOption,
+    Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -159,6 +160,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
       unreadOption: unreadOption,
+      notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
@@ -186,6 +188,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
   Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
 
   bool get unreadFiltered => searchEmailFilter.value.unread;
+
+  bool get notIncludeEventsFiltered => searchEmailFilter.value.notIncludeEvents;
 
   EmailSortOrderType get sortOrderFiltered => searchEmailFilter.value.sortOrderType;
 

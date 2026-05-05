@@ -425,9 +425,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         controller.selectUnreadSearchFilter();
         break;
       case QuickSearchFilter.events:
-        controller.selectKeywordsSearchFilter(
-          KeyWordIdentifierExtension.eventsMail,
-        );
+        controller.selectNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.mailboxDashBoardController.labelController.labels;

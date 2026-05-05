@@ -6,7 +6,6 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
-import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -760,6 +759,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
       final listHasKeywordFiltered = controller.searchController.listHasKeywordFiltered;
       final unreadFiltered = controller.searchController.unreadFiltered;
+      final notIncludeEventsFiltered = controller.searchController.notIncludeEventsFiltered;
 
       final isSelected = searchFilter.isSelected(
         context,
@@ -779,7 +779,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           receiveTimeType != EmailReceiveTimeType.allTime ||
           mailbox != null ||
           listHasKeywordFiltered.contains(KeyWordIdentifier.emailFlagged.value) ||
-          unreadFiltered;
+          unreadFiltered ||
+          notIncludeEventsFiltered;
 
       return SearchFilterButton(
         key: Key('${searchFilter.name}_search_filter_button'),
@@ -848,9 +849,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         controller.selectUnreadSearchFilter();
         break;
       case QuickSearchFilter.events:
-        controller.selectKeywordSearchFilter(
-          KeyWordIdentifierExtension.eventsMail,
-        );
+        controller.selectNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.labelController.labels;
