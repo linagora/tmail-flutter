@@ -8,9 +8,13 @@
 
 set -e
 
-if [ -n "${SENTRY_ORG:-}" ] && [ -n "${SENTRY_PROJECT:-}" ] && [ -n "${SENTRY_AUTH_TOKEN:-}" ]; then
+if [ -n "${SENTRY_AUTH_TOKEN:-}" ] && \
+   [ -n "${SENTRY_ORG:-}" ] && \
+   [ -n "${SENTRY_PROJECT:-}" ] && \
+   [ -n "${SENTRY_RELEASE:-}" ] && \
+   [ -n "${GITHUB_SHA:-}" ]; then
   echo "Running sentry_dart_plugin (Debug ID injection + source map upload)..."
   dart run sentry_dart_plugin
 else
-  echo "Skipping sentry_dart_plugin: SENTRY_ORG, SENTRY_PROJECT, or SENTRY_AUTH_TOKEN not set."
+  echo "Sentry configuration not complete, skipping sourcemap upload."
 fi

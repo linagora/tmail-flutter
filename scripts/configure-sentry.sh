@@ -17,10 +17,14 @@ if [ -z "${SENTRY_PROJECT}" ] || [ -z "${SENTRY_ORG}" ]; then
   exit 0
 fi
 
+if [ -z "${GITHUB_SHA:-}" ] && [ -z "${SENTRY_DIST:-}" ]; then
+  echo "Skipping Sentry configuration: GITHUB_SHA is required for SENTRY_DIST when SENTRY_DIST is not explicitly set."
+  exit 0
+fi
+
 _pubspec_ver=$(grep "^version:" pubspec.yaml | tr -d ' ' | cut -d: -f2)
 SENTRY_RELEASE="${SENTRY_RELEASE:-$(echo "${_pubspec_ver}" | cut -d'+' -f1)}"
-# Fall back to GITHUB_SHA as dist if not explicitly provided
-SENTRY_DIST="${SENTRY_DIST:-${GITHUB_SHA:-}}"
+SENTRY_DIST="${SENTRY_DIST:-${GITHUB_SHA}}"
 
 echo "Configuring Sentry: release=${SENTRY_RELEASE} dist=${SENTRY_DIST} url_prefix=~/"
 
