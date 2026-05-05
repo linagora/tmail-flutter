@@ -51,6 +51,8 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_persistent_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
@@ -77,10 +79,17 @@ import 'package:uuid/uuid.dart';
 
 class ComposerBindings extends BaseBindings {
 
-  final String? composerId;
+  final String? _composerId;
   final ComposerArguments? composerArguments;
 
-  ComposerBindings({this.composerId, this.composerArguments});
+  ComposerBindings({String? composerId, this.composerArguments})
+      : _composerId = composerId;
+
+  /// Returns the composerId passed at construction time, or falls back to the
+  /// one embedded in the route arguments (phone path where AppPages creates
+  /// ComposerBindings() without a composerId).
+  String? get composerId =>
+      _composerId ?? (Get.arguments as ComposerArguments?)?.composerId;
 
   @override
   void bindingsDataSourceImpl() {
@@ -152,6 +161,13 @@ class ComposerBindings extends BaseBindings {
       Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
+    if (PlatformInfo.isMobile) {
+      Get.lazyPut(() => ComposerHiveCacheClient(), tag: composerId);
+      Get.lazyPut(() => ComposerPersistentCacheDatasourceImpl(
+        Get.find<ComposerHiveCacheClient>(tag: composerId),
+        Get.find<CacheExceptionThrower>(),
+      ), tag: composerId);
+    }
   }
 
   @override
@@ -188,10 +204,17 @@ class ComposerBindings extends BaseBindings {
       () => Get.find<PrintFileDataSourceImpl>(tag: composerId),
       tag: composerId,
     );
-    Get.lazyPut<ComposerCacheDatasource>(
-      () => Get.find<ComposerSessionCacheDatasourceImpl>(tag: composerId),
-      tag: composerId,
-    );
+    if (PlatformInfo.isMobile) {
+      Get.lazyPut<ComposerCacheDatasource>(
+        () => Get.find<ComposerPersistentCacheDatasourceImpl>(tag: composerId),
+        tag: composerId,
+      );
+    } else {
+      Get.lazyPut<ComposerCacheDatasource>(
+        () => Get.find<ComposerSessionCacheDatasourceImpl>(tag: composerId),
+        tag: composerId,
+      );
+    }
   }
 
   @override
@@ -368,6 +391,10 @@ class ComposerBindings extends BaseBindings {
     Get.delete<EmailLocalStorageDataSourceImpl>(tag: composerId);
     Get.delete<EmailSessionStorageDatasourceImpl>(tag: composerId);
     Get.delete<ComposerSessionCacheDatasourceImpl>(tag: composerId);
+    if (PlatformInfo.isMobile) {
+      Get.delete<ComposerHiveCacheClient>(tag: composerId);
+      Get.delete<ComposerPersistentCacheDatasourceImpl>(tag: composerId);
+    }
 
     Get.delete<AttachmentUploadDataSource>(tag: composerId);
     Get.delete<ComposerDataSource>(tag: composerId);

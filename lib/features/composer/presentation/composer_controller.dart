@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_in
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
@@ -252,12 +253,25 @@ class ComposerController extends BaseController
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
 
+  AppLifecycleListener? mobileAutoSaveLifecycleListener;
+  Timer? periodicSnapshotTimer;
+  Timer? inactiveGuardTimer;
+
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   GetEmailContentInteractor get getEmailContentInteractor => _getEmailContentInteractor;
 
   GetServerSettingInteractor get getServerSettingInteractor => _getServerSettingInteractor;
+
+  CreateNewAndSaveEmailToDraftsInteractor get createNewAndSaveEmailToDraftsInteractor =>
+      _createNewAndSaveEmailToDraftsInteractor;
+
+  SaveComposerCacheInteractor get saveComposerCacheInteractor =>
+     _saveComposerCacheInteractor;
+
+  Future<CreateEmailRequest?> buildCreateEmailRequestForAutoSave() =>
+      _generateCreateEmailRequestToSaveAsCache();
 
   GetAllIdentitiesInteractor get getAllIdentitiesInteractor => _getAllIdentitiesInteractor;
 
@@ -308,6 +322,9 @@ class ComposerController extends BaseController
     _beforeReconnectManager.addListener(onBeforeReconnect);
     _injectBinding();
     onKeyboardShortcutInit();
+    if (PlatformInfo.isAndroid) {
+      initMobileAutoSave();
+    }
   }
 
   @override
@@ -352,6 +369,7 @@ class ComposerController extends BaseController
     } else {
       richTextMobileTabletController = null;
     }
+    if (PlatformInfo.isAndroid) tearDownMobileAutoSave();
     onKeyboardShortcutDispose();
     super.onClose();
   }
@@ -1479,6 +1497,8 @@ class ComposerController extends BaseController
       closeOverlays: closeOverlays,
       composerId: composerId,
     );
+
+    markCleanClose();
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {

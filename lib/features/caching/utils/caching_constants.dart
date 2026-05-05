@@ -32,10 +32,12 @@ class CachingConstants {
   static const String oidcConfigurationCacheBoxName = 'oidc_configuration_cache_box';
   static const String sentryConfigurationCacheBoxName = 'sentry_configuration_cache_box';
   static const String sentryUserCacheBoxName = 'sentry_user_cache_box';
+  static const String composerHiveCacheBoxName = 'composer_hive_cache_box';
 
   static const String oidcConfigurationCacheKeyName = 'oidc_configuration_cache_key';
   static const String sentryConfigurationCacheKeyName = 'sentry_configuration_cache_key';
   static const String sentryUserCacheKeyName = 'sentry_user_cache_key';
+  static const String composerHiveCacheKeyName = 'composer_hive_cache_key';
 
   static const String newEmailsContentFolderName = 'new_emails';
   static const String openedEmailContentFolderName = 'opened_email';
