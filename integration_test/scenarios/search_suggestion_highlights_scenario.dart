@@ -45,6 +45,7 @@ class SearchSuggestionHighlightsScenario extends BaseTestScenario {
     await threadRobot.tapOnSearchField();
     await searchRobot.enterKeyword(keyword);
     await $.waitUntilVisible($(RichTextBuilder));
+    // Maximum 10 suggestions
     expect($(RichTextBuilder).$(keyword.split(' ').first).evaluate().length, 10);
   }
 }

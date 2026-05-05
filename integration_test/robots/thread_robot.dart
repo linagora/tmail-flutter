@@ -132,11 +132,14 @@ class ThreadRobot extends CoreRobot {
     while (retry < 3) {
       await $(subject).longPress();
       if ($(#moreAction_selected_email_button).exists) {
-        break;
+        return;
       } else {
         retry++;
       }
     }
+    throw TestFailure(
+      'Failed to select email with subject "$subject" after 3 attempts.',
+    );
   }
 
   Future<void> moveEmailToMailboxWithName(String mailboxName) async {

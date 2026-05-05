@@ -49,6 +49,7 @@ class DownloadAllAttachmentsScenario extends BaseTestScenario {
       MobileSelector(
         android: AndroidSelector(text: 'SAVE'),
       ),
+      timeout: const Duration(seconds: 20),
     );
     await expectLater(
       $.platformAutomator.tap(

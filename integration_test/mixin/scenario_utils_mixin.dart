@@ -63,6 +63,13 @@ mixin ScenarioUtilsMixin {
         break;
       }
     }
+    if (mailboxDashBoardController == null ||
+        mailboxDashBoardController.sessionCurrent == null ||
+        mailboxDashBoardController.accountId.value == null) {
+      throw StateError(
+        'MailboxDashBoardController is not ready for provisioning email.',
+      );
+    }
     final createNewAndSendEmailInteractor =
         Get.find<CreateNewAndSendEmailInteractor>();
     final threadController = Get.find<ThreadController>();

@@ -226,6 +226,10 @@ class ComposerController extends BaseController
   StreamSubscription<String>? _composerCacheListener;
 
   RichTextMobileTabletController? richTextMobileTabletController;
+  late final _fallbackRichTextController = RichTextController();
+  RichTextController get effectiveRichTextController =>
+      richTextMobileTabletController?.richTextController ??
+      _fallbackRichTextController;
   RichTextWebController? richTextWebController;
   CustomPopupMenuController? menuMoreOptionController;
 
