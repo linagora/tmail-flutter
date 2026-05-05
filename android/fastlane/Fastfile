@@ -30,7 +30,7 @@ platform :android do
       track: track,
       json_key_data: ENV["PLAY_STORE_CONFIG_JSON"]
     )[0].to_i
-    pubspec = File.read("../pubspec.yaml")
+    pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
     sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
     build_name = sentry_release.split("-").first
     # Add: --obfuscate --split-debug-info=build/app/outputs/symbols
