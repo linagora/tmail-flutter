@@ -46,7 +46,7 @@ jobs:
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
-      - name: Run integration tests
+      - name: Run integration tests for mobile apps
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ env.API_LEVEL }}
@@ -56,7 +56,7 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          emulator-boot-timeout: 900
+          emulator-boot-timeout: 1000
           pre-emulator-launch-script: |
             adb kill-server
             adb start-server
