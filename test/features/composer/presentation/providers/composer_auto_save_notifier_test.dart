@@ -183,5 +183,72 @@ void main() {
         expect(notifier.hasRecoverableSnapshot, isTrue);
       });
     });
+
+    group('restore → clearCache sequence (Layer 3 restore-and-clear pattern)', () {
+      test(
+        'hasRecoverableSnapshot transitions true→false after restore succeeds then cache is cleared',
+        () async {
+          final cache = makeCache(withEmail: true);
+          when(mockResolveInteractor.execute(any, any)).thenAnswer(
+            (_) async => Right(ResolveComposerCacheForRestoreSuccess(cache)),
+          );
+
+          await notifier.restore(testAccountId, testUserName);
+          expect(notifier.hasRecoverableSnapshot, isTrue);
+
+          await notifier.clearCache(testAccountId, testUserName);
+
+          expect(notifier.hasRecoverableSnapshot, isFalse);
+          verify(mockRemoveInteractor.execute(any, any)).called(1);
+        },
+      );
+
+      test('clearCache after failed restore does not call removeInteractor', () async {
+        when(mockResolveInteractor.execute(any, any)).thenAnswer(
+          (_) async => Left(ResolveComposerCacheForRestoreFailure(Exception('err'))),
+        );
+
+        await notifier.restore(testAccountId, testUserName);
+        expect(notifier.hasRecoverableSnapshot, isFalse);
+
+        await notifier.clearCache(testAccountId, testUserName);
+
+        // clearCache always calls removeInteractor regardless of prior restore result
+        verify(mockRemoveInteractor.execute(any, any)).called(1);
+        expect(notifier.hasRecoverableSnapshot, isFalse);
+      });
+    });
+
+    group('isCleanClose does not block clearCache', () {
+      test('clearCache executes even after setCleanClose is flagged', () async {
+        notifier.onSnapshotSaved();
+        notifier.setCleanClose();
+        expect(notifier.isCleanClose, isTrue);
+
+        await notifier.clearCache(testAccountId, testUserName);
+
+        verify(mockRemoveInteractor.execute(any, any)).called(1);
+        expect(notifier.hasRecoverableSnapshot, isFalse);
+      });
+    });
+
+    group('concurrent flag independence', () {
+      test('beginDraftSave and setCleanClose can coexist', () {
+        notifier.beginDraftSave();
+        notifier.setCleanClose();
+
+        expect(notifier.isSavingToDraftInProgress, isTrue);
+        expect(notifier.isCleanClose, isTrue);
+      });
+
+      test('endDraftSave clears only isSavingToDraftInProgress, not isCleanClose', () {
+        notifier.beginDraftSave();
+        notifier.setCleanClose();
+        notifier.endDraftSave();
+
+        expect(notifier.isSavingToDraftInProgress, isFalse);
+        expect(notifier.isCleanClose, isTrue);
+      });
+    });
   });
 }

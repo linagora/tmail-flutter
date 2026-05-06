@@ -178,6 +178,7 @@ class ComposerController extends BaseController
   final PrintEmailInteractor printEmailInteractor;
   final ComposerRepository _composerRepository;
   final String? composerId;
+  final String? autoSaveComposerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
 
@@ -301,6 +302,7 @@ class ComposerController extends BaseController
     this._saveTemplateEmailInteractor,
     {
       this.composerId,
+      this.autoSaveComposerId,
       this.composerArgs,
     }
   );
@@ -444,6 +446,7 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onUnloadBrowserListener(html.Event event) async {
+    if (!PlatformInfo.isWeb) return;
     final username = mailboxDashBoardController.sessionCurrent?.username;
     final accountId = mailboxDashBoardController.accountId.value;
     if (composerId != null && username != null && accountId != null) {
@@ -507,8 +510,6 @@ class ComposerController extends BaseController
   }
 
   Future<void> _saveComposerSessionCache() async {
-    autoCreateEmailTag();
-
     final createEmailRequest = await _generateCreateEmailRequestToSaveAsCache();
     if (createEmailRequest == null) return;
 
@@ -533,7 +534,7 @@ class ComposerController extends BaseController
       log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return null;
     }
-    
+    autoCreateEmailTag();
     String emailContent = await getContentInEditor();
     if (currentEmailActionType == EmailActionType.compose) {
       emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
@@ -563,7 +564,6 @@ class ComposerController extends BaseController
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       inlineAttachments: uploadController.mapInlineAttachments,
-      outboxMailboxId: getOutboxMailboxIdForComposer(),
       sentMailboxId: getSentMailboxIdForComposer(),
       draftsMailboxId: getDraftMailboxIdForComposer(),
       draftsEmailId: getDraftEmailId(),
@@ -2355,6 +2355,7 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onBeforeReconnect() async {
+    if (!PlatformInfo.isWeb) return;
     if (mailboxDashBoardController.accountId.value != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {

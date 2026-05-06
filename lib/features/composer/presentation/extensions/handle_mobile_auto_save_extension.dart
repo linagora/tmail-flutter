@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
@@ -42,13 +44,17 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
   // Only sets the flag in notifier state; the actual Hive clean-close write is
   // deferred to onClose so it runs after all timer/lifecycle teardown.
+  // No-op on non-Android: composerAutoSaveProvider is only initialised on
+  // Android, so reading it on other platforms would create an orphaned family
+  // entry that is never invalidated (memory leak).
   void markCleanClose() {
+    if (!PlatformInfo.isAndroid) return;
     _autoSaveNotifier()?.setCleanClose();
     log('HandleMobileAutoSaveExtension::markCleanClose: flagged');
   }
 
   ComposerAutoSaveNotifier? _autoSaveNotifier() {
-    final id = composerId;
+    final id = autoSaveComposerId;
     if (id == null) return null;
     return appProviderContainer.read(composerAutoSaveProvider(id).notifier);
   }
@@ -111,6 +117,9 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       // Keep the fallback snapshot in sync: if the editor dies before the next
       // periodic tick, _saveSnapshotToCache will use this restored content.
       if (restoredHtml.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(restoredHtml);
+      // Delete the stale snapshot now that its content is live in the editor.
+      // The periodic timer will write a fresh snapshot on the next 30 s tick.
+      unawaited(clearComposerMobileSnapshot());
     } catch (e) {
       log('HandleMobileAutoSaveExtension::_restoreIfEditorBlank: error=$e');
     }
@@ -128,7 +137,10 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     try {
       await _refreshLastKnownContent(notifier);
 
+      KeyboardUtils.hideSystemKeyboardMobile();
+
       final createEmailRequest = await buildCreateEmailRequestForAutoSave();
+
       if (createEmailRequest == null) {
         log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: no request, skip');
         return;
@@ -207,7 +219,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   }
 
   void tearDownMobileAutoSave() {
-    final id = composerId;
+    final id = autoSaveComposerId;
     if (id != null) _persistCleanCloseIfNeeded(id);
     try {
       disposeMobileAutoSave();
@@ -217,7 +229,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   }
 
   Future<void> clearComposerMobileSnapshot() {
-    if (composerId == null) return Future.value();
+    if (autoSaveComposerId == null) return Future.value();
     final accountId = mailboxDashBoardController.accountId.value;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (accountId == null || userName == null) return Future.value();

@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
@@ -753,6 +754,54 @@ void main() {
             equals(savedEmailDraft.asString().hashCode),
           );
         });
+      });
+    });
+
+    group('markCleanClose - platform guard:', () {
+      // composerController has composerId = null in this test setup.
+      // _autoSaveNotifier() returns null for null composerId, so no provider
+      // entry is created regardless of platform. These tests verify that
+      // markCleanClose() does not throw and behaves safely on all platforms.
+
+      test(
+        'Should not throw on web\n'
+        'When composerId is null',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+
+        expect(
+          () => composerController?.markCleanClose(),
+          returnsNormally,
+        );
+
+        PlatformInfo.isTestingForWeb = false;
+      });
+
+      test(
+        'Should not throw on non-web\n'
+        'When composerId is null',
+      () {
+        PlatformInfo.isTestingForWeb = false;
+
+        expect(
+          () => composerController?.markCleanClose(),
+          returnsNormally,
+        );
+      });
+    });
+
+    group('tearDownMobileAutoSave safety:', () {
+      // tearDownMobileAutoSave is only called on Android (onClose guard).
+      // With composerId = null, _persistCleanCloseIfNeeded is a no-op and
+      // disposeMobileAutoSave cancels any timers. Verify no exception is thrown.
+      test(
+        'Should not throw\n'
+        'When composerId is null and timers are not started',
+      () {
+        expect(
+          () => composerController?.tearDownMobileAutoSave(),
+          returnsNormally,
+        );
       });
     });
   });
