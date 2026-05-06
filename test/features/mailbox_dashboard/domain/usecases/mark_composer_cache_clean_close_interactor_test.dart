@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/compo
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_composer_cache_clean_close_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_composer_cache_clean_close_interactor.dart';
 
-import 'mark_composer_local_cache_clean_close_interactor_test.mocks.dart';
+import 'mark_composer_cache_clean_close_interactor_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ComposerCacheRepository>()])
 void main() {

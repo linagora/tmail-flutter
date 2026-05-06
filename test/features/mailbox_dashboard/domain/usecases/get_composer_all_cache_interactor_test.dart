@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/compo
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 
-import 'get_composer_local_cache_interactor_test.mocks.dart';
+import 'get_composer_all_cache_interactor_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ComposerCacheRepository>()])
 void main() {
