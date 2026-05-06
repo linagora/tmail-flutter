@@ -5562,5 +5562,89 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "labelDescription": "描述（可选）",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "添加简短描述以说明此标签的用途",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notIncludeEvents": "不包含活动",
+  "@notIncludeEvents": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailDetailView": "关闭邮件详情视图",
+  "@closeMailDetailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmail": "所有邮件",
+  "@allEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmailTrashAndSpam": "所有邮件、已删除邮件和垃圾邮件",
+  "@allEmailTrashAndSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseLabel": "选择标签",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectLabel": "选择标签",
+  "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "标签已成功添加到这些邮件中。",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailHasSomeFailureMessage": "标签已成功添加到部分邮件中。",
+  "@addListLabelToListEmailHasSomeFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "为这些邮件添加标签失败",
+  "@addListLabelToListEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYet": "尚无标签",
+  "@noLabelsYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYetMessageDescriptions": "创建您的第一个标签，以便更高效地整理邮件。",
+  "@noLabelsYetMessageDescriptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createALabel": "创建标签",
+  "@createALabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
