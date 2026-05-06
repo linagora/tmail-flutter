@@ -18,8 +18,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     PresentationEmail? selectedEmail,
     BuildContext? context,
   ) {
-    if (selectedEmail?.id == null && mailboxDashBoardController.isEmailOpened) {
-      closeThreadDetailAction();
+    if (selectedEmail == null || selectedEmail.id == null) {
+      if (mailboxDashBoardController.isEmailOpened) {
+        closeThreadDetailAction();
+      }
       return;
     }
 
@@ -29,12 +31,12 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
 
     if (currentExpandedEmailId.value == null) {
       loadThreadOnThreadChanged = isThreadDetailEnabled;
-      _preloadSelectedEmail(selectedEmail!);
+      _preloadSelectedEmail(selectedEmail);
       return;
     }
 
     // Thread setting updated, no need to dispose current single email controller
-    if (currentExpandedEmailId.value == selectedEmail!.id) {
+    if (currentExpandedEmailId.value == selectedEmail.id) {
       _preloadSelectedEmail(selectedEmail);
 
       if (isThreadDetailEnabled && selectedEmail.threadId != null) {
