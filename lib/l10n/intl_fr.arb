@@ -5791,5 +5791,89 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "labelDescription": "Description (optionnel)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Ajoutez une brève description pour expliquer à quoi sert ce libellé",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notIncludeEvents": "Exclure les événements",
+  "@notIncludeEvents": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailDetailView": "Fermer la vue détaillée de l'email",
+  "@closeMailDetailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmail": "Tous les messages",
+  "@allEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmailTrashAndSpam": "Tous les messages, corbeille & spam",
+  "@allEmailTrashAndSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseLabel": "Choisir le libellé",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectLabel": "Sélectionner le libellé",
+  "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "Les libellés ont bien été ajoutés aux messages.",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailHasSomeFailureMessage": "Les libellés ont bien été ajoutés à certains messages.",
+  "@addListLabelToListEmailHasSomeFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "L'ajout des libellés à ces messages a échoué",
+  "@addListLabelToListEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYet": "Aucun libellé",
+  "@noLabelsYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYetMessageDescriptions": "Créez votre premier libellé pour mieux organiser vos messages.",
+  "@noLabelsYetMessageDescriptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createALabel": "Créer un libellé",
+  "@createALabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
