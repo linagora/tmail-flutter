@@ -4,6 +4,9 @@
 users=("alice" "bob" "brian" "charlotte" "david" "emma")
 bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Calendar" "Reply Emails")
 
+# Add domain
+james-cli AddDomain "example.com" &
+
 # Add users in parallel
 for user in "${users[@]}"; do
   james-cli AddUser "$user@example.com" "$user" &

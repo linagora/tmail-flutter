@@ -51,7 +51,7 @@ export RESET_PORT=9999
 
 RESET_SERVER_LOG="/tmp/backend-reset-server.log"
 echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
-WORK_DIR="$(pwd)" RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
+RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
 
 cleanup() {
