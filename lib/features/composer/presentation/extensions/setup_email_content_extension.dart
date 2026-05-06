@@ -45,7 +45,7 @@ extension SetupEmailContentExtension on ComposerController {
     } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
       await _loadReopenBrowserEmailContent(arguments);
     } else if (currentEmailActionType == EmailActionType.restoreComposerFromPersistentCache) {
-      _setMobileRestoredEmailContent(arguments.emailContents ?? '');
+      await _loadMobileRestoredEmailContent(arguments);
     } else {
       emailContentsViewState.value = Right(LoadEmailContentCompleted());
     }
@@ -197,12 +197,21 @@ extension SetupEmailContentExtension on ComposerController {
     consumeState(Stream.value(Left(failure)));
   }
 
-  void _setMobileRestoredEmailContent(String content) {
+  Future<void> _loadMobileRestoredEmailContent(ComposerArguments arguments) async {
+    final content = arguments.emailContents ?? '';
+    final inlineImages = arguments.inlineImages ?? [];
+
     if (content.trim().isEmpty) {
       emailContentsViewState.value = Left(GetEmailContentFailure(EmptyEmailContentException()));
-    } else {
-      emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: content));
+      return;
     }
+
+    if (inlineImages.isEmpty) {
+      emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: content));
+      return;
+    }
+
+    await _restoreInlineImages(content, inlineImages);
   }
 
   Future<void> _getEmailContent(

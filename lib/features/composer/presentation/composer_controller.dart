@@ -310,10 +310,10 @@ class ComposerController extends BaseController
   @override
   void onInit() {
     super.onInit();
+    restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
     if (PlatformInfo.isWeb) {
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
-      restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
       menuMoreOptionController = CustomPopupMenuController();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
@@ -363,6 +363,7 @@ class ComposerController extends BaseController
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
+    restoreEmailInlineImagesInteractor = null;
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
       responsiveContainerKey = null;

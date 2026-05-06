@@ -1,5 +1,3 @@
-import 'package:core/core.dart';
-import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
@@ -13,7 +11,6 @@ class WebMailboxDashboardBindings extends MailboxDashBoardBindings {
   void bindPlatformDatasourceImpl() {
     Get.lazyPut(
       () => ComposerSessionCacheDatasourceImpl(
-        Get.find<HtmlTransform>(),
         Get.find<CacheExceptionThrower>(),
       ),
     );

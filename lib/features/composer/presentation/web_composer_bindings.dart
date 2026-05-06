@@ -1,4 +1,3 @@
-import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -14,7 +13,6 @@ class WebComposerBindings extends ComposerBindings {
   @override
   void bindPlatformCacheDatasourceImpl() {
     Get.lazyPut(() => ComposerSessionCacheDatasourceImpl(
-      Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
   }
