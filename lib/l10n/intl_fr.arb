@@ -4306,7 +4306,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createTwakeIdFailed": "Échec de la création d'un Twake ID. Veuillez réessayer.",
+  "createTwakeIdFailed": "Échec de la création du Twake ID. Veuillez réessayer.",
   "@createTwakeIdFailed": {
     "type": "text",
     "placeholders_order": [],
