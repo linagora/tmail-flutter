@@ -396,16 +396,22 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<HtmlDataSource>(tag: composerId);
     Get.delete<StateDataSource>(tag: composerId);
     Get.delete<PrintFileDataSource>(tag: composerId);
-    Get.delete<ComposerCacheDatasource>(tag: composerId);
+    if (composerId != null) {
+      Get.delete<ComposerCacheDatasource>(tag: composerId);
+    }
 
     Get.delete<ComposerRepositoryImpl>(tag: composerId);
-    Get.delete<ComposerCacheRepositoryImpl>(tag: composerId);
+    if (composerId != null) {
+      Get.delete<ComposerCacheRepositoryImpl>(tag: composerId);
+    }
     Get.delete<ContactRepositoryImpl>(tag: composerId);
     Get.delete<MailboxRepositoryImpl>(tag: composerId);
     Get.delete<EmailRepositoryImpl>(tag: composerId);
 
     Get.delete<ComposerRepository>(tag: composerId);
-    Get.delete<ComposerCacheRepository>(tag: composerId);
+    if (composerId != null) {
+      Get.delete<ComposerCacheRepository>(tag: composerId);
+    }
     Get.delete<ContactRepository>(tag: composerId);
     Get.delete<MailboxRepository>(tag: composerId);
     Get.delete<EmailRepository>(tag: composerId);
@@ -414,7 +420,9 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
-    Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
+    if (composerId != null) {
+      Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
+    }
     Get.delete<SaveComposerCacheInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);

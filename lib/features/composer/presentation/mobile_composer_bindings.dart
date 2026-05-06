@@ -40,6 +40,7 @@ class MobileComposerBindings extends ComposerBindings {
 
   @override
   void disposePlatformCacheImpl() {
+    if (composerId == null) return;
     Get.delete<ComposerHiveCacheClient>(tag: composerId);
     Get.delete<ComposerPersistentCacheDatasourceImpl>(tag: composerId);
   }
