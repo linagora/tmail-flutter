@@ -84,7 +84,6 @@ abstract class ComposerBindings extends BaseBindings {
       : _composerId = composerId;
 
   factory ComposerBindings({String? composerId, ComposerArguments? composerArguments}) {
-    log('>> dab >> ComposerBindings >> factory ${PlatformInfo.isWeb}');
     if (PlatformInfo.isWeb) {
       return WebComposerBindings(composerId: composerId, composerArguments: composerArguments);
     }

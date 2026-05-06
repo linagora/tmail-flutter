@@ -203,7 +203,7 @@ void main() {
         },
       );
 
-      test('clearCache after failed restore does not call removeInteractor', () async {
+      test('clearCache calls removeInteractor even after failed restore', () async {
         when(mockResolveInteractor.execute(any, any)).thenAnswer(
           (_) async => Left(ResolveComposerCacheForRestoreFailure(Exception('err'))),
         );
