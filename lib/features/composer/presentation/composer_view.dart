@@ -284,7 +284,7 @@ class ComposerView extends GetWidget<ComposerController> {
         ),
       ),
       tablet: TabletContainerView(
-        keyboardRichTextController: controller.effectiveRichTextController,
+        keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: controller.clearFocus,
         childBuilder: (_, constraints) => ColoredBox(

@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
 
@@ -65,12 +66,9 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
 
   Future<void> _expectEmailViewScrollableWithLongContent() async {
     expect($(EmailSubjectWidget).visible, isTrue);
-    int retry = 0;
-    while (retry < 3 &&
-        $(#integration_testing_email_detailed_divider).hitTestable().exists) {
-      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
-      retry++;
-    }
+    await waitForCondition(
+      () => $(#integration_testing_email_detailed_divider).hitTestable().exists,
+    );
 
     await $.scrollUntilVisible(
       finder: $(#integration_testing_email_detailed_divider),
@@ -78,7 +76,7 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
       delta: 150,
       maxScrolls: 100,
     );
-    await $.pumpAndSettle();
+    await $.pumpAndTrySettle();
 
     expect($(EmailSubjectWidget).visible, isFalse);
   }

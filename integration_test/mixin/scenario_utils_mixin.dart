@@ -41,6 +41,7 @@ import '../extensions/patrol_file_extensions.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_identity.dart';
 import '../resources/test_images.dart';
+import '../utils/wait_for_condition.dart';
 
 mixin ScenarioUtilsMixin {
   Future<void> provisionEmail(
@@ -51,25 +52,10 @@ mixin ScenarioUtilsMixin {
   }) async {
     ComposerBindings().dependencies();
 
-    MailboxDashBoardController? mailboxDashBoardController;
-    int retry = 0;
-    while (retry < 3) {
-      await Future.delayed(Duration(seconds: retry + 1));
-      if (getBinding<MailboxDashBoardController>() == null) {
-        retry++;
-        continue;
-      } else {
-        mailboxDashBoardController = getBinding<MailboxDashBoardController>();
-        break;
-      }
-    }
-    if (mailboxDashBoardController == null ||
-        mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null) {
-      throw StateError(
-        'MailboxDashBoardController is not ready for provisioning email.',
-      );
-    }
+    await waitForCondition(
+      () => getBinding<MailboxDashBoardController>() != null,
+    );
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
         Get.find<CreateNewAndSendEmailInteractor>();
     final threadController = Get.find<ThreadController>();
@@ -87,7 +73,7 @@ mixin ScenarioUtilsMixin {
       return await createNewAndSendEmailInteractor
           .execute(
             createEmailRequest: CreateEmailRequest(
-              session: mailboxDashBoardController!.sessionCurrent!,
+              session: mailboxDashBoardController.sessionCurrent!,
               accountId: mailboxDashBoardController.accountId.value!,
               emailActionType: EmailActionType.compose,
               ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,

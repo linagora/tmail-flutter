@@ -8,6 +8,7 @@ import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
 import '../../robots/labels/label_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
@@ -68,14 +69,21 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
   }) async {
     final tagDisplayName = label.safeDisplayName;
     await $(EmailTileBuilder).waitUntilVisible();
-    for (int i = 0; i < 5; i++) {
-      final count = $.tester.widgetList<EmailTileBuilder>(
-        $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
-            widget.presentationEmail.subject?.contains(tagDisplayName) == true),
-      ).length;
-      if (count >= emailCount) break;
-      await $.pump(const Duration(seconds: 1));
-    }
+    await waitForCondition(
+      () {
+        final count = $.tester
+            .widgetList<EmailTileBuilder>(
+              $(EmailTileBuilder).which<EmailTileBuilder>(
+                (widget) {
+                  final subject = widget.presentationEmail.subject;
+                  return subject?.contains(tagDisplayName) == true;
+                },
+              ),
+            )
+            .length;
+        return count >= emailCount;
+      },
+    );
 
     final listEmailTileWithTag = $.tester.widgetList<EmailTileBuilder>(
       $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>

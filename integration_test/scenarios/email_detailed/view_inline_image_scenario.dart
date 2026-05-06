@@ -11,6 +11,7 @@ import '../../base/base_test_scenario.dart';
 import '../../resources/image_resources.dart';
 import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class ViewInlineImageScenario extends BaseTestScenario {
 
@@ -78,16 +79,13 @@ class ViewInlineImageScenario extends BaseTestScenario {
         currentHtmlContent.contains('data:image/') &&
         currentHtmlContent.contains(';base64') &&
         currentHtmlContent.contains('cid:');
-    int retry = 0;
-    while (retry < 3) {
-      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
-      currentHtmlContent =
-          await getBinding<ComposerController>()?.getContentInEditor() ?? '';
-      if (conditionPassed()) {
-        break;
-      }
-      retry++;
-    }
+    await waitForCondition(
+      () async {
+        currentHtmlContent =
+            await getBinding<ComposerController>()?.getContentInEditor() ?? '';
+        return conditionPassed();
+      },
+    );
     expect(conditionPassed(), isTrue);
   }
 

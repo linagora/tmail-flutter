@@ -9,6 +9,7 @@ import '../../base/base_test_scenario.dart';
 import '../../resources/test_images.dart';
 import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
   const ComposerUploadAttachmentAndInlineImageScenario(super.$, super.robots);
@@ -41,17 +42,13 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
   }
 
   Future<void> _expectInline() async {
-    int retry = 0;
-    while (retry < 3) {
-      await $.pumpAndTrySettle(duration: Duration(seconds: retry + 1));
-      final currentHtmlContent = await Get
-        .find<ComposerController>()
-        .getContentInEditor();
-      if (currentHtmlContent.contains(TestImages.base64)) {
-        break;
-      }
-      retry++;
-    }
+    await waitForCondition(
+      () async {
+        final currentHtmlContent =
+            await Get.find<ComposerController>().getContentInEditor();
+        return currentHtmlContent.contains(TestImages.base64);
+      },
+    );
     final currentHtmlContent = await Get
       .find<ComposerController>()
       .getContentInEditor();

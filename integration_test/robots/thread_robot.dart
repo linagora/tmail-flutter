@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../utils/wait_for_condition.dart';
 
 class ThreadRobot extends CoreRobot {
   ThreadRobot(super.$);
@@ -127,20 +128,12 @@ class ThreadRobot extends CoreRobot {
     await $(AppLocalizations().deleteAllSpamEmails).tap();
   }
 
-  Future<void> longPressEmailWithSubject(String subject) async {
-    int retry = 0;
-    while (retry < 3) {
-      await $(subject).longPress();
-      if ($(#moreAction_selected_email_button).exists) {
-        return;
-      } else {
-        retry++;
-      }
-    }
-    throw TestFailure(
-      'Failed to select email with subject "$subject" after 3 attempts.',
-    );
-  }
+  Future<void> longPressEmailWithSubject(String subject) => waitForCondition(
+        () async {
+          await $(subject).longPress();
+          return $(#moreAction_selected_email_button).exists;
+        },
+      );
 
   Future<void> moveEmailToMailboxWithName(String mailboxName) async {
     await $(#moreAction_selected_email_button).tap();
