@@ -7,6 +7,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
@@ -225,6 +226,23 @@ class ComposerArguments extends RouterArguments {
   SendingEmailActionType get sendingEmailActionType => sendingEmail != null
     ? SendingEmailActionType.edit
     : SendingEmailActionType.create;
+
+  factory ComposerArguments.fromComposerPersistentCache(ComposerPersistentCache cache) =>
+    ComposerArguments(
+      emailActionType: EmailActionType.restoreComposerFromPersistentCache,
+      presentationEmail: cache.email?.toPresentationEmail(),
+      emailContents: cache.email?.emailContentList.asHtmlString,
+      attachments: cache.email?.allAttachments.getListAttachmentsDisplayedOutside(
+        cache.email?.htmlBodyAttachments ?? [],
+      ),
+      selectedIdentityId: cache.email?.identityIdFromHeader,
+      inlineImages: cache.email?.allAttachments.listAttachmentsDisplayedInContent,
+      hasRequestReadReceipt: cache.hasRequestReadReceipt,
+      isMarkAsImportant: cache.isMarkAsImportant,
+      composerId: cache.composerId,
+      savedActionType: cache.actionType,
+      savedEmailDraftId: cache.draftEmailId,
+    );
 
   factory ComposerArguments.fromUnsubscribeMailtoLink({
     List<EmailAddress>? listEmailAddress,

@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
@@ -753,6 +754,126 @@ void main() {
             equals(savedEmailDraft.asString().hashCode),
           );
         });
+      });
+    });
+
+    group('markCleanClose - platform guard:', () {
+      // composerController has composerId = null in this test setup.
+      // _autoSaveNotifier() returns null for null composerId, so no provider
+      // entry is created regardless of platform. These tests verify that
+      // markCleanClose() does not throw and behaves safely on all platforms.
+
+      test(
+        'Should not throw on web\n'
+        'When composerId is null',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        expect(
+          () => composerController?.markCleanClose(),
+          returnsNormally,
+        );
+      });
+
+      test(
+        'Should not throw on non-web\n'
+        'When composerId is null',
+      () {
+        PlatformInfo.isTestingForWeb = false;
+
+        expect(
+          () => composerController?.markCleanClose(),
+          returnsNormally,
+        );
+      });
+    });
+
+    group('tearDownMobileAutoSave safety:', () {
+      // tearDownMobileAutoSave is only called on Android (onClose guard).
+      // With composerId = null, disposeMobileAutoSave cancels any timers and
+      // invalidate is skipped. Verify no exception is thrown.
+      test(
+        'Should not throw\n'
+        'When composerId is null and timers are not started',
+      () {
+        expect(
+          () => composerController?.tearDownMobileAutoSave(),
+          returnsNormally,
+        );
+      });
+    });
+
+    group('buildCreateEmailRequestForAutoSave htmlContent override:', () {
+      // ADR-0086 Layer 1: _saveSnapshotToCache always passes effectiveContent
+      // (fresh or lastKnownHtmlContent fallback) as htmlContent so getText()
+      // is never called a second time inside buildCreateEmailRequestForAutoSave.
+
+      const fallbackHtml = '<p>last known content</p>';
+      const editorHtml = '<p>live editor content</p>';
+
+      void arrangeComposerState() {
+        final args = ComposerArguments(
+          emailActionType: EmailActionType.compose,
+          displayMode: ScreenDisplayMode.normal,
+        );
+        composerController?.composerArguments.value = args;
+        composerController?.currentEmailActionType = EmailActionType.compose;
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((i) async =>
+            i.namedArguments[const Symbol('emailContent')] as String);
+      }
+
+      test(
+        'Should use provided htmlContent\n'
+        'When htmlContent is non-empty — getText() must not be called',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave(htmlContent: fallbackHtml);
+
+        expect(request, isNotNull);
+        expect(request?.emailContent, equals(fallbackHtml));
+        verifyNever(mockHtmlEditorApi.getText());
+      });
+
+      test(
+        'Should call getContentInEditor\n'
+        'When htmlContent is null',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        when(mockHtmlEditorApi.getText())
+            .thenAnswer((_) async => editorHtml);
+
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave();
+
+        expect(request, isNotNull);
+        verify(mockHtmlEditorApi.getText()).called(greaterThanOrEqualTo(1));
+      });
+
+      test(
+        'Should use empty string and not call getText()\n'
+        'When htmlContent is empty — ensures _saveSnapshotToCache never triggers a second getText() call',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave(htmlContent: '');
+
+        expect(request, isNotNull);
+        expect(request?.emailContent, equals(''));
+        verifyNever(mockHtmlEditorApi.getText());
       });
     });
   });

@@ -18,7 +18,11 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     PresentationEmail? selectedEmail,
     BuildContext? context,
   ) {
-    if (selectedEmail?.id == null && mailboxDashBoardController.isEmailOpened) {
+    final selectedPresentationEmail = selectedEmail;
+    final selectedPresentationEmailId = selectedPresentationEmail?.id;
+    final selectedPresentationEmailThreadId = selectedPresentationEmail?.threadId;
+
+    if (selectedPresentationEmailId == null && mailboxDashBoardController.isEmailOpened) {
       closeThreadDetailAction();
       return;
     }
@@ -27,23 +31,23 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     onKeyboardShortcutInit();
     scrollController ??= ScrollController();
 
-    if (currentExpandedEmailId.value == null) {
+    if (currentExpandedEmailId.value == null && selectedPresentationEmail != null && selectedPresentationEmailId != null) {
       loadThreadOnThreadChanged = isThreadDetailEnabled;
-      _preloadSelectedEmail(selectedEmail!);
+      _preloadSelectedEmail(selectedPresentationEmail);
       return;
     }
 
     // Thread setting updated, no need to dispose current single email controller
-    if (currentExpandedEmailId.value == selectedEmail!.id) {
-      _preloadSelectedEmail(selectedEmail);
+    if (currentExpandedEmailId.value == selectedPresentationEmailId && selectedPresentationEmail != null) {
+      _preloadSelectedEmail(selectedPresentationEmail);
 
-      if (isThreadDetailEnabled && selectedEmail.threadId != null) {
-        final mailboxContain = selectedEmail.findMailboxContain(
+      if (isThreadDetailEnabled && selectedPresentationEmailThreadId != null) {
+        final mailboxContain = selectedPresentationEmail.findMailboxContain(
           mailboxDashBoardController.mapMailboxById,
         );
         mailboxDashBoardController.dispatchThreadDetailUIAction(
           LoadThreadDetailAfterSelectedEmailAction(
-            selectedEmail.threadId!,
+            selectedPresentationEmailThreadId,
             isSentMailbox: mailboxContain?.isSent == true,
           )
         );
@@ -60,7 +64,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     }
 
     loadThreadOnThreadChanged = isThreadDetailEnabled;
-    _preloadSelectedEmail(selectedEmail);
+
+    if (selectedPresentationEmail != null) {
+      _preloadSelectedEmail(selectedPresentationEmail);
+    }
   }
 
   void _preloadSelectedEmail(PresentationEmail selectedEmail) {

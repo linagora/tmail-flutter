@@ -3,6 +3,7 @@ import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
@@ -82,7 +83,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/hi
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_app_grid_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/app_grid_repository_impl.dart';
@@ -112,6 +112,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_l
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/email_action_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/linagora_ecosystem_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mobile_mailbox_dashboard_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/web_mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -169,7 +171,19 @@ import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.da
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
-class MailboxDashBoardBindings extends BaseBindings {
+abstract class MailboxDashBoardBindings extends BaseBindings {
+
+  MailboxDashBoardBindings.base();
+
+  factory MailboxDashBoardBindings() {
+    if (PlatformInfo.isWeb) {
+      return WebMailboxDashboardBindings();
+    }
+    return MobileMailboxDashboardBindings();
+  }
+
+  void bindPlatformDatasourceImpl();
+  void bindPlatformDatasource();
 
   @override
   void dependencies() {
@@ -269,12 +283,12 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
-    Get.lazyPut<ComposerCacheDatasource>(() => Get.find<ComposerSessionCacheDatasourceImpl>());
     Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
     Get.lazyPut<ServerSettingsDataSource>(
       () => Get.find<RemoteServerSettingsDataSourceImpl>());
     Get.lazyPut<IdentityCreatorDataSource>(() => Get.find<LocalIdentityCreatorDataSourceImpl>());
     Get.lazyPut<AppGridDatasource>(() => Get.find<AppGridDatasourceImpl>());
+    bindPlatformDatasource();
   }
 
   @override
@@ -317,8 +331,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => ComposerSessionCacheDatasourceImpl(
-      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LocalSpamReportDataSourceImpl(
       Get.find<PreferencesSettingManager>(),
       Get.find<CacheExceptionThrower>(),
@@ -357,6 +369,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<AppConfigLoader>(),
       Get.find<CacheExceptionThrower>(),
     ));
+    bindPlatformDatasourceImpl();
   }
 
   @override
