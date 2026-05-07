@@ -411,6 +411,8 @@ class ComposerBindings extends BaseBindings {
     Get.delete<CreateNewAndSendEmailInteractor>(tag: composerId);
     Get.delete<CreateNewAndSaveEmailToDraftsInteractor>(tag: composerId);
     Get.delete<RestoreEmailInlineImagesInteractor>(tag: composerId);
+    Get.delete<HtmlEmailTransformerAdapter>(tag: composerId);
+    Get.delete<HtmlEmailTransformer>(tag: composerId);
     Get.delete<PrintEmailInteractor>(tag: composerId);
     Get.delete<SaveTemplateEmailInteractor>(tag: composerId);
 

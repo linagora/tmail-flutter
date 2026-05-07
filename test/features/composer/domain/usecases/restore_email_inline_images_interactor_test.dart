@@ -55,7 +55,9 @@ void main() {
         mapUrlDownloadCID: mapCid,
       ).map((either) => either.fold((f) => f, (s) => s)).toList();
 
-      expect(states.last, isA<RestoreEmailInlineImagesFailure>());
+       expect(states, hasLength(2));
+       expect(states[0], isA<RestoringEmailInlineImages>());
+       expect(states[1], isA<RestoreEmailInlineImagesFailure>());
     });
   });
 }

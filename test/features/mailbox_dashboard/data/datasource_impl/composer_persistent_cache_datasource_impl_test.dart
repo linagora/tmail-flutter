@@ -63,4 +63,16 @@ void main() {
       verify(mockCacheClient.deleteCache(accountId, userName)).called(1);
     });
   });
+
+  group('removeComposerCacheById', () {
+    test('delegates to cache client', () async {
+      const composerId = 'composer-uuid-1';
+      when(mockCacheClient.deleteCacheById(accountId, userName, composerId))
+          .thenAnswer((_) async {});
+
+      await datasource.removeComposerCacheById(accountId, userName, composerId);
+
+      verify(mockCacheClient.deleteCacheById(accountId, userName, composerId)).called(1);
+    });
+  });
 }

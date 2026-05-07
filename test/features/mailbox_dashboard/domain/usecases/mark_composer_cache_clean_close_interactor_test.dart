@@ -103,8 +103,9 @@ void main() {
           userName,
           any,
         )).thenAnswer((_) async {});
+        final exception = Exception('remove failed');
         when(mockRepository.removeAllComposerCache(accountId, userName))
-            .thenThrow(Exception('remove failed'));
+            .thenThrow(exception);
 
         final result = await interactor.execute(accountId, userName);
 
@@ -116,8 +117,7 @@ void main() {
         result.fold(
           (f) {
             expect(f, isA<MarkComposerCacheCleanCloseFailure>());
-            expect((f as MarkComposerCacheCleanCloseFailure).exception,
-                isA<Exception>());
+            expect((f as MarkComposerCacheCleanCloseFailure).exception, exception);
           },
           (_) => fail('expected Left'),
         );

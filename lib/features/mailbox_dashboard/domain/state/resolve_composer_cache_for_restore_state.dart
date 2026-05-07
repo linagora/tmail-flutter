@@ -15,6 +15,6 @@ class ResolveComposerCacheForRestoreSuccess extends UIState {
 }
 
 class ResolveComposerCacheForRestoreFailure extends FeatureFailure {
-  ResolveComposerCacheForRestoreFailure(Object exception)
+  ResolveComposerCacheForRestoreFailure(dynamic exception)
       : super(exception: exception);
 }

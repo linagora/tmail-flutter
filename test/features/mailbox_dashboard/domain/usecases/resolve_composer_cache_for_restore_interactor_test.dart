@@ -174,5 +174,15 @@ void main() {
         );
       });
     });
+
+    test('returns the cache when isCleanClose is null (crash snapshot)', () async {
+      final cache = makeCache(isCleanClose: null);  // null means clean-close was never written
+      when(mockRepository.getComposerCache(accountId, userName))
+          .thenAnswer((_) async => [cache]);
+
+      final result = await interactor.execute(accountId, userName);
+
+      expectRightWithoutRemoveAll(result, expectedCache: cache);
+    });
   });
 }

@@ -7,11 +7,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_per
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/resolve_composer_cache_for_restore_state.dart';
 
-/// Fetches, validates, and cleans up the composer cache in one pass.
+/// Fetches and validates the newest composer cache entry.
 ///
 /// Returns [ResolveComposerCacheForRestoreSuccess] with a non-null [cache]
-/// when a restorable snapshot exists.  Stale or clean-close entries are
-/// removed as a side-effect so Hive stays lean.
+/// when a restorable snapshot exists.  All entries are removed when the
+/// newest cache is absent or not restorable.
 class ResolveComposerCacheForRestoreInteractor {
   final ComposerCacheRepository _repository;
 
