@@ -118,6 +118,11 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     try {
       final payload = await _resolveRestorePayload();
       if (payload == null) return;
+      // Re-check after the async gap: the user may have closed the composer
+      // while _resolveRestorePayload was awaiting. isClosed covers the case
+      // where onClose() already ran (notifier invalidated → fresh isCleanClose=false);
+      // isCleanClose covers the window between markCleanClose() and onClose().
+      if (isClosed || _autoSaveNotifier()?.isCleanClose == true) return;
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: restoring from cache');
       await payload.api.setText(payload.html);
       // Keep the fallback snapshot in sync: if the editor dies before the next
