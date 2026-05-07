@@ -104,14 +104,11 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   Widget _buildNeedsActionWidget(BuildContext context) {
     final canRemove = widget.onDeleteNeedsAction != null;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 1),
-      child: AiActionTagWidget(
-        actionWidget: canRemove ? _buildRemoveNeedsActionWidget() : null,
-        padding: canRemove
-            ? const EdgeInsetsDirectional.only(start: 4, end: 2)
-            : null,
-      ),
+    return AiActionTagWidget(
+      actionWidget: canRemove ? _buildRemoveNeedsActionWidget() : null,
+      padding: canRemove
+          ? const EdgeInsetsDirectional.only(start: 4, end: 2)
+          : null,
     );
   }
 
