@@ -166,17 +166,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     final interactor =
         mailboxDashBoardController.removeALabelFromAnEmailInteractor;
 
-    if (session == null) {
-      toastManager.showMessageFailure(
-          RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
-      return;
-    }
-    if (accountId == null) {
-      toastManager.showMessageFailure(
-          RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
-      return;
-    }
-    if (interactor == null) {
+    if (session == null || accountId == null || interactor == null) {
       toastManager.showMessageFailure(
           RemoveALabelFromAnEmailFailure(labelDisplay: labelDisplay));
       return;
