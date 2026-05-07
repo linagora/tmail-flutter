@@ -332,7 +332,7 @@ v.push(C.cI)
 return A.cZ(r,A.a7(r,new A.cu(C.a3,r,C.Z,C.F,A.c([A.aC(v,C.o,C.l,C.z,0,C.u),A.kt(r,A.bK(C.t,r,24,r,r,r,"assets/images/ic_composer_close.svg",C.d9,22,r,r,1/0,r,s.w,C.fk,r,r),6,r,6,r)],w),r),C.k,r,r,new A.ba(C.m,r,r,C.m1,x,r,r,C.B),r,r,r,r,r,r,r,260),C.O,!1,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,q,r,r,r,r,r,r,r,r,!1,C.a2)}}
 B.baQ.prototype={
 t(d){var x,w,v,u,t,s,r,q=this,p=null,o=q.r
-if(o==null)o=D.aqW
+if(o==null)o=D.aqX
 x=A.eY(8)
 $.q()
 w=$.b
@@ -568,8 +568,8 @@ D.p0=new A.E(1,0.9176470588235294,0.9294117647058824,0.9490196078431372,C.j)
 D.Ge=new A.ba(D.p0,null,null,C.bM,null,null,null,C.B)
 D.wp=new A.be(100,100)
 D.FZ=new A.dw(D.wp,D.wp,D.wp,D.wp)
-D.aPb=new A.C(0,0.5)
-D.aax=new A.c7(1,C.U,C.hZ,D.aPb,1)
+D.aPc=new A.C(0,0.5)
+D.aax=new A.c7(1,C.U,C.hZ,D.aPc,1)
 D.Hp=new A.E(1,1,0.9607843137254902,0.7607843137254902,C.j)
 D.ag0=new A.E(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
 D.ahU=new A.E(1,0.5019607843137255,0.7411764705882353,1,C.j)
@@ -578,12 +578,12 @@ D.apL=new A.aB(30,0,30,0)
 D.Jv=new A.aB(40,0,40,0)
 D.jx=new A.aB(8,0,8,0)
 D.JB=new A.aB(8,4,8,0)
-D.zP=new A.aG(0,6,0,6)
-D.aqW=new A.aG(12,5,12,5)
-D.mI=new A.aG(16,12,16,12)
-D.zT=new A.aG(8,3,8,3)
-D.bdE=x([],A.aq("N<vN>"))
+D.zP=new A.aE(0,6,0,6)
+D.aqX=new A.aE(12,5,12,5)
+D.mI=new A.aE(16,12,16,12)
+D.zT=new A.aE(8,3,8,3)
+D.bdF=x([],A.aq("N<vN>"))
 D.w3=new B.S2(null)
 D.Z3=new A.rJ("mailbox_list",A.aq("rJ<h>"))})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"f8X","e4s",()=>A.c([A.XN(20,C.U,C.n.an(0.15),C.q,0)],y.V))})()};
-(a=>{a["CLVKqKm1Wa29Cwdg7l9ZVb+IOhA="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["23JYf4OnlkxqfkOEsRA8w6Qw5U8="]=a.current})($__dart_deferred_initializers__);
