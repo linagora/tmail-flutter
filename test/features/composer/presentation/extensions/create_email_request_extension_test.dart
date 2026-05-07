@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -9,6 +10,9 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/create_email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
@@ -264,6 +268,98 @@ void main() {
         KeyWordIdentifier.emailFlagged: true,
         KeyWordIdentifier.emailAnswered: true,
         KeyWordIdentifier.emailForwarded: true,
+      });
+    });
+  });
+
+  group('generateComposerCache', () {
+    CreateEmailRequest makeRequest({String? composerId}) => CreateEmailRequest(
+          session: SessionFixtures.aliceSession,
+          accountId: AccountFixtures.aliceAccountId,
+          emailActionType: EmailActionType.compose,
+          ownEmailAddress: 'alice@domain.tld',
+          subject: 'Test',
+          emailContent: '<p>Hello</p>',
+          composerId: composerId,
+        );
+
+    group('when isPersistent is true', () {
+      test('returns ComposerPersistentCache', () {
+        final cache = makeRequest().generateComposerCache(
+          emailCreated: Email(),
+          isPersistent: true,
+        );
+
+        expect(cache, isA<ComposerPersistentCache>());
+      });
+
+      test('sets actionType to restoreComposerFromPersistentCache', () {
+        final cache = makeRequest().generateComposerCache(
+          emailCreated: Email(),
+          isPersistent: true,
+        ) as ComposerPersistentCache;
+
+        expect(cache.actionType,
+            EmailActionType.restoreComposerFromPersistentCache);
+      });
+
+      test('sets isCleanClose to false', () {
+        final cache = makeRequest().generateComposerCache(
+          emailCreated: Email(),
+          isPersistent: true,
+        ) as ComposerPersistentCache;
+
+        expect(cache.isCleanClose, isFalse);
+      });
+
+      test('sets timestampMs to a value within the current second', () {
+        final before = DateTime.now().millisecondsSinceEpoch;
+        final cache = makeRequest().generateComposerCache(
+          emailCreated: Email(),
+          isPersistent: true,
+        ) as ComposerPersistentCache;
+        final after = DateTime.now().millisecondsSinceEpoch;
+
+        expect(cache.timestampMs, isNotNull);
+        expect(cache.timestampMs, greaterThanOrEqualTo(before));
+        expect(cache.timestampMs, lessThanOrEqualTo(after));
+      });
+
+      test('includes the generated email', () {
+        final email = Email();
+        final cache = makeRequest().generateComposerCache(
+          emailCreated: email,
+          isPersistent: true,
+        );
+
+        expect(cache.email, same(email));
+      });
+
+      test('preserves composerId from the request', () {
+        const composerId = 'uuid-composer-abc';
+        final cache = makeRequest(composerId: composerId).generateComposerCache(
+          emailCreated: Email(),
+          isPersistent: true,
+        );
+
+        expect(cache.composerId, composerId);
+      });
+    });
+
+    group('when isPersistent is false (default)', () {
+      test('returns plain ComposerCache, not ComposerPersistentCache', () {
+        final cache =
+            makeRequest().generateComposerCache(emailCreated: Email());
+
+        expect(cache, isA<ComposerCache>());
+        expect(cache, isNot(isA<ComposerPersistentCache>()));
+      });
+
+      test('preserves displayMode from the request', () {
+        final cache =
+            makeRequest().generateComposerCache(emailCreated: Email());
+
+        expect(cache.displayMode, ScreenDisplayMode.normal);
       });
     });
   });

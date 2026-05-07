@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -236,7 +237,20 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
   ComposerCache generateComposerCache({
     required Email emailCreated,
+    bool isPersistent = false,
   }) {
+    if (isPersistent) {
+      return ComposerPersistentCache(
+        email: emailCreated,
+        hasRequestReadReceipt: hasRequestReadReceipt,
+        isMarkAsImportant: isMarkAsImportant,
+        actionType: EmailActionType.restoreComposerFromPersistentCache,
+        draftEmailId: draftsEmailId,
+        composerId: composerId,
+        isCleanClose: false,
+        timestampMs: DateTime.now().millisecondsSinceEpoch,
+      );
+    }
     return ComposerCache(
       email: emailCreated,
       hasRequestReadReceipt: hasRequestReadReceipt,

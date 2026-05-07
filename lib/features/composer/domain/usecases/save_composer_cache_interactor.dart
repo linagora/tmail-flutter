@@ -18,6 +18,7 @@ class SaveComposerCacheInteractor {
 
   Future<Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
+    bool isPersistent = false,
   }) async {
     try {
       final emailCreated = await _composerRepository.generateEmail(
@@ -29,6 +30,7 @@ class SaveComposerCacheInteractor {
       final userName = createEmailRequest.session.username;
       final composerCache = createEmailRequest.generateComposerCache(
         emailCreated: emailCreated,
+        isPersistent: isPersistent,
       );
       await _composerCacheRepository.saveComposerCache(
         accountId,
