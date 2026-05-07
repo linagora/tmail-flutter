@@ -40,10 +40,10 @@ class SentryConfig {
   final String? dist;
 
   // Release Health: The sampling rate for sessions (0.0 to 1.0). Defines the percentage of sessions to send.
-  final double sessionSampleRate;
+  final double? sessionSampleRate;
 
   // Error tracking: The sampling rate for errors (0.0 to 1.0). If set to 0.1, only 10% of errors are sent.
-  final double onErrorSampleRate;
+  final double? onErrorSampleRate;
 
   // Performance: Tracks UI rendering performance (slow and frozen frames).
   final bool enableFramesTracking;
@@ -54,8 +54,8 @@ class SentryConfig {
     required this.release,
     this.tracesSampleRate = 0.1,
     this.profilesSampleRate = 0.1,
-    this.sessionSampleRate = 1.0,
-    this.onErrorSampleRate = 1.0,
+    this.sessionSampleRate,
+    this.onErrorSampleRate,
     this.enableLogs = true,
     this.enableFramesTracking = true,
     this.isDebug = BuildUtils.isDebugMode,
