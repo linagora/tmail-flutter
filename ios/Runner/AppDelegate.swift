@@ -4,7 +4,7 @@ import receive_sharing_intent
 import flutter_local_notifications
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
 
     var notificationInteractionChannel: FlutterMethodChannel?
     var fcmMethodChannel: FlutterMethodChannel?
@@ -14,11 +14,6 @@ import flutter_local_notifications
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        GeneratedPluginRegistrant.register(with: self)
-        
-        createNotificationInteractionChannel()
-        createFcmMethodChannel()
-        
         if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
            let emailId = payload[JmapConstants.EMAIL_ID] as? String,
            !emailId.isEmpty {
@@ -46,9 +41,12 @@ import flutter_local_notifications
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
-    
-    override func applicationDidEnterBackground(_ application: UIApplication) {
-        updateApplicationStateInUserDefaults(false)
+
+    func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+        GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+        
+        createNotificationInteractionChannel(engineBridge.applicationRegistrar.messenger())
+        createFcmMethodChannel(engineBridge.applicationRegistrar.messenger())
     }
     
     override func applicationWillTerminate(_ application: UIApplication) {
@@ -68,11 +66,6 @@ import flutter_local_notifications
         }
         
         return super.application(app, open: url, options:options)
-    }
-    
-    override func applicationDidBecomeActive(_ application: UIApplication) {
-        removeAppBadger()
-        updateApplicationStateInUserDefaults(true)
     }
     
     private func handleEmailAndress(open url: URL) -> URL? {
@@ -150,22 +143,10 @@ extension AppDelegate {
         }
     }
     
-    private func removeAppBadger() {
-        TwakeLogger.shared.log(message: "AppDelegate::removeAppBadger")
-        if #available(iOS 16.0, *) {
-            UNUserNotificationCenter.current().setBadgeCount(0)
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = 0
-            
-        }
-    }
-    
-    private func createNotificationInteractionChannel() {
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        
+    private func createNotificationInteractionChannel(_ binaryMessenger: FlutterBinaryMessenger) {
         self.notificationInteractionChannel = FlutterMethodChannel(
             name: CoreUtils.NOTIFICATION_INTERACTION_CHANNEL_NAME,
-            binaryMessenger: controller.binaryMessenger
+            binaryMessenger: binaryMessenger
         )
         
         self.notificationInteractionChannel?.setMethodCallHandler { (call, result) in
@@ -179,12 +160,10 @@ extension AppDelegate {
         }
     }
     
-    private func createFcmMethodChannel() {
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        
+    private func createFcmMethodChannel(_ binaryMessenger: FlutterBinaryMessenger) {
         self.fcmMethodChannel = FlutterMethodChannel(
             name: CoreUtils.FCM_METHOD_CHANNEL_NAME,
-            binaryMessenger: controller.binaryMessenger
+            binaryMessenger: binaryMessenger
         )
     }
     

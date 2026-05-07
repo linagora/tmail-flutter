@@ -76,10 +76,11 @@ dependencies:
       url: https://github.com/linagora/jmap-dart-client.git
       ref: main
 
+  # TODO: Revert when https://github.com/linagora/flutter_contacts/pull/13 is merged
   contacts_service:
     git:
       url: https://github.com/linagora/flutter_contacts.git
-      ref: master
+      ref: hotfix/migrate-ios-26
 
   receive_sharing_intent:
     git:

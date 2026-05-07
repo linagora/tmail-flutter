@@ -17,6 +17,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		B561AD69C2BE6DF40BF29406 /* Pods_TwakeMailNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA243B93F65E4E3CD7DC0348 /* Pods_TwakeMailNSE.framework */; };
+		C06B95712FAC780E009C15B4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B95702FAC7800009C15B4 /* SceneDelegate.swift */; };
 		CDFECA8C54311B749F044831 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5810EDDA99BEFEACD742F507 /* Pods_Runner.framework */; };
 		F522E87F2C0EE23400DDA35B /* AuthenticationSSOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E87E2C0EE23400DDA35B /* AuthenticationSSOTests.swift */; };
 		F522E8812C0EE3F200DDA35B /* AuthenticationSSO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */; };
@@ -147,6 +148,7 @@
 		AF31502A83CA492E27C36A7B /* Pods-TwakeMailNSE.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwakeMailNSE.profile.xcconfig"; path = "Target Support Files/Pods-TwakeMailNSE/Pods-TwakeMailNSE.profile.xcconfig"; sourceTree = "<group>"; };
 		B2EAFF659572E6B9F5AFAAF8 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		BC08294F5AE09BF8CC592AD1 /* Pods-TeamMailShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TeamMailShareExtension.release.xcconfig"; path = "Target Support Files/Pods-TeamMailShareExtension/Pods-TeamMailShareExtension.release.xcconfig"; sourceTree = "<group>"; };
+		C06B95702FAC7800009C15B4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		EA243B93F65E4E3CD7DC0348 /* Pods_TwakeMailNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwakeMailNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F522E87E2C0EE23400DDA35B /* AuthenticationSSOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSSOTests.swift; sourceTree = "<group>"; };
 		F522E8852C0EE8B600DDA35B /* CoreUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreUtils.swift; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				C06B95702FAC7800009C15B4 /* SceneDelegate.swift */,
 				4D124E74293A67D900BA5186 /* RunnerProfile.entitlements */,
 				F52F993D27FD733C00346091 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
@@ -836,6 +839,7 @@
 				F522E8862C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
 				F522E8812C0EE3F200DDA35B /* AuthenticationSSO.swift in Sources */,
 				F522E8822C0EE48700DDA35B /* AuthenticationType.swift in Sources */,
+				C06B95712FAC780E009C15B4 /* SceneDelegate.swift in Sources */,
 				F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */,
 				F5E7D8742B3578F90009BB8A /* JmapConstants.swift in Sources */,
 				F522E8832C0EE48C00DDA35B /* Authentication.swift in Sources */,
