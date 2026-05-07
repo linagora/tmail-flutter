@@ -6,11 +6,13 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AiActionTagWidget extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
   final Widget? actionWidget;
 
   const AiActionTagWidget({
     super.key,
     this.margin,
+    this.padding,
     this.actionWidget,
   });
 
@@ -24,6 +26,7 @@ class AiActionTagWidget extends StatelessWidget {
       showTooltip: PlatformInfo.isWeb,
       actionWidget: actionWidget,
       margin: margin,
+      padding: padding,
     );
   }
 }
