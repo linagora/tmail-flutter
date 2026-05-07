@@ -40,7 +40,13 @@ extension HandleComposerRestoreOnMobileExtension on MailboxDashBoardController {
         log('HandleComposerRestoreOnMobileExtension::_resolveRestorableCache: failure=${failure.runtimeType}');
         return null;
       },
-      (success) => (success as ResolveComposerCacheForRestoreSuccess).cache,
+      (success) {
+        if (success is ResolveComposerCacheForRestoreSuccess) {
+          return success.cache;
+        }
+        log('HandleComposerRestoreOnMobileExtension::_resolveRestorableCache: unexpected success type=${success.runtimeType}');
+        return null;
+      }
     );
   }
 }

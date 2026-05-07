@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 
 void main() {
@@ -46,6 +47,26 @@ void main() {
     }
 
     group('isRestorable', () {
+      test('returns true when email is set, not expired, and not a clean close', () {
+        final cache = makeCache(
+          email: Email(),
+          isCleanClose: false,
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect(cache.isRestorable, isTrue);
+      });
+
+      test('returns true when isCleanClose is null (involuntary kill)', () {
+        final cache = makeCache(
+          email: Email(),
+          isCleanClose: null,
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect(cache.isRestorable, isTrue);
+      });
+
       test('returns false when isCleanClose is true', () {
         final cache = makeCache(
           isCleanClose: true,
@@ -62,6 +83,18 @@ void main() {
         );
 
         expect(cache.isEmpty, isTrue);
+        expect(cache.isRestorable, isFalse);
+      });
+
+      test('returns false when cache is expired', () {
+        final cache = makeCache(
+          email: Email(),
+          isCleanClose: false,
+          timestampMs: DateTime.now()
+              .subtract(const Duration(hours: 25))
+              .millisecondsSinceEpoch,
+        );
+
         expect(cache.isRestorable, isFalse);
       });
 
@@ -160,6 +193,57 @@ void main() {
           testCase.verify,
         );
       }
+    });
+
+    group('newestLocalCache extension', () {
+      test('returns null when iterable is empty', () {
+        expect(<ComposerPersistentCache>[].newestLocalCache, isNull);
+      });
+
+      test('returns the single entry when there is only one', () {
+        final cache = makeCache(
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect([cache].newestLocalCache, same(cache));
+      });
+
+      test('returns the entry with the highest timestampMs', () {
+        final older = makeCache(
+          timestampMs: DateTime.now()
+              .subtract(const Duration(hours: 2))
+              .millisecondsSinceEpoch,
+        );
+        final newer = makeCache(
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect([older, newer].newestLocalCache, same(newer));
+        expect([newer, older].newestLocalCache, same(newer));
+      });
+
+      test('ignores plain ComposerCache entries and picks the newest ComposerPersistentCache', () {
+        final plainCache = ComposerCache(email: Email());
+        final persistent = makeCache(
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect([plainCache, persistent].newestLocalCache, same(persistent));
+      });
+
+      test('returns null when iterable contains only plain ComposerCache entries', () {
+        final plain = ComposerCache(email: Email());
+        expect([plain].newestLocalCache, isNull);
+      });
+
+      test('treats null timestampMs as 0 when comparing', () {
+        final noTimestamp = makeCache(timestampMs: null);
+        final withTimestamp = makeCache(
+          timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect([noTimestamp, withTimestamp].newestLocalCache, same(withTimestamp));
+      });
     });
 
     group('JSON serialisation', () {

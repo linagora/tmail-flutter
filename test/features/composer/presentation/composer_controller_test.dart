@@ -768,13 +768,12 @@ void main() {
         'When composerId is null',
       () {
         PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
 
         expect(
           () => composerController?.markCleanClose(),
           returnsNormally,
         );
-
-        PlatformInfo.isTestingForWeb = false;
       });
 
       test(
@@ -792,8 +791,8 @@ void main() {
 
     group('tearDownMobileAutoSave safety:', () {
       // tearDownMobileAutoSave is only called on Android (onClose guard).
-      // With composerId = null, _persistCleanCloseIfNeeded is a no-op and
-      // disposeMobileAutoSave cancels any timers. Verify no exception is thrown.
+      // With composerId = null, disposeMobileAutoSave cancels any timers and
+      // invalidate is skipped. Verify no exception is thrown.
       test(
         'Should not throw\n'
         'When composerId is null and timers are not started',
@@ -802,6 +801,79 @@ void main() {
           () => composerController?.tearDownMobileAutoSave(),
           returnsNormally,
         );
+      });
+    });
+
+    group('buildCreateEmailRequestForAutoSave htmlContent override:', () {
+      // ADR-0086 Layer 1: _saveSnapshotToCache always passes effectiveContent
+      // (fresh or lastKnownHtmlContent fallback) as htmlContent so getText()
+      // is never called a second time inside buildCreateEmailRequestForAutoSave.
+
+      const fallbackHtml = '<p>last known content</p>';
+      const editorHtml = '<p>live editor content</p>';
+
+      void arrangeComposerState() {
+        final args = ComposerArguments(
+          emailActionType: EmailActionType.compose,
+          displayMode: ScreenDisplayMode.normal,
+        );
+        composerController?.composerArguments.value = args;
+        composerController?.currentEmailActionType = EmailActionType.compose;
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((i) async =>
+            i.namedArguments[const Symbol('emailContent')] as String);
+      }
+
+      test(
+        'Should use provided htmlContent\n'
+        'When htmlContent is non-empty — getText() must not be called',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave(htmlContent: fallbackHtml);
+
+        expect(request, isNotNull);
+        expect(request?.emailContent, equals(fallbackHtml));
+        verifyNever(mockHtmlEditorApi.getText());
+      });
+
+      test(
+        'Should call getContentInEditor\n'
+        'When htmlContent is null',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        when(mockHtmlEditorApi.getText())
+            .thenAnswer((_) async => editorHtml);
+
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave();
+
+        expect(request, isNotNull);
+        verify(mockHtmlEditorApi.getText()).called(greaterThanOrEqualTo(1));
+      });
+
+      test(
+        'Should use empty string and not call getText()\n'
+        'When htmlContent is empty — ensures _saveSnapshotToCache never triggers a second getText() call',
+      () async {
+        arrangeComposerState();
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+
+        final request = await composerController
+            ?.buildCreateEmailRequestForAutoSave(htmlContent: '');
+
+        expect(request, isNotNull);
+        expect(request?.emailContent, equals(''));
+        verifyNever(mockHtmlEditorApi.getText());
       });
     });
   });

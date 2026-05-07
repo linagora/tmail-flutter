@@ -52,7 +52,6 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
@@ -100,8 +99,11 @@ abstract class ComposerBindings extends BaseBindings {
   /// composerId for the controller's auto-save feature.
   /// Falls back to route arguments on the phone path so the controller
   /// always receives a composerId for Riverpod provider keying.
-  String? get _autoSaveComposerId =>
-      _composerId ?? (Get.arguments as ComposerArguments?)?.composerId;
+  String? get _autoSaveComposerId {
+    if (_composerId != null) return _composerId;
+    final args = Get.arguments;
+    return args is ComposerArguments ? args.composerId : null;
+  }
 
   void bindPlatformCacheDatasourceImpl();
   void bindPlatformComposerCacheDatasource();
@@ -385,7 +387,6 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<EmailHiveCacheDataSourceImpl>(tag: composerId);
     Get.delete<EmailLocalStorageDataSourceImpl>(tag: composerId);
     Get.delete<EmailSessionStorageDatasourceImpl>(tag: composerId);
-    Get.delete<ComposerSessionCacheDatasourceImpl>(tag: composerId);
     disposePlatformCacheImpl();
 
     Get.delete<AttachmentUploadDataSource>(tag: composerId);
@@ -396,22 +397,16 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<HtmlDataSource>(tag: composerId);
     Get.delete<StateDataSource>(tag: composerId);
     Get.delete<PrintFileDataSource>(tag: composerId);
-    if (composerId != null) {
-      Get.delete<ComposerCacheDatasource>(tag: composerId);
-    }
+    Get.delete<ComposerCacheDatasource>(tag: composerId);
 
     Get.delete<ComposerRepositoryImpl>(tag: composerId);
-    if (composerId != null) {
-      Get.delete<ComposerCacheRepositoryImpl>(tag: composerId);
-    }
+    Get.delete<ComposerCacheRepositoryImpl>(tag: composerId);
     Get.delete<ContactRepositoryImpl>(tag: composerId);
     Get.delete<MailboxRepositoryImpl>(tag: composerId);
     Get.delete<EmailRepositoryImpl>(tag: composerId);
 
     Get.delete<ComposerRepository>(tag: composerId);
-    if (composerId != null) {
-      Get.delete<ComposerCacheRepository>(tag: composerId);
-    }
+    Get.delete<ComposerCacheRepository>(tag: composerId);
     Get.delete<ContactRepository>(tag: composerId);
     Get.delete<MailboxRepository>(tag: composerId);
     Get.delete<EmailRepository>(tag: composerId);
@@ -420,9 +415,7 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
-    if (composerId != null) {
-      Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
-    }
+    Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
     Get.delete<SaveComposerCacheInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);

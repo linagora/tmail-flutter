@@ -36,5 +36,7 @@ class WebComposerBindings extends ComposerBindings {
   }
 
   @override
-  void disposePlatformCacheImpl() {}
+  void disposePlatformCacheImpl() {
+    Get.delete<ComposerSessionCacheDatasourceImpl>(tag: composerId);
+  }
 }

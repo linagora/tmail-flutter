@@ -5,11 +5,9 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/model.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -26,6 +24,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   static const _inactiveGuardDelay = Duration(milliseconds: 300);
 
   void initMobileAutoSave() {
+    if (autoSaveComposerId == null) return;
     mobileAutoSaveLifecycleListener ??= AppLifecycleListener(
       onStateChange: _onLifecycleStateChanged,
     );
@@ -42,15 +41,29 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     mobileAutoSaveLifecycleListener = null;
   }
 
-  // Only sets the flag in notifier state; the actual Hive clean-close write is
-  // deferred to onClose so it runs after all timer/lifecycle teardown.
+  // Sets the in-memory clean-close flag and immediately fires the Hive write
+  // (unawaited). Writing eagerly — before navigation — is safer than deferring
+  // to onClose: the process is still foreground and the isCleanClose flag
+  // already blocks any further snapshot writes, so there is no race.
   // No-op on non-Android: composerAutoSaveProvider is only initialised on
   // Android, so reading it on other platforms would create an orphaned family
   // entry that is never invalidated (memory leak).
   void markCleanClose() {
     if (!PlatformInfo.isAndroid) return;
-    _autoSaveNotifier()?.setCleanClose();
-    log('HandleMobileAutoSaveExtension::markCleanClose: flagged');
+    final notifier = _autoSaveNotifier();
+    if (notifier == null) return;
+    notifier.setCleanClose();
+    _persistCleanCloseToCache();
+    log('HandleMobileAutoSaveExtension::markCleanClose: flagged and persisted');
+  }
+
+  void _persistCleanCloseToCache() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
+    if (accountId == null || userName == null) return;
+    unawaited(appProviderContainer
+        .read(markComposerLocalCacheCleanCloseProvider)
+        .execute(accountId, userName));
   }
 
   ComposerAutoSaveNotifier? _autoSaveNotifier() {
@@ -92,14 +105,14 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       case AppLifecycleState.resumed:
         inactiveGuardTimer?.cancel();
         inactiveGuardTimer = null;
-        unawaited(_restoreIfEditorBlank());
+        unawaited(restoreIfEditorBlank());
         break;
       default:
         break;
     }
   }
 
-  Future<void> _restoreIfEditorBlank() async {
+  Future<void> restoreIfEditorBlank() async {
     try {
       final currentContent = await _fetchEditorContent();
       if (currentContent != null && currentContent.trim().isNotEmpty) return;
@@ -111,7 +124,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       final cache = await _autoSaveNotifier()?.restore(accountId, userName);
       if (cache == null) return;
 
-      log('HandleMobileAutoSaveExtension::_restoreIfEditorBlank: restoring from cache');
+      log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: restoring from cache');
       final restoredHtml = cache.email?.emailContentList.asHtmlString ?? '';
       await htmlEditorApi?.setText(restoredHtml);
       // Keep the fallback snapshot in sync: if the editor dies before the next
@@ -121,13 +134,36 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       // The periodic timer will write a fresh snapshot on the next 30 s tick.
       unawaited(clearComposerMobileSnapshot());
     } catch (e) {
-      log('HandleMobileAutoSaveExtension::_restoreIfEditorBlank: error=$e');
+      log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=$e');
     }
   }
 
-  Future<void> _refreshLastKnownContent(ComposerAutoSaveNotifier notifier) async {
-    final content = await _fetchEditorContent();
-    if (content != null && notifier.mounted) notifier.updateLastKnownContent(content);
+  // Picks the best available content and syncs it to the notifier.
+  // Fresh content from the editor takes priority; falls back to the last
+  // periodic snapshot (ADR-0086 Layer 1 fallback requirement).
+  String _resolveAndSyncContent(
+    String? freshContent,
+    ComposerAutoSaveNotifier notifier,
+  ) {
+    if (freshContent != null && freshContent.isNotEmpty) {
+      if (notifier.mounted) notifier.updateLastKnownContent(freshContent);
+      return freshContent;
+    }
+    return notifier.lastKnownHtmlContent;
+  }
+
+  Future<void> _executeCacheSave(
+    CreateEmailRequest createEmailRequest,
+    ComposerAutoSaveNotifier notifier,
+  ) async {
+    final saveResult = await saveComposerCacheInteractor.execute(
+      createEmailRequest: createEmailRequest,
+      isPersistent: true,
+    );
+    saveResult.fold(
+      (failure) => log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}'),
+      (_) { if (notifier.mounted) notifier.onSnapshotSaved(); },
+    );
   }
 
   Future<void> _saveSnapshotToCache() async {
@@ -135,25 +171,20 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     if (notifier == null || notifier.isCleanClose) return;
 
     try {
-      await _refreshLastKnownContent(notifier);
+      final freshContent = await _fetchEditorContent();
+      final effectiveContent = _resolveAndSyncContent(freshContent, notifier);
 
       KeyboardUtils.hideSystemKeyboardMobile();
 
-      final createEmailRequest = await buildCreateEmailRequestForAutoSave();
+      final createEmailRequest = await buildCreateEmailRequestForAutoSave(
+        htmlContent: effectiveContent,
+      );
 
       if (createEmailRequest == null) {
         log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: no request, skip');
         return;
       }
-      final saveResult = await saveComposerCacheInteractor.execute(
-        createEmailRequest: createEmailRequest,
-        isPersistent: true,
-      );
-      saveResult.fold(
-        (failure) => log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}'),
-        (_) { if (notifier.mounted) notifier.onSnapshotSaved(); },
-      );
-
+      await _executeCacheSave(createEmailRequest, notifier);
       unawaited(_saveToDraftSilently(createEmailRequest));
     } catch (e) {
       log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: error=$e');
@@ -164,19 +195,19 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     state.fold(
       (failure) {
         // Privacy: only the type is sent — no content, subject, or recipients.
-        SentryManager.instance.captureException(
-          'Layer2AutoSaveDraftFailure: ${failure.runtimeType}',
-          level: SentryLevel.warning,
-        );
-        log('HandleMobileAutoSaveExtension::_onDraftSaveState: failure=${failure.runtimeType}');
+        logError('HandleMobileAutoSaveExtension::_onDraftSaveState: failure=${failure.runtimeType}');
       },
       (success) {
-        if (success is SaveEmailAsDraftsSuccess || success is UpdateEmailDraftsSuccess) {
-          // Do NOT clear the Hive cache here: the periodic auto-save may have
-          // written a newer snapshot while this JMAP call was in flight (race
-          // condition on slow networks). Cleanup is handled by markCleanClose
-          // (intentional close) and the 24 h TTL on ComposerPersistentCache.
+        // Do NOT clear the Hive cache here: the periodic auto-save may have
+        // written a newer snapshot while this JMAP call was in flight (race
+        // condition on slow networks). Cleanup is handled by markCleanClose
+        // (intentional close) and the 24 h TTL on ComposerPersistentCache.
+        if (success is SaveEmailAsDraftsSuccess) {
+          emailIdEditing = success.emailId;
           log('HandleMobileAutoSaveExtension::_onDraftSaveState: saved to server draft');
+        } else if (success is UpdateEmailDraftsSuccess) {
+          emailIdEditing = success.emailId;
+          log('HandleMobileAutoSaveExtension::_onDraftSaveState: updated server draft');
         }
       },
     );
@@ -193,37 +224,23 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       )) {
         _onDraftSaveState(state);
       }
-    } catch (e) {
+    } catch (e, st) {
       // Privacy: only the type is captured.
-      SentryManager.instance.captureException(
-        'Layer2AutoSaveDraftException: ${e.runtimeType}',
-        level: SentryLevel.warning,
+      logError(
+        'HandleMobileAutoSaveExtension::_saveToDraftSilently: error=${e.runtimeType}',
+        exception: e,
+        stackTrace: st,
       );
-      log('HandleMobileAutoSaveExtension::_saveToDraftSilently: error=${e.runtimeType}');
     } finally {
       if (notifier.mounted) notifier.endDraftSave();
     }
   }
 
-  void _persistCleanCloseIfNeeded(String id) {
-    final isCleanClose = appProviderContainer
-        .read(composerAutoSaveProvider(id).notifier)
-        .isCleanClose;
-    if (!isCleanClose) return;
-    final accountId = mailboxDashBoardController.accountId.value;
-    final userName = mailboxDashBoardController.sessionCurrent?.username;
-    if (accountId == null || userName == null) return;
-    unawaited(appProviderContainer
-        .read(markComposerLocalCacheCleanCloseProvider)
-        .execute(accountId, userName));
-  }
-
   void tearDownMobileAutoSave() {
-    final id = autoSaveComposerId;
-    if (id != null) _persistCleanCloseIfNeeded(id);
     try {
       disposeMobileAutoSave();
     } finally {
+      final id = autoSaveComposerId;
       if (id != null) appProviderContainer.invalidate(composerAutoSaveProvider(id));
     }
   }

@@ -271,8 +271,8 @@ class ComposerController extends BaseController
   SaveComposerCacheInteractor get saveComposerCacheInteractor =>
      _saveComposerCacheInteractor;
 
-  Future<CreateEmailRequest?> buildCreateEmailRequestForAutoSave() =>
-      _generateCreateEmailRequestToSaveAsCache();
+  Future<CreateEmailRequest?> buildCreateEmailRequestForAutoSave({String? htmlContent}) =>
+      _generateCreateEmailRequestToSaveAsCache(htmlContent: htmlContent);
 
   GetAllIdentitiesInteractor get getAllIdentitiesInteractor => _getAllIdentitiesInteractor;
 
@@ -526,7 +526,7 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache() async {
+  Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache({String? htmlContent}) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
@@ -536,7 +536,7 @@ class ComposerController extends BaseController
       return null;
     }
     autoCreateEmailTag();
-    String emailContent = await getContentInEditor();
+    String emailContent = htmlContent ?? await getContentInEditor();
     if (currentEmailActionType == EmailActionType.compose) {
       emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
         emailContent: emailContent,
@@ -642,6 +642,7 @@ class ComposerController extends BaseController
     _isEmailBodyLoaded = true;
     await setupSelectedIdentity();
     _autoFocusFieldWhenLauncher();
+    if (PlatformInfo.isAndroid) unawaited(restoreIfEditorBlank());
   }
 
   void _injectBinding() {
@@ -1493,13 +1494,12 @@ class ComposerController extends BaseController
         richTextWebController!.isFormattingOptionsEnabled,
       );
     }
+    markCleanClose();
     mailboxDashBoardController.closeComposer(
       result: result,
       closeOverlays: closeOverlays,
       composerId: composerId,
     );
-
-    markCleanClose();
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {

@@ -50,7 +50,7 @@ void main() {
     );
   }
 
-  group('GetComposerLocalCacheInteractor', () {
+  group('GetAllComposerCacheInteractor', () {
     group('when repository returns a single local cache', () {
       test('returns success with that cache', () async {
         final cache = makeLocalCache(timestampMs: msAgo(1));
@@ -94,7 +94,7 @@ void main() {
           () async {
         final exception = Exception('db error');
         when(mockRepository.getComposerCache(accountId, userName))
-            .thenThrow(exception);
+            .thenAnswer((_) async => throw exception);
 
         final result = await interactor.execute(accountId, userName).last;
 

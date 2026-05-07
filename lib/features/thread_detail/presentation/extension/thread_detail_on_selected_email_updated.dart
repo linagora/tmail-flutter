@@ -31,7 +31,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     onKeyboardShortcutInit();
     scrollController ??= ScrollController();
 
-    if (currentExpandedEmailId.value == null && selectedPresentationEmail != null) {
+    if (currentExpandedEmailId.value == null && selectedPresentationEmail != null && selectedPresentationEmailId != null) {
       loadThreadOnThreadChanged = isThreadDetailEnabled;
       _preloadSelectedEmail(selectedPresentationEmail);
       return;
