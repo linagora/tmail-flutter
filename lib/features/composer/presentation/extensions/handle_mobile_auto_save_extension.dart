@@ -155,7 +155,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     String? freshContent,
     ComposerAutoSaveNotifier notifier,
   ) {
-    if (freshContent != null && freshContent.isNotEmpty) {
+    if (freshContent != null) {
       if (notifier.mounted) notifier.updateLastKnownContent(freshContent);
       return freshContent;
     }
