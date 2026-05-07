@@ -257,6 +257,7 @@ class ComposerController extends BaseController
   AppLifecycleListener? mobileAutoSaveLifecycleListener;
   Timer? periodicSnapshotTimer;
   Timer? inactiveGuardTimer;
+  int? lastAutoSavedToServerHash;
 
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
@@ -346,6 +347,7 @@ class ComposerController extends BaseController
     _textEditorWeb = null;
     savedActionType = null;
     _savedEmailDraftHash = null;
+    lastAutoSavedToServerHash = null;
     currentEmailActionType = null;
     emailIdEditing = null;
     maxWithEditor = null;
@@ -1293,6 +1295,8 @@ class ComposerController extends BaseController
   Future<void> _updateSavedEmailDraftHash() async {
     _savedEmailDraftHash = await _hashComposingEmail();
   }
+
+  Future<int> hashComposerStateForAutoSave() => _hashComposingEmail();
 
   Future<void> initEmailDraftHash() async {
     final currentDraftHash = await _hashComposingEmail();
