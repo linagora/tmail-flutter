@@ -1,4 +1,3 @@
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
@@ -48,15 +47,4 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
         composerId,
       );
 
-  @override
-  Future<String> restoreEmailInlineImages(
-    String htmlContent,
-    TransformConfiguration transformConfiguration,
-    Map<String, String> mapUrlDownloadCID,
-  ) =>
-      _composerCacheDatasource.restoreEmailInlineImages(
-        htmlContent,
-        transformConfiguration,
-        mapUrlDownloadCID,
-      );
 }

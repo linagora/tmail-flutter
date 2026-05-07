@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:core/domain/exceptions/web_session_exception.dart';
-import 'package:core/presentation/utils/html_transformer/html_transform.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/email/email_action_type.dart';
@@ -13,13 +11,9 @@ import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:universal_html/html.dart' as html;
 
 class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
-  final HtmlTransform _htmlTransform;
   final ExceptionThrower _exceptionThrower;
 
-  ComposerSessionCacheDatasourceImpl(
-    this._htmlTransform,
-    this._exceptionThrower,
-  );
+  ComposerSessionCacheDatasourceImpl(this._exceptionThrower);
 
   @override
   Future<List<ComposerCache>> getComposerCache(
@@ -31,7 +25,7 @@ class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
         EmailActionType.reopenComposerBrowser.name,
         accountId.asString,
         userName.value).toString();
-        
+
       final listEntries = html.window.sessionStorage.entries.where(
         (entry) => entry.key.startsWith(keyWithIdentity),
       );
@@ -60,19 +54,6 @@ class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
         composerCache.composerId,
       ).toString();
       html.window.sessionStorage[composerCacheKey] = jsonEncode(composerCache.toJson());
-    }).catchError(_exceptionThrower.throwException);
-  }
-  
-  @override
-  Future<String> restoreEmailInlineImages(
-    String htmlContent,
-    TransformConfiguration transformConfiguration,
-    Map<String, String> mapUrlDownloadCID) {
-    return Future.sync(() async {
-      return await _htmlTransform.transformToHtml(
-        htmlContent: htmlContent,
-        transformConfiguration: transformConfiguration,
-        mapCidImageDownloadUrl: mapUrlDownloadCID);
     }).catchError(_exceptionThrower.throwException);
   }
 
