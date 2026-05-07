@@ -5,12 +5,12 @@ import 'package:tmail_ui_user/features/base/widget/labels/tag_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AiActionTagWidget extends StatelessWidget {
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
   final Widget? actionWidget;
 
   const AiActionTagWidget({
     super.key,
-    this.padding,
+    this.margin,
     this.actionWidget,
   });
 
@@ -23,7 +23,7 @@ class AiActionTagWidget extends StatelessWidget {
       isTruncateText: true,
       showTooltip: PlatformInfo.isWeb,
       actionWidget: actionWidget,
-      padding: padding,
+      margin: margin,
     );
   }
 }
