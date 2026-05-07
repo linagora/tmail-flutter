@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_se
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/providers/composer_auto_save_notifier.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
@@ -68,6 +70,7 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -758,6 +761,88 @@ void main() {
     });
 
     group('markCleanClose - platform guard:', () {
+      test(
+          'Should set isCleanClose flag in the notifier\n'
+          'When on Android with valid autoSaveComposerId', () {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        addTearDown(() {
+          debugDefaultTargetPlatformOverride = null;
+          appProviderContainer
+              .invalidate(composerAutoSaveProvider('mark-cc-android-test'));
+        });
+
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'mark-cc-android-test',
+        );
+
+        // act
+        ctrl.markCleanClose();
+
+        // assert
+        expect(
+          appProviderContainer
+              .read(composerAutoSaveProvider('mark-cc-android-test').notifier)
+              .isCleanClose,
+          isTrue,
+        );
+      });
+
+      test(
+          'Should be a no-op\n'
+          'When platform is not Android even with valid autoSaveComposerId',
+          () {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        addTearDown(() {
+          debugDefaultTargetPlatformOverride = null;
+          appProviderContainer
+              .invalidate(composerAutoSaveProvider('mark-cc-noop-test'));
+        });
+
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'mark-cc-noop-test',
+        );
+
+        // act
+        ctrl.markCleanClose();
+
+        // assert — notifier should remain at default (isCleanClose: false)
+        expect(
+          appProviderContainer
+              .read(composerAutoSaveProvider('mark-cc-noop-test').notifier)
+              .isCleanClose,
+          isFalse,
+        );
+      });
       // composerController has composerId = null in this test setup.
       // _autoSaveNotifier() returns null for null composerId, so no provider
       // entry is created regardless of platform. These tests verify that
@@ -790,6 +875,121 @@ void main() {
     });
 
     group('tearDownMobileAutoSave safety:', () {
+      test(
+          'periodicSnapshotTimer is active after initMobileAutoSave\n'
+          'When autoSaveComposerId is set', () {
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'timer-init-test',
+        );
+        addTearDown(() => ctrl.tearDownMobileAutoSave());
+
+        ctrl.initMobileAutoSave();
+
+        expect(ctrl.periodicSnapshotTimer?.isActive, isTrue);
+      });
+
+      test(
+          'periodicSnapshotTimer is null after tearDownMobileAutoSave\n'
+          'When timers were started', () {
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'timer-teardown-test',
+        );
+
+        ctrl.initMobileAutoSave();
+        ctrl.tearDownMobileAutoSave();
+
+        expect(ctrl.periodicSnapshotTimer, isNull);
+      });
+
+      test(
+          'mobileAutoSaveLifecycleListener is null after tearDownMobileAutoSave\n'
+          'When listener was started', () {
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'listener-teardown-test',
+        );
+
+        ctrl.initMobileAutoSave();
+        ctrl.tearDownMobileAutoSave();
+
+        expect(ctrl.mobileAutoSaveLifecycleListener, isNull);
+      });
+
+      test(
+          'Calling tearDownMobileAutoSave twice does not throw\n'
+          '— idempotent teardown', () {
+        final ctrl = ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+          autoSaveComposerId: 'idempotent-teardown-test',
+        );
+
+        ctrl.initMobileAutoSave();
+        ctrl.tearDownMobileAutoSave();
+
+        expect(
+          () => ctrl.tearDownMobileAutoSave(),
+          returnsNormally,
+        );
+      });
+
       // tearDownMobileAutoSave is only called on Android (onClose guard).
       // With composerId = null, disposeMobileAutoSave cancels any timers and
       // invalidate is skipped. Verify no exception is thrown.
