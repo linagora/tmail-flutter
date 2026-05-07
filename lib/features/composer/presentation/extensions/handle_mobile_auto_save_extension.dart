@@ -20,8 +20,7 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 extension HandleMobileAutoSaveExtension on ComposerController {
   static const _periodicSnapshotInterval = Duration(seconds: 30);
   static const _getContentTimeout = Duration(seconds: 2);
-  // 300ms guard filters AppLifecycleState.inactive from system overlays
-  // (permission dialogs, incoming calls) that resolve quickly.
+  // Filters transient inactive events (overlays, incoming calls) that resolve quickly.
   static const _inactiveGuardDelay = Duration(milliseconds: 300);
 
   void initMobileAutoSave() {
@@ -42,13 +41,9 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     mobileAutoSaveLifecycleListener = null;
   }
 
-  // Sets the in-memory clean-close flag and immediately fires the Hive write
-  // (unawaited). Writing eagerly — before navigation — is safer than deferring
-  // to onClose: the process is still foreground and the isCleanClose flag
-  // already blocks any further snapshot writes, so there is no race.
-  // No-op on non-Android: composerAutoSaveProvider is only initialised on
-  // Android, so reading it on other platforms would create an orphaned family
-  // entry that is never invalidated (memory leak).
+  // Written eagerly before navigation — process is still foreground, and
+  // isCleanClose already blocks snapshot writes (no Hive write race).
+  // No-op on non-Android: provider is Android-only (memory leak guard).
   void markCleanClose() {
     if (!PlatformInfo.isAndroid) return;
     final notifier = _autoSaveNotifier();
@@ -89,16 +84,10 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     });
   }
 
-  // Runs every _periodicSnapshotInterval while the composer is open.
-  //
-  // Two responsibilities:
-  //   1. Keep lastKnownHtmlContent fresh (fallback for _saveSnapshotToCache).
-  //   2. Save the draft to the server, but ONLY when the app is visibly
-  //      foreground and the full composer state has actually changed.
-  //
-  // Deliberately NOT triggered from the inactive path: a background JMAP call
-  // may need to refresh the token, and the system can terminate the Hive write
-  // mid-flight, leaving the account cache in a corrupt state (ADR-0086).
+  // Updates lastKnownHtmlContent and, when foregrounded, silently saves the
+  // draft to the server only if composer state changed since the last auto-save.
+  // Not called from inactive: background token refresh may be killed before
+  // writing the refreshed token to Hive, corrupting the account cache.
   Future<void> _periodicSaveTask() async {
     final content = await _fetchEditorContent();
     if (content != null) _autoSaveNotifier()?.updateLastKnownContent(content);
@@ -123,8 +112,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     );
     if (createEmailRequest == null) return;
 
-    // Set optimistically: if the save fails, skip retry until content changes
-    // (the local Hive snapshot already holds the data as a safety net).
+    // Optimistic: on failure, retry is deferred until content changes.
     lastAutoSavedToServerHash = currentHash;
     unawaited(_saveToDraftSilently(createEmailRequest));
   }
@@ -153,18 +141,16 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     try {
       final payload = await _resolveRestorePayload();
       if (payload == null) return;
-      // Re-check after the async gap: the user may have closed the composer
-      // while _resolveRestorePayload was awaiting. isClosed covers the case
-      // where onClose() already ran (notifier invalidated → fresh isCleanClose=false);
-      // isCleanClose covers the window between markCleanClose() and onClose().
+      // Re-check after await: user may have closed the composer during resolution.
+      // isClosed: onClose() already ran (fresh notifier resets isCleanClose to false).
+      // isCleanClose: markCleanClose() fired but onClose() not yet called.
       if (isClosed || _autoSaveNotifier()?.isCleanClose == true) return;
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: restoring from cache');
       await payload.api.setText(payload.html);
-      // Keep the fallback snapshot in sync: if the editor dies before the next
-      // periodic tick, _saveSnapshotToCache will use this restored content.
+      // Sync fallback so _saveSnapshotToCache has fresh content if editor
+      // crashes before the next periodic tick.
       if (payload.html.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(payload.html);
-      // Delete the stale snapshot now that its content is live in the editor.
-      // The periodic timer will write a fresh snapshot on the next 30 s tick.
+      // Content is now live in editor; remove stale Hive snapshot.
       unawaited(clearComposerMobileSnapshot());
     } catch (e) {
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=$e');
@@ -188,9 +174,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     return (api: api, html: cache.email?.emailContentList.asHtmlString ?? '');
   }
 
-  // Picks the best available content and syncs it to the notifier.
-  // Fresh content from the editor takes priority; falls back to the last
-  // periodic snapshot (ADR-0086 Layer 1 fallback requirement).
+  // Fresh editor content takes priority; falls back to last known (ADR-0086 Layer 1).
   String _resolveAndSyncContent(
     String? freshContent,
     ComposerAutoSaveNotifier notifier,
@@ -234,17 +218,12 @@ extension HandleMobileAutoSaveExtension on ComposerController {
         log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: no request, skip');
         return;
       }
-      // Re-check: markCleanClose() may have fired during the async gaps above.
-      // Without this guard, _executeCacheSave() would write isCleanClose=false
-      // to Hive, racing against _persistCleanCloseToCache() which writes true.
+      // Re-check: markCleanClose() may have fired during the async gaps, racing
+      // with _persistCleanCloseToCache() to write isCleanClose to Hive.
       if (notifier.isCleanClose) return;
       await _executeCacheSave(createEmailRequest, notifier);
-      // Draft-to-server save is intentionally excluded here: this path fires
-      // on AppLifecycleState.inactive (app going to background). A background
-      // JMAP call can trigger a token refresh whose Hive write the system may
-      // terminate before completion, corrupting the account cache.
-      // Server saves are handled exclusively by _periodicSaveTask(), which
-      // guards on AppLifecycleState.resumed.
+      // Server save excluded: inactive path fires in background where a token
+      // refresh may be terminated before writing to Hive. See _periodicSaveTask().
     } catch (e) {
       log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: error=$e');
     }
@@ -253,14 +232,12 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   void _onDraftSaveState(Either<Failure, Success> state) {
     state.fold(
       (failure) {
-        // Privacy: only the type is sent — no content, subject, or recipients.
+        // Privacy: log type only — no content, subject, or recipients.
         logError('HandleMobileAutoSaveExtension::_onDraftSaveState: failure=${failure.runtimeType}');
       },
       (success) {
-        // Do NOT clear the Hive cache here: the periodic auto-save may have
-        // written a newer snapshot while this JMAP call was in flight (race
-        // condition on slow networks). Cleanup is handled by markCleanClose
-        // (intentional close) and the 24 h TTL on ComposerPersistentCache.
+        // Don't clear Hive: a newer snapshot may have been written while this
+        // call was in flight. Cleanup is via markCleanClose() or the 24 h TTL.
         if (success is SaveEmailAsDraftsSuccess) {
           emailIdEditing = success.emailId;
           log('HandleMobileAutoSaveExtension::_onDraftSaveState: saved to server draft');
@@ -284,7 +261,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
         _onDraftSaveState(state);
       }
     } catch (e, st) {
-      // Privacy: only the type is captured.
+      // Privacy: log type only.
       logError(
         'HandleMobileAutoSaveExtension::_saveToDraftSilently: error=${e.runtimeType}',
         exception: e,
