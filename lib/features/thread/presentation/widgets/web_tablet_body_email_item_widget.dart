@@ -400,7 +400,7 @@ class _WebTabletBodyEmailItemWidgetState
             Flexible(child: partialContent),
           if (widget.shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
         ],
       );
@@ -411,7 +411,7 @@ class _WebTabletBodyEmailItemWidgetState
         children: [
           if (widget.shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           Flexible(
             child: LabelTagListWidget(
@@ -430,7 +430,7 @@ class _WebTabletBodyEmailItemWidgetState
           Flexible(child: partialContent),
           if (widget.shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           const SizedBox(width: 12),
           LabelTagListWidget(
@@ -449,7 +449,7 @@ class _WebTabletBodyEmailItemWidgetState
             Expanded(child: partialContent),
             if (widget.shouldShowAIAction)
               const AiActionTagWidget(
-                padding: EdgeInsetsDirectional.only(start: 8),
+                margin: EdgeInsetsDirectional.only(start: 8),
               ),
             const SizedBox(width: 12),
             ConstrainedBox(

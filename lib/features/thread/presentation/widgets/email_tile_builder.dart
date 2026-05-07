@@ -166,7 +166,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
             Flexible(child: partialContent),
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
         ],
       );
@@ -177,7 +177,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
         children: [
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           Flexible(
             child: LabelTagListWidget(
@@ -196,7 +196,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
           Flexible(child: partialContent),
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           const SizedBox(width: 12),
           LabelTagListWidget(
@@ -215,7 +215,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
             Expanded(child: partialContent),
             if (_shouldShowAIAction)
               const AiActionTagWidget(
-                padding: EdgeInsetsDirectional.only(start: 8),
+                margin: EdgeInsetsDirectional.only(start: 8),
               ),
             const SizedBox(width: 12),
             ConstrainedBox(

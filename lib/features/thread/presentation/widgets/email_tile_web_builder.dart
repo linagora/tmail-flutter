@@ -389,7 +389,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             widget.isSenderImportantFlagEnabled)
           buildMarkAsImportantIcon(context),
         if (_shouldShowAIAction)
-          const AiActionTagWidget(padding: EdgeInsetsDirectional.only(end: 12)),
+          const AiActionTagWidget(margin: EdgeInsetsDirectional.only(end: 12)),
         Expanded(
           child: LayoutBuilder(
             builder: (_, constraints) {
@@ -529,7 +529,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             Flexible(child: partialContent),
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
         ],
       );
@@ -540,7 +540,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         children: [
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           Flexible(
             child: LabelTagListWidget(
@@ -559,7 +559,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
           Flexible(child: partialContent),
           if (_shouldShowAIAction)
             const AiActionTagWidget(
-              padding: EdgeInsetsDirectional.only(start: 8),
+              margin: EdgeInsetsDirectional.only(start: 8),
             ),
           const SizedBox(width: 12),
           LabelTagListWidget(
@@ -578,7 +578,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             Expanded(child: partialContent),
             if (_shouldShowAIAction)
               const AiActionTagWidget(
-                padding: EdgeInsetsDirectional.only(start: 8),
+                margin: EdgeInsetsDirectional.only(start: 8),
               ),
             const SizedBox(width: 12),
             ConstrainedBox(

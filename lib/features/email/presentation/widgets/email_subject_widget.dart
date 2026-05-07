@@ -106,7 +106,7 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
 
     return AiActionTagWidget(
       actionWidget: canRemove ? _buildRemoveNeedsActionWidget() : null,
-      padding:
+        margin: canRemove
           canRemove ? const EdgeInsetsDirectional.only(start: 4, end: 2) : null,
     );
   }
