@@ -85,13 +85,48 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   void _startPeriodicContentSnapshot() {
     periodicSnapshotTimer?.cancel();
     periodicSnapshotTimer = Timer.periodic(_periodicSnapshotInterval, (_) {
-      unawaited(_updateLastKnownContent());
+      unawaited(_periodicSaveTask());
     });
   }
 
-  Future<void> _updateLastKnownContent() async {
+  // Runs every _periodicSnapshotInterval while the composer is open.
+  //
+  // Two responsibilities:
+  //   1. Keep lastKnownHtmlContent fresh (fallback for _saveSnapshotToCache).
+  //   2. Save the draft to the server, but ONLY when the app is visibly
+  //      foreground and the full composer state has actually changed.
+  //
+  // Deliberately NOT triggered from the inactive path: a background JMAP call
+  // may need to refresh the token, and the system can terminate the Hive write
+  // mid-flight, leaving the account cache in a corrupt state (ADR-0086).
+  Future<void> _periodicSaveTask() async {
     final content = await _fetchEditorContent();
     if (content != null) _autoSaveNotifier()?.updateLastKnownContent(content);
+
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
+
+    final notifier = _autoSaveNotifier();
+    if (notifier == null || notifier.isCleanClose) return;
+
+    final int currentHash;
+    try {
+      currentHash = await hashComposerStateForAutoSave().timeout(_getContentTimeout);
+    } on TimeoutException {
+      log('HandleMobileAutoSaveExtension::_periodicSaveTask: hash timeout, skip');
+      return;
+    }
+    if (currentHash == lastAutoSavedToServerHash) return;
+
+    final effectiveContent = content ?? notifier.lastKnownHtmlContent;
+    final createEmailRequest = await buildCreateEmailRequestForAutoSave(
+      htmlContent: effectiveContent,
+    );
+    if (createEmailRequest == null) return;
+
+    // Set optimistically: if the save fails, skip retry until content changes
+    // (the local Hive snapshot already holds the data as a safety net).
+    lastAutoSavedToServerHash = currentHash;
+    unawaited(_saveToDraftSilently(createEmailRequest));
   }
 
   void _onLifecycleStateChanged(AppLifecycleState state) {
@@ -199,8 +234,17 @@ extension HandleMobileAutoSaveExtension on ComposerController {
         log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: no request, skip');
         return;
       }
+      // Re-check: markCleanClose() may have fired during the async gaps above.
+      // Without this guard, _executeCacheSave() would write isCleanClose=false
+      // to Hive, racing against _persistCleanCloseToCache() which writes true.
+      if (notifier.isCleanClose) return;
       await _executeCacheSave(createEmailRequest, notifier);
-      unawaited(_saveToDraftSilently(createEmailRequest));
+      // Draft-to-server save is intentionally excluded here: this path fires
+      // on AppLifecycleState.inactive (app going to background). A background
+      // JMAP call can trigger a token refresh whose Hive write the system may
+      // terminate before completion, corrupting the account cache.
+      // Server saves are handled exclusively by _periodicSaveTask(), which
+      // guards on AppLifecycleState.resumed.
     } catch (e) {
       log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: error=$e');
     }
