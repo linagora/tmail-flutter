@@ -183,7 +183,9 @@ extension SetupEmailContentExtension on ComposerController {
     final uiState = resultState.fold((f) => f, (s) => s);
 
     if (uiState is RestoreEmailInlineImagesSuccess) {
-      setTextEditorWeb(uiState.emailContent);
+      if (PlatformInfo.isWeb) {
+        setTextEditorWeb(uiState.emailContent);
+      }
       emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: uiState.emailContent));
     } else if (uiState is RestoreEmailInlineImagesFailure) {
       _setEmailContentFailure(GetEmailContentFailure(uiState.exception));
