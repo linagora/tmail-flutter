@@ -55,6 +55,7 @@ extension SetupEmailAttachmentsExtension on ComposerController {
     EmailActionType.replyAll,
     EmailActionType.forward,
     EmailActionType.reopenComposerBrowser,
+    EmailActionType.restoreComposerFromPersistentCache,
   }.contains(currentEmailActionType);
 
   void _uploadAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
