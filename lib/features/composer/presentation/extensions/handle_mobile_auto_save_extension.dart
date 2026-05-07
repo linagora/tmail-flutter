@@ -124,9 +124,12 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       final cache = await _autoSaveNotifier()?.restore(accountId, userName);
       if (cache == null) return;
 
+      final api = htmlEditorApi;
+      if (api == null) return;
+
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: restoring from cache');
       final restoredHtml = cache.email?.emailContentList.asHtmlString ?? '';
-      await htmlEditorApi?.setText(restoredHtml);
+      await api.setText(restoredHtml);
       // Keep the fallback snapshot in sync: if the editor dies before the next
       // periodic tick, _saveSnapshotToCache will use this restored content.
       if (restoredHtml.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(restoredHtml);
