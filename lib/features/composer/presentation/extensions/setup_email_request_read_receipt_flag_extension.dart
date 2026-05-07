@@ -10,7 +10,8 @@ import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_s
 extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
 
   void setupEmailRequestReadReceiptFlag(ComposerArguments arguments) {
-    if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+    if (currentEmailActionType == EmailActionType.reopenComposerBrowser ||
+        currentEmailActionType == EmailActionType.restoreComposerFromPersistentCache) {
       hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
     } else if (currentEmailActionType == EmailActionType.editSendingEmail) {
       hasRequestReadReceipt.value = arguments.sendingEmail?.email.hasRequestReadReceipt ?? false;

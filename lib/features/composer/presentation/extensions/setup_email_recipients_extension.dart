@@ -36,6 +36,7 @@ extension SetupEmailRecipientsExtension on ComposerController {
     EmailActionType.editAsNewEmail,
     EmailActionType.editDraft,
     EmailActionType.reopenComposerBrowser,
+    EmailActionType.restoreComposerFromPersistentCache,
   }.contains(currentEmailActionType);
 
   bool get _isDirectToAddressAction => const {
