@@ -7,6 +7,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -114,31 +115,36 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
   Future<void> restoreIfEditorBlank() async {
     try {
-      final currentContent = await _fetchEditorContent();
-      if (currentContent != null && currentContent.trim().isNotEmpty) return;
-
-      final accountId = mailboxDashBoardController.accountId.value;
-      final userName = mailboxDashBoardController.sessionCurrent?.username;
-      if (accountId == null || userName == null) return;
-
-      final cache = await _autoSaveNotifier()?.restore(accountId, userName);
-      if (cache == null) return;
-
-      final api = htmlEditorApi;
-      if (api == null) return;
-
+      final payload = await _resolveRestorePayload();
+      if (payload == null) return;
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: restoring from cache');
-      final restoredHtml = cache.email?.emailContentList.asHtmlString ?? '';
-      await api.setText(restoredHtml);
+      await payload.api.setText(payload.html);
       // Keep the fallback snapshot in sync: if the editor dies before the next
       // periodic tick, _saveSnapshotToCache will use this restored content.
-      if (restoredHtml.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(restoredHtml);
+      if (payload.html.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(payload.html);
       // Delete the stale snapshot now that its content is live in the editor.
       // The periodic timer will write a fresh snapshot on the next 30 s tick.
       unawaited(clearComposerMobileSnapshot());
     } catch (e) {
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=$e');
     }
+  }
+
+  Future<({HtmlEditorApi api, String html})?> _resolveRestorePayload() async {
+    final currentContent = await _fetchEditorContent();
+    if (currentContent != null && currentContent.trim().isNotEmpty) return null;
+
+    final accountId = mailboxDashBoardController.accountId.value;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
+    if (accountId == null || userName == null) return null;
+
+    final cache = await _autoSaveNotifier()?.restore(accountId, userName);
+    if (cache == null) return null;
+
+    final api = htmlEditorApi;
+    if (api == null) return null;
+
+    return (api: api, html: cache.email?.emailContentList.asHtmlString ?? '');
   }
 
   // Picks the best available content and syncs it to the notifier.
