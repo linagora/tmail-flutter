@@ -34,7 +34,7 @@ class ComposerHiveCacheClient extends HiveCacheClient<String> {
         return ComposerPersistentCache.fromJson(decoded);
       }
     } catch (e) {
-      logWarning('ComposerHiveCacheClient::_decodeEntry: corrupted entry, skipping: $e');
+      logWarning('ComposerHiveCacheClient::_decodeEntry: corrupted entry, skipping: ${e.runtimeType}');
     }
     return null;
   }

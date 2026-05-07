@@ -44,10 +44,7 @@ class ComposerPersistentCache extends ComposerCache {
       _$ComposerPersistentCacheFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() => {
-        ...super.toJson(),
-        ..._$ComposerPersistentCacheToJson(this),
-      };
+  Map<String, dynamic> toJson() => _$ComposerPersistentCacheToJson(this);
 
   bool get isRestorable => isCleanClose != true && !isExpired && !isEmpty;
 

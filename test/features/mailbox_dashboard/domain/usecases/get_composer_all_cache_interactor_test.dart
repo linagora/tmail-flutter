@@ -64,7 +64,7 @@ void main() {
     });
 
     group('when repository returns multiple local caches', () {
-      test('returns the most recent one by timestampMs', () async {
+      test('includes all returned caches in the result', () async {
         final older = makeLocalCache(timestampMs: msAgo(3));
         final newer = makeLocalCache(timestampMs: msAgo(1));
         when(mockRepository.getComposerCache(accountId, userName))
@@ -72,7 +72,13 @@ void main() {
 
         final result = await interactor.execute(accountId, userName).last;
 
-        expectSuccessWithCache(result, newer);
+        result.fold(
+          (_) => fail('expected Right'),
+          (s) {
+            final list = (s as GetAllComposerCacheSuccess).listComposerCache;
+            expect(list, containsAll([older, newer]));
+          },
+        );
       });
 
       test(
@@ -90,7 +96,7 @@ void main() {
     });
 
     group('error handling', () {
-      test('wraps repository exception in GetComposerLocalCacheFailure',
+      test('wraps repository exception in GetAllComposerCacheFailure',
           () async {
         final exception = Exception('db error');
         when(mockRepository.getComposerCache(accountId, userName))
