@@ -34,10 +34,10 @@ class SentryConfigurationCache extends HiveObject with EquatableMixin {
   final bool isAvailable;
 
   @HiveField(9)
-  final double sessionSampleRate;
+  final double? sessionSampleRate;
 
   @HiveField(10)
-  final double onErrorSampleRate;
+  final double? onErrorSampleRate;
 
   @HiveField(11)
   final bool enableFramesTracking;
