@@ -1,7 +1,6 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
@@ -319,7 +318,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => ComposerSessionCacheDatasourceImpl(
-      Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LocalSpamReportDataSourceImpl(
       Get.find<PreferencesSettingManager>(),

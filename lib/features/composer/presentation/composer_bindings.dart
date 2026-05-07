@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/composer/data/adapter/html_email_transformer_adapter.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/data/repository/composer_reposit
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/transformer/html_email_transformer.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
@@ -149,7 +151,6 @@ class ComposerBindings extends BaseBindings {
 
   void _bindComposerCacheDatasourceImpl() {
     Get.lazyPut(() => ComposerSessionCacheDatasourceImpl(
-      Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
   }
@@ -297,7 +298,15 @@ class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(tag: composerId),
     ), tag: composerId);
     Get.lazyPut(
-      () => RestoreEmailInlineImagesInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
+      () => HtmlEmailTransformerAdapter(Get.find<HtmlTransform>()),
+      tag: composerId,
+    );
+    Get.lazyPut<HtmlEmailTransformer>(
+      () => Get.find<HtmlEmailTransformerAdapter>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => RestoreEmailInlineImagesInteractor(Get.find<HtmlEmailTransformer>(tag: composerId)),
       tag: composerId,
     );
     Get.lazyPut(
