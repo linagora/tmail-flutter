@@ -114,6 +114,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   }
 
   Future<void> restoreIfEditorBlank() async {
+    if (_autoSaveNotifier()?.isCleanClose == true) return;
     try {
       final payload = await _resolveRestorePayload();
       if (payload == null) return;
