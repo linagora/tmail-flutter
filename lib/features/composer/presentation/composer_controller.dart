@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_in
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
@@ -177,6 +178,7 @@ class ComposerController extends BaseController
   final PrintEmailInteractor printEmailInteractor;
   final ComposerRepository _composerRepository;
   final String? composerId;
+  final String? autoSaveComposerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
 
@@ -252,12 +254,25 @@ class ComposerController extends BaseController
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
 
+  AppLifecycleListener? mobileAutoSaveLifecycleListener;
+  Timer? periodicSnapshotTimer;
+  Timer? inactiveGuardTimer;
+
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   GetEmailContentInteractor get getEmailContentInteractor => _getEmailContentInteractor;
 
   GetServerSettingInteractor get getServerSettingInteractor => _getServerSettingInteractor;
+
+  CreateNewAndSaveEmailToDraftsInteractor get createNewAndSaveEmailToDraftsInteractor =>
+      _createNewAndSaveEmailToDraftsInteractor;
+
+  SaveComposerCacheInteractor get saveComposerCacheInteractor =>
+     _saveComposerCacheInteractor;
+
+  Future<CreateEmailRequest?> buildCreateEmailRequestForAutoSave({String? htmlContent}) =>
+      _generateCreateEmailRequestToSaveAsCache(htmlContent: htmlContent);
 
   GetAllIdentitiesInteractor get getAllIdentitiesInteractor => _getAllIdentitiesInteractor;
 
@@ -287,6 +302,7 @@ class ComposerController extends BaseController
     this._saveTemplateEmailInteractor,
     {
       this.composerId,
+      this.autoSaveComposerId,
       this.composerArgs,
     }
   );
@@ -294,10 +310,10 @@ class ComposerController extends BaseController
   @override
   void onInit() {
     super.onInit();
+    restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
     if (PlatformInfo.isWeb) {
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
-      restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
       menuMoreOptionController = CustomPopupMenuController();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
@@ -308,6 +324,9 @@ class ComposerController extends BaseController
     _beforeReconnectManager.addListener(onBeforeReconnect);
     _injectBinding();
     onKeyboardShortcutInit();
+    if (PlatformInfo.isAndroid) {
+      initMobileAutoSave();
+    }
   }
 
   @override
@@ -344,6 +363,7 @@ class ComposerController extends BaseController
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
+    restoreEmailInlineImagesInteractor = null;
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
       responsiveContainerKey = null;
@@ -352,6 +372,7 @@ class ComposerController extends BaseController
     } else {
       richTextMobileTabletController = null;
     }
+    if (PlatformInfo.isAndroid) tearDownMobileAutoSave();
     onKeyboardShortcutDispose();
     super.onClose();
   }
@@ -426,6 +447,7 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onUnloadBrowserListener(html.Event event) async {
+    if (!PlatformInfo.isWeb) return;
     final username = mailboxDashBoardController.sessionCurrent?.username;
     final accountId = mailboxDashBoardController.accountId.value;
     if (composerId != null && username != null && accountId != null) {
@@ -489,8 +511,6 @@ class ComposerController extends BaseController
   }
 
   Future<void> _saveComposerSessionCache() async {
-    autoCreateEmailTag();
-
     final createEmailRequest = await _generateCreateEmailRequestToSaveAsCache();
     if (createEmailRequest == null) return;
 
@@ -506,7 +526,7 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache() async {
+  Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache({String? htmlContent}) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
@@ -515,8 +535,8 @@ class ComposerController extends BaseController
       log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return null;
     }
-    
-    String emailContent = await getContentInEditor();
+    autoCreateEmailTag();
+    String emailContent = htmlContent ?? await getContentInEditor();
     if (currentEmailActionType == EmailActionType.compose) {
       emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
         emailContent: emailContent,
@@ -545,7 +565,6 @@ class ComposerController extends BaseController
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       inlineAttachments: uploadController.mapInlineAttachments,
-      outboxMailboxId: getOutboxMailboxIdForComposer(),
       sentMailboxId: getSentMailboxIdForComposer(),
       draftsMailboxId: getDraftMailboxIdForComposer(),
       draftsEmailId: getDraftEmailId(),
@@ -623,6 +642,7 @@ class ComposerController extends BaseController
     _isEmailBodyLoaded = true;
     await setupSelectedIdentity();
     _autoFocusFieldWhenLauncher();
+    if (PlatformInfo.isAndroid) unawaited(restoreIfEditorBlank());
   }
 
   void _injectBinding() {
@@ -1474,6 +1494,7 @@ class ComposerController extends BaseController
         richTextWebController!.isFormattingOptionsEnabled,
       );
     }
+    markCleanClose();
     mailboxDashBoardController.closeComposer(
       result: result,
       closeOverlays: closeOverlays,
@@ -2335,6 +2356,7 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onBeforeReconnect() async {
+    if (!PlatformInfo.isWeb) return;
     if (mailboxDashBoardController.accountId.value != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {
