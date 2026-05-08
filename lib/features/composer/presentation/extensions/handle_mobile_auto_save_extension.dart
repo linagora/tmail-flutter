@@ -99,18 +99,26 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
     final int currentHash;
     try {
-      currentHash = await hashComposerStateForAutoSave().timeout(_getContentTimeout);
+      // Reuse already-fetched content to avoid a second WebView getText() call.
+      currentHash = await hashComposerStateForAutoSave(htmlContent: content).timeout(_getContentTimeout);
     } on TimeoutException {
       log('HandleMobileAutoSaveExtension::_periodicSaveTask: hash timeout, skip');
       return;
     }
     if (currentHash == lastAutoSavedToServerHash) return;
 
+    // Don't consume the hash while a save is in flight: the in-flight save will
+    // finish with older content, and the next tick must retry with the new hash.
+    if (notifier.isSavingToDraftInProgress) return;
+
     final effectiveContent = content ?? notifier.lastKnownHtmlContent;
     final createEmailRequest = await buildCreateEmailRequestForAutoSave(
       htmlContent: effectiveContent,
     );
-    if (createEmailRequest == null) return;
+    if (createEmailRequest == null) {
+      log('HandleMobileAutoSaveExtension::_periodicSaveTask: request is null, skip');
+      return;
+    }
 
     // Optimistic: on failure, retry is deferred until content changes.
     lastAutoSavedToServerHash = currentHash;
