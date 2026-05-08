@@ -7,7 +7,7 @@ name: Release
 
 env:
   FLUTTER_VERSION: 3.38.9
-  XCODE_VERSION: latest-stable
+  XCODE_VERSION: 26.2
 
 jobs:
   release:

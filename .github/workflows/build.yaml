@@ -7,7 +7,7 @@ name: Build dev binaries
 
 env:
   FLUTTER_VERSION: 3.38.9
-  XCODE_VERSION: 16.0
+  XCODE_VERSION: 26.2
 
 jobs:
   build-app:
@@ -19,7 +19,7 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-14 # Use macos-14 runners because Xcode 16 only exists on macOS 14+.
+            runner: macos-15 # Use macos-15 runners because Xcode 26 requires macOS 15+.
     environment: dev
 
     steps:
