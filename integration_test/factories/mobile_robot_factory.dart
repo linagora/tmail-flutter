@@ -1,5 +1,7 @@
 import 'package:patrol/patrol.dart';
 
+import '../robots/abstract/abstract_app_grid_robot.dart';
+import '../robots/mobile/mobile_app_grid_robot.dart';
 import 'robot_factory.dart';
 import '../robots/abstract/abstract_login_robot.dart';
 import '../robots/abstract/abstract_thread_robot.dart';
@@ -21,4 +23,7 @@ class MobileRobotFactory implements RobotFactory {
 
   @override
   AbstractComposerRobot composerRobot() => MobileComposerRobot($);
+
+  @override
+  AbstractAppGridRobot appGridRobot() => MobileAppGridRobot($);
 }

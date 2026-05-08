@@ -21,10 +21,6 @@ import '../exceptions/mailbox/null_quota_exception.dart';
 class MailboxMenuRobot extends CoreRobot {
   MailboxMenuRobot(super.$);
 
-  Future<void> openAppGrid() async {
-    await $(#toggle_app_grid_button).tap();
-  }
-
   Future<void> openFolderByName(String name) async {
     final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
     await $(mailboxItem).waitUntilExists();

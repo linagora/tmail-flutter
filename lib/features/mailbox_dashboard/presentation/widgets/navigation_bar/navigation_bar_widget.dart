@@ -88,6 +88,7 @@ class NavigationBarWidget extends StatelessWidget {
                   Obx(() {
                     if (appGridController!.listLinagoraApp.isNotEmpty) {
                       return AppGridDashboardIcon(
+                        key: const ValueKey('toggle_app_grid_button'),
                         imagePaths: imagePaths,
                         linagoraApps: appGridController!.listLinagoraApp,
                       );
