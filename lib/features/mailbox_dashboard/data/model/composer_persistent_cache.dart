@@ -49,7 +49,8 @@ class ComposerPersistentCache extends ComposerCache {
   bool get isRestorable => isCleanClose != true && !isExpired && !isEmpty;
 
   bool get isExpired {
-    if (timestampMs == null) return false;
+    // Treat missing timestamp as expired: old-format entries have no TTL anchor.
+    if (timestampMs == null) return true;
     return DateTime.now().millisecondsSinceEpoch - timestampMs! >
         _expiryDuration.inMilliseconds;
   }
