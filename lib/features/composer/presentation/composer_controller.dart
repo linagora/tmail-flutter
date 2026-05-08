@@ -1260,8 +1260,8 @@ class ComposerController extends BaseController
     return _savedEmailDraftHash != newDraftHash;
   }
 
-  Future<int> _hashComposingEmail() async {
-    String emailContent = await getContentInEditor();
+  Future<int> _hashComposingEmail({String? htmlContent}) async {
+    String emailContent = htmlContent ?? await getContentInEditor();
 
     emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
       emailContent: emailContent,
@@ -1288,7 +1288,7 @@ class ComposerController extends BaseController
     );
     final draftAsString = savedEmailDraft.asString();
     final draftAsHasCode = draftAsString.hashCode;
-    log('ComposerController::_hashDraftEmail:draftAsString = $draftAsString | draftAsHasCode = $draftAsHasCode');
+    log('ComposerController::_hashDraftEmail:draftAsHasCode = $draftAsHasCode');
     return draftAsHasCode;
   }
 
@@ -1296,7 +1296,8 @@ class ComposerController extends BaseController
     _savedEmailDraftHash = await _hashComposingEmail();
   }
 
-  Future<int> hashComposerStateForAutoSave() => _hashComposingEmail();
+  Future<int> hashComposerStateForAutoSave({String? htmlContent}) =>
+      _hashComposingEmail(htmlContent: htmlContent);
 
   Future<void> initEmailDraftHash() async {
     final currentDraftHash = await _hashComposingEmail();
