@@ -258,6 +258,7 @@ class ComposerController extends BaseController
   Timer? periodicSnapshotTimer;
   Timer? inactiveGuardTimer;
   int? lastAutoSavedToServerHash;
+  bool isRestoringFromCache = false;
 
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;

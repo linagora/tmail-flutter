@@ -146,6 +146,9 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
   Future<void> restoreIfEditorBlank() async {
     if (_autoSaveNotifier()?.isCleanClose == true) return;
+    // Guard against concurrent calls (editor-load and lifecycle-resumed can both fire).
+    if (isRestoringFromCache) return;
+    isRestoringFromCache = true;
     try {
       final payload = await _resolveRestorePayload();
       if (payload == null) return;
@@ -162,6 +165,8 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       unawaited(clearComposerMobileSnapshot());
     } catch (e) {
       log('HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=$e');
+    } finally {
+      isRestoringFromCache = false;
     }
   }
 
