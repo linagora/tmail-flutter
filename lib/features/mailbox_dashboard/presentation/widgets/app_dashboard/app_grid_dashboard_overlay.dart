@@ -26,9 +26,14 @@ class AppDashboardOverlay extends StatelessWidget {
           boxShadow: AppGridDashboardStyle.cardShadow
         ),
         padding: AppGridDashboardStyle.padding,
-        child: Wrap(children: listLinagoraApp
-          .map((app) => AppGridDashboardItem(app: app, imagePaths: imagePaths))
-          .toList()),
+        child: Wrap(
+          key: const ValueKey('list_view_app_grid'),
+          children: listLinagoraApp
+              .map(
+                (app) => AppGridDashboardItem(app: app, imagePaths: imagePaths),
+              )
+              .toList(),
+        ),
       ),
     );
   }
