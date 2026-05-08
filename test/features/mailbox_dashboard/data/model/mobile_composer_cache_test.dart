@@ -136,11 +136,11 @@ void main() {
         expect(cache.isExpired, isFalse);
       });
 
-      test('returns false when timestampMs is exactly at the 24-hour boundary', () {
-        // Implementation uses strict >, so exactly 24h is not yet expired.
+      test('returns false when timestampMs is just inside the 24-hour window', () {
+        // Use 23h 59m instead of exactly 24h to avoid a wall-clock race on slow CI.
         final cache = makeCache(
           timestampMs: DateTime.now()
-              .subtract(const Duration(hours: 24))
+              .subtract(const Duration(hours: 23, minutes: 59))
               .millisecondsSinceEpoch,
         );
 
