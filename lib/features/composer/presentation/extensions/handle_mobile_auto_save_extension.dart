@@ -208,7 +208,10 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       isPersistent: true,
     );
     saveResult.fold(
-      (failure) => log('HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}'),
+      (failure) => logError(
+        'HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}',
+        exception: failure is FeatureFailure ? failure.exception : null,
+      ),
       (_) { if (notifier.mounted) notifier.onSnapshotSaved(); },
     );
   }
@@ -245,8 +248,13 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   void _onDraftSaveState(Either<Failure, Success> state) {
     state.fold(
       (failure) {
-        // Privacy: log type only — no content, subject, or recipients.
-        logError('HandleMobileAutoSaveExtension::_onDraftSaveState: failure=${failure.runtimeType}');
+        // Privacy: message and extras contain no user content, subject, or recipients.
+        // exception carries the underlying cause (network/JMAP/etc.) for Sentry.
+        logError(
+          'HandleMobileAutoSaveExtension::_onDraftSaveState: failure=${failure.runtimeType}',
+          exception: failure is FeatureFailure ? failure.exception : null,
+          extras: {'isFirstSave': emailIdEditing == null},
+        );
       },
       (success) {
         // Don't clear Hive: a newer snapshot may have been written while this
