@@ -98,6 +98,17 @@ void main() {
         expect(cache.isRestorable, isFalse);
       });
 
+      test('returns false when timestampMs is null — treated as expired', () {
+        final cache = makeCache(
+          email: Email(),
+          isCleanClose: false,
+          timestampMs: null,
+        );
+
+        expect(cache.isExpired, isTrue);
+        expect(cache.isRestorable, isFalse);
+      });
+
       test('evaluates guard conditions correctly', () {
         final cache = makeCache(
           isCleanClose: null,
@@ -112,13 +123,24 @@ void main() {
     });
 
     group('isExpired', () {
-      test('returns false when timestampMs is null', () {
-        expect(makeCache().isExpired, isFalse);
+      test('returns true when timestampMs is null — no anchor means unsafe to restore', () {
+        expect(makeCache().isExpired, isTrue);
       });
 
       test('returns false when timestampMs is recent', () {
         final cache = makeCache(
           timestampMs: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        expect(cache.isExpired, isFalse);
+      });
+
+      test('returns false when timestampMs is exactly at the 24-hour boundary', () {
+        // Implementation uses strict >, so exactly 24h is not yet expired.
+        final cache = makeCache(
+          timestampMs: DateTime.now()
+              .subtract(const Duration(hours: 24))
+              .millisecondsSinceEpoch,
         );
 
         expect(cache.isExpired, isFalse);
