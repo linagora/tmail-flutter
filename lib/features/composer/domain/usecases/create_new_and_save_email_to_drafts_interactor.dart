@@ -93,8 +93,12 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         isDraft: true,
       );
       return emailCreated;
-    } catch (e) {
-      logWarning('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');
+    } catch (e, st) {
+      // Privacy: log type only — exception message may embed email content.
+      logError(
+        'CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: exception=${e.runtimeType}',
+        stackTrace: st,
+      );
       return null;
     }
   }
