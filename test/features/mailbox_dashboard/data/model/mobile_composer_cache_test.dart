@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
@@ -321,6 +322,29 @@ void main() {
         final restored = ComposerPersistentCache.fromJson(original.toJson());
 
         expect(restored.email, isNotNull);
+      });
+
+      // draftEmailId is read back during kill+restore to sync emailIdEditing
+      // and avoid using stale blobIds from the destroyed draft.
+      test('toJson / fromJson round-trip preserves draftEmailId', () {
+        final draftId = EmailId(Id('draft-id-abc-123'));
+        final original = ComposerPersistentCache(
+          composerId: 'uuid-draft-test',
+          email: Email(),
+          draftEmailId: draftId,
+          timestampMs: 1700000000000,
+        );
+
+        final restored = ComposerPersistentCache.fromJson(original.toJson());
+
+        expect(restored.draftEmailId, isNotNull);
+        expect(restored.draftEmailId!.id.value, draftId.id.value);
+      });
+
+      test('draftEmailId is omitted from JSON when null', () {
+        final cache = ComposerPersistentCache(composerId: 'uuid-no-draft');
+
+        expect(cache.toJson().containsKey('draftEmailId'), isFalse);
       });
     });
   });
