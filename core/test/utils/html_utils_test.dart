@@ -1113,4 +1113,22 @@ void main() {
       );
     });
   });
+
+  group('HtmlUtils::convertBase64ToImageResourceData::', () {
+    test(
+      'When base64 data needs == padding (length % 4 == 2),\n'
+      'should return a data URI with properly padded base64',
+    () {
+      // "YQ" is "a" encoded in base64 without padding — needs "==" appended
+      const unpaddedBase64 = 'YQ';
+
+      final result = HtmlUtils.convertBase64ToImageResourceData(
+        base64Data: unpaddedBase64,
+        mimeType: 'image/png',
+      );
+
+      // The returned URI must have properly padded base64 so it can be decoded
+      expect(result, 'data:image/png;base64,YQ==');
+    });
+  });
 }
