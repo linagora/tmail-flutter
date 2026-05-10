@@ -16,7 +16,6 @@ import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
-import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
@@ -133,12 +132,24 @@ class HtmlAnalyzer {
     log('HtmlAnalyzer::replaceImageBase64ToImageCID:listImgTagLength = ${listImgTag.length} | inlineAttachments = ${inlineAttachments.length}');
 
     if (listImgTag.isEmpty) {
-      return Tuple2(
-        emailContent,
-        inlineAttachments.isNotEmpty
-          ? inlineAttachments.values.toList().toEmailBodyPart(charset: Constant.base64Charset)
-          : {},
-      );
+      if (inlineAttachments.isEmpty) return Tuple2(emailContent, {});
+
+      // Only include attachments that are actually referenced by a cid: img tag in the body.
+      // Orphaned inline attachments (CID present in metadata but no body reference) must not
+      // be re-forwarded, as this produces sent emails with unreferenced attachments.
+      final cidImgTags = document.querySelectorAll('img[src^="$cidPrefixKey"]');
+      if (cidImgTags.isEmpty) return Tuple2(emailContent, {});
+
+      final referencedCids = cidImgTags
+        .map((img) => img.attributes['src']!.substring(cidPrefixKey.length).trim())
+        .toSet();
+
+      final referencedAttachments = inlineAttachments.entries
+        .where((entry) => referencedCids.contains(entry.key))
+        .map((entry) => entry.value.toEmailBodyPart(charset: Constant.base64Charset))
+        .toSet();
+
+      return Tuple2(emailContent, referencedAttachments);
     }
 
     final Set<EmailBodyPart> inlineAttachmentsSet = {};
@@ -186,6 +197,18 @@ class HtmlAnalyzer {
       attributes.remove('id');
 
       inlineAttachmentsSet.add(newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset));
+    }
+
+    // Include attachments for cid: images that were never converted to base64
+    // (e.g. download failed during view). These are not in listImgTag but still
+    // need their attachment included so the recipient can load them.
+    final remainingCidImgs = document.querySelectorAll('img[src^="$cidPrefixKey"]');
+    for (final img in remainingCidImgs) {
+      final cid = img.attributes['src']!.substring(cidPrefixKey.length).trim();
+      final attachment = inlineAttachments[cid];
+      if (attachment != null) {
+        inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
+      }
     }
 
     return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);

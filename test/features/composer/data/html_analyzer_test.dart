@@ -356,5 +356,135 @@ void main() {
       verify(mockUuid.v1()).called(1);
       verify(mockFileUploader.uploadAttachment(any, any, any)).called(1);
     });
+
+    test(
+      'When HTML has both a base64 image (CID found) and a cid: image (download failed),\n'
+      'should include attachments for both images in result',
+    () async {
+      // img1: converted to base64 with id="cid:img1" (normal flow)
+      // img2: download failed, stayed as <img src="cid:img2"> (not in listImgTag)
+      const htmlContent = '<img src="data:image/png;base64,iVBORw0KGgo=" id="cid:img1"> '
+          '<img src="cid:img2">';
+      final inlineAttachments = {
+        'img1': Attachment(
+          blobId: Id('blob1'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'img1',
+        ),
+        'img2': Attachment(
+          blobId: Id('blob2'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'img2',
+        ),
+      };
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      // Both attachments must be present so recipient can load both images
+      expect(result.value2.length, 2);
+      expect(result.value2.any((p) => p.cid == 'img1'), isTrue);
+      expect(result.value2.any((p) => p.cid == 'img2'), isTrue);
+    });
+  });
+
+  group('HtmlAnalyzer::replaceImageBase64ToImageCID - orphaned inline attachments::', () {
+    late HtmlAnalyzer htmlAnalyzer;
+    late MockHtmlTransform mockHtmlTransform;
+    late MockFileUploader mockFileUploader;
+    late MockUuid mockUuid;
+
+    setUp(() {
+      mockHtmlTransform = MockHtmlTransform();
+      mockFileUploader = MockFileUploader();
+      mockUuid = MockUuid();
+      htmlAnalyzer = HtmlAnalyzer(mockHtmlTransform, mockFileUploader, mockUuid);
+    });
+
+    test(
+      'When inlineAttachments has entries but HTML body has no cid: img reference,\n'
+      'should return empty attachments (orphaned inline attachment must not be re-forwarded)',
+    () async {
+      // Simulates replying to a malformed Outlook email: the image is listed in
+      // JMAP attachment metadata (inline + CID) but the HTML body never references it.
+      const htmlContent = '<div>Hello World</div>';
+      final inlineAttachments = {
+        'orphan-cid': Attachment(
+          blobId: Id('blob-orphan'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'orphan-cid',
+        ),
+      };
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      expect(result.value1, htmlContent);
+      expect(result.value2, isEmpty);
+      verifyNever(mockFileUploader.uploadAttachment(any, any, any));
+    });
+
+    test(
+      'When inlineAttachments has entries and HTML has a matching cid: img reference,\n'
+      'should return only the referenced attachment',
+    () async {
+      // img1 is referenced in the body (download failed, stays as cid:)
+      // img2 is orphaned (not referenced in the body)
+      const htmlContent = '<img src="cid:img1"><div>text</div>';
+      final inlineAttachments = {
+        'img1': Attachment(
+          blobId: Id('blob1'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'img1',
+        ),
+        'img2': Attachment(
+          blobId: Id('blob2'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'img2',
+        ),
+      };
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      expect(result.value2.length, 1);
+      expect(result.value2.any((p) => p.cid == 'img1'), isTrue);
+      expect(result.value2.any((p) => p.cid == 'img2'), isFalse);
+    });
+
+    test(
+      'When inlineAttachments is empty and HTML has no base64 images,\n'
+      'should return empty attachments',
+    () async {
+      const htmlContent = '<div>Plain text, no images</div>';
+      final inlineAttachments = <String, Attachment>{};
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      expect(result.value1, htmlContent);
+      expect(result.value2, isEmpty);
+    });
   });
 }
