@@ -10,7 +10,6 @@ import 'js_interop_stub.dart' if (dart.library.html) 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:core/data/constants/constant.dart';
-import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
@@ -329,12 +328,14 @@ class HtmlUtils {
 
   static String convertBase64ToImageResourceData({
     required String base64Data,
-    required String mimeType
+    required String mimeType,
   }) {
-    if (!base64Data.endsWith('==')) {
-      base64Data.append('==');
+    try {
+      return 'data:$mimeType;base64,${base64.normalize(base64Data)}';
+    } catch (e) {
+      logWarning('HtmlUtils::convertBase64ToImageResourceData: $e');
+      return 'data:$mimeType;base64,$base64Data';
     }
-    return 'data:$mimeType;base64,$base64Data';
   }
 
   static String generateHtmlDocument({

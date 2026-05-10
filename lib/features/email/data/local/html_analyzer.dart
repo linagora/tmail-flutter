@@ -9,6 +9,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:dartz/dartz.dart';
+import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
@@ -62,52 +63,40 @@ class HtmlAnalyzer {
   Future<List<EventAction>> getListEventAction(String emailContents) async {
     try {
       final document = parse(emailContents);
-
-      final openPaasLinkElements = document.querySelectorAll('a.part-button');
-      if (openPaasLinkElements.isNotEmpty) {
-        final listEventAction = openPaasLinkElements
-          .mapIndexed((index, element) {
-            final hrefLink = element.attributes['href'] ?? '';
-            if (hrefLink.isNotEmpty) {
-              if (index == 0) {
-                return EventAction(EventActionType.yes, hrefLink);
-              } else if (index == 1) {
-                return EventAction(EventActionType.maybe, hrefLink);
-              } else if (index == 2) {
-                return EventAction(EventActionType.no, hrefLink);
-              }
-            }
-            return null;
-          })
-          .nonNulls
-          .toList();
-        log('HtmlAnalyzer::getListEventAction:OPEN_PAAS::listEventAction: $listEventAction');
-        return listEventAction;
-      } else {
-        final googleLinkElements = document.querySelectorAll('a.grey-button-text');
-        final listEventAction = googleLinkElements
-          .mapIndexed((index, element) {
-            final hrefLink = element.attributes['href'] ?? '';
-            if (hrefLink.isNotEmpty) {
-              if (index == 0) {
-                return EventAction(EventActionType.yes, hrefLink);
-              } else if (index == 1) {
-                return EventAction(EventActionType.no, hrefLink);
-              } else if (index == 2) {
-                return EventAction(EventActionType.maybe, hrefLink);
-              }
-            }
-            return null;
-          })
-          .nonNulls
-          .toList();
-        log('HtmlAnalyzer::getListEventAction:GOOGLE::listEventAction: $listEventAction');
-        return listEventAction;
+      final openPaasElements = document.querySelectorAll('a.part-button');
+      if (openPaasElements.isNotEmpty) {
+        final result = _extractEventActions(
+          openPaasElements,
+          [EventActionType.yes, EventActionType.maybe, EventActionType.no],
+        );
+        log('HtmlAnalyzer::getListEventAction:OPEN_PAAS::listEventAction: $result');
+        return result;
       }
+      final googleElements = document.querySelectorAll('a.grey-button-text');
+      final result = _extractEventActions(
+        googleElements,
+        [EventActionType.yes, EventActionType.no, EventActionType.maybe],
+      );
+      log('HtmlAnalyzer::getListEventAction:GOOGLE::listEventAction: $result');
+      return result;
     } catch(e) {
       logWarning('HtmlAnalyzer::getListEventAction:Exception: $e');
       return [];
     }
+  }
+
+  List<EventAction> _extractEventActions(
+    List<Element> elements,
+    List<EventActionType> typeOrder,
+  ) {
+    return elements
+      .mapIndexed((index, element) {
+        final hrefLink = element.attributes['href'] ?? '';
+        if (hrefLink.isEmpty || index >= typeOrder.length) return null;
+        return EventAction(typeOrder[index], hrefLink);
+      })
+      .nonNulls
+      .toList();
   }
 
   Future<String> transformHtmlEmailContent(
@@ -128,90 +117,97 @@ class HtmlAnalyzer {
   }) async {
     final document = parse(emailContent);
     final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
+    final cidImgTags = document.querySelectorAll('img[src^="$cidPrefixKey"]');
 
     log('HtmlAnalyzer::replaceImageBase64ToImageCID:listImgTagLength = ${listImgTag.length} | inlineAttachments = ${inlineAttachments.length}');
 
-    if (listImgTag.isEmpty) {
-      if (inlineAttachments.isEmpty) return Tuple2(emailContent, {});
-
-      // Only include attachments that are actually referenced by a cid: img tag in the body.
-      // Orphaned inline attachments (CID present in metadata but no body reference) must not
-      // be re-forwarded, as this produces sent emails with unreferenced attachments.
-      final cidImgTags = document.querySelectorAll('img[src^="$cidPrefixKey"]');
-      if (cidImgTags.isEmpty) return Tuple2(emailContent, {});
-
-      final referencedCids = cidImgTags
-        .map((img) => img.attributes['src']!.substring(cidPrefixKey.length).trim())
-        .toSet();
-
-      final referencedAttachments = inlineAttachments.entries
-        .where((entry) => referencedCids.contains(entry.key))
-        .map((entry) => entry.value.toEmailBodyPart(charset: Constant.base64Charset))
-        .toSet();
-
-      return Tuple2(emailContent, referencedAttachments);
+    if (listImgTag.isEmpty && (inlineAttachments.isEmpty || cidImgTags.isEmpty)) {
+      return Tuple2(emailContent, {});
     }
 
     final Set<EmailBodyPart> inlineAttachmentsSet = {};
 
     for (final imgTag in listImgTag) {
-      final attributes = imgTag.attributes;
-      final imageSrc = attributes['src'];
+      final imageSrc = imgTag.attributes['src'];
       if (imageSrc?.isEmpty ?? true) continue;
-
-      final idImg = attributes['id'];
-      if (idImg?.startsWith(cidPrefixKey) == true) {
-        final cid = idImg!.substring(cidPrefixKey.length).trim();
-        final attachment = inlineAttachments[cid];
-
-        if (attachment != null) {
-          attributes['src'] = '$cidPrefixKey$cid';
-          attributes.remove('id');
-          inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
-          continue;
-        }
-      }
-
-      if (uploadUri == null) continue;
-
-      final taskId = idImg?.startsWith(cidPrefixKey) == true
-        ? idImg!.substring(cidPrefixKey.length)
-        : _uuid.v1();
-
-      final attachmentRecord = await _retrieveAttachmentFromUpload(
-        taskId: taskId,
+      final bodyPart = await _processBase64ImageTag(
+        attributes: imgTag.attributes,
+        inlineAttachments: inlineAttachments,
         uploadUri: uploadUri,
-        base64ImageTag: imageSrc!,
+        imageSrc: imageSrc!,
       );
-
-      if (attachmentRecord == null) continue;
-
-      final newInlineAttachment = attachmentRecord.$1.toAttachmentWithDisposition(
-        disposition: ContentDisposition.inline,
-        cid: attachmentRecord.$2,
-      );
-
-      final newCid = newInlineAttachment.cid!;
-      inlineAttachments[newCid] = newInlineAttachment;
-      attributes['src'] = '$cidPrefixKey$newCid';
-      attributes.remove('id');
-
-      inlineAttachmentsSet.add(newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset));
+      if (bodyPart != null) inlineAttachmentsSet.add(bodyPart);
     }
 
-    // Include attachments for cid: images that were never converted to base64
-    // (e.g. download failed during view). These are not in listImgTag but still
-    // need their attachment included so the recipient can load them.
-    final remainingCidImgs = document.querySelectorAll('img[src^="$cidPrefixKey"]');
-    for (final img in remainingCidImgs) {
-      final cid = img.attributes['src']!.substring(cidPrefixKey.length).trim();
+    // Include attachments for cid: images whose download failed during view (never converted to base64).
+    _includeCidImageAttachments(
+      cidImgTags: cidImgTags,
+      inlineAttachments: inlineAttachments,
+      inlineAttachmentsSet: inlineAttachmentsSet,
+    );
+
+    return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);
+  }
+
+  Future<EmailBodyPart?> _processBase64ImageTag({
+    required Map<Object, String> attributes,
+    required Map<String, Attachment> inlineAttachments,
+    required Uri? uploadUri,
+    required String imageSrc,
+  }) async {
+    final idImg = attributes['id'];
+
+    if (idImg?.startsWith(cidPrefixKey) == true) {
+      final cid = idImg!.substring(cidPrefixKey.length).trim();
+      final attachment = inlineAttachments[cid];
+      if (attachment != null) {
+        attributes['src'] = '$cidPrefixKey$cid';
+        attributes.remove('id');
+        return attachment.toEmailBodyPart(charset: Constant.base64Charset);
+      }
+    }
+
+    if (uploadUri == null) return null;
+
+    final taskId = idImg?.startsWith(cidPrefixKey) == true
+      ? idImg!.substring(cidPrefixKey.length)
+      : _uuid.v1();
+
+    final attachmentRecord = await _retrieveAttachmentFromUpload(
+      taskId: taskId,
+      uploadUri: uploadUri,
+      base64ImageTag: imageSrc,
+    );
+
+    if (attachmentRecord == null) return null;
+
+    final newInlineAttachment = attachmentRecord.$1.toAttachmentWithDisposition(
+      disposition: ContentDisposition.inline,
+      cid: attachmentRecord.$2,
+    );
+
+    final newCid = newInlineAttachment.cid!;
+    inlineAttachments[newCid] = newInlineAttachment;
+    attributes['src'] = '$cidPrefixKey$newCid';
+    attributes.remove('id');
+
+    return newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset);
+  }
+
+  void _includeCidImageAttachments({
+    required List<Element> cidImgTags,
+    required Map<String, Attachment> inlineAttachments,
+    required Set<EmailBodyPart> inlineAttachmentsSet,
+  }) {
+    for (final img in cidImgTags) {
+      final src = img.attributes['src'];
+      if (src == null) continue;
+      final cid = src.substring(cidPrefixKey.length).trim();
       final attachment = inlineAttachments[cid];
       if (attachment != null) {
         inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
       }
     }
-
-    return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);
   }
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
