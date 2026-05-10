@@ -2,10 +2,9 @@
 import 'package:core/utils/list_utils.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/extensions/email_extension.dart';
-import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/email_attachment_classifier_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
@@ -21,32 +20,31 @@ extension SetupEmailAttachmentsExtension on ComposerController {
       return;
     }
 
+    final resolved = _resolveAttachmentsFromArguments(arguments);
     initAttachmentsAndInlineImages(
-      attachments: _getAttachmentsFromArguments(arguments),
-      inlineImages: _getInlineImagesFromArguments(arguments),
+      attachments: resolved.attachments,
+      inlineImages: resolved.inlineImages,
     );
   }
 
-  List<Attachment>? _getAttachmentsFromArguments(ComposerArguments arguments) {
+  ({List<Attachment>? attachments, List<Attachment>? inlineImages})
+      _resolveAttachmentsFromArguments(ComposerArguments arguments) {
     if (currentEmailActionType == EmailActionType.editSendingEmail) {
-      final sendingEmail = arguments.sendingEmail;
-      if (sendingEmail == null) return null;
-      return sendingEmail.email.allAttachments.getListAttachmentsDisplayedOutside(
-        sendingEmail.email.htmlBodyAttachments,
+      final email = arguments.sendingEmail?.email;
+      if (email == null) return (attachments: null, inlineImages: null);
+      final classified = email.classifyAttachments();
+      return (
+        attachments: classified.attachments,
+        inlineImages: classified.inlineImages,
       );
     }
-    if (_shouldPreserveAttachments) return arguments.attachments;
-    return null;
-  }
-
-  List<Attachment>? _getInlineImagesFromArguments(ComposerArguments arguments) {
-    if (currentEmailActionType == EmailActionType.editSendingEmail) {
-      final sendingEmail = arguments.sendingEmail;
-      if (sendingEmail == null) return null;
-      return sendingEmail.email.allAttachments.listAttachmentsDisplayedInContent;
+    if (_shouldPreserveAttachments) {
+      return (
+        attachments: arguments.attachments,
+        inlineImages: arguments.inlineImages,
+      );
     }
-    if (_shouldPreserveAttachments) return arguments.inlineImages;
-    return null;
+    return (attachments: null, inlineImages: null);
   }
 
   bool get _shouldPreserveAttachments => const {

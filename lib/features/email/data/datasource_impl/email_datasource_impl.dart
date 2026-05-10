@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/email_attachment_classifier_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
@@ -402,13 +403,9 @@ class EmailDataSourceImpl extends EmailDataSource {
       final appLocalizations = previewEmailEMLRequest.appLocalizations;
       final locale = previewEmailEMLRequest.locale.toLanguageTag();
 
-      final listAttachments = email
-        .allAttachments
-        .getListAttachmentsDisplayedOutside(email.htmlBodyAttachments);
-
-      final listInlineImages = email
-        .allAttachments
-        .listAttachmentsDisplayedInContent;
+      final classified = email.classifyAttachments();
+      final listAttachments = classified.attachments;
+      final listInlineImages = classified.inlineImages;
 
       final mapCidImageDownloadUrl = listInlineImages.toMapCidImageDownloadUrl(
         accountId: previewEmailEMLRequest.accountId,

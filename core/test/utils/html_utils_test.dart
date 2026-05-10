@@ -1127,8 +1127,51 @@ void main() {
         mimeType: 'image/png',
       );
 
-      // The returned URI must have properly padded base64 so it can be decoded
       expect(result, 'data:image/png;base64,YQ==');
+    });
+
+    test(
+      'When base64 data needs = padding (length % 4 == 3),\n'
+      'should return a data URI with one = appended',
+    () {
+      // "YWI" is "ab" encoded in base64 without padding — needs "=" appended
+      const unpaddedBase64 = 'YWI';
+
+      final result = HtmlUtils.convertBase64ToImageResourceData(
+        base64Data: unpaddedBase64,
+        mimeType: 'image/png',
+      );
+
+      expect(result, 'data:image/png;base64,YWI=');
+    });
+
+    test(
+      'When base64 data is already aligned (length % 4 == 0),\n'
+      'should return a data URI with no padding added',
+    () {
+      // "YWJj" is "abc" encoded in base64 — already 4-byte aligned
+      const paddedBase64 = 'YWJj';
+
+      final result = HtmlUtils.convertBase64ToImageResourceData(
+        base64Data: paddedBase64,
+        mimeType: 'image/png',
+      );
+
+      expect(result, 'data:image/png;base64,YWJj');
+    });
+
+    test(
+      'When base64 data is invalid (contains illegal characters),\n'
+      'should fall back to raw data URI without crashing',
+    () {
+      const invalidBase64 = '!!!not-valid-base64!!!';
+
+      final result = HtmlUtils.convertBase64ToImageResourceData(
+        base64Data: invalidBase64,
+        mimeType: 'image/png',
+      );
+
+      expect(result, 'data:image/png;base64,$invalidBase64');
     });
   });
 }

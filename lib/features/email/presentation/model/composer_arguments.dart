@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/email_attachment_classifier_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
@@ -130,14 +131,15 @@ class ComposerArguments extends RouterArguments {
     savedEmailTemplateId: savedEmailTemplateId,
   );
 
-  factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
-    ComposerArguments(
+  factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) {
+    final classified = composerCache.email?.classifyAttachments();
+    return ComposerArguments(
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
       emailContents: composerCache.email?.emailContentList.asHtmlString,
-      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
+      attachments: classified?.attachments,
       selectedIdentityId: composerCache.email?.identityIdFromHeader,
-      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
+      inlineImages: classified?.inlineImages,
       hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
       isMarkAsImportant: composerCache.isMarkAsImportant,
@@ -147,6 +149,7 @@ class ComposerArguments extends RouterArguments {
       savedEmailDraftId: composerCache.draftEmailId,
       savedEmailTemplateId: composerCache.templateEmailId,
     );
+  }
 
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,
@@ -227,16 +230,15 @@ class ComposerArguments extends RouterArguments {
     ? SendingEmailActionType.edit
     : SendingEmailActionType.create;
 
-  factory ComposerArguments.fromComposerPersistentCache(ComposerPersistentCache cache) =>
-    ComposerArguments(
+  factory ComposerArguments.fromComposerPersistentCache(ComposerPersistentCache cache) {
+    final classified = cache.email?.classifyAttachments();
+    return ComposerArguments(
       emailActionType: EmailActionType.restoreComposerFromPersistentCache,
       presentationEmail: cache.email?.toPresentationEmail(),
       emailContents: cache.email?.emailContentList.asHtmlString,
-      attachments: cache.email?.allAttachments.getListAttachmentsDisplayedOutside(
-        cache.email?.htmlBodyAttachments ?? [],
-      ),
+      attachments: classified?.attachments,
       selectedIdentityId: cache.email?.identityIdFromHeader,
-      inlineImages: cache.email?.allAttachments.listAttachmentsDisplayedInContent,
+      inlineImages: classified?.inlineImages,
       hasRequestReadReceipt: cache.hasRequestReadReceipt,
       isMarkAsImportant: cache.isMarkAsImportant,
       composerId: cache.composerId,
@@ -246,6 +248,7 @@ class ComposerArguments extends RouterArguments {
       savedEmailDraftId: cache.draftEmailId,
       savedEmailTemplateId: cache.templateEmailId,
     );
+  }
 
   factory ComposerArguments.fromUnsubscribeMailtoLink({
     List<EmailAddress>? listEmailAddress,
