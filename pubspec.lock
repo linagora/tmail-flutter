@@ -292,7 +292,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master 
+      ref: master
       resolved-ref: "db61bece7ba0b543fdc4af68cfb7c2c958887418"
       url: "https://github.com/linagora/flutter_contacts.git"
     source: git

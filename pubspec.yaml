@@ -79,7 +79,7 @@ dependencies:
   contacts_service:
     git:
       url: https://github.com/linagora/flutter_contacts.git
-      ref: master 
+      ref: master
 
   receive_sharing_intent:
     git:
