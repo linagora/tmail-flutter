@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/attachment_extension.dart';
@@ -472,6 +473,53 @@ class UploadController extends BaseController {
     ...attachmentsUploaded,
     ...inlineAttachmentsUploaded,
   ];
+
+  bool refreshAllBlobIdForAttachments({
+    required Id oldBlobId,
+    required Id newBlobId,
+  }) {
+    final regularSuccess = _refreshBlobIdForAttachments(
+      oldBlobId: oldBlobId,
+      newBlobId: newBlobId,
+      isInline: false,
+    );
+    final inlineSuccess = _refreshBlobIdForAttachments(
+      oldBlobId: oldBlobId,
+      newBlobId: newBlobId,
+      isInline: true,
+    );
+    log('UploadController::refreshAllBlobIdForAttachments(): regularSuccess = $regularSuccess | inlineSuccess = $inlineSuccess');
+    return regularSuccess || inlineSuccess;
+  }
+
+  bool _refreshBlobIdForAttachments({
+    required Id oldBlobId,
+    required Id newBlobId,
+    required bool isInline,
+  }) {
+    try {
+      final stateList =
+          isInline ? _uploadingStateInlineFiles : _uploadingStateFiles;
+
+      stateList.refreshBlobId(
+        oldBlobId: oldBlobId,
+        newBlobId: newBlobId,
+      );
+
+      if (!isInline) {
+        _refreshListUploadAttachmentState();
+      }
+
+      return true;
+    } catch (e, st) {
+      logError(
+        'UploadController::_refreshBlobIdForAttachments: Exception: $e',
+        exception: e,
+        stackTrace: st,
+      );
+      return false;
+    }
+  }
 
   void _handleUploadAttachmentFailure(UploadAttachmentFailure failure) {
     if (currentContext != null && currentOverlayContext != null) {

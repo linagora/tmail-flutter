@@ -593,7 +593,7 @@ void main() {
                 createEmailRequest: anyNamed('createEmailRequest'),
                 cancelToken: anyNamed('cancelToken')))
               .thenAnswer((_) => Stream.value(
-                Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
+                Right(UpdateEmailDraftsSuccess(emailId: EmailId(Id('123')), oldBlobId: Id('abc'), newBlobId: Id('123')))));
 
             final savedEmailDraft = SavedComposingEmail(
               content: emailContent,

@@ -1,5 +1,8 @@
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:model/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
@@ -69,5 +72,41 @@ class UploadFileStateList {
 
   UploadFileState? getUploadFileStateById(UploadTaskId uploadTaskId) {
     return _uploadingStateFiles.firstWhereOrNull((fileState) => fileState?.uploadTaskId == uploadTaskId);
+  }
+
+  void refreshBlobId({
+    required Id oldBlobId,
+    required Id newBlobId,
+  }) {
+    for (var i = 0; i < _uploadingStateFiles.length; i++) {
+      final uploadFile = _uploadingStateFiles[i];
+      if (uploadFile == null) continue;
+
+      final attachment = uploadFile.attachment;
+      if (attachment == null) continue;
+
+      final currentBlobId = attachment.blobId?.value;
+      if (currentBlobId == null) continue;
+
+      if (!currentBlobId.contains(oldBlobId.value)) {
+        continue;
+      }
+
+      final updatedBlobId = currentBlobId.replaceAll(
+        oldBlobId.value,
+        newBlobId.value,
+      );
+
+      _uploadingStateFiles[i] = uploadFile.copyWith(
+        attachment: attachment.withBlobId(
+          Id(updatedBlobId),
+        ),
+      );
+    }
+  }
+
+  @visibleForTesting
+  void addNullableForTest(UploadFileState? state) {
+    _uploadingStateFiles.add(state);
   }
 }

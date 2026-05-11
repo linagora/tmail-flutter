@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_auto_refresh_all_attachments_from_draft.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
@@ -1357,6 +1358,10 @@ class ComposerController extends BaseController
       _saveToDraftButtonState = ButtonState.enabled;
       emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+      autoRefreshAllBlobIdAttachmentsFromDraft(
+        oldBlobId: resultState.oldBlobId,
+        newBlobId: resultState.newBlobId,
+      );
       _updateSavedEmailDraftHash();
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
