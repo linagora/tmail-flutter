@@ -292,8 +292,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "hotfix/migrate-ios-26"
-      resolved-ref: "61ceb0751a564f8d687cb51bb4d6298737e2b9dc"
+      ref: master 
+      resolved-ref: "db61bece7ba0b543fdc4af68cfb7c2c958887418"
       url: "https://github.com/linagora/flutter_contacts.git"
     source: git
     version: "0.6.4"
