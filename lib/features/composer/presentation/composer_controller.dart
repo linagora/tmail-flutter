@@ -537,7 +537,9 @@ class ComposerController extends BaseController
       return null;
     }
     autoCreateEmailTag();
-    String emailContent = htmlContent ?? await getContentInEditor();
+    String emailContent = htmlContent != null
+        ? htmlContent.removeEditorStartTag()
+        : await getContentInEditor();
     if (currentEmailActionType == EmailActionType.compose) {
       emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
         emailContent: emailContent,
@@ -1489,13 +1491,15 @@ class ComposerController extends BaseController
     }
   }
 
-  void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
+  Future<void> _closeComposerAction({dynamic result, bool closeOverlays = false}) async {
     if (PlatformInfo.isWeb && richTextWebController != null) {
       mailboxDashBoardController.updateTextFormattingMenuState(
         richTextWebController!.isFormattingOptionsEnabled,
       );
     }
-    markCleanClose();
+    if (PlatformInfo.isAndroid) {
+      await markCleanClose();
+    }
     mailboxDashBoardController.closeComposer(
       result: result,
       closeOverlays: closeOverlays,

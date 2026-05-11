@@ -30,11 +30,14 @@ void main() {
       });
 
       test('preserves all entries when id is not found', () {
-        final list = makeList([const UploadTaskId('a'), const UploadTaskId('b')]);
+        const a = UploadTaskId('a');
+        const b = UploadTaskId('b');
+        final list = makeList([a, b]);
 
         list.deleteElementByUploadTaskId(const UploadTaskId('unknown'));
 
         expect(list.uploadingStateFiles.length, 2);
+        expect(taskIds(list), equals({a, b}));
       });
 
       test('is a no-op on an empty list', () {
