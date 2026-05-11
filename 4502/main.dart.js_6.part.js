@@ -289,7 +289,7 @@ B.bek.prototype={}
 B.aFF.prototype={
 t(d){var x=null,w=this.gbMI(),v=A.eY(24),u=$.e4q(),t=this.c,s=t.$ti.h("D<am.E,MO>")
 t=A.A(new A.D(t,new B.bCL(this),s),s.h("a1.E"))
-return A.cZ(x,A.a7(x,A.jU(C.aG,t,C.dm,C.Y,D.a5M,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tV,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bCM(),x,x,x,x,x,x,x,x,!1,C.a2)},
+return A.cZ(x,A.a7(x,A.jU(C.aG,t,C.dm,C.Y,D.a5L,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tV,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bCM(),x,x,x,x,x,x,x,x,!1,C.a2)},
 gbMI(){var x=this.c
 if(J.at(x.gi(0))>=3)return 240+D.tV.ghz()
 else if(J.at(x.gi(0))===2)return 160+D.tV.ghz()
@@ -585,7 +585,7 @@ D.zT=new A.aG(8,3,8,3)
 D.bdE=x([],A.aq("N<vM>"))
 D.w3=new B.S2(null)
 D.Z3=new A.rJ("mailbox_list",A.aq("rJ<h>"))
-D.a5M=new A.b1("list_view_app_grid",y.O)
-D.EK=new A.b1("toggle_app_grid_button",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
+D.a5L=new A.b1("listViewAppGrid",y.O)
+D.EK=new A.b1("toggleAppGridButton",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"f8U","e4q",()=>A.c([A.XL(20,C.U,C.n.an(0.15),C.q,0)],y.V))})()};
-(a=>{a["ZLV6W7WDUK+vbnPmzePc1YIv9sc="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["IQ8c00YMS5HqVGwyfos4g6sRBBM="]=a.current})($__dart_deferred_initializers__);
