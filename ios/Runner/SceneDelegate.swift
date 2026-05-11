@@ -12,7 +12,7 @@ class SceneDelegate: FlutterSceneDelegate {
     }
     
     private func removeAppBadger() {
-        TwakeLogger.shared.log(message: "AppDelegate::removeAppBadger")
+        TwakeLogger.shared.log(message: "SceneDelegate::removeAppBadger")
         if #available(iOS 16.0, *) {
             UNUserNotificationCenter.current().setBadgeCount(0)
         } else {
