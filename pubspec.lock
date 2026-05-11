@@ -293,10 +293,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: d39739e8e9a43bba2c6ea6c885653c615e114e07
+      resolved-ref: "db61bece7ba0b543fdc4af68cfb7c2c958887418"
       url: "https://github.com/linagora/flutter_contacts.git"
     source: git
-    version: "0.6.3"
+    version: "0.6.4"
   convert:
     dependency: transitive
     description:
