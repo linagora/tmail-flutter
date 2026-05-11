@@ -43,7 +43,6 @@ class EmptyTrashScenario extends BaseTestScenario {
     await mailboxMenuRobot.openFolderByName(
       appLocalizations.trashMailboxDisplayName,
     );
-    await $.pumpAndSettle();
     await _expectEmptyTrashBannerVisible();
     await _expectEmailWithSubjectVisible(subject);
 
@@ -64,8 +63,9 @@ class EmptyTrashScenario extends BaseTestScenario {
         .$(find.text(folderName)));
   }
 
-  Future<void> _expectEmptyTrashBannerVisible() =>
-      expectViewVisible($(#empty_trash_banner));
+  Future<void> _expectEmptyTrashBannerVisible() async {
+    await expectViewVisible($(#empty_trash_banner));
+  }
 
   Future<void> _expectEmailWithSubjectVisible(String subject) =>
       expectViewVisible($(subject));

@@ -6,7 +6,7 @@ class KeyboardUtils {
     FocusScope.of(context).unfocus();
   }
 
-  static void hideSystemKeyboardMobile() {
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
+  static Future<void> hideSystemKeyboardMobile() {
+    return SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 }

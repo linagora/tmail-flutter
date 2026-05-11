@@ -30,7 +30,7 @@ class MailboxMoveEmailScenario extends BaseTestScenario {
         content: '',
       ),
     ]);
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+    await $.waitUntilVisible($(templatesSubject));
 
     await threadRobot.longPressEmailWithSubject(templatesSubject);
     await threadRobot.moveEmailToMailboxWithName(appLocalizations.templatesMailboxDisplayName);

@@ -48,9 +48,7 @@ class AppGridScenario extends BaseTestScenario {
       await Future.delayed(const Duration(seconds: 2));
 
       await native.pressBack();
-      await native.pressBack();
-
-      await _expectMailboxViewVisible();
+      await _expectListViewAppGridVisible();
     } else if (PlatformInfo.isIOS) {
       await _expectMailboxViewInVisible();
     }

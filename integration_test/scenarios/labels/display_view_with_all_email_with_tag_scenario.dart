@@ -35,8 +35,7 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
         requestReadReceipt: false,
       );
     }
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
-
+    await $.waitUntilVisible($(EmailTileBuilder));
 
     for (final label in labels) {
       await threadRobot.openMailbox();
@@ -47,8 +46,6 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
         label: label,
         emailCount: emailCount,
       );
-
-      await $.pumpAndSettle(duration: const Duration(seconds: 1));
     }
   }
 
@@ -60,6 +57,7 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
     required int emailCount,
   }) async {
     final tagDisplayName = label.safeDisplayName;
+    await $(EmailTileBuilder).waitUntilVisible();
 
     final listEmailTileWithTag = $.tester.widgetList<EmailTileBuilder>(
       $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>

@@ -98,11 +98,9 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
       expectViewVisible($(appLocalizations.drafts_saved));
 
   Future<void> _expectIdentityVisible(Identity identity) async {
-    expect(
-      $(FromComposerMobileWidget).which<FromComposerMobileWidget>(
-        (widget) => widget.selectedIdentity?.name == identity.name
-      ).visible,
-      isTrue,
+    final identityFinder = $(FromComposerMobileWidget).which<FromComposerMobileWidget>(
+      (widget) => widget.selectedIdentity?.name == identity.name
     );
+    await expectViewVisible(identityFinder);
   }
 }

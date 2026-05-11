@@ -64,8 +64,17 @@ class MoveFolderContentScenario extends BaseTestScenario {
     await expectViewVisible($(subject));
   }
 
-  Future<void> _expectEmailWithSubjectInVisible(String subject) async {
-    await expectViewInvisible($(subject));
+  Future<void> _expectEmailWithSubjectInVisible(String subject, {int attempt = 0,}) async {
+    // While the emails are being move, pumpAndTrySettle might resolve,
+    // causing some emails are still waiting to be moved
+    // and this expectation is triggered
+    try {
+      await expectViewInvisible($(subject));
+    } catch (e) {
+      if (attempt == 3) rethrow;
+      await $.pumpAndTrySettle(duration: Duration(seconds: attempt + 1));
+      await _expectEmailWithSubjectInVisible(subject, attempt: attempt + 1);
+    }
   }
 
   Future<void> _expectEmptyViewVisibleInInboxFolder() async {

@@ -1,4 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
@@ -77,6 +79,9 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
   }) async {
     await threadRobot.openEmailWithSubject(subject);
     await _expectEmailViewVisible();
+    if (PlatformInfo.isMobile) {
+      await KeyboardUtils.hideSystemKeyboardMobile();
+    }
     await _expectReplyEmailButtonVisible();
 
     await emailRobot.onTapReplyEmail();

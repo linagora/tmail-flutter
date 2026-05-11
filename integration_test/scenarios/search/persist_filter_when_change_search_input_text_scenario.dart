@@ -49,7 +49,8 @@ class PersistFilterWhenChangeSearchInputTextScenario
   }
 
   Future<void> _expectEmailWithSubjectVisible(String subject) async {
-    await expectViewVisible($(find.text(subject)));
+    await $.pumpAndTrySettle();
+    await expectViewVisible($(subject));
   }
 
   void _expectAttachmentFilterSelected() {

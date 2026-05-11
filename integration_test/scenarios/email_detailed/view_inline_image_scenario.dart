@@ -11,6 +11,7 @@ import '../../base/base_test_scenario.dart';
 import '../../resources/image_resources.dart';
 import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class ViewInlineImageScenario extends BaseTestScenario {
 
@@ -61,7 +62,6 @@ class ViewInlineImageScenario extends BaseTestScenario {
       base64Data: ImageResources.base64,
     );
     await composerRobot.addInlineImageFromFile(imageFile);
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
     await _expectInlineImageVisible();
 
@@ -74,13 +74,19 @@ class ViewInlineImageScenario extends BaseTestScenario {
   Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
 
   Future<void> _expectInlineImageVisible() async {
-    final currentHtmlContent = await getBinding<ComposerController>()?.getContentInEditor() ?? '';
-    expect(
-      currentHtmlContent.contains('data:image/') &&
-          currentHtmlContent.contains(';base64') &&
-          currentHtmlContent.contains('cid:'),
-      isTrue,
+    String currentHtmlContent = '';
+    bool conditionPassed() =>
+        currentHtmlContent.contains('data:image/') &&
+        currentHtmlContent.contains(';base64') &&
+        currentHtmlContent.contains('cid:');
+    await waitForCondition(
+      () async {
+        currentHtmlContent =
+            await getBinding<ComposerController>()?.getContentInEditor() ?? '';
+        return conditionPassed();
+      },
     );
+    expect(conditionPassed(), isTrue);
   }
 
   Future<void> _expectEmailWithInlineImageVisible(String emailSubject) async {

@@ -53,6 +53,7 @@ class TeamMailboxReceiveEmailScenario extends BaseTestScenario {
   }
 
   Future<void> _expectTeamMailboxVisible(String name) async {
+    await $.waitUntilExists($(name));
     await $.scrollUntilVisible(finder: $(name));
     await expectViewVisible($(name));
   }

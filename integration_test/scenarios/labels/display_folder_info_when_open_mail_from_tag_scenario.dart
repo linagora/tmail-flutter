@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -39,7 +40,7 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
       requestReadReceipt: false,
       folderLocationRole: PresentationMailbox.roleTrash,
     );
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+    await $.waitUntilVisible($(EmailTileBuilder));
 
     await threadRobot.openMailbox();
     await _expectLabelListViewVisible();

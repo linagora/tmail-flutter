@@ -4,16 +4,18 @@
 users=("alice" "bob" "brian" "charlotte" "david" "emma")
 bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Calendar" "Reply Emails")
 
-# Add users
+# Add users in parallel
 for user in "${users[@]}"; do
-  james-cli AddUser "$user@example.com" "$user"
+  james-cli AddUser "$user@example.com" "$user" &
 done
+wait
 
-# Create folders for user Bob
+# Create folders for user Bob in parallel
 for folderName in "${bobFolders[@]}"; do
   echo "Creating $folderName folder for user bob"
-  james-cli CreateMailbox \#private "bob@example.com" "$folderName"
+  james-cli CreateMailbox \#private "bob@example.com" "$folderName" &
 done
+wait
 
 # Function to check if mailbox exists
 function wait_for_mailbox() {
@@ -36,37 +38,41 @@ function wait_for_mailbox() {
   return 1
 }
 
-# Ensure all mailboxes exist before importing emails
+# Ensure all mailboxes exist before importing emails (parallel polling)
 for folderName in "${bobFolders[@]}"; do
-  wait_for_mailbox "bob@example.com" "$folderName" || exit 1
+  wait_for_mailbox "bob@example.com" "$folderName" &
+done
+# Collect exit codes — fail fast if any mailbox was not created in time
+for pid in $(jobs -p); do
+  wait "$pid" || exit 1
 done
 
 # For test search email with sort order
 # Import emails into 'Search Emails' folder for user Bob
 for eml in {0..4}; do
   echo "Importing $eml.eml into 'Search Emails' folder for user bob"
-  james-cli ImportEml \#private "bob@example.com" "Search Emails" "/root/conf/integration_test/eml/search_email_with_sort_order/$eml.eml"
+  james-cli ImportEml \#private "bob@example.com" "Search Emails" "/root/conf/integration_test/eml/search_email_with_sort_order/$eml.eml" &
 done
 
 # For test forward email
 # Import emails into 'Forward Emails' folder for user Bob
 echo "Importing forward.eml into 'Forward Emails' folder for user bob"
-james-cli ImportEml \#private "bob@example.com" "Forward Emails" "/root/conf/integration_test/eml/forward_email/forward.eml"
+james-cli ImportEml \#private "bob@example.com" "Forward Emails" "/root/conf/integration_test/eml/forward_email/forward.eml" &
 
 # For test email with no-disposition inline image
 # Import email into 'Disposition' folder for user Bob
 echo "Importing no_disposition_inline.eml into 'Disposition' folder for user bob"
-james-cli ImportEml \#private "bob@example.com" "Disposition" "/root/conf/integration_test/eml/no_disposition_inline/no_disposition_inline.eml"
+james-cli ImportEml \#private "bob@example.com" "Disposition" "/root/conf/integration_test/eml/no_disposition_inline/no_disposition_inline.eml" &
 
 # For test reply email with image base64
 # Import email into 'MailBase64' folder for user Bob
 echo "Importing 0.eml into 'MailBase64' folder for user bob"
-james-cli ImportEml \#private "bob@example.com" "MailBase64" "/root/conf/integration_test/eml/reply_email_with_image_base64/0.eml"
+james-cli ImportEml \#private "bob@example.com" "MailBase64" "/root/conf/integration_test/eml/reply_email_with_image_base64/0.eml" &
 
 # For test calendar event
 # Import email into 'Calendar' folder for user Bob
 echo "Importing calendar eml into 'Calendar' folder for user bob"
-james-cli ImportEml \#private "bob@example.com" "Calendar" "/root/conf/integration_test/eml/calendar/calendar_counter.eml"
+james-cli ImportEml \#private "bob@example.com" "Calendar" "/root/conf/integration_test/eml/calendar/calendar_counter.eml" &
 
 # For test reply email
 # Import emails into 'Reply Emails' folder for user Bob
@@ -74,22 +80,17 @@ replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without
 
 for eml in "${replyEmailsEML[@]}"; do
   echo "Importing $eml into 'Reply Emails' folder for user bob"
-  james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
+  james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml" &
 done
 
-# For test reply email
-# Import emails into 'Reply Emails' folder for user Bob
-replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without-reply-to.eml")
+wait
 
-for eml in "${replyEmailsEML[@]}"; do
-  echo "Importing $eml into 'Reply Emails' folder for user bob"
-  james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
-done
-
-# For test team mailbox
-curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests
-curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/bob@example.com?role=member
-curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/alice@example.com?role=member
+# For test team mailbox — create first, then add members in parallel
+curl -XPUT http://localhost:8000/domains/example.com/team-mailboxes/bob-guests
+curl -XPUT "http://localhost:8000/domains/example.com/team-mailboxes/bob-guests/members/bob@example.com?role=member" &
+curl -XPUT "http://localhost:8000/domains/example.com/team-mailboxes/bob-guests/members/alice@example.com?role=member" &
 
 # For test quota
-curl -X PUT http://172.18.0.2:8000/quota/users/bob@example.com -d '{"count":200,"size":50000000}' -H "Content-Type: application/json" # 200 emails, 50MB
+curl -X PUT http://localhost:8000/quota/users/bob@example.com -d '{"count":200,"size":50000000}' -H "Content-Type: application/json" &
+
+wait

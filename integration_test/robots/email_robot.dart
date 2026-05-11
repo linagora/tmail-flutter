@@ -20,7 +20,6 @@ class EmailRobot extends CoreRobot {
 
   Future<void> tapDownloadAllButton() async {
     await $(#download_all_attachments_button).tap();
-    await $.pumpAndSettle();
   }
 
   Future<void> onTapReplyEmail() async {
