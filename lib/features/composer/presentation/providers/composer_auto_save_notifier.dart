@@ -12,26 +12,22 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/resolve
 class ComposerAutoSaveState extends Equatable {
   final bool hasRecoverableSnapshot;
   final bool isCleanClose;
-  final bool isSavingToDraftInProgress;
   final String lastKnownHtmlContent;
 
   const ComposerAutoSaveState({
     this.hasRecoverableSnapshot = false,
     this.isCleanClose = false,
-    this.isSavingToDraftInProgress = false,
     this.lastKnownHtmlContent = '',
   });
 
   ComposerAutoSaveState copyWith({
     bool? hasRecoverableSnapshot,
     bool? isCleanClose,
-    bool? isSavingToDraftInProgress,
     String? lastKnownHtmlContent,
   }) =>
       ComposerAutoSaveState(
         hasRecoverableSnapshot: hasRecoverableSnapshot ?? this.hasRecoverableSnapshot,
         isCleanClose: isCleanClose ?? this.isCleanClose,
-        isSavingToDraftInProgress: isSavingToDraftInProgress ?? this.isSavingToDraftInProgress,
         lastKnownHtmlContent: lastKnownHtmlContent ?? this.lastKnownHtmlContent,
       );
 
@@ -39,7 +35,6 @@ class ComposerAutoSaveState extends Equatable {
   List<Object?> get props => [
         hasRecoverableSnapshot,
         isCleanClose,
-        isSavingToDraftInProgress,
         lastKnownHtmlContent,
       ];
 }
@@ -59,7 +54,6 @@ class ComposerAutoSaveNotifier extends StateNotifier<ComposerAutoSaveState> {
 
   bool get hasRecoverableSnapshot => state.hasRecoverableSnapshot;
   bool get isCleanClose => state.isCleanClose;
-  bool get isSavingToDraftInProgress => state.isSavingToDraftInProgress;
   String get lastKnownHtmlContent => state.lastKnownHtmlContent;
 
   void onSnapshotSaved() {
@@ -74,14 +68,6 @@ class ComposerAutoSaveNotifier extends StateNotifier<ComposerAutoSaveState> {
 
   void updateLastKnownContent(String content) {
     state = state.copyWith(lastKnownHtmlContent: content);
-  }
-
-  void beginDraftSave() {
-    state = state.copyWith(isSavingToDraftInProgress: true);
-  }
-
-  void endDraftSave() {
-    state = state.copyWith(isSavingToDraftInProgress: false);
   }
 
   Future<ComposerPersistentCache?> restore(

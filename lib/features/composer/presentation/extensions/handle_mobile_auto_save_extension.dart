@@ -5,7 +5,6 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -126,14 +125,14 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   }
 
   Future<void> _applyRestoredPayload(
-    ({HtmlEditorApi api, String html, EmailId? draftEmailId}) payload,
+    ({HtmlEditorApi api, String html}) payload,
   ) async {
     log('HandleMobileAutoSaveExtension::_applyRestoredPayload: restoring from cache');
     await payload.api.setText(payload.html);
     if (payload.html.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(payload.html);
   }
 
-  Future<({HtmlEditorApi api, String html, EmailId? draftEmailId})?> _resolveRestorePayload() async {
+  Future<({HtmlEditorApi api, String html})?> _resolveRestorePayload() async {
     final currentContent = await _fetchEditorContent();
     if (currentContent != null && currentContent.trim().isNotEmpty) return null;
 
@@ -150,7 +149,6 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     return (
       api: api,
       html: cache.email?.emailContentList.asHtmlString ?? '',
-      draftEmailId: cache.draftEmailId,
     );
   }
 

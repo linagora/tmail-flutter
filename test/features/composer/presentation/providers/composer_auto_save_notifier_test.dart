@@ -52,7 +52,6 @@ void main() {
       test('all flags are false and content is empty', () {
         expect(notifier.hasRecoverableSnapshot, isFalse);
         expect(notifier.isCleanClose, isFalse);
-        expect(notifier.isSavingToDraftInProgress, isFalse);
         expect(notifier.lastKnownHtmlContent, isEmpty);
       });
     });
@@ -94,19 +93,6 @@ void main() {
         notifier.updateLastKnownContent('<p>first</p>');
         notifier.updateLastKnownContent('<p>second</p>');
         expect(notifier.lastKnownHtmlContent, '<p>second</p>');
-      });
-    });
-
-    group('beginDraftSave / endDraftSave', () {
-      test('beginDraftSave sets isSavingToDraftInProgress=true', () {
-        notifier.beginDraftSave();
-        expect(notifier.isSavingToDraftInProgress, isTrue);
-      });
-
-      test('endDraftSave clears isSavingToDraftInProgress', () {
-        notifier.beginDraftSave();
-        notifier.endDraftSave();
-        expect(notifier.isSavingToDraftInProgress, isFalse);
       });
     });
 
@@ -229,80 +215,6 @@ void main() {
 
         verify(mockRemoveInteractor.execute(any, any)).called(1);
         expect(notifier.hasRecoverableSnapshot, isFalse);
-      });
-    });
-
-    group('concurrent flag independence', () {
-      test('beginDraftSave and setCleanClose can coexist', () {
-        notifier.beginDraftSave();
-        notifier.setCleanClose();
-
-        expect(notifier.isSavingToDraftInProgress, isTrue);
-        expect(notifier.isCleanClose, isTrue);
-      });
-
-      test('endDraftSave clears only isSavingToDraftInProgress, not isCleanClose', () {
-        notifier.beginDraftSave();
-        notifier.setCleanClose();
-        notifier.endDraftSave();
-
-        expect(notifier.isSavingToDraftInProgress, isFalse);
-        expect(notifier.isCleanClose, isTrue);
-      });
-    });
-
-    group('isSavingToDraftInProgress — hash-consume guard contract', () {
-      // These tests verify the notifier contract that _periodicSaveTask relies on
-      // when deciding whether to consume lastAutoSavedToServerHash.
-
-      test('isSavingToDraftInProgress is true between begin and end', () {
-        expect(notifier.isSavingToDraftInProgress, isFalse);
-
-        notifier.beginDraftSave();
-        expect(notifier.isSavingToDraftInProgress, isTrue);
-
-        notifier.endDraftSave();
-        expect(notifier.isSavingToDraftInProgress, isFalse);
-      });
-
-      test('multiple beginDraftSave calls do not stack — endDraftSave always clears', () {
-        notifier.beginDraftSave();
-        notifier.beginDraftSave();
-
-        notifier.endDraftSave();
-
-        expect(notifier.isSavingToDraftInProgress, isFalse);
-      });
-
-      test('endDraftSave without beginDraftSave is a no-op (stays false)', () {
-        notifier.endDraftSave();
-        expect(notifier.isSavingToDraftInProgress, isFalse);
-      });
-
-      test('beginDraftSave does not affect lastKnownHtmlContent', () {
-        notifier.updateLastKnownContent('<p>draft</p>');
-        notifier.beginDraftSave();
-
-        expect(notifier.lastKnownHtmlContent, '<p>draft</p>');
-      });
-    });
-
-    group('updateLastKnownContent during in-progress save', () {
-      test('content update is visible while save is in progress', () {
-        notifier.beginDraftSave();
-        notifier.updateLastKnownContent('<p>updated during save</p>');
-
-        expect(notifier.lastKnownHtmlContent, '<p>updated during save</p>');
-        expect(notifier.isSavingToDraftInProgress, isTrue);
-      });
-
-      test('content survives endDraftSave', () {
-        notifier.beginDraftSave();
-        notifier.updateLastKnownContent('<p>content</p>');
-        notifier.endDraftSave();
-
-        expect(notifier.lastKnownHtmlContent, '<p>content</p>');
-        expect(notifier.isSavingToDraftInProgress, isFalse);
       });
     });
   });

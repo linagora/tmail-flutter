@@ -214,19 +214,6 @@ class UploadController extends BaseController {
     _refreshListUploadAttachmentState();
   }
 
-  // Replaces stale draft-part blobIds with fresh ones from the updated draft.
-  // Only the entries in staleTaskIds are removed; images inserted by the user
-  // after the last save (not yet on server) are left untouched.
-  void refreshInlineAttachments(
-    Set<UploadTaskId> staleTaskIds,
-    List<Attachment> freshAttachments,
-  ) {
-    for (final taskId in staleTaskIds) {
-      _uploadingStateInlineFiles.deleteElementByUploadTaskId(taskId);
-    }
-    initializeUploadInlineAttachments(freshAttachments);
-  }
-
   void deleteFileUploaded(UploadTaskId uploadId) {
     _uploadingStateFiles.deleteElementByUploadTaskId(uploadId);
     _refreshListUploadAttachmentState();
