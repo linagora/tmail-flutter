@@ -4,25 +4,26 @@ import 'package:flutter_test/flutter_test.dart';
 import '../base/base_test_scenario.dart';
 
 class AppGridScenario extends BaseTestScenario {
-
   const AppGridScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {
-    PlatformInfo.isIntegrationTesting = true;
-    final threadRobot = robots.threadRobot();
-    final appGridRobot = robots.appGridRobot();
+    try {
+      PlatformInfo.isIntegrationTesting = true;
+      final threadRobot = robots.threadRobot();
+      final appGridRobot = robots.appGridRobot();
 
-    await threadRobot.expectAppGridVisible();
-    await threadRobot.openAppGrid();
+      await threadRobot.expectAppGridVisible();
+      await threadRobot.openAppGrid();
 
-    await appGridRobot.expectListViewAppGridVisible();
-    await appGridRobot.expectAllAppInAppGridDisplayedIsFull();
+      await appGridRobot.expectAppCountAndLabelsMatch();
+      await appGridRobot.expectListViewVisible();
 
-    await appGridRobot.openAppInAppGrid();
-    
-    await appGridRobot.expectListViewAppGridVisible();
+      await appGridRobot.openAppInAppGrid();
 
-    PlatformInfo.isIntegrationTesting = false;
+      await appGridRobot.expectAppCountAndLabelsMatch();
+    } finally {
+      PlatformInfo.isIntegrationTesting = false;
+    }
   }
 }

@@ -18,15 +18,14 @@ class MobileAppGridRobot implements AbstractAppGridRobot {
       ];
 
   @override
-  Future<void> expectAllAppInAppGridDisplayedIsFull() async {
+  Future<void> expectListViewVisible() async {
     await $(#list_view_app_grid).waitUntilVisible();
   }
 
   @override
-  Future<void> expectListViewAppGridVisible() async {
-    int totalApp = PlatformInfo.isIOS ? 2 : 3;
+  Future<void> expectAppCountAndLabelsMatch() async {
     await $(AppShortcut).waitUntilVisible();
-    expect(find.byType(AppShortcut), findsNWidgets(totalApp));
+    expect(find.byType(AppShortcut), findsNWidgets(appNames.length));
 
     final listAppItem =
         $.tester.widgetList<AppShortcut>(find.byType(AppShortcut));
