@@ -67,8 +67,11 @@ class CreateNewAndSaveEmailToDraftsInteractor {
       } else {
         yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
       }
-    } catch (e) {
-      logWarning('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
+    } catch (e, st) {
+      logError(
+        'CreateNewAndSaveEmailToDraftsInteractor::execute: exception=${e.runtimeType}',
+        stackTrace: st,
+      );
       if (e is UnknownRemoteException && e.error is List<SavingEmailToDraftsCanceledException>) {
         if (createEmailRequest.draftsEmailId == null) {
           yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));

@@ -39,22 +39,27 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
   // Android-only: provider is guarded against memory leaks on other platforms.
   // Called before navigation while still in foreground (no Hive write race).
-  void markCleanClose() {
+  Future<void> markCleanClose() async {
     if (!PlatformInfo.isAndroid) return;
     final notifier = _autoSaveNotifier();
     if (notifier == null) return;
     notifier.setCleanClose();
-    _persistCleanCloseToCache();
+    await _persistCleanCloseToCache();
     log('HandleMobileAutoSaveExtension::markCleanClose: flagged and persisted');
   }
 
-  void _persistCleanCloseToCache() {
+  Future<void> _persistCleanCloseToCache() async {
     final accountId = mailboxDashBoardController.accountId.value;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (accountId == null || userName == null) return;
-    unawaited(appProviderContainer
-        .read(markComposerLocalCacheCleanCloseProvider)
-        .execute(accountId, userName));
+    try {
+      await appProviderContainer
+          .read(markComposerLocalCacheCleanCloseProvider)
+          .execute(accountId, userName)
+          .timeout(const Duration(seconds: 2));
+    } catch (e) {
+      logWarning('HandleMobileAutoSaveExtension::_persistCleanCloseToCache: write failed or timed out – $e');
+    }
   }
 
   ComposerAutoSaveNotifier? _autoSaveNotifier() {

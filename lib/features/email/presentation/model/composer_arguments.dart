@@ -240,8 +240,11 @@ class ComposerArguments extends RouterArguments {
       hasRequestReadReceipt: cache.hasRequestReadReceipt,
       isMarkAsImportant: cache.isMarkAsImportant,
       composerId: cache.composerId,
+      displayMode: cache.displayMode,
+      savedDraftHash: cache.draftHash,
       savedActionType: cache.actionType,
       savedEmailDraftId: cache.draftEmailId,
+      savedEmailTemplateId: cache.templateEmailId,
     );
 
   factory ComposerArguments.fromUnsubscribeMailtoLink({
