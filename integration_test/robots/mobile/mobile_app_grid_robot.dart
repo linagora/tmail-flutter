@@ -1,6 +1,8 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid/app_shortcut.dart';
 
 import '../abstract/abstract_app_grid_robot.dart';
@@ -19,7 +21,7 @@ class MobileAppGridRobot implements AbstractAppGridRobot {
 
   @override
   Future<void> expectListViewVisible() async {
-    await $(#list_view_app_grid).waitUntilVisible();
+    await $(const ValueKey(UiKeys.listViewAppGrid)).waitUntilVisible();
   }
 
   @override
