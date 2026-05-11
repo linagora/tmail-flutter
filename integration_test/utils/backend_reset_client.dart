@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:core/utils/app_logger.dart';
+
 /// Calls the backend reset server running on the CI host.
 ///
 /// The Android emulator reaches the host at 10.0.2.2. The reset server
@@ -33,6 +35,8 @@ class BackendResetClient {
       if (response.statusCode != 200) {
         throw Exception('Backend reset failed with status ${response.statusCode}');
       }
+    } catch (e) {
+      logWarning('Backend reset failed: $e');
     } finally {
       client.close();
     }
