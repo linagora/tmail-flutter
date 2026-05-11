@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/user_avatar_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid/app_grid_icon.dart';
@@ -45,7 +46,7 @@ class MailboxAppBar extends StatelessWidget {
             ),
           if (openAppGridAction != null)
             AppGridIcon(
-              key: const ValueKey('toggle_app_grid_button'),
+              key: const ValueKey(UiKeys.toggleAppGridButton),
               icon: imagePaths.icAppDashboard,
               onTapAction: openAppGridAction!,
             ),

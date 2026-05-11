@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+
 import '../mobile/mobile_thread_robot.dart';
 
 class WebThreadRobot extends MobileThreadRobot {
@@ -5,6 +8,6 @@ class WebThreadRobot extends MobileThreadRobot {
 
   @override
   Future<void> expectAppGridVisible() async {
-    await $(#toggle_app_grid_button).waitUntilVisible();
+    await $(const ValueKey(UiKeys.toggleAppGridButton)).waitUntilVisible();
   }
 }
