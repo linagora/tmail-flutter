@@ -17,10 +17,9 @@ class WebAppGridRobot extends MobileAppGridRobot {
       ];
 
   @override
-  Future<void> expectListViewAppGridVisible() async {
-    int totalApp = 6;
+  Future<void> expectAppCountAndLabelsMatch() async {
     await $(AppGridDashboardItem).waitUntilVisible();
-    expect(find.byType(AppGridDashboardItem), findsNWidgets(totalApp));
+    expect(find.byType(AppGridDashboardItem), findsNWidgets(appNames.length));
 
     final listAppItem = $.tester
         .widgetList<AppGridDashboardItem>(find.byType(AppGridDashboardItem));

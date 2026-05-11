@@ -19,7 +19,6 @@ class WebRobotFactory implements RobotFactory {
   AbstractLoginRobot loginRobot() => WebLoginRobot($);
 
   @override
-  // Thread interaction is identical on web — reuse mobile robot
   AbstractThreadRobot threadRobot() => WebThreadRobot($);
 
   @override
