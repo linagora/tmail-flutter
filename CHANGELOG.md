@@ -1,3 +1,13 @@
+## [0.28.18] - 2026-05-11
+
+### Fixed
+- TF-4473 Auto save composer to Hive Cache when app in background
+- Fix iOS 26 build
+
+### Changed
+- TF-4444 Can untag Action Required
+- Translation pt, ir, fr, vi
+
 ## [0.28.12] - 2026-05-05
 
 ### Changed
