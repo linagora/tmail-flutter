@@ -33,7 +33,8 @@ extension SessionExtension on Session {
       throw const UnknownUriException();
     }
 
-    var baseUrl = '${downloadUrlValid.origin}${downloadUrlValid.path}?${downloadUrlValid.query}';
+    final normalizedUrl = downloadUrlValid.normalizePathSlashes();
+    var baseUrl = '${normalizedUrl.origin}${normalizedUrl.path}?${normalizedUrl.query}';
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
@@ -59,7 +60,8 @@ extension SessionExtension on Session {
       throw const UnknownUriException();
     }
 
-    final baseUrl = '${uploadUrlValid.origin}${uploadUrlValid.path}';
+    final normalizedUrl = uploadUrlValid.normalizePathSlashes();
+    final baseUrl = '${normalizedUrl.origin}${normalizedUrl.path}';
     final uploadUriTemplate = UriTemplate(Uri.decodeFull(baseUrl));
     final uploadUri = uploadUriTemplate.expand({
       'accountId' : accountId.id.value
