@@ -9,16 +9,22 @@ void main() {
     test('Test findImageUrlFromStyleTag with valid input', () {
       const style = 'background-image: url(\'example.com/image.jpg\');';
       final result = imageTransformer.findImageUrlFromStyleTag(style);
-      expect(result!.value1, 'background-image: url(\'example.com/image.jpg\')');
+      expect(
+        result!.value1,
+        'background-image: url(\'example.com/image.jpg\')',
+      );
       expect(result.value2, 'example.com/image.jpg');
     });
 
-    test('Test findImageUrlFromStyleTag with valid input and no quotation marks', () {
-      const style = 'background-image: url(example.com/image.jpg);';
-      final result = imageTransformer.findImageUrlFromStyleTag(style);
-      expect(result!.value1, 'background-image: url(example.com/image.jpg)');
-      expect(result.value2, 'example.com/image.jpg');
-    });
+    test(
+      'Test findImageUrlFromStyleTag with valid input and no quotation marks',
+      () {
+        const style = 'background-image: url(example.com/image.jpg);';
+        final result = imageTransformer.findImageUrlFromStyleTag(style);
+        expect(result!.value1, 'background-image: url(example.com/image.jpg)');
+        expect(result.value2, 'example.com/image.jpg');
+      },
+    );
 
     test('Test findImageUrlFromStyleTag with empty input', () {
       const style = '';
@@ -87,7 +93,8 @@ void main() {
     });
 
     test('should handle complex mixed entities', () {
-      const input = '&lt;script&gt;alert(&quot;Hello&quot;);&lt;/script&gt;&amp;&#64;&#x40;';
+      const input =
+          '&lt;script&gt;alert(&quot;Hello&quot;);&lt;/script&gt;&amp;&#64;&#x40;';
       const expected = '<script>alert("Hello");</script>&@@';
       expect(HtmlUtils.unescapeHtml(input), equals(expected));
     });
@@ -113,7 +120,10 @@ void main() {
     });
 
     test('should remove all whitespace characters when combined', () {
-      expect(HtmlUtils.removeWhitespace('Hello\r\n\tWorld'), equals('HelloWorld'));
+      expect(
+        HtmlUtils.removeWhitespace('Hello\r\n\tWorld'),
+        equals('HelloWorld'),
+      );
       expect(HtmlUtils.removeWhitespace('a\rb\nc\td'), equals('abcd'));
       expect(HtmlUtils.removeWhitespace('\r\n\t\r\n\t'), equals(''));
     });
@@ -381,22 +391,31 @@ void main() {
       );
     });
 
-    test('keeps content of encoded blockquotes since they are not real tags', () {
-      const html = '''
+    test(
+      'keeps content of encoded blockquotes since they are not real tags',
+      () {
+        const html = '''
       <p>Before</p>
       &amp;lt;blockquote&amp;gt;Inner from encoded quote&amp;lt;/blockquote&amp;gt;
       <p>After</p>
     ''';
-      expect(HtmlUtils.extractPlainText(html), 'Before Inner from encoded quote After');
-    });
+        expect(
+          HtmlUtils.extractPlainText(html),
+          'Before Inner from encoded quote After',
+        );
+      },
+    );
 
-    test('handles multiple encoded tags that become real tags then stripped', () {
-      const html = '''
+    test(
+      'handles multiple encoded tags that become real tags then stripped',
+      () {
+        const html = '''
       &amp;lt;div&amp;gt;A&amp;lt;/div&amp;gt;&amp;lt;span&amp;gt;B&amp;lt;/span&amp;gt;
     ''';
-      // After decoding twice: <div>A</div><span>B</span> → "A B"
-      expect(HtmlUtils.extractPlainText(html), 'A B');
-    });
+        // After decoding twice: <div>A</div><span>B</span> → "A B"
+        expect(HtmlUtils.extractPlainText(html), 'A B');
+      },
+    );
 
     test('removes style and script tags when enabled', () {
       const html = '''
@@ -479,8 +498,10 @@ void main() {
       <div style="font-size:11px">Ce message et les éventuels documents joints...</div>
       <p>Bottom</p>
     ''';
-      expect(HtmlUtils.extractPlainText(html),
-          'Top Ce message et les éventuels documents joints... Bottom');
+      expect(
+        HtmlUtils.extractPlainText(html),
+        'Top Ce message et les éventuels documents joints... Bottom',
+      );
     });
 
     test('removes malformed nested blockquotes completely', () {
@@ -511,10 +532,13 @@ void main() {
       expect(HtmlUtils.extractPlainText(html), '<abc>a</abc><xyz>b</xyz>');
     });
 
-    test('handles encoded unknown tags that become html text after decoding', () {
-      const html = '&amp;lt;weird&amp;gt;X&amp;lt;/weird&amp;gt;Y';
-      expect(HtmlUtils.extractPlainText(html), '<weird>X</weird>Y');
-    });
+    test(
+      'handles encoded unknown tags that become html text after decoding',
+      () {
+        const html = '&amp;lt;weird&amp;gt;X&amp;lt;/weird&amp;gt;Y';
+        expect(HtmlUtils.extractPlainText(html), '<weird>X</weird>Y');
+      },
+    );
   });
 
   group('HtmlUtils.wrapPlainTextLinks', () {
@@ -821,8 +845,14 @@ void main() {
       );
 
       expect(result.contains('<img src="https://example.com/image.jpg"'), true);
-      expect(result.contains('<video src="https://example.com/video.mp4"'), true);
-      expect(result.contains('<a href="https://flutter.dev">Flutter</a>'), true);
+      expect(
+        result.contains('<video src="https://example.com/video.mp4"'),
+        true,
+      );
+      expect(
+        result.contains('<a href="https://flutter.dev">Flutter</a>'),
+        true,
+      );
     });
 
     test('does not alter src or href attributes', () {
@@ -840,14 +870,16 @@ void main() {
       expect(
         result,
         '<div>\n  <p>Visit <a href="https://www.google.com">www.google.com</a></p>\n  '
-            '<img src="https://example.com/image.jpg" alt="example">\n  '
-            '<video src="https://example.com/video.mp4"></video>\n  '
-            '<a href="https://flutter.dev">Flutter</a>\n</div>',
+        '<img src="https://example.com/image.jpg" alt="example">\n  '
+        '<video src="https://example.com/video.mp4"></video>\n  '
+        '<a href="https://flutter.dev">Flutter</a>\n</div>',
       );
     });
 
-    test('does NOT wrap URLs inside special tags (img, video, script, link, iframe)', () {
-      const input = '''
+    test(
+      'does NOT wrap URLs inside special tags (img, video, script, link, iframe)',
+      () {
+        const input = '''
 <div>
   <p>Check www.google.com</p>
   <img src="https://cdn.example.com/image.jpg" alt="Sample image with link google.com">
@@ -860,46 +892,55 @@ void main() {
 </div>
 ''';
 
-      final result = HtmlUtils.wrapPlainTextLinks(input);
-      // The URL in <p> should be wrapped
-      expect(
-        result.contains('<a href="https://www.google.com">www.google.com</a>'),
-        true,
-        reason:
-            'The text www.google.com inside <p> should be wrapped into a link',
-      );
+        final result = HtmlUtils.wrapPlainTextLinks(input);
+        // The URL in <p> should be wrapped
+        expect(
+          result.contains(
+            '<a href="https://www.google.com">www.google.com</a>',
+          ),
+          true,
+          reason:
+              'The text www.google.com inside <p> should be wrapped into a link',
+        );
 
-      // There must NOT be any <a> tag inside these special tags
-      final forbiddenTags = ['img', 'video', 'script', 'iframe', 'link'];
-      for (final tag in forbiddenTags) {
-        final pattern = RegExp('<$tag[^>]*>.*?<\\/\\s*$tag>', dotAll: true);
-        final matches = pattern.allMatches(result);
-        for (final match in matches) {
-          final segment = match.group(0)!;
-          expect(
-            segment.contains('<a '),
-            false,
-            reason: 'There must be no <a> tag inside <$tag>',
-          );
+        // There must NOT be any <a> tag inside these special tags
+        final forbiddenTags = ['img', 'video', 'script', 'iframe', 'link'];
+        for (final tag in forbiddenTags) {
+          final pattern = RegExp('<$tag[^>]*>.*?<\\/\\s*$tag>', dotAll: true);
+          final matches = pattern.allMatches(result);
+          for (final match in matches) {
+            final segment = match.group(0)!;
+            expect(
+              segment.contains('<a '),
+              false,
+              reason: 'There must be no <a> tag inside <$tag>',
+            );
+          }
         }
-      }
 
-      // There must NOT be any <a> tag inside href/src attributes
-      final attributePattern = RegExp(r'(src|href)="[^"]*<a[^"]*"');
-      expect(
-        attributePattern.hasMatch(result),
-        false,
-        reason: 'There must be no <a> tag inside href or src attributes',
-      );
-    });
+        // There must NOT be any <a> tag inside href/src attributes
+        final attributePattern = RegExp(r'(src|href)="[^"]*<a[^"]*"');
+        expect(
+          attributePattern.hasMatch(result),
+          false,
+          reason: 'There must be no <a> tag inside href or src attributes',
+        );
+      },
+    );
 
     test('Protocol variations: http/https/www', () {
       const html = 'A https://example.com B http://foo.bar C www.site.com';
       final result = HtmlUtils.wrapPlainTextLinks(html);
 
-      expect(result, contains('<a href="https://example.com">https://example.com</a>'));
+      expect(
+        result,
+        contains('<a href="https://example.com">https://example.com</a>'),
+      );
       expect(result, contains('<a href="http://foo.bar">http://foo.bar</a>'));
-      expect(result, contains('<a href="https://www.site.com">www.site.com</a>'));
+      expect(
+        result,
+        contains('<a href="https://www.site.com">www.site.com</a>'),
+      );
     });
 
     test('Protocol variations: ftp, mailto, file', () {
@@ -909,7 +950,9 @@ void main() {
 
       expect(
         out,
-        contains('<a href="ftp://files.example.com">ftp://files.example.com</a>'),
+        contains(
+          '<a href="ftp://files.example.com">ftp://files.example.com</a>',
+        ),
       );
 
       expect(
@@ -972,8 +1015,14 @@ void main() {
       const html = 'http://192.168.1.1 www.127.0.0.1';
       final out = HtmlUtils.wrapPlainTextLinks(html);
 
-      expect(out, contains('<a href="http://192.168.1.1">http://192.168.1.1</a>'));
-      expect(out, contains('<a href="https://www.127.0.0.1">www.127.0.0.1</a>'));
+      expect(
+        out,
+        contains('<a href="http://192.168.1.1">http://192.168.1.1</a>'),
+      );
+      expect(
+        out,
+        contains('<a href="https://www.127.0.0.1">www.127.0.0.1</a>'),
+      );
     });
 
     test('URLs in blockquote/list/table are wrapped', () {
@@ -1030,14 +1079,20 @@ void main() {
 
       expect(
         out,
-        contains(
-          '<a href="https://example.com">https://example.com</a>',
-        ),
+        contains('<a href="https://example.com">https://example.com</a>'),
       );
-      expect(
-        out,
-        contains('<a href="https://www.site.com">www.site.com</a>'),
+      expect(out, contains('<a href="https://www.site.com">www.site.com</a>'));
+    });
+  });
+
+  group('HtmlUtils.generateHtmlDocument', () {
+    test('SHOULD include find-in-message highlight styles', () {
+      final htmlDocument = HtmlUtils.generateHtmlDocument(
+        content: 'Email body',
       );
+
+      expect(htmlDocument, contains('.tmail-find-hit'));
+      expect(htmlDocument, contains('.tmail-find-hit-active'));
     });
   });
 }

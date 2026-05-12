@@ -20,7 +20,6 @@ typedef OnIFrameKeyboardShortcutAction = void Function(KeyShortcut keyShortcut);
 typedef OnIFrameClickAction = void Function();
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
-
   final String contentHtml;
   final double widthContent;
   final double heightContent;
@@ -92,17 +91,28 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     with AutomaticKeepAliveClientMixin {
   /// The view ID for the IFrameElement. Must be unique.
   late String _createdViewId;
+
   /// The actual height of the content view, used to automatically set the height
   late double _actualHeight;
+
   /// The actual width of the content view, used to automatically set the width
   late double _actualWidth;
+  static String? _activeFindViewId;
 
   Future<bool>? _webInit;
   String? _htmlData;
   bool _isLoading = true;
   late double minHeight;
   late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
+  late final StreamSubscription<html.KeyboardEvent>
+  _onWindowKeyDownSubscription;
   bool _iframeLoaded = false;
+  bool _findBarVisible = false;
+  int _findMatchCount = 0;
+  int _findActiveIndex = -1;
+  html.IFrameElement? _iframeElement;
+  final TextEditingController _findTextController = TextEditingController();
+  final FocusNode _findFocusNode = FocusNode();
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
   static const String onScrollChangedEvent = 'onScrollChanged';
@@ -123,6 +133,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
     _setUpWeb();
     _onMessageSubscription = html.window.onMessage.listen(_handleMessageEvent);
+    _onWindowKeyDownSubscription = html.window.onKeyDown.listen(
+      _handleWindowKeyDown,
+    );
   }
 
   void _handleMessageEvent(html.MessageEvent event) {
@@ -141,6 +154,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         return;
       } else if (_isIframeKeyboardEventTriggered(type)) {
         _handleOnIFrameKeyboardEvent(data);
+        return;
+      } else if (_isIframeFindShortcutEventTriggered(type)) {
+        _handleIFrameFindShortcutEvent();
+        return;
+      } else if (_isIframeFindResultEventTriggered(type)) {
+        _handleIFrameFindResultEvent(data);
         return;
       } else if (_isIframeClickEventTriggered(type)) {
         _handleOnIFrameClickEvent(data);
@@ -170,6 +189,140 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     } catch (e) {
       logWarning('$runtimeType::_handleMessageEvent:Exception = $e');
     }
+  }
+
+  bool _isActiveFindView() => _activeFindViewId == _createdViewId;
+
+  void _markAsActiveFindView() {
+    _activeFindViewId = _createdViewId;
+  }
+
+  void _clearActiveFindView() {
+    if (_activeFindViewId == _createdViewId) {
+      _activeFindViewId = null;
+    }
+  }
+
+  void _handleWindowKeyDown(html.KeyboardEvent event) {
+    if (!_isActiveFindView() && !_findBarVisible) {
+      return;
+    }
+
+    if (_isBrowserFindShortcut(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      _showFindBar();
+      return;
+    }
+
+    if (!_findBarVisible) {
+      return;
+    }
+
+    if (event.key == 'Escape') {
+      event.preventDefault();
+      _closeFindBar();
+    } else if (event.key == 'Enter') {
+      event.preventDefault();
+      event.shiftKey ? _findPrevious() : _findNext();
+    }
+  }
+
+  bool _isBrowserFindShortcut(html.KeyboardEvent event) {
+    return (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        (event.key ?? '').toLowerCase() == 'f';
+  }
+
+  void _handleIFrameFindShortcutEvent() {
+    _markAsActiveFindView();
+    _showFindBar();
+  }
+
+  bool _isIframeFindShortcutEventTriggered(String? type) {
+    return type?.contains(
+          'toDart: ${HtmlInteraction.iframeFindShortcutEvent}',
+        ) ==
+        true;
+  }
+
+  bool _isIframeFindResultEventTriggered(String? type) {
+    return type?.contains('toDart: ${HtmlInteraction.iframeFindResultEvent}') ==
+        true;
+  }
+
+  void _handleIFrameFindResultEvent(dynamic data) {
+    if (!mounted) return;
+
+    final total = data['total'];
+    final active = data['active'];
+    setState(() {
+      _findMatchCount = total is int ? total : 0;
+      _findActiveIndex = active is int ? active : -1;
+    });
+  }
+
+  void _showFindBar() {
+    if (!mounted) return;
+
+    if (!_findBarVisible) {
+      setState(() {
+        _findBarVisible = true;
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _findFocusNode.requestFocus();
+      _findTextController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _findTextController.text.length,
+      );
+    });
+  }
+
+  void _closeFindBar() {
+    _findTextController.clear();
+    _postMessageToIFrame(HtmlInteraction.iframeFindClearEvent);
+
+    if (!mounted) return;
+    setState(() {
+      _findBarVisible = false;
+      _findMatchCount = 0;
+      _findActiveIndex = -1;
+    });
+  }
+
+  void _applyFindQuery(String query) {
+    _postMessageToIFrame(
+      HtmlInteraction.iframeFindApplyEvent,
+      data: {'query': query},
+    );
+  }
+
+  void _findNext() {
+    _postMessageToIFrame(HtmlInteraction.iframeFindNextEvent);
+  }
+
+  void _findPrevious() {
+    _postMessageToIFrame(HtmlInteraction.iframeFindPreviousEvent);
+  }
+
+  void _postMessageToIFrame(
+    String event, {
+    Map<String, dynamic> data = const {},
+  }) {
+    final contentWindow = _iframeElement?.contentWindow;
+    if (contentWindow == null) return;
+
+    contentWindow.postMessage(
+      json.encode({
+        'view': _createdViewId,
+        'type': 'toIframe: $event',
+        ...data,
+      }),
+      '*',
+    );
   }
 
   bool get _isScrollingIsAvailable {
@@ -214,7 +367,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         }
       }
     } catch (e) {
-      logWarning('$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e');
+      logWarning(
+        '$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e',
+      );
     }
   }
 
@@ -246,10 +401,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     final docHeight = height ?? _actualHeight;
     if (docHeight != null && mounted) {
       final scrollHeightWithBuffer = docHeight + widget.offsetHtmlContentHeight;
-      log('$runtimeType::_handleContentHeightEvent: ScrollHeightWithBuffer = $scrollHeightWithBuffer');
+      log(
+        '$runtimeType::_handleContentHeightEvent: ScrollHeightWithBuffer = $scrollHeightWithBuffer',
+      );
       bool isHeightChanged = widget.autoAdjustHeight
-        ? scrollHeightWithBuffer >= minHeight
-        : scrollHeightWithBuffer > minHeight;
+          ? scrollHeightWithBuffer >= minHeight
+          : scrollHeightWithBuffer > minHeight;
 
       if (isHeightChanged) {
         setState(() {
@@ -267,11 +424,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
 
   bool _isHtmlContentWidthEventTriggered(String? type) =>
       type?.contains('toDart: htmlWidth') == true &&
-          !widget.keepWidthWhileLoading;
+      !widget.keepWidthWhileLoading;
 
   void _handleContentWidthEvent(dynamic width) {
     final docWidth = width ?? _actualWidth;
-    if (docWidth != null && mounted &&
+    if (docWidth != null &&
+        mounted &&
         docWidth > widget.htmlContentMinWidth &&
         widget.allowResizeToDocumentSize) {
       setState(() => _actualWidth = docWidth);
@@ -307,8 +465,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         key: data['key'] as String,
         code: data['code'] as String,
         shift: data['shift'] == true,
+        ctrl: data['ctrl'] == true,
+        meta: data['meta'] == true,
+        alt: data['alt'] == true,
       );
-      log('$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
+      log(
+        '$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut',
+      );
       widget.onIFrameKeyboardShortcutAction?.call(shortcut);
     } catch (e) {
       logWarning('$runtimeType::_handleOnIFrameKeyboardEvent: Exception = $e');
@@ -323,6 +486,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void _handleOnIFrameClickEvent(dynamic data) {
     try {
       log('$runtimeType::_handleOnIFrameClickEvent: $data');
+      _markAsActiveFindView();
       widget.onIFrameClickAction?.call();
     } catch (e) {
       logWarning('$runtimeType::_handleOnIFrameClickEvent: Exception = $e');
@@ -372,7 +536,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
-    log('$runtimeType::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
+    log(
+      '$runtimeType::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}',
+    );
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
       _setUpWeb();
@@ -387,10 +553,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
-
-
   String _generateHtmlDocument(String content) {
-    final webViewActionScripts = '''
+    final webViewActionScripts =
+        '''
       <script type="text/javascript">
         window.parent.addEventListener('message', handleMessage, false);
         window.addEventListener('load', handleOnLoad);
@@ -429,50 +594,42 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
           });
         ''' : ''}
         
-        ${widget.mailtoDelegate != null
-            ? '''
+        ${widget.mailtoDelegate != null ? '''
                 function handleOnClickEmailLink(e) {
                    var href = this.href;
                    window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
                    e.preventDefault();
                 }
-              '''
-            : ''}
+              ''' : ''}
         
         
         
-        ${widget.onClickHyperLinkAction != null
-            ? '''
+        ${widget.onClickHyperLinkAction != null ? '''
                 function onClickHyperLink(e) {
                    var href = this.href;
                    window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
                    e.preventDefault();
                 }
-              '''
-            : ''}
+              ''' : ''}
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "message": "$iframeOnLoadMessage"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getHeight"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getWidth"}), "*");
           
-          ${widget.onClickHyperLinkAction != null
-              ? '''
+          ${widget.onClickHyperLinkAction != null ? '''
                   var hyperLinks = document.querySelectorAll('a');
                   for (var i=0; i < hyperLinks.length; i++){
                       hyperLinks[i].addEventListener('click', onClickHyperLink);
                   }
-                '''
-              : ''}
+                ''' : ''}
           
-          ${widget.mailtoDelegate != null
-              ? '''
+          ${widget.mailtoDelegate != null ? '''
                   var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
                   for (var i=0; i < emailLinks.length; i++){
                       emailLinks[i].addEventListener('click', handleOnClickEmailLink);
                   }
-                '''
-              : ''}
+                ''' : ''}
           
           ${!widget.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
         }
@@ -480,7 +637,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     ''';
 
     final processedContent = widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(content, startCollapsed: widget.quoteStartCollapsed)
+        ? HtmlUtils.addQuoteToggle(
+            content,
+            startCollapsed: widget.quoteStartCollapsed,
+          )
         : content;
 
     final combinedCss = [
@@ -493,6 +653,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       HtmlInteraction.scriptsDisableZoom,
       HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
+      HtmlInteraction.scriptHandleIframeFindShortcutListener(_createdViewId),
+      HtmlInteraction.scriptHandleIframeContentFind(_createdViewId),
       if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
       if (widget.scrollController != null)
         PlatformInfo.isWebTouchDevice
@@ -531,6 +693,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void _setUpWeb() {
     _createdViewId = HtmlUtils.getRandString(10);
     _htmlData = _generateHtmlDocument(widget.contentHtml);
+    _iframeElement = null;
+    _iframeLoaded = false;
+    _findMatchCount = 0;
+    _findActiveIndex = -1;
+    _findBarVisible = false;
+    _findTextController.clear();
 
     _webInit = Future.value(true);
   }
@@ -551,6 +719,125 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
+  String get _findMatchLabel {
+    if (_findTextController.text.trim().isEmpty) {
+      return '';
+    }
+
+    if (_findMatchCount == 0) {
+      return '0/0';
+    }
+
+    return '${_findActiveIndex + 1}/$_findMatchCount';
+  }
+
+  Widget _buildFindBar() {
+    final hasMatches = _findMatchCount > 0;
+
+    return Positioned(
+      top: 8,
+      right: 8,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9FAFC),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColor.colorDividerEmailView),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x26000000),
+              blurRadius: 12,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 220,
+                height: 34,
+                child: CupertinoTextField(
+                  controller: _findTextController,
+                  focusNode: _findFocusNode,
+                  placeholder: 'Find in message',
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 7,
+                  ),
+                  prefix: const Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Icon(
+                      CupertinoIcons.search,
+                      size: 16,
+                      color: Color(0xFF7A869A),
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColor.colorDividerEmailView),
+                  ),
+                  onChanged: (query) {
+                    setState(() {
+                      _findMatchCount = 0;
+                      _findActiveIndex = -1;
+                    });
+                    _applyFindQuery(query);
+                  },
+                  onSubmitted: (_) => _findNext(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 48,
+                child: Text(
+                  _findMatchLabel,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF4C566A),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              _buildFindButton(
+                icon: CupertinoIcons.chevron_up,
+                onPressed: hasMatches ? _findPrevious : null,
+              ),
+              _buildFindButton(
+                icon: CupertinoIcons.chevron_down,
+                onPressed: hasMatches ? _findNext : null,
+              ),
+              _buildFindButton(
+                icon: CupertinoIcons.xmark,
+                onPressed: _closeFindBar,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFindButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) {
+    return CupertinoButton(
+      minimumSize: const Size(30, 30),
+      padding: EdgeInsets.zero,
+      onPressed: onPressed,
+      child: Icon(
+        icon,
+        size: 17,
+        color: onPressed == null
+            ? const Color(0xFFB8C0CC)
+            : const Color(0xFF334054),
+      ),
+    );
+  }
+
   Widget _buildHtmlElementView() {
     log('$runtimeType::_buildHtmlElementView: ActualHeight: $_actualHeight');
     final child = Stack(
@@ -564,7 +851,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                   key: ValueKey('$_htmlData-${widget.key}'),
                   tagName: 'iframe',
                   onElementCreated: (element) {
-                    (element as html.IFrameElement)
+                    _iframeElement = element as html.IFrameElement;
+                    _iframeElement!
                       ..width = _actualWidth.toString()
                       ..height = _actualHeight.toString()
                       ..srcdoc = _htmlData ?? ''
@@ -608,13 +896,24 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
               ),
             ),
           ),
+        if (_findBarVisible) _buildFindBar(),
       ],
     );
 
+    final activeAwareChild = MouseRegion(
+      onEnter: (_) => _markAsActiveFindView(),
+      onExit: (_) {
+        if (!_findBarVisible) {
+          _clearActiveFindView();
+        }
+      },
+      child: child,
+    );
+
     if (widget.keepWidthWhileLoading) {
-      return child;
+      return activeAwareChild;
     } else {
-      return SizedBox(width: _actualWidth, child: child);
+      return SizedBox(width: _actualWidth, child: activeAwareChild);
     }
   }
 
@@ -622,6 +921,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void dispose() {
     _htmlData = null;
     _onMessageSubscription.cancel();
+    _onWindowKeyDownSubscription.cancel();
+    _findTextController.dispose();
+    _findFocusNode.dispose();
+    _clearActiveFindView();
     if (PlatformInfo.isWebDesktop) {
       _tooltipOverlay?.hide();
       _tooltipOverlay = null;

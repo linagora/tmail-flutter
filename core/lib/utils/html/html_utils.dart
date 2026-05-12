@@ -17,9 +17,39 @@ import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
   static const validTags = [
-    'html','head','body','div','span','p','b','i','u','strong','em','a',
-    'img','blockquote','ul','ol','li','table','tr','td','th','thead','tbody',
-    'br','hr','h1','h2','h3','h4','h5','h6','pre','code'
+    'html',
+    'head',
+    'body',
+    'div',
+    'span',
+    'p',
+    'b',
+    'i',
+    'u',
+    'strong',
+    'em',
+    'a',
+    'img',
+    'blockquote',
+    'ul',
+    'ol',
+    'li',
+    'table',
+    'tr',
+    'td',
+    'th',
+    'thead',
+    'tbody',
+    'br',
+    'hr',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'pre',
+    'code',
   ];
   static final random = Random();
   static final htmlUnescape = HtmlUnescape();
@@ -55,7 +85,8 @@ class HtmlUtils {
           el.style.removeProperty("line-height");
         }
       });''',
-    name: 'removeLineHeight1px');
+    name: 'removeLineHeight1px',
+  );
 
   static const registerDropListener = (
     script: '''
@@ -63,20 +94,22 @@ class HtmlUtils {
         "drop",
         (event) => window.parent.postMessage(
           JSON.stringify({"name": "registerDropListener"})))''',
-    name: 'registerDropListener');
+    name: 'registerDropListener',
+  );
 
   static const unregisterDropListener = (
     script: '''
       const editor = document.querySelector(".note-editable");
       const newEditor = editor.cloneNode(true);
       editor.parentNode.replaceChild(newEditor, editor);''',
-    name: 'unregisterDropListener');
+    name: 'unregisterDropListener',
+  );
 
   static ({String name, String script}) registerSelectionChangeListener(
     String viewId,
-  ) =>
-      (
-        script: '''
+  ) => (
+    script:
+        '''
       let lastSelectedText = '';
 
       const sendSelectionChangeMessage = (data) => {
@@ -176,8 +209,8 @@ class HtmlUtils {
         }
       });
     ''',
-        name: 'onSelectionChange',
-      );
+    name: 'onSelectionChange',
+  );
 
   static const collapseSelectionToEnd = (
     script: '''
@@ -187,7 +220,8 @@ class HtmlUtils {
           selection.collapseToEnd()
         }
       })();''',
-    name: 'collapseSelectionToEnd');
+    name: 'collapseSelectionToEnd',
+  );
 
   static const deleteSelectionContent = (
     script: '''
@@ -198,16 +232,19 @@ class HtmlUtils {
           range.deleteContents();
         }
       })();''',
-    name: 'deleteSelectionContent');
+    name: 'deleteSelectionContent',
+  );
 
   static recalculateEditorHeight({double? maxHeight}) => (
-    script: '''
+    script:
+        '''
       const editable = document.querySelector('.note-editable');
       if (editable) {
         editable.style.height = $maxHeight + 'px';
       }
     ''',
-    name: 'recalculateEditorHeight');
+    name: 'recalculateEditorHeight',
+  );
 
   static String customInlineBodyCssStyleHtmlEditor({
     TextDirection direction = TextDirection.ltr,
@@ -228,8 +265,7 @@ class HtmlUtils {
           text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
         }
         
-        ${horizontalPadding != null
-          ? '''
+        ${horizontalPadding != null ? '''
               .note-codable {
                 padding: 10px ${horizontalPadding}px 0px ${horizontalPadding > 3 ? horizontalPadding - 3 : horizontalPadding}px;
                 margin-right: 3px;
@@ -239,8 +275,7 @@ class HtmlUtils {
                 padding: 10px ${horizontalPadding}px 0px ${horizontalPadding > 3 ? horizontalPadding - 3 : horizontalPadding}px;
                 margin-right: 3px;
               }
-            '''
-          : '''
+            ''' : '''
               .note-editable {
                 padding: 10px 10px 0px 10px;
               }
@@ -259,7 +294,7 @@ class HtmlUtils {
 
   static String convertBase64ToImageResourceData({
     required String base64Data,
-    required String mimeType
+    required String mimeType,
   }) {
     if (!base64Data.endsWith('==')) {
       base64Data.append('==');
@@ -310,6 +345,16 @@ class HtmlUtils {
         pre {
           white-space: pre-wrap;
         }
+
+        .tmail-find-hit {
+          background-color: #ffeb80;
+          color: inherit;
+          padding: 0;
+        }
+
+        .tmail-find-hit-active {
+          background-color: #ffb84d;
+        }
         
         table {
           white-space: normal !important;
@@ -355,7 +400,8 @@ class HtmlUtils {
     ''';
   }
 
-  static String generateSVGImageData(String base64Data) => 'data:image/svg+xml;base64,$base64Data';
+  static String generateSVGImageData(String base64Data) =>
+      'data:image/svg+xml;base64,$base64Data';
 
   static void openNewTabHtmlDocument(String htmlDocument) {
     final blob = html.Blob([htmlDocument], Constant.textHtmlMimeType);
@@ -533,7 +579,7 @@ class HtmlUtils {
   static void openFileViewer({
     required Uint8List bytes,
     required String fileName,
-    String? mimeType
+    String? mimeType,
   }) {
     final blob = html.Blob([bytes], mimeType);
     final file = html.File([blob], fileName, {'type': mimeType});
@@ -603,7 +649,10 @@ class HtmlUtils {
       </div>
     </div>''';
 
-  static String _downloadButtonListenerScript(Uint8List bytes, String? fileName) {
+  static String _downloadButtonListenerScript(
+    Uint8List bytes,
+    String? fileName,
+  ) {
     return '''
       const downloadBtn = document.getElementById('download-btn');
       downloadBtn.addEventListener('click', () => {
@@ -638,14 +687,12 @@ class HtmlUtils {
   }
 
   static bool openNewWindowByUrl(
-    String url,
-    {
-      int width = 800,
-      int height = 600,
-      bool isFullScreen = false,
-      bool isCenter = true,
-    }
-  ) {
+    String url, {
+    int width = 800,
+    int height = 600,
+    bool isFullScreen = false,
+    bool isCenter = true,
+  }) {
     try {
       if (isFullScreen) {
         html.window.open(url, '_blank');
@@ -701,10 +748,7 @@ class HtmlUtils {
   }
 
   static String removeWhitespace(String input) {
-    return input
-        .replaceAll('\r', '')
-        .replaceAll('\n', '')
-        .replaceAll('\t', '');
+    return input.replaceAll('\r', '').replaceAll('\n', '').replaceAll('\t', '');
   }
 
   /// Returns true if the browser is Safari and its major version is less than 17.
@@ -712,7 +756,8 @@ class HtmlUtils {
     try {
       final userAgent = html.window.navigator.userAgent;
       log('HtmlUtils::isOldSafari:UserAgent = $userAgent');
-      final isSafari = userAgent.contains('Safari') && !userAgent.contains('Chrome');
+      final isSafari =
+          userAgent.contains('Safari') && !userAgent.contains('Chrome');
       if (!isSafari) return false;
 
       final match = RegExp(r'Version/(\d+)\.').firstMatch(userAgent);
@@ -727,9 +772,13 @@ class HtmlUtils {
     }
   }
 
-  static String addQuoteToggle(String htmlString, {bool startCollapsed = true}) {
-    final likelyHtml = htmlString.contains(_htmlStartTagRegex) && // Contains a start tag
-      htmlString.contains(_htmlEndTagRegex); // Contains an end tag
+  static String addQuoteToggle(
+    String htmlString, {
+    bool startCollapsed = true,
+  }) {
+    final likelyHtml =
+        htmlString.contains(_htmlStartTagRegex) && // Contains a start tag
+        htmlString.contains(_htmlEndTagRegex); // Contains an end tag
 
     if (!likelyHtml) {
       return htmlString; // Not likely HTML, return original
@@ -741,23 +790,32 @@ class HtmlUtils {
       return htmlString;
     }
 
-    final containerElement = '<div class="quote-toggle-container" >$htmlString</div>';
+    final containerElement =
+        '<div class="quote-toggle-container" >$htmlString</div>';
 
-    final containerDom = html.DomParser().parseFromString(containerElement, 'text/html');
-    html.ElementList blockquotes = containerDom.querySelectorAll('.quote-toggle-container > blockquote');
+    final containerDom = html.DomParser().parseFromString(
+      containerElement,
+      'text/html',
+    );
+    html.ElementList blockquotes = containerDom.querySelectorAll(
+      '.quote-toggle-container > blockquote',
+    );
     int currentSearchLevel = 1;
 
     while (blockquotes.isEmpty) {
       // Finish searching at level [currentSearchLevel]
       if (currentSearchLevel >= 3) return htmlString;
       // No blockquote elements found on first level, try another level
-      blockquotes = containerDom.querySelectorAll('.quote-toggle-container${' > div' * currentSearchLevel} > blockquote');
+      blockquotes = containerDom.querySelectorAll(
+        '.quote-toggle-container${' > div' * currentSearchLevel} > blockquote',
+      );
       currentSearchLevel++;
     }
 
     final lastBlockquote = blockquotes.last;
 
-    final buttonHtmlContent = '''
+    final buttonHtmlContent =
+        '''
       <button class="quote-toggle-button${startCollapsed ? ' collapsed' : ''}" title="${startCollapsed ? 'Show trimmed content' : 'Hide expanded content'}">
           <span class="dot"></span>
           <span class="dot"></span>
@@ -765,8 +823,10 @@ class HtmlUtils {
       </button>''';
 
     // Parse the button HTML content as a fragment
-    final tempDoc =
-        html.DomParser().parseFromString(buttonHtmlContent, 'text/html');
+    final tempDoc = html.DomParser().parseFromString(
+      buttonHtmlContent,
+      'text/html',
+    );
 
     final buttonElement = tempDoc.querySelector('.quote-toggle-button');
 
@@ -946,9 +1006,7 @@ class HtmlUtils {
             nodes.add(dom.Text(url));
           } else {
             // Normalize href
-            final href = url.startsWith(_protocolRegex)
-                ? url
-                : 'https://$url';
+            final href = url.startsWith(_protocolRegex) ? url : 'https://$url';
 
             final link = dom.Element.tag('a')
               ..attributes['href'] = href

@@ -1,11 +1,18 @@
-
 class HtmlInteraction {
   static const String scrollRightEndAction = 'ScrollRightEndAction';
   static const String scrollLeftEndAction = 'ScrollLeftEndAction';
   static const String scrollEventJSChannelName = 'ScrollEventListener';
-  static const String contentSizeChangedEventJSChannelName = 'ContentSizeChangedEventListener';
+  static const String contentSizeChangedEventJSChannelName =
+      'ContentSizeChangedEventListener';
+  static const String iframeFindShortcutEvent = 'iframeFindShortcut';
+  static const String iframeFindResultEvent = 'iframeFindResult';
+  static const String iframeFindApplyEvent = 'findApply';
+  static const String iframeFindNextEvent = 'findNext';
+  static const String iframeFindPreviousEvent = 'findPrevious';
+  static const String iframeFindClearEvent = 'findClear';
 
-  static const String runScriptsHandleScrollEvent = '''
+  static const String runScriptsHandleScrollEvent =
+      '''
     let contentElement = document.getElementsByClassName('tmail-content')[0];
     var xDown = null;                                                        
     var yDown = null;
@@ -59,7 +66,8 @@ class HtmlInteraction {
     }
   ''';
 
-  static const String scriptsHandleContentSizeChanged = '''
+  static const String scriptsHandleContentSizeChanged =
+      '''
     <script type="text/javascript">
       const bodyResizeObserver = new ResizeObserver(entries => {
         window.flutter_inappwebview.callHandler('$contentSizeChangedEventJSChannelName', '');
@@ -308,7 +316,8 @@ class HtmlInteraction {
   static String scriptsWheelEventListener({
     required String viewId,
     required String onScrollChangedEvent,
-  }) => '''
+  }) =>
+      '''
     <script type="text/javascript">
       function onWheel(e) { 
         const deltaY = event.deltaY;
@@ -331,7 +340,8 @@ class HtmlInteraction {
     required String viewId,
     required String onScrollChangedEvent,
     required String onScrollEndEvent,
-  }) => '''
+  }) =>
+      '''
     <script type="text/javascript">
       let lastY = 0;
       let lastTime = 0;
@@ -385,7 +395,8 @@ class HtmlInteraction {
 
   ''';
 
-  static String scriptHandleIframeKeyboardListener(String viewId) => '''
+  static String scriptHandleIframeKeyboardListener(String viewId) =>
+      '''
     <script type="text/javascript">
       window.addEventListener('keydown', handleIframeKeydown);
       
@@ -399,14 +410,253 @@ class HtmlInteraction {
           type: 'toDart: iframeKeydown',
           key: event.key,
           code: event.code,
-          shift: event.shiftKey
+          shift: event.shiftKey,
+          ctrl: event.ctrlKey,
+          meta: event.metaKey,
+          alt: event.altKey
         };
         window.parent.postMessage(JSON.stringify(payload), "*");
       }
     </script>
   ''';
 
-  static String scriptsHandleIframeClickListener(String viewId) => '''
+  static String scriptHandleIframeFindShortcutListener(String viewId) =>
+      '''
+    <script type="text/javascript">
+      window.addEventListener('keydown', handleIframeFindShortcut);
+
+      window.addEventListener('pagehide', () => {
+        window.removeEventListener('keydown', handleIframeFindShortcut);
+      });
+
+      function handleIframeFindShortcut(event) {
+        const key = (event.key || '').toLowerCase();
+        const isFindShortcut = (event.ctrlKey || event.metaKey) &&
+          !event.altKey &&
+          key === 'f';
+
+        if (!isFindShortcut) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.parent.postMessage(JSON.stringify({
+          view: '$viewId',
+          type: 'toDart: $iframeFindShortcutEvent'
+        }), '*');
+      }
+    </script>
+  ''';
+
+  static String scriptHandleIframeContentFind(String viewId) =>
+      '''
+    <script type="text/javascript">
+      const tmailFindState = {
+        marks: [],
+        activeIndex: -1,
+        query: ''
+      };
+
+      window.addEventListener('message', handleTMailFindMessage, false);
+
+      window.addEventListener('pagehide', () => {
+        window.removeEventListener('message', handleTMailFindMessage, false);
+      });
+
+      function handleTMailFindMessage(event) {
+        if (!event || !event.data || !String(event.data).includes('toIframe:')) {
+          return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(event.data);
+        } catch (_) {
+          return;
+        }
+
+        if (!data.view || data.view !== '$viewId' || !data.type) {
+          return;
+        }
+
+        if (data.type.includes('$iframeFindApplyEvent')) {
+          applyTMailFindQuery(data.query || '');
+        } else if (data.type.includes('$iframeFindNextEvent')) {
+          moveTMailFindActive(1);
+        } else if (data.type.includes('$iframeFindPreviousEvent')) {
+          moveTMailFindActive(-1);
+        } else if (data.type.includes('$iframeFindClearEvent')) {
+          clearTMailFindMarks();
+          postTMailFindResult();
+        }
+      }
+
+      function postTMailFindResult() {
+        window.parent.postMessage(JSON.stringify({
+          view: '$viewId',
+          type: 'toDart: $iframeFindResultEvent',
+          total: tmailFindState.marks.length,
+          active: tmailFindState.activeIndex
+        }), '*');
+      }
+
+      function escapeTMailFindRegExp(value) {
+        return value.replace(/[.*+?^\\\${}()|[\\]\\\\]/g, '\\\\\$&');
+      }
+
+      function clearTMailFindMarks() {
+        const existingMarks = Array.from(
+          document.querySelectorAll('mark.tmail-find-hit')
+        );
+
+        existingMarks.forEach((mark) => {
+          const parent = mark.parentNode;
+          if (!parent) {
+            return;
+          }
+          parent.replaceChild(document.createTextNode(mark.textContent || ''), mark);
+          parent.normalize();
+        });
+
+        tmailFindState.marks = [];
+        tmailFindState.activeIndex = -1;
+        tmailFindState.query = '';
+      }
+
+      function isTMailFindSearchableNode(node) {
+        const parent = node.parentElement;
+        if (!parent) {
+          return false;
+        }
+
+        if (!node.nodeValue || !node.nodeValue.trim()) {
+          return false;
+        }
+
+        const excluded = parent.closest(
+          'script, style, noscript, textarea, input, select, mark.tmail-find-hit'
+        );
+        return !excluded;
+      }
+
+      function collectTMailFindTextNodes(root) {
+        const textNodes = [];
+        const walker = document.createTreeWalker(
+          root,
+          NodeFilter.SHOW_TEXT,
+          {
+            acceptNode: (node) => isTMailFindSearchableNode(node)
+              ? NodeFilter.FILTER_ACCEPT
+              : NodeFilter.FILTER_REJECT
+          }
+        );
+
+        let node;
+        while ((node = walker.nextNode())) {
+          textNodes.push(node);
+        }
+        return textNodes;
+      }
+
+      function markTMailFindTextNode(node, regex) {
+        const text = node.nodeValue || '';
+        const fragment = document.createDocumentFragment();
+        let lastIndex = 0;
+        let hasMatch = false;
+        let match;
+
+        regex.lastIndex = 0;
+        while ((match = regex.exec(text)) !== null) {
+          if (match.index > lastIndex) {
+            fragment.appendChild(
+              document.createTextNode(text.slice(lastIndex, match.index))
+            );
+          }
+
+          const mark = document.createElement('mark');
+          mark.className = 'tmail-find-hit';
+          mark.textContent = match[0];
+          fragment.appendChild(mark);
+          tmailFindState.marks.push(mark);
+          hasMatch = true;
+          lastIndex = regex.lastIndex;
+
+          if (regex.lastIndex === match.index) {
+            regex.lastIndex++;
+          }
+        }
+
+        if (!hasMatch) {
+          return;
+        }
+
+        if (lastIndex < text.length) {
+          fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+
+        node.parentNode.replaceChild(fragment, node);
+      }
+
+      function setTMailFindActive(index) {
+        tmailFindState.marks.forEach((mark) => {
+          mark.classList.remove('tmail-find-hit-active');
+        });
+
+        if (index < 0 || index >= tmailFindState.marks.length) {
+          tmailFindState.activeIndex = -1;
+          return;
+        }
+
+        tmailFindState.activeIndex = index;
+        const activeMark = tmailFindState.marks[index];
+        activeMark.classList.add('tmail-find-hit-active');
+        activeMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function moveTMailFindActive(delta) {
+        const total = tmailFindState.marks.length;
+        if (!total) {
+          postTMailFindResult();
+          return;
+        }
+
+        const currentIndex = tmailFindState.activeIndex < 0
+          ? 0
+          : tmailFindState.activeIndex;
+        const nextIndex = (currentIndex + delta + total) % total;
+        setTMailFindActive(nextIndex);
+        postTMailFindResult();
+      }
+
+      function applyTMailFindQuery(rawQuery) {
+        const query = String(rawQuery).trim();
+        clearTMailFindMarks();
+
+        if (!query) {
+          postTMailFindResult();
+          return;
+        }
+
+        tmailFindState.query = query;
+        const contentRoot = document.querySelector('.tmail-content') || document.body;
+        const regex = new RegExp(escapeTMailFindRegExp(query), 'gi');
+
+        collectTMailFindTextNodes(contentRoot).forEach((node) => {
+          markTMailFindTextNode(node, regex);
+        });
+
+        if (tmailFindState.marks.length > 0) {
+          setTMailFindActive(0);
+        }
+
+        postTMailFindResult();
+      }
+    </script>
+  ''';
+
+  static String scriptsHandleIframeClickListener(String viewId) =>
+      '''
     <script type="text/javascript">
       document.addEventListener('click', function (e) {
         try {
@@ -420,7 +670,8 @@ class HtmlInteraction {
     </script>
   ''';
 
-  static String scriptsHandleIframeLinkHoverListener(String viewId) => '''
+  static String scriptsHandleIframeLinkHoverListener(String viewId) =>
+      '''
     <script type="text/javascript">
       document.addEventListener("mouseover", function (e) {
         const target = e.target;
