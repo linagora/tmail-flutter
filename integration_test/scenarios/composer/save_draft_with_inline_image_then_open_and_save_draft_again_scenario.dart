@@ -48,7 +48,7 @@ class SaveDraftWithInlineImageThenOpenAndSaveDraftAgainScenario extends BaseTest
       await threadRobot.openMailbox();
     }
     await mailboxMenuRobot.openFolderByName(appLocalizations.draftsMailboxDisplayName);
-    await $.pump(const Duration(seconds: 2));
+    await waitForCondition(() => $(find.text(subject)).exists);
     await threadRobot.openEmailWithSubject(subject);
     await composerRobot.expectComposerViewVisible();
     await composerRobot.grantContactPermission();
