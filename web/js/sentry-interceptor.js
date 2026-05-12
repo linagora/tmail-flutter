@@ -28,21 +28,35 @@
   // document.createElement entirely. We must patch the prototype-level src
   // setter to intercept ALL HTMLScriptElement src assignments universally.
   const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-  Object.defineProperty(HTMLScriptElement.prototype, 'src', {
-    configurable: true,
-    enumerable: true,
-    get: function() {
-      return nativeSrcDescriptor.get.call(this);
-    },
-    set: function(val) {
-      const urlString = val ? String(val) : '';
-      if (shouldBlockSentryUrl(urlString)) {
-        blockAndNotify(this, 'HTMLScriptElement.src', urlString);
-        return;
-      }
-      nativeSrcDescriptor.set.call(this, val);
-    },
-  });
+  const canPatchSrc =
+    nativeSrcDescriptor &&
+    typeof nativeSrcDescriptor.get === 'function' &&
+    typeof nativeSrcDescriptor.set === 'function' &&
+    nativeSrcDescriptor.configurable === true;
+
+  if (canPatchSrc) {
+    try {
+      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+        configurable: true,
+        enumerable: nativeSrcDescriptor.enumerable,
+        get: function() {
+          return nativeSrcDescriptor.get.call(this);
+        },
+        set: function(val) {
+          const urlString = val ? String(val) : '';
+          if (shouldBlockSentryUrl(urlString)) {
+            blockAndNotify(this, 'HTMLScriptElement.src', urlString);
+            return;
+          }
+          nativeSrcDescriptor.set.call(this, val);
+        },
+      });
+    } catch (e) {
+      console.warn('[Sentry Interceptor] Failed to patch HTMLScriptElement.src:', e);
+    }
+  } else {
+    console.warn('[Sentry Interceptor] HTMLScriptElement.src patch unavailable; using setAttribute fallback only.');
+  }
 
   // Defense-in-depth: also intercept setAttribute('src', ...) as a fallback.
   const originalSetAttribute = Element.prototype.setAttribute;
