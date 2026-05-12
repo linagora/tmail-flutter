@@ -1,8 +1,4 @@
 (function() {
-  const originalCreateElement = document.createElement;
-
-  // Only block the specific tracing bundle we self-host. Narrowing to this pathname
-  // prevents silently swallowing future CDN assets that have no local replacement.
   const BLOCKED_PATHNAME = '/bundle.tracing.min.js';
 
   function isSentryCdnHostname(hostname) {
@@ -13,71 +9,50 @@
     if (!urlString) return false;
     try {
       const parsed = new URL(urlString, document.baseURI);
-      const hostname = parsed.hostname.toLowerCase();
-      const pathname = parsed.pathname.toLowerCase();
-      return isSentryCdnHostname(hostname) && pathname.endsWith(BLOCKED_PATHNAME);
+      return isSentryCdnHostname(parsed.hostname.toLowerCase()) &&
+             parsed.pathname.toLowerCase().endsWith(BLOCKED_PATHNAME);
     } catch (e) {
-      // Fallback for non-parseable URLs: check if it looks like a plain hostname
-      // (no whitespace, no path/query/fragment separators).
-      const str = String(urlString).trim().toLowerCase();
-      const isHostLike = str.length > 0 && !/[\s/?#]/.test(str);
-      return isHostLike && isSentryCdnHostname(str);
+      return false;
     }
   }
 
   function blockAndNotify(element, channel, urlString) {
     console.log('[Sentry Interceptor] 🛑 Blocked CDN request (' + channel + '):', urlString);
-    // Fire a synthetic 'load' event so the Sentry SDK's internal Promise resolves
-    // cleanly instead of hanging indefinitely waiting for a CDN script we blocked.
+    // Dispatch a synthetic 'load' event so the Sentry SDK's internal Promise
+    // resolves cleanly instead of hanging indefinitely.
     setTimeout(() => element.dispatchEvent(new Event('load')), 10);
   }
 
-  function makeSrcSetter(nativeSrcDescriptor) {
-    return function(val) {
+  // sentry_flutter's web_script_dom_api.dart creates script elements via
+  // `new HTMLScriptElement()` (Dart package:web interop), which bypasses
+  // document.createElement entirely. We must patch the prototype-level src
+  // setter to intercept ALL HTMLScriptElement src assignments universally.
+  const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+  Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+    configurable: true,
+    enumerable: true,
+    get: function() {
+      return nativeSrcDescriptor.get.call(this);
+    },
+    set: function(val) {
       const urlString = val ? String(val) : '';
       if (shouldBlockSentryUrl(urlString)) {
-        blockAndNotify(this, 'Property', urlString);
-      } else {
-        nativeSrcDescriptor?.set?.call(this, val);
-      }
-    };
-  }
-
-  function makeSrcGetter(nativeSrcDescriptor) {
-    return function() {
-      return nativeSrcDescriptor?.get?.call(this) ?? '';
-    };
-  }
-
-  function makeSetAttribute(originalSetAttribute) {
-    return function(name, value) {
-      const urlString = value ? String(value) : '';
-      if (String(name).toLowerCase() === 'src' && shouldBlockSentryUrl(urlString)) {
-        blockAndNotify(this, 'Attribute', urlString);
+        blockAndNotify(this, 'HTMLScriptElement.src', urlString);
         return;
       }
-      originalSetAttribute.call(this, name, value);
-    };
-  }
+      nativeSrcDescriptor.set.call(this, val);
+    },
+  });
 
-  function patchScriptElement(element) {
-    const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-    Object.defineProperty(element, 'src', {
-      configurable: true,
-      set: makeSrcSetter(nativeSrcDescriptor),
-      get: makeSrcGetter(nativeSrcDescriptor),
-    });
-    element.setAttribute = makeSetAttribute(element.setAttribute);
-  }
-
-  // Load order: sentry-tracing.min.js (self-hosted SDK) must run before this interceptor.
-  // This interceptor patches document.createElement to block any subsequent CDN injection
-  // the SDK may attempt at runtime.
-  document.createElement = function(tagName, options) {
-    const element = originalCreateElement.call(document, tagName, options);
-    if (String(tagName).toLowerCase() === 'script') {
-      patchScriptElement(element);
+  // Defense-in-depth: also intercept setAttribute('src', ...) as a fallback.
+  const originalSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function(name, value) {
+    const urlString = value ? String(value) : '';
+    const isScriptSrc = this instanceof HTMLScriptElement && String(name).toLowerCase() === 'src';
+    if (isScriptSrc && shouldBlockSentryUrl(urlString)) {
+      blockAndNotify(this, 'setAttribute', urlString);
+      return;
     }
-    return element;
+    originalSetAttribute.call(this, name, value);
   };
 })();
