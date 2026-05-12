@@ -392,7 +392,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
     });
 
     if (!newEmailResponse.hasEmails()
-        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
+        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value
+        || collapseThreads == true) {
       final networkEmailResponse = await _getFirstPage(
         session,
         accountId,

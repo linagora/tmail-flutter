@@ -449,7 +449,6 @@ class ThreadController extends BaseController with EmailActionController {
         } else if (forceEmailQuery) {
           getAllEmailAction(
             forceEmailQuery: forceEmailQuery,
-            limit: limitEmailFetched,
           );
         }
       },
@@ -721,7 +720,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
-        collapseThreads: _isCollapseThreadsEnabled,
+        collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -859,7 +858,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
-      collapseThreads: _isCollapseThreadsEnabled,
+      collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
     ).last;
 
     refreshState.fold(
