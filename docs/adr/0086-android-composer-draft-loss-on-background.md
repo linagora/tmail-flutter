@@ -103,39 +103,25 @@ This is the primary fix for both RC1 and RC2. It is fast, offline, and does not 
 
 **Fallback for `getText()` failure**: a periodic content snapshot (`Timer.periodic(30s)`) runs while the editor is loaded, storing the last known HTML in `notifier.lastKnownHtmlContent`. At `inactive`, extraction calls `_fetchEditorContent()` which wraps `getText()` in a `try/catch` with a 2 s timeout. The timeout prevents an indefinite hang if the JS bridge freezes (distinct from a renderer crash, which throws immediately). If the result is `null` (renderer crash or timeout), the fallback is `notifier.lastKnownHtmlContent` from the last periodic tick. The resolved effective content — either fresh or fallback, even if empty — is always passed as `htmlContent` to `buildCreateEmailRequestForAutoSave(htmlContent: effectiveContent)`, so `getText()` is never called a second time inside that method.
 
-**System dialog false positive**: `AppLifecycleState.inactive` is also triggered by system overlays (permission dialogs, incoming calls, notification shade). To avoid unnecessary saves in these cases, the save is preceded by a short guard delay (~300 ms). If the state returns to `active` within that window, the save is cancelled. This prevents both the Layer 1 Hive write and the Layer 2 network call from triggering unnecessarily when the user never actually leaves the app.
+**System dialog false positive**: `AppLifecycleState.inactive` is also triggered by system overlays (permission dialogs, incoming calls, notification shade). To avoid unnecessary saves in these cases, the save is preceded by a short guard delay (~300 ms). If the state returns to `active` within that window, the save is cancelled. This prevents the Layer 1 Hive write from triggering unnecessarily when the user never actually leaves the app.
 
 **In-progress attachment uploads**: if the user backgrounds the app while an attachment is still uploading, that attachment will not yet have a `blobId`. Only completed attachments (with a resolved `blobId`) are included in the `ComposerCache` snapshot. In-progress attachments are omitted and must be re-uploaded after restore. This is a known limitation documented in the Negative consequences.
 
-#### Layer 2 — Silent Server-Side Draft Save at `AppLifecycleState.inactive`
+#### Layer 2 — Recovery at `AppLifecycleState.resumed` (RC1)
 
-Layer 1 is `await`ed before Layer 2 is triggered. Once the Hive write completes, `CreateNewAndSaveEmailToDraftsInteractor` is fired without `await` (fire-and-forget) — `_onAppInactive()` does not block on the network call. This saves the draft to the JMAP server, protecting against RC2 even if the local cache is later lost (e.g. app data cleared).
+On `AppLifecycleState.resumed`, `restoreIfEditorBlank()` checks if the editor content is empty (renderer was killed while the app stayed alive). If so, it calls `ResolveComposerCacheForRestoreInteractor` to fetch the newest restorable snapshot and reinjects the cached HTML into the editor via `htmlEditorApi.setText()`. The snapshot is then cleared so the periodic timer can write a fresh one.
 
-**Why `inactive` and not `paused`**: at `AppLifecycleState.paused`, Android Doze mode and app-standby buckets may throttle or block outbound network traffic before the request completes. `inactive` is before the compositor is frozen, giving the network call the best chance of completing while the renderer is still alive.
+A concurrency guard (`isRestoringFromCache`) prevents a concurrent `_saveSnapshotToCache()` from overwriting a valid snapshot while restoration is in progress — a race that would store empty content to the cache just as it is being read back.
 
-This is **fire-and-forget** — failure is reported via `SentryManager.instance.captureException(exception, level: SentryLevel.warning)` but not surfaced to the user. The draft will appear in the Drafts folder on success.
+**Layer 3 → Layer 2 bridge (RC2)**: when `MailboxDashBoardController` re-opens the composer with `EmailActionType.restoreComposerFromPersistentCache`, `setupEmailContent()` routes to `_loadMobileRestoredEmailContent()` which loads the cached HTML directly. No additional `onReady()` check is required in this path — the content is delivered via `ComposerArguments`.
 
-**Privacy requirement**: exceptions reported to Sentry MUST NOT include the email body HTML, subject, recipient addresses, or `identityJson`. Log only the exception type and error code to avoid exfiltrating sensitive draft content through telemetry.
-
-> **Why `captureException` and not `addBreadcrumb`**: breadcrumbs are only uploaded to Sentry when a subsequent error event is captured. A silent fire-and-forget failure never triggers such an event, so the breadcrumb would be silently lost. `captureException` sends the event immediately and independently, guaranteeing visibility.
-
-**Deduplication guard**: a boolean `_isSavingToDraftInProgress` flag on `ComposerController` ensures only one server-side save runs at a time. If `onInactive` fires again (e.g., user rapidly switches apps back and forth) while a save is still in flight, the duplicate trigger is silently skipped. The flag is cleared on completion (success or failure). Note that Layer 1 (Hive write) is also protected by the 300 ms guard described above — the deduplication flag applies only to the Layer 2 network call.
-
-#### Layer 3 — Recovery at `AppLifecycleState.resumed` (RC1)
-
-On `AppLifecycleState.resumed`, `_restoreIfEditorBlank()` checks if the editor content is empty (renderer was killed while the app stayed alive). If so, it calls `ResolveComposerCacheForRestoreInteractor` to fetch the newest restorable snapshot and reinjects the cached HTML into the editor via `htmlEditorApi.setText()`. The snapshot is then cleared so the periodic timer can write a fresh one.
-
-**Layer 4 → Layer 3 bridge (RC2)**: when `MailboxDashBoardController` re-opens the composer with `EmailActionType.restoreComposerFromPersistentCache`, `setupEmailContent()` routes to `_loadMobileRestoredEmailContent()` which loads the cached HTML directly. No additional `onReady()` check is required in this path — the content is delivered via `ComposerArguments`.
-
-**Cache not cleared after Layer 2**: Layer 2 deliberately does NOT clear the Hive cache on server-save success (see Layer 2 note). If the cache happens to be absent when the user returns, Layer 3 `_restoreIfEditorBlank()` finds nothing and leaves the editor as-is. The draft is safely persisted in the Drafts folder; the user can open it from there. No data is lost.
-
-#### Layer 4 — Re-open Composer on App Restart (RC2)
+#### Layer 3 — Re-open Composer on App Restart (RC2)
 
 When Android kills the entire app process, `ComposerController` is destroyed along with the route stack. Any recovery logic inside `ComposerController` will never be called because the controller no longer exists.
 
 Recovery for RC2 must happen at a higher level — `_handleSessionFromArguments()` inside `MailboxDashBoardController`, which always runs when the session is established on app restart. On startup:
 
-1. `HandleComposerRestoreOnMobileExtension.checkAndRestoreComposerOnMobile()` calls `appProviderContainer.read(resolveComposerCacheForRestoreProvider).execute(accountId, userName)`. `ResolveComposerCacheForRestoreInteractor` fetches all cached entries, picks the **newest by `timestampMs`** via `newestLocalCache`, discards non-restorable entries, and returns the single best candidate (filter: `isRestorable == true`, age < 24 h).
+1. `HandleComposerRestoreOnMobileExtension.checkAndRestoreComposerOnMobile()` calls `appProviderContainer.read(resolveComposerCacheForRestoreProvider).execute(accountId, userName)`. `ResolveComposerCacheForRestoreInteractor` fetches all cached entries, picks the **newest by `timestampMs`** via `newestLocalCache`, discards non-restorable entries, and returns the single best candidate (`isRestorable == true`, age < 24 h).
 2. If a restorable entry is found, the dashboard opens the composer with `ComposerArguments.fromComposerPersistentCache(cache)` which sets `emailActionType = EmailActionType.restoreComposerFromPersistentCache`.
 3. `ComposerController.setupEmailContent()` detects `restoreComposerFromPersistentCache` and calls `_loadMobileRestoredEmailContent()` to inject the cached HTML. Inline images are restored via `_restoreInlineImages()`.
 4. Non-restorable entries (expired or `isCleanClose=true`) are removed as a side-effect of step 1.
@@ -171,44 +157,56 @@ ComposerController (GetX)  [Android only]
     │
     ├── AppLifecycleListener
     │       ├── onInactive → 300ms guard → _saveSnapshotToCache()
-    │       └── onResume   → _restoreIfEditorBlank()
+    │       └── onResume   → restoreIfEditorBlank()
     │
     ├── _saveSnapshotToCache()
+    │       ├── guard: isRestoringFromCache? → skip (avoid race with Layer 2 restore)
+    │       ├── guard: notifier.isCleanClose? → skip
     │       ├── freshContent = _fetchEditorContent()  ← getText().timeout(2s)
-    │       ├── effectiveContent = freshContent ?? notifier.lastKnownHtmlContent
-    │       ├── await Layer 1: saveComposerCacheInteractor.execute(
-    │       │                       createEmailRequest: ...(htmlContent: effectiveContent),
-    │       │                       isPersistent: true,
-    │       │                  )                                         ← Hive write
-    │       └── fire Layer 2: CreateNewAndSaveEmailToDraftsInteractor   ← unawaited
+    │       ├── effectiveContent = _resolveAndSyncContent(freshContent, notifier)
+    │       │                       freshContent != null → updateLastKnownContent + return fresh
+    │       │                       freshContent == null → return notifier.lastKnownHtmlContent
+    │       ├── KeyboardUtils.hideSystemKeyboardMobile()
+    │       ├── createEmailRequest = buildCreateEmailRequestForAutoSave(
+    │       │                            htmlContent: effectiveContent)
+    │       └── await _executeCacheSave(createEmailRequest, notifier)
+    │               └── saveComposerCacheInteractor.execute(isPersistent: true)
+    │                       .fold(failure → logError, _ → notifier.onSnapshotSaved())
     │
-    ├── _restoreIfEditorBlank()  [RC1 — user returns, editor blank]
-    │       └── editor blank + resolveComposerCacheForRestoreProvider returns cache?
-    │               └── htmlEditorApi.setText(cache.email.emailContentList.asHtmlString)
+    ├── restoreIfEditorBlank()  [RC1 — user returns, editor blank]
+    │       ├── guard: isRestoringFromCache → skip
+    │       ├── _resolveRestorePayload()
+    │       │       ├── currentContent = _fetchEditorContent()
+    │       │       ├── currentContent non-empty? → null (nothing to restore)
+    │       │       └── notifier.restore(accountId, userName)
+    │       │               └── ResolveComposerCacheForRestoreInteractor → ComposerPersistentCache?
+    │       └── payload found? → api.setText(html) + updateLastKnownContent
+    │                          → clearComposerMobileSnapshot() (unawaited)
     │
     ├── _closeComposerAction() [mark clean — Android only]
-    │       ├── markCleanClose()  ← notifier.setCleanClose() + MarkComposerCacheCleanCloseInteractor (unawaited)
-    │       └── closeComposer()   ← navigation (after clean-close is already persisting)
+    │       ├── await markCleanClose()  ← notifier.setCleanClose()
+    │       │                              + await MarkComposerCacheCleanCloseInteractor (2s timeout)
+    │       └── closeComposer()         ← navigation
     │
     └── onClose() [Android only]
-            └── appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId))
+            └── tearDownMobileAutoSave()
+                    ├── disposeMobileAutoSave()  ← cancel timers + dispose listener
+                    └── appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId))
 ```
 
 ```text
 ComposerAutoSaveNotifier (Riverpod StateNotifier)
     │   [family param: String — autoSaveComposerId]
     │
-    ├── state fields: hasRecoverableSnapshot, isCleanClose,
-    │                 isSavingToDraftInProgress, lastKnownHtmlContent
+    ├── state fields: hasRecoverableSnapshot, isCleanClose, lastKnownHtmlContent
     │
     ├── onSnapshotSaved()          — sets hasRecoverableSnapshot = true
-    ├── setCleanClose()            — sets isCleanClose = true (Hive write fired immediately in markCleanClose)
+    ├── setCleanClose()            — sets isCleanClose = true (Hive write awaited in markCleanClose)
     ├── updateLastKnownContent(s)  — stores periodic snapshot for fallback
-    ├── beginDraftSave() / endDraftSave()  — deduplication guard for Layer 2
     ├── restore(accountId, userName)  → ResolveComposerCacheForRestoreInteractor
     └── clearCache(accountId, userName) → RemoveAllComposerCacheInteractor
         │
-        └── Restore/Clear → ComposerCacheRepository (existing)
+        └── Restore/Clear → ComposerCacheRepository
                                 └── ComposerHiveCacheClient (HiveCacheClient<String>, encryption=true)
                                         └── box: composer_hive_cache_box
 ```
@@ -216,13 +214,15 @@ ComposerAutoSaveNotifier (Riverpod StateNotifier)
 ```text
 Riverpod providers  [composer_cache_providers.dart]
 
-    _composerHiveCacheClientProvider  (private)
-    _composerCacheDatasourceProvider  (private)
-    composerCacheRepositoryProvider   (public)
-    removeAllComposerCacheProvider    (public)
+    _composerHiveCacheClientProvider   (private)
+    _cacheExceptionThrowerProvider     (private)
+    _composerCacheDatasourceProvider   (private)
+    composerCacheRepositoryProvider    (public)
+    removeAllComposerCacheProvider     (public)
     markComposerLocalCacheCleanCloseProvider  (public)
     resolveComposerCacheForRestoreProvider    (public)
 
+    [composer_auto_save_notifier.dart]
     composerAutoSaveProvider = StateNotifierProvider.family<
         ComposerAutoSaveNotifier, ComposerAutoSaveState, String>
 ```
@@ -233,7 +233,7 @@ A new subclass `ComposerPersistentCache extends ComposerCache` (in `mailbox_dash
 
 ```dart
 final bool? isCleanClose;   // null/false = involuntary kill → restore; true = deliberate discard → skip
-final int? timestampMs;     // snapshot time (ms); used for Layer 4 deterministic selection
+final int? timestampMs;     // snapshot time (ms); used for Layer 3 deterministic selection
 ```
 
 `@JsonSerializable(includeIfNull: false)` ensures these fields are omitted from JSON when null, so existing `ComposerCache` entries (web) are unaffected.
@@ -259,15 +259,18 @@ The dependency chain is managed **purely by Riverpod** via `ref.read()` — no `
 
 The `composerAutoSaveProvider` family is keyed by `String` (the `autoSaveComposerId`) rather than by the interactor, because the notifier itself does not call save — only the controller extension does. The notifier handles state tracking and restore/clear operations only.
 
-**Memory management**: `StateNotifierProvider.family` on a global `appProviderContainer` caches one entry per unique parameter. `ComposerController.onClose()` calls `appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId))` to remove the entry when the composer closes. Using `autoDispose + listen` was rejected: maintaining a keep-alive listener from a GetX controller is an anti-pattern that fights the framework and risks accidental early disposal.
+**Memory management**: `StateNotifierProvider.family` on a global `appProviderContainer` caches one entry per unique parameter. `ComposerController.onClose()` calls `tearDownMobileAutoSave()`, which cancels timers, disposes the `AppLifecycleListener`, then calls `appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId))` to remove the entry. Using `autoDispose + listen` was rejected: maintaining a keep-alive listener from a GetX controller is an anti-pattern that fights the framework and risks accidental early disposal.
 
 Follows [ADR-0085](./0085-riverpod-state-management-for-local-settings.md): providers are registered on the global `appProviderContainer`.
 
 ```dart
-// All providers co-located in composer_cache_providers.dart — internal providers are private (_)
+// composer_cache_providers.dart — internal providers are private (_)
 
 final _composerHiveCacheClientProvider =
     Provider<ComposerHiveCacheClient>((_) => ComposerHiveCacheClient());
+
+final _cacheExceptionThrowerProvider =
+    Provider<CacheExceptionThrower>((_) => CacheExceptionThrower());
 
 final _composerCacheDatasourceProvider = Provider<ComposerCacheDatasource>(
   (ref) => ComposerPersistentCacheDatasourceImpl(
@@ -292,8 +295,9 @@ final resolveComposerCacheForRestoreProvider = Provider<ResolveComposerCacheForR
   (ref) => ResolveComposerCacheForRestoreInteractor(ref.read(composerCacheRepositoryProvider)),
 );
 
-// Keyed by String (autoSaveComposerId). The notifier handles restore/clear; save is
-// called directly by HandleMobileAutoSaveExtension via saveComposerCacheInteractor.
+// composer_auto_save_notifier.dart — keyed by autoSaveComposerId.
+// The notifier handles state + restore/clear; save is called directly
+// by HandleMobileAutoSaveExtension via saveComposerCacheInteractor (GetX).
 final composerAutoSaveProvider = StateNotifierProvider
     .family<ComposerAutoSaveNotifier, ComposerAutoSaveState, String>(
   (ref, composerId) => ComposerAutoSaveNotifier(
@@ -303,33 +307,46 @@ final composerAutoSaveProvider = StateNotifierProvider
 );
 ```
 
-`ComposerController` (Android only):
+`HandleMobileAutoSaveExtension._saveSnapshotToCache()` (Android only):
 
 ```dart
-// _saveSnapshotToCache — calls save interactor directly (not through the notifier)
-final createEmailRequest = await buildCreateEmailRequestForAutoSave(
-  htmlContent: effectiveContent,  // always pass; never null to avoid a second getText() call
-);
-await saveComposerCacheInteractor.execute(
-  createEmailRequest: createEmailRequest,
-  isPersistent: true,
-);
-notifier.onSnapshotSaved();
+// Guard: don't overwrite a valid snapshot while Layer 2 restore is reading it.
+if (isRestoringFromCache) return;
 
-// onClose() — invalidate family entry to prevent memory leak on appProviderContainer
-appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId));
+final freshContent = await _fetchEditorContent();
+final effectiveContent = _resolveAndSyncContent(freshContent, notifier);
+
+KeyboardUtils.hideSystemKeyboardMobile();
+
+final createEmailRequest = await buildCreateEmailRequestForAutoSave(
+  htmlContent: effectiveContent,
+);
+if (createEmailRequest == null) return;
+if (notifier.isCleanClose) return;  // re-check after async gap
+
+await _executeCacheSave(createEmailRequest, notifier);
+// _executeCacheSave folds the result: failure → logError, success → notifier.onSnapshotSaved()
+```
+
+`ComposerController.onClose()` (Android only):
+
+```dart
+if (PlatformInfo.isAndroid) tearDownMobileAutoSave();
+// tearDownMobileAutoSave: cancel timers → dispose AppLifecycleListener
+//   → appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId))
 ```
 
 ### Cache eviction
 
 - Entries older than 24 hours are ignored on restore (treated as expired).
 - Entries are deleted after successful restoration or after `markCleanClose`.
-- On successful server-side draft save (Layer 2), the local cache entry is **not** cleared. Clearing on success introduces a race condition: the periodic 30 s timer may have written a newer snapshot while the JMAP call was in flight on a slow network, and clearing would discard it. Cleanup is handled exclusively by `markCleanClose` (intentional close) and the 24 h TTL.
-- If the close is **not** a clean close (system kill, swipe from Recents, or any scenario where `isCleanClose` is not explicitly set to `true`), the entry remains in cache indefinitely until it is either restored by Layer 3/4, replaced by a newer snapshot, or expires after 24 hours. This is intentional: every involuntary kill must result in a restore attempt.
+- Cleanup is handled exclusively by `markCleanClose` (intentional close) and the 24 h TTL. There is no other code path that clears the cache.
+- If the close is **not** a clean close (system kill, swipe from Recents, or any scenario where `isCleanClose` is not explicitly set to `true`), the entry remains in cache until it is either restored by Layer 2/3, replaced by a newer snapshot, or expires after 24 hours. This is intentional: every involuntary kill must result in a restore attempt.
 - `composer_hive_cache_box` MUST use encrypted Hive storage (AES-256 cipher) with keys provided by `HiveCacheConfig`. Plaintext storage is not permitted for draft body content. The AES key is generated once by `HiveCacheConfig.initializeEncryptionKey()` on first launch and stored in device secure storage via `EncryptionKeyCacheManager` (backed by `flutter_secure_storage`). There is no scheduled key rotation — the key is stable for the lifetime of the app installation. If the key is missing after a backup/restore (Android backup does not include `flutter_secure_storage` data by default), the Hive box will fail to open; in that case the cache is treated as empty and the user must re-compose.
 
 ### What is NOT in scope
 
+- **Silent server-side draft save at `AppLifecycleState.inactive`** — considered during design but not implemented. The async complexity (deduplication guard, race with the periodic snapshot timer, Doze mode network uncertainty) did not justify the marginal benefit: Layer 1 already covers both RC1 and RC2 via local Hive cache without any network dependency.
 - Forwarding `onRenderProcessGone` from `enough_html_editor` to callers — tracked as a separate upstream contribution to that library. The `inactive` snapshot already covers the same scenario because the renderer is always alive at that moment.
 - Migrating `ComposerController` from GetX to Riverpod — that is part of the broader ADR-0075 migration roadmap.
 - Restoring uploaded attachment binaries — blobs are already on the server; only metadata is needed.
@@ -342,10 +359,9 @@ appProviderContainer.invalidate(composerAutoSaveProvider(autoSaveComposerId));
 ### Positive
 
 - Draft content is preserved across Android background kills (both renderer-only and full process), without any user action required. On full process kill (RC2), the composer is automatically re-opened on next app launch.
-- Layers 1–4 are **Android-only**. iOS has a less aggressive memory management policy (WKWebView renderer is not independently killable by the OS), so the feature is intentionally scoped to Android to limit complexity.
+- Layers 1–3 are **Android-only**. iOS has a less aggressive memory management policy (WKWebView renderer is not independently killable by the OS), so the feature is intentionally scoped to Android to limit complexity.
 - The fix is additive — no existing save/close/send logic is changed in behaviour.
 - Follows the established Riverpod coexistence pattern (ADR-0085) for the new state logic.
-- Layer 2 (silent server save) gives users a fallback in Drafts even if local cache is unavailable.
 - The `isCleanClose` discriminant ensures intentional discards are not accidentally restored.
 - Cache entries auto-expire after 24 hours — no unbounded Hive growth.
 
