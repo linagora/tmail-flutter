@@ -1,14 +1,16 @@
 import 'package:patrol/patrol.dart';
 
 import '../robots/abstract/abstract_app_grid_robot.dart';
-import '../robots/mobile/mobile_app_grid_robot.dart';
-import 'robot_factory.dart';
-import '../robots/abstract/abstract_login_robot.dart';
-import '../robots/abstract/abstract_thread_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
+import '../robots/abstract/abstract_login_robot.dart';
+import '../robots/abstract/abstract_mailbox_menu_robot.dart';
+import '../robots/abstract/abstract_thread_robot.dart';
+import '../robots/mailbox_menu_robot.dart';
+import '../robots/mobile/mobile_app_grid_robot.dart';
+import '../robots/mobile/mobile_composer_robot.dart';
 import '../robots/mobile/mobile_login_robot.dart';
 import '../robots/mobile/mobile_thread_robot.dart';
-import '../robots/mobile/mobile_composer_robot.dart';
+import 'robot_factory.dart';
 
 class MobileRobotFactory implements RobotFactory {
   final PatrolIntegrationTester $;
@@ -26,4 +28,7 @@ class MobileRobotFactory implements RobotFactory {
 
   @override
   AbstractAppGridRobot appGridRobot() => MobileAppGridRobot($);
+
+  @override
+  AbstractMailboxMenuRobot mailboxMenuRobot() => MailboxMenuRobot($);
 }

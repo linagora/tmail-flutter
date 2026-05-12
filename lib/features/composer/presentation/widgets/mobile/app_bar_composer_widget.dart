@@ -44,6 +44,7 @@ class AppBarComposerWidget extends StatelessWidget {
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(
+            key: const Key(UiKeys.closeComposerButton),
             icon: imagePaths.icCancel,
             backgroundColor: Colors.transparent,
             tooltipMessage: AppLocalizations.of(context).saveAndClose,
@@ -105,7 +106,7 @@ class AppBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
-            key: const Key('composer_more_button'),
+            key: const Key(UiKeys.composerMoreButton),
             icon: imagePaths.icMore,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,

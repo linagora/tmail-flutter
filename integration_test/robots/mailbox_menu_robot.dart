@@ -17,10 +17,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
 import '../exceptions/mailbox/null_quota_exception.dart';
+import 'abstract/abstract_mailbox_menu_robot.dart';
 
-class MailboxMenuRobot extends CoreRobot {
+class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   MailboxMenuRobot(super.$);
 
+  @override
   Future<void> openFolderByName(String name) async {
     final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
     await $(mailboxItem).waitUntilExists();

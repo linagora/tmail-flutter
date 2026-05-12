@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum ComposerActionType {
@@ -65,7 +66,7 @@ enum ComposerActionType {
       case ComposerActionType.requestReadReceipt:
         return const Key('read_receipt_popup_item');
       case ComposerActionType.saveAsDraft:
-        return const Key('save_as_draft_popup_item');
+        return const Key(UiKeys.saveDraftPopupItem);
       case ComposerActionType.saveAsTemplate:
         return const Key('save_as_template_popup_item');
       case ComposerActionType.delete:

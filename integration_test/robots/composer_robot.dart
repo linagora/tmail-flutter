@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -90,12 +91,8 @@ class ComposerRobot extends CoreRobot {
     }
   }
 
-  Future<void> tapCloseComposer(ImagePaths imagePaths) async {
-    await $(AppBarComposerWidget)
-        .$(TMailButtonWidget)
-        .which<TMailButtonWidget>(
-            (widget) => widget.icon == imagePaths.icCancel)
-        .tap();
+  Future<void> tapCloseComposer([ImagePaths? imagePaths]) async {
+    await $(const ValueKey(UiKeys.closeComposerButton)).tap();
   }
 
   Future<void> tapSaveButtonOnSaveDraftConfirmDialog(
@@ -140,15 +137,24 @@ class ComposerRobot extends CoreRobot {
     await $(AppLocalizations().saveAsTemplate).tap();
   }
 
+  ComposerController? findComposerController() => getBinding<ComposerController>();
+
   Future<void> addAttachment(File file) async {
-    final controller = Get.find<ComposerController>();
+    final controller = findComposerController()!;
     final fileInfo = await file.toFileInfo();
+    _uploadAttachment(controller, fileInfo);
+  }
+
+  Future<void> addAttachmentFromBytes(Uint8List bytes, String fileName) async {
+    final controller = findComposerController()!;
+    final fileInfo = FileInfo.fromBytes(bytes: bytes, name: fileName);
+    _uploadAttachment(controller, fileInfo);
+  }
+
+  void _uploadAttachment(ComposerController controller, FileInfo fileInfo) {
     controller.uploadController.justUploadAttachmentsAction(
-      uploadFiles: [
-        fileInfo,
-      ],
-      uploadUri:
-          controller.mailboxDashBoardController.sessionCurrent!.getUploadUri(
+      uploadFiles: [fileInfo],
+      uploadUri: controller.mailboxDashBoardController.sessionCurrent!.getUploadUri(
         controller.mailboxDashBoardController.accountId.value!,
         jmapUrl: controller.dynamicUrlInterceptors.jmapUrl,
       ),
@@ -156,8 +162,18 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> addInline(File file) async {
-    final controller = Get.find<ComposerController>();
+    final controller = findComposerController()!;
     final fileInfo = await file.toFileInfo();
+    await _addInlineFromFileInfo(controller, fileInfo);
+  }
+
+  Future<void> addInlineFromBytes(Uint8List bytes, String fileName) async {
+    final controller = findComposerController()!;
+    final fileInfo = FileInfo.fromBytes(bytes: bytes, name: fileName, isInline: true);
+    await _addInlineFromFileInfo(controller, fileInfo);
+  }
+
+  Future<void> _addInlineFromFileInfo(ComposerController controller, FileInfo fileInfo) async {
     controller.handleSuccessViewState(LocalImagePickerSuccess(fileInfo));
     await controller.viewState.stream.firstWhere((state) => state.fold(
       (failure) => false,
@@ -180,5 +196,12 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> tapDiscardChanges() async {
     await $(AppLocalizations().discardChanges).tap();
+  }
+
+  Future<void> tapSaveAsDraftButton() async {
+    await $(const Key(UiKeys.composerMoreButton)).tap();
+    await $.pumpAndSettle();
+    await $(const Key(UiKeys.saveDraftPopupItem)).tap();
+    await $.pumpAndSettle();
   }
 }
