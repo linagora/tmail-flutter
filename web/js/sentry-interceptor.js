@@ -1,4 +1,10 @@
 (function() {
+  // Guard against double-execution (e.g. duplicate script tag, hot-reload).
+  // On a second load, nativeSrcDescriptor would resolve to our already-patched
+  // setter instead of the native one, causing infinite recursion.
+  if (window.__sentryInterceptorActive) return;
+  window.__sentryInterceptorActive = true;
+
   const BLOCKED_PATHNAME = '/bundle.tracing.min.js';
 
   function isSentryCdnHostname(hostname) {
@@ -20,7 +26,7 @@
     console.log('[Sentry Interceptor] 🛑 Blocked CDN request (' + channel + '):', urlString);
     // Dispatch a synthetic 'load' event so the Sentry SDK's internal Promise
     // resolves cleanly instead of hanging indefinitely.
-    setTimeout(() => element.dispatchEvent(new Event('load')), 10);
+    Promise.resolve().then(() => element.dispatchEvent(new Event('load')));
   }
 
   // sentry_flutter's web_script_dom_api.dart creates script elements via
@@ -59,14 +65,25 @@
   }
 
   // Defense-in-depth: also intercept setAttribute('src', ...) as a fallback.
+  // Patched on HTMLScriptElement.prototype only (not Element) to avoid
+  // intercepting setAttribute on every element in the DOM.
   const originalSetAttribute = Element.prototype.setAttribute;
-  Element.prototype.setAttribute = function(name, value) {
-    const urlString = value ? String(value) : '';
-    const isScriptSrc = this instanceof HTMLScriptElement && String(name).toLowerCase() === 'src';
-    if (isScriptSrc && shouldBlockSentryUrl(urlString)) {
-      blockAndNotify(this, 'setAttribute', urlString);
-      return;
-    }
-    originalSetAttribute.call(this, name, value);
-  };
+  try {
+    Object.defineProperty(HTMLScriptElement.prototype, 'setAttribute', {
+      configurable: true,
+      writable: true,
+      value: function(name, value) {
+        if (String(name).toLowerCase() === 'src') {
+          const urlString = String(value || '');
+          if (shouldBlockSentryUrl(urlString)) {
+            blockAndNotify(this, 'setAttribute', urlString);
+            return;
+          }
+        }
+        originalSetAttribute.call(this, name, value);
+      },
+    });
+  } catch (e) {
+    console.warn('[Sentry Interceptor] Failed to patch HTMLScriptElement.setAttribute:', e);
+  }
 })();
