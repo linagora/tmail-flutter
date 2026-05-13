@@ -4,6 +4,9 @@ extension URLExtension on String {
   static const String prefixUrlHttps = 'https://';
   static const String prefixUrlHttp = 'http://';
 
+  // Negative lookbehind (?<!:) preserves :// so the scheme is never collapsed.
+  static final _multipleSlashRegExp = RegExp(r'(?<!:)/{2,}');
+
   String formatURLValid() {
     if (isNotEmpty) {
       if (startsWith(prefixUrlHttps)) {
@@ -46,4 +49,6 @@ extension URLExtension on String {
       return '/$this';
     }
   }
+
+  String normalizePathSlashes() => replaceAll(_multipleSlashRegExp, '/');
 }

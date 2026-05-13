@@ -12,11 +12,129 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/error_type_handler/unknown_address_exception.dart';
+import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/principals/capability_principals.dart';
 
 void main() {
   final accountId = AccountId(Id('123abc'));
+
+  Session makeSession({
+    Uri? apiUrl,
+    Uri? downloadUrl,
+    Uri? uploadUrl,
+  }) =>
+      Session(
+        {},
+        {accountId: Account(AccountName('name'), true, true, {})},
+        {},
+        UserName('user@example.com'),
+        apiUrl ?? Uri.parse('http://localhost/jmap'),
+        downloadUrl ?? Uri.parse('http://localhost/download/{accountId}/{blobId}?type={type}&name={name}'),
+        uploadUrl ?? Uri.parse('http://localhost/upload/{accountId}'),
+        Uri.parse('http://localhost/eventSource'),
+        State(''),
+      );
+
+  group('getUploadUri', () {
+    test('should normalize double slashes when server returns path with //', () {
+      final session = makeSession(uploadUrl: Uri.parse('http://localhost//upload/{accountId}'));
+      expect(session.getUploadUri(accountId).toString(), 'http://localhost/upload/123abc');
+    });
+
+    test('should produce correct upload URI when path has single slash', () {
+      expect(makeSession().getUploadUri(accountId).toString(), 'http://localhost/upload/123abc');
+    });
+
+    test('should resolve relative uploadUrl using jmapUrl', () {
+      final session = makeSession(
+        apiUrl: Uri.parse('http://example.com/jmap'),
+        uploadUrl: Uri.parse('/upload/{accountId}'),
+      );
+      expect(
+        session.getUploadUri(accountId, jmapUrl: 'http://example.com').toString(),
+        'http://example.com/upload/123abc',
+      );
+    });
+
+    test('should throw UnknownUriException when uploadUrl has no origin and jmapUrl is not provided', () {
+      final session = makeSession(uploadUrl: Uri.parse('/upload/{accountId}'));
+      expect(
+        () => session.getUploadUri(accountId),
+        throwsA(isA<UnknownUriException>()),
+      );
+    });
+  });
+
+  group('getDownloadUrl', () {
+    test('should normalize double slashes when server returns path with //', () {
+      final session = makeSession(
+        downloadUrl: Uri.parse('http://localhost//download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(
+        session.getDownloadUrl(),
+        'http://localhost/download/{accountId}/{blobId}?type={type}&name={name}',
+      );
+    });
+
+    test('should produce correct download URL when path has single slash', () {
+      expect(
+        makeSession().getDownloadUrl(),
+        'http://localhost/download/{accountId}/{blobId}?type={type}&name={name}',
+      );
+    });
+
+    test('should resolve relative downloadUrl using jmapUrl', () {
+      final session = makeSession(
+        apiUrl: Uri.parse('http://example.com/jmap'),
+        downloadUrl: Uri.parse('/download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(
+        session.getDownloadUrl(jmapUrl: 'http://example.com'),
+        'http://example.com/download/{accountId}/{blobId}?type={type}&name={name}',
+      );
+    });
+
+    test('should throw UnknownUriException when downloadUrl has no origin and jmapUrl is not provided', () {
+      final session = makeSession(
+        downloadUrl: Uri.parse('/download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(
+        () => session.getDownloadUrl(),
+        throwsA(isA<UnknownUriException>()),
+      );
+    });
+
+    test('should preserve port number while normalizing download URL', () {
+      final session = makeSession(
+        apiUrl: Uri.parse('http://localhost:9000/jmap'),
+        downloadUrl: Uri.parse('http://localhost:9000//download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(
+        session.getDownloadUrl(),
+        'http://localhost:9000/download/{accountId}/{blobId}?type={type}&name={name}',
+      );
+    });
+  });
+
+  group('getSafetyDownloadUrl', () {
+    test('should return empty string when downloadUrl has no origin and jmapUrl is not provided', () {
+      final session = makeSession(
+        downloadUrl: Uri.parse('/download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(session.getSafetyDownloadUrl(), '');
+    });
+
+    test('should return normalized URL when downloadUrl is valid', () {
+      final session = makeSession(
+        downloadUrl: Uri.parse('http://localhost//download/{accountId}/{blobId}?type={type}&name={name}'),
+      );
+      expect(
+        session.getSafetyDownloadUrl(),
+        'http://localhost/download/{accountId}/{blobId}?type={type}&name={name}',
+      );
+    });
+  });
 
   group('validate calendar event capability test:', () {
     final account = Account(AccountName('name'), true, true, {});

@@ -434,7 +434,7 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
     }
 
     final baseDownloadAllUrl =
-        session.getDownloadAllCapability(accountId)!.endpoint!;
+        session.getDownloadAllCapability(accountId)!.normalizedEndpoint!;
 
     consumeState(
       exportAllAttachmentsInteractor.execute(
@@ -504,7 +504,7 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
     }
 
     final baseDownloadAllUrl =
-        session.getDownloadAllCapability(accountId)!.endpoint!;
+        session.getDownloadAllCapability(accountId)!.normalizedEndpoint!;
 
     final downloadAttachment = Attachment(
       name: outputFileName,

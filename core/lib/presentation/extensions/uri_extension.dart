@@ -37,4 +37,6 @@ extension URIExtension on Uri {
     }
     return replace(scheme: 'wss');
   }
+
+  Uri normalizePathSlashes() => replace(path: path.normalizePathSlashes());
 }
