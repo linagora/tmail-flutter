@@ -24,10 +24,6 @@ import flutter_local_notifications
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
         
-        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
-            GeneratedPluginRegistrant.register(with: registry)
-        }
-        
         let sharingIntent = SwiftReceiveSharingIntentPlugin.instance
         if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL {
             if url.scheme == "mailto" {
