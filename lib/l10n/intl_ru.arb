@@ -5809,5 +5809,89 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "labelDescription": "Описание (опционально)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Добавьте краткое описание метки",
+  "@labelDescriptionHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notIncludeEvents": "Не включать события",
+  "@notIncludeEvents": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailDetailView": "Закрыть подробный просмотр",
+  "@closeMailDetailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmail": "Вся почта",
+  "@allEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmailTrashAndSpam": "Вся почта, корзина и спам",
+  "@allEmailTrashAndSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseLabel": "Выбрать метку",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectLabel": "Выделить метку",
+  "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "Метки успешно добавлены к этим письмам.",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailHasSomeFailureMessage": "Метки успешно добавлены к некоторым письмам.",
+  "@addListLabelToListEmailHasSomeFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "Не удалось добавить метки",
+  "@addListLabelToListEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYet": "Меток еще нет",
+  "@noLabelsYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYetMessageDescriptions": "Создайте первую метку, чтобы письма было проще организовать.",
+  "@noLabelsYetMessageDescriptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createALabel": "Создать метку",
+  "@createALabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
