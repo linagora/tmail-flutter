@@ -97,8 +97,7 @@ ADB_WATCHDOG_PID=$!
 echo "Running Patrol tests..."
 flutter build apk --config-only --quiet
 patrol test \
-    --exclude-tags=web \
-    --hide-test-steps \
+    --tags=android \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \

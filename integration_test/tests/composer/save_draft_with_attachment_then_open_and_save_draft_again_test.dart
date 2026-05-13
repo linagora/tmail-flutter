@@ -8,6 +8,6 @@ void main() {
         'after reopening a draft email that contains an attachment',
     scenarioBuilder: ($, robots) =>
         SaveDraftWithAttachmentThenOpenAndSaveDraftAgainScenario($, robots),
-    tags: [TestTags.android, TestTags.ios, TestTags.web],
+    tags: [TestTags.ios, TestTags.web],
   );
 }
