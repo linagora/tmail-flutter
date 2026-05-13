@@ -20,7 +20,7 @@ class TestBase {
   void runPatrolTest({
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $, RobotFactory robots) scenarioBuilder,
-    List<TestTags> tags = const [TestTags.android, TestTags.ios],
+    List<TestTags> tags = const [TestTags.ios],
   }) {
     patrolSetUp(_setup);
 

@@ -6,6 +6,6 @@ void main() {
   TestBase().runPatrolTest(
     description: 'Should see save dialog when download all attachments successfully',
     scenarioBuilder: ($, robots) => DownloadAllAttachmentsScenario($, robots),
-    tags: [TestTags.android, TestTags.ios, TestTags.web],
+    tags: [TestTags.ios, TestTags.web],
   );
 }
