@@ -41,10 +41,11 @@
   <script src="worker_service/worker_service.js"></script>
   <script src="i18n/translater.js"></script>
   <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-  <!-- Load Sentry SDK first (self-hosted bundle), then interceptor to block any subsequent CDN injection.
-       Order matters: the interceptor must activate after the SDK is ready so it can patch document.createElement. -->
-  <script src="js/sentry-tracing.min.js?v=1.0.0" integrity="sha384-SFODEb3T2QkMjTr3S1it5zIK0cIW7jsComFUkmJ9nU9uaWs3AzA6cubt8xn0zW7A" crossorigin="anonymous"></script>
-  <script src="js/sentry-interceptor.js?v=1.0.0" integrity="sha384-uThyomTT1K0+gzqsKuq4UoZXu3SABtbtP7Y3NXFyvabuIQPGYszSO41UBrcs5czI" crossorigin="anonymous"></script>
+  <!-- Load self-hosted Sentry SDK first, then the interceptor that blocks any subsequent
+       CDN injection attempted by sentry_flutter at runtime. Order matters: interceptor
+       must activate after the SDK bundle so window.Sentry is already populated. -->
+  <script src="js/sentry-tracing.min.js?v=1.0.0"></script>
+  <script src="js/sentry-interceptor.js?v=1.0.1"></script>
 </head>
 <body>
 
