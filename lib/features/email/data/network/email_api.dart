@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/reference_path_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
@@ -473,10 +474,12 @@ class EmailAPI
     Email email,
     {
       CreateNewMailboxRequest? createNewMailboxRequest,
+      Properties? getEmailProperties,
       CancelToken? cancelToken
     }
   ) async {
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     MailboxId? mailboxId;
     if (createNewMailboxRequest != null) {
@@ -508,6 +511,20 @@ class EmailAPI
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    RequestInvocation? getEmailInvocation;
+    if (getEmailProperties != null) {
+      final getEmailMethod = GetEmailMethod(accountId)
+        ..addReferenceIds(
+            processingInvocation.createResultReference(
+              setEmailInvocation.methodCallId,
+              emailSetCreatedIdsRef,
+            )
+        )
+        ..addProperties(getEmailProperties);
+
+      getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+    }
+
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
@@ -524,11 +541,22 @@ class EmailAPI
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
     final mapErrors = handleSetResponse([setEmailResponse]);
 
-    if (emailCreated != null && mapErrors.isEmpty) {
-      return emailCreated;
-    } else {
+    if (emailCreated == null || mapErrors.isNotEmpty) {
       throw SetMethodException(mapErrors);
     }
+
+    if (getEmailInvocation == null) return emailCreated;
+
+    final getEmailResponse = response.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize,
+    );
+
+    final fetchedEmail = getEmailResponse?.list.firstOrNull;
+    if (fetchedEmail == null) {
+      logWarning('EmailAPI::_emailSetCreateMethod: Email/get returned no result; attachment data unavailable');
+    }
+    return fetchedEmail ?? emailCreated;
   }
 
   Future<bool> _emailSetDestroyMethod(
@@ -571,7 +599,13 @@ class EmailAPI
     AccountId accountId,
     Email email,
     {CancelToken? cancelToken}
-  ) => _emailSetCreateMethod(session, accountId, email, cancelToken: cancelToken);
+  ) => _emailSetCreateMethod(
+    session,
+    accountId,
+    email,
+    cancelToken: cancelToken,
+    getEmailProperties: ThreadConstants.propertiesSaveDraftEmails,
+  );
 
   Future<bool> removeEmailDrafts(
     Session session,

@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
@@ -81,28 +82,36 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     }) draftPayload,
     CancelToken? cancelToken,
   }) async* {
-    yield dartz.Right<Failure, Success>(SaveEmailAsDraftsLoading());
+    try {
+      yield dartz.Right<Failure, Success>(SaveEmailAsDraftsLoading());
 
-    final emailDraftSaved = await _emailRepository.saveEmailAsDrafts(
-      draftPayload.session,
-      draftPayload.accountId,
-      draftPayload.email,
-      cancelToken: cancelToken,
-    );
-
-    final newEmailId = emailDraftSaved.id;
-
-    if (newEmailId == null) {
-      yield dartz.Left<Failure, Success>(
-        SaveEmailAsDraftsFailure(NotFoundEmailIdException()),
+      final emailDraftSaved = await _emailRepository.saveEmailAsDrafts(
+        draftPayload.session,
+        draftPayload.accountId,
+        draftPayload.email,
+        cancelToken: cancelToken,
       );
-    } else {
-      yield dartz.Right<Failure, Success>(
-        SaveEmailAsDraftsSuccess(
-          newEmailId,
-          draftPayload.draftsMailboxId,
-        ),
+
+      final newEmailId = emailDraftSaved.id;
+
+      if (newEmailId == null) {
+        yield dartz.Left<Failure, Success>(
+          SaveEmailAsDraftsFailure(NotFoundEmailIdException()),
+        );
+      } else {
+        yield dartz.Right<Failure, Success>(
+          SaveEmailAsDraftsSuccess(
+            newEmailId,
+            draftPayload.draftsMailboxId,
+          ),
+        );
+      }
+    } catch (e, st) {
+      logError(
+        'CreateNewAndSaveEmailToDraftsInteractor::_saveEmailAsDrafts: exception=${e.runtimeType}',
+        stackTrace: st,
       );
+      yield* _handleFailure(exception: e, isSaveDraft: true);
     }
   }
 
@@ -116,35 +125,38 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     required EmailId draftsEmailId,
     CancelToken? cancelToken,
   }) async* {
-    yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
+    try {
+      yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
 
-    final emailDraftSaved = await _emailRepository.updateEmailDrafts(
-      draftPayload.session,
-      draftPayload.accountId,
-      draftPayload.email,
-      draftsEmailId,
-      cancelToken: cancelToken,
-    );
+      final emailDraftSaved = await _emailRepository.updateEmailDrafts(
+        draftPayload.session,
+        draftPayload.accountId,
+        draftPayload.email,
+        draftsEmailId,
+        cancelToken: cancelToken,
+      );
 
-    final newEmailId = emailDraftSaved.id;
-    final newBlobId = emailDraftSaved.blobId;
+      final newEmailId = emailDraftSaved.id;
 
-    if (newEmailId == null) {
-      yield dartz.Left<Failure, Success>(
-        UpdateEmailDraftsFailure(NotFoundEmailIdException()),
+      if (newEmailId == null) {
+        yield dartz.Left<Failure, Success>(
+          UpdateEmailDraftsFailure(NotFoundEmailIdException()),
+        );
+      } else {
+        yield dartz.Right<Failure, Success>(
+          UpdateEmailDraftsSuccess(
+            emailId: newEmailId,
+            attachments: emailDraftSaved.allAttachments,
+            htmlBodyAttachments: emailDraftSaved.htmlBodyAttachments,
+          ),
+        );
+      }
+    } catch (e, st) {
+      logError(
+        'CreateNewAndSaveEmailToDraftsInteractor::_updateDraftsEmail: exception=${e.runtimeType}',
+        stackTrace: st,
       );
-    } else if (newBlobId == null) {
-      yield dartz.Left<Failure, Success>(
-        UpdateEmailDraftsFailure(NotFoundEmailBlobIdException()),
-      );
-    } else {
-      yield dartz.Right<Failure, Success>(
-        UpdateEmailDraftsSuccess(
-          emailId: emailDraftSaved.id!,
-          oldBlobId: draftsEmailId.id,
-          newBlobId: emailDraftSaved.blobId!,
-        ),
-      );
+      yield* _handleFailure(exception: e, isSaveDraft: false);
     }
   }
 

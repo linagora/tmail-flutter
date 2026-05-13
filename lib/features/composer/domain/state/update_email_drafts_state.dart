@@ -1,29 +1,24 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/attachment.dart';
 
 class UpdatingEmailDrafts extends LoadingState {}
 
-/// Represents successful update of an email draft.
-/// Contains the email ID along with the old and new blob IDs
-/// to track the attachment/content changes.
 class UpdateEmailDraftsSuccess extends UIState {
 
   final EmailId emailId;
-  /// The blob ID before the update
-  final Id oldBlobId;
-  /// The blob ID after the update
-  final Id newBlobId;
+  final List<Attachment> attachments;
+  final List<Attachment> htmlBodyAttachments;
 
   UpdateEmailDraftsSuccess({
     required this.emailId,
-    required this.oldBlobId,
-    required this.newBlobId,
+    required this.attachments,
+    this.htmlBodyAttachments = const [],
   });
 
   @override
-  List<Object?> get props => [emailId, oldBlobId, newBlobId, ...super.props];
+  List<Object?> get props => [emailId, attachments, htmlBodyAttachments, ...super.props];
 }
 
 class UpdateEmailDraftsFailure extends FeatureFailure {

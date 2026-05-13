@@ -6,17 +6,19 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state_list.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 
 void main() {
-  group('UploadFileStateList::refreshBlobId', () {
+  group('UploadFileStateList', () {
     late UploadFileStateList uploadFileStateList;
 
-    Attachment createAttachment(String blobId) {
+    Attachment createAttachment(String blobId, {String? cid}) {
       return Attachment(
         blobId: Id(blobId),
         name: 'file.png',
         size: UnsignedInt(100),
         type: MediaType('image', 'png'),
+        cid: cid,
       );
     }
 
@@ -26,224 +28,136 @@ void main() {
     }) {
       return UploadFileState(
         UploadTaskId(uploadTaskId),
+        uploadStatus: UploadFileStatus.succeed,
         attachment: createAttachment(blobId),
       );
+    }
+
+    void populateWithTwoItems() {
+      uploadFileStateList.addAll([
+        createUploadFileState(uploadTaskId: 'task-1', blobId: 'blob-1'),
+        createUploadFileState(uploadTaskId: 'task-2', blobId: 'blob-2'),
+      ]);
     }
 
     setUp(() {
       uploadFileStateList = UploadFileStateList();
     });
 
-    test(
-      'should replace matching blobId',
-      () {
-        uploadFileStateList.add(
-          createUploadFileState(
-            uploadTaskId: 'task-1',
-            blobId: 'draft-123_5',
-          ),
-        );
+    group('add / addAll', () {
+      test('should contain added element', () {
+        uploadFileStateList.add(createUploadFileState(
+          uploadTaskId: 'task-1',
+          blobId: 'blob-1',
+        ));
 
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
-
-        final updatedState = uploadFileStateList.uploadingStateFiles.first;
-
+        expect(uploadFileStateList.uploadingStateFiles, hasLength(1));
         expect(
-          updatedState?.attachment?.blobId?.value,
-          'email-999_5',
+          uploadFileStateList.uploadingStateFiles.first?.attachment?.blobId?.value,
+          'blob-1',
         );
-      },
-    );
+      });
 
-    test(
-      'should update all matching blobIds',
-      () {
-        uploadFileStateList.addAll([
-          createUploadFileState(
-            uploadTaskId: 'task-1',
-            blobId: 'draft-123_1',
-          ),
-          createUploadFileState(
-            uploadTaskId: 'task-2',
-            blobId: 'draft-123_2',
-          ),
-        ]);
+      test('should contain all added elements', () {
+        populateWithTwoItems();
 
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
+        expect(uploadFileStateList.uploadingStateFiles, hasLength(2));
+      });
+    });
+
+    group('clear', () {
+      test('should be empty after clear', () {
+        populateWithTwoItems();
+
+        uploadFileStateList.clear();
+
+        expect(uploadFileStateList.uploadingStateFiles, isEmpty);
+      });
+    });
+
+    group('updateElementByUploadTaskId', () {
+      late UploadFileState? Function(UploadFileState?) updater;
+
+      setUp(() {
+        uploadFileStateList.add(createUploadFileState(
+          uploadTaskId: 'task-1',
+          blobId: 'blob-1',
+        ));
+        updater = (state) => state?.copyWith(
+          attachment: createAttachment('blob-updated'),
         );
+      });
 
-        final states = uploadFileStateList.uploadingStateFiles;
-
+      void actAndAssert({
+        required String taskId,
+        required String expectedBlobId,
+      }) {
+        uploadFileStateList.updateElementByUploadTaskId(
+          UploadTaskId(taskId),
+          updater,
+        );
         expect(
-          states[0]?.attachment?.blobId?.value,
-          'email-999_1',
+          uploadFileStateList.uploadingStateFiles.first?.attachment?.blobId?.value,
+          expectedBlobId,
         );
+      }
 
+      test('should update element matching the given upload task id', () {
+        actAndAssert(taskId: 'task-1', expectedBlobId: 'blob-updated');
+      });
+
+      test('should not update element when task id does not match', () {
+        actAndAssert(taskId: 'task-2', expectedBlobId: 'blob-1');
+      });
+    });
+
+    group('deleteElementByUploadTaskId', () {
+      test('should remove element with matching task id', () {
+        populateWithTwoItems();
+
+        uploadFileStateList.deleteElementByUploadTaskId(const UploadTaskId('task-1'));
+
+        expect(uploadFileStateList.uploadingStateFiles, hasLength(1));
         expect(
-          states[1]?.attachment?.blobId?.value,
-          'email-999_2',
+          uploadFileStateList.uploadingStateFiles.first?.attachment?.blobId?.value,
+          'blob-2',
         );
-      },
-    );
+      });
+    });
 
-    test(
-      'should not update non matching blobId',
-      () {
-        uploadFileStateList.add(
-          createUploadFileState(
-            uploadTaskId: 'task-1',
-            blobId: 'another-blob_1',
-          ),
-        );
+    group('allSuccess', () {
+      test('should return true when all elements have succeed status', () {
+        populateWithTwoItems();
 
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
+        expect(uploadFileStateList.allSuccess, isTrue);
+      });
 
-        final state = uploadFileStateList.uploadingStateFiles.first;
+      test('should return false when list is empty', () {
+        expect(uploadFileStateList.allSuccess, isFalse);
+      });
 
-        expect(
-          state?.attachment?.blobId?.value,
-          'another-blob_1',
-        );
-      },
-    );
-
-    test(
-      'should skip upload file when attachment is null',
-      () {
-        uploadFileStateList.add(
-          UploadFileState(
-            const UploadTaskId('task-1'),
-          ),
-        );
-
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
-
-        final state = uploadFileStateList.uploadingStateFiles.first;
-
-        expect(state?.attachment, isNull);
-      },
-    );
-
-    test(
-      'should skip upload file when blobId is null',
-      () {
-        final attachment = Attachment(
-          name: 'file.png',
-          size: UnsignedInt(100),
-          type: MediaType('image', 'png'),
-        );
-
-        uploadFileStateList.add(
-          UploadFileState(
-            const UploadTaskId('task-1'),
-            attachment: attachment,
-          ),
-        );
-
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
-
-        final state = uploadFileStateList.uploadingStateFiles.first;
-
-        expect(
-          state?.attachment?.blobId,
-          isNull,
-        );
-      },
-    );
-
-    test(
-      'should skip null upload file state',
-      () {
-        uploadFileStateList.addAll([
-          createUploadFileState(
-            uploadTaskId: 'task-1',
-            blobId: 'draft-123_1',
-          ),
-        ]);
-
+      test('should return false when list contains a null element', () {
         uploadFileStateList.addNullableForTest(null);
 
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
+        expect(uploadFileStateList.allSuccess, isFalse);
+      });
+    });
 
-        final states = uploadFileStateList.uploadingStateFiles;
+    group('getUploadFileStateById', () {
+      setUp(() => populateWithTwoItems());
 
-        expect(
-          states.first?.attachment?.blobId?.value,
-          'email-999_1',
-        );
-      },
-    );
+      test('should return state matching the given task id', () {
+        final result = uploadFileStateList.getUploadFileStateById(const UploadTaskId('task-1'));
 
-    test(
-      'should keep other attachment properties after updating blobId',
-      () {
-        final attachment = Attachment(
-          blobId: Id('draft-123_1'),
-          name: 'image.png',
-          size: UnsignedInt(500),
-          type: MediaType('image', 'png'),
-          cid: 'cid-123',
-        );
+        expect(result, isNotNull);
+        expect(result?.attachment?.blobId?.value, 'blob-1');
+      });
 
-        uploadFileStateList.add(
-          UploadFileState(
-            const UploadTaskId('task-1'),
-            attachment: attachment,
-          ),
-        );
+      test('should return null when task id does not match any element', () {
+        final result = uploadFileStateList.getUploadFileStateById(const UploadTaskId('task-99'));
 
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
-
-        final updatedAttachment =
-            uploadFileStateList.uploadingStateFiles.first?.attachment;
-
-        expect(
-          updatedAttachment?.blobId?.value,
-          'email-999_1',
-        );
-
-        expect(updatedAttachment?.name, 'image.png');
-        expect(updatedAttachment?.size?.value, 500);
-        expect(updatedAttachment?.cid, 'cid-123');
-
-        expect(updatedAttachment?.type?.type, 'image');
-        expect(updatedAttachment?.type?.subtype, 'png');
-      },
-    );
-
-    test(
-      'should do nothing when list is empty',
-      () {
-        uploadFileStateList.refreshBlobId(
-          oldBlobId: Id('draft-123'),
-          newBlobId: Id('email-999'),
-        );
-
-        expect(
-          uploadFileStateList.uploadingStateFiles,
-          isEmpty,
-        );
-      },
-    );
+        expect(result, isNull);
+      });
+    });
   });
 }

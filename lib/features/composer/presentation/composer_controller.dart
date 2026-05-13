@@ -1358,10 +1358,7 @@ class ComposerController extends BaseController
       _saveToDraftButtonState = ButtonState.enabled;
       emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
-      autoRefreshAllBlobIdAttachmentsFromDraft(
-        oldBlobId: resultState.oldBlobId,
-        newBlobId: resultState.newBlobId,
-      );
+      autoRefreshAllAttachmentsFromDraft(resultState.attachments, resultState.htmlBodyAttachments);
       _updateSavedEmailDraftHash();
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {

@@ -1,5 +1,4 @@
 
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
@@ -35,18 +34,5 @@ extension AttachmentExtension on Attachment {
     return (noCid() || !isDispositionInlined()) &&
       !isApplicationRTFInlined() &&
       !htmlBodyAttachments.include(this);
-  }
-
-  Attachment withBlobId(Id newBlobId) {
-    return Attachment(
-      partId: partId,
-      blobId: newBlobId,
-      size: size,
-      name: name,
-      type: type,
-      cid: cid,
-      disposition: disposition,
-      charset: charset,
-    );
   }
 }

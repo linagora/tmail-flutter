@@ -10,10 +10,10 @@ import 'package:dio/dio.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/attachment_extension.dart';
+import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -474,52 +474,31 @@ class UploadController extends BaseController {
     ...inlineAttachmentsUploaded,
   ];
 
-  bool refreshAllBlobIdForAttachments({
-    required Id oldBlobId,
-    required Id newBlobId,
-  }) {
-    final regularSuccess = _refreshBlobIdForAttachments(
-      oldBlobId: oldBlobId,
-      newBlobId: newBlobId,
-      isInline: false,
-    );
-    final inlineSuccess = _refreshBlobIdForAttachments(
-      oldBlobId: oldBlobId,
-      newBlobId: newBlobId,
-      isInline: true,
-    );
-    log('UploadController::refreshAllBlobIdForAttachments(): regularSuccess = $regularSuccess | inlineSuccess = $inlineSuccess');
-    return regularSuccess || inlineSuccess;
+  void refreshAllAttachmentsFromDraft(
+    List<Attachment> attachments,
+    List<Attachment> htmlBodyAttachments,
+  ) {
+    final regularAttachments = attachments.getListAttachmentsDisplayedOutside(htmlBodyAttachments);
+    final inlineAttachments = attachments.listAttachmentsDisplayedInContent;
+
+    _uploadingStateFiles.clear();
+    _uploadingStateFiles.addAll(_toUploadFileStates(regularAttachments));
+
+    _uploadingStateInlineFiles.clear();
+    _uploadingStateInlineFiles.addAll(_toUploadFileStates(inlineAttachments));
+
+    _refreshListUploadAttachmentState();
+    log('UploadController::refreshAllAttachmentsFromDraft(): regular=${regularAttachments.length} | inline=${inlineAttachments.length}');
   }
 
-  bool _refreshBlobIdForAttachments({
-    required Id oldBlobId,
-    required Id newBlobId,
-    required bool isInline,
-  }) {
-    try {
-      final stateList =
-          isInline ? _uploadingStateInlineFiles : _uploadingStateFiles;
-
-      stateList.refreshBlobId(
-        oldBlobId: oldBlobId,
-        newBlobId: newBlobId,
-      );
-
-      if (!isInline) {
-        _refreshListUploadAttachmentState();
-      }
-
-      return true;
-    } catch (e, st) {
-      logError(
-        'UploadController::_refreshBlobIdForAttachments: Exception: $e',
-        exception: e,
-        stackTrace: st,
-      );
-      return false;
-    }
-  }
+  Iterable<UploadFileState> _toUploadFileStates(List<Attachment> attachments) =>
+    attachments
+      .where((a) => a.blobId != null)
+      .map((a) => UploadFileState(
+        UploadTaskId(a.blobId!.value),
+        uploadStatus: UploadFileStatus.succeed,
+        attachment: a,
+      ));
 
   void _handleUploadAttachmentFailure(UploadAttachmentFailure failure) {
     if (currentContext != null && currentOverlayContext != null) {
