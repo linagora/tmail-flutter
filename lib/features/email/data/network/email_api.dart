@@ -58,7 +58,6 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
-import 'package:tmail_ui_user/features/email/domain/extensions/reference_path_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
@@ -66,6 +65,7 @@ import 'package:tmail_ui_user/features/download/domain/state/download_attachment
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -84,6 +84,41 @@ class EmailAPI
   final Uuid _uuid;
 
   EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
+
+  Future<Email> getEmailMetadata(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    Properties properties,
+  ) async {
+    final processingInvocation = ProcessingInvocation();
+    final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds({emailId.id})
+      ..addProperties(properties);
+
+    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+    final capabilities = getEmailMethod.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (jmapRequestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final resultList = result.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize,
+    );
+
+    if (resultList?.list.isNotEmpty == true) {
+      return resultList!.list.first;
+    } else {
+      throw NotFoundEmailException();
+    }
+  }
 
   Future<Email> getEmailContent(
     Session session,
@@ -474,12 +509,10 @@ class EmailAPI
     Email email,
     {
       CreateNewMailboxRequest? createNewMailboxRequest,
-      Properties? getEmailProperties,
       CancelToken? cancelToken
     }
   ) async {
-    final processingInvocation = ProcessingInvocation();
-    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     MailboxId? mailboxId;
     if (createNewMailboxRequest != null) {
@@ -511,20 +544,6 @@ class EmailAPI
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
-    RequestInvocation? getEmailInvocation;
-    if (getEmailProperties != null) {
-      final getEmailMethod = GetEmailMethod(accountId)
-        ..addReferenceIds(
-            processingInvocation.createResultReference(
-              setEmailInvocation.methodCallId,
-              emailSetCreatedIdsRef,
-            )
-        )
-        ..addProperties(getEmailProperties);
-
-      getEmailInvocation = requestBuilder.invocation(getEmailMethod);
-    }
-
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
@@ -545,18 +564,7 @@ class EmailAPI
       throw SetMethodException(mapErrors);
     }
 
-    if (getEmailInvocation == null) return emailCreated;
-
-    final getEmailResponse = response.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize,
-    );
-
-    final fetchedEmail = getEmailResponse?.list.firstOrNull;
-    if (fetchedEmail == null) {
-      logWarning('EmailAPI::_emailSetCreateMethod: Email/get returned no result; attachment data unavailable');
-    }
-    return fetchedEmail ?? emailCreated;
+    return emailCreated;
   }
 
   Future<bool> _emailSetDestroyMethod(
@@ -604,7 +612,6 @@ class EmailAPI
     accountId,
     email,
     cancelToken: cancelToken,
-    getEmailProperties: ThreadConstants.propertiesSaveDraftEmails,
   );
 
   Future<bool> removeEmailDrafts(
@@ -628,6 +635,9 @@ class EmailAPI
       cancelToken: cancelToken
     );
 
+    final emailId = emailCreated.id;
+    if (emailId == null) throw NotFoundEmailIdException();
+
     try {
       await removeEmailDrafts(
         session,
@@ -636,7 +646,20 @@ class EmailAPI
         cancelToken: cancelToken
       );
     } catch (e) {
-      logWarning('EmailAPI::updateEmailDrafts: Exception = $e');
+      logWarning('EmailAPI::updateEmailDrafts: removeEmailDrafts throw exception = $e');
+    }
+
+    try {
+      final email = await getEmailMetadata(
+        session,
+        accountId,
+        emailId,
+        ThreadConstants.propertiesComposerEmailFetch,
+      );
+
+      return email;
+    } catch (e) {
+      logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
     }
 
     return emailCreated;
@@ -648,9 +671,15 @@ class EmailAPI
     Email email,
     {
       CreateNewMailboxRequest? createNewMailboxRequest,
-      CancelToken? cancelToken
+      CancelToken? cancelToken,
     }
-  ) => _emailSetCreateMethod(session, accountId, email, createNewMailboxRequest: createNewMailboxRequest, cancelToken: cancelToken);
+  ) => _emailSetCreateMethod(
+    session,
+    accountId,
+    email,
+    createNewMailboxRequest: createNewMailboxRequest,
+    cancelToken: cancelToken,
+  );
 
   Future<bool> removeEmailTemplate(
     Session session,
@@ -670,8 +699,11 @@ class EmailAPI
       session,
       accountId,
       newEmail,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
     );
+
+    final emailId = emailCreated.id;
+    if (emailId == null) throw NotFoundEmailIdException();
 
     try {
       await removeEmailTemplate(
@@ -681,8 +713,22 @@ class EmailAPI
         cancelToken: cancelToken
       );
     } catch (e) {
-      logWarning('EmailAPI::updateEmailTemplate: Exception = $e');
+      logWarning('EmailAPI::updateEmailTemplate: removeEmailTemplate throw exception = $e');
     }
+
+    try {
+      final email = await getEmailMetadata(
+        session,
+        accountId,
+        emailId,
+        ThreadConstants.propertiesComposerEmailFetch,
+      );
+
+      return email;
+    } catch (e) {
+      logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
+    }
+
 
     return emailCreated;
   }

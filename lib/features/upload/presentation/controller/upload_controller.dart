@@ -474,7 +474,7 @@ class UploadController extends BaseController {
     ...inlineAttachmentsUploaded,
   ];
 
-  void refreshAllAttachmentsFromDraft(
+  void refreshAllAttachments(
     List<Attachment> attachments,
     List<Attachment> htmlBodyAttachments,
   ) {
@@ -488,7 +488,7 @@ class UploadController extends BaseController {
     _uploadingStateInlineFiles.addAll(_toUploadFileStates(inlineAttachments));
 
     _refreshListUploadAttachmentState();
-    log('UploadController::refreshAllAttachmentsFromDraft(): regular=${regularAttachments.length} | inline=${inlineAttachments.length}');
+    log('UploadController::refreshAllAttachments(): regular=${regularAttachments.length} | inline=${inlineAttachments.length}');
   }
 
   Iterable<UploadFileState> _toUploadFileStates(List<Attachment> attachments) =>

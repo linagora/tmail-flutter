@@ -98,7 +98,7 @@ class ThreadConstants {
     EmailProperty.references,
   });
 
-  static final propertiesSaveDraftEmails = Properties({
+  static final propertiesComposerEmailFetch = Properties({
     EmailProperty.id,
     EmailProperty.blobId,
     EmailProperty.threadId,

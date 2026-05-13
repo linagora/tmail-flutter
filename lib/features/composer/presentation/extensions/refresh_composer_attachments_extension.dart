@@ -3,8 +3,8 @@ import 'package:model/email/attachment.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 
-extension HandleRefreshAllAttachmentsFromDraft on ComposerController {
-  void autoRefreshAllAttachmentsFromDraft(
+extension RefreshComposerAttachmentsExtension on ComposerController {
+  void autoRefreshAllAttachments(
     List<Attachment> attachments,
     List<Attachment> htmlBodyAttachments,
   ) {
@@ -18,11 +18,11 @@ extension HandleRefreshAllAttachmentsFromDraft on ComposerController {
         inlineAttachments.isEmpty &&
         (initialAttachments.isNotEmpty ||
             uploadController.inlineAttachmentsUploaded.isNotEmpty)) {
-      log('HandleRefreshAllAttachmentsFromDraft::autoRefreshAllAttachmentsFromDraft: skipping — empty server response with non-empty composer state');
+      log('RefreshComposerAttachmentsExtension::autoRefreshAllAttachments: skipping — empty server response with non-empty composer state');
       return;
     }
 
     initialAttachments = regularAttachments;
-    uploadController.refreshAllAttachmentsFromDraft(attachments, htmlBodyAttachments);
+    uploadController.refreshAllAttachments(attachments, htmlBodyAttachments);
   }
 }
