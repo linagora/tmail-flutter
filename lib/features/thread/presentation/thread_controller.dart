@@ -702,14 +702,13 @@ class ThreadController extends BaseController with EmailActionController {
   void getAllEmailAction({
     bool getLatestChanges = true,
     bool forceEmailQuery = false,
-    UnsignedInt? limit,
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
-        limit: limit ?? ThreadConstants.defaultLimit,
+        limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: getEmailFilterForLoadMailbox(),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
