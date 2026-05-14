@@ -8,22 +8,19 @@ extension RefreshComposerAttachmentsExtension on ComposerController {
     List<Attachment> attachments,
     List<Attachment> htmlBodyAttachments,
   ) {
-    final regularAttachments = attachments.getListAttachmentsDisplayedOutside(htmlBodyAttachments);
-    final inlineAttachments = attachments.listAttachmentsDisplayedInContent;
     // If server returned no attachments but the composer still shows attachments,
     // Email/get likely fell back to the Set response which lacks attachment data.
     // Skip the refresh to avoid clearing the UI.
     // Use current upload state (not initialAttachments) so removing all attachments
     // before saving correctly updates initialAttachments to empty.
-    if (regularAttachments.isEmpty &&
-        inlineAttachments.isEmpty &&
+    if (attachments.isEmpty &&
         (uploadController.attachmentsUploaded.isNotEmpty ||
             uploadController.inlineAttachmentsUploaded.isNotEmpty)) {
       log('RefreshComposerAttachmentsExtension::autoRefreshAllAttachments: skipping — empty server response with non-empty composer state');
       return;
     }
 
-    initialAttachments = regularAttachments;
+    initialAttachments = attachments.getListAttachmentsDisplayedOutside(htmlBodyAttachments);
     uploadController.refreshAllAttachments(attachments, htmlBodyAttachments);
   }
 }

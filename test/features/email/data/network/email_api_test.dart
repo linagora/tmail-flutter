@@ -4,6 +4,7 @@ import 'package:core/data/network/download/download_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
@@ -13,6 +14,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:uuid/uuid.dart';
@@ -1130,6 +1132,68 @@ void main() {
         )).called(countIterations);
         expect(result.emailIdsSuccess.length, totalEmails);
         expect(result.mapErrors.isEmpty, isTrue);
+      });
+    });
+
+    group('getEmailMetadata:', () {
+      final emailId = EmailId(Id('email-id-123'));
+      final properties = Properties({'id'});
+
+      void stubHttpResponse(List<Map<String, dynamic>> emailList) {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          'sessionState': 'some-state',
+          'methodResponses': [
+            [
+              'Email/get',
+              {
+                'accountId': AccountFixtures.aliceAccountId.asString,
+                'state': 'email-state',
+                'list': emailList,
+                'notFound': [],
+              },
+              'c0',
+            ]
+          ]
+        });
+      }
+
+      test(
+        'SHOULD return first email in the list '
+        'WHEN server response contains the requested email',
+      () async {
+        stubHttpResponse([
+          {'id': 'email-id-123'},
+        ]);
+
+        final result = await emailApi.getEmailMetadata(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          emailId,
+          properties,
+        );
+
+        expect(result.id, emailId);
+      });
+
+      test(
+        'SHOULD throw NotFoundEmailException '
+        'WHEN server response returns an empty list',
+      () async {
+        stubHttpResponse([]);
+
+        await expectLater(
+          emailApi.getEmailMetadata(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailId,
+            properties,
+          ),
+          throwsA(isA<NotFoundEmailException>()),
+        );
       });
     });
   });

@@ -7,7 +7,6 @@ class UiKeys {
   static const String toggleAppGridButton = 'toggleAppGridButton';
   static const String closeComposerButton = 'closeComposerButton';
   static const String saveDraftButton = 'saveDraftButton';
-  static const String saveTemplateButton = 'saveTemplateButton';
   static const String saveTemplatePopupItem = 'saveAsTemplatePopupItem';
   // Keep snake_case values — existing widgets and tests already reference these key names.
   static const String composerMoreButton = 'composer_more_button';

@@ -630,39 +630,18 @@ class EmailAPI
       session,
       accountId,
       newEmail,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
     );
-
-    final emailId = emailCreated.id;
-    if (emailId == null) throw NotFoundEmailIdException();
-
-    try {
-      await removeEmailDrafts(
-        session,
-        accountId,
-        oldEmailId,
-        cancelToken: cancelToken
-      );
-    } catch (e) {
-      logWarning('EmailAPI::updateEmailDrafts: removeEmailDrafts throw exception = $e');
-    }
-
-    if (!isUpdateDraftToClose) {
-      try {
-        final email = await getEmailMetadata(
-          session,
-          accountId,
-          emailId,
-          ThreadConstants.propertiesComposerEmailFetch,
-        );
-
-        return email;
-      } catch (e) {
-        logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
-      }
-    }
-
-    return emailCreated;
+    return _postSaveEmailProcessing(
+      savedEmail: emailCreated,
+      removeOldEmail: () => removeEmailDrafts(
+        session, accountId, oldEmailId, cancelToken: cancelToken,
+      ),
+      callerTag: 'EmailAPI::updateEmailDrafts',
+      session: session,
+      accountId: accountId,
+      skipMetadataFetch: isUpdateDraftToClose,
+    );
   }
 
   Future<Email> saveEmailAsTemplate(
@@ -693,37 +672,50 @@ class EmailAPI
       session,
       accountId,
       newEmail,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
     );
+    return _postSaveEmailProcessing(
+      savedEmail: emailCreated,
+      removeOldEmail: () => removeEmailTemplate(
+        session, accountId, oldEmailId, cancelToken: cancelToken,
+      ),
+      callerTag: 'EmailAPI::updateEmailTemplate',
+      session: session,
+      accountId: accountId,
+    );
+  }
 
-    final emailId = emailCreated.id;
+  Future<Email> _postSaveEmailProcessing({
+    required Email savedEmail,
+    required Future<void> Function() removeOldEmail,
+    required String callerTag,
+    required Session session,
+    required AccountId accountId,
+    bool skipMetadataFetch = false,
+  }) async {
+    final emailId = savedEmail.id;
     if (emailId == null) throw NotFoundEmailIdException();
 
     try {
-      await removeEmailTemplate(
-        session,
-        accountId,
-        oldEmailId,
-        cancelToken: cancelToken
-      );
+      await removeOldEmail();
     } catch (e) {
-      logWarning('EmailAPI::updateEmailTemplate: removeEmailTemplate throw exception = $e');
+      logWarning('$callerTag: remove old email exception = $e');
     }
 
-    try {
-      final email = await getEmailMetadata(
-        session,
-        accountId,
-        emailId,
-        ThreadConstants.propertiesComposerEmailFetch,
-      );
-
-      return email;
-    } catch (e) {
-      logWarning('EmailAPI::updateEmailTemplate: getEmailMetadata throw exception = $e');
+    if (!skipMetadataFetch) {
+      try {
+        return await getEmailMetadata(
+          session,
+          accountId,
+          emailId,
+          ThreadConstants.propertiesComposerEmailFetch,
+        );
+      } catch (e) {
+        logWarning('$callerTag: getEmailMetadata exception = $e');
+      }
     }
 
-    return emailCreated;
+    return savedEmail;
   }
 
   Future<({

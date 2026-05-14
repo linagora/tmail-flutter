@@ -167,15 +167,15 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     required Object? exception,
     required bool isCreatingNewDraft,
   }) async* {
-    if (exception is UnknownRemoteException &&
-        exception.error is List<SavingEmailToDraftsCanceledException>) {
-      exception = SavingEmailToDraftsCanceledException();
-    }
+    final resolvedEx = (exception is UnknownRemoteException &&
+        exception.error is List<SavingEmailToDraftsCanceledException>)
+        ? SavingEmailToDraftsCanceledException()
+        : exception;
 
     yield dartz.Left<Failure, Success>(
       isCreatingNewDraft
-          ? SaveEmailAsDraftsFailure(exception)
-          : UpdateEmailDraftsFailure(exception),
+          ? SaveEmailAsDraftsFailure(resolvedEx)
+          : UpdateEmailDraftsFailure(resolvedEx),
     );
   }
 

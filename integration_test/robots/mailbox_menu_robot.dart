@@ -187,4 +187,9 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await $(mailboxName).tap();
     await $.pumpAndTrySettle();
   }
+
+  @override
+  Future<void> pullToRefresh() async {
+    await $.platformAutomator.mobile.pullToRefresh();
+  }
 }
