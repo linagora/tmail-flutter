@@ -65,8 +65,8 @@ _.d=g
 _.e=h
 _.f=i},
 cbi:function cbi(d){this.a=d},
-emF(d){var x,w,v,u,t,s,r,q,p="text/html"
-if(!(B.d.q(d,$.e6W())&&B.d.q(d,$.e6V())))return d
+emG(d){var x,w,v,u,t,s,r,q,p="text/html"
+if(!(B.d.q(d,$.e6X())&&B.d.q(d,$.e6W())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
@@ -80,7 +80,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.edZ(v)
+v=v==null?null:J.ee_(v)
 return v==null?d:v}},D
 J=c[1]
 A=c[0]
@@ -104,7 +104,7 @@ x=A.jz(x,"message",w.gbpM(),!1,y._)
 w.z!==$&&A.cB()
 w.z=x},
 bpN(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
-try{x=B.aw.h9(0,new A.VI([],[]).RC(d.data,!0))
+try{x=B.aw.h9(0,new A.VI([],[]).RB(d.data,!0))
 w=J.af(x,"view")
 t=n.d
 t===$&&A.d()
@@ -240,11 +240,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-aED(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dRv(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+aED(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dRw(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.emF(q)
+if(r.ch)q=C.emG(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -415,8 +415,8 @@ A.GD(b.typeUniverse,JSON.parse('{"Qp":{"ah":[],"k":[],"p":[]},"axw":{"ag":["Qp"]
 var y=(function rtii(){var x=A.aq
 return{v:x("Ip"),V:x("N<c7>"),s:x("N<h>"),p:x("N<k>"),w:x("oq"),_:x("xy"),P:x("b_"),t:x("bF<ap>"),O:x("b1<h>"),N:x("a9d<iz>"),y:x("B"),i:x("ap")}})();(function constants(){D.aYM=new A.b4(30,30,B.z9,null)
 D.aQd=new A.Y(B.cq,D.aYM,null)
-D.a7o=new A.e2(B.d6,null,null,D.aQd,null)
+D.a7o=new A.e3(B.d6,null,null,D.aQd,null)
 D.b2o=new A.an(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"feG","e6W",()=>A.b0("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"feF","e6V",()=>A.b0("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
-(a=>{a["N3SW1sR1HQMvE1BS0AU6l8C51Zs="]=a.current})($__dart_deferred_initializers__);
+x($,"feH","e6X",()=>A.b0("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"feG","e6W",()=>A.b0("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+(a=>{a["I2HB7L1e5baANPw5LEag5NM8PsA="]=a.current})($__dart_deferred_initializers__);
