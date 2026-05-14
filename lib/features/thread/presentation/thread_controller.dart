@@ -842,7 +842,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Future<Either<Failure, Success>> _refreshChangeListEmailCache() async {
+  Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
     final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
@@ -858,7 +858,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
-      collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+      collapseThreads: collapseThreads,
     ).last;
 
     refreshState.fold(
@@ -875,7 +875,9 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
-    final refreshViewState = await _refreshChangeListEmailCache();
+    final refreshViewState = await _refreshChangeListEmailCache(
+      collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+    );
 
     final refreshState = refreshViewState
         .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
