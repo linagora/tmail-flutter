@@ -226,7 +226,7 @@ class QuickSearchSuggestionListState<T, P, R>
     final queryString = widget.controller!.text.trim();
 
     setState(() {
-      _animationController!.forward(from: 1.0);
+      _animationController?.forward(from: 1.0);
       _isLoading = true;
     });
 
@@ -234,7 +234,7 @@ class QuickSearchSuggestionListState<T, P, R>
       final recentItems = await _getListRecent(queryString);
 
       setState(() {
-        _animationController!.forward(from: widget.animationStart);
+        _animationController?.forward(from: widget.animationStart);
         _isLoading = false;
         _suggestions = null;
         _recentItems = recentItems;
@@ -265,7 +265,7 @@ class QuickSearchSuggestionListState<T, P, R>
     setState(() {
       final animationStart =
           suggestions?.isNotEmpty == true ? widget.animationStart : 1.0;
-      _animationController!.forward(from: animationStart);
+      _animationController?.forward(from: animationStart);
       _isLoading = false;
       _suggestions = suggestions;
       _recentItems = recentItems;
@@ -275,7 +275,8 @@ class QuickSearchSuggestionListState<T, P, R>
 
   @override
   void dispose() {
-    _animationController!.dispose();
+    _animationController?.dispose();
+    _animationController = null;
     _deBouncerSuggestionStreamSubscriptions.cancel();
     _deBouncerSuggestion.cancel();
     super.dispose();
@@ -296,14 +297,25 @@ class QuickSearchSuggestionListState<T, P, R>
       child = createRecentWidget();
     }
 
-    final animationChild = widget.transitionBuilder != null
-        ? widget.transitionBuilder!(context, child, _animationController)
-        : SizeTransition(
-            axisAlignment: -1.0,
-            sizeFactor: CurvedAnimation(
-                parent: _animationController!, curve: Curves.fastOutSlowIn),
-            child: child,
-          );
+    Widget animationChild;
+    if (widget.transitionBuilder != null) {
+      animationChild = widget.transitionBuilder!(
+        context,
+        child,
+        _animationController,
+      );
+    } else if (_animationController != null) {
+      animationChild = SizeTransition(
+        axisAlignment: -1.0,
+        sizeFactor: CurvedAnimation(
+          parent: _animationController!,
+          curve: Curves.fastOutSlowIn,
+        ),
+        child: child,
+      );
+    } else {
+      animationChild = child;
+    }
 
     BoxConstraints constraints;
     if (widget.decoration!.constraints == null) {
