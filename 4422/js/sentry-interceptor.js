@@ -1,8 +1,10 @@
 (function() {
-  const originalCreateElement = document.createElement;
+  // Guard against double-execution (e.g. duplicate script tag, hot-reload).
+  // On a second load, nativeSrcDescriptor would resolve to our already-patched
+  // setter instead of the native one, causing infinite recursion.
+  if (window.__sentryInterceptorActive) return;
+  window.__sentryInterceptorActive = true;
 
-  // Only block the specific tracing bundle we self-host. Narrowing to this pathname
-  // prevents silently swallowing future CDN assets that have no local replacement.
   const BLOCKED_PATHNAME = '/bundle.tracing.min.js';
 
   function isSentryCdnHostname(hostname) {
@@ -13,71 +15,75 @@
     if (!urlString) return false;
     try {
       const parsed = new URL(urlString, document.baseURI);
-      const hostname = parsed.hostname.toLowerCase();
-      const pathname = parsed.pathname.toLowerCase();
-      return isSentryCdnHostname(hostname) && pathname.endsWith(BLOCKED_PATHNAME);
+      return isSentryCdnHostname(parsed.hostname.toLowerCase()) &&
+             parsed.pathname.toLowerCase().endsWith(BLOCKED_PATHNAME);
     } catch (e) {
-      // Fallback for non-parseable URLs: check if it looks like a plain hostname
-      // (no whitespace, no path/query/fragment separators).
-      const str = String(urlString).trim().toLowerCase();
-      const isHostLike = str.length > 0 && !/[\s/?#]/.test(str);
-      return isHostLike && isSentryCdnHostname(str);
+      return false;
     }
   }
 
   function blockAndNotify(element, channel, urlString) {
     console.log('[Sentry Interceptor] 🛑 Blocked CDN request (' + channel + '):', urlString);
-    // Fire a synthetic 'load' event so the Sentry SDK's internal Promise resolves
-    // cleanly instead of hanging indefinitely waiting for a CDN script we blocked.
-    setTimeout(() => element.dispatchEvent(new Event('load')), 10);
+    // Dispatch a synthetic 'load' event so the Sentry SDK's internal Promise
+    // resolves cleanly instead of hanging indefinitely.
+    Promise.resolve().then(() => element.dispatchEvent(new Event('load')));
   }
 
-  function makeSrcSetter(nativeSrcDescriptor) {
-    return function(val) {
-      const urlString = val ? String(val) : '';
-      if (shouldBlockSentryUrl(urlString)) {
-        blockAndNotify(this, 'Property', urlString);
-      } else {
-        nativeSrcDescriptor?.set?.call(this, val);
-      }
-    };
-  }
+  // sentry_flutter's web_script_dom_api.dart creates script elements via
+  // `new HTMLScriptElement()` (Dart package:web interop), which bypasses
+  // document.createElement entirely. We must patch the prototype-level src
+  // setter to intercept ALL HTMLScriptElement src assignments universally.
+  const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+  const canPatchSrc =
+    nativeSrcDescriptor &&
+    typeof nativeSrcDescriptor.get === 'function' &&
+    typeof nativeSrcDescriptor.set === 'function' &&
+    nativeSrcDescriptor.configurable === true;
 
-  function makeSrcGetter(nativeSrcDescriptor) {
-    return function() {
-      return nativeSrcDescriptor?.get?.call(this) ?? '';
-    };
-  }
-
-  function makeSetAttribute(originalSetAttribute) {
-    return function(name, value) {
-      const urlString = value ? String(value) : '';
-      if (String(name).toLowerCase() === 'src' && shouldBlockSentryUrl(urlString)) {
-        blockAndNotify(this, 'Attribute', urlString);
-        return;
-      }
-      originalSetAttribute.call(this, name, value);
-    };
-  }
-
-  function patchScriptElement(element) {
-    const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-    Object.defineProperty(element, 'src', {
-      configurable: true,
-      set: makeSrcSetter(nativeSrcDescriptor),
-      get: makeSrcGetter(nativeSrcDescriptor),
-    });
-    element.setAttribute = makeSetAttribute(element.setAttribute);
-  }
-
-  // Load order: sentry-tracing.min.js (self-hosted SDK) must run before this interceptor.
-  // This interceptor patches document.createElement to block any subsequent CDN injection
-  // the SDK may attempt at runtime.
-  document.createElement = function(tagName, options) {
-    const element = originalCreateElement.call(document, tagName, options);
-    if (String(tagName).toLowerCase() === 'script') {
-      patchScriptElement(element);
+  if (canPatchSrc) {
+    try {
+      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+        configurable: true,
+        enumerable: nativeSrcDescriptor.enumerable,
+        get: function() {
+          return nativeSrcDescriptor.get.call(this);
+        },
+        set: function(val) {
+          const urlString = val ? String(val) : '';
+          if (shouldBlockSentryUrl(urlString)) {
+            blockAndNotify(this, 'HTMLScriptElement.src', urlString);
+            return;
+          }
+          nativeSrcDescriptor.set.call(this, val);
+        },
+      });
+    } catch (e) {
+      console.warn('[Sentry Interceptor] Failed to patch HTMLScriptElement.src:', e);
     }
-    return element;
-  };
+  } else {
+    console.warn('[Sentry Interceptor] HTMLScriptElement.src patch unavailable; using setAttribute fallback only.');
+  }
+
+  // Defense-in-depth: also intercept setAttribute('src', ...) as a fallback.
+  // Patched on HTMLScriptElement.prototype only (not Element) to avoid
+  // intercepting setAttribute on every element in the DOM.
+  const originalSetAttribute = Element.prototype.setAttribute;
+  try {
+    Object.defineProperty(HTMLScriptElement.prototype, 'setAttribute', {
+      configurable: true,
+      writable: true,
+      value: function(name, value) {
+        if (String(name).toLowerCase() === 'src') {
+          const urlString = String(value || '');
+          if (shouldBlockSentryUrl(urlString)) {
+            blockAndNotify(this, 'setAttribute', urlString);
+            return;
+          }
+        }
+        originalSetAttribute.call(this, name, value);
+      },
+    });
+  } catch (e) {
+    console.warn('[Sentry Interceptor] Failed to patch HTMLScriptElement.setAttribute:', e);
+  }
 })();
