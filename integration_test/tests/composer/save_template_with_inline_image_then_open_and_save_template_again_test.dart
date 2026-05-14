@@ -8,6 +8,6 @@ void main() {
         'after reopening a template email that contains an inline image',
     scenarioBuilder: ($, robots) =>
         SaveTemplateWithInlineImageThenOpenAndSaveTemplateAgainScenario($, robots),
-    tags: [TestTags.android, TestTags.ios],
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }

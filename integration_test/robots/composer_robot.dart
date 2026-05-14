@@ -204,4 +204,11 @@ class ComposerRobot extends CoreRobot {
     await $(const Key(UiKeys.saveDraftPopupItem)).tap();
     await $.pumpAndSettle();
   }
+
+  Future<void> tapSaveAsTemplateButton() async {
+    await $(const Key(UiKeys.composerMoreButton)).tap();
+    await $.pumpAndSettle();
+    await $(const Key(UiKeys.saveTemplatePopupItem)).tap();
+    await $.pumpAndSettle();
+  }
 }

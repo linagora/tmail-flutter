@@ -560,11 +560,11 @@ class EmailAPI
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
     final mapErrors = handleSetResponse([setEmailResponse]);
 
-    if (emailCreated == null || mapErrors.isNotEmpty) {
+    if (emailCreated != null && mapErrors.isEmpty) {
+      return emailCreated;
+    } else {
       throw SetMethodException(mapErrors);
     }
-
-    return emailCreated;
   }
 
   Future<bool> _emailSetDestroyMethod(
@@ -607,12 +607,7 @@ class EmailAPI
     AccountId accountId,
     Email email,
     {CancelToken? cancelToken}
-  ) => _emailSetCreateMethod(
-    session,
-    accountId,
-    email,
-    cancelToken: cancelToken,
-  );
+  ) => _emailSetCreateMethod(session, accountId, email, cancelToken: cancelToken);
 
   Future<bool> removeEmailDrafts(
     Session session,
@@ -626,7 +621,10 @@ class EmailAPI
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      bool isUpdateDraftToClose = false,
+    }
   ) async {
     final emailCreated = await saveEmailAsDrafts(
       session,
@@ -649,17 +647,19 @@ class EmailAPI
       logWarning('EmailAPI::updateEmailDrafts: removeEmailDrafts throw exception = $e');
     }
 
-    try {
-      final email = await getEmailMetadata(
-        session,
-        accountId,
-        emailId,
-        ThreadConstants.propertiesComposerEmailFetch,
-      );
+    if (!isUpdateDraftToClose) {
+      try {
+        final email = await getEmailMetadata(
+          session,
+          accountId,
+          emailId,
+          ThreadConstants.propertiesComposerEmailFetch,
+        );
 
-      return email;
-    } catch (e) {
-      logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
+        return email;
+      } catch (e) {
+        logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
+      }
     }
 
     return emailCreated;
@@ -673,13 +673,7 @@ class EmailAPI
       CreateNewMailboxRequest? createNewMailboxRequest,
       CancelToken? cancelToken,
     }
-  ) => _emailSetCreateMethod(
-    session,
-    accountId,
-    email,
-    createNewMailboxRequest: createNewMailboxRequest,
-    cancelToken: cancelToken,
-  );
+  ) => _emailSetCreateMethod(session, accountId, email, createNewMailboxRequest: createNewMailboxRequest, cancelToken: cancelToken);
 
   Future<bool> removeEmailTemplate(
     Session session,
@@ -699,7 +693,7 @@ class EmailAPI
       session,
       accountId,
       newEmail,
-      cancelToken: cancelToken,
+      cancelToken: cancelToken
     );
 
     final emailId = emailCreated.id;
@@ -726,9 +720,8 @@ class EmailAPI
 
       return email;
     } catch (e) {
-      logWarning('EmailAPI::updateEmailDrafts: getEmailMetadata throw exception = $e');
+      logWarning('EmailAPI::updateEmailTemplate: getEmailMetadata throw exception = $e');
     }
-
 
     return emailCreated;
   }

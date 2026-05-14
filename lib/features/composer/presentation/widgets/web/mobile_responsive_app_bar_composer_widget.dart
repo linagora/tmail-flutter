@@ -205,6 +205,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
               ),
               PopupItemWidget(
+                key: const Key(UiKeys.saveTemplatePopupItem),
                 iconAction: imagePaths.icSaveToDraft,
                 nameAction: AppLocalizations.of(context).saveAsTemplate,
                 colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,

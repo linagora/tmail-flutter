@@ -33,7 +33,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     CancelToken? cancelToken,
   }) async* {
     final draftEmailId = createEmailRequest.draftsEmailId;
-    final isSaveDraft = draftEmailId == null;
+    final isCreatingNewDraft = draftEmailId == null;
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
 
@@ -52,7 +52,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         draftsMailboxId: createEmailRequest.draftsMailboxId,
       );
 
-      if (isSaveDraft) {
+      if (isCreatingNewDraft) {
         yield* _saveEmailAsDrafts(
           draftPayload: draftPayload,
           cancelToken: cancelToken,
@@ -62,6 +62,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
           draftPayload: draftPayload,
           draftsEmailId: draftEmailId,
           cancelToken: cancelToken,
+          isUpdateDraftToClose: createEmailRequest.isUpdateDraftToClose,
         );
       }
     } catch (e, st) {
@@ -69,7 +70,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         'CreateNewAndSaveEmailToDraftsInteractor::execute: exception=${e.runtimeType}',
         stackTrace: st,
       );
-      yield* _handleFailure(exception: e, isSaveDraft: isSaveDraft);
+      yield* _handleFailure(exception: e, isCreatingNewDraft: isCreatingNewDraft);
     }
   }
 
@@ -111,7 +112,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         'CreateNewAndSaveEmailToDraftsInteractor::_saveEmailAsDrafts: exception=${e.runtimeType}',
         stackTrace: st,
       );
-      yield* _handleFailure(exception: e, isSaveDraft: true);
+      yield* _handleFailure(exception: e, isCreatingNewDraft: true);
     }
   }
 
@@ -124,6 +125,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     }) draftPayload,
     required EmailId draftsEmailId,
     CancelToken? cancelToken,
+    bool isUpdateDraftToClose = false,
   }) async* {
     try {
       yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
@@ -134,6 +136,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         draftPayload.email,
         draftsEmailId,
         cancelToken: cancelToken,
+        isUpdateDraftToClose: isUpdateDraftToClose,
       );
 
       final newEmailId = emailDraftSaved.id;
@@ -156,13 +159,13 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         'CreateNewAndSaveEmailToDraftsInteractor::_updateDraftsEmail: exception=${e.runtimeType}',
         stackTrace: st,
       );
-      yield* _handleFailure(exception: e, isSaveDraft: false);
+      yield* _handleFailure(exception: e, isCreatingNewDraft: false);
     }
   }
 
   Stream<dartz.Either<Failure, Success>> _handleFailure({
-    dynamic exception,
-    required bool isSaveDraft,
+    required Object? exception,
+    required bool isCreatingNewDraft,
   }) async* {
     if (exception is UnknownRemoteException &&
         exception.error is List<SavingEmailToDraftsCanceledException>) {
@@ -170,7 +173,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     }
 
     yield dartz.Left<Failure, Success>(
-      isSaveDraft
+      isCreatingNewDraft
           ? SaveEmailAsDraftsFailure(exception)
           : UpdateEmailDraftsFailure(exception),
     );

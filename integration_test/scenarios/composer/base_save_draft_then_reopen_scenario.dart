@@ -23,7 +23,9 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    assert(email.isNotEmpty, 'BASIC_AUTH_EMAIL must not be empty');
 
+    final uniqueSubject = '$subject ${DateTime.now().microsecondsSinceEpoch}';
     final threadRobot = robots.threadRobot();
     final mailboxMenuRobot = robots.mailboxMenuRobot();
     final composerRobot = robots.composerRobot();
@@ -34,25 +36,25 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseTestScenario {
     await composerRobot.grantContactPermission();
 
     await composerRobot.addRecipient(PrefixEmailAddress.to, email);
-    await composerRobot.addSubject(subject);
+    await composerRobot.addSubject(uniqueSubject);
 
     final bytes = base64Decode(TestImages.base64);
     await attachContent(composerRobot, bytes);
     await waitForContentUploaded(composerRobot);
 
     await composerRobot.tapCloseComposer();
-    await $.pumpAndSettle();
+    await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
     await composerRobot.tapSaveButtonOnSaveDraftConfirmDialog(appLocalizations);
     await _expectSaveDraftSuccessToast(appLocalizations);
-    await $.pumpAndSettle();
+    await $.pumpAndTrySettle();
 
     if (PlatformInfo.isMobile) {
       await threadRobot.openMailbox();
     }
     await mailboxMenuRobot.openFolderByName(appLocalizations.draftsMailboxDisplayName);
-    await waitForCondition(() => $(find.text(subject)).exists);
-    await threadRobot.openEmailWithSubject(subject);
+    await waitForCondition(() => $(uniqueSubject).exists);
+    await threadRobot.openEmailWithSubject(uniqueSubject);
     await composerRobot.expectComposerViewVisible();
     await composerRobot.grantContactPermission();
 

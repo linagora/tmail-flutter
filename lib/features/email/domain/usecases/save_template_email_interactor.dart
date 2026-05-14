@@ -32,6 +32,7 @@ class SaveTemplateEmailInteractor {
     CancelToken? cancelToken,
   }) async* {
     final templateEmailId = createEmailRequest.templateEmailId;
+    final isCreatingNewTemplate = templateEmailId == null;
     try {
       yield Right(GenerateEmailLoading());
 
@@ -47,7 +48,7 @@ class SaveTemplateEmailInteractor {
         email: emailCreated,
       );
 
-      if (templateEmailId != null) {
+      if (!isCreatingNewTemplate) {
         yield* _updateTemplateEmail(
           payload: payload,
           templateEmailId: templateEmailId,
@@ -62,7 +63,7 @@ class SaveTemplateEmailInteractor {
       }
     } catch (e) {
       logWarning('SaveTemplateEmailInteractor::execute(): $e');
-      yield _buildFailure(exception: e, isUpdate: templateEmailId != null);
+      yield _buildFailure(exception: e, isCreatingNewTemplate: isCreatingNewTemplate);
     }
   }
 
@@ -90,7 +91,7 @@ class SaveTemplateEmailInteractor {
       }
     } catch (e) {
       logWarning('SaveTemplateEmailInteractor::_saveEmailAsTemplate(): $e');
-      yield _buildFailure(exception: e, isUpdate: false);
+      yield _buildFailure(exception: e, isCreatingNewTemplate: true);
     }
   }
 
@@ -122,15 +123,15 @@ class SaveTemplateEmailInteractor {
       }
     } catch (e) {
       logWarning('SaveTemplateEmailInteractor::_updateTemplateEmail(): $e');
-      yield _buildFailure(exception: e, isUpdate: true);
+      yield _buildFailure(exception: e, isCreatingNewTemplate: false);
     }
   }
 
   Either<Failure, Success> _buildFailure({
-    required dynamic exception,
-    required bool isUpdate,
+    required Object? exception,
+    required bool isCreatingNewTemplate,
   }) => Left(
-    isUpdate
+    !isCreatingNewTemplate
       ? UpdateTemplateEmailFailure(exception: exception)
       : SaveTemplateEmailFailure(exception: exception),
   );

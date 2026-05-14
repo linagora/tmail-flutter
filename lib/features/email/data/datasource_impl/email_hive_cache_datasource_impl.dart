@@ -327,7 +327,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      bool isUpdateDraftToClose = false,
+    }
   ) async {
     await _emailCacheManager.update(
       accountId,

@@ -49,4 +49,12 @@ class WebComposerRobot extends MobileComposerRobot {
     if (widgets.isEmpty) return null;
     return widgets.first.controller;
   }
+
+  @override
+  Future<void> tapSaveAsTemplateButton() async {
+    await $(const Key(UiKeys.composerMoreButton)).tap();
+    await $.pumpAndSettle();
+    await $(const Key(UiKeys.saveTemplatePopupItem)).tap();
+    await $.pumpAndSettle();
+  }
 }

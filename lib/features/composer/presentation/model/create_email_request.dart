@@ -49,6 +49,7 @@ class CreateEmailRequest with EquatableMixin {
   final EmailActionType? savedActionType;
   final EmailId? savedEmailDraftId;
   final List<KeyWordIdentifier>? keywords;
+  final bool isUpdateDraftToClose;
 
   CreateEmailRequest({
     required this.session,
@@ -86,6 +87,7 @@ class CreateEmailRequest with EquatableMixin {
     this.savedActionType,
     this.savedEmailDraftId,
     this.keywords,
+    this.isUpdateDraftToClose = false,
   });
 
   @override
@@ -125,5 +127,6 @@ class CreateEmailRequest with EquatableMixin {
     savedActionType,
     savedEmailDraftId,
     keywords,
+    isUpdateDraftToClose,
   ];
 }

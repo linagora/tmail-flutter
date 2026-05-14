@@ -21,7 +21,7 @@ abstract class AbstractComposerRobot {
   Future<void> addAttachmentFromBytes(Uint8List bytes, String fileName);
   Future<void> addInlineFromBytes(Uint8List bytes, String fileName);
   Future<void> tapSaveAsDraftButton();
-  Future<void> saveAsTemplate();
+  Future<void> tapSaveAsTemplateButton();
   Future<void> tapDiscardChanges();
   /// Returns the active [ComposerController] for the currently visible composer.
   /// Platform implementations must resolve the correct GetX tag (web uses a

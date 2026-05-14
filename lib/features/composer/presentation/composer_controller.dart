@@ -2151,7 +2151,8 @@ class ComposerController extends BaseController
       emailContent: emailContent,
       uploadUri: uploadUri,
       draftEmailId: draftEmailId,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      isUpdateDraftToClose: true,
     );
 
     if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
@@ -2199,6 +2200,7 @@ class ComposerController extends BaseController
     required Uri? uploadUri,
     EmailId? draftEmailId,
     CancelToken? cancelToken,
+    bool isUpdateDraftToClose = false,
   }) {
     final childWidget = PointerInterceptor(
       child: SavingMessageDialogView(
@@ -2229,6 +2231,7 @@ class ComposerController extends BaseController
           emailSendingQueue: arguments.sendingEmail,
           displayMode: screenDisplayMode.value,
           uploadUri: uploadUri,
+          isUpdateDraftToClose: isUpdateDraftToClose,
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
         onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,

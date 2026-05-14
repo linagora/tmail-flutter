@@ -68,7 +68,7 @@ enum ComposerActionType {
       case ComposerActionType.saveAsDraft:
         return const Key(UiKeys.saveDraftPopupItem);
       case ComposerActionType.saveAsTemplate:
-        return const Key('save_as_template_popup_item');
+        return const Key(UiKeys.saveTemplatePopupItem);
       case ComposerActionType.delete:
         return const Key('delete_popup_item');
     }
