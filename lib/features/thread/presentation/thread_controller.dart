@@ -684,14 +684,15 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-
+    canLoadMore = emailsAfterChanges.isNotEmpty;
     logTrace(
       'ThreadController::_refreshChangesAllEmailSuccess():'
       'MailboxId = ${success.currentMailboxId?.asString}, '
       'CurrentEmailCount = ${emailsBeforeChanges.length}, '
       'ServerEmailCount = ${success.emailList.length}, '
       'DisplayedEmailCount = ${emailListSynced.length}, '
-      'EmailState = ${success.currentEmailState?.value}',
+      'EmailState = ${success.currentEmailState?.value}, '
+      'canLoadMore = $canLoadMore',
     );
 
     if (_isAutoLoadMore) {
@@ -922,8 +923,10 @@ class ThreadController extends BaseController with EmailActionController {
 
     if (emailSuccessState is GetAllEmailSuccess) {
       _getAllEmailSuccess(emailSuccessState, shouldJumpToFirstEmail: false);
+      _handleOnDoneGetAllEmailSuccess(emailSuccessState);
     } else if (emailSuccessState != null) {
       onDataFailureViewState(emailSuccessState);
+      _handleOnDoneGetAllEmailFailure();
     }
   }
 
