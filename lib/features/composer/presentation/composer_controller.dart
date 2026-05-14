@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
@@ -1357,6 +1358,7 @@ class ComposerController extends BaseController
       _saveToDraftButtonState = ButtonState.enabled;
       emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+      autoRefreshAllAttachments(resultState.attachments, resultState.htmlBodyAttachments);
       _updateSavedEmailDraftHash();
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
@@ -1440,6 +1442,7 @@ class ComposerController extends BaseController
       );
     } else if (resultState is UpdateTemplateEmailSuccess && context.mounted == true) {
       currentTemplateEmailId = resultState.emailId;
+      autoRefreshAllAttachments(resultState.attachments, resultState.htmlBodyAttachments);
       appToast.showToastSuccessMessage(
         context,
         AppLocalizations.of(context).updateMessageToTemplateSuccess,
@@ -2148,7 +2151,8 @@ class ComposerController extends BaseController
       emailContent: emailContent,
       uploadUri: uploadUri,
       draftEmailId: draftEmailId,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      isUpdateDraftToClose: true,
     );
 
     if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
@@ -2196,6 +2200,7 @@ class ComposerController extends BaseController
     required Uri? uploadUri,
     EmailId? draftEmailId,
     CancelToken? cancelToken,
+    bool isUpdateDraftToClose = false,
   }) {
     final childWidget = PointerInterceptor(
       child: SavingMessageDialogView(
@@ -2226,6 +2231,7 @@ class ComposerController extends BaseController
           emailSendingQueue: arguments.sendingEmail,
           displayMode: screenDisplayMode.value,
           uploadUri: uploadUri,
+          isUpdateDraftToClose: isUpdateDraftToClose,
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
         onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,

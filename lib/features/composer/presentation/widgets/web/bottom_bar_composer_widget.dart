@@ -149,6 +149,7 @@ class BottomBarComposerWidget extends StatelessWidget {
           PopupMenuOverlayWidget(
             controller: menuMoreOptionController,
             iconButton: HighlightSVGIconOnHover(
+              key: const Key(UiKeys.composerMoreButton),
               icon: imagePaths.icMore,
               size: BottomBarComposerWidgetStyle.iconSize,
               iconColor: BottomBarComposerWidgetStyle.iconColor,
@@ -207,6 +208,7 @@ class BottomBarComposerWidget extends StatelessWidget {
                   },
                 ),
               PopupItemWidget(
+                key: const Key(UiKeys.saveTemplatePopupItem),
                 iconAction: imagePaths.icSaveToDraft,
                 nameAction: AppLocalizations.of(context).saveAsTemplate,
                 colorIcon: BottomBarComposerWidgetStyle.iconColor,
@@ -235,6 +237,7 @@ class BottomBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
+            key: const Key(UiKeys.saveDraftButton),
             icon: imagePaths.icSaveToDraft,
             borderRadius: BottomBarComposerWidgetStyle.iconRadius,
             padding: BottomBarComposerWidgetStyle.iconPadding,

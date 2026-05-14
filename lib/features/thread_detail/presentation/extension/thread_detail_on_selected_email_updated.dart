@@ -51,7 +51,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && currentExpandedEmailId.value != null) {
       mailboxDashBoardController.dispatchEmailUIAction(
         DisposePreviousExpandedEmailAction(
           currentExpandedEmailId.value!,

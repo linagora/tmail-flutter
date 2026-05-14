@@ -1,5 +1,6 @@
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
@@ -49,8 +50,7 @@ class UploadFileStateList {
       return false;
     }
     return _uploadingStateFiles
-        .nonNulls
-        .every((file) => file.uploadStatus == UploadFileStatus.succeed);
+        .every((file) => file?.uploadStatus == UploadFileStatus.succeed);
   }
 
   void clear() {
@@ -69,5 +69,10 @@ class UploadFileStateList {
 
   UploadFileState? getUploadFileStateById(UploadTaskId uploadTaskId) {
     return _uploadingStateFiles.firstWhereOrNull((fileState) => fileState?.uploadTaskId == uploadTaskId);
+  }
+
+  @visibleForTesting
+  void addNullableForTest(UploadFileState? state) {
+    _uploadingStateFiles.add(state);
   }
 }

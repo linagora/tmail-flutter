@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/minimize_composer_widget.dart';
@@ -64,6 +65,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: AppBarComposerWidgetStyle.space),
                   TMailButtonWidget.fromIcon(
+                    key: const Key(UiKeys.closeComposerButton),
                     icon: imagePaths.icCancel,
                     backgroundColor: Colors.transparent,
                     tooltipMessage: AppLocalizations.of(context).saveAndClose,
@@ -75,6 +77,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                 ]
           else
             TMailButtonWidget.fromIcon(
+              key: const Key(UiKeys.closeComposerButton),
               icon: imagePaths.icCancel,
               backgroundColor: Colors.transparent,
               tooltipMessage: AppLocalizations.of(context).saveAndClose,

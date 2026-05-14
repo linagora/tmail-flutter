@@ -202,7 +202,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId, {CancelToken? cancelToken}) {
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId, {CancelToken? cancelToken, bool isUpdateDraftToClose = false}) {
     throw UnimplementedError();
   }
 

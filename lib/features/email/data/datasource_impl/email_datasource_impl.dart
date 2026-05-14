@@ -193,7 +193,10 @@ class EmailDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      bool isUpdateDraftToClose = false,
+    }
   ) {
     return Future.sync(() async {
       return await emailAPI.updateEmailDrafts(
@@ -201,7 +204,8 @@ class EmailDataSourceImpl extends EmailDataSource {
         accountId,
         newEmail,
         oldEmailId,
-        cancelToken: cancelToken
+        cancelToken: cancelToken,
+        isUpdateDraftToClose: isUpdateDraftToClose,
       );
     }).catchError(_exceptionThrower.throwException);
   }

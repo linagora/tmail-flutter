@@ -97,4 +97,12 @@ class ThreadConstants {
     EmailProperty.messageId,
     EmailProperty.references,
   });
+
+  static final propertiesComposerEmailFetch = Properties({
+    EmailProperty.id,
+    EmailProperty.blobId,
+    EmailProperty.threadId,
+    EmailProperty.htmlBody,
+    EmailProperty.attachments,
+  });
 }

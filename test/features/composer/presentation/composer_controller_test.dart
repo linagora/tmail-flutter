@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart' show UpdateTemplateEmailSuccess;
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
@@ -41,6 +42,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
@@ -593,7 +595,7 @@ void main() {
                 createEmailRequest: anyNamed('createEmailRequest'),
                 cancelToken: anyNamed('cancelToken')))
               .thenAnswer((_) => Stream.value(
-                Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
+                Right(UpdateEmailDraftsSuccess(emailId: EmailId(Id('123')), attachments: [], htmlBodyAttachments: []))));
 
             final savedEmailDraft = SavedComposingEmail(
               content: emailContent,
@@ -1074,6 +1076,76 @@ void main() {
         expect(request, isNotNull);
         expect(request?.emailContent, equals(''));
         verifyNever(mockHtmlEditorApi.getText());
+      });
+    });
+
+    group('autoRefreshAllAttachments:', () {
+      setUp(() {
+        when(mockUploadController.inlineAttachmentsUploaded).thenReturn([]);
+      });
+
+      test(
+        'should call uploadController.refreshAllAttachments '
+        'when server returns non-empty attachments',
+      () {
+        final serverAttachment = Attachment(
+          blobId: Id('blob-server-1'),
+          name: 'file.png',
+        );
+
+        composerController?.autoRefreshAllAttachments([serverAttachment], []);
+
+        verify(mockUploadController.refreshAllAttachments(
+          [serverAttachment], [],
+        )).called(1);
+      });
+
+      test(
+        'should call uploadController.refreshAllAttachments '
+        'when server returns empty lists and composer has no existing attachments',
+      () {
+        composerController?.initialAttachments = [];
+
+        composerController?.autoRefreshAllAttachments([], []);
+
+        verify(mockUploadController.refreshAllAttachments([], [])).called(1);
+      });
+
+      test(
+        'should skip calling uploadController.refreshAllAttachments '
+        'when server returns empty lists but composer has existing inline attachments',
+      () {
+        final existingInline = Attachment(blobId: Id('existing-inline'));
+        when(mockUploadController.inlineAttachmentsUploaded).thenReturn([existingInline]);
+
+        composerController?.autoRefreshAllAttachments([], []);
+
+        verifyNever(mockUploadController.refreshAllAttachments(any, any));
+      });
+
+      test(
+        'should update currentTemplateEmailId '
+        'when UpdateTemplateEmailSuccess is processed',
+      () async {
+        final newEmailId = EmailId(Id('new-template-id'));
+        final success = UpdateTemplateEmailSuccess(
+          emailId: newEmailId,
+          attachments: [],
+          htmlBodyAttachments: [],
+        );
+
+        when(mockUploadController.inlineAttachmentsUploaded).thenReturn([]);
+        composerController?.initialAttachments = [];
+
+        // Simulate what handleClickSaveAsTemplateButton does on success
+        composerController?.currentTemplateEmailId = success.emailId;
+        composerController?.autoRefreshAllAttachments(
+          success.attachments,
+          success.htmlBodyAttachments,
+        );
+
+        expect(composerController?.currentTemplateEmailId, equals(newEmailId));
+        verify(mockUploadController.refreshAllAttachments([], [])).called(1);
       });
     });
   });

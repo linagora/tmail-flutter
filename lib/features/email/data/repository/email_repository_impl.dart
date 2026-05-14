@@ -279,14 +279,18 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      bool isUpdateDraftToClose = false,
+    }
   ) async {
     final result = await emailDataSource[DataSourceType.network]!.updateEmailDrafts(
       session,
       accountId,
       newEmail,
       oldEmailId,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      isUpdateDraftToClose: isUpdateDraftToClose,
     );
     try {
       await emailDataSource[DataSourceType.hiveCache]!.updateEmailDrafts(
@@ -294,6 +298,7 @@ class EmailRepositoryImpl extends EmailRepository {
         accountId,
         result,
         oldEmailId,
+        isUpdateDraftToClose: isUpdateDraftToClose,
       );
     } catch (e) {
       logWarning('EmailRepositoryImpl::updateEmailDrafts:exception $e');

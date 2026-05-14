@@ -94,7 +94,10 @@ abstract class EmailRepository {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      bool isUpdateDraftToClose = false,
+    }
   );
 
   Future<Email> saveEmailAsTemplate(

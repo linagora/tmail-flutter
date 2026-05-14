@@ -70,6 +70,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(
+            key: const Key(UiKeys.closeComposerButton),
             icon: imagePaths.icCancel,
             backgroundColor: Colors.transparent,
             tooltipMessage: AppLocalizations.of(context).saveAndClose,
@@ -192,6 +193,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
                 ),
               PopupItemWidget(
+                  key: const Key(UiKeys.saveDraftPopupItem),
                   iconAction: imagePaths.icSaveToDraft,
                   nameAction: AppLocalizations.of(context).saveAsDraft,
                   colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
@@ -203,6 +205,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
               ),
               PopupItemWidget(
+                key: const Key(UiKeys.saveTemplatePopupItem),
                 iconAction: imagePaths.icSaveToDraft,
                 nameAction: AppLocalizations.of(context).saveAsTemplate,
                 colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,

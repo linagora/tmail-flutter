@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/attachment_extension.dart';
+import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -472,6 +473,32 @@ class UploadController extends BaseController {
     ...attachmentsUploaded,
     ...inlineAttachmentsUploaded,
   ];
+
+  void refreshAllAttachments(
+    List<Attachment> attachments,
+    List<Attachment> htmlBodyAttachments,
+  ) {
+    final regularAttachments = attachments.getListAttachmentsDisplayedOutside(htmlBodyAttachments);
+    final inlineAttachments = attachments.listAttachmentsDisplayedInContent;
+
+    _uploadingStateFiles.clear();
+    _uploadingStateFiles.addAll(_toUploadFileStates(regularAttachments));
+
+    _uploadingStateInlineFiles.clear();
+    _uploadingStateInlineFiles.addAll(_toUploadFileStates(inlineAttachments));
+
+    _refreshListUploadAttachmentState();
+    log('UploadController::refreshAllAttachments(): regular=${regularAttachments.length} | inline=${inlineAttachments.length}');
+  }
+
+  Iterable<UploadFileState> _toUploadFileStates(List<Attachment> attachments) =>
+    attachments
+      .where((a) => a.blobId != null)
+      .map((a) => UploadFileState(
+        UploadTaskId(a.blobId!.value),
+        uploadStatus: UploadFileStatus.succeed,
+        attachment: a,
+      ));
 
   void _handleUploadAttachmentFailure(UploadAttachmentFailure failure) {
     if (currentContext != null && currentOverlayContext != null) {

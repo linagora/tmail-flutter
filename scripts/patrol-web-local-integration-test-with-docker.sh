@@ -9,8 +9,8 @@ docker compose down || true
 cd ..
 
 # Forward traffic to tmail-backend
-export BASIC_AUTH_URL="http://localhost/"
-export WEBSOCKET_URL="ws://localhost/"
+export BASIC_AUTH_URL="http://localhost"
+export WEBSOCKET_URL="ws://localhost"
 
 cd backend-docker
 
