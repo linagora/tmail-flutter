@@ -41,7 +41,7 @@ void main() {
     expect(result.inlineImages.map((a) => a.cid).toSet(), inlineCids);
   }
 
-  group('EmailAttachmentClassifierExtension::classifyAttachments::', () {
+  group('EmailAttachmentClassifierExtension::toPresentationAttachments::', () {
     test('no attachments returns empty lists', () {
       expectPartition(
         buildEmail().toPresentationAttachments(),

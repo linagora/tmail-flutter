@@ -403,9 +403,9 @@ class EmailDataSourceImpl extends EmailDataSource {
       final appLocalizations = previewEmailEMLRequest.appLocalizations;
       final locale = previewEmailEMLRequest.locale.toLanguageTag();
 
-      final classified = email.toPresentationAttachments();
-      final listAttachments = classified.attachments;
-      final listInlineImages = classified.inlineImages;
+      final presentationAttachments = email.toPresentationAttachments();
+      final listAttachments = presentationAttachments.attachments;
+      final listInlineImages = presentationAttachments.inlineImages;
 
       final mapCidImageDownloadUrl = listInlineImages.toMapCidImageDownloadUrl(
         accountId: previewEmailEMLRequest.accountId,

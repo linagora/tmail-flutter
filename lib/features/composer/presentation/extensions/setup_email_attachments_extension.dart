@@ -32,10 +32,10 @@ extension SetupEmailAttachmentsExtension on ComposerController {
     if (currentEmailActionType == EmailActionType.editSendingEmail) {
       final email = arguments.sendingEmail?.email;
       if (email == null) return (attachments: null, inlineImages: null);
-      final classified = email.toPresentationAttachments();
+      final presentationAttachments = email.toPresentationAttachments();
       return (
-        attachments: classified.attachments,
-        inlineImages: classified.inlineImages,
+        attachments: presentationAttachments.attachments,
+        inlineImages: presentationAttachments.inlineImages,
       );
     }
     if (_shouldPreserveAttachments) {
