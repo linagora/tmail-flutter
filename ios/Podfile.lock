@@ -174,7 +174,7 @@ PODS:
   - nanopb/encode (3.30910.0)
   - objective_c (0.0.1):
     - Flutter
-  - open_file_ios (0.0.1):
+  - open_file_ios (1.0.3):
     - Flutter
   - OrderedSet (6.0.3)
   - package_info_plus (0.4.5):
@@ -413,7 +413,7 @@ SPEC CHECKSUMS:
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   objective_c: 89e720c30d716b036faf9c9684022048eee1eee2
-  open_file_ios: 5ff7526df64e4394b4fe207636b67a95e83078bb
+  open_file_ios: 46184d802ee7959203f6392abcfa0dd49fdb5be0
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   package_info_plus: 580e9a5f1b6ca5594e7c9ed5f92d1dfb2a66b5e1
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
