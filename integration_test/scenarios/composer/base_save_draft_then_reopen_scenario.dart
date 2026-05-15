@@ -19,7 +19,7 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
     await composerRobot.tapSaveButtonOnSaveDraftConfirmDialog(l10n);
-    await $.pumpAndTrySettle();
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 1));
     await _expectSaveDraftSuccessToast(l10n);
     await $.pumpAndTrySettle();
   }
