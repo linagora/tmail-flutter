@@ -9,7 +9,7 @@ void main() {
     const transformer = SanitizePlainTextHtmlOutputTransformer();
     const htmlEscape = HtmlEscape();
 
-    String process(String input) => transformer.process(input, htmlEscape).trim();
+    String process(String input) => transformer.process(input, htmlEscape);
 
     group('Text nodes – preserved as-is', () {
       test('SHOULD preserve plain text unchanged', () {
