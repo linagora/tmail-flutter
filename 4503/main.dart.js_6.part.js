@@ -564,15 +564,15 @@ var y=(function rtii(){var x=A.aq
 return{J:x("pS"),k:x("as"),R:x("D1"),v:x("k1"),V:x("N<c7>"),f:x("N<a2>"),p:x("N<k>"),l:x("SN"),x:x("Tr"),O:x("b1<h>"),z:x("cR<B>"),G:x("bG<B>"),w:x("LL"),H:x("~")}})();(function constants(){var x=a.makeConstList
 D.a7p=new A.H2(1,null,C.kl,C.kk,C.v,C.jg,C.jg,C.q,null)
 D.FA=new A.H2(1,null,C.kl,C.kk,C.v,C.jg,C.jg,C.q,D.a7p)
-D.p1=new A.E(1,0.9176470588235294,0.9294117647058824,0.9490196078431372,C.j)
+D.p1=new A.F(1,0.9176470588235294,0.9294117647058824,0.9490196078431372,C.j)
 D.Gh=new A.ba(D.p1,null,null,C.bM,null,null,null,C.B)
 D.wr=new A.be(100,100)
 D.G1=new A.dw(D.wr,D.wr,D.wr,D.wr)
 D.aPo=new A.C(0,0.5)
 D.aaM=new A.c7(1,C.U,C.i_,D.aPo,1)
-D.Hs=new A.E(1,1,0.9607843137254902,0.7607843137254902,C.j)
-D.agf=new A.E(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
-D.ai8=new A.E(1,0.5019607843137255,0.7411764705882353,1,C.j)
+D.Hs=new A.F(1,1,0.9607843137254902,0.7607843137254902,C.j)
+D.agf=new A.F(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
+D.ai8=new A.F(1,0.5019607843137255,0.7411764705882353,1,C.j)
 D.tW=new A.aB(10,14,10,14)
 D.apY=new A.aB(30,0,30,0)
 D.JA=new A.aB(40,0,40,0)
@@ -588,4 +588,4 @@ D.Za=new A.rL("mailbox_list",A.aq("rL<h>"))
 D.a5Y=new A.b1("listViewAppGrid",y.O)
 D.EM=new A.b1("toggleAppGridButton",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"faC","e4G",()=>A.c([A.XS(20,C.U,C.n.an(0.15),C.q,0)],y.V))})()};
-(a=>{a["38ZMNOofHXJ6b2+GBCFCZ5frX/U="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["VcIt9glgEBhXIpOSJJPlDcDYNhU="]=a.current})($__dart_deferred_initializers__);
