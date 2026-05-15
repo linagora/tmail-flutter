@@ -30,9 +30,11 @@ extension EmailAttachmentClassifierExtension on Email {
     // Dedupe: undefined-disposition + cid attachments satisfy both
     // isOutsideAttachment and listAttachmentsDisplayedInContent predicates.
     // Without this filter the same blob would render twice in the panel.
-    final orphanBlobIds = orphanedInlineImages.map((a) => a.blobId).toSet();
+    // nonNulls: a null blobId in the orphan set would otherwise falsely match
+    // any outside attachment with a null blobId (Set<Id?> collapses all nulls).
+    final orphanBlobIds = orphanedInlineImages.map((a) => a.blobId).nonNulls.toSet();
     final outsideOnly = outsideAttachments
-      .where((a) => !orphanBlobIds.contains(a.blobId))
+      .where((a) => a.blobId == null || !orphanBlobIds.contains(a.blobId))
       .toList();
     return PresentationAttachments(
       attachments: [...outsideOnly, ...orphanedInlineImages],
