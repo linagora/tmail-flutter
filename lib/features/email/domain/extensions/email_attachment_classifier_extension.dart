@@ -16,7 +16,7 @@ class PresentationAttachments {
 }
 
 extension EmailAttachmentClassifierExtension on Email {
-  PresentationAttachments classifyAttachments() {
+  PresentationAttachments toPresentationAttachments() {
     // Cache: allAttachments getter re-allocates on each call.
     final allAttachmentsSnapshot = allAttachments;
     final outsideAttachments = allAttachmentsSnapshot.getListAttachmentsDisplayedOutside(htmlBodyAttachments);

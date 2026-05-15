@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -55,42 +56,34 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
     await _expectSearchResultEmailListVisible();
     await _expectEmailListDisplayedCorrectly(listUsername: listUsername);
 
-    await _validateSortOrder(sortOrderType);
-  }
-
-  Future<void> _validateSortOrder(EmailSortOrderType sortOrderType) async {
-    final validators = <EmailSortOrderType, Future<void> Function()>{
-      EmailSortOrderType.mostRecent: _expectEmailListSortedCorrectByMostRecent,
-      EmailSortOrderType.oldest: _expectEmailListSortedCorrectByOldest,
-      EmailSortOrderType.senderAscending: () => _expectEmailListSortedByStringProperty(
-        listUsername: listUsername,
-        ascending: true,
-        getValue: (tile) => tile.presentationEmail.firstEmailAddressInFrom,
-        buildExpected: (username) => '${username.toLowerCase()}@example.com',
-      ),
-      EmailSortOrderType.senderDescending: () => _expectEmailListSortedByStringProperty(
-        listUsername: listUsername,
-        ascending: false,
-        getValue: (tile) => tile.presentationEmail.firstEmailAddressInFrom,
-        buildExpected: (username) => '${username.toLowerCase()}@example.com',
-      ),
-      EmailSortOrderType.subjectAscending: () => _expectEmailListSortedByStringProperty(
-        listUsername: listUsername,
-        ascending: true,
-        getValue: (tile) => tile.presentationEmail.subject,
-        buildExpected: (username) => '$username send Bob',
-      ),
-      EmailSortOrderType.subjectDescending: () => _expectEmailListSortedByStringProperty(
-        listUsername: listUsername,
-        ascending: false,
-        getValue: (tile) => tile.presentationEmail.subject,
-        buildExpected: (username) => '$username send Bob',
-      ),
-      EmailSortOrderType.sizeAscending: () => _expectEmailListSortedBySize(ascending: true),
-      EmailSortOrderType.sizeDescending: () => _expectEmailListSortedBySize(ascending: false),
-    };
-    final validator = validators[sortOrderType];
-    if (validator != null) await validator();
+    switch (sortOrderType) {
+      case EmailSortOrderType.mostRecent:
+        await _expectEmailListSortedCorrectByMostRecent();
+        break;
+      case EmailSortOrderType.oldest:
+        await _expectEmailListSortedCorrectByOldest();
+        break;
+      case EmailSortOrderType.senderAscending:
+        await _expectEmailListSortedCorrectBySenderAscending(listUsername: listUsername);
+        break;
+      case EmailSortOrderType.senderDescending:
+        await _expectEmailListSortedCorrectBySenderDescending(listUsername: listUsername);
+        break;
+      case EmailSortOrderType.subjectAscending:
+        await _expectEmailListSortedCorrectBySubjectAscending(listUsername: listUsername);
+        break;
+      case EmailSortOrderType.subjectDescending:
+        await _expectEmailListSortedCorrectBySubjectDescending(listUsername: listUsername);
+        break;
+      case EmailSortOrderType.relevance:
+        break;
+      case EmailSortOrderType.sizeAscending:
+        await _expectEmailListSortedCorrectBySizeAscending(listUsername: listUsername);
+        break;
+      case EmailSortOrderType.sizeDescending:
+        await _expectEmailListSortedCorrectBySizeDescending(listUsername: listUsername);
+        break;
+    }
   }
 
   Future<void> _expectSearchViewVisible() async {
@@ -119,18 +112,59 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
     expect(find.byType(EmailTileBuilder), findsNWidgets(listUsername.length));
   }
 
-  Future<void> _expectEmailListSortedByStringProperty({
+  Future<void> _expectEmailListSortedCorrectBySenderAscending({
     required List<String> listUsername,
-    required bool ascending,
-    required String? Function(EmailTileBuilder) getValue,
-    required String Function(String) buildExpected,
   }) async {
     final listEmailTile = $.tester
       .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
-    final orderedList = ascending ? listUsername : listUsername.reversed.toList();
-    for (int i = 0; i < orderedList.length; i++) {
-      final emailTile = listEmailTile.elementAt(i);
-      expect(getValue(emailTile), equals(buildExpected(orderedList[i])));
+
+    for (int i = 0; i < listUsername.length; i++) {
+      EmailTileBuilder emailTile = listEmailTile.elementAt(i);
+      final senderName = emailTile.presentationEmail.firstEmailAddressInFrom;
+      expect(senderName, equals('${listUsername[i].toLowerCase()}@example.com'));
+    }
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySenderDescending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+      .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    final reversedListUsername = listUsername.reversed.toList();
+
+    for (int i = 0; i < reversedListUsername.length; i++) {
+      EmailTileBuilder emailTile = listEmailTile.elementAt(i);
+      final senderName = emailTile.presentationEmail.firstEmailAddressInFrom;
+      expect(senderName, equals('${reversedListUsername[i].toLowerCase()}@example.com'));
+    }
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySubjectAscending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+      .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    for (int i = 0; i < listUsername.length; i++) {
+      EmailTileBuilder emailTile = listEmailTile.elementAt(i);
+      final subject = emailTile.presentationEmail.subject;
+      expect(subject, equals('${listUsername[i]} send Bob'));
+    }
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySubjectDescending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+      .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    final reversedListUsername = listUsername.reversed.toList();
+
+    for (int i = 0; i < reversedListUsername.length; i++) {
+      EmailTileBuilder emailTile = listEmailTile.elementAt(i);
+      final subject = emailTile.presentationEmail.subject;
+      expect(subject, equals('${reversedListUsername[i]} send Bob'));
     }
   }
 
@@ -158,13 +192,32 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
     expect(listReceiveAtTime.isSortedByOldestFirst(), isTrue);
   }
 
-  Future<void> _expectEmailListSortedBySize({required bool ascending}) async {
-    final sizeList = $.tester
-      .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder))
-      .map((emailTile) => emailTile.presentationEmail.size)
+  Future<void> _expectEmailListSortedCorrectBySizeAscending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+        .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    List<UnsignedInt> sizeList = listEmailTile
+      .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
       .nonNulls
       .toList();
-    expect(_isSortedAscending(sizeList), equals(ascending));
+
+    expect(_isSortedAscending(sizeList), isTrue);
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySizeDescending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+        .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    List<UnsignedInt> sizeList = listEmailTile
+      .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
+      .nonNulls
+      .toList();
+
+    expect(_isSortedAscending(sizeList), isFalse);
   }
 
   bool _isSortedAscending(List<UnsignedInt> list) {

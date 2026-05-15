@@ -403,7 +403,7 @@ class EmailDataSourceImpl extends EmailDataSource {
       final appLocalizations = previewEmailEMLRequest.appLocalizations;
       final locale = previewEmailEMLRequest.locale.toLanguageTag();
 
-      final classified = email.classifyAttachments();
+      final classified = email.toPresentationAttachments();
       final listAttachments = classified.attachments;
       final listInlineImages = classified.inlineImages;
 

@@ -44,7 +44,7 @@ void main() {
   group('EmailAttachmentClassifierExtension::classifyAttachments::', () {
     test('no attachments returns empty lists', () {
       expectPartition(
-        buildEmail().classifyAttachments(),
+        buildEmail().toPresentationAttachments(),
         attachmentBlobIds: {},
         inlineCids: {},
       );
@@ -53,7 +53,7 @@ void main() {
     test('external attachment goes to attachments only', () {
       final email = buildEmail(attachments: {externalPart(blobIdValue: 'b', name: 'doc.pdf')});
       expectPartition(
-        email.classifyAttachments(),
+        email.toPresentationAttachments(),
         attachmentBlobIds: {'b'},
         inlineCids: {},
       );
@@ -90,7 +90,7 @@ void main() {
           htmlContent: tc.body,
         );
         expectPartition(
-          email.classifyAttachments(),
+          email.toPresentationAttachments(),
           attachmentBlobIds: tc.expectedAttachmentBlobs,
           inlineCids: tc.expectedInlineCids,
         );
@@ -107,7 +107,7 @@ void main() {
         htmlContent: '<img src="cid:ref@x">',
       );
       expectPartition(
-        email.classifyAttachments(),
+        email.toPresentationAttachments(),
         attachmentBlobIds: {'ext', 'orphan'},
         inlineCids: {'ref@x'},
       );
@@ -117,7 +117,7 @@ void main() {
       // No htmlBody/bodyValues → emailContentList is empty → asHtmlString = ''
       final email = buildEmail(attachments: {inlinePart(blobIdValue: 'b', cid: 'c@x')});
       expectPartition(
-        email.classifyAttachments(),
+        email.toPresentationAttachments(),
         attachmentBlobIds: {'b'},
         inlineCids: {},
       );
@@ -130,7 +130,7 @@ void main() {
         attachments: {inlinePart(blobIdValue: 'b', cid: 'c@x')},
         htmlContent: '<<<>>>not html<<<',
       );
-      expect(() => email.classifyAttachments(), returnsNormally);
+      expect(() => email.toPresentationAttachments(), returnsNormally);
     });
 
     test('inline disposition without cid is excluded from inline list', () {
@@ -141,7 +141,7 @@ void main() {
         htmlContent: '<p>text</p>',
       );
       expectPartition(
-        email.classifyAttachments(),
+        email.toPresentationAttachments(),
         attachmentBlobIds: {'b'},
         inlineCids: {},
       );
@@ -155,7 +155,7 @@ void main() {
         htmlContent: '<p>no cid ref</p>',
       );
       expectPartition(
-        email.classifyAttachments(),
+        email.toPresentationAttachments(),
         attachmentBlobIds: {'b'},
         inlineCids: {},
       );

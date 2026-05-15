@@ -78,7 +78,7 @@ class GetEmailContentInteractor {
         accountId,
         emailId,
         additionalProperties: additionalProperties);
-      final classified = email.classifyAttachments();
+      final classified = email.toPresentationAttachments();
       final listAttachments = classified.attachments;
       final listInlineImages = classified.inlineImages;
       log('GetEmailContentInteractor::_getContentEmailFromServer: listAttachments = ${listAttachments.length} | listInlineImages = ${listInlineImages.length}');
