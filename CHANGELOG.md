@@ -1,3 +1,13 @@
+## [0.28.19] - 2026-05-15
+
+### Fixed
+- Upgrade open_file to iOS 26
+- upgrade to iOS notification in iOS26
+- Double slash in JMAP session
+- Refresh BlobId of attachment in composer when saving draft multiple times
+- Display orphaned inline image
+- Upgrade to fix Android notification
+
 ## [0.28.18] - 2026-05-11
 
 ### Fixed
