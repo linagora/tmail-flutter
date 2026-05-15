@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 
 extension EmailExtension on Email {
   DetailedEmail toDetailedEmail({String? htmlEmailContent}) {
-    final classified = classifyAttachments();
+    final classified = toPresentationAttachments();
     return DetailedEmail(
       emailId: id!,
       createdTime: receivedAt?.value ?? DateTime.now(),

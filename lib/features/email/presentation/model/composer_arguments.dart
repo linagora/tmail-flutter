@@ -132,7 +132,7 @@ class ComposerArguments extends RouterArguments {
   );
 
   factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) {
-    final classified = composerCache.email?.classifyAttachments();
+    final classified = composerCache.email?.toPresentationAttachments();
     return ComposerArguments(
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
@@ -231,7 +231,7 @@ class ComposerArguments extends RouterArguments {
     : SendingEmailActionType.create;
 
   factory ComposerArguments.fromComposerPersistentCache(ComposerPersistentCache cache) {
-    final classified = cache.email?.classifyAttachments();
+    final classified = cache.email?.toPresentationAttachments();
     return ComposerArguments(
       emailActionType: EmailActionType.restoreComposerFromPersistentCache,
       presentationEmail: cache.email?.toPresentationEmail(),

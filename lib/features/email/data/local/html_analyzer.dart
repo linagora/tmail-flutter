@@ -1,5 +1,4 @@
 
-import 'package:collection/collection.dart';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
@@ -17,7 +16,6 @@ import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
-import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:uuid/uuid.dart';
@@ -59,46 +57,6 @@ class HtmlAnalyzer {
         return emailContent;
     }
   }
-
-  Future<List<EventAction>> getListEventAction(String emailContents) async {
-    try {
-      final document = parse(emailContents);
-      final openPaasElements = document.querySelectorAll('a.part-button');
-      if (openPaasElements.isNotEmpty) {
-        final result = _extractEventActions(
-          openPaasElements,
-          [EventActionType.yes, EventActionType.maybe, EventActionType.no],
-        );
-        log('HtmlAnalyzer::getListEventAction:OPEN_PAAS::listEventAction: $result');
-        return result;
-      }
-      final googleElements = document.querySelectorAll('a.grey-button-text');
-      final result = _extractEventActions(
-        googleElements,
-        [EventActionType.yes, EventActionType.no, EventActionType.maybe],
-      );
-      log('HtmlAnalyzer::getListEventAction:GOOGLE::listEventAction: $result');
-      return result;
-    } catch(e) {
-      logWarning('HtmlAnalyzer::getListEventAction:Exception: $e');
-      return [];
-    }
-  }
-
-  List<EventAction> _extractEventActions(
-    List<Element> elements,
-    List<EventActionType> typeOrder,
-  ) {
-    return elements
-      .mapIndexed((index, element) {
-        final hrefLink = element.attributes['href'] ?? '';
-        if (hrefLink.isEmpty || index >= typeOrder.length) return null;
-        return EventAction(typeOrder[index], hrefLink);
-      })
-      .nonNulls
-      .toList();
-  }
-
   Future<String> transformHtmlEmailContent(
     String htmlContent,
     TransformConfiguration configuration
