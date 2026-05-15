@@ -32,12 +32,19 @@ abstract final class TextPlainEmailCorpus {
       r"throw new \App\DB\Exception\AuthFailed('access denied');" '\n'
       'See https://jira.example.com/issues/1234 for context.';
 
+  // ─── HTML-special characters ───────────────────────────────────────────────
+  static const String ampersand = 'Tom & Jerry';
+
   // ─── Preformatted / tables ─────────────────────────────────────────────────
   static const String markdownTable =
       '| Name  | Score |\n'
       '|-------|-------|\n'
       '| Alice | 100   |\n'
       '| Bob   | 90    |';
+  static const String markdownTableWithUrl =
+      '| Name  | Link                   |\n'
+      '|-------|------------------------|\n'
+      '| Alice | https://alice.com/page |';
   static const String asciiArtBox =
       '+--------+-------+\n'
       '| Alice  | 100   |\n'

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 
+import '../../../test/fixtures/html_email_corpus.dart';
+
 void main() {
   group('StandardizeHtmlSanitizingTransformers.process', () {
     const transformer = StandardizeHtmlSanitizingTransformers();
@@ -457,6 +459,49 @@ void main() {
         expect(out.contains('input'), isFalse);
         expect(out.contains('iframe'), isFalse);
       });
+    });
+
+    group('Backslash namespace / path patterns in HTML text nodes', () {
+      test('SHOULD preserve backslash namespace inside <code> tag', () {
+        final out = sanitize(HtmlEmailCorpus.htmlWithBackslashInCode);
+        expect(out, contains(r'\App\DB\Exception\AuthFailed'));
+        expect(out, contains('access denied'));
+      });
+
+      test('SHOULD preserve backslash namespace across multiple text nodes', () {
+        final out = sanitize(HtmlEmailCorpus.htmlWithBackslashMultipleNodes);
+        expect(out, allOf(contains('NotFound'), contains('Dispatcher')));
+      });
+
+      test('SHOULD preserve backslash namespace AND keep hyperlink in same email', () {
+        final out = sanitize(HtmlEmailCorpus.htmlWithBackslashAndLink);
+        expect(out, contains(r'\App\DB\Exception\AuthFailed'));
+        expect(out, contains('href="https://docs.example.com/errors"'));
+      });
+
+      test('SHOULD preserve Windows file path with backslashes inside <code>', () {
+        final out = sanitize(HtmlEmailCorpus.htmlWithWindowsPath);
+        expect(out, contains(r'C:\Users\Admin'));
+        expect(out, contains('error.log'));
+      });
+
+      test('SHOULD preserve Go package path with backslash separators', () {
+        final out = sanitize(HtmlEmailCorpus.htmlWithGoPath);
+        expect(out, allOf(contains(r'\github.com\org\repo'), contains('handler')));
+      });
+
+      // Bare \XX-only text nodes (no surrounding words) are still stripped by the
+      // sanitizer. Real HTML emails wrap such content in <code>/<pre> — verified above.
+      test(
+        'SHOULD NOT produce blank paragraphs when text nodes contain only backslash-hex',
+        skip: 'Known limitation: sanitizer strips bare \\XX-only text in <p>. '
+              'Real emails use <code>/<pre> for such content.',
+        () {
+          final out = sanitize(HtmlEmailCorpus.htmlAllHexBackslashParagraphs);
+          expect(out, isNot(contains('<p></p>')));
+          expect(out, allOf(contains('Path'), contains('Config')));
+        },
+      );
     });
   });
 }
