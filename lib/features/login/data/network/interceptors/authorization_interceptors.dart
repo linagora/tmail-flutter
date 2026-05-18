@@ -225,14 +225,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         exception: e,
         stackTrace: stackTrace,
       );
-      if (e is ServerError || e is TemporarilyUnavailable) {
-        return super.onError(
-          DioException(requestOptions: err.requestOptions, error: e),
-          handler,
-        );
-      } else {
+      // Any exception that is not a DioException with an HTTP response is a
+      // network-level failure (e.g. FlutterAppAuthPlatformException from the
+      // OIDC token refresh on mobile). Carrying the original 401 response
+      // forward via err.copyWith would cause RemoteExceptionThrower to
+      // misclassify it as BadCredentialsException and log the user out.
+      if (e is DioException && e.response != null) {
         return super.onError(err.copyWith(error: e), handler);
       }
+      return super.onError(
+        DioException(requestOptions: err.requestOptions, error: e),
+        handler,
+      );
     }
   }
 

@@ -12,6 +12,8 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -591,7 +593,9 @@ void main() {
 
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(predicate<DioException>((e) => e.error is ServerError)),
+          throwsA(predicate<DioException>(
+            (e) => e.error is ServerError && e.response == null,
+          )),
         );
       },
     );
@@ -622,15 +626,16 @@ void main() {
         await expectLater(
           () => dio.post(baseUrl),
           throwsA(predicate<DioException>(
-            (e) => e.error is TemporarilyUnavailable,
+            (e) => e.error is TemporarilyUnavailable && e.response == null,
           )),
         );
       },
     );
 
     test(
-      'WHEN refresh throws generic exception (AccessTokenInvalidException)\n'
-      'THEN outer catch wraps it via err.copyWith(error: e)',
+      'WHEN refresh throws generic non-DioException (AccessTokenInvalidException)\n'
+      'THEN outer catch creates fresh DioException with NO HTTP response\n'
+      'AND does NOT preserve original 401 (Fix 3 regression)',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
           newToken: OIDCFixtures.tokenOidcExpiredTime,
@@ -653,9 +658,9 @@ void main() {
 
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(predicate<DioException>(
-            (e) => e.error is AccessTokenInvalidException,
-          )),
+          throwsA(predicate<DioException>((e) {
+            return e.error is AccessTokenInvalidException && e.response == null;
+          })),
         );
       },
     );
@@ -1738,6 +1743,197 @@ void main() {
       },
     );
   });
+
+  // ============================================================
+  // Bug 1 — FlutterAppAuthPlatformException from OIDC refresh
+  // must NOT preserve original 401 response (outer catch, Fix 3)
+  // ============================================================
+  group(
+    'Bug 1 — FlutterAppAuthPlatformException from OIDC refresh '
+    'does not preserve original 401 (outer catch)',
+    () {
+      // Simulates _appAuth.token() on mobile with no internet where the native
+      // SDK sends structured error details (details != null). invokeMethod()
+      // then throws FlutterAppAuthPlatformException with error == null (no
+      // OAuth error code for a transport failure). handleException() passes it
+      // through unchanged because platformErrorDetails.error is null.
+      // Note: if details == null, invokeMethod() rethrows raw PlatformException
+      // instead; the fix in the outer catch handles both identically.
+      final platformNetworkException = FlutterAppAuthPlatformException(
+        code: 'network_error',
+        message: 'Failed to connect to token endpoint',
+        platformErrorDetails: FlutterAppAuthPlatformErrorDetails(
+          error: null, // null = pure transport failure, not an OAuth error
+        ),
+      );
+
+      test(
+        'WHEN 401 with expired token\n'
+        'AND refresh throws FlutterAppAuthPlatformException (no internet)\n'
+        'THEN propagated DioException has NO HTTP response\n'
+        'AND error is FlutterAppAuthPlatformException\n'
+        '(BUG: outer catch err.copyWith preserved original 401 → BadCredentialsException → logout)',
+        () async {
+          authorizationInterceptors.setTokenAndAuthorityOidc(
+            newToken: OIDCFixtures.tokenOidcExpiredTime,
+            newConfig: OIDCFixtures.oidcConfiguration,
+          );
+
+          dioAdapter.onPost(
+            baseUrl,
+            (server) =>
+                server.throws(responseStatusCode401, makeDioError401()),
+            headers: {
+              HttpHeaders.authorizationHeader:
+                  'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+            },
+          );
+
+          when(authenticationClient.refreshingTokensOIDC(
+            OIDCFixtures.oidcConfiguration.clientId,
+            OIDCFixtures.oidcConfiguration.redirectUrl,
+            OIDCFixtures.oidcConfiguration.discoveryUrl,
+            OIDCFixtures.oidcConfiguration.scopes,
+            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          )).thenThrow(platformNetworkException);
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) {
+              return e.response == null &&
+                  e.error is FlutterAppAuthPlatformException;
+            })),
+          );
+        },
+      );
+
+      test(
+        'WHEN server-side 401 (token not locally expired)\n'
+        'AND refresh throws FlutterAppAuthPlatformException (no internet)\n'
+        'THEN propagated DioException has NO HTTP response',
+        () async {
+          authorizationInterceptors.setTokenAndAuthorityOidc(
+            newToken: OIDCFixtures.tokenOidcNotExpiredYet,
+            newConfig: OIDCFixtures.oidcConfiguration,
+          );
+
+          dioAdapter.onPost(
+            baseUrl,
+            (server) =>
+                server.throws(responseStatusCode401, makeDioError401()),
+            headers: {
+              HttpHeaders.authorizationHeader:
+                  'Bearer ${OIDCFixtures.tokenOidcNotExpiredYet.token}',
+            },
+          );
+
+          when(authenticationClient.refreshingTokensOIDC(
+            OIDCFixtures.oidcConfiguration.clientId,
+            OIDCFixtures.oidcConfiguration.redirectUrl,
+            OIDCFixtures.oidcConfiguration.discoveryUrl,
+            OIDCFixtures.oidcConfiguration.scopes,
+            OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          )).thenThrow(platformNetworkException);
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) {
+              return e.response == null &&
+                  e.error is FlutterAppAuthPlatformException;
+            })),
+          );
+        },
+      );
+
+      test(
+        'WHEN refresh throws raw PlatformException (invokeMethod details==null path)\n'
+        'THEN propagated DioException has NO HTTP response',
+        () async {
+          authorizationInterceptors.setTokenAndAuthorityOidc(
+            newToken: OIDCFixtures.tokenOidcExpiredTime,
+            newConfig: OIDCFixtures.oidcConfiguration,
+          );
+
+          dioAdapter.onPost(
+            baseUrl,
+            (server) =>
+                server.throws(responseStatusCode401, makeDioError401()),
+            headers: {
+              HttpHeaders.authorizationHeader:
+                  'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+            },
+          );
+
+          // invokeMethod() rethrows PlatformException unchanged when e.details==null
+          // (socket-level failure, no structured error from native SDK).
+          // handleException() does not match FlutterAppAuthPlatformException check
+          // → passes through as-is → outer catch → not DioException → fresh
+          // DioException without response.
+          when(authenticationClient.refreshingTokensOIDC(
+            OIDCFixtures.oidcConfiguration.clientId,
+            OIDCFixtures.oidcConfiguration.redirectUrl,
+            OIDCFixtures.oidcConfiguration.discoveryUrl,
+            OIDCFixtures.oidcConfiguration.scopes,
+            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          )).thenThrow(PlatformException(
+            code: 'network_error',
+            message: 'Failed to connect to token endpoint',
+          ));
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) {
+              return e.response == null && e.error is PlatformException;
+            })),
+          );
+        },
+      );
+
+      test(
+        'WHEN refresh throws OAuthAuthorizationError (e.g. invalid_grant)\n'
+        'THEN propagated DioException still has NO HTTP response',
+        () async {
+          authorizationInterceptors.setTokenAndAuthorityOidc(
+            newToken: OIDCFixtures.tokenOidcExpiredTime,
+            newConfig: OIDCFixtures.oidcConfiguration,
+          );
+
+          dioAdapter.onPost(
+            baseUrl,
+            (server) =>
+                server.throws(responseStatusCode401, makeDioError401()),
+            headers: {
+              HttpHeaders.authorizationHeader:
+                  'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+            },
+          );
+
+          // In production: FlutterAppAuthPlatformException(error: 'invalid_grant')
+          // is caught inside authentication_client_mobile.dart::refreshingTokensOIDC
+          // and converted by handleException() to OAuthAuthorizationError before
+          // being re-thrown. Mocking that output directly.
+          when(authenticationClient.refreshingTokensOIDC(
+            OIDCFixtures.oidcConfiguration.clientId,
+            OIDCFixtures.oidcConfiguration.redirectUrl,
+            OIDCFixtures.oidcConfiguration.discoveryUrl,
+            OIDCFixtures.oidcConfiguration.scopes,
+            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          )).thenThrow(const OAuthAuthorizationError(
+            error: 'invalid_grant',
+            errorDescription: 'The refresh token has been revoked',
+          ));
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) {
+              return e.response == null &&
+                  e.error is OAuthAuthorizationError;
+            })),
+          );
+        },
+      );
+    },
+  );
 
   tearDown(() {
     reset(authenticationClient);
