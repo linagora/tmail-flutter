@@ -135,7 +135,9 @@ class QuickSearchSuggestionListState<T, P, R>
   }
 
   Future<void> _handleDebounceTimeListener(String queryString) async {
-    log('QuickSearchSuggestionListState::_handleDebounceTimeListener:queryString = $queryString | minCharsForSuggestions = ${widget.minCharsForSuggestions}');
+    log(
+      'QuickSearchSuggestionListState::_handleDebounceTimeListener:queryString = $queryString | minCharsForSuggestions = ${widget.minCharsForSuggestions}',
+    );
     if (!mounted) return;
 
     if (_isLoading == true) return;
@@ -165,7 +167,9 @@ class QuickSearchSuggestionListState<T, P, R>
     // If we came here because of a change in selected text, not because of
     // actual change in text
     final queryString = widget.controller!.text.trim();
-    log('QuickSearchSuggestionListState::_textInputControllerListener:queryString = $queryString | _lastTextValue = $_lastTextValue');
+    log(
+      'QuickSearchSuggestionListState::_textInputControllerListener:queryString = $queryString | _lastTextValue = $_lastTextValue',
+    );
     if (queryString == _lastTextValue) return;
 
     _lastTextValue = queryString;
@@ -207,8 +211,8 @@ class QuickSearchSuggestionListState<T, P, R>
     }
 
     widget.controller!.addListener(_textInputControllerListener);
-    _deBouncerSuggestionStreamSubscriptions =
-        _deBouncerSuggestion.values.listen(_handleDebounceTimeListener);
+    _deBouncerSuggestionStreamSubscriptions = _deBouncerSuggestion.values
+        .listen(_handleDebounceTimeListener);
   }
 
   Future<void> invalidateSuggestions() async {
@@ -254,21 +258,22 @@ class QuickSearchSuggestionListState<T, P, R>
       if (queryString.length >= (widget.minInputLengthAutocomplete ?? 0))
         _getListContact(queryString),
     ]);
-    if (!mounted) return;
 
     if (tupleListItems.isEmpty ||
         tupleListItems.every((item) => item == null || item.isEmpty)) {
       recentItems = await _getListRecent(queryString);
-      if (!mounted) return;
     } else {
       suggestions = tupleListItems[0] as Iterable<T>?;
-      contacts =
-          tupleListItems.length == 2 ? tupleListItems[1] as Iterable<P>? : null;
+      contacts = tupleListItems.length == 2
+          ? tupleListItems[1] as Iterable<P>?
+          : null;
     }
 
+    if (!mounted) return;
     setState(() {
-      final animationStart =
-          suggestions?.isNotEmpty == true ? widget.animationStart : 1.0;
+      final animationStart = suggestions?.isNotEmpty == true
+          ? widget.animationStart
+          : 1.0;
       _animationController?.forward(from: animationStart);
       _isLoading = false;
       _suggestions = suggestions;
@@ -323,12 +328,12 @@ class QuickSearchSuggestionListState<T, P, R>
 
     BoxConstraints constraints;
     if (widget.decoration!.constraints == null) {
-      constraints = BoxConstraints(
-        maxHeight: widget.suggestionsBox!.maxHeight,
-      );
+      constraints = BoxConstraints(maxHeight: widget.suggestionsBox!.maxHeight);
     } else {
-      double maxHeight = min(widget.decoration!.constraints!.maxHeight,
-          widget.suggestionsBox!.maxHeight);
+      double maxHeight = min(
+        widget.decoration!.constraints!.maxHeight,
+        widget.suggestionsBox!.maxHeight,
+      );
       constraints = widget.decoration!.constraints!.copyWith(
         minHeight: min(widget.decoration!.constraints!.minHeight, maxHeight),
         maxHeight: maxHeight,
@@ -343,14 +348,13 @@ class QuickSearchSuggestionListState<T, P, R>
       shape: widget.decoration!.shape,
       borderRadius: widget.suggestionsBox?.isOpened == true
           ? const BorderRadius.only(
-              bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16))
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            )
           : widget.decoration!.borderRadius,
       shadowColor: widget.decoration!.shadowColor,
       clipBehavior: widget.decoration!.clipBehavior,
-      child: ConstrainedBox(
-        constraints: constraints,
-        child: animationChild,
-      ),
+      child: ConstrainedBox(constraints: constraints, child: animationChild),
     );
 
     return PointerInterceptor(child: container);
@@ -367,8 +371,9 @@ class QuickSearchSuggestionListState<T, P, R>
       primary: false,
       shrinkWrap: true,
       controller: _scrollController,
-      reverse:
-          widget.suggestionsBox!.direction == AxisDirection.down ? false : true,
+      reverse: widget.suggestionsBox!.direction == AxisDirection.down
+          ? false
+          : true,
       // reverses the list to start at the bottom
       children: [
         if (listActionWidget != null) listActionWidget,
@@ -382,16 +387,13 @@ class QuickSearchSuggestionListState<T, P, R>
           const Divider(),
         if (listItemSuggestionWidget.isNotEmpty) ...[
           ...listItemSuggestionWidget,
-          const SizedBox(height: 16)
+          const SizedBox(height: 16),
         ],
       ],
     );
 
     if (widget.decoration!.hasScrollbar) {
-      child = Scrollbar(
-        controller: _scrollController,
-        child: child,
-      );
+      child = Scrollbar(controller: _scrollController, child: child);
     }
 
     return child;
@@ -407,8 +409,9 @@ class QuickSearchSuggestionListState<T, P, R>
       primary: false,
       shrinkWrap: true,
       controller: _scrollController,
-      reverse:
-          widget.suggestionsBox!.direction == AxisDirection.down ? false : true,
+      reverse: widget.suggestionsBox!.direction == AxisDirection.down
+          ? false
+          : true,
       // reverses the list to start at the bottom
       children: [
         if (listActionWidget != null) listActionWidget,
@@ -423,7 +426,7 @@ class QuickSearchSuggestionListState<T, P, R>
         if (loadingWidget != null)
           loadingWidget
         else if (listItemRecent.isNotEmpty)
-          const SizedBox(height: 16)
+          const SizedBox(height: 16),
       ],
     );
 
@@ -444,32 +447,36 @@ class QuickSearchSuggestionListState<T, P, R>
     }
 
     final listActionWidget = Wrap(
-        children: widget.listActionButton!.map((action) {
-      if (widget.buttonActionCallback != null) {
-        return Padding(
-          padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              onTap: () {
-                widget.buttonActionCallback?.call(action);
-                invalidateSuggestions();
-              },
-              child: widget.actionButtonBuilder!(context, action, this),
-            ),
-          ),
-        );
-      } else {
-        return Padding(
+      children: widget.listActionButton!.map((action) {
+        if (widget.buttonActionCallback != null) {
+          return Padding(
             padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
-            child: widget.actionButtonBuilder!(context, action, this));
-      }
-    }).toList());
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                onTap: () {
+                  widget.buttonActionCallback?.call(action);
+                  invalidateSuggestions();
+                },
+                child: widget.actionButtonBuilder!(context, action, this),
+              ),
+            ),
+          );
+        } else {
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
+            child: widget.actionButtonBuilder!(context, action, this),
+          );
+        }
+      }).toList(),
+    );
 
     if (widget.listActionPadding != null) {
       return Padding(
-          padding: widget.listActionPadding!, child: listActionWidget);
+        padding: widget.listActionPadding!,
+        child: listActionWidget,
+      );
     } else {
       return listActionWidget;
     }
