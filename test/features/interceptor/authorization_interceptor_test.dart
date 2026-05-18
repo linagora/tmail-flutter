@@ -1593,6 +1593,152 @@ void main() {
     );
   });
 
+  // ============================================================
+  // Bug 1 — refresh network timeout preserves original 401 response (regression)
+  // ============================================================
+  group('Bug 1 — refresh network timeout preserves original 401 response (regression)', () {
+    final refreshTimeoutError = DioException(
+      requestOptions: RequestOptions(path: '/token'),
+      type: DioExceptionType.connectionTimeout,
+      // response: null — pure network failure, no HTTP response
+    );
+
+    test(
+      'WHEN 401 with expired token\n'
+      'AND refresh call times out (connectionTimeout, response=null)\n'
+      'THEN propagated error carries NO HTTP response\n'
+      '(BUG: err.copyWith preserves original 401 response → RemoteExceptionThrower → logout)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(refreshTimeoutError);
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            // BUG: e.response?.statusCode == 401 (original 401 preserved by err.copyWith)
+            // FIX: e.response == null — transient network failure, should NOT trigger logout
+            return e.response == null;
+          })),
+        );
+      },
+    );
+
+    test(
+      'WHEN server-side 401 (token not locally expired)\n'
+      'AND refresh call times out\n'
+      'THEN propagated error carries NO HTTP response',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcNotExpiredYet,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcNotExpiredYet.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+        )).thenThrow(refreshTimeoutError);
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null;
+          })),
+        );
+      },
+    );
+  });
+
+  // ============================================================
+  // Bug 1 — retry network timeout preserves original 401 response (regression)
+  // ============================================================
+  group('Bug 1 — retry network timeout preserves original 401 response (regression)', () {
+    test(
+      'WHEN 401 with expired token\n'
+      'AND refresh succeeds\n'
+      'AND retry call times out (connectionTimeout, response=null)\n'
+      'THEN propagated error carries NO HTTP response\n'
+      '(BUG: err.copyWith preserves original 401 response → logout)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        final retryTimeoutError = DioException(
+          requestOptions: RequestOptions(path: baseUrl),
+          type: DioExceptionType.connectionTimeout,
+          // response: null
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(0, retryTimeoutError),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            // BUG: e.response?.statusCode == 401 (original 401 preserved)
+            // FIX: e.response == null — network timeout during retry, not an auth failure
+            return e.response == null;
+          })),
+        );
+      },
+    );
+  });
+
   tearDown(() {
     reset(authenticationClient);
     reset(tokenOidcCacheManager);

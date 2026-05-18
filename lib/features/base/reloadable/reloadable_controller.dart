@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cach
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {
@@ -147,7 +148,12 @@ abstract class ReloadableController extends BaseController {
   }
 
   void handleGetSessionFailure(GetSessionFailure failure) {
-    if (failure.exception is! BadCredentialsException) {
+    final exception = failure.exception;
+    if (exception is NetworkException) {
+      toastManager.showMessageFailure(failure);
+      return;
+    }
+    if (exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }
     clearDataAndGoToLoginPage();

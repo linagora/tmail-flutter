@@ -160,6 +160,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
               ),
               handler,
             );
+          } else if (refreshError.response == null) {
+            // Network failure during refresh — don't carry the original 401
+            // response forward, as that would make RemoteExceptionThrower
+            // classify this as BadCredentialsException and log the user out.
+            return super.onError(
+              DioException(
+                requestOptions: err.requestOptions,
+                type: refreshError.type,
+                error: refreshError.error,
+                message: refreshError.message,
+              ),
+              handler,
+            );
           } else {
             return super.onError(err.copyWith(error: refreshError), handler);
           }
@@ -187,6 +200,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             'AuthorizationInterceptors::onError: '
             'Retry failed with error=$retryError',
           );
+          if (retryError is DioException && retryError.response == null) {
+            return super.onError(
+              DioException(
+                requestOptions: err.requestOptions,
+                type: retryError.type,
+                error: retryError.error,
+                message: retryError.message,
+              ),
+              handler,
+            );
+          }
           return super.onError(
             err.copyWith(error: retryError),
             handler,
