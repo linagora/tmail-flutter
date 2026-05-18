@@ -174,7 +174,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
               handler,
             );
           } else {
-            return super.onError(err.copyWith(error: refreshError), handler);
+            return super.onError(refreshError, handler);
           }
         }
       } else {
@@ -200,19 +200,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             'AuthorizationInterceptors::onError: '
             'Retry failed with error=$retryError',
           );
-          if (retryError is DioException && retryError.response == null) {
-            return super.onError(
-              DioException(
-                requestOptions: err.requestOptions,
-                type: retryError.type,
-                error: retryError.error,
-                message: retryError.message,
-              ),
-              handler,
-            );
+          if (retryError is DioException) {
+            return super.onError(retryError, handler);
           }
           return super.onError(
-            err.copyWith(error: retryError),
+            DioException(requestOptions: err.requestOptions, error: retryError),
             handler,
           );
         }
@@ -231,7 +223,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // forward via err.copyWith would cause RemoteExceptionThrower to
       // misclassify it as BadCredentialsException and log the user out.
       if (e is DioException && e.response != null) {
-        return super.onError(err.copyWith(error: e), handler);
+        return super.onError(e, handler);
       }
       return super.onError(
         DioException(requestOptions: err.requestOptions, error: e),

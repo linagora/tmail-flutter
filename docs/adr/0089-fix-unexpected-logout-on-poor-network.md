@@ -65,12 +65,16 @@ void handleGetSessionFailure(GetSessionFailure failure) {
 
 ## Decision
 
-### Fix 1 — Strip 401 response from DioException on network-only failure (inner catch)
+### Fix 1 — Pass errors directly without preserving stale 401 response
 
-When `refreshError.response == null` (no HTTP response = pure network error), construct a fresh `DioException` without the original 401 `response` field. Apply the same pattern to the retry failure catch block. Checking `response == null` correctly covers all network-layer failures — timeouts, send/receive timeouts, socket errors — while leaving real HTTP error responses (400, 401, 5xx) to propagate normally.
+The root cause of all `err.copyWith` variants is the same: `copyWith` replaces only the `error` payload while leaving the original `response` field (the 401) intact. The correct fix is to never use `err.copyWith` when forwarding errors from the refresh or retry paths — pass each error directly so it carries its own response (or none).
+
+**Refresh failure path (inner catch):**
+
+- `response == null` (network failure) → fresh `DioException` without any response.
+- `response != null` and not 400 (e.g. 5xx from the refresh endpoint) → pass `refreshError` directly. Previously `err.copyWith(error: refreshError)` carried the original 401 response, which caused `RemoteExceptionThrower` to classify a real 5xx as `BadCredentialsException`.
 
 ```dart
-// Refresh failure path
 } else if (refreshError.response == null) {
   return super.onError(
     DioException(
@@ -82,34 +86,34 @@ When `refreshError.response == null` (no HTTP response = pure network error), co
     handler,
   );
 } else {
-  return super.onError(err.copyWith(error: refreshError), handler);
+  return super.onError(refreshError, handler); // pass directly — own response, not stale 401
 }
+```
 
-// Retry failure path
+**Retry failure path:**
+
+Simplified to a single type check. Any `DioException` from the retry is passed directly (carries its own response or none). Non-DioException is wrapped in a fresh `DioException` with no response.
+
+```dart
 } catch (retryError) {
-  if (retryError is DioException && retryError.response == null) {
-    return super.onError(
-      DioException(
-        requestOptions: err.requestOptions,
-        type: retryError.type,
-        error: retryError.error,
-        message: retryError.message,
-      ),
-      handler,
-    );
+  if (retryError is DioException) {
+    return super.onError(retryError, handler);
   }
-  return super.onError(err.copyWith(error: retryError), handler);
+  return super.onError(
+    DioException(requestOptions: err.requestOptions, error: retryError),
+    handler,
+  );
 }
 ```
 
 ### Fix 3 — Strip 401 response in outer catch for non-DioException network errors
 
-The outer `catch (e, stackTrace)` in `onError` previously used `err.copyWith(error: e)` for all exceptions that were not `ServerError`/`TemporarilyUnavailable`. This is wrong for `FlutterAppAuthPlatformException` and any other non-DioException thrown during token refresh on poor network. The only case where preserving the original response is meaningful is when `e` is itself a `DioException` that carries a real HTTP error response. All other cases should produce a fresh `DioException` without the 401.
+The outer `catch (e, stackTrace)` in `onError` handles all exceptions that escape the inner `on DioException catch` — primarily non-DioException types such as `FlutterAppAuthPlatformException`, `PlatformException`, and `OAuthAuthorizationError` from the OIDC token refresh on mobile. The `if (e is DioException && e.response != null)` branch also previously called `err.copyWith(error: e)`, preserving the original 401 response. The fix passes `e` directly.
 
 ```dart
-// Outer catch — replaces the old ServerError/TemporarilyUnavailable + else split
+// Outer catch — final state
 if (e is DioException && e.response != null) {
-  return super.onError(err.copyWith(error: e), handler);
+  return super.onError(e, handler); // pass e directly — own response, not stale 401
 }
 return super.onError(
   DioException(requestOptions: err.requestOptions, error: e),
@@ -117,7 +121,7 @@ return super.onError(
 );
 ```
 
-This subsumes the old `ServerError`/`TemporarilyUnavailable` branch (those are not `DioException`, so `e is DioException` is false → fresh `DioException`) and covers `FlutterAppAuthPlatformException` and any other future non-DioException.
+This subsumes the old `ServerError`/`TemporarilyUnavailable` branch (those are not `DioException`, so `e is DioException` is false → fresh `DioException`) and covers `FlutterAppAuthPlatformException` and any other future non-DioException. The `e is DioException && e.response != null` branch is effectively unreachable from the refresh path (all `DioException` types from the inner try are caught by the inner `on DioException catch` first), but is retained as a defensive guard.
 
 ### Fix 2 — Guard `handleGetSessionFailure` against network exceptions
 
@@ -140,8 +144,9 @@ void handleGetSessionFailure(GetSessionFailure failure) {
 ## Consequences
 
 - Network timeouts during token refresh or retry no longer cause logout; a connectivity error is propagated instead.
-- `FlutterAppAuthPlatformException` from `_appAuth.token()` on mobile (OIDC, no internet) no longer causes logout — covered by Fix 3.
+- Non-network DioExceptions from the refresh endpoint (e.g. 5xx) are now propagated with their own status code — no longer misclassified as `BadCredentialsException` via the stale 401 response.
+- `FlutterAppAuthPlatformException` and raw `PlatformException` from `_appAuth.token()` on mobile (OIDC, no internet) no longer cause logout — covered by Fix 3.
 - Session fetch failure on poor network shows a toast; user stays logged in.
-- Fix 1 does not change behaviour when the refresh or retry receives an actual HTTP error response (400, 401, 5xx) — those still propagate correctly.
-- Fix 3 preserves the original `err` response only when `e` itself is a `DioException` with a non-null HTTP response, which cannot happen from inside the `on DioException catch` block (those are already handled there). The condition is thus effectively always false for exceptions that reach the outer catch from the refresh path, but is retained as a safe guard.
+- Real HTTP error responses (400, 401, 5xx) from the refresh endpoint or the original request still propagate correctly.
+- Fix 3 preserves the original `err` response only when `e` itself is a `DioException` with a non-null HTTP response; that branch is effectively unreachable from the current code paths (all `DioException` types from the inner try are caught by the inner `on DioException catch` first) but is retained as a defensive guard.
 - Fix 2 does not affect `validateUrgentException` — that early-exit path is unchanged.

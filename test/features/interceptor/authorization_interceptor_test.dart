@@ -520,7 +520,7 @@ void main() {
 
     test(
       'WHEN refresh fails with 500 DioException\n'
-      'THEN propagate original error via super.onError\n'
+      'THEN propagate refreshError directly (not stale 401)\n'
       'AND OIDC state is NOT cleared',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
@@ -553,7 +553,12 @@ void main() {
 
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(isA<DioException>()),
+          // Fix path 1: must carry the refresh error's own 500 response,
+          // NOT the original 401 — otherwise RemoteExceptionThrower
+          // would classify it as BadCredentialsException and log user out.
+          throwsA(predicate<DioException>(
+            (e) => e.response?.statusCode == responseStatusCode500,
+          )),
         );
 
         expect(
@@ -1403,7 +1408,7 @@ void main() {
 
     test(
       'WHEN refresh succeeds but retry gets 500\n'
-      'THEN error is propagated\n'
+      'THEN propagated error carries 500 (not stale 401)\n'
       'AND OIDC state is preserved',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
@@ -1451,7 +1456,11 @@ void main() {
 
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(isA<DioException>()),
+          // Fix path 2: retry error propagated directly — must carry 500,
+          // NOT the original 401 (which would trigger BadCredentialsException).
+          throwsA(predicate<DioException>(
+            (e) => e.response?.statusCode == responseStatusCode500,
+          )),
         );
 
         // OIDC state should NOT be cleared (only 400 clears state)
