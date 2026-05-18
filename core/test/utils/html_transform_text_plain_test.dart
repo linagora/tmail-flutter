@@ -104,7 +104,7 @@ void main() {
       test('SHOULD block <script> tag injected in plain text', () {
         expect(
           transform('Hello <script>alert("xss")</script> world'),
-          isNot(contains('<script>')),
+          isNot(contains(RegExp(r'<script\b', caseSensitive: false))),
         );
       });
 
@@ -113,7 +113,7 @@ void main() {
         // (< → &lt;, > → &gt;). No actual <img> element is produced so the
         // onerror attribute cannot fire.
         const input = 'Click <img src="https://tracker.com/1x1.gif" onerror="alert(1)"> here';
-        expect(transform(input), isNot(contains('<img ')));
+        expect(transform(input), isNot(contains(RegExp(r'<img\b', caseSensitive: false))));
       });
 
       test('SHOULD prevent inline event handler from executing — tag becomes escaped text', () {
@@ -121,7 +121,7 @@ void main() {
         // actual <div> element is produced and onclick cannot fire.
         expect(
           transform('<div onclick="steal()">Click me</div>'),
-          isNot(contains('<div ')),
+          isNot(contains(RegExp(r'<div\b', caseSensitive: false))),
         );
       });
     });

@@ -35,6 +35,9 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
   }
 
   Future<void> _expectSaveDraftSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(find.text(l10n.drafts_saved)));
+    await $.waitUntilVisible(
+      $(find.text(l10n.drafts_saved)),
+      timeout: const Duration(seconds: 30),
+    );
   }
 }

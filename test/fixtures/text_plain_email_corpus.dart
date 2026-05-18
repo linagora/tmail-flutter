@@ -19,18 +19,16 @@ abstract final class TextPlainEmailCorpus {
   // ─── Backslash namespace / path patterns ──────────────────────────────────
   static const String phpNamespace =
       r'Unhandled exception: \App\DB\Exception\AuthFailed — access denied';
-  static const String phpStackTrace =
-      r'Fatal error: Uncaught \App\Http\Exception\NotFound' '\n'
-      r'Stack trace: #0 \App\Router\Dispatcher::dispatch()' '\n'
-      'In file: /var/www/html/public/index.php on line 42';
+  static const String phpStackTrace = r'''Fatal error: Uncaught \App\Http\Exception\NotFound
+Stack trace: #0 \App\Router\Dispatcher::dispatch()
+In file: /var/www/html/public/index.php on line 42''';
   static const String windowsFilePath =
       r'C:\Users\Admin\AppData\Local\Temp\error.log';
   static const String goPackagePath =
       r'FAILED: \github.com\org\repo\pkg\handler\main.go';
-  static const String phpNamespaceWithUrl =
-      'On Monday, Alice wrote:\n'
-      r"throw new \App\DB\Exception\AuthFailed('access denied');" '\n'
-      'See https://jira.example.com/issues/1234 for context.';
+  static const String phpNamespaceWithUrl = r'''On Monday, Alice wrote:
+throw new \App\DB\Exception\AuthFailed('access denied');
+See https://jira.example.com/issues/1234 for context.''';
 
   // ─── HTML-special characters ───────────────────────────────────────────────
   static const String ampersand = 'Tom & Jerry';

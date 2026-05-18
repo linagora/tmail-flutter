@@ -94,14 +94,20 @@ void main() {
 
     group('XSS and injection blocking', () {
       test('SHOULD block <script> tag embedded in plain text email', () async {
-        expect((await transformPlain(TextPlainEmailCorpus.scriptTag)).content, isNot(contains('<script>')));
+        expect(
+          (await transformPlain(TextPlainEmailCorpus.scriptTag)).content,
+          isNot(contains(RegExp(r'<script\b', caseSensitive: false))),
+        );
       });
 
       test('SHOULD prevent <img> pixel tracker from executing — tag becomes escaped text', () async {
         // When <img> appears in a plain-text email, Layer 1 HTML-escapes its
         // delimiters (< → &lt;, > → &gt;). No actual <img> element is produced
         // so onerror cannot fire.
-        expect((await transformPlain(TextPlainEmailCorpus.imgTracker)).content, isNot(contains('<img ')));
+        expect(
+          (await transformPlain(TextPlainEmailCorpus.imgTracker)).content,
+          isNot(contains(RegExp(r'<img\b', caseSensitive: false))),
+        );
       });
     });
 
