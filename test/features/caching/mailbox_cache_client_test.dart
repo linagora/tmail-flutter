@@ -13,8 +13,8 @@ void main() {
 
   late MailboxCacheClient mailboxCacheClient;
 
-  setUpAll(() {
-    HiveCacheConfig.instance.setUp(cachePath: Directory.current.path);
+  setUpAll(() async {
+    await HiveCacheConfig.instance.setUp(cachePath: Directory.current.path);
   });
 
   setUp(() {
