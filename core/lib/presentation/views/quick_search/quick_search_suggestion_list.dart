@@ -147,6 +147,7 @@ class QuickSearchSuggestionListState<T, P, R>
       });
 
       final recentItems = await _getListRecent(queryString);
+      if (!mounted) return;
 
       setState(() {
         _isLoading = false;
@@ -232,6 +233,7 @@ class QuickSearchSuggestionListState<T, P, R>
 
     if (queryString.isEmpty) {
       final recentItems = await _getListRecent(queryString);
+      if (!mounted) return;
 
       setState(() {
         _animationController?.forward(from: widget.animationStart);
@@ -252,10 +254,12 @@ class QuickSearchSuggestionListState<T, P, R>
       if (queryString.length >= (widget.minInputLengthAutocomplete ?? 0))
         _getListContact(queryString),
     ]);
+    if (!mounted) return;
 
     if (tupleListItems.isEmpty ||
         tupleListItems.every((item) => item == null || item.isEmpty)) {
       recentItems = await _getListRecent(queryString);
+      if (!mounted) return;
     } else {
       suggestions = tupleListItems[0] as Iterable<T>?;
       contacts =
