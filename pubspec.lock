@@ -2084,10 +2084,10 @@ packages:
     description:
       path: sanitize_html
       ref: support_mail
-      resolved-ref: "21f9da9bc177f5f29bc871d70f0b5f5fa2085d89"
+      resolved-ref: "8ca32f013de5d7c9973209651498fddc7d1b6299"
       url: "https://github.com/linagora/dart-neats.git"
     source: git
-    version: "3.0.1"
+    version: "3.0.2"
   scribe:
     dependency: "direct main"
     description:
