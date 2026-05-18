@@ -313,9 +313,9 @@ void main() {
       // arrange
       const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
       const expectedEventDescription = '<html><head></head><body>'
-        '<a href="https://example1.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example1.com</a>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example2.com</a>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
@@ -361,20 +361,24 @@ void main() {
     test(
       'should transform all calendar event description url to a tag '
       'and all new line to <br> tag '
-      'and remove all xss attempt',
+      'and neutralise all xss attempt by HTML-escaping them as text',
     () async {
       // arrange
+      // XSS tags in ICS descriptions are plain text — the new pipeline
+      // (SanitizeAutolinkHtmlTransformers with escapeHtml:true) converts
+      // < and > to &lt;/&gt; so they render as visible text, not markup.
       const eventDescription = '\nhttps://example1.com'
         '\nhttps://example2.com'
         '\n<script>alert(1)</script>'
         '\n<a href="javascript:alert(1)">href xss</a>';
       const expectedEventDescription = '<html><head></head><body>'
-        '<a href="https://example1.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example1.com</a>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example2.com</a>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
         '<br>'
+        '&lt;script&gt;alert(1)&lt;/script&gt;'
         '<br>'
-        '<a>href xss</a>'
+        '&lt;a href="javascript:alert(1)"&gt;href xss&lt;/a&gt;'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
