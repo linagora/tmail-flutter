@@ -19,7 +19,7 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
     await composerRobot.tapSaveButtonOnSaveDraftConfirmDialog(l10n);
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 1));
+    await $.pumpAndTrySettle();
     await _expectSaveDraftSuccessToast(l10n);
     await $.pumpAndTrySettle();
   }
@@ -35,9 +35,6 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
   }
 
   Future<void> _expectSaveDraftSuccessToast(AppLocalizations l10n) async {
-    await $.waitUntilVisible(
-      $(find.text(l10n.drafts_saved)),
-      timeout: const Duration(seconds: 30),
-    );
+    await expectViewVisible($(find.text(l10n.drafts_saved)));
   }
 }

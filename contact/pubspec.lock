@@ -1051,11 +1051,11 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: "fix/tighten-unicode-escape-regex"
-      resolved-ref: fefbb2dbdb63fa994ba28bd4551d4447dc7c60db
+      ref: support_mail
+      resolved-ref: "8ca32f013de5d7c9973209651498fddc7d1b6299"
       url: "https://github.com/linagora/dart-neats.git"
     source: git
-    version: "3.0.1"
+    version: "3.0.2"
   sentry:
     dependency: transitive
     description:

@@ -33,7 +33,7 @@ dependencies:
   sanitize_html:
     git:
       url: https://github.com/linagora/dart-neats.git
-      ref: fix/tighten-unicode-escape-regex
+      ref: support_mail
       path: sanitize_html
 
   ### Dependencies from pub.dev ###
