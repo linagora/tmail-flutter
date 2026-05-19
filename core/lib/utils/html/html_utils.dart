@@ -405,6 +405,7 @@ class HtmlUtils {
       </head>
       <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden; ${contentPadding != null ? 'margin: $contentPadding;' : ''}";>
       <div class="tmail-content">$content</div>
+      <style>html, body { height: auto !important; }</style>
       ${javaScripts ?? ''}
       </body>
       </html> 
