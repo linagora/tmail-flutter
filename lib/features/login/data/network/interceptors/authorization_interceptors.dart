@@ -151,37 +151,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             stackTrace: st,
           );
 
-          if (refreshError is ServerError ||
-              refreshError is TemporarilyUnavailable) {
-            return super.onError(
-              DioException(
-                requestOptions: err.requestOptions,
-                error: refreshError,
-              ),
-              handler,
-            );
-          } else if (PlatformInfo.isMobile && refreshError.response == null) {
-            // Mobile only: network failure during refresh — don't carry the
-            // original 401 response forward, as that would make
-            // RemoteExceptionThrower classify this as BadCredentialsException
-            // and log the user out.
-            return super.onError(
-              DioException(
-                requestOptions: err.requestOptions,
-                type: refreshError.type,
-                error: refreshError.error,
-                message: refreshError.message,
-              ),
-              handler,
-            );
-          } else {
-            return super.onError(
-              PlatformInfo.isMobile
-                  ? refreshError
-                  : err.copyWith(error: refreshError),
-              handler,
-            );
-          }
+          return _handleDioRefreshError(
+            refreshError: refreshError,
+            originalError: err,
+            handler: handler,
+          );
         }
       } else {
         logTrace(
@@ -251,6 +225,43 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err.copyWith(error: e), handler);
       }
+    }
+  }
+
+  void _handleDioRefreshError({
+    required DioException refreshError,
+    required DioException originalError,
+    required ErrorInterceptorHandler handler,
+  }) {
+    if (refreshError is ServerError || refreshError is TemporarilyUnavailable) {
+      return super.onError(
+        DioException(
+          requestOptions: originalError.requestOptions,
+          error: refreshError,
+        ),
+        handler,
+      );
+    } else if (PlatformInfo.isMobile && refreshError.response == null) {
+      // Mobile only: network failure during refresh — don't carry the
+      // original 401 response forward, as that would make
+      // RemoteExceptionThrower classify this as BadCredentialsException
+      // and log the user out.
+      return super.onError(
+        DioException(
+          requestOptions: originalError.requestOptions,
+          type: refreshError.type,
+          error: refreshError.error,
+          message: refreshError.message,
+        ),
+        handler,
+      );
+    } else {
+      return super.onError(
+        PlatformInfo.isMobile
+            ? refreshError
+            : originalError.copyWith(error: refreshError),
+        handler,
+      );
     }
   }
 
