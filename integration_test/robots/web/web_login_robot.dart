@@ -1,3 +1,4 @@
+import '../../utils/test_timer.dart';
 import '../mobile/mobile_login_robot.dart';
 
 class WebLoginRobot extends MobileLoginRobot {
@@ -10,8 +11,9 @@ class WebLoginRobot extends MobileLoginRobot {
     required String email,
     required String password,
   }) async {
-    await enterBasicAuthEmail(email);
-    await enterBasicAuthPassword(password);
-    await loginBasicAuth();
+    final t = TestTimer();
+    await t.timedStep('login_enter_email', () => enterBasicAuthEmail(email));
+    await t.timedStep('login_enter_password', () => enterBasicAuthPassword(password));
+    await t.timedStep('login_submit', loginBasicAuth);
   }
 }

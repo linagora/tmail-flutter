@@ -123,3 +123,4 @@ messages_*.dart
 test_bundle.dart
 playwright-report
 test-results
+integration_test/report/

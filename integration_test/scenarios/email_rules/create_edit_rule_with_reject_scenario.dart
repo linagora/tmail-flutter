@@ -26,83 +26,65 @@ class CreateEditRuleWithRejectScenario extends BaseTestScenario {
     final rulesFilterCreatorRobot = robots.rulesFilterCreatorRobot();
     final emailRulesSettingRobot = robots.emailRulesSettingRobot();
 
-    await provisionEmail(
-      [
-        ProvisioningEmail(
-          toEmail: emailUser,
-          subject: _subject,
-          content: _subject,
-        ),
-      ],
+    await timedStep('provision_email', () => provisionEmail(
+      [ProvisioningEmail(toEmail: emailUser, subject: _subject, content: _subject)],
       requestReadReceipt: false,
-    );
+    ));
 
-    await threadRobot.openEmailWithSubject(_subject);
+    await timedStep('open_email', () => threadRobot.openEmailWithSubject(_subject));
 
-    await emailRobot.tapSenderEmailAddress(emailUser);
+    await timedStep('create_rule_from_sender', () async {
+      await emailRobot.tapSenderEmailAddress(emailUser);
+      await emailAddressDialogRobot.tapCreateRuleWithThisEmailAddressButton(appLocalizations);
+      await rulesFilterCreatorRobot.expectCreatorViewVisible();
+    });
 
-    await emailAddressDialogRobot
-        .tapCreateRuleWithThisEmailAddressButton(appLocalizations);
+    await timedStep('configure_reject_rule', () async {
+      await rulesFilterCreatorRobot.enterRuleName(_ruleName);
+      await rulesFilterCreatorRobot.selectEmptyActionSlot(
+        appLocalizations.rejectIt,
+        appLocalizations.selectAction,
+      );
+    });
 
-    await rulesFilterCreatorRobot.expectCreatorViewVisible();
+    await timedStep('create_rule_confirm_warning', () async {
+      await rulesFilterCreatorRobot.tapCreateRuleButton();
+      await rulesFilterCreatorRobot.expectWarningTextVisible(
+        appLocalizations.messageConfirmationRuleWithRejectAction,
+      );
+      await rulesFilterCreatorRobot.confirmWarningDialog(appLocalizations.confirm);
+    });
 
-    await rulesFilterCreatorRobot.enterRuleName(_ruleName);
+    await timedStep('navigate_to_email_rules', () async {
+      await emailRobot.onTapBackButton();
+      await mailboxMenuRobot.openSetting();
+      await settingRobot.openEmailRulesMenuItem();
+      await emailRulesSettingRobot.expectRuleVisible(_ruleName);
+    });
 
-    await rulesFilterCreatorRobot.selectEmptyActionSlot(
-      appLocalizations.rejectIt,
-      appLocalizations.selectAction,
-    );
+    await timedStep('edit_rule_add_actions', () async {
+      await emailRulesSettingRobot.tapEditRule(_ruleName, appLocalizations.editRule);
+      await rulesFilterCreatorRobot.expectCreatorViewVisible();
+      await rulesFilterCreatorRobot.tapAddActionButton();
+      await rulesFilterCreatorRobot.selectEmptyActionSlot(
+        appLocalizations.maskAsSeen,
+        appLocalizations.selectAction,
+      );
+      await rulesFilterCreatorRobot.tapAddActionButton();
+      await rulesFilterCreatorRobot.selectEmptyActionSlot(
+        appLocalizations.starIt,
+        appLocalizations.selectAction,
+      );
+    });
 
-    await rulesFilterCreatorRobot.tapCreateRuleButton();
-
-    await rulesFilterCreatorRobot.expectWarningTextVisible(
-      appLocalizations.messageConfirmationRuleWithRejectAction,
-    );
-
-    await rulesFilterCreatorRobot.confirmWarningDialog(
-      appLocalizations.confirm,
-    );
-
-    await emailRobot.onTapBackButton();
-
-    await mailboxMenuRobot.openSetting();
-
-    await settingRobot.openEmailRulesMenuItem();
-
-    await emailRulesSettingRobot.expectRuleVisible(_ruleName);
-
-    await emailRulesSettingRobot.tapEditRule(
-      _ruleName,
-      appLocalizations.editRule,
-    );
-
-    await rulesFilterCreatorRobot.expectCreatorViewVisible();
-
-    await rulesFilterCreatorRobot.tapAddActionButton();
-
-    await rulesFilterCreatorRobot.selectEmptyActionSlot(
-      appLocalizations.maskAsSeen,
-      appLocalizations.selectAction,
-    );
-
-    await rulesFilterCreatorRobot.tapAddActionButton();
-
-    await rulesFilterCreatorRobot.selectEmptyActionSlot(
-      appLocalizations.starIt,
-      appLocalizations.selectAction,
-    );
-
-    await rulesFilterCreatorRobot.tapCreateRuleButton();
-
-    await rulesFilterCreatorRobot.expectWarningTextVisible(
-      appLocalizations.messageConfirmationRuleWithRejectAction,
-    );
-
-    await rulesFilterCreatorRobot
-        .confirmWarningDialog(appLocalizations.confirm);
-
-    await rulesFilterCreatorRobot.expectCreatorViewClosed();
-
-    await emailRulesSettingRobot.expectRuleVisible(_ruleName);
+    await timedStep('edit_rule_confirm_warning', () async {
+      await rulesFilterCreatorRobot.tapCreateRuleButton();
+      await rulesFilterCreatorRobot.expectWarningTextVisible(
+        appLocalizations.messageConfirmationRuleWithRejectAction,
+      );
+      await rulesFilterCreatorRobot.confirmWarningDialog(appLocalizations.confirm);
+      await rulesFilterCreatorRobot.expectCreatorViewClosed();
+      await emailRulesSettingRobot.expectRuleVisible(_ruleName);
+    });
   }
 }

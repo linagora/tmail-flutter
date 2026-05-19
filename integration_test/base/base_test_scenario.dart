@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/login/data/model/authentication_info_cach
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
+import '../utils/test_timer.dart';
 import '../factories/robot_factory.dart';
 import '../mixin/scenario_utils_mixin.dart';
 import 'base_scenario.dart';
@@ -39,8 +40,8 @@ abstract class BaseTestScenario extends BaseScenario with ScenarioUtilsMixin {
 
   @override
   Future<void> execute() async {
-    await _seedTestCredentials();
-    await runTestLogic();
+    await TestTimer().timedPhase('login', _seedTestCredentials);
+    await TestTimer().timedPhase('test_logic', runTestLogic);
   }
 
   Future<void> runTestLogic();

@@ -16,18 +16,15 @@ class SendEmailScenario extends BaseTestScenario {
     const subject = 'Test subject';
     const content = 'Test content';
 
-    await robots.threadRobot().openComposer();
-    await robots.composerRobot().expectComposerViewVisible();
-
-    await robots.composerRobot().grantContactPermission();
-
-    await robots.composerRobot().addRecipient(PrefixEmailAddress.to, email);
-    await robots.composerRobot().addRecipient(PrefixEmailAddress.to, additionalRecipient);
-    await robots.composerRobot().addSubject(customSubject ?? subject);
-    await robots.composerRobot().addContent(content);
-    await robots.composerRobot().send();
-
-    await _expectSendEmailSuccessToast();
+    await timedStep('open_composer', robots.threadRobot().openComposer);
+    await timedStep('expect_composer', robots.composerRobot().expectComposerViewVisible);
+    await timedStep('grant_contact_permission', robots.composerRobot().grantContactPermission);
+    await timedStep('add_recipient_self', () => robots.composerRobot().addRecipient(PrefixEmailAddress.to, email));
+    await timedStep('add_recipient_extra', () => robots.composerRobot().addRecipient(PrefixEmailAddress.to, additionalRecipient));
+    await timedStep('add_subject', () => robots.composerRobot().addSubject(customSubject ?? subject));
+    await timedStep('add_content', () => robots.composerRobot().addContent(content));
+    await timedStep('send', robots.composerRobot().send);
+    await timedStep('expect_success_toast', _expectSendEmailSuccessToast);
   }
 
   Future<void> _expectSendEmailSuccessToast() async {

@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
+import '../utils/test_timer.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -41,15 +42,25 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        await setupTest();
-        await scenarioBuilder($, createRobotFactory($)).execute();
+        // Fire before startTest so harness_setup→test_body_start delta isolates
+        // patrol's internal setUp-to-test scheduling overhead.
+        await BackendResetClient.postEvent('test_body_start');
+        TestTimer().startTest(description);
+        await TestTimer().timedPhase('app_launch', setupTest);
+        try {
+          await scenarioBuilder($, createRobotFactory($)).execute();
+          TestTimer().recordStatus('passed');
+        } catch (_) {
+          TestTimer().recordStatus('failed');
+          rethrow;
+        }
       },
     );
   }
 
   Future<void> setupTest() async {
-    await EnvLoader.loadEnvFile();
-    await runTmail();
+    await TestTimer().timedStep('env_load', EnvLoader.loadEnvFile);
+    await TestTimer().timedStep('app_start', runTmail);
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -59,10 +70,13 @@ class TestBase {
 
   Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
+    await BackendResetClient.postEvent('harness_setup');
   }
 
   Future<void> _tearDown() async {
     PlatformInfo.isIntegrationTesting = false;
-    await BackendResetClient.reset();
+    await TestTimer().timedPhase('backend_reset', BackendResetClient.reset);
+    await TestTimer().printReport();
+    await BackendResetClient.postEvent('harness_teardown_end');
   }
 }

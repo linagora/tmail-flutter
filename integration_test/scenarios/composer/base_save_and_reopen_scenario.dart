@@ -50,36 +50,45 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
 
     await onPreComposerSetup();
 
-    await threadRobot.openComposer();
-    await composerRobot.expectComposerViewVisible();
-    await composerRobot.grantContactPermission();
+    await timedStep('open_composer', () => threadRobot.openComposer());
+    await timedStep('expect_composer', () => composerRobot.expectComposerViewVisible());
+    await timedStep('grant_contact_permission', () => composerRobot.grantContactPermission());
 
-    await composerRobot.addRecipient(PrefixEmailAddress.to, email);
-    await composerRobot.addSubject(uniqueSubject);
+    await timedStep('add_recipient', () => composerRobot.addRecipient(PrefixEmailAddress.to, email));
+    await timedStep('add_subject', () => composerRobot.addSubject(uniqueSubject));
 
     final bytes = base64Decode(TestImages.base64);
-    await attachContent(composerRobot, bytes);
-    await waitForContentUploaded(composerRobot);
+    await timedStep('attach_content', () async {
+      await attachContent(composerRobot, bytes);
+      await waitForContentUploaded(composerRobot);
+      await onAfterContentUploaded();
+    });
 
-    await onAfterContentUploaded();
+    await timedStep('first_save', () => performFirstSave(composerRobot, appLocalizations));
 
-    await performFirstSave(composerRobot, appLocalizations);
+    await timedStep('navigate_to_folder', () async {
+      if (PlatformInfo.isMobile) {
+        await threadRobot.openMailbox();
+      }
+      await mailboxMenuRobot.openFolderByName(folderDisplayName(appLocalizations));
+      await waitForCondition(() => $(uniqueSubject).exists);
+    });
 
-    if (PlatformInfo.isMobile) {
-      await threadRobot.openMailbox();
-    }
-    await mailboxMenuRobot.openFolderByName(folderDisplayName(appLocalizations));
-    await waitForCondition(() => $(uniqueSubject).exists);
-    await threadRobot.openEmailWithSubject(uniqueSubject);
-    await composerRobot.expectComposerViewVisible();
-    await composerRobot.grantContactPermission();
+    await timedStep('reopen_email', () async {
+      await threadRobot.openEmailWithSubject(uniqueSubject);
+      await composerRobot.expectComposerViewVisible();
+      await composerRobot.grantContactPermission();
+      await onAfterComposerReopened();
+    });
 
-    await onAfterComposerReopened();
+    await timedStep('second_save', () async {
+      await composerRobot.addSubject(' edited');
+      await performSubsequentSave(composerRobot, appLocalizations);
+    });
 
-    await composerRobot.addSubject(' edited');
-    await performSubsequentSave(composerRobot, appLocalizations);
-
-    await composerRobot.addSubject(' again');
-    await performSubsequentSave(composerRobot, appLocalizations);
+    await timedStep('third_save', () async {
+      await composerRobot.addSubject(' again');
+      await performSubsequentSave(composerRobot, appLocalizations);
+    });
   }
 }

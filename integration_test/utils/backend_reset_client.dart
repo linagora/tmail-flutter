@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 
 /// Calls the backend reset server running on the CI host.
@@ -36,7 +35,55 @@ class BackendResetClient {
         throw Exception('Backend reset failed with status ${response.statusCode}');
       }
     } catch (e) {
-      logWarning('Backend reset failed: $e');
+      // Swallow — test outcome must not depend on reset-server availability
+    } finally {
+      dio.close();
+    }
+  }
+
+  /// POSTs [report] JSON to /timing so the host-side reset server can emit
+  /// a [TIMING_REPORT] tag to its stdout log, which the report generator parses.
+  /// Works on any platform where RESET_SERVER_URL is reachable (Android, Web).
+  static Future<void> postTiming(Map<String, dynamic> report) async {
+    if (!isEnabled) return;
+
+    final dio = Dio();
+
+    try {
+      await dio.post(
+        '$_resetUrl/timing',
+        data: report,
+        options: Options(
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
+    } catch (_) {
+      // Timing data loss is acceptable — don't fail the test
+    } finally {
+      dio.close();
+    }
+  }
+
+  /// POSTs a named event to /event. The reset server timestamps it server-side
+  /// and emits [EVENT] to its log, enabling patrol framework overhead analysis
+  /// between harness lifecycle hooks and test execution phases.
+  static Future<void> postEvent(String event) async {
+    if (!isEnabled) return;
+
+    final dio = Dio();
+
+    try {
+      await dio.post(
+        '$_resetUrl/event',
+        data: {'event': event},
+        options: Options(
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
+        ),
+      );
+    } catch (_) {
+      // Event data loss is acceptable — don't fail the test
     } finally {
       dio.close();
     }

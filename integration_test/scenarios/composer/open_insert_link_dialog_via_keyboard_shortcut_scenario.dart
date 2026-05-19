@@ -10,12 +10,10 @@ class OpenInsertLinkDialogViaKeyboardShortcutScenario extends BaseTestScenario {
     final composerRobot = robots.composerRobot();
     final appLocalizations = AppLocalizations();
 
-    await robots.threadRobot().openComposer();
-    await composerRobot.expectComposerViewVisible();
-    await composerRobot.grantContactPermission();
-
-    await composerRobot.openInsertLinkDialogViaKeyboardShortcut();
-
-    await composerRobot.expectInsertLinkDialogVisible(appLocalizations);
+    await timedStep('open_composer', () => robots.threadRobot().openComposer());
+    await timedStep('expect_composer', () => composerRobot.expectComposerViewVisible());
+    await timedStep('grant_contact_permission', () => composerRobot.grantContactPermission());
+    await timedStep('open_insert_link_dialog', () => composerRobot.openInsertLinkDialogViaKeyboardShortcut());
+    await timedStep('expect_insert_link_dialog', () => composerRobot.expectInsertLinkDialogVisible(appLocalizations));
   }
 }

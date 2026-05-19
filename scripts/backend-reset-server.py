@@ -80,10 +80,7 @@ def _delete_user_vault() -> Optional[str]:
     """Submit a vault deletion task. Returns taskId or None if vault is empty."""
     resp = _webadmin("DELETE", f"/deletedMessages?scope=expired")
     print(f"[reset-server] delete_user_vault response: {resp}", flush=True)
-    task_id = resp.get("taskId")
-    if not task_id:
-        raise RuntimeError(f"delete vault for domain {domain} returned no taskId: {resp}")
-    return task_id
+    return resp.get("taskId")
 
 
 def _wait_for_task(task_id: str, timeout: float = 30.0) -> None:
@@ -131,22 +128,33 @@ def _set_quota() -> None:
 
 
 def reset_backend() -> None:
-    print("[reset-server] Deleting user data for all test users...", flush=True)
+    timings: dict = {}
+    total_start = time.time()
 
+    # --- delete domain data ---
+    print("[reset-server] Deleting user data for all test users...", flush=True)
+    t0 = time.time()
     task_id = _delete_domain_data(_TEST_DOMAIN)
     _wait_for_task(task_id)
-    print(f"[reset-server]   cleared {_TEST_DOMAIN}", flush=True)
+    timings['delete_domain_data_ms'] = int((time.time() - t0) * 1000)
+    print(f"[reset-timing] delete_domain_data={timings['delete_domain_data_ms']}ms", flush=True)
 
-    # Clear deleted message vault for all test users.
-    print("[reset-server] Clearing deleted message vault for all test users...", flush=True)
+    # --- clear deleted message vault ---
+    print("[reset-server] Clearing deleted message vault...", flush=True)
+    t0 = time.time()
     task_id = _delete_user_vault()
-    _wait_for_task(task_id)
-    print(f"[reset-server]   cleared vault for {_TEST_DOMAIN}", flush=True)
+    if task_id:
+        _wait_for_task(task_id)
+    timings['delete_user_vault_ms'] = int((time.time() - t0) * 1000)
+    print(f"[reset-timing] delete_user_vault={timings['delete_user_vault_ms']}ms", flush=True)
 
-    # Restore mailbox backup for bob.
+    # --- restore mailbox backup for bob ---
     print(f"[reset-server]   restoring {_BOB_USER}...", flush=True)
+    t0 = time.time()
     task_id = _restore_user_backup(_BOB_USER)
     _wait_for_task(task_id)
+    timings['restore_backup_ms'] = int((time.time() - t0) * 1000)
+    print(f"[reset-timing] restore_backup={timings['restore_backup_ms']}ms", flush=True)
     print(f"[reset-server]   restored {_BOB_USER}", flush=True)
 
     # Recreate team mailbox and quota (these are not restored by mailbox restore).
@@ -154,6 +162,11 @@ def reset_backend() -> None:
     _recreate_team_mailboxes()
     _set_quota()
 
+    timings['total_ms'] = int((time.time() - total_start) * 1000)
+    print(f"[reset-timing] total_reset={timings['total_ms']}ms", flush=True)
+
+    # [RESET_TIMING_REPORT] parsed by scripts/patrol-timing-report.py
+    print(f"[RESET_TIMING_REPORT] {json.dumps(timings)}", flush=True)
     print("[reset-server] Reset complete.", flush=True)
 
 
@@ -169,24 +182,53 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        if self.path != "/reset":
+        if self.path == "/reset":
+            try:
+                reset_backend()
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"ok")
+            except Exception as exc:
+                print(f"[reset-server] ERROR: {exc}", file=sys.stderr, flush=True)
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(exc).encode())
+
+        elif self.path == "/timing":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length).decode("utf-8")
+            try:
+                data = json.loads(body)
+                # [TIMING_REPORT] parsed by scripts/patrol-timing-report.py
+                print(f"[TIMING_REPORT] {json.dumps(data)}", flush=True)
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"ok")
+            except Exception as exc:
+                print(f"[reset-server] ERROR parsing timing: {exc}", file=sys.stderr, flush=True)
+                self.send_response(400)
+                self.end_headers()
+
+        elif self.path == "/event":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length).decode("utf-8")
+            try:
+                data = json.loads(body)
+                # [EVENT] parsed by scripts/patrol-timing-report.py for inter-test gap analysis
+                payload = {"event": data.get("event", "unknown"), "ts_ms": int(time.time() * 1000)}
+                print(f"[EVENT] {json.dumps(payload)}", flush=True)
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"ok")
+            except Exception as exc:
+                print(f"[reset-server] ERROR parsing event: {exc}", file=sys.stderr, flush=True)
+                self.send_response(400)
+                self.end_headers()
+
+        else:
             self.send_response(404)
             self._send_cors_headers()
             self.end_headers()
-            return
-
-        try:
-            reset_backend()
-            self.send_response(200)
-            self._send_cors_headers()
-            self.end_headers()
-            self.wfile.write(b"ok")
-        except Exception as exc:
-            print(f"[reset-server] ERROR: {exc}", file=sys.stderr, flush=True)
-            self.send_response(500)
-            self._send_cors_headers()
-            self.end_headers()
-            self.wfile.write(str(exc).encode())
 
     def log_message(self, fmt, *args):
         print(f"[reset-server] {self.address_string()} - {fmt % args}", flush=True)

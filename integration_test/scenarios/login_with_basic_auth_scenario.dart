@@ -32,7 +32,7 @@ class LoginWithBasicAuthScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
-    await _expectThreadViewVisible();
+    await timedStep('expect_thread_view', _expectThreadViewVisible);
   }
 
   Future<void> _expectThreadViewVisible() => expectViewVisible($(ThreadView));

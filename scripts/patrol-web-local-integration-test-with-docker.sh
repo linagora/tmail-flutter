@@ -1,43 +1,34 @@
 #!/bin/bash
+set -euo pipefail
 
 ## Pre-requisites
-# Install patrol CLI
+#   - patrol_cli installed: dart pub global activate patrol_cli 4.3.1
+#
+# Usage:
+#   ./scripts/patrol-web-local-integration-test-with-docker.sh
 
-# Stop previous environment if any
-cd backend-docker
-docker compose down || true
-cd ..
+# shellcheck source=scripts/patrol-lib.sh
+source "$(dirname "$0")/patrol-lib.sh"
 
-# Forward traffic to tmail-backend
-export BASIC_AUTH_URL="http://localhost"
-export WEBSOCKET_URL="ws://localhost"
+REPORT_DIR="integration_test/report"
+mkdir -p "$REPORT_DIR"
+LOG_FILE="$REPORT_DIR/patrol-web-test-$(date +%Y%m%d-%H%M%S).log"
+REPORT_FILE="$REPORT_DIR/patrol-web-timing-report.html"
 
-cd backend-docker
+BASIC_AUTH_URL="http://localhost"
+WEBSOCKET_URL="ws://localhost"
 
-# Generate keys for tmail backend
-echo "Generating keys for tmail-backend..."
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
-openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+patrol_docker_cleanup
+patrol_jwt_keygen
+patrol_patch_jmap_urls "$BASIC_AUTH_URL" "$WEBSOCKET_URL"
 
-# Replace jmap.properties URLs so James reports the correct public base URL
-# in its JMAP session responses (the app uses these URLs for subsequent requests).
-sed -i '' "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties
+echo "Starting services via Docker..."
+patrol_docker_startup
 
-echo "Starting services and adding users..."
-docker compose up -d
-# Wait till the service is started to add users
-until (docker compose logs tmail-backend | grep -i "JAMES server started"); do
-    echo "Waiting for tmail-backend to start..."
-    sleep 2
-done
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
-
-docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
-
-cd ..
+patrol_initial_provisioning
 
 export RESET_PORT=9999
 
@@ -47,11 +38,10 @@ RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVE
 RESET_SERVER_PID=$!
 
 cleanup() {
-    echo "Cleaning up test environment..."
-    kill "$RESET_SERVER_PID" 2>/dev/null || true
-    cd backend-docker || exit 0
-    docker compose down
-    cd ..
+  echo "Cleaning up test environment..."
+  kill "$RESET_SERVER_PID" 2>/dev/null || true
+  patrol_finalize_report "$LOG_FILE" "$REPORT_FILE" "$RESET_SERVER_LOG"
+  (cd "$BACKEND_DIR" && docker compose down)
 }
 trap cleanup EXIT
 
@@ -59,7 +49,7 @@ echo "Copying integration_test/integration_test_env.file to env.file..."
 cp integration_test/integration_test_env.file env.file
 
 echo "Building the app and running tests..."
-patrol test -v \
+patrol_run_timed \
     --tags=web \
     --device=chrome \
     --web-port=3000 \
@@ -70,3 +60,5 @@ patrol test -v \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
     --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT"
+
+exit $_PATROL_EXIT
