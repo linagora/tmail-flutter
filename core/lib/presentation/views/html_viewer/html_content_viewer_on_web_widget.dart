@@ -84,6 +84,23 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
   @override
   State<HtmlContentViewerOnWeb> createState() => _HtmlContentViewerOnWebState();
+
+  /// Returns true when [scrollHeightWithBuffer] should become the new iframe
+  /// height. Returns false when it already equals [currentActualHeight]
+  /// (prevents the infinite loop caused by emails that set
+  /// `html, body { height: 100% }`).
+  @visibleForTesting
+  static bool shouldUpdateHeight({
+    required double scrollHeightWithBuffer,
+    required double currentActualHeight,
+    required double minHeight,
+    required bool autoAdjust,
+  }) {
+    if (scrollHeightWithBuffer == currentActualHeight) return false;
+    return autoAdjust
+        ? scrollHeightWithBuffer >= minHeight
+        : scrollHeightWithBuffer > minHeight;
+  }
 }
 
 class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
@@ -243,13 +260,15 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void _handleContentHeightEvent(dynamic height) {
     final docHeight = height ?? _actualHeight;
     if (docHeight != null && mounted) {
-      final scrollHeightWithBuffer = docHeight + widget.offsetHtmlContentHeight;
+      final scrollHeightWithBuffer = (docHeight as num).toDouble() + widget.offsetHtmlContentHeight;
       log('$runtimeType::_handleContentHeightEvent: ScrollHeightWithBuffer = $scrollHeightWithBuffer');
-      bool isHeightChanged = widget.autoAdjustHeight
-        ? scrollHeightWithBuffer >= minHeight
-        : scrollHeightWithBuffer > minHeight;
 
-      if (isHeightChanged) {
+      if (HtmlContentViewerOnWeb.shouldUpdateHeight(
+        scrollHeightWithBuffer: scrollHeightWithBuffer,
+        currentActualHeight: _actualHeight,
+        minHeight: minHeight,
+        autoAdjust: widget.autoAdjustHeight,
+      )) {
         setState(() {
           _actualHeight = scrollHeightWithBuffer;
           _isLoading = false;
@@ -395,6 +414,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
+          ${!widget.autoAdjustHeight ? '''
+            clearTimeout(_resizeDebounceTimer);
+            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
+          ''' : ''}
         });
       
         function handleMessage(e) {
@@ -421,9 +444,16 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         }
 
         ${!widget.autoAdjustHeight ? '''
+          var _lastResizeHeight = 0;
+          var _resizeDebounceTimer;
           const resizeObserver = new ResizeObserver((entries) => {
-            var height = document.body.scrollHeight;
-            window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+            clearTimeout(_resizeDebounceTimer);
+            _resizeDebounceTimer = setTimeout(function() {
+              var height = document.body.scrollHeight;
+              if (height === _lastResizeHeight) return;
+              _lastResizeHeight = height;
+              window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+            }, 50);
           });
         ''' : ''}
         
