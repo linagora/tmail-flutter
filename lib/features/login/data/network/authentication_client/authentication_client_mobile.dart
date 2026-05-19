@@ -81,8 +81,12 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
         refreshToken,
         scopes,
       );
+      logTrace(
+        '$runtimeType::refreshingTokensOIDC(): BEGIN appAuth.token',
+        extras: {'clientId': clientId, 'discoveryUrl': discoveryUrl},
+      );
       final tokenResponse = await _appAuth.token(tokenRequest);
-      log('$runtimeType::refreshingTokensOIDC():Token: ${tokenResponse.accessToken}');
+      logTrace('$runtimeType::refreshingTokensOIDC(): END appAuth.token');
       final tokenOIDC = tokenResponse.toTokenOIDC(
         maybeAvailableRefreshToken: refreshToken,
       );
@@ -91,8 +95,13 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
       } else {
         throw AccessTokenInvalidException();
       }
-    } catch (e) {
-      logWarning('$runtimeType::refreshingTokensOIDC(): $e');
+    } catch (e, st) {
+      logError(
+        '$runtimeType::refreshingTokensOIDC(): FAILED appAuth.token',
+        exception: e,
+        stackTrace: st,
+        extras: {'errorType': e.runtimeType.toString()},
+      );
       throw handleException(e);
     }
   }

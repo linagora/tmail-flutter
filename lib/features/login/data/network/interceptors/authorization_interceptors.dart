@@ -92,6 +92,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       bool isRetryRequest = false;
 
       final hasAttemptedRefresh = extraInRequest[_refreshAttemptedKey] == true;
+      final isUploadRequest =
+          extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey);
+
+      logTrace(
+        'AuthorizationInterceptors::onError(): BEGIN',
+        extras: {
+          'url': requestOptions.uri.toString(),
+          'status': err.response?.statusCode,
+          'hasAttemptedRefresh': hasAttemptedRefresh,
+          'isUpload': isUploadRequest,
+        },
+      );
 
       if (!hasAttemptedRefresh && validateToRetryTheRequestWithNewToken(
         responseStatusCode: err.response?.statusCode,
@@ -105,10 +117,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         tokenOIDC: _token
       )) {
         try {
-          log('AuthorizationInterceptors::onError: Perform get New Token');
+          logTrace(
+            'AuthorizationInterceptors::onError(): BEGIN refresh',
+            extras: {'tokenId': _token?.tokenIdHash},
+          );
           final newTokenOidc = PlatformInfo.isIOS
             ? await _getNewTokenForIOSPlatform()
             : await _getNewTokenForOtherPlatform();
+          logTrace(
+            'AuthorizationInterceptors::onError(): END refresh',
+            extras: {'newTokenId': newTokenOidc.tokenIdHash.toString()},
+          );
 
           if (newTokenOidc.token == _token?.token) {
             log('AuthorizationInterceptors::onError: Token duplicated');
@@ -127,9 +146,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         } on DioException catch (refreshError, st) {
           if (refreshError.response?.statusCode == 400) {
             logError(
-              'AuthorizationInterceptors: Refresh Token Failed 400',
+              'AuthorizationInterceptors::onError(): FAILED refresh (400)',
               exception: refreshError,
               stackTrace: st,
+              extras: {
+                'status': refreshError.response?.statusCode,
+                'type': refreshError.type.toString(),
+              },
             );
 
             clear();
@@ -145,10 +168,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           }
 
           logError(
-            'AuthorizationInterceptors: Refresh token failed with '
-            'statusCode=${refreshError.response?.statusCode}',
+            'AuthorizationInterceptors::onError(): FAILED refresh',
             exception: refreshError,
             stackTrace: st,
+            extras: {
+              'status': refreshError.response?.statusCode,
+              'type': refreshError.type.toString(),
+            },
           );
 
           if (refreshError is ServerError ||
@@ -166,26 +192,41 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         }
       } else {
         logTrace(
-          'AuthorizationInterceptors::onError: '
-          'No retry or refresh applicable. '
-          'statusCode = ${err.response?.statusCode} | '
-          'authType = $_authenticationType | '
-          'hasConfig = ${_configOIDC != null} | '
-          'hasAttemptedRefresh = $hasAttemptedRefresh | '
-          'url = ${err.requestOptions.uri}',
+          'AuthorizationInterceptors::onError(): no retry or refresh applicable',
+          extras: {
+            'status': err.response?.statusCode,
+            'authType': _authenticationType.toString(),
+            'hasConfig': _configOIDC != null,
+            'hasAttemptedRefresh': hasAttemptedRefresh,
+            'url': err.requestOptions.uri.toString(),
+          },
           webConsoleEnabled: true,
         );
         return super.onError(err, handler);
       }
 
       if (isRetryRequest) {
+        logTrace(
+          'AuthorizationInterceptors::onError(): BEGIN retry',
+          extras: {
+            'url': requestOptions.uri.toString(),
+            'isUpload': isUploadRequest,
+            'tokenId': _token?.tokenIdHash.toString(),
+          },
+        );
         try {
           final response = await _retryRequest(requestOptions, extraInRequest);
+          logTrace(
+            'AuthorizationInterceptors::onError(): END retry',
+            extras: {'status': response.statusCode},
+          );
           return handler.resolve(response);
-        } catch (retryError) {
+        } catch (retryError, st) {
           logError(
-            'AuthorizationInterceptors::onError: '
-            'Retry failed with error=$retryError',
+            'AuthorizationInterceptors::onError(): FAILED retry',
+            exception: retryError,
+            stackTrace: st,
+            extras: {'errorType': retryError.runtimeType.toString()},
           );
           return super.onError(
             err.copyWith(error: retryError),
@@ -197,9 +238,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       }
     } catch (e, stackTrace) {
       logError(
-        'AuthorizationInterceptors::onError:Exception: $e',
+        'AuthorizationInterceptors::onError(): outer catch',
         exception: e,
         stackTrace: stackTrace,
+        extras: {'errorType': e.runtimeType.toString()},
       );
       if (e is ServerError || e is TemporarilyUnavailable) {
         return super.onError(

@@ -107,6 +107,13 @@ class FileUploader {
         }
       };
 
+      logTrace(
+        'FileUploader::_handleUploadAttachmentAction(): BEGIN post (isolate)',
+        extras: {
+          'url': argsUpload.uploadUri.toString(),
+          'size': argsUpload.fileInfo.fileSize,
+        },
+      );
       final resultJson = await argsUpload.dioClient.post(
         Uri.decodeFull(argsUpload.uploadUri.toString()),
         options: Options(
@@ -129,7 +136,7 @@ class FileUploader {
           );
         }
       );
-      log('FileUploader::_handleUploadAttachmentAction(): RESULT_JSON = $resultJson');
+      logTrace('FileUploader::_handleUploadAttachmentAction(): END post (isolate)');
       if (argsUpload.fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
         final fileBytes = argsUpload.fileInfo.filePath?.isNotEmpty == true
           ? File(argsUpload.fileInfo.filePath!).readAsBytesSync()
@@ -147,13 +154,26 @@ class FileUploader {
           resultJson: resultJson,
           fileName: argsUpload.fileInfo.fileName);
       }
-    } on DioException catch (exception) {
-      logWarning('FileUploader::_handleUploadAttachmentAction():DioException: $exception');
+    } on DioException catch (exception, st) {
+      logError(
+        'FileUploader::_handleUploadAttachmentAction(): FAILED post (isolate, DioException)',
+        exception: exception,
+        stackTrace: st,
+        extras: {
+          'status': exception.response?.statusCode,
+          'type': exception.type.toString(),
+        },
+      );
 
       throw exception.copyWith(
         requestOptions: exception.requestOptions.copyWith(data: ''));
-    } catch (exception) {
-      logWarning('FileUploader::_handleUploadAttachmentAction():OtherException: $exception');
+    } catch (exception, st) {
+      logError(
+        'FileUploader::_handleUploadAttachmentAction(): FAILED post (isolate, Other)',
+        exception: exception,
+        stackTrace: st,
+        extras: {'type': exception.runtimeType.toString()},
+      );
 
       rethrow;
     }
@@ -179,26 +199,55 @@ class FileUploader {
       }
     };
 
-    final resultJson = await _dioClient.post(
-      Uri.decodeFull(uploadUri.toString()),
-      options: Options(
-        headers: headerParam,
-        extra: mapExtra
-      ),
-      data: BodyBytesStream.fromBytes(fileInfo.bytes!),
-      cancelToken: cancelToken,
-      onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentActionOnMainIsolate():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
-        onSendController?.add(
-          Right(UploadingAttachmentUploadState(
-            uploadId,
-            count,
-            fileInfo.fileSize
-          ))
-        );
-      }
+    logTrace(
+      'FileUploader::_handleUploadAttachmentActionOnMainIsolate(): BEGIN post (main)',
+      extras: {
+        'url': uploadUri.toString(),
+        'size': fileInfo.fileSize,
+      },
     );
-    log('FileUploader::_handleUploadAttachmentActionOnMainIsolate(): RESULT_JSON = $resultJson');
+    final dynamic resultJson;
+    try {
+      resultJson = await _dioClient.post(
+        Uri.decodeFull(uploadUri.toString()),
+        options: Options(
+          headers: headerParam,
+          extra: mapExtra
+        ),
+        data: BodyBytesStream.fromBytes(fileInfo.bytes!),
+        cancelToken: cancelToken,
+        onSendProgress: (count, total) {
+          log('FileUploader::_handleUploadAttachmentActionOnMainIsolate():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
+          onSendController?.add(
+            Right(UploadingAttachmentUploadState(
+              uploadId,
+              count,
+              fileInfo.fileSize
+            ))
+          );
+        }
+      );
+      logTrace('FileUploader::_handleUploadAttachmentActionOnMainIsolate(): END post (main)');
+    } on DioException catch (exception, st) {
+      logError(
+        'FileUploader::_handleUploadAttachmentActionOnMainIsolate(): FAILED post (main, DioException)',
+        exception: exception,
+        stackTrace: st,
+        extras: {
+          'status': exception.response?.statusCode,
+          'type': exception.type.toString(),
+        },
+      );
+      rethrow;
+    } catch (exception, st) {
+      logError(
+        'FileUploader::_handleUploadAttachmentActionOnMainIsolate(): FAILED post (main, Other)',
+        exception: exception,
+        stackTrace: st,
+        extras: {'type': exception.runtimeType.toString()},
+      );
+      rethrow;
+    }
     if (fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
       final fileCharset = await _fileUtils.getCharsetFromBytes(fileInfo.bytes!);
       return _parsingResponse(

@@ -79,7 +79,12 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
         refreshToken,
         scopes,
       );
+      logTrace(
+        '$runtimeType::refreshingTokensOIDC(): BEGIN appAuthWeb.token',
+        extras: {'clientId': clientId, 'discoveryUrl': discoveryUrl},
+      );
       final tokenResponse = await _appAuthWeb.token(tokenRequest);
+      logTrace('$runtimeType::refreshingTokensOIDC(): END appAuthWeb.token');
       final tokenOIDC = tokenResponse.toTokenOIDC(
         maybeAvailableRefreshToken: refreshToken,
       );
@@ -88,8 +93,13 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
       } else {
         throw AccessTokenInvalidException();
       }
-    } catch (e) {
-      logWarning('$runtimeType::refreshingTokensOIDC(): $e');
+    } catch (e, st) {
+      logError(
+        '$runtimeType::refreshingTokensOIDC(): FAILED appAuthWeb.token',
+        exception: e,
+        stackTrace: st,
+        extras: {'errorType': e.runtimeType.toString()},
+      );
       throw handleException(e);
     }
   }

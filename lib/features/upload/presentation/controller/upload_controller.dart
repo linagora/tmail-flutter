@@ -84,6 +84,17 @@ class UploadController extends BaseController {
       (failure) {
           log('UploadController::_handleProgressUploadStateStream():failure: $failure');
           if (failure is ErrorAttachmentUploadState) {
+            final exceptionType = failure.exception?.runtimeType.toString() ?? 'null';
+            logError(
+              'UploadController::_handleProgressUploadStateStream(): '
+              'Attachment upload terminal failure',
+              extras: {
+                'exceptionType': exceptionType,
+                'exception': failure.exception?.toString(),
+                'uploadId': failure.uploadId.toString(),
+                'inline': false,
+              },
+            );
             _uploadingStateFiles.updateElementByUploadTaskId(
                 failure.uploadId,
                 (currentState) => currentState?.copyWith(uploadStatus: UploadFileStatus.uploadFailed));
@@ -135,6 +146,17 @@ class UploadController extends BaseController {
       (failure) {
         log('UploadController::_handleProgressUploadInlineImageStateStream():failure: $failure');
         if (failure is ErrorAttachmentUploadState) {
+          final exceptionType = failure.exception?.runtimeType.toString() ?? 'null';
+          logError(
+            'UploadController::_handleProgressUploadInlineImageStateStream(): '
+            'Inline image upload terminal failure',
+            extras: {
+              'exceptionType': exceptionType,
+              'exception': failure.exception?.toString(),
+              'uploadId': failure.uploadId.toString(),
+              'inline': true,
+            },
+          );
           uploadInlineViewState.value = Left(failure);
           _deleteInlineFileUploaded(failure.uploadId);
 
@@ -144,6 +166,15 @@ class UploadController extends BaseController {
               AppLocalizations.of(currentContext!).thisImageCannotBeAdded,
               leadingSVGIconColor: Colors.white,
               leadingSVGIcon: imagePaths.icInsertImage);
+          } else {
+            logTrace(
+              'UploadController::_handleProgressUploadInlineImageStateStream(): '
+              'toast skipped',
+              extras: {
+                'hasContext': currentContext != null,
+                'hasOverlay': currentOverlayContext != null,
+              },
+            );
           }
           consumeState(Stream.value((Left(failure))));
         }
@@ -289,6 +320,15 @@ class UploadController extends BaseController {
         AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
+    } else {
+      logTrace(
+        'UploadController::_showToastMessageWhenUploadAttachmentsFailure(): '
+        'toast skipped',
+        extras: {
+          'hasContext': currentContext != null,
+          'hasOverlay': currentOverlayContext != null,
+        },
+      );
     }
   }
 

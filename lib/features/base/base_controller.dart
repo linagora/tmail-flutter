@@ -200,8 +200,12 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _executeBeforeReconnectAndLogOut() async {
+    logTrace('$runtimeType::_executeBeforeReconnectAndLogOut(): BEGIN');
     twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
+    logTrace(
+      '$runtimeType::_executeBeforeReconnectAndLogOut(): END executeBeforeReconnect',
+    );
     clearDataAndGoToLoginPage();
   }
 
@@ -230,7 +234,10 @@ abstract class BaseController extends GetxController
   }
 
   void handleBadCredentialsException() {
-    log('$runtimeType::handleBadCredentialsException:');
+    logTrace(
+      '$runtimeType::handleBadCredentialsException(): BEGIN',
+      extras: {'hasComposer': twakeAppManager.hasComposer},
+    );
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
@@ -251,7 +258,10 @@ abstract class BaseController extends GetxController
   }
 
   void handleRefreshTokenFailedException() {
-    log('$runtimeType::handleRefreshTokenFailedException:');
+    logTrace(
+      '$runtimeType::handleRefreshTokenFailedException(): BEGIN',
+      extras: {'hasComposer': twakeAppManager.hasComposer},
+    );
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
@@ -578,13 +588,15 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
-    log('$runtimeType::clearDataAndGoToLoginPage:');
+    logTrace('$runtimeType::clearDataAndGoToLoginPage(): BEGIN');
     SentryManager.instance.clearUser();
     await clearAllData();
     removeAllPageAndGoToLogin();
+    logTrace('$runtimeType::clearDataAndGoToLoginPage(): END');
   }
 
   Future<void> clearAllData() async {
+    logTrace('$runtimeType::clearAllData(): BEGIN');
     try {
       await Future.wait([
         if (isAuthenticatedWithOidc)
@@ -597,8 +609,14 @@ abstract class BaseController extends GetxController
       authorizationInterceptors.clear();
       authorizationIsolateInterceptors.clear();
       await cachingManager.closeHive();
-    } catch (e) {
-      logWarning('BaseController::clearAllData: Cannot clear all data: $e');
+      logTrace('$runtimeType::clearAllData(): END');
+    } catch (e, st) {
+      logError(
+        '$runtimeType::clearAllData(): FAILED',
+        exception: e,
+        stackTrace: st,
+        extras: {'errorType': e.runtimeType.toString()},
+      );
     } finally {
       AttachmentKeywordConfigManager().clearCache();
     }
