@@ -2,146 +2,68 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_w
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  // These tests guard against the infinite-resize loop triggered by emails that
-  // include `html, body { height: 100% !important }` in their CSS.  When that
-  // rule is active, document.body.scrollHeight equals the iframe's current
-  // height, so every postMessage adds offsetBuffer and grows the iframe again.
-  // shouldUpdateHeight must return false in the stabilized state to break the
-  // loop at the Dart layer.
+  // Guards against the infinite-resize loop: emails with `html, body { height: 100% }`
+  // make scrollHeight equal the iframe height, so every update grows it forever.
   group('HtmlContentViewerOnWeb.shouldUpdateHeight', () {
     const offset = 30.0;
     const minH = 200.0;
 
-    // ── loop-guard cases ──────────────────────────────────────────────────────
+    bool check({
+      required double reported,
+      required double current,
+      bool autoAdjust = false,
+    }) => HtmlContentViewerOnWeb.shouldUpdateHeight(
+      scrollHeightWithBuffer: reported + offset,
+      currentActualHeight: current,
+      minHeight: minH,
+      autoAdjust: autoAdjust,
+    );
 
     test('returns false when height is already stable', () {
-      // scrollHeight = 3000, current = 3030 (3000 + 30 offset already baked in)
-      // This is exactly the stabilized state produced by the feedback loop.
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 3000,
-          currentActualHeight: 3030,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isFalse,
-      );
+      // reported=3000, withBuffer=3030 == current=3030 → idempotent, stop loop
+      expect(check(reported: 3000, current: 3030), isFalse);
     });
 
     test('returns false when stable at a different size', () {
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 500,
-          currentActualHeight: 530,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isFalse,
-      );
+      expect(check(reported: 500, current: 530), isFalse);
     });
-
-    // ── legitimate first-load case ────────────────────────────────────────────
 
     test('returns true for initial render when content exceeds initial height', () {
       // Widget starts at heightContent=200, real content is 3000 px.
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 3000,
-          currentActualHeight: 200,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isTrue,
-      );
+      expect(check(reported: 3000, current: 200), isTrue);
     });
 
-    // ── legitimate dynamic-resize cases ──────────────────────────────────────
-
     test('returns true when content genuinely grows (e.g. quote expanded)', () {
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 5000,
-          currentActualHeight: 3030,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isTrue,
-      );
+      expect(check(reported: 5000, current: 3030), isTrue);
     });
 
     test('returns true when content shrinks (e.g. quote collapsed)', () {
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 2000,
-          currentActualHeight: 5030,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isTrue,
-      );
+      expect(check(reported: 2000, current: 5030), isTrue);
     });
 
-    // ── minHeight boundary cases ──────────────────────────────────────────────
-
     test('returns false when autoAdjust=false and withBuffer does not exceed minHeight', () {
-      // 100 + 30 = 130 which is not > 200
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 100,
-          currentActualHeight: 130,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isFalse,
-      );
+      // 100 + 30 = 130, not > 200 (minHeight)
+      expect(check(reported: 100, current: 200), isFalse);
+    });
+
+    test('returns false when autoAdjust=false and withBuffer exactly equals minHeight', () {
+      // 170 + 30 = 200, not > 200 — strict greater-than boundary
+      expect(check(reported: 170, current: 150), isFalse);
     });
 
     test('returns true when autoAdjust=false and withBuffer exceeds minHeight', () {
       // 210 + 30 = 240 > 200
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 210,
-          currentActualHeight: 200,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: false,
-        ),
-        isTrue,
-      );
+      expect(check(reported: 210, current: 200), isTrue);
     });
 
     test('returns true when autoAdjust=true and withBuffer meets minHeight', () {
       // 170 + 30 = 200 >= 200
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 170,
-          currentActualHeight: 150,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: true,
-        ),
-        isTrue,
-      );
+      expect(check(reported: 170, current: 150, autoAdjust: true), isTrue);
     });
 
     test('returns false when autoAdjust=true and withBuffer is below minHeight', () {
       // 100 + 30 = 130 < 200
-      expect(
-        HtmlContentViewerOnWeb.shouldUpdateHeight(
-          reportedScrollHeight: 100,
-          currentActualHeight: 90,
-          minHeight: minH,
-          offsetBuffer: offset,
-          autoAdjust: true,
-        ),
-        isFalse,
-      );
+      expect(check(reported: 100, current: 90, autoAdjust: true), isFalse);
     });
   });
 }

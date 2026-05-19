@@ -1114,6 +1114,33 @@ void main() {
     });
   });
 
+  group('HtmlUtils.generateHtmlDocument', () {
+    test('injects html/body height override after email content', () {
+      const content = '<style>html,body{height:100%!important}</style><p>Hello</p>';
+      final doc = HtmlUtils.generateHtmlDocument(content: content);
+
+      final contentIndex = doc.indexOf(content);
+      final overrideIndex = doc.indexOf('html, body { height: auto !important; }');
+
+      expect(overrideIndex, isNot(-1), reason: 'override rule must be present');
+      expect(
+        overrideIndex,
+        greaterThan(contentIndex),
+        reason: 'override must appear after email content to win cascade',
+      );
+    });
+
+    test('override rule is present regardless of optional parameters', () {
+      final doc = HtmlUtils.generateHtmlDocument(
+        content: '<p>Simple</p>',
+        styleCSS: '.custom { color: red; }',
+        minHeight: 400,
+      );
+
+      expect(doc, contains('html, body { height: auto !important; }'));
+    });
+  });
+
   group('HtmlUtils::convertBase64ToImageResourceData::', () {
     test(
       'When base64 data needs == padding (length % 4 == 2),\n'
