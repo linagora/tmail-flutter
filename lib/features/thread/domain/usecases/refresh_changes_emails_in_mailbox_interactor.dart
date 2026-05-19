@@ -28,6 +28,7 @@ class RefreshChangesEmailsInMailboxInteractor {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       EmailFilter? emailFilter,
+      bool? collapseThreads,
     }
   ) async* {
     yield Right<Failure, Success>(RefreshChangesAllEmailLoading());
@@ -42,6 +43,7 @@ class RefreshChangesEmailsInMailboxInteractor {
           limit: limit,
           propertiesCreated: propertiesCreated,
           propertiesUpdated: propertiesUpdated,
+          collapseThreads: collapseThreads,
           emailFilter: emailFilter)
         .map((emailResponse) => _toGetEmailState(
           emailResponse: emailResponse,

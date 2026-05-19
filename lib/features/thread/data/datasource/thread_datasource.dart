@@ -28,6 +28,7 @@ abstract class ThreadDataSource {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties
     }
   );

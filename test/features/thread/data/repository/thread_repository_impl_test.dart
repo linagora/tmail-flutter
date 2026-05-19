@@ -1454,6 +1454,80 @@ void main() {
       },
     );
 
+    test(
+      'SHOULD always call network\n'
+      'WHEN collapseThreads is true even if cache has enough emails',
+      () async {
+        final cacheEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => cacheEmails);
+
+        when(refreshChangesStateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+            ));
+
+        final networkEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('collapsed_$i'))),
+        );
+
+        when(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) async => EmailsResponse(
+              emailList: networkEmails,
+              state: State('network_state'),
+            ));
+
+        final result = await refreshChangesThreadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+              collapseThreads: true,
+            )
+            .first;
+
+        verify(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: true,
+        )).called(1);
+
+        expect(result.emailList, networkEmails);
+      },
+    );
+
     tearDown(() {
       reset(networkDataSource);
       reset(localDataSource);

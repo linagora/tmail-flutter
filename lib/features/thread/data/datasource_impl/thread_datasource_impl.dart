@@ -45,6 +45,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties,
     }
   ) {
@@ -56,6 +57,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         position: position,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
     }).catchError(_exceptionThrower.throwException);
   }

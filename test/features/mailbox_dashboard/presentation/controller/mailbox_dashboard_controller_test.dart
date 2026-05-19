@@ -481,7 +481,11 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated')));
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      ));
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
       verify(getEmailsInMailboxInteractor.execute(
@@ -491,7 +495,11 @@ void main() {
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        useCache: true,
+        forceEmailQuery: false,
+        collapseThreads: false,
+      ));
     });
 
     test('WHEN user use advanced search/sort/filter feature, '
@@ -539,7 +547,11 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated')));
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      ));
       expect(searchController.sortOrderFiltered, SearchEmailFilter.defaultSortOrder);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
       verify(getEmailsInMailboxInteractor.execute(
@@ -549,7 +561,10 @@ void main() {
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
         getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        useCache: true,
+        forceEmailQuery: false,
+        collapseThreads: false,
       )).called(1);
     });
 

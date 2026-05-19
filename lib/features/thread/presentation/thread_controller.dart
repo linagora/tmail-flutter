@@ -44,8 +44,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
@@ -133,6 +135,8 @@ class ThreadController extends BaseController with EmailActionController {
 
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+
+  bool get _shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
 
@@ -446,6 +450,10 @@ class ThreadController extends BaseController with EmailActionController {
         if (previous?.threadConfig == next.threadConfig) return;
         if (searchController.isSearchEmailRunning) {
           _searchEmail(limit: limitEmailFetched);
+        } else if (forceEmailQuery) {
+          getAllEmailAction(
+            forceEmailQuery: forceEmailQuery,
+          );
         }
       },
       fireImmediately: false,
@@ -570,7 +578,7 @@ class ThreadController extends BaseController with EmailActionController {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearAllEmailAndStateCache();
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -680,18 +688,25 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-
+    _refreshLoadMoreState(success.emailChangeResponse);
     logTrace(
       'ThreadController::_refreshChangesAllEmailSuccess():'
       'MailboxId = ${success.currentMailboxId?.asString}, '
       'CurrentEmailCount = ${emailsBeforeChanges.length}, '
       'ServerEmailCount = ${success.emailList.length}, '
       'DisplayedEmailCount = ${emailListSynced.length}, '
-      'EmailState = ${success.currentEmailState?.value}',
+      'EmailState = ${success.currentEmailState?.value}, '
+      'canLoadMore = $canLoadMore',
     );
 
     if (_isAutoLoadMore) {
       _performAutomaticallyLoadMoreEmails();
+    }
+  }
+
+  void _refreshLoadMoreState(EmailChangeResponse? emailChangeResponse) {
+    if (emailChangeResponse.hasChanged && !canLoadMore) {
+      canLoadMore = true;
     }
   }
 
@@ -715,6 +730,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
+        collapseThreads: _shouldCollapseThreads,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -739,7 +755,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     }
   }
 
@@ -836,7 +852,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Future<Either<Failure, Success>> _refreshChangeListEmailCache() async {
+  Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
     final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
@@ -852,6 +868,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
+      collapseThreads: collapseThreads,
     ).last;
 
     refreshState.fold(
@@ -868,7 +885,9 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
-    final refreshViewState = await _refreshChangeListEmailCache();
+    final refreshViewState = await _refreshChangeListEmailCache(
+      collapseThreads: _shouldCollapseThreads,
+    );
 
     final refreshState = refreshViewState
         .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
@@ -903,6 +922,7 @@ class ThreadController extends BaseController with EmailActionController {
             _accountId!,
           ),
           useCache: false,
+          collapseThreads: _shouldCollapseThreads,
         )
         .last;
 
@@ -913,8 +933,10 @@ class ThreadController extends BaseController with EmailActionController {
 
     if (emailSuccessState is GetAllEmailSuccess) {
       _getAllEmailSuccess(emailSuccessState, shouldJumpToFirstEmail: false);
+      _handleOnDoneGetAllEmailSuccess(emailSuccessState);
     } else if (emailSuccessState != null) {
       onDataFailureViewState(emailSuccessState);
+      _handleOnDoneGetAllEmailFailure();
     }
   }
 
@@ -948,6 +970,7 @@ class ThreadController extends BaseController with EmailActionController {
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
+          collapseThreads: _shouldCollapseThreads,
         )
       ));
     } else {

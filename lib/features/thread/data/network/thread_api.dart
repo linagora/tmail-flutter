@@ -48,6 +48,7 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties
     }
   ) async {
@@ -59,6 +60,7 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       position: position,
       sort: sort,
       filter: filter,
+      collapseThreads: collapseThreads,
       properties: properties,
     );
   }
