@@ -10,143 +10,50 @@ Accepted
 
 On poor network (train, tunnel, intermittent WiFi), users are logged out mid-session even though their session and refresh token are valid. Two independent bugs allow `clearDataAndGoToLoginPage()` to fire on transient network failures.
 
-### Bug 1 — Interceptor propagates original 401 response on network failure during token refresh/retry
+### Bug 1 — Interceptor propagates stale 401 on network failure during token refresh/retry
 
 `lib/features/login/data/network/interceptors/authorization_interceptors.dart`
 
-When a token refresh or request retry fails due to a network error (timeout, connection drop), the catch block calls `err.copyWith(error: refreshError)`. `copyWith` replaces only the `error` payload; the original `response` field — the 401 that triggered the flow — is preserved. Downstream, `RemoteExceptionThrower` inspects the response status code, sees 401, and converts it to `BadCredentialsException` → `clearDataAndGoToLoginPage()`.
+When token refresh or retry fails due to network error, the catch block calls `err.copyWith(error: refreshError)`. `copyWith` replaces only the `error` payload; the original `response` field (the 401 that triggered the flow) is preserved. Downstream, `RemoteExceptionThrower` sees 401 → `BadCredentialsException` → logout.
 
-```dart
-// refresh failure path
-} catch (refreshError) {
-  // ...
-  } else {
-    // BUG: err still carries original 401 response
-    return super.onError(err.copyWith(error: refreshError), handler);
-  }
-}
+Affects three paths:
+- **Path 1:** Access token expired → refresh HTTP call times out.
+- **Path 2:** Server-side session invalidation returns 401; `validateToRefreshToken` fires unconditionally, times out on poor network.
+- **Path 3:** Two concurrent requests both get 401 → one completes refresh → second retry times out → stale 401 preserved → logout.
 
-// retry failure path
-} catch (retryError) {
-  return super.onError(
-    err.copyWith(error: retryError), // same bug
-    handler,
-  );
-}
-```
+**Additional finding — outer `catch` also affected:**
 
-This affects three code paths:
-- **Path 1:** Access token expired → server returns 401 → refresh HTTP call times out.
-- **Path 2:** Server-side session invalidation (server restart, forced logout) returns 401 while local token is still valid. `validateToRefreshToken` does not check local token expiry, so it fires unconditionally and times out on a poor network.
-- **Path 3:** Two concurrent JMAP requests both get 401 → one completes refresh → second request's retry times out → same 401 preserved → logout.
-
-**Additional finding — outer `catch` also affected (`FlutterAppAuthPlatformException`):**
-
-The `on DioException catch (refreshError, st)` block only handles `DioException`. On mobile with OIDC, `_authenticationClient.refreshingTokensOIDC()` calls `_appAuth.token()`, which is a MethodChannel bridge to the native AppAuth SDK — not a Dio HTTP call. When there is no internet, the native SDK failure propagates through `MethodChannelFlutterAppAuth.invokeMethod()` as either a raw `PlatformException` (when the native side sends no structured details, i.e. `e.details == null`) or a `FlutterAppAuthPlatformException` (when structured details are present but carry no OAuth `error` code for a transport failure). In both cases `handleException()` in `AuthenticationClientInteractionMixin` passes the exception through unchanged — raw `PlatformException` does not match the `is FlutterAppAuthPlatformException` check, and `FlutterAppAuthPlatformException` with `platformErrorDetails.error == null` exits without mapping.
-
-Neither exception type is a `DioException`, so both bypass the inner `on DioException catch` entirely and propagate to the outer `catch (e, stackTrace)` block. The original `else` branch there also called `err.copyWith(error: e)`, preserving the 401 response and triggering the same logout path. The only case that correctly stripped the 401 was the explicit `ServerError`/`TemporarilyUnavailable` check; all other non-DioException types were broken.
+On mobile OIDC, `_authenticationClient.refreshingTokensOIDC()` calls `_appAuth.token()` via MethodChannel (native AppAuth SDK — not Dio). Network failure from native SDK propagates as `PlatformException` or `FlutterAppAuthPlatformException`. Neither is a `DioException`, so both bypass the inner `on DioException catch` and reach the outer `catch`. The old `else` branch there also called `err.copyWith(error: e)`, preserving the stale 401. Only the explicit `ServerError`/`TemporarilyUnavailable` check was correct; all other non-DioException types were broken.
 
 ### Bug 2 — `handleGetSessionFailure` logs out for any exception type
 
 `lib/features/base/reloadable/reloadable_controller.dart`
 
-On app start or resume, `getSessionAction()` fetches the JMAP session. On mobile, `GetSessionInteractor` falls back to Hive session cache on failure. If the cache is empty (fresh install, or wiped by Bug 1's `cachingManager.clearAll()`), `GetSessionFailure(ConnectionTimeout)` is emitted. The handler calls `clearDataAndGoToLoginPage()` unconditionally:
-
-```dart
-void handleGetSessionFailure(GetSessionFailure failure) {
-  if (failure.exception is! BadCredentialsException) {
-    toastManager.showMessageFailure(failure);
-  }
-  clearDataAndGoToLoginPage(); // called for ALL exception types
-}
-```
-
-`validateUrgentException` does not include `ConnectionTimeout`, `SocketError`, or `UnknownRemoteException`, so these fall through to `handleGetSessionFailure` and cause logout.
+On app start/resume, `getSessionAction()` fetches JMAP session. On mobile, `GetSessionInteractor` falls back to Hive cache on failure. If cache is empty (fresh install or wiped by Bug 1's `cachingManager.clearAll()`), `GetSessionFailure(ConnectionTimeout)` is emitted. The handler calls `clearDataAndGoToLoginPage()` unconditionally for all exception types. `validateUrgentException` does not include `ConnectionTimeout`, `SocketError`, or `UnknownRemoteException`, so these fall through and cause logout.
 
 ## Decision
 
 ### Fix 1 — Pass errors directly without preserving stale 401 response
 
-The root cause of all `err.copyWith` variants is the same: `copyWith` replaces only the `error` payload while leaving the original `response` field (the 401) intact. The correct fix is to never use `err.copyWith` when forwarding errors from the refresh or retry paths — pass each error directly so it carries its own response (or none).
+Root cause: `copyWith` leaves the original `response` (the 401) intact. Fix: never use `err.copyWith` in refresh or retry paths — pass each error directly so it carries its own response (or none).
 
-**Refresh failure path (inner catch):**
-
-- `response == null` (network failure) → fresh `DioException` without any response.
-- `response != null` and not 400 (e.g. 5xx from the refresh endpoint) → pass `refreshError` directly. Previously `err.copyWith(error: refreshError)` carried the original 401 response, which caused `RemoteExceptionThrower` to classify a real 5xx as `BadCredentialsException`.
-
-```dart
-} else if (refreshError.response == null) {
-  return super.onError(
-    DioException(
-      requestOptions: err.requestOptions,
-      type: refreshError.type,
-      error: refreshError.error,
-      message: refreshError.message,
-    ),
-    handler,
-  );
-} else {
-  return super.onError(refreshError, handler); // pass directly — own response, not stale 401
-}
-```
-
-**Retry failure path:**
-
-Simplified to a single type check. Any `DioException` from the retry is passed directly (carries its own response or none). Non-DioException is wrapped in a fresh `DioException` with no response.
-
-```dart
-} catch (retryError) {
-  if (retryError is DioException) {
-    return super.onError(retryError, handler);
-  }
-  return super.onError(
-    DioException(requestOptions: err.requestOptions, error: retryError),
-    handler,
-  );
-}
-```
-
-### Fix 3 — Strip 401 response in outer catch for non-DioException network errors
-
-The outer `catch (e, stackTrace)` in `onError` handles all exceptions that escape the inner `on DioException catch` — primarily non-DioException types such as `FlutterAppAuthPlatformException`, `PlatformException`, and `OAuthAuthorizationError` from the OIDC token refresh on mobile. The `if (e is DioException && e.response != null)` branch also previously called `err.copyWith(error: e)`, preserving the original 401 response. The fix passes `e` directly.
-
-```dart
-// Outer catch — final state
-if (e is DioException && e.response != null) {
-  return super.onError(e, handler); // pass e directly — own response, not stale 401
-}
-return super.onError(
-  DioException(requestOptions: err.requestOptions, error: e),
-  handler,
-);
-```
-
-This subsumes the old `ServerError`/`TemporarilyUnavailable` branch (those are not `DioException`, so `e is DioException` is false → fresh `DioException`) and covers `FlutterAppAuthPlatformException` and any other future non-DioException. The `e is DioException && e.response != null` branch is effectively unreachable from the refresh path (all `DioException` types from the inner try are caught by the inner `on DioException catch` first), but is retained as a defensive guard.
+- **Refresh failure path (inner catch, `response == null`):** create fresh `DioException` without any response.
+- **Refresh failure path (`response != null`, non-400):** pass `refreshError` directly — own response, not stale 401.
+- **Retry failure path:** if `DioException`, pass directly; otherwise wrap in fresh `DioException` with no response.
 
 ### Fix 2 — Guard `handleGetSessionFailure` against network exceptions
 
-Check `exception is NetworkException` before reaching `clearDataAndGoToLoginPage()`. `ConnectionTimeout`, `SocketError`, `ConnectionError`, and `NoNetworkError` all extend `NetworkException`. On a network exception, show a toast and return — no logout. The guard belongs in `handleGetSessionFailure` to keep the fix local and reviewable.
+Check `exception is NetworkException` before `clearDataAndGoToLoginPage()`. `ConnectionTimeout`, `SocketError`, `ConnectionError`, `NoNetworkError` all extend `NetworkException`. On network exception: show toast, return — no logout. Guard belongs in `handleGetSessionFailure` to keep fix local and reviewable.
 
-```dart
-void handleGetSessionFailure(GetSessionFailure failure) {
-  final exception = failure.exception;
-  if (exception is NetworkException) {
-    toastManager.showMessageFailure(failure);
-    return; // transient — stay logged in
-  }
-  if (exception is! BadCredentialsException) {
-    toastManager.showMessageFailure(failure);
-  }
-  clearDataAndGoToLoginPage();
-}
-```
+### Fix 3 — Strip stale 401 in outer catch for non-DioException network errors
+
+Outer `catch` in `onError` handles all non-DioException types (`FlutterAppAuthPlatformException`, `PlatformException`, `OAuthAuthorizationError`). If `e` is a `DioException` with non-null response, pass `e` directly. Otherwise, wrap in fresh `DioException` with no response. This subsumes the old `ServerError`/`TemporarilyUnavailable` branch and covers all future non-DioException types. The `e is DioException && e.response != null` branch is effectively unreachable from current paths (all `DioException` from inner try are caught by inner `on DioException catch` first) but retained as defensive guard.
 
 ## Consequences
 
-- Network timeouts during token refresh or retry no longer cause logout; a connectivity error is propagated instead.
-- Non-network DioExceptions from the refresh endpoint (e.g. 5xx) are now propagated with their own status code — no longer misclassified as `BadCredentialsException` via the stale 401 response.
-- `FlutterAppAuthPlatformException` and raw `PlatformException` from `_appAuth.token()` on mobile (OIDC, no internet) no longer cause logout — covered by Fix 3.
-- Session fetch failure on poor network shows a toast; user stays logged in.
-- Real HTTP error responses (400, 401, 5xx) from the refresh endpoint or the original request still propagate correctly.
-- Fix 3 preserves the original `err` response only when `e` itself is a `DioException` with a non-null HTTP response; that branch is effectively unreachable from the current code paths (all `DioException` types from the inner try are caught by the inner `on DioException catch` first) but is retained as a defensive guard.
+- Network timeouts during token refresh or retry no longer cause logout; connectivity error propagates instead.
+- Non-network `DioException` from refresh endpoint (e.g. 5xx) propagate with own status code — no longer misclassified as `BadCredentialsException` via stale 401.
+- `FlutterAppAuthPlatformException` and `PlatformException` from `_appAuth.token()` on mobile (OIDC, no internet) no longer cause logout.
+- Session fetch failure on poor network shows toast; user stays logged in.
+- Real HTTP error responses (400, 401, 5xx) from refresh endpoint or original request still propagate correctly.
 - Fix 2 does not affect `validateUrgentException` — that early-exit path is unchanged.

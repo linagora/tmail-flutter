@@ -94,9 +94,6 @@ void main() {
     controller.wasLoggedOut = false;
   });
 
-  // ============================================================
-  // Bug 2 — handleGetSessionFailure logs out for any exception (regression)
-  // ============================================================
   group('Bug 2 — handleGetSessionFailure logs out for transient network errors (regression)', () {
     test(
       'WHEN GetSessionFailure carries ConnectionTimeout\n'
@@ -105,8 +102,6 @@ void main() {
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const ConnectionTimeout()));
 
-        // BUG: wasLoggedOut == true — ConnectionTimeout triggers logout
-        // FIX: wasLoggedOut == false — transient error, user should stay logged in
         expect(controller.wasLoggedOut, isFalse);
       },
     );
