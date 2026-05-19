@@ -88,10 +88,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     logWarning('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
-      final extraInRequest = requestOptions.extra;
-      bool isRetryRequest = false;
-
-      final hasAttemptedRefresh = extraInRequest[_refreshAttemptedKey] == true;
+      final hasAttemptedRefresh = requestOptions.extra[_refreshAttemptedKey] == true;
 
       if (!hasAttemptedRefresh && validateToRetryTheRequestWithNewToken(
         responseStatusCode: err.response?.statusCode,
@@ -99,106 +96,25 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         tokenOIDC: _token
       )) {
         log('AuthorizationInterceptors::onError: Request using old token, retry with updated token');
-        isRetryRequest = true;
+        return await _performRetry(requestOptions, err, handler);
       } else if (!hasAttemptedRefresh && validateToRefreshToken(
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        try {
-          log('AuthorizationInterceptors::onError: Perform get New Token');
-          final newTokenOidc = PlatformInfo.isIOS
-            ? await _getNewTokenForIOSPlatform()
-            : await _getNewTokenForOtherPlatform();
-
-          if (newTokenOidc.token == _token?.token) {
-            log('AuthorizationInterceptors::onError: Token duplicated');
-            return super.onError(err, handler);
-          }
-          _updateNewToken(newTokenOidc);
-
-          final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
-
-          if (PlatformInfo.isIOS) {
-            await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
-          }
-
-          requestOptions.extra[_refreshAttemptedKey] = true;
-          isRetryRequest = true;
-        } on DioException catch (refreshError, st) {
-          if (refreshError.response?.statusCode == 400) {
-            logError(
-              'AuthorizationInterceptors: Refresh Token Failed 400',
-              exception: refreshError,
-              stackTrace: st,
-            );
-
-            clear();
-
-            final sessionExpiredError = DioException(
-              requestOptions: err.requestOptions,
-              error: RefreshTokenFailedException(),
-              type: DioExceptionType.badResponse,
-              response: refreshError.response,
-            );
-
-            return handler.reject(sessionExpiredError);
-          }
-
-          logError(
-            'AuthorizationInterceptors: Refresh token failed with '
-            'statusCode=${refreshError.response?.statusCode}',
-            exception: refreshError,
-            stackTrace: st,
-          );
-
-          return _handleDioRefreshError(
-            refreshError: refreshError,
-            originalError: err,
-            handler: handler,
-          );
-        }
-      } else {
-        logTrace(
-          'AuthorizationInterceptors::onError: '
-          'No retry or refresh applicable. '
-          'statusCode = ${err.response?.statusCode} | '
-          'authType = $_authenticationType | '
-          'hasConfig = ${_configOIDC != null} | '
-          'hasAttemptedRefresh = $hasAttemptedRefresh | '
-          'url = ${err.requestOptions.uri}',
-          webConsoleEnabled: true,
-        );
-        return super.onError(err, handler);
+        return await _refreshTokenThenRetry(err, requestOptions, handler);
       }
 
-      if (isRetryRequest) {
-        try {
-          final response = await _retryRequest(requestOptions, extraInRequest);
-          return handler.resolve(response);
-        } catch (retryError) {
-          logError(
-            'AuthorizationInterceptors::onError: '
-            'Retry failed with error=$retryError',
-          );
-          // Mobile only: pass retry errors directly so the stale 401 response
-          // is not preserved via err.copyWith.
-          if (PlatformInfo.isMobile) {
-            if (retryError is DioException) {
-              return super.onError(retryError, handler);
-            }
-            return super.onError(
-              DioException(requestOptions: err.requestOptions, error: retryError),
-              handler,
-            );
-          }
-          return super.onError(
-            err.copyWith(error: retryError),
-            handler,
-          );
-        }
-      } else {
-        return super.onError(err, handler);
-      }
+      logTrace(
+        'AuthorizationInterceptors::onError: '
+        'No retry or refresh applicable. '
+        'statusCode = ${err.response?.statusCode} | '
+        'authType = $_authenticationType | '
+        'hasConfig = ${_configOIDC != null} | '
+        'hasAttemptedRefresh = $hasAttemptedRefresh | '
+        'url = ${err.requestOptions.uri}',
+        webConsoleEnabled: true,
+      );
+      return super.onError(err, handler);
     } catch (e, stackTrace) {
       logError(
         'AuthorizationInterceptors::onError:Exception: $e',
@@ -225,6 +141,88 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err.copyWith(error: e), handler);
       }
+    }
+  }
+
+  Future<void> _refreshTokenThenRetry(
+    DioException err,
+    RequestOptions requestOptions,
+    ErrorInterceptorHandler handler,
+  ) async {
+    try {
+      log('AuthorizationInterceptors::onError: Perform get New Token');
+      final newTokenOidc = PlatformInfo.isIOS
+        ? await _getNewTokenForIOSPlatform()
+        : await _getNewTokenForOtherPlatform();
+
+      if (newTokenOidc.token == _token?.token) {
+        log('AuthorizationInterceptors::onError: Token duplicated');
+        return super.onError(err, handler);
+      }
+      _updateNewToken(newTokenOidc);
+
+      final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+
+      if (PlatformInfo.isIOS) {
+        await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+      }
+
+      requestOptions.extra[_refreshAttemptedKey] = true;
+      return await _performRetry(requestOptions, err, handler);
+    } on DioException catch (refreshError, st) {
+      if (refreshError.response?.statusCode == 400) {
+        logError(
+          'AuthorizationInterceptors: Refresh Token Failed 400',
+          exception: refreshError,
+          stackTrace: st,
+        );
+        clear();
+        return handler.reject(DioException(
+          requestOptions: err.requestOptions,
+          error: RefreshTokenFailedException(),
+          type: DioExceptionType.badResponse,
+          response: refreshError.response,
+        ));
+      }
+      logError(
+        'AuthorizationInterceptors: Refresh token failed with '
+        'statusCode=${refreshError.response?.statusCode}',
+        exception: refreshError,
+        stackTrace: st,
+      );
+      return _handleDioRefreshError(
+        refreshError: refreshError,
+        originalError: err,
+        handler: handler,
+      );
+    }
+  }
+
+  Future<void> _performRetry(
+    RequestOptions requestOptions,
+    DioException originalErr,
+    ErrorInterceptorHandler handler,
+  ) async {
+    try {
+      final response = await _retryRequest(requestOptions, requestOptions.extra);
+      return handler.resolve(response);
+    } catch (retryError) {
+      logError(
+        'AuthorizationInterceptors::onError: '
+        'Retry failed with error=$retryError',
+      );
+      // Mobile only: pass retry errors directly so the stale 401 response
+      // is not preserved via err.copyWith.
+      if (PlatformInfo.isMobile) {
+        if (retryError is DioException) {
+          return super.onError(retryError, handler);
+        }
+        return super.onError(
+          DioException(requestOptions: originalErr.requestOptions, error: retryError),
+          handler,
+        );
+      }
+      return super.onError(originalErr.copyWith(error: retryError), handler);
     }
   }
 
