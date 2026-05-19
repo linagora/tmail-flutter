@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
@@ -133,6 +134,8 @@ class ThreadController extends BaseController with EmailActionController {
 
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+
+  bool get _shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
 
@@ -684,12 +687,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-    final emailChangeResponse = success.emailChangeResponse;
-    final isEmailChanged = emailChangeResponse?.created?.isNotEmpty == true
-        || emailChangeResponse?.updated?.isNotEmpty == true
-        || emailChangeResponse?.destroyed?.isNotEmpty == true;
-
-    if (isEmailChanged && !canLoadMore) {
+    if (success.emailChangeResponse.hasChanged && !canLoadMore) {
       canLoadMore = true;
     }
     logTrace(
@@ -727,7 +725,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
-        collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+        collapseThreads: _shouldCollapseThreads,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -883,7 +881,7 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
     final refreshViewState = await _refreshChangeListEmailCache(
-      collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+      collapseThreads: _shouldCollapseThreads,
     );
 
     final refreshState = refreshViewState
@@ -919,7 +917,7 @@ class ThreadController extends BaseController with EmailActionController {
             _accountId!,
           ),
           useCache: false,
-          collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+          collapseThreads: _shouldCollapseThreads,
         )
         .last;
 
@@ -967,7 +965,7 @@ class ThreadController extends BaseController with EmailActionController {
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
-          collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
+          collapseThreads: _shouldCollapseThreads,
         )
       ));
     } else {
