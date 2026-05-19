@@ -684,7 +684,12 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-    if (success.emailChangeResponse?.created?.isNotEmpty == true && !canLoadMore) {
+    final emailChangeResponse = success.emailChangeResponse;
+    final isEmailChanged = emailChangeResponse?.created?.isNotEmpty == true
+        || emailChangeResponse?.updated?.isNotEmpty == true
+        || emailChangeResponse?.destroyed?.isNotEmpty == true;
+
+    if (isEmailChanged && !canLoadMore) {
       canLoadMore = true;
     }
     logTrace(
