@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
@@ -687,9 +688,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-    if (success.emailChangeResponse.hasChanged && !canLoadMore) {
-      canLoadMore = true;
-    }
+    _refreshLoadMoreState(success.emailChangeResponse);
     logTrace(
       'ThreadController::_refreshChangesAllEmailSuccess():'
       'MailboxId = ${success.currentMailboxId?.asString}, '
@@ -702,6 +701,12 @@ class ThreadController extends BaseController with EmailActionController {
 
     if (_isAutoLoadMore) {
       _performAutomaticallyLoadMoreEmails();
+    }
+  }
+
+  void _refreshLoadMoreState(EmailChangeResponse? emailChangeResponse) {
+    if (emailChangeResponse.hasChanged && !canLoadMore) {
+      canLoadMore = true;
     }
   }
 
