@@ -149,7 +149,7 @@ abstract class ReloadableController extends BaseController {
 
   void handleGetSessionFailure(GetSessionFailure failure) {
     final exception = failure.exception;
-    if (exception is NetworkException) {
+    if (PlatformInfo.isMobile && exception is NetworkException) {
       toastManager.showMessageFailure(failure);
       return;
     }

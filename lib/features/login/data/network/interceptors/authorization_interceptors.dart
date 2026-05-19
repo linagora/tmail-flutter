@@ -160,10 +160,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
               ),
               handler,
             );
-          } else if (refreshError.response == null) {
-            // Network failure during refresh — don't carry the original 401
-            // response forward, as that would make RemoteExceptionThrower
-            // classify this as BadCredentialsException and log the user out.
+          } else if (PlatformInfo.isMobile && refreshError.response == null) {
+            // Mobile only: network failure during refresh — don't carry the
+            // original 401 response forward, as that would make
+            // RemoteExceptionThrower classify this as BadCredentialsException
+            // and log the user out.
             return super.onError(
               DioException(
                 requestOptions: err.requestOptions,
@@ -174,7 +175,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
               handler,
             );
           } else {
-            return super.onError(refreshError, handler);
+            return super.onError(
+              PlatformInfo.isMobile
+                  ? refreshError
+                  : err.copyWith(error: refreshError),
+              handler,
+            );
           }
         }
       } else {
@@ -200,11 +206,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             'AuthorizationInterceptors::onError: '
             'Retry failed with error=$retryError',
           );
-          if (retryError is DioException) {
-            return super.onError(retryError, handler);
+          // Mobile only: pass retry errors directly so the stale 401 response
+          // is not preserved via err.copyWith.
+          if (PlatformInfo.isMobile) {
+            if (retryError is DioException) {
+              return super.onError(retryError, handler);
+            }
+            return super.onError(
+              DioException(requestOptions: err.requestOptions, error: retryError),
+              handler,
+            );
           }
           return super.onError(
-            DioException(requestOptions: err.requestOptions, error: retryError),
+            err.copyWith(error: retryError),
             handler,
           );
         }
@@ -217,18 +231,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         exception: e,
         stackTrace: stackTrace,
       );
-      // Any exception that is not a DioException with an HTTP response is a
-      // network-level failure (e.g. FlutterAppAuthPlatformException from the
-      // OIDC token refresh on mobile). Carrying the original 401 response
-      // forward via err.copyWith would cause RemoteExceptionThrower to
-      // misclassify it as BadCredentialsException and log the user out.
-      if (e is DioException && e.response != null) {
-        return super.onError(e, handler);
+      if (PlatformInfo.isMobile) {
+        // Mobile only: non-DioException types (e.g. FlutterAppAuthPlatformException
+        // from native OIDC refresh) must not carry the stale 401 response forward,
+        // as RemoteExceptionThrower would misclassify it as BadCredentialsException.
+        if (e is DioException && e.response != null) {
+          return super.onError(e, handler);
+        }
+        return super.onError(
+          DioException(requestOptions: err.requestOptions, error: e),
+          handler,
+        );
       }
-      return super.onError(
-        DioException(requestOptions: err.requestOptions, error: e),
-        handler,
-      );
+      if (e is ServerError || e is TemporarilyUnavailable) {
+        return super.onError(
+          DioException(requestOptions: err.requestOptions, error: e),
+          handler,
+        );
+      } else {
+        return super.onError(err.copyWith(error: e), handler);
+      }
     }
   }
 

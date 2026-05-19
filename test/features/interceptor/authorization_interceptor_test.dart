@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -1545,9 +1547,13 @@ void main() {
       type: DioExceptionType.connectionTimeout,
     );
 
+    setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.android);
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
     test(
       'WHEN 401 with expired token\n'
       'AND refresh call times out (connectionTimeout, response=null)\n'
+      'AND platform is mobile\n'
       'THEN propagated error carries NO HTTP response\n'
       '(BUG: err.copyWith preserves original 401 response → RemoteExceptionThrower → logout)',
       () async {
@@ -1583,6 +1589,7 @@ void main() {
     test(
       'WHEN server-side 401 (token not locally expired)\n'
       'AND refresh call times out\n'
+      'AND platform is mobile\n'
       'THEN propagated error carries NO HTTP response',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
@@ -1615,13 +1622,56 @@ void main() {
         );
       },
     );
+
+    test(
+      'WHEN 401 with expired token\n'
+      'AND refresh call times out\n'
+      'AND platform is web\n'
+      'THEN propagated error preserves original 401 response (old web behaviour)',
+      () async {
+        debugDefaultTargetPlatformOverride = null;
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(refreshTimeoutError);
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) => e.response != null)),
+        );
+      },
+    );
   });
 
   group('Bug 1 — retry network timeout preserves original 401 response (regression)', () {
+    setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.android);
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
     test(
       'WHEN 401 with expired token\n'
       'AND refresh succeeds\n'
       'AND retry call times out (connectionTimeout, response=null)\n'
+      'AND platform is mobile\n'
       'THEN propagated error carries NO HTTP response\n'
       '(BUG: err.copyWith preserves original 401 response → logout)',
       () async {
@@ -1667,12 +1717,69 @@ void main() {
         );
       },
     );
+
+    test(
+      'WHEN 401 with expired token\n'
+      'AND refresh succeeds\n'
+      'AND retry call times out\n'
+      'AND platform is web\n'
+      'THEN propagated error preserves original 401 response (old web behaviour)',
+      () async {
+        debugDefaultTargetPlatformOverride = null;
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        final retryTimeoutError = DioException(
+          requestOptions: RequestOptions(path: baseUrl),
+          type: DioExceptionType.connectionTimeout,
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(0, retryTimeoutError),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) => e.response != null)),
+        );
+      },
+    );
   });
 
   group(
     'Bug 1 — FlutterAppAuthPlatformException from OIDC refresh '
-    'does not preserve original 401 (outer catch)',
+    'does not preserve original 401 (outer catch) — mobile only',
     () {
+      setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.android);
+      tearDown(() => debugDefaultTargetPlatformOverride = null);
+
       // _appAuth.token() mobile OIDC no-internet: native SDK throws
       // FlutterAppAuthPlatformException(error: null) — transport failure.
       // details==null path rethrows raw PlatformException instead.
@@ -1840,6 +1947,47 @@ void main() {
               return e.response == null &&
                   e.error is OAuthAuthorizationError;
             })),
+          );
+        },
+      );
+
+      test(
+        'WHEN platform is web\n'
+        'AND refresh throws non-DioException (OAuthAuthorizationError)\n'
+        'THEN propagated error preserves original 401 response (old web behaviour)',
+        () async {
+          debugDefaultTargetPlatformOverride = null;
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          authorizationInterceptors.setTokenAndAuthorityOidc(
+            newToken: OIDCFixtures.tokenOidcExpiredTime,
+            newConfig: OIDCFixtures.oidcConfiguration,
+          );
+
+          dioAdapter.onPost(
+            baseUrl,
+            (server) => server.throws(responseStatusCode401, makeDioError401()),
+            headers: {
+              HttpHeaders.authorizationHeader:
+                  'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+            },
+          );
+
+          when(authenticationClient.refreshingTokensOIDC(
+            OIDCFixtures.oidcConfiguration.clientId,
+            OIDCFixtures.oidcConfiguration.redirectUrl,
+            OIDCFixtures.oidcConfiguration.discoveryUrl,
+            OIDCFixtures.oidcConfiguration.scopes,
+            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          )).thenThrow(const OAuthAuthorizationError(
+            error: 'invalid_grant',
+            errorDescription: 'The refresh token has been revoked',
+          ));
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) => e.response != null)),
           );
         },
       );

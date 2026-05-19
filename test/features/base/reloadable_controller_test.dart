@@ -2,6 +2,8 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -94,11 +96,19 @@ void main() {
     controller.wasLoggedOut = false;
   });
 
-  group('Bug 2 — handleGetSessionFailure logs out for transient network errors (regression)', () {
+  group('Bug 2 — mobile: handleGetSessionFailure does NOT log out on transient network error', () {
+    setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      controller.wasLoggedOut = false;
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+    });
+
     test(
-      'WHEN GetSessionFailure carries ConnectionTimeout\n'
-      'THEN clearDataAndGoToLoginPage MUST NOT be called\n'
-      '(BUG: currently calls logout for any exception type)',
+      'WHEN GetSessionFailure carries ConnectionTimeout on mobile\n'
+      'THEN clearDataAndGoToLoginPage MUST NOT be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const ConnectionTimeout()));
 
@@ -107,7 +117,7 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries SocketError\n'
+      'WHEN GetSessionFailure carries SocketError on mobile\n'
       'THEN clearDataAndGoToLoginPage MUST NOT be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const SocketError()));
@@ -117,7 +127,7 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries NoNetworkError\n'
+      'WHEN GetSessionFailure carries NoNetworkError on mobile\n'
       'THEN clearDataAndGoToLoginPage MUST NOT be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const NoNetworkError()));
@@ -127,7 +137,7 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries ConnectionError\n'
+      'WHEN GetSessionFailure carries ConnectionError on mobile\n'
       'THEN clearDataAndGoToLoginPage MUST NOT be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const ConnectionError()));
@@ -137,7 +147,7 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries BadCredentialsException\n'
+      'WHEN GetSessionFailure carries BadCredentialsException on mobile\n'
       'THEN clearDataAndGoToLoginPage MUST be called\n'
       '(real auth failure — logout is correct)',
       () {
@@ -148,10 +158,52 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries RefreshTokenFailedException\n'
+      'WHEN GetSessionFailure carries RefreshTokenFailedException on mobile\n'
       'THEN clearDataAndGoToLoginPage MUST be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(RefreshTokenFailedException()));
+
+        expect(controller.wasLoggedOut, isTrue);
+      },
+    );
+  });
+
+  group('Bug 2 — web: handleGetSessionFailure logs out on network error (old behaviour preserved)', () {
+    setUp(() {
+      PlatformInfo.isTestingForWeb = true;
+      controller.wasLoggedOut = false;
+    });
+
+    tearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    test(
+      'WHEN GetSessionFailure carries ConnectionTimeout on web\n'
+      'THEN clearDataAndGoToLoginPage MUST be called\n'
+      '(web keeps original logout-on-any-failure behaviour)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const ConnectionTimeout()));
+
+        expect(controller.wasLoggedOut, isTrue);
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries SocketError on web\n'
+      'THEN clearDataAndGoToLoginPage MUST be called',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const SocketError()));
+
+        expect(controller.wasLoggedOut, isTrue);
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries BadCredentialsException on web\n'
+      'THEN clearDataAndGoToLoginPage MUST be called',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const BadCredentialsException()));
 
         expect(controller.wasLoggedOut, isTrue);
       },
