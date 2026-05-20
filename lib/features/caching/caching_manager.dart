@@ -108,7 +108,7 @@ class CachingManager {
         _tokenOidcCacheManager.clear(),
         _authenticationInfoCacheManager.clear(),
         if (PlatformInfo.isMobile && _sentryConfigurationCacheManager != null)
-          _sentryConfigurationCacheManager!.clearSentryConfiguration(),
+          _sentryConfigurationCacheManager.clearSentryConfiguration(),
       ], eagerError: true);
     } catch (e) {
       logWarning('CachingManager::clearAccountDataCached: Cannot clear account data cache: $e');

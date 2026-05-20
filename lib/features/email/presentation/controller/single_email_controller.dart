@@ -316,7 +316,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         for (var worker in obxListeners) {
           worker.dispose();
         }
-        Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+        Get.delete<SingleEmailController>(tag: _currentEmailId.id.value);
       } else if (action is UnsubscribeFromThreadAction) {
         if (_currentEmailId == null || action.emailId != _currentEmailId) return;
         _handleUnsubscribe(action.listUnsubscribe);
@@ -325,13 +325,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         for (var worker in obxListeners) {
           worker.dispose();
         }
-        Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+        Get.delete<SingleEmailController>(tag: _currentEmailId.id.value);
       } else if (action is OpenAttachmentListAction) {
         if (_currentEmailId == null || action.emailId != _currentEmailId) {
           return;
         }
         jumpToAttachmentList(
-          emailId: _currentEmailId!,
+          emailId: _currentEmailId,
           countAttachments: action.countAttachments,
           screenHeight: action.screenHeight,
           isDisplayAllAttachments: action.isDisplayAllAttachments,
@@ -486,8 +486,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) {
-    if (_currentEmailId != null && _threadDetailController?.cachedEmailLoaded[_currentEmailId!] != null) {
-      final emailLoaded = _threadDetailController!.cachedEmailLoaded[_currentEmailId!]!;
+    if (_currentEmailId != null && _threadDetailController?.cachedEmailLoaded[_currentEmailId] != null) {
+      final emailLoaded = _threadDetailController!.cachedEmailLoaded[_currentEmailId]!;
       consumeState(Stream.value(Right(GetEmailContentFromThreadCacheSuccess(
         htmlEmailContent: emailLoaded.htmlContent,
         emailCurrent: emailLoaded.emailCurrent,
@@ -643,7 +643,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _jumpScrollViewToTopOfEmail() {
     if (_currentEmailId == null) return;
-    _threadDetailController?.focusExpandedEmail(_currentEmailId!);
+    _threadDetailController?.focusExpandedEmail(_currentEmailId);
   }
 
   void _handleUnsubscribe(String listUnsubscribe) {
