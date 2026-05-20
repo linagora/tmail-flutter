@@ -3,6 +3,9 @@ description: A model module contains entities
 
 # As we are not publishing this Installer in pub.dev, we can add publish_to: 'none'
 publish_to: none
+
+resolution: workspace
+
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
@@ -20,7 +23,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.9.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -31,9 +34,6 @@ dependencies:
 
   ### Dependencies from git ###
   jmap_dart_client:
-    git:
-      url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
@@ -64,9 +64,9 @@ dev_dependencies:
 
   flutter_lints: 2.0.1
 
-  build_runner: 2.4.10
+  build_runner: ^2.15.0
 
-  json_serializable: 6.6.1
+  json_serializable: ^6.11.3
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
