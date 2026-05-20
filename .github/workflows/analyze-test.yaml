@@ -38,7 +38,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
+          cache-key: "deps-${{ hashFiles('pubspec.lock') }}"
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
       - name: Setup Firebase env
