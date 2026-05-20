@@ -138,10 +138,8 @@ class HiveCacheConfig {
 
   Future<void> closeHive({bool isolated = true}) async {
     if (isolated) {
-      _isolatedAdaptersRegistered = false;
       await IsolatedHive.close();
     } else {
-      _regularAdaptersRegistered = false;
       await Hive.close();
     }
   }
