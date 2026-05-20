@@ -57,9 +57,9 @@ class SentryEcosystem {
   Future<void> _cacheData(SentryConfig sentryConfig, SentryUser? sentryUser) async {
     if (_cacheManager == null) return;
     try {
-      await _cacheManager!.saveSentryConfiguration(sentryConfig.toSentryConfigurationCache());
+      await _cacheManager.saveSentryConfiguration(sentryConfig.toSentryConfigurationCache());
       if (sentryUser != null) {
-        await _cacheManager!.saveSentryUser(sentryUser.toSentryUserCache());
+        await _cacheManager.saveSentryUser(sentryUser.toSentryUserCache());
       }
     } catch (e, st) {
       logError(
@@ -68,7 +68,7 @@ class SentryEcosystem {
         stackTrace: st,
       );
       // Clear both caches to avoid stale/inconsistent state (e.g. new config + old user PII)
-      await _cacheManager!.clearSentryConfiguration().catchError((_) {});
+      await _cacheManager.clearSentryConfiguration().catchError((_) {});
     }
   }
 
