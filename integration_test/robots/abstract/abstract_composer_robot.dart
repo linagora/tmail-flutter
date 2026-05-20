@@ -25,6 +25,9 @@ abstract class AbstractComposerRobot {
   Future<void> tapDiscardChanges();
   /// Returns the active [ComposerController] for the currently visible composer.
   /// Platform implementations must resolve the correct GetX tag (web uses a
-  /// per-instance composerId; mobile uses the default null tag).
+  /// per-instance composerId tag; mobile uses the default null tag).
   ComposerController? findComposerController();
+  // Cmd+K on macOS, Ctrl+K elsewhere — mirrors the JS isMac heuristic in the editor.
+  Future<void> openInsertLinkDialogViaKeyboardShortcut();
+  Future<void> expectInsertLinkDialogVisible(AppLocalizations appLocalizations);
 }

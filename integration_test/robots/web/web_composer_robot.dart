@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -5,6 +6,7 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../mobile/mobile_composer_robot.dart';
 
@@ -56,5 +58,30 @@ class WebComposerRobot extends MobileComposerRobot {
     await $.pumpAndSettle();
     await $(const Key(UiKeys.saveTemplatePopupItem)).tap();
     await $.pumpAndSettle();
+  }
+
+  @override
+  Future<void> openInsertLinkDialogViaKeyboardShortcut() async {
+    await $(WebEditorWidget).tap();
+    // enterText focuses div.note-editable inside the iframe and the element
+    // retains focus afterward, so pressKeyCombo lands in Summernote rather
+    // than the outer Flutter shell.
+    await $.platformAutomator.web.enterText(
+      WebSelector(cssOrXpath: 'div.note-editable'),
+      iframeSelector: WebSelector(cssOrXpath: 'iframe'),
+      text: ' ',
+    );
+    final isMac = defaultTargetPlatform == TargetPlatform.macOS;
+    await $.platformAutomator.web.pressKeyCombo(
+      keys: isMac ? ['Meta', 'k'] : ['Control', 'k'],
+    );
+    await $.pumpAndTrySettle();
+  }
+
+  // "Apply" is unique to the custom overlay; Summernote's native dialog never
+  // renders this Flutter widget, so its presence confirms the correct dialog.
+  @override
+  Future<void> expectInsertLinkDialogVisible(AppLocalizations appLocalizations) async {
+    await $.waitUntilVisible($(find.text(appLocalizations.apply)));
   }
 }
