@@ -9,6 +9,7 @@ import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../mocks/fake_file_picker.dart';
 import '../abstract/abstract_composer_robot.dart';
@@ -136,4 +137,12 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
       if (ready == true) return;
     }
   }
+
+  @override
+  Future<void> openInsertLinkDialogViaKeyboardShortcut() =>
+      throw UnsupportedError('Insert-link keyboard shortcut is web-only');
+
+  @override
+  Future<void> expectInsertLinkDialogVisible(AppLocalizations appLocalizations) =>
+      throw UnsupportedError('Insert-link keyboard shortcut is web-only');
 }
