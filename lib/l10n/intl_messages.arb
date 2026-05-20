@@ -1322,6 +1322,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "confirm": "Confirm",
+  "@confirm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "you_have_created_a_new_identity": "You have created a new identity",
   "@you_have_created_a_new_identity": {
     "type": "text",
@@ -2156,6 +2162,18 @@
   },
   "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
   "@emailRuleSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleConfirmRuleWithRejectAction": "Reject all emails matching this condition?",
+  "@titleConfirmRuleWithRejectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationRuleWithRejectAction": "This action is irreversible. Are you sure you want to proceed?",
+  "@messageConfirmationRuleWithRejectAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1338,6 +1338,13 @@ class AppLocalizations {
         name: 'create');
   }
 
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+    );
+  }
+
   String get you_have_created_a_new_identity {
     return Intl.message(
         'You have created a new identity',
@@ -2197,6 +2204,20 @@ class AppLocalizations {
     return Intl.message(
       'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
       name: 'emailRuleSettingExplanation');
+  }
+
+  String get titleConfirmRuleWithRejectAction {
+    return Intl.message(
+      'Reject all emails matching this condition?',
+      name: 'titleConfirmRuleWithRejectAction',
+    );
+  }
+
+  String get messageConfirmationRuleWithRejectAction {
+    return Intl.message(
+      'This action is irreversible. Are you sure you want to proceed?',
+      name: 'messageConfirmationRuleWithRejectAction',
+    );
   }
 
   String messageConfirmationDialogDeleteEmailRule(String ruleName) {
