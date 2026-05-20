@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: ae92f5d747aee634b87f89d9946000c2de774be1d6ac3e58268224348cd0101a
+      sha256: a49d6cf99e8d8e7a8e93668d09ced0bbdb954d0b4fccc2f5f9241c6b87fad95c
       url: "https://pub.dev"
     source: hosted
-    version: "61.0.0"
+    version: "99.0.0"
   _flutterfire_internals:
     dependency: transitive
     description:
@@ -18,13 +18,13 @@ packages:
     source: hosted
     version: "1.3.70"
   analyzer:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: analyzer
-      sha256: ea3d8652bda62982addfd92fdc2d0214e5f82e43325104990d4f4c4a2a313562
+      sha256: "663efa951fb8a45e06f491223a604c93820598f20e6a99c25617a1576065e8b7"
       url: "https://pub.dev"
     source: hosted
-    version: "5.13.0"
+    version: "12.1.0"
   ansicolor:
     dependency: transitive
     description:
@@ -141,18 +141,18 @@ packages:
     dependency: transitive
     description:
       name: build
-      sha256: "3fbda25365741f8251b39f3917fb3c8e286a96fd068a5a242e11c2012d495777"
+      sha256: a156715e7cd728130c592f30552575908aae5b100005fbc1f0fb16b3c03a3d10
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "4.0.6"
   build_config:
     dependency: transitive
     description:
       name: build_config
-      sha256: bf80fcfb46a29945b423bd9aad884590fb1dc69b330a4d4700cac476af1708d1
+      sha256: "4070d2a59f8eec34c97c86ceb44403834899075f66e8a9d59706f8e7834f6f71"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.3.0"
   build_daemon:
     dependency: transitive
     description:
@@ -161,30 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-  build_resolvers:
-    dependency: transitive
-    description:
-      name: build_resolvers
-      sha256: "64e12b0521812d1684b1917bc80945625391cb9bdd4312536b1d69dcb6133ed8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1"
   build_runner:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "1414d6d733a85d8ad2f1dfcb3ea7945759e35a123cb99ccfac75d0758f75edfa"
+      sha256: "1523ce62448ebac2c15a8ba5fbad8acac169788658a7dd2a1c2d9c2a9318b9a6"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.10"
-  build_runner_core:
-    dependency: transitive
-    description:
-      name: build_runner_core
-      sha256: "0671ad4162ed510b70d0eb4ad6354c249f8429cab4ae7a4cec86bbc2886eb76e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.2.7+1"
+    version: "2.15.0"
   built_collection:
     dependency: "direct main"
     description:
@@ -197,10 +181,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: "723b4021e903217dfc445ec4cf5b42e27975aece1fc4ebbc1ca6329c2d9fb54e"
+      sha256: "34e4067d30ce212937df995f03b69992eea683539ceeac7f679a1f1eba055b56"
       url: "https://pub.dev"
     source: hosted
-    version: "8.7.0"
+    version: "8.12.6"
   byte_converter:
     dependency: "direct main"
     description:
@@ -281,13 +265,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.4"
-  contact:
-    dependency: "direct main"
-    description:
-      path: contact
-      relative: true
-    source: path
-    version: "1.0.0+1"
   contacts_service:
     dependency: "direct main"
     description:
@@ -305,20 +282,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-  core:
-    dependency: "direct main"
-    description:
-      path: core
-      relative: true
-    source: path
-    version: "1.0.0+1"
-  cozy:
-    dependency: "direct main"
-    description:
-      path: cozy
-      relative: true
-    source: path
-    version: "0.1.0"
   cross_file:
     dependency: transitive
     description:
@@ -384,13 +347,13 @@ packages:
     source: hosted
     version: "3.0.4"
   dart_style:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: dart_style
-      sha256: "1efa911ca7086affd35f463ca2fc1799584fb6aa89883cf0af8e3664d6a02d55"
+      sha256: a4c1ccfee44c7e75ed80484071a5c142a385345e658fd8bd7c4b5c97e7198f98
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "3.1.8"
   dartz:
     dependency: "direct main"
     description:
@@ -495,13 +458,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.3"
-  email_recovery:
-    dependency: "direct main"
-    description:
-      path: email_recovery
-      relative: true
-    source: path
-    version: "1.0.0+1"
   enough_html_editor:
     dependency: transitive
     description:
@@ -559,13 +515,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.3"
-  fcm:
-    dependency: "direct main"
-    description:
-      path: fcm
-      relative: true
-    source: path
-    version: "1.0.0+1"
   ffi:
     dependency: transitive
     description:
@@ -1172,13 +1121,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  forward:
-    dependency: "direct main"
-    description:
-      path: forward
-      relative: true
-    source: path
-    version: "1.0.0+1"
   freezed_annotation:
     dependency: transitive
     description:
@@ -1187,14 +1129,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.4"
-  frontend_server_client:
-    dependency: transitive
-    description:
-      name: frontend_server_client
-      sha256: f64a0333a82f30b0cca061bc3d143813a486dc086b574bfb233b7c1372427694
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   future_loading_dialog:
     dependency: "direct main"
     description:
@@ -1243,31 +1177,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  hive:
-    dependency: "direct overridden"
-    description:
-      path: "overrides/hive"
-      ref: "18f92b53295e9eb77ebd4830d905a72cd404a126"
-      resolved-ref: "18f92b53295e9eb77ebd4830d905a72cd404a126"
-      url: "https://github.com/IO-Design-Team/hive_ce"
-    source: git
-    version: "0.0.0"
   hive_ce:
     dependency: "direct main"
     description:
       name: hive_ce
-      sha256: "708bb39050998707c5d422752159f91944d3c81ab42d80e1bd0ee37d8e130658"
+      sha256: "412c638aeac0f003bba664884e3048b9547e541aaca13f10cc639da788184bed"
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.3"
-  hive_generator:
+    version: "2.16.0"
+  hive_ce_generator:
     dependency: "direct dev"
     description:
-      name: hive_generator
-      sha256: "65998cc4d2cd9680a3d9709d893d2f6bb15e6c1f92626c3f1fa650b4b3281521"
+      name: hive_ce_generator
+      sha256: "69800cb5e9bde43d457d24d38c20f458cf95b122c25ba04cfe9519578f31548d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "1.11.2"
   html:
     dependency: "direct main"
     description:
@@ -1369,8 +1294,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "20ca4d1c3ed3a7e9e2e86700af928ded9db4ff11"
+      ref: upgrade-dependencies
+      resolved-ref: "16bff121232e8f85cc916da446fad81f1a8222dd"
       url: "https://github.com/linagora/intl_generator.git"
     source: git
     version: "0.4.1"
@@ -1419,25 +1344,18 @@ packages:
     dependency: "direct main"
     description:
       name: json_annotation
-      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      sha256: "2a743920d81b7910627f68ee2c9ac1fc0bfee32b9fc3403587d7c6791ca12f80"
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.1"
+    version: "4.12.0"
   json_serializable:
     dependency: "direct dev"
     description:
       name: json_serializable
-      sha256: dadc08bd61f72559f938dd08ec20dbfec6c709bba83515085ea943d2078d187a
+      sha256: ffcd10cde35a93b2abbbcc26bd9971f4ca93763e8abe78d855e3c4177797e501
       url: "https://pub.dev"
     source: hosted
-    version: "6.6.1"
-  labels:
-    dependency: "direct main"
-    description:
-      path: labels
-      relative: true
-    source: path
-    version: "1.0.0+1"
+    version: "6.14.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -1528,13 +1446,13 @@ packages:
     source: hosted
     version: "0.11.1"
   meta:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: df0c643f44ad098eb37988027a8e2b2b5a031fd3977f06bbfd3a76637e8df739
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.2"
   middle_ellipsis_text:
     dependency: transitive
     description:
@@ -1555,17 +1473,10 @@ packages:
     dependency: "direct dev"
     description:
       name: mockito
-      sha256: "6841eed20a7befac0ce07df8116c8b8233ed1f4486a7647c7fc5a02ae6163917"
+      sha256: eff30d002f0c8bf073b6f929df4483b543133fcafce056870163587b03f1d422
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.4"
-  model:
-    dependency: "direct main"
-    description:
-      path: model
-      relative: true
-    source: path
-    version: "1.0.0+1"
+    version: "5.6.4"
   multiple_localization:
     dependency: transitive
     description:
@@ -2064,13 +1975,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
-  rule_filter:
-    dependency: "direct main"
-    description:
-      path: rule_filter
-      relative: true
-    source: path
-    version: "1.0.0+1"
   rxdart:
     dependency: "direct main"
     description:
@@ -2088,13 +1992,6 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "3.0.2"
-  scribe:
-    dependency: "direct main"
-    description:
-      path: scribe
-      relative: true
-    source: path
-    version: "0.0.1"
   sentry:
     dependency: transitive
     description:
@@ -2127,13 +2024,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.8.0"
-  server_settings:
-    dependency: "direct main"
-    description:
-      path: server_settings
-      relative: true
-    source: path
-    version: "0.0.1"
   share_plus:
     dependency: "direct main"
     description:
@@ -2239,18 +2129,18 @@ packages:
     dependency: transitive
     description:
       name: source_gen
-      sha256: fc0da689e5302edb6177fdd964efcb7f58912f43c28c2047a808f5bfff643d16
+      sha256: ec37cc0e6694374cbef59ed79685572c870a54ede6fa30a3e420feb3adffea02
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "4.2.3"
   source_helper:
     dependency: transitive
     description:
       name: source_helper
-      sha256: "6adebc0006c37dd63fe05bca0a929b99f06402fc95aa35bf36d67f5c06de01fd"
+      sha256: "4227d54ceefd0bb8ca4c8fcb96e1719dc53f1ee1b6e2ca9d7a6069da160e4eae"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.4"
+    version: "1.3.12"
   source_span:
     dependency: transitive
     description:
@@ -2411,14 +2301,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.2"
-  timing:
-    dependency: transitive
-    description:
-      name: timing
-      sha256: "70a3b636575d4163c477e6de42f247a23b315ae20e86442bebe32d3cabf61c32"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   twake_previewer_flutter:
     dependency: "direct main"
     description:
@@ -2647,12 +2529,11 @@ packages:
   worker_manager:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "hotfix/worker-init-memory-leak"
-      resolved-ref: "5c70ecc12f459b97c476ce3dd7a2da4218d71121"
-      url: "https://github.com/linagora/worker_manager.git"
-    source: git
-    version: "7.2.7"
+      name: worker_manager
+      sha256: "887587eb97e517bca88dea761bea96edc495513ec91e4c489dcf110967ba79ff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.9"
   xdg_directories:
     dependency: transitive
     description:
@@ -2677,6 +2558,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  yaml_writer:
+    dependency: transitive
+    description:
+      name: yaml_writer
+      sha256: "69651cd7238411179ac32079937d4aa9a2970150d6b2ae2c6fe6de09402a5dc5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
 sdks:
-  dart: ">=3.8.1 <4.0.0"
+  dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.32.0"
