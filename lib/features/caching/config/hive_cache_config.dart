@@ -23,30 +23,9 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/config/fcm_isolate_name_server.dart';
-import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
-import 'package:tmail_ui_user/features/caching/entries/sentry_user_cache.dart';
-import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
-import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/oidc_configuration_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
-import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.dart';
-import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
-import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
-import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
-import 'package:tmail_ui_user/features/push_notification/data/model/firebase_registration_cache.dart';
-import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
-import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
+import 'package:tmail_ui_user/hive_registrar.g.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -57,6 +36,9 @@ class HiveCacheConfig {
   static final HiveCacheConfig _instance = HiveCacheConfig._internal();
 
   static HiveCacheConfig get instance => _instance;
+
+  bool _isolatedAdaptersRegistered = false;
+  bool _regularAdaptersRegistered = false;
 
   Future<void> setUp({String? cachePath, bool isolated = true}) async {
     await initializeDatabase(databasePath: cachePath, isolated: isolated);
@@ -143,138 +125,23 @@ class HiveCacheConfig {
   }
 
   void _registerAdapter({bool isolated = true}) {
-    registerCacheAdapter<MailboxCache>(
-      MailboxCacheAdapter(),
-      CachingConstants.MAILBOX_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<MailboxRightsCache>(
-      MailboxRightsCacheAdapter(),
-      CachingConstants.MAILBOX_RIGHTS_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<StateCache>(
-      StateCacheAdapter(),
-      CachingConstants.STATE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<StateType>(
-      StateTypeAdapter(),
-      CachingConstants.STATE_TYPE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<EmailAddressHiveCache>(
-      EmailAddressHiveCacheAdapter(),
-      CachingConstants.EMAIL_ADDRESS_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<EmailCache>(
-      EmailCacheAdapter(),
-      CachingConstants.EMAIL_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<RecentSearchCache>(
-      RecentSearchCacheAdapter(),
-      CachingConstants.RECENT_SEARCH_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<TokenOidcCache>(
-      TokenOidcCacheAdapter(),
-      CachingConstants.TOKEN_OIDC_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<AccountCache>(
-      AccountCacheAdapter(),
-      CachingConstants.ACCOUNT_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<EncryptionKeyCache>(
-      EncryptionKeyCacheAdapter(),
-      CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<AuthenticationInfoCache>(
-      AuthenticationInfoCacheAdapter(),
-      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<RecentLoginUrlCache>(
-      RecentLoginUrlCacheAdapter(),
-      CachingConstants.RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<RecentLoginUsernameCache>(
-      RecentLoginUsernameCacheAdapter(),
-      CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<FirebaseRegistrationCache>(
-      FirebaseRegistrationCacheAdapter(),
-      CachingConstants.FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY,
-      isolated: isolated,
-    );
-    registerCacheAdapter<AttachmentHiveCache>(
-      AttachmentHiveCacheAdapter(),
-      CachingConstants.ATTACHMENT_HIVE_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<EmailHeaderHiveCache>(
-      EmailHeaderHiveCacheAdapter(),
-      CachingConstants.EMAIL_HEADER_HIVE_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<DetailedEmailHiveCache>(
-      DetailedEmailHiveCacheAdapter(),
-      CachingConstants.DETAILED_EMAIL_HIVE_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<SendingEmailHiveCache>(
-      SendingEmailHiveCacheAdapter(),
-      CachingConstants.SENDING_EMAIL_HIVE_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<SessionHiveObj>(
-      SessionHiveObjAdapter(),
-      CachingConstants.SESSION_HIVE_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<OidcConfigurationCache>(
-      OidcConfigurationCacheAdapter(),
-      CachingConstants.OIDC_CONFIGURATION_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<SentryConfigurationCache>(
-      SentryConfigurationCacheAdapter(),
-      CachingConstants.SENTRY_CONFIGURATION_CACHE_ID,
-      isolated: isolated,
-    );
-    registerCacheAdapter<SentryUserCache>(
-      SentryUserCacheAdapter(),
-      CachingConstants.SENTRY_USER_CACHE_ID,
-      isolated: isolated,
-    );
-  }
-
-  void registerCacheAdapter<T>(
-    TypeAdapter<T> typeAdapter,
-    int typeId, {
-    bool isolated = true,
-  }) {
     if (isolated) {
-      if (!IsolatedHive.isAdapterRegistered(typeId)) {
-        IsolatedHive.registerAdapter<T>(typeAdapter);
-      }
+      if (_isolatedAdaptersRegistered) return;
+      _isolatedAdaptersRegistered = true;
+      IsolatedHive.registerAdapters();
     } else {
-      if (!Hive.isAdapterRegistered(typeId)) {
-        Hive.registerAdapter<T>(typeAdapter);
-      }
+      if (_regularAdaptersRegistered) return;
+      _regularAdaptersRegistered = true;
+      Hive.registerAdapters();
     }
   }
 
   Future<void> closeHive({bool isolated = true}) async {
     if (isolated) {
+      _isolatedAdaptersRegistered = false;
       await IsolatedHive.close();
     } else {
+      _regularAdaptersRegistered = false;
       await Hive.close();
     }
   }
