@@ -1294,8 +1294,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-dependencies
-      resolved-ref: "16bff121232e8f85cc916da446fad81f1a8222dd"
+      ref: master
+      resolved-ref: "0585f29af985ab3290aaa467e01936f166a5ba5e"
       url: "https://github.com/linagora/intl_generator.git"
     source: git
     version: "0.4.1"

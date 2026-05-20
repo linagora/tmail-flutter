@@ -321,7 +321,7 @@ dependency_overrides:
   intl_generator:
     git:
       url: https://github.com/linagora/intl_generator.git
-      ref: upgrade-dependencies
+      ref: master
 
   # jmap_dart_client incorrectly declares build_runner and json_serializable
   # as regular dependencies. Override here so the workspace can resolve.
