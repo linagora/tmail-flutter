@@ -3,8 +3,10 @@ description: TMail AI scribe extension
 version: 0.0.1
 publish_to: "none"
 
+resolution: workspace
+
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.9.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -19,9 +21,6 @@ dependencies:
 
   ### Dependencies from git ###
   jmap_dart_client:
-    git:
-      url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
 
   ### Dependencies from pub.dev ###
   dartz: 0.10.1
@@ -46,16 +45,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.4.10
+  build_runner: ^2.15.0
 
-  json_serializable: 6.6.1
+  json_serializable: ^6.11.3
 
   ### Original dependency is abandoned, so we use fork
   ### https://github.com/linagora/intl_generator/pull/1
   intl_generator:
-    git:
-      url: https://github.com/linagora/intl_generator.git
-      ref: master
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

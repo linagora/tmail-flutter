@@ -1,24 +1,24 @@
 name: cozy
 description: "Cozy integration module"
 publish_to: 'none'
+
+resolution: workspace
+
 version: 0.1.0
 
 environment:
-  sdk: ^3.5.4
+  sdk: ">=3.9.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   linagora_design_flutter:
-    git:
-      url: https://github.com/linagora/linagora-design-flutter.git
-      ref: master
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: 2.0.1
 
 flutter:
   uses-material-design: true
