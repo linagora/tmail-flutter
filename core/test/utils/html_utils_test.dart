@@ -1139,6 +1139,23 @@ void main() {
 
       expect(doc, contains('html, body { height: auto !important; }'));
     });
+
+    test('override appears after styleCSS so user CSS cannot win cascade', () {
+      // Guards against refactors that move the override into <head> before
+      // styleCSS — if that happens, a competing rule in styleCSS would win.
+      const competing = 'html, body { height: 100% !important; }';
+      final doc = HtmlUtils.generateHtmlDocument(
+        content: '<p>x</p>',
+        styleCSS: competing,
+      );
+
+      final styleCssIndex = doc.indexOf(competing);
+      final overrideIndex = doc.indexOf('html, body { height: auto !important; }');
+
+      expect(styleCssIndex, isNot(-1));
+      expect(overrideIndex, greaterThan(styleCssIndex),
+          reason: 'override must come AFTER styleCSS in source order');
+    });
   });
 
   group('HtmlUtils::convertBase64ToImageResourceData::', () {

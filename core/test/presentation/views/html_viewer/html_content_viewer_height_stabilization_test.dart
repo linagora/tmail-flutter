@@ -65,5 +65,29 @@ void main() {
       // 100 + 30 = 130 < 200
       expect(check(reported: 100, current: 90, autoAdjust: true), isFalse);
     });
+
+    test('dedup alone CANNOT stop the loop — CSS override is load-bearing', () {
+      double iframe = 200;
+      const buffer = 30.0;
+      final history = <double>{iframe};
+
+      for (var i = 0; i < 10; i++) {
+        final scrollHeight = iframe; // body fills iframe — the bug condition
+        final reported = scrollHeight + buffer;
+        if (HtmlContentViewerOnWeb.shouldUpdateHeight(
+          scrollHeightWithBuffer: reported,
+          currentActualHeight: iframe,
+          minHeight: 200,
+          autoAdjust: false,
+        )) {
+          iframe = reported;
+          history.add(iframe);
+        }
+      }
+
+      expect(history.length, greaterThan(5),
+          reason: 'Dart dedup does not catch the buffer-delta loop; '
+              'the CSS override in generateHtmlDocument is the actual fix.');
+    });
   });
 }
