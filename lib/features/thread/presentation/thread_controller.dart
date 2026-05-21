@@ -523,8 +523,10 @@ class ThreadController extends BaseController with EmailActionController {
         ? 0
         : currentListEmails.length *
             ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
-    final isAutoLoadMore = totalHeightListEmails > 0 &&
-        totalHeightListEmails <= browserInnerHeight;
+    final isAutoLoadMore = shouldAutoLoadMoreByEstimatedHeight(
+      totalHeightListEmails,
+      browserInnerHeight,
+    );
     logTrace(
       'ThreadController::_isAutoLoadMore():'
       'BrowserInnerHeight = $browserInnerHeight, '
@@ -536,6 +538,17 @@ class ThreadController extends BaseController with EmailActionController {
     );
     return isAutoLoadMore;
   }
+
+  // Returns true only when the estimated list height has not yet filled the
+  // viewport (strictly less-than), so the list needs more items to fill the screen.
+  // Uses strict < to avoid triggering an extra load when estimated height equals
+  // the viewport — the actual rendered height is likely already overflowing.
+  @visibleForTesting
+  static bool shouldAutoLoadMoreByEstimatedHeight(
+    int totalHeight,
+    int viewportHeight,
+  ) =>
+      totalHeight > 0 && totalHeight < viewportHeight;
 
   bool get _isNonWebAutoLoadMore {
     if (!listEmailController.hasClients) {

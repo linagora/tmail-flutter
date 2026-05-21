@@ -863,5 +863,77 @@ void main() {
         expect(threadController.canLoadMore, isFalse);
       });
     });
+
+    group('shouldAutoLoadMoreByEstimatedHeight unit test:', () {
+      test(
+        'GIVEN totalHeight is 0 (empty list) '
+        'WHEN no emails are loaded '
+        'THEN SHOULD return false — nothing to trigger load from',
+      () {
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(0, 816),
+          isFalse,
+        );
+      });
+
+      test(
+        'GIVEN totalHeight is less than viewportHeight '
+        'WHEN content does not fill the viewport '
+        'THEN SHOULD return true',
+      () {
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(800, 816),
+          isTrue,
+        );
+      });
+
+      test(
+        'GIVEN totalHeight equals viewportHeight '
+        'WHEN estimated height exactly fills the viewport '
+        'THEN SHOULD return false — actual rendered height likely already overflows',
+      () {
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(816, 816),
+          isFalse,
+        );
+      });
+
+      test(
+        'GIVEN totalHeight exceeds viewportHeight '
+        'WHEN content overflows the viewport '
+        'THEN SHOULD return false',
+      () {
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(1200, 816),
+          isFalse,
+        );
+      });
+
+      test(
+        'GIVEN 20 emails × 40px estimate = 800px with viewport 816px '
+        'WHEN actual rendered height is likely larger (e.g. 70px/email = 1400px) '
+        'THEN SHOULD return true — one extra load may occur but no infinite loop',
+      () {
+        const estimatedHeight =
+            20 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
+          isTrue,
+        );
+      });
+
+      test(
+        'GIVEN 21 emails × 40px estimate = 840px with viewport 816px '
+        'WHEN estimated height exceeds viewport on large-screen browser '
+        'THEN SHOULD return false to prevent infinite load-more loop',
+      () {
+        const estimatedHeight =
+            21 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
+        expect(
+          ThreadController.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
+          isFalse,
+        );
+      });
+    });
   });
 }
