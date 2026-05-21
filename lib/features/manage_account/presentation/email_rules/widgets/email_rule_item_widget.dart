@@ -6,6 +6,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_rule_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -90,6 +91,7 @@ class EmailRulesItemWidget extends StatelessWidget {
               ),
             ),
             TMailButtonWidget.fromIcon(
+              key: ValueKey('${UiKeys.editEmailRuleButton}_${rule.name}'),
               icon: imagePaths.icEdit,
               iconSize: 20,
               iconColor: AppColor.steelGrayA540,
@@ -116,6 +118,7 @@ class EmailRulesItemWidget extends StatelessWidget {
               ),
             ),
             TMailButtonWidget.fromIcon(
+              key: ValueKey('${UiKeys.moreEmailRuleButton}_${rule.name}'),
               icon: imagePaths.icMoreVertical,
               iconSize: 20,
               iconColor: AppColor.steelGrayA540,

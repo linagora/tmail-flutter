@@ -30,6 +30,7 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await mailboxItem.tap();
   }
 
+  @override
   Future<void> openSetting() async {
     await $(#user_avatar).tap();
   }

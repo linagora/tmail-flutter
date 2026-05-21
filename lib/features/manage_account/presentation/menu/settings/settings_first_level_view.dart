@@ -3,6 +3,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/setting_user_info_widget.dart';
@@ -90,6 +91,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return Column(children: [
               _buildSettingItem(
+                key: const ValueKey(UiKeys.emailRulesSettingMenuItem),
                 context: context,
                 menuItem: AccountMenuItem.emailRules,
                 appLocalizations: appLocalizations,

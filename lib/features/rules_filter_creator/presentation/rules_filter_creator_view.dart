@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:core/core.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
 import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
@@ -400,6 +401,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         height: 36,
                         margin: const EdgeInsetsDirectional.only(top: 4),
                         child: ConfirmDialogButton(
+                          key: const ValueKey(UiKeys.addActionButton),
                           label: AppLocalizations.of(context).addAnAction,
                           backgroundColor: Colors.white,
                           textColor: AppColor.primaryMain,
