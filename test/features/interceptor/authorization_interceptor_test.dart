@@ -13,7 +13,9 @@ import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
+import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
@@ -24,6 +26,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -2427,6 +2430,365 @@ void main() {
           OIDCFixtures.oidcConfiguration.scopes,
           OIDCFixtures.tokenOidcExpiredTime.refreshToken,
         ));
+      },
+    );
+  });
+
+  // ============================================================
+  // onError: refresh side-effect failures
+  // ============================================================
+  group('onError: refresh side-effect failures', () {
+    test(
+      'WHEN refresh succeeds but _updateCurrentAccount throws (cache failure)\n'
+      'THEN outer catch wraps cache error in fresh DioException\n'
+      'AND propagated error has NO HTTP response (no stale 401 → no logout)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) async => AccountFixtures.aliceAccount);
+        when(accountCacheManager.deleteCurrentAccount(AccountFixtures.aliceAccount.id))
+            .thenThrow(Exception('Cache write failure'));
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is Exception;
+          })),
+        );
+      },
+    );
+
+    test(
+      'WHEN platform is iOS\n'
+      'AND refresh succeeds but Keychain save throws\n'
+      'THEN outer catch wraps keychain error in fresh DioException\n'
+      'AND propagated error has NO HTTP response',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+        );
+
+        // iOS: keychain returns null → server refresh path
+        when(iosSharingManager.getKeychainSharingSession(AccountFixtures.aliceAccountId))
+            .thenAnswer((_) async => null);
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+        final expectedPersonalAccount = PersonalAccount(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true,
+          accountId: AccountFixtures.aliceAccountId,
+          apiUrl: AccountFixtures.aliceAccount.apiUrl,
+          userName: AccountFixtures.aliceAccount.userName,
+        );
+        when(iosSharingManager.saveKeyChainSharingSession(expectedPersonalAccount))
+            .thenThrow(Exception('Keychain access denied'));
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is Exception;
+          })),
+        );
+      },
+    );
+  });
+
+  // ============================================================
+  // onError: upload retry with attachment extras
+  // ============================================================
+  group('onError: upload retry with attachment extras', () {
+    test(
+      'WHEN 401 on upload request with uploadAttachmentExtraKey + filePath\n'
+      'AND refresh succeeds\n'
+      'THEN upload-specific retry path is taken (uses retryDio.request, not fetch)\n'
+      'AND retry succeeds with 200',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        // filePath='' triggers the streamData fallback inside _getDataUploadRequest.
+        // streamData is null → retryDio.request is called with data=null, still
+        // exercising the upload branch (vs fetch branch).
+        final uploadExtras = <String, dynamic>{
+          'upload-attachment': <String, dynamic>{
+            'path': '',
+            'streamData': null,
+          },
+        };
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) =>
+              server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        final response = await dio.post(
+          baseUrl,
+          options: Options(extra: uploadExtras),
+        );
+
+        expect(response.statusCode, responseStatusCode200);
+        expect(response.data, dataRequestSuccessfully);
+      },
+    );
+
+    test(
+      'WHEN upload extras has invalid map shape\n'
+      'AND refresh succeeds\n'
+      'THEN _getDataUploadRequest returns null but retry still completes\n'
+      '(defensive: malformed extras must not crash the interceptor)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        final malformedExtras = <String, dynamic>{
+          'upload-attachment': 'not a map',
+        };
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) =>
+              server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        final response = await dio.post(
+          baseUrl,
+          options: Options(extra: malformedExtras),
+        );
+
+        expect(response.statusCode, responseStatusCode200);
+      },
+    );
+  });
+
+  // ============================================================
+  // onError: iOS keychain refresh path
+  // ============================================================
+  group('onError: iOS keychain refresh path', () {
+    setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.iOS);
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    test(
+      'WHEN platform is iOS\n'
+      'AND keychain contains a newer non-expired token (rotated by another app process)\n'
+      'THEN use keychain token without calling refreshingTokensOIDC\n'
+      'AND retry succeeds with 200',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) =>
+              server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        final keychainSession = KeychainSharingSession(
+          accountId: AccountFixtures.aliceAccountId,
+          userName: AccountFixtures.aliceAccount.userName!,
+          authenticationType: AuthenticationType.oidc,
+          apiUrl: AccountFixtures.aliceAccount.apiUrl!,
+          tokenOIDC: OIDCFixtures.newTokenOidc,
+        );
+        when(iosSharingManager
+                .getKeychainSharingSession(AccountFixtures.aliceAccountId))
+            .thenAnswer((_) async => keychainSession);
+
+        final expectedPersonalAccount = PersonalAccount(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true,
+          accountId: AccountFixtures.aliceAccountId,
+          apiUrl: AccountFixtures.aliceAccount.apiUrl,
+          userName: AccountFixtures.aliceAccount.userName,
+        );
+        when(iosSharingManager
+                .saveKeyChainSharingSession(expectedPersonalAccount))
+            .thenAnswer((_) async {});
+        stubAccountCache();
+
+        final response = await dio.post(baseUrl);
+
+        expect(response.statusCode, responseStatusCode200);
+        verifyNever(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        ));
+      },
+    );
+
+    test(
+      'WHEN platform is iOS\n'
+      'AND keychain returns expired tokenOIDC\n'
+      'THEN fallback to server refreshingTokensOIDC\n'
+      'AND retry succeeds with 200',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) =>
+              server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        final expiredKeychainToken = TokenOIDC(
+          'expired_keychain_token',
+          TokenId('expired_keychain_token'),
+          'older_refresh',
+          expiredTime: DateTime.now().subtract(const Duration(days: 2)),
+        );
+        final keychainSession = KeychainSharingSession(
+          accountId: AccountFixtures.aliceAccountId,
+          userName: AccountFixtures.aliceAccount.userName!,
+          authenticationType: AuthenticationType.oidc,
+          apiUrl: AccountFixtures.aliceAccount.apiUrl!,
+          tokenOIDC: expiredKeychainToken,
+        );
+        when(iosSharingManager
+                .getKeychainSharingSession(AccountFixtures.aliceAccountId))
+            .thenAnswer((_) async => keychainSession);
+
+        final expectedPersonalAccount = PersonalAccount(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true,
+          accountId: AccountFixtures.aliceAccountId,
+          apiUrl: AccountFixtures.aliceAccount.apiUrl,
+          userName: AccountFixtures.aliceAccount.userName,
+        );
+        when(iosSharingManager
+                .saveKeyChainSharingSession(expectedPersonalAccount))
+            .thenAnswer((_) async {});
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        final response = await dio.post(baseUrl);
+
+        expect(response.statusCode, responseStatusCode200);
+        verify(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).called(1);
       },
     );
   });
