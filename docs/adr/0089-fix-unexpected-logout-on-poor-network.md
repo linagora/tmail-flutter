@@ -29,11 +29,11 @@ Affects three paths:
 
 On mobile OIDC, `_authenticationClient.refreshingTokensOIDC()` calls `_appAuth.token()` via MethodChannel (native AppAuth SDK — not Dio). Network failure from native SDK propagates as `PlatformException` or `FlutterAppAuthPlatformException`. Neither is a `DioException`, so both bypass the inner `on DioException catch` and reach the outer `catch`. The old `else` branch called `err.copyWith(error: e)`, preserving the stale 401.
 
-### Bug 2 — `handleGetSessionFailure` logs out for any exception type (mobile only)
+### Bug 2 — `handleGetSessionFailure` logs out for any exception type
 
 `lib/features/base/reloadable/reloadable_controller.dart`
 
-On app start/resume, `getSessionAction()` fetches JMAP session. On mobile, `GetSessionInteractor` falls back to Hive cache on failure. If cache is empty (fresh install or wiped by Bug 1's `cachingManager.clearAll()`), `GetSessionFailure(ConnectionTimeout)` is emitted. The handler called `clearDataAndGoToLoginPage()` unconditionally for all exception types. `validateUrgentException` does not include `ConnectionTimeout`, `SocketError`, or `UnknownRemoteException`, so these fall through and cause logout. Web does not use Hive session cache, so the original logout-on-failure behaviour is correct there.
+On app start/resume, `getSessionAction()` fetches JMAP session. On mobile, `GetSessionInteractor` falls back to Hive cache on failure. If cache is empty (fresh install or wiped by Bug 1's `cachingManager.clearAll()`), `GetSessionFailure(ConnectionTimeout)` is emitted. The handler called `clearDataAndGoToLoginPage()` unconditionally for all exception types. `validateUrgentException` does not include `ConnectionTimeout`, `SocketError`, or `UnknownRemoteException`, so these fall through and cause logout.
 
 ## Decision
 
@@ -50,16 +50,14 @@ Root cause: `copyWith` leaves the original `response` (the 401) intact.
 
 Dead code removed: `if (refreshError is ServerError || refreshError is TemporarilyUnavailable)` in `_handleDioRefreshError` — `refreshError` is typed as `DioException`, those types don't extend it, so the check could never be true.
 
-### Fix 2 — Mobile only: guard `handleGetSessionFailure` against network exceptions
+### Fix 2 — All platforms: guard `handleGetSessionFailure` against network exceptions
 
-Check `PlatformInfo.isMobile && exception is NetworkException` before `clearDataAndGoToLoginPage()`. `ConnectionTimeout`, `SocketError`, `ConnectionError`, `NoNetworkError` all extend `NetworkException`. On mobile network exception: show toast, return — no logout.
-
-**Web behaviour (unchanged):** any non-BadCredentials exception still calls `clearDataAndGoToLoginPage()`.
+Check `exception is NetworkException` before `clearDataAndGoToLoginPage()`. `ConnectionTimeout`, `SocketError`, `ConnectionError`, `NoNetworkError` all extend `NetworkException`. On network exception: show toast, return — no logout on any platform.
 
 ## Consequences
 
 - **All platforms:** Network timeouts during token refresh or retry no longer cause logout; connectivity error propagates instead.
-- **Mobile:** `FlutterAppAuthPlatformException` and `PlatformException` from `_appAuth.token()` (OIDC, no internet) no longer cause logout.
+- **All platforms:** `FlutterAppAuthPlatformException` and `PlatformException` from `_appAuth.token()` (OIDC, no internet) no longer cause logout.
 - **All platforms:** Session fetch failure on poor network shows toast; user stays logged in.
 - Real HTTP error responses (400, 401, 5xx) from refresh endpoint or original request still propagate correctly on all platforms.
 - Fix 2 does not affect `validateUrgentException` — that early-exit path is unchanged.

@@ -12,6 +12,8 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
+import 'package:model/account/personal_account.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
@@ -106,11 +108,27 @@ void main() {
   });
 
   void stubAccountCache() {
-    when(accountCacheManager.getCurrentAccount())
-        .thenAnswer((_) async => AccountFixtures.aliceAccount);
+    var callCount = 0;
+    when(accountCacheManager.getCurrentAccount()).thenAnswer((_) async {
+      callCount++;
+      if (callCount == 1) return AccountFixtures.aliceAccount;
+      // Second call is the read-back in _verifyStoreTokenAndAccount.
+      // Return the PersonalAccount that _updateCurrentAccount would have
+      // constructed from newTokenOidc so the equality check passes.
+      return PersonalAccount(
+        OIDCFixtures.newTokenOidc.tokenIdHash,
+        AuthenticationType.oidc,
+        isSelected: true,
+        accountId: AccountFixtures.aliceAccountId,
+        apiUrl: AccountFixtures.aliceAccount.apiUrl,
+        userName: AccountFixtures.aliceAccount.userName,
+      );
+    });
     when(accountCacheManager.deleteCurrentAccount(
       AccountFixtures.aliceAccount.id,
     )).thenAnswer((_) async {});
+    when(tokenOidcCacheManager.getTokenOidc(OIDCFixtures.newTokenOidc.tokenIdHash))
+        .thenAnswer((_) async => OIDCFixtures.newTokenOidc);
   }
 
   group('validateToRefreshToken', () {

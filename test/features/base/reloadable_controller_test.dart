@@ -168,7 +168,7 @@ void main() {
     );
   });
 
-  group('Bug 2 — web: handleGetSessionFailure logs out on network error (old behaviour preserved)', () {
+  group('Bug 2 — web: handleGetSessionFailure does NOT log out on transient network error', () {
     setUp(() {
       PlatformInfo.isTestingForWeb = true;
       controller.wasLoggedOut = false;
@@ -180,22 +180,22 @@ void main() {
 
     test(
       'WHEN GetSessionFailure carries ConnectionTimeout on web\n'
-      'THEN clearDataAndGoToLoginPage MUST be called\n'
-      '(web keeps original logout-on-any-failure behaviour)',
+      'THEN clearDataAndGoToLoginPage MUST NOT be called\n'
+      '(network guard applies to all platforms)',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const ConnectionTimeout()));
 
-        expect(controller.wasLoggedOut, isTrue);
+        expect(controller.wasLoggedOut, isFalse);
       },
     );
 
     test(
       'WHEN GetSessionFailure carries SocketError on web\n'
-      'THEN clearDataAndGoToLoginPage MUST be called',
+      'THEN clearDataAndGoToLoginPage MUST NOT be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const SocketError()));
 
-        expect(controller.wasLoggedOut, isTrue);
+        expect(controller.wasLoggedOut, isFalse);
       },
     );
 
