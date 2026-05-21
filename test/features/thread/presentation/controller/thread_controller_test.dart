@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -39,6 +40,8 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -659,6 +662,205 @@ void main() {
 
         // Assert - peak should be 15, not stale 40
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(15));
+      });
+    });
+
+    group('shouldAutoLoadMoreByScrollExtent unit test:', () {
+      test(
+        'GIVEN maxScrollExtent is 0 '
+        'WHEN content exactly fills the viewport '
+        'THEN SHOULD return true',
+      () {
+        expect(ThreadController.shouldAutoLoadMoreByScrollExtent(0), isTrue);
+      });
+
+      test(
+        'GIVEN maxScrollExtent is positive '
+        'WHEN content overflows the viewport '
+        'THEN SHOULD return false',
+      () {
+        expect(ThreadController.shouldAutoLoadMoreByScrollExtent(1), isFalse);
+      });
+
+      test(
+        'GIVEN maxScrollExtent is 785 with viewport 816 '
+        'WHEN content fills between 1× and 2× the viewport (large-screen device) '
+        'THEN SHOULD return false to prevent infinite load-more loop',
+      () {
+        expect(
+          ThreadController.shouldAutoLoadMoreByScrollExtent(785.0459770114941),
+          isFalse,
+        );
+      });
+    });
+
+    group('shouldAutoLoadMoreByScrollExtent widget test:', () {
+      testWidgets(
+        'GIVEN a ListView whose content overflows the viewport '
+        'THEN maxScrollExtent > 0 and SHOULD return false',
+      (tester) async {
+        final scrollController = ScrollController();
+        addTearDown(scrollController.dispose);
+
+        await tester.pumpWidget(MaterialApp(
+          home: SizedBox(
+            height: 500,
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: 20,
+              itemBuilder: (_, __) => const SizedBox(height: 80),
+            ),
+          ),
+        ));
+
+        final maxScroll = scrollController.position.maxScrollExtent;
+        expect(maxScroll, greaterThan(0));
+        expect(
+          ThreadController.shouldAutoLoadMoreByScrollExtent(maxScroll),
+          isFalse,
+        );
+      });
+
+      testWidgets(
+        'GIVEN a ListView whose content does not fill the viewport '
+        'THEN maxScrollExtent == 0 and SHOULD return true',
+      (tester) async {
+        final scrollController = ScrollController();
+        addTearDown(scrollController.dispose);
+
+        await tester.pumpWidget(MaterialApp(
+          home: SizedBox(
+            height: 500,
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: 3,
+              itemBuilder: (_, __) => const SizedBox(height: 80),
+            ),
+          ),
+        ));
+
+        final maxScroll = scrollController.position.maxScrollExtent;
+        expect(maxScroll, 0.0);
+        expect(
+          ThreadController.shouldAutoLoadMoreByScrollExtent(maxScroll),
+          isTrue,
+        );
+      });
+    });
+
+    group('canLoadMore after getAllEmail completes test:', () {
+      final mailboxId = MailboxId(Id('inbox'));
+
+      List<PresentationEmail> makeEmails(int count) => List.generate(
+        count,
+        (i) => PresentationEmail(
+          id: EmailId(Id('e$i')),
+          mailboxIds: {mailboxId: true},
+        ),
+      );
+
+      void setupMocksForOnDone() {
+        PlatformInfo.isTestingForWeb = false;
+        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+      }
+
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'GIVEN server returns fewer than limit emails '
+        'WHEN getAllEmail stream completes (e.g. mailbox with 3 emails) '
+        'THEN canLoadMore SHOULD be false — no Load More button',
+      () {
+        setupMocksForOnDone();
+        final emails = makeEmails(3);
+        threadController.viewState.value = Right(
+          GetAllEmailSuccess(emailList: emails, currentMailboxId: mailboxId),
+        );
+
+        threadController.onDone();
+
+        expect(threadController.canLoadMore, isFalse);
+      });
+
+      test(
+        'GIVEN server returns exactly limit emails '
+        'WHEN getAllEmail stream completes '
+        'THEN canLoadMore SHOULD be true — more may exist',
+      () {
+        setupMocksForOnDone();
+        final emails = makeEmails(ThreadConstants.maxCountEmails);
+        threadController.viewState.value = Right(
+          GetAllEmailSuccess(emailList: emails, currentMailboxId: mailboxId),
+        );
+
+        threadController.onDone();
+
+        expect(threadController.canLoadMore, isTrue);
+      });
+    });
+
+    group('canLoadMore after loadMoreEmails completes test:', () {
+      final mailboxId = MailboxId(Id('inbox'));
+
+      List<PresentationEmail> makeEmails(int count) => List.generate(
+        count,
+        (i) => PresentationEmail(
+          id: EmailId(Id('lm$i')),
+          mailboxIds: {mailboxId: true},
+        ),
+      );
+
+      void setupMocksForLoadMore() {
+        PlatformInfo.isTestingForWeb = false;
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+      }
+
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'GIVEN server returns fewer than limit emails in load-more response '
+        'WHEN the last page has fewer items (e.g. 5 remaining) '
+        'THEN canLoadMore SHOULD be false immediately — no extra empty request needed',
+      () {
+        setupMocksForLoadMore();
+        final emails = makeEmails(5);
+
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(emails));
+
+        expect(threadController.canLoadMore, isFalse);
+      });
+
+      test(
+        'GIVEN server returns exactly limit emails in load-more response '
+        'WHEN more pages may exist '
+        'THEN canLoadMore SHOULD be true',
+      () {
+        setupMocksForLoadMore();
+        final emails = makeEmails(ThreadConstants.maxCountEmails);
+
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(emails));
+
+        expect(threadController.canLoadMore, isTrue);
+      });
+
+      test(
+        'GIVEN server returns 0 emails in load-more response '
+        'WHEN all emails have been loaded '
+        'THEN canLoadMore SHOULD be false',
+      () {
+        setupMocksForLoadMore();
+
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess([]));
+
+        expect(threadController.canLoadMore, isFalse);
       });
     });
   });

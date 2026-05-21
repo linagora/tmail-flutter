@@ -547,7 +547,7 @@ class ThreadController extends BaseController with EmailActionController {
 
     final maxScroll = listEmailController.position.maxScrollExtent;
     final viewport = listEmailController.position.viewportDimension;
-    final isAutoLoadMore = maxScroll <= viewport;
+    final isAutoLoadMore = shouldAutoLoadMoreByScrollExtent(maxScroll);
 
     logTrace(
       'ThreadController::_isNonWebAutoLoadMore():'
@@ -559,6 +559,12 @@ class ThreadController extends BaseController with EmailActionController {
 
     return isAutoLoadMore;
   }
+
+  // Returns true only when the content does not yet fill the viewport
+  // (maxScrollExtent == 0), so the list needs more items to fill the screen.
+  @visibleForTesting
+  static bool shouldAutoLoadMoreByScrollExtent(double maxScrollExtent) =>
+      maxScrollExtent <= 0;
 
   void _performAutomaticallyLoadMoreEmails() {
     log('ThreadController::_performAutomaticallyLoadMoreEmails:');
@@ -643,10 +649,10 @@ class ThreadController extends BaseController with EmailActionController {
     }
     final emailList = success.emailList;
     log('ThreadController::_handleOnDoneGetAllEmailSuccess: EmailCount = ${emailList.length}');
-    if (_isAutoLoadMore && emailList.isNotEmpty) {
+    final hasMore = emailList.length >= ThreadConstants.maxCountEmails;
+    canLoadMore = hasMore;
+    if (_isAutoLoadMore && hasMore) {
       _performAutomaticallyLoadMoreEmails();
-    } else {
-      canLoadMore = emailList.isNotEmpty;
     }
   }
 
@@ -1011,10 +1017,10 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
 
-    if (_isAutoLoadMore && emailList.isNotEmpty) {
+    canLoadMore = emailList.length >= ThreadConstants.maxCountEmails;
+    if (_isAutoLoadMore && canLoadMore) {
       _performAutomaticallyLoadMoreEmails();
     } else {
-      canLoadMore = emailList.isNotEmpty;
       loadingMoreStatus.value = LoadingMoreStatus.completed;
     }
   }
