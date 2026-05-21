@@ -16,8 +16,8 @@ openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
 openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>/dev/null
 
 # 10.0.2.2 is the QEMU alias for the host machine inside the Android emulator.
-sed -i "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
-sed -i "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
+sed -i.bak "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
+sed -i.bak "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
 
 echo "Starting tmail-backend..."
 docker compose up -d tmail-backend --quiet-pull

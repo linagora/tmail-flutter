@@ -21,8 +21,8 @@ openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
 
 # Replace jmap.properties URLs so James reports the correct public base URL
 # in its JMAP session responses (the app uses these URLs for subsequent requests).
-sed -i '' "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties
+sed -i.bak "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
+sed -i.bak "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties
 
 echo "Starting services and adding users..."
 docker compose up -d
