@@ -53,7 +53,13 @@ mixin ScenarioUtilsMixin {
     ComposerBindings().dependencies();
 
     await waitForCondition(
-      () => getBinding<MailboxDashBoardController>() != null,
+      () {
+        final controller = getBinding<MailboxDashBoardController>();
+        if (controller == null) return false;
+        return controller.sessionCurrent != null &&
+            controller.accountId.value != null &&
+            controller.outboxMailbox != null;
+      },
     );
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
