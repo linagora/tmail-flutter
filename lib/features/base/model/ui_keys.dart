@@ -18,4 +18,6 @@ class UiKeys {
   static const String editEmailRuleButton = 'editEmailRuleButton';
   static const String moreEmailRuleButton = 'moreEmailRuleButton';
   static const String addActionButton = 'addActionButton';
+  static const String mobileMailboxMenuButton = 'mobileMailboxMenuButton';
+  static const String userAvatar = 'userAvatar';
 }

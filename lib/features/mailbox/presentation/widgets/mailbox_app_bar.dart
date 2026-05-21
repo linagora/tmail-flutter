@@ -51,7 +51,7 @@ class MailboxAppBar extends StatelessWidget {
               onTapAction: openAppGridAction!,
             ),
           UserAvatarBuilder(
-            key: const Key('user_avatar'),
+            key: const ValueKey(UiKeys.userAvatar),
             username: username.firstLetterToUpperCase,
             padding: const EdgeInsetsDirectional.only(start: 4),
             onTapAction: openSettingsAction,

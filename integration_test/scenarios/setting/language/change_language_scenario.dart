@@ -1,6 +1,7 @@
 import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../base/base_test_scenario.dart';
@@ -44,7 +45,8 @@ class ChangeLanguageScenario extends BaseTestScenario {
     await _expectLanguageViewWithVietnameseTitleVisible();
   }
 
-  Future<void> _expectUserAvatarVisible() => expectViewVisible($(#user_avatar));
+  Future<void> _expectUserAvatarVisible() =>
+      expectViewVisible($(const ValueKey(UiKeys.userAvatar)));
 
   Future<void> _expectSettingViewVisible(AppLocalizations appLocalizations) =>
       expectViewVisible($(find.text(appLocalizations.settings)));

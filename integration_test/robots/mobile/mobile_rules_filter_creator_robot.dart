@@ -29,8 +29,9 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
 
   @override
   Future<void> tapAddActionButton() async {
-    await $(const ValueKey(UiKeys.addActionButton)).scrollTo();
-    await $(const ValueKey(UiKeys.addActionButton)).tap();
+    const addActionButtonKey = ValueKey(UiKeys.addActionButton);
+    await $(addActionButtonKey).scrollTo();
+    await $(addActionButtonKey).tap();
   }
 
   @override

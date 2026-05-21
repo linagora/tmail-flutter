@@ -14,7 +14,7 @@ class PopupMenuItemProfileSettingTypeAction
     super.action,
     this.appLocalizations,
     this.imagePaths,
-  );
+  ) : super(key: action.getKey());
 
   @override
   String get actionIcon => action.getIcon(imagePaths);

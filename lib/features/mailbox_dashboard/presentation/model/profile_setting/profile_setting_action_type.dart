@@ -23,4 +23,11 @@ enum ProfileSettingActionType {
         return imagePaths.icLogout;
     }
   }
+
+  String? getKey() {
+    return switch (this) {
+      ProfileSettingActionType.manageAccount => name,
+      _ => null,
+    };
+  }
 }
