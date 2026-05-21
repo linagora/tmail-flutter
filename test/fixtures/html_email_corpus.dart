@@ -120,6 +120,23 @@ abstract final class HtmlEmailCorpus {
   static const String htmlDoubleEncoded =
       '<p>&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;</p>';
 
+  // ─── Table / responsive cells ─────────────────────────────────────────────
+  static const String htmlTableSimple =
+      '<table>'
+      '<tr><th>Name</th><th>Email</th></tr>'
+      '<tr><td>Alice</td><td>alice@example.com</td></tr>'
+      '</table>';
+
+  static const String htmlTableCellWithOverflowWrap =
+      '<table><tr>'
+      '<td style="overflow-wrap: break-word;">https://very-long-url.example.com/path</td>'
+      '</tr></table>';
+
+  static const String htmlTableCellWithOtherStyles =
+      '<table><tr>'
+      '<td style="color: green; padding: 8px">Revenue +12%</td>'
+      '</tr></table>';
+
   // ─── Multi-language ────────────────────────────────────────────────────────
   static const String htmlRtlArabic =
       '<div dir="rtl"><p>مرحبا بالعالم</p><p>البريد الإلكتروني</p></div>';

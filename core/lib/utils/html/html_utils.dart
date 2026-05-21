@@ -361,6 +361,10 @@ class HtmlUtils {
         
         ${useDefaultFontStyle ? HtmlTemplate.defaultFontStyle(fontSize: fontSize) : ''}
         
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
         .tmail-content {
           min-height: ${minHeight ?? 0}px;
           min-width: ${minWidth ?? 0}px;
