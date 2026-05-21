@@ -1,44 +1,50 @@
 pipeline {
-  agent {
-    label 'jdk11'
-  }
-
-  options {
-    // Configure an overall timeout for the build.
-    timeout(time: 1, unit: 'HOURS')
-    disableConcurrentBuilds()
-  }
-
-  stages {
-    stage('Deliver web Docker image') {
-      when {
-        anyOf {
-          branch 'master'
-          branch 'release'
-          buildingTag()
-        }
-      }
-      steps {
-        script {
-          env.DOCKER_TAG = 'master'
-          if (env.BRANCH_NAME == 'release') {
-            env.DOCKER_TAG = 'release'
-          }
-          if (env.TAG_NAME) {
-            env.DOCKER_TAG = env.TAG_NAME
-          }
-
-          echo "Docker tag: ${env.DOCKER_TAG}"
-
-          // Build image
-          sh "docker build -t linagora/tmail-web:${env.DOCKER_TAG} ."
-
-          def webImage = docker.image "linagora/tmail-web:${env.DOCKER_TAG}"
-          docker.withRegistry('', 'dockerHub') {
-            webImage.push()
-          }
-        }
-      }
+    agent {
+        label 'test'
     }
-  }
+
+    tools {
+        nodejs 'nodejs_24'
+    }
+
+    options {
+        timeout(time: 180, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        FLUTTER_VERSION = '3.38.9'
+    }
+
+    stages {
+        stage('Prebuild') {
+            steps {
+                sh './scripts/prebuild.sh'
+            }
+        }
+
+        stage('Run Patrol Web Integration Tests') {
+            steps {
+                sh './scripts/patrol-web-integration-test-with-docker.sh'
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo 'Running post-build cleanup...'
+
+                // Tear down the backend Docker stack if it is still running.
+                sh '''
+                    cd backend-docker
+                    docker compose down --remove-orphans 2>/dev/null || true
+                '''
+            }
+            deleteDir() /* clean up our workspace */
+        }
+        failure {
+            echo 'Pipeline failed. Review the console log and emulator.log for details.'
+        }
+    }
 }

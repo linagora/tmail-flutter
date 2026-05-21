@@ -8,13 +8,10 @@ dart pub global activate patrol_cli 4.3.1
 # Stop previous environment if any
 cd backend-docker
 docker compose down || true
-cd ..
 
 # Forward traffic to tmail-backend
 export BASIC_AUTH_URL="http://localhost"
 export WEBSOCKET_URL="ws://localhost"
-
-cd backend-docker
 
 # Generate keys for tmail backend
 echo "Generating keys for tmail-backend..."
@@ -50,7 +47,8 @@ patrol test -v \
     --device=chrome \
     --web-port=3000 \
     --web-headless=true \
-    --web-browser-args='["--lang=en-US","--accept-lang=en-US,en"]' \
+    --web-server-timeout=300 \
+    --web-browser-args='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]' \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
