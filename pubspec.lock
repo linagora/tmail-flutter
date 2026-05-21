@@ -1280,11 +1280,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "fix/tf-4488-fix-ctrl-k-opens-custom-link-dialog"
-      resolved-ref: "785f61ac4c5ed3c0c855be2b9a537f2ede971cca"
+      ref: main
+      resolved-ref: "388c756491955c77aee56f2153cd726eafe7a985"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.3.5"
+    version: "3.3.6"
   html_unescape:
     dependency: transitive
     description:
