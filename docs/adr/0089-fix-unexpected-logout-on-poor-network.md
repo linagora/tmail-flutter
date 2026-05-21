@@ -1,7 +1,6 @@
 # 0089. Fix Unexpected Logout on Poor Network
 
-Date: 2026-05-18
-Updated: 2026-05-21
+Date: 2026-05-21
 
 ## Status
 
