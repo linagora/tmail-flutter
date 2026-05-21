@@ -12,6 +12,7 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_max_width_in_image_style_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_outside_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
@@ -76,6 +77,7 @@ class TransformConfiguration {
       const AddLazyLoadingForBackgroundImageTransformer(),
       const RemoveCollapsedSignatureButtonTransformer(),
       const NormalizeLineHeightInStyleTransformer(),
+      const ResponsiveTableCellTransformer(),
     ]
   );
 
@@ -139,6 +141,7 @@ class TransformConfiguration {
     const AddLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
     const NormalizeLineHeightInStyleTransformer(),
+    const ResponsiveTableCellTransformer(),
   ];
 
   static const List<TextTransformer> standardTextTransformers = [

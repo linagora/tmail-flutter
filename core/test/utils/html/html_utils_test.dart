@@ -3,6 +3,47 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:universal_html/html.dart' as html;
 
 void main() {
+  group('HtmlUtils generateHtmlDocument', () {
+    test('appends custom styleCSS after all default styles', () {
+      const customCss = 'div { color: red; }';
+
+      final result = HtmlUtils.generateHtmlDocument(
+        content: '<p>Test</p>',
+        styleCSS: customCss,
+      );
+
+      expect(result, contains(customCss));
+      final lastDefaultRuleIndex = result.indexOf('word-break: normal !important');
+      final customCssIndex = result.indexOf(customCss);
+      expect(lastDefaultRuleIndex, greaterThan(-1));
+      expect(customCssIndex, greaterThan(lastDefaultRuleIndex),
+        reason: 'custom styleCSS must appear after default CSS so it can override');
+    });
+
+    test('generates valid HTML document structure with required meta tags', () {
+      final result = HtmlUtils.generateHtmlDocument(content: '<p>Hello</p>');
+
+      expect(result, contains('<!DOCTYPE html>'));
+      expect(result, contains('<html>'));
+      expect(result, contains('width=device-width, initial-scale=1.0'));
+      expect(result, contains('charset=utf-8'));
+      expect(result, contains('<div class="tmail-content">'));
+      expect(result, contains('<p>Hello</p>'));
+    });
+
+    test('generates document without custom styleCSS when param is omitted', () {
+      final result = HtmlUtils.generateHtmlDocument(content: '<p>Test</p>');
+
+      expect(result, contains('word-break: normal !important'));
+    });
+
+    test('includes box-sizing border-box reset to prevent border overflow', () {
+      final result = HtmlUtils.generateHtmlDocument(content: '<p>Test</p>');
+
+      expect(result, contains('box-sizing: border-box'));
+    });
+  });
+
   group('HtmlUtils addQuoteToggle tests', () {
     test('Should add toggle button to HTML with single blockquote', () {
       const htmlInput = '''

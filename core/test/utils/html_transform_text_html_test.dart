@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
@@ -202,6 +203,27 @@ void main() {
         expect(out, allOf(contains('日本語'), contains('中文'), contains('한국어')));
       });
     });
+
+    group('ResponsiveTableCellTransformer', () {
+      test('SHOULD add overflow-wrap: anywhere to td and th cells with no existing style', () async {
+        final out = await transform(HtmlEmailCorpus.htmlTableSimple);
+        expect(out, contains('overflow-wrap: anywhere'));
+      });
+
+      test('SHOULD not override overflow-wrap that is already set on a cell', () async {
+        final out = await transform(HtmlEmailCorpus.htmlTableCellWithOverflowWrap);
+        expect(out, contains('overflow-wrap: break-word'));
+        expect(out, isNot(contains('overflow-wrap: anywhere')));
+      });
+
+      test('SHOULD append overflow-wrap: anywhere to cells that already have other inline styles', () async {
+        final out = await transform(HtmlEmailCorpus.htmlTableCellWithOtherStyles);
+        expect(out, allOf(
+          contains('color: green'),
+          contains('overflow-wrap: anywhere'),
+        ));
+      });
+    });
   });
 
   group('HtmlTransform.transformToHtml — fromDomTransformers', () {
@@ -260,6 +282,14 @@ void main() {
           contains('target="_blank"'),
           contains('rel="noreferrer"'),
         ));
+      });
+
+      test('SHOULD add overflow-wrap: anywhere to td and th when only ResponsiveTableCellTransformer is used', () async {
+        final out = await transformWith(
+          HtmlEmailCorpus.htmlTableSimple,
+          [const ResponsiveTableCellTransformer()],
+        );
+        expect(out, contains('overflow-wrap: anywhere'));
       });
     });
 
