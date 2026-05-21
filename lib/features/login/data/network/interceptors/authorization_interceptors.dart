@@ -11,6 +11,7 @@ import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -123,11 +124,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // Non-DioException types (e.g. FlutterAppAuthPlatformException from native
       // OIDC refresh) must not carry the stale 401 response forward, as
       // RemoteExceptionThrower would misclassify it as BadCredentialsException.
-      if (e is DioException && e.response != null) {
+      if (e is DioException) {
         return super.onError(e, handler);
       }
       return super.onError(
-        DioException(requestOptions: err.requestOptions, error: e),
+        e.toDioException(requestOptions: err.requestOptions),
         handler,
       );
     }
@@ -203,7 +204,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return super.onError(retryError, handler);
       }
       return super.onError(
-        DioException(requestOptions: originalErr.requestOptions, error: retryError),
+        retryError.toDioException(requestOptions: originalErr.requestOptions),
         handler,
       );
     }
@@ -219,10 +220,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // BadCredentialsException and log the user out.
     if (refreshError.response == null) {
       return super.onError(
-        DioException(
+        refreshError.error.toDioException(
           requestOptions: originalError.requestOptions,
           type: refreshError.type,
-          error: refreshError.error,
           message: refreshError.message,
         ),
         handler,
@@ -333,24 +333,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
 
-    await _verifyStoreTokenAndAccount(
-      tokenOIDC: tokenOIDC,
-      personalAccount: personalAccount,
-    );
-
     return personalAccount;
-  }
-
-  Future<void> _verifyStoreTokenAndAccount({
-    required TokenOIDC tokenOIDC,
-    required PersonalAccount personalAccount,
-  }) async {
-    final savedAccount = await _accountCacheManager.getCurrentAccount();
-    final savedToken = await _tokenOidcCacheManager.getTokenOidc(savedAccount.id);
-
-    if (savedAccount != personalAccount || savedToken != tokenOIDC) {
-      throw StateError('Error saving the token and account');
-    }
   }
 
   Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {

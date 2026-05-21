@@ -131,6 +131,9 @@ void main() {
         .thenAnswer((_) async => OIDCFixtures.newTokenOidc);
   }
 
+  // ============================================================
+  // validateToRefreshToken
+  // ============================================================
   group('validateToRefreshToken', () {
     test(
       'should return TRUE when 401 + OIDC + has token + has refreshToken (expired)',
@@ -237,6 +240,9 @@ void main() {
     });
   });
 
+  // ============================================================
+  // validateToRetryTheRequestWithNewToken
+  // ============================================================
   group('validateToRetryTheRequestWithNewToken', () {
     test(
       'should return TRUE when 401, auth header present, token updated, and token not expired',
@@ -333,6 +339,9 @@ void main() {
     });
   });
 
+  // ============================================================
+  // onError: refresh and retry flow
+  // ============================================================
   group('onError: refresh and retry flow', () {
     test(
       'WHEN 401 with expired token\n'
@@ -471,6 +480,9 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: refresh fails with DioException
+  // ============================================================
   group('onError: refresh fails with DioException', () {
     test(
       'WHEN refresh fails with 400 (Invalid Grant)\n'
@@ -573,6 +585,9 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: refresh fails with non-DioException (outer catch)
+  // ============================================================
   group('onError: refresh fails with non-DioException (outer catch)', () {
     test(
       'WHEN refresh throws ServerError\n'
@@ -672,6 +687,9 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: skip refresh scenarios
+  // ============================================================
   group('onError: skip refresh scenarios', () {
     test(
       'WHEN error is 500 (not 401)\n'
@@ -778,7 +796,9 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
-        // server.reply preserves requestOptions.extra (unlike server.throws)
+        // Use server.reply(401) instead of server.throws() so that Dio
+        // creates the DioException from the ORIGINAL request options,
+        // preserving the _refreshAttemptedKey extra.
         dioAdapter.onPost(
           baseUrl,
           (server) => server.reply(
@@ -810,6 +830,9 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: multiple queued requests
+  // ============================================================
   group('onError: multiple queued requests', () {
     test(
       'GIVEN 2 sequential requests with expired token\n'
@@ -822,6 +845,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // Request 1: old token → 401
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.throws(
@@ -833,6 +857,7 @@ void main() {
                 'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
           },
         );
+        // Request 1 retry: new token → 200
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) =>
@@ -842,6 +867,8 @@ void main() {
                 'Bearer ${OIDCFixtures.newTokenOidc.token}',
           },
         );
+
+        // Request 2: after Request 1 completes, onRequest uses new token → 200
         dioAdapter.onPost(
           '$baseUrl/2',
           (server) =>
@@ -864,6 +891,7 @@ void main() {
         final response1 = await dio.post('$baseUrl/1');
         final response2 = await dio.post('$baseUrl/2');
 
+        // Refresh called only once by Request 1
         verify(authenticationClient.refreshingTokensOIDC(
           OIDCFixtures.oidcConfiguration.clientId,
           OIDCFixtures.oidcConfiguration.redirectUrl,
@@ -946,7 +974,8 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
-        // server.reply preserves requestOptions auth header (unlike server.throws)
+        // Use server.reply(401) so Dio creates DioException from
+        // original requestOptions (preserving auth header from onRequest)
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.reply(
@@ -970,6 +999,7 @@ void main() {
           },
         );
 
+        // Retry handlers: new token → 200
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) =>
@@ -998,10 +1028,12 @@ void main() {
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
+        // Fire both requests concurrently
         final future1 = dio.post('$baseUrl/1');
         final future2 = dio.post('$baseUrl/2');
         final responses = await Future.wait([future1, future2]);
 
+        // Refresh should be called only once (by whichever enters onError first)
         verify(authenticationClient.refreshingTokensOIDC(
           OIDCFixtures.oidcConfiguration.clientId,
           OIDCFixtures.oidcConfiguration.redirectUrl,
@@ -1036,6 +1068,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // All 3 requests with old token → 401
         for (final i in [1, 2, 3]) {
           dioAdapter.onPost(
             '$baseUrl/$i',
@@ -1048,6 +1081,7 @@ void main() {
                   'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
             },
           );
+          // Retry with new token → 200
           dioAdapter.onPost(
             '$baseUrl/$i',
             (server) =>
@@ -1074,6 +1108,7 @@ void main() {
           dio.post('$baseUrl/3'),
         ]);
 
+        // Refresh called exactly once regardless of how many requests queued
         verify(authenticationClient.refreshingTokensOIDC(
           OIDCFixtures.oidcConfiguration.clientId,
           OIDCFixtures.oidcConfiguration.redirectUrl,
@@ -1104,6 +1139,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // Both requests with old token → 401
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.reply(
@@ -1136,9 +1172,11 @@ void main() {
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
+        // Fire both requests concurrently
         final future1 = dio.post('$baseUrl/1');
         final future2 = dio.post('$baseUrl/2');
 
+        // Request 1: refresh fails with 400 → RefreshTokenFailedException
         DioException? error1;
         DioException? error2;
         try {
@@ -1156,9 +1194,11 @@ void main() {
         expect(error1?.error, isA<RefreshTokenFailedException>());
         expect(error1?.response?.statusCode, 400);
 
-        // state cleared by Request 1 → no refresh/retry → propagates 401
+        // Request 2: state was cleared by Request 1, so no refresh/retry
+        // possible → propagates original 401
         expect(error2, isNotNull);
 
+        // State should be cleared
         expect(
           authorizationInterceptors.authenticationType,
           AuthenticationType.none,
@@ -1177,6 +1217,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // Request 1: old token → 401
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.throws(
@@ -1198,6 +1239,7 @@ void main() {
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
+        // Request 1 fails with RefreshTokenFailedException
         await expectLater(
           () => dio.post('$baseUrl/1'),
           throwsA(predicate<DioException>(
@@ -1205,11 +1247,13 @@ void main() {
           )),
         );
 
+        // State is now cleared
         expect(
           authorizationInterceptors.authenticationType,
           AuthenticationType.none,
         );
 
+        // Request 2: no auth header added (type is none), server returns 401
         dioAdapter.onPost(
           '$baseUrl/2',
           (server) => server.reply(
@@ -1218,6 +1262,7 @@ void main() {
           ),
         );
 
+        // Request 2 fails — no OIDC config, no refresh possible
         await expectLater(
           () => dio.post('$baseUrl/2'),
           throwsA(predicate<DioException>(
@@ -1225,6 +1270,7 @@ void main() {
           )),
         );
 
+        // Refresh should NOT be called again (state cleared)
         verify(authenticationClient.refreshingTokensOIDC(
           OIDCFixtures.oidcConfiguration.clientId,
           OIDCFixtures.oidcConfiguration.redirectUrl,
@@ -1247,6 +1293,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // Both requests → 401
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.reply(
@@ -1299,19 +1346,24 @@ void main() {
           error2 = e;
         }
 
+        // Both should fail with 401
         expect(error1, isNotNull);
         expect(error1!.response?.statusCode, responseStatusCode401);
 
         expect(error2, isNotNull);
         expect(error2!.response?.statusCode, responseStatusCode401);
 
-        // duplicate token doesn't update _token → second request can't detect first's attempt
-        // each request tries once and stops — no infinite loop
+        // Both requests independently attempt refresh (duplicate didn't
+        // update _token, so second request can't detect the first's attempt).
+        // Key assertion: no infinite loop — each request tries once and stops.
         expect(refreshCallCount, 2);
       },
     );
   });
 
+  // ============================================================
+  // onError: retry fails (separate Dio error handling)
+  // ============================================================
   group('onError: retry fails (separate Dio error handling)', () {
     test(
       'WHEN refresh succeeds but retry with new token gets 401\n'
@@ -1323,6 +1375,7 @@ void main() {
           newConfig: OIDCFixtures.oidcConfiguration,
         );
 
+        // Old token → 401
         dioAdapter.onPost(
           baseUrl,
           (server) => server.throws(responseStatusCode401, makeDioError401()),
@@ -1331,6 +1384,7 @@ void main() {
                 'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
           },
         );
+        // Retry with new token → also 401
         dioAdapter.onPost(
           baseUrl,
           (server) => server.throws(
@@ -1357,6 +1411,7 @@ void main() {
           throwsA(isA<DioException>()),
         );
 
+        // Refresh was called once
         verify(authenticationClient.refreshingTokensOIDC(
           OIDCFixtures.oidcConfiguration.clientId,
           OIDCFixtures.oidcConfiguration.redirectUrl,
@@ -1387,6 +1442,7 @@ void main() {
           type: DioExceptionType.badResponse,
         );
 
+        // Old token → 401
         dioAdapter.onPost(
           baseUrl,
           (server) => server.throws(responseStatusCode401, makeDioError401()),
@@ -1395,6 +1451,7 @@ void main() {
                 'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
           },
         );
+        // Retry with new token → 500
         dioAdapter.onPost(
           baseUrl,
           (server) => server.throws(responseStatusCode500, dioError500),
@@ -1421,6 +1478,7 @@ void main() {
           )),
         );
 
+        // OIDC state should NOT be cleared (only 400 clears state)
         expect(
           authorizationInterceptors.authenticationType,
           AuthenticationType.oidc,
@@ -1450,6 +1508,7 @@ void main() {
           type: DioExceptionType.badResponse,
         );
 
+        // Request 1: old token → 401
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) => server.reply(
@@ -1461,6 +1520,7 @@ void main() {
                 'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
           },
         );
+        // Request 1 retry: new token → 200
         dioAdapter.onPost(
           '$baseUrl/1',
           (server) =>
@@ -1471,6 +1531,7 @@ void main() {
           },
         );
 
+        // Request 2: old token → 401
         dioAdapter.onPost(
           '$baseUrl/2',
           (server) => server.reply(
@@ -1482,6 +1543,7 @@ void main() {
                 'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
           },
         );
+        // Request 2 retry: new token → 500
         dioAdapter.onPost(
           '$baseUrl/2',
           (server) => server.throws(responseStatusCode500, dioError500),
@@ -1514,6 +1576,9 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: token duplicate prevents infinite loop
+  // ============================================================
   group('onError: token duplicate prevents infinite loop', () {
     test(
       'WHEN refresh returns same token as current\n'
@@ -1541,7 +1606,7 @@ void main() {
           OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
         )).thenAnswer((_) async {
           refreshCallCount++;
-          return OIDCFixtures.tokenOidcNotExpiredYet; // duplicate → detected, no retry
+          return OIDCFixtures.tokenOidcNotExpiredYet; // same token → duplicate
         });
         stubAccountCache();
 
