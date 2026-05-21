@@ -149,14 +149,20 @@ abstract class ReloadableController extends BaseController {
 
   void handleGetSessionFailure(GetSessionFailure failure) {
     final exception = failure.exception;
-    if (PlatformInfo.isMobile && exception is NetworkException) {
-      toastManager.showMessageFailure(failure);
-      return;
-    }
+    if (_isNetworkException(failure)) return;
     if (exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }
     clearDataAndGoToLoginPage();
+  }
+
+  bool _isNetworkException(FeatureFailure failure) {
+    final exception = failure.exception;
+    if (exception is NetworkException) {
+      toastManager.showMessageFailure(failure);
+      return true;
+    }
+    return false;
   }
 
   void handleReloaded(Session session) {}

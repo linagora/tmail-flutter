@@ -14,7 +14,6 @@ import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -121,26 +120,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         exception: e,
         stackTrace: stackTrace,
       );
-      if (PlatformInfo.isMobile) {
-        // Mobile only: non-DioException types (e.g. FlutterAppAuthPlatformException
-        // from native OIDC refresh) must not carry the stale 401 response forward,
-        // as RemoteExceptionThrower would misclassify it as BadCredentialsException.
-        if (e is DioException && e.response != null) {
-          return super.onError(e, handler);
-        }
-        return super.onError(
-          DioException(requestOptions: err.requestOptions, error: e),
-          handler,
-        );
+      // Non-DioException types (e.g. FlutterAppAuthPlatformException from native
+      // OIDC refresh) must not carry the stale 401 response forward, as
+      // RemoteExceptionThrower would misclassify it as BadCredentialsException.
+      if (e is DioException && e.response != null) {
+        return super.onError(e, handler);
       }
-      if (e is ServerError || e is TemporarilyUnavailable) {
-        return super.onError(
-          DioException(requestOptions: err.requestOptions, error: e),
-          handler,
-        );
-      } else {
-        return super.onError(err.copyWith(error: e), handler);
-      }
+      return super.onError(
+        DioException(requestOptions: err.requestOptions, error: e),
+        handler,
+      );
     }
   }
 
@@ -156,7 +145,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         : await _getNewTokenForOtherPlatform();
 
       if (newTokenOidc.token == _token?.token) {
-        log('AuthorizationInterceptors::onError: Token duplicated');
+        logError('AuthorizationInterceptors::onError: Token duplicated', exception: err);
         return super.onError(err, handler);
       }
       _updateNewToken(newTokenOidc);
@@ -171,10 +160,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       return await _performRetry(requestOptions, err, handler);
     } on DioException catch (refreshError, st) {
       if (refreshError.response?.statusCode == 400) {
-        logError(
-          'AuthorizationInterceptors: Refresh Token Failed 400',
-          exception: refreshError,
-          stackTrace: st,
+        logWarning(
+          'AuthorizationInterceptors: Refresh Token Failed 400 - error=$refreshError | stackTrace=$st',
         );
         clear();
         return handler.reject(DioException(
@@ -184,11 +171,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           response: refreshError.response,
         ));
       }
-      logError(
+      logWarning(
         'AuthorizationInterceptors: Refresh token failed with '
-        'statusCode=${refreshError.response?.statusCode}',
-        exception: refreshError,
-        stackTrace: st,
+        'statusCode=${refreshError.response?.statusCode} \n'
+        'error=$refreshError | stackTrace=$st',
       );
       return _handleDioRefreshError(
         refreshError: refreshError,
@@ -211,18 +197,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: '
         'Retry failed with error=$retryError',
       );
-      // Mobile only: pass retry errors directly so the stale 401 response
-      // is not preserved via err.copyWith.
-      if (PlatformInfo.isMobile) {
-        if (retryError is DioException) {
-          return super.onError(retryError, handler);
-        }
-        return super.onError(
-          DioException(requestOptions: originalErr.requestOptions, error: retryError),
-          handler,
-        );
+      // Pass retry errors directly so the stale 401 response is not preserved
+      // via err.copyWith.
+      if (retryError is DioException) {
+        return super.onError(retryError, handler);
       }
-      return super.onError(originalErr.copyWith(error: retryError), handler);
+      return super.onError(
+        DioException(requestOptions: originalErr.requestOptions, error: retryError),
+        handler,
+      );
     }
   }
 
@@ -231,19 +214,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     required DioException originalError,
     required ErrorInterceptorHandler handler,
   }) {
-    if (refreshError is ServerError || refreshError is TemporarilyUnavailable) {
-      return super.onError(
-        DioException(
-          requestOptions: originalError.requestOptions,
-          error: refreshError,
-        ),
-        handler,
-      );
-    } else if (PlatformInfo.isMobile && refreshError.response == null) {
-      // Mobile only: network failure during refresh — don't carry the
-      // original 401 response forward, as that would make
-      // RemoteExceptionThrower classify this as BadCredentialsException
-      // and log the user out.
+    // Network failure during refresh — don't carry the original 401 response
+    // forward, as that would make RemoteExceptionThrower classify this as
+    // BadCredentialsException and log the user out.
+    if (refreshError.response == null) {
       return super.onError(
         DioException(
           requestOptions: originalError.requestOptions,
@@ -253,14 +227,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
         handler,
       );
-    } else {
-      return super.onError(
-        PlatformInfo.isMobile
-            ? refreshError
-            : originalError.copyWith(error: refreshError),
-        handler,
-      );
     }
+    return super.onError(refreshError, handler);
   }
 
   Stream<List<int>>? _getDataUploadRequest(dynamic mapUploadExtra) {
@@ -365,7 +333,24 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
 
+    await _verifyStoreTokenAndAccount(
+      tokenOIDC: tokenOIDC,
+      personalAccount: personalAccount,
+    );
+
     return personalAccount;
+  }
+
+  Future<void> _verifyStoreTokenAndAccount({
+    required TokenOIDC tokenOIDC,
+    required PersonalAccount personalAccount,
+  }) async {
+    final savedAccount = await _accountCacheManager.getCurrentAccount();
+    final savedToken = await _tokenOidcCacheManager.getTokenOidc(savedAccount.id);
+
+    if (savedAccount != personalAccount || savedToken != tokenOIDC) {
+      throw StateError('Error saving the token and account');
+    }
   }
 
   Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {
