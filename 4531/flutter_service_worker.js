@@ -421,7 +421,7 @@ const RESOURCES = {"splash/img/icon_twp.png": "5f3bf8fc4a58850bf5dae7b6f33043fc"
 "canvaskit/skwasm_heavy.js.symbols": "0755b4fb399918388d71b59ad390b055",
 "main.dart.js_7.part.js": "d91fd741c5f16fd874afe18b85c9a114",
 "main.dart.js_5.part.js": "2baa149e628a80c645c7da9ea97bc8a6",
-"flutter_bootstrap.js": "92ccd0cb72d731860b4d5fa9c078e7f5",
+"flutter_bootstrap.js": "a456b0e33d8b83c12b737776dca12b5c",
 "manifest.json": "c2c66c9dd73fa42a8a2c5e95615de7d1",
 "logout-callback.html": "cf4eb9df559c8357b8eec78d68fd7d85",
 "main.dart.js": "4015d8097c2fe237d757426b9e5683e0"};
