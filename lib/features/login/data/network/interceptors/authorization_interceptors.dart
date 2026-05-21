@@ -124,14 +124,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // Non-DioException types (e.g. FlutterAppAuthPlatformException from native
       // OIDC refresh) must not carry the stale 401 response forward, as
       // RemoteExceptionThrower would misclassify it as BadCredentialsException.
-      if (e is DioException) {
-        return super.onError(e, handler);
-      }
-      return super.onError(
-        e.toDioException(requestOptions: err.requestOptions),
-        handler,
+      return _handleThrownException(
+        e,
+        handler: handler,
+        requestOptions: err.requestOptions,
       );
     }
+  }
+
+  void _handleThrownException(
+    Object exception, {
+    required ErrorInterceptorHandler handler,
+    required RequestOptions requestOptions,
+  }) {
+    if (exception is DioException) {
+      return super.onError(exception, handler);
+    }
+    return super.onError(
+      exception.toDioException(requestOptions: requestOptions),
+      handler,
+    );
   }
 
   Future<void> _refreshTokenThenRetry(
@@ -200,12 +212,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       );
       // Pass retry errors directly so the stale 401 response is not preserved
       // via err.copyWith.
-      if (retryError is DioException) {
-        return super.onError(retryError, handler);
-      }
-      return super.onError(
-        retryError.toDioException(requestOptions: originalErr.requestOptions),
-        handler,
+      return _handleThrownException(
+        retryError,
+        handler: handler,
+        requestOptions: originalErr.requestOptions,
       );
     }
   }
