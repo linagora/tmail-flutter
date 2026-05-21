@@ -548,19 +548,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       }
     }
 
-    final hasRejectAction = listEmailRuleFilterActionSelected
-        .any((action) => action is RejectItActionArguments);
-
-    if (hasRejectAction && context.mounted) {
-      await MessageDialogActionManager().showConfirmDialogAction(
-        context,
-        appLocalizations.messageConfirmationRuleWithRejectAction,
-        appLocalizations.confirm,
-        title: appLocalizations.titleConfirmRuleWithRejectAction,
-        cancelTitle: appLocalizations.cancel,
-        alignCenter: true,
-        onConfirmAction: _buildAndSubmitRuleFilter,
-      );
+    if (await _submitRuleWithRejectAction(context)) {
       return;
     }
 
@@ -635,6 +623,27 @@ class RulesFilterCreatorController extends BaseMailboxController {
       ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
     }
     popBack(result: ruleFilterRequest);
+  }
+
+  Future<bool> _submitRuleWithRejectAction(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context);
+    final hasRejectAction = listEmailRuleFilterActionSelected
+        .any((action) => action is RejectItActionArguments);
+
+    if (hasRejectAction && context.mounted) {
+      await MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.messageConfirmationRuleWithRejectAction,
+        appLocalizations.confirm,
+        title: appLocalizations.titleConfirmRuleWithRejectAction,
+        cancelTitle: appLocalizations.cancel,
+        alignCenter: true,
+        onConfirmAction: _buildAndSubmitRuleFilter,
+      );
+      return true;
+    }
+
+    return false;
   }
 
   void closeView(BuildContext context) {
