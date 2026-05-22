@@ -11,6 +11,12 @@ import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interact
 import '../../../../fixtures/session_fixtures.dart';
 import 'get_session_interactor_test.mocks.dart';
 
+Matcher _emitsNetworkThenCacheThen(dynamic result) => emitsInOrder([
+  Right<Failure, Success>(GetSessionLoading()),
+  Right<Failure, Success>(GetSessionLoading()),
+  result,
+]);
+
 @GenerateMocks([SessionRepository])
 void main() {
   late MockSessionRepository sessionRepository;
@@ -70,11 +76,9 @@ void main() {
 
         expect(
           interactor.execute(),
-          emitsInOrder([
-            Right<Failure, Success>(GetSessionLoading()),
-            Right<Failure, Success>(GetSessionLoading()),
+          _emitsNetworkThenCacheThen(
             Right<Failure, Success>(GetSessionSuccess(SessionFixtures.aliceSession)),
-          ]),
+          ),
         );
       });
 
@@ -84,11 +88,9 @@ void main() {
 
         expect(
           interactor.execute(),
-          emitsInOrder([
-            Right<Failure, Success>(GetSessionLoading()),
-            Right<Failure, Success>(GetSessionLoading()),
+          _emitsNetworkThenCacheThen(
             Left<Failure, Success>(GetSessionFailure(networkException)),
-          ]),
+          ),
         );
       });
     });
