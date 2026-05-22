@@ -5,9 +5,14 @@ part 'thread_detail_config.g.dart';
 
 @JsonSerializable()
 class ThreadDetailConfig extends PreferencesConfig {
+  static const keySuffix = 'THREAD';
+
   final bool isEnabled;
 
   ThreadDetailConfig({this.isEnabled = false});
+
+  @override
+  String get configKey => keySuffix;
 
   factory ThreadDetailConfig.initial() => ThreadDetailConfig();
 

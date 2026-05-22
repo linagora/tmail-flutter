@@ -5,9 +5,14 @@ part 'label_config.g.dart';
 
 @JsonSerializable()
 class LabelConfig extends PreferencesConfig {
+  static const keySuffix = 'LABEL';
+
   final bool isEnabled;
 
   LabelConfig({this.isEnabled = true});
+
+  @override
+  String get configKey => keySuffix;
 
   factory LabelConfig.initial() => LabelConfig();
 
