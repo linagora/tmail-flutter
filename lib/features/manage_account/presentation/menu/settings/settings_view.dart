@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -14,6 +15,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_mode_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
@@ -28,23 +30,7 @@ class SettingsView extends GetWidget<SettingsController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Obx(() {
-          return SettingAppBar(
-            pageLevel: controller
-                .manageAccountDashboardController
-                .settingsPageLevel
-                .value,
-            accountMenuItem: controller
-                .manageAccountDashboardController
-                .accountMenuItemSelected
-                .value,
-            imagePaths: controller.imagePaths,
-            responsiveUtils: controller.responsiveUtils,
-            onBackAction: () => controller.onBackSettingAction(context),
-            onExportTraceLogAction: () =>
-                controller.showExportTraceLogConfirmDialog(context),
-          );
-        }),
+        _buildAppBar(context),
         Obx(() {
           final dashboard = controller.manageAccountDashboardController;
           final vacation = dashboard.vacationResponse.value;
@@ -88,8 +74,8 @@ class SettingsView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
-        Expanded(child: _bodySettingsScreen())
-      ]
+        Expanded(child: _bodySettingsScreen()),
+      ],
     );
   }
 
@@ -157,5 +143,39 @@ class SettingsView extends GetWidget<SettingsController> {
           return const SizedBox.shrink();
       }
     });
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final isExperimentalEnabled = ref.watch(experimentalModeNotifierProvider);
+        return Obx(() {
+          final selectedMenuItem = controller
+              .manageAccountDashboardController
+              .accountMenuItemSelected
+              .value;
+
+          final pageLevel = controller
+            .manageAccountDashboardController
+            .settingsPageLevel
+            .value;
+
+          return SettingAppBar(
+            pageLevel: pageLevel,
+            accountMenuItem: selectedMenuItem,
+            imagePaths: controller.imagePaths,
+            responsiveUtils: controller.responsiveUtils,
+            onBackAction: () => controller.onBackSettingAction(context),
+            onExportTraceLogAction: () =>
+                controller.showExportTraceLogConfirmDialog(context),
+            onMultiClickAction: selectedMenuItem == AccountMenuItem.preferences &&
+                    !isExperimentalEnabled
+                ? controller.onMultiClickPreferencesTitle
+                : null,
+            multiClickCount: ExperimentalModeNotifier.activationTapCount,
+          );
+        });
+      },
+    );
   }
 }

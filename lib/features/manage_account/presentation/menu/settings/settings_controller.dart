@@ -10,11 +10,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/prof
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mixin/enable_experimental_mode_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class SettingsController extends GetxController with ContactSupportMixin {
+class SettingsController extends GetxController
+    with ContactSupportMixin, EnableExperimentalModeMixin {
   final manageAccountDashboardController = Get.find<ManageAccountDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -44,6 +46,8 @@ class SettingsController extends GetxController with ContactSupportMixin {
   void showExportTraceLogConfirmDialog(BuildContext context) {
     manageAccountDashboardController.showExportTraceLogConfirmDialog(context);
   }
+
+  void onMultiClickPreferencesTitle() => enableExperimentalMode();
 
   void goToCommonSetting(OidcUserInfo oidcUserInfo) {
     final commonSettingUrl = WebLinkGenerator.safeGenerateWebLink(

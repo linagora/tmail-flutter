@@ -56,4 +56,16 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       return labelConfig.isEnabled;
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<bool> getExperimentalModeEnabled() {
+    return Future.sync(() => _preferencesSettingManager.getExperimentalModeEnabled())
+        .catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> enableExperimentalMode() {
+    return Future.sync(() => _preferencesSettingManager.enableExperimentalMode())
+        .catchError(_exceptionThrower.throwException);
+  }
 }

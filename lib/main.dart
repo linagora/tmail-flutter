@@ -9,7 +9,9 @@ import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/runner/app_runner_mobile.dart'
     if (dart.library.html) 'package:tmail_ui_user/main/runner/app_runner_web.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
@@ -41,40 +43,43 @@ class _TMailAppState extends State<TMailApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeUtils.buildAppTheme(context),
-      supportedLocales: LocalizationService.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizationsDelegate(),
-        ScribeLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      localeResolutionCallback: (deviceLocale, supportedLocales) {
-        for (var locale in supportedLocales) {
-          if (locale.languageCode == deviceLocale?.languageCode) {
-            return deviceLocale;
+    return UncontrolledProviderScope(
+      container: appProviderContainer,
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeUtils.buildAppTheme(context),
+        supportedLocales: LocalizationService.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          ScribeLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback: (deviceLocale, supportedLocales) {
+          for (var locale in supportedLocales) {
+            if (locale.languageCode == deviceLocale?.languageCode) {
+              return deviceLocale;
+            }
           }
-        }
-        return supportedLocales.first;
-      },
-      locale: LocalizationService.getInitialLocale(),
-      fallbackLocale: LocalizationService.fallbackLocale,
-      translations: LocalizationService(),
-      onGenerateTitle: (context) {
-        if (Get.currentRoute == AppRoutes.unknownRoutePage) {
-          return AppLocalizations.of(context).page404;
-        } else {
-          return AppLocalizations.of(context).page_name;
-        }
-      },
-      unknownRoute: AppPages.unknownRoutePage,
-      defaultTransition: Transition.noTransition,
-      initialRoute: AppRoutes.home,
-      getPages: AppPages.pages,
-      builder: FlutterSmartDialog.init(),
+          return supportedLocales.first;
+        },
+        locale: LocalizationService.getInitialLocale(),
+        fallbackLocale: LocalizationService.fallbackLocale,
+        translations: LocalizationService(),
+        onGenerateTitle: (context) {
+          if (Get.currentRoute == AppRoutes.unknownRoutePage) {
+            return AppLocalizations.of(context).page404;
+          } else {
+            return AppLocalizations.of(context).page_name;
+          }
+        },
+        unknownRoute: AppPages.unknownRoutePage,
+        defaultTransition: Transition.noTransition,
+        initialRoute: AppRoutes.home,
+        getPages: AppPages.pages,
+        builder: FlutterSmartDialog.init(),
+      ),
     );
   }
 

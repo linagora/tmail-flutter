@@ -2,9 +2,11 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/asset_preloader.dart';
 import 'package:tmail_ui_user/main/utils/cozy_integration.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -23,6 +25,11 @@ Future<void> runTmailPreload() async {
     HiveCacheConfig.instance.setUp(),
     if (PlatformInfo.isWeb) AssetPreloader.preloadHtmlEditorAssets(),
   ], eagerError: false);
+
+  // SharedPreferences was initialized inside MainBindings; getInstance() returns
+  // the cached instance here. We wire it into Riverpod so no provider needs GetX.
+  final prefs = await SharedPreferences.getInstance();
+  initAppProviderContainer(prefs);
 
   if (PlatformInfo.isMobile) {
     await workerManager.init(dynamicSpawning: true);

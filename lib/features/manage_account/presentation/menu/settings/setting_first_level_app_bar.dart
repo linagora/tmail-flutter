@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_mode_notifier.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SettingFirstLevelAppBar extends StatelessWidget {
@@ -13,6 +14,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final VoidCallback onBackAction;
   final VoidCallback? onMultiClickAction;
+  final int? multiClickCount;
 
   const SettingFirstLevelAppBar({
     super.key,
@@ -21,6 +23,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
     required this.responsiveUtils,
     required this.onBackAction,
     this.onMultiClickAction,
+    this.multiClickCount,
   });
 
   @override
@@ -37,6 +40,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
     if (onMultiClickAction != null) {
       titleWidget = MultiClickWidget(
         onMultiTap: onMultiClickAction!,
+        requiredClicks: multiClickCount ?? ExperimentalModeNotifier.activationTapCount,
         child: titleWidget,
       );
     }

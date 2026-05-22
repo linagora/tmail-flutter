@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/t
 
 class PreferencesSettingManager {
   static const _storagePrefix = 'PREFERENCES_SETTING';
+  static const _experimentalModeKey = 'EXPERIMENTAL_MODE_ENABLED';
 
   static String _storageKey(String suffix) => '${_storagePrefix}_$suffix';
 
@@ -117,6 +118,14 @@ class PreferencesSettingManager {
         defaultFactory: LabelConfig.initial,
         fromJson: LabelConfig.fromJson,
       );
+
+  Future<bool> getExperimentalModeEnabled() async {
+    // Write-once flag — no reload needed.
+    return _sharedPreferences.getBool(_experimentalModeKey) ?? false;
+  }
+
+  Future<void> enableExperimentalMode() =>
+      _sharedPreferences.setBool(_experimentalModeKey, true);
 
   Future<T> _readConfig<T extends PreferencesConfig>({
     required String key,
