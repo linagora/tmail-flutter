@@ -108,7 +108,7 @@ class IOSSharingManager {
 
       log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED');
     } catch (e) {
-      logWarning('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
+      logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }
   }
 

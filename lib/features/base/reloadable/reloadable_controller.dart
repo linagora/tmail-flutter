@@ -11,6 +11,7 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
@@ -147,10 +148,21 @@ abstract class ReloadableController extends BaseController {
   }
 
   void handleGetSessionFailure(GetSessionFailure failure) {
-    if (failure.exception is! BadCredentialsException) {
+    final exception = failure.exception;
+    if (exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }
-    clearDataAndGoToLoginPage();
+    if (exception is BadCredentialsException ||
+        exception is RefreshTokenFailedException ||
+        exception is NotFoundSessionException) {
+      logError(
+        '$runtimeType::handleGetSessionFailure: '
+        'forcing logout — session definitively dead',
+        exception: exception,
+        stackTrace: StackTrace.current,
+      );
+      clearDataAndGoToLoginPage();
+    }
   }
 
   void handleReloaded(Session session) {}
