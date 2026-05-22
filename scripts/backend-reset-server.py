@@ -8,10 +8,10 @@ The Android emulator reaches the host at 10.0.2.2, so Dart tests call:
 Reset strategy: call the James WebAdmin `deleteData` action for every test
 user, which runs all DeleteUserDataTaskStep hooks (clearing mailboxes, emails,
 JMAP settings, and identities) without restarting the JVM. User accounts are
-preserved so provisioning.sh can re-import mailboxes/emails immediately.
-The AddUser calls in provisioning.sh print "already exists" errors but are
-harmless — everything else (CreateMailbox, ImportEml, team-mailboxes, quota)
-proceeds normally.
+preserved so the mailbox restore can re-import data immediately.
+
+After deletion, bob's mailbox is restored from backup.zip via the
+WebAdmin restore endpoint, then team mailboxes and quota are recreated.
 
 Returns 200 OK only once all deleteData tasks complete and provisioning
 finishes, so Dart tearDown blocks until the next test can safely start.
@@ -32,7 +32,7 @@ from typing import Optional
 
 RESET_PORT    = int(os.environ.get("RESET_PORT", "9999"))
 WEBADMIN_PORT = int(os.environ.get("WEBADMIN_PORT", "8000"))
-PROVISION     = "/root/conf/integration_test/provisioning.sh"
+BACKUP_ZIP    = "/root/conf/integration_test/backup.zip"
 
 # Must match the users created by provisioning.sh
 _TEST_USERS = [
@@ -46,18 +46,22 @@ _TEST_USERS = [
 
 _TEST_DOMAIN = "example.com"
 
+_BOB_USER = "bob@example.com"
+
 
 def _run(cmd: list[str], check: bool = False) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, check=check, capture_output=True, text=True)
 
 
-def _webadmin(method: str, path: str) -> dict:
+def _webadmin(method: str, path: str, data: str | None = None) -> dict:
     """Call the James WebAdmin API inside the container via docker exec curl."""
-    result = _run([
-        "docker", "exec", "tmail-backend",
+    cmd = [
         "curl", "-s", "-X", method,
         f"http://localhost:{WEBADMIN_PORT}{path}",
-    ])
+    ]
+    if data is not None:
+        cmd += ["-d", data, "-H", "Content-Type: application/json"]
+    result = _run(cmd)
     if not result.stdout.strip():
         return {}
     return json.loads(result.stdout)
@@ -73,10 +77,13 @@ def _delete_domain_data(domain: str) -> str:
     return task_id
 
 def _delete_user_vault() -> Optional[str]:
-    """Submit a vault deletion task for one user. Returns taskId or None if vault is empty."""
+    """Submit a vault deletion task. Returns taskId or None if vault is empty."""
     resp = _webadmin("DELETE", f"/deletedMessages?scope=expired")
     print(f"[reset-server] delete_user_vault response: {resp}", flush=True)
-    return resp.get("taskId")
+    task_id = resp.get("taskId")
+    if not task_id:
+        raise RuntimeError(f"delete vault for domain {domain} returned no taskId: {resp}")
+    return task_id
 
 
 def _wait_for_task(task_id: str, timeout: float = 30.0) -> None:
@@ -94,6 +101,35 @@ def _wait_for_task(task_id: str, timeout: float = 30.0) -> None:
     raise TimeoutError(f"James task {task_id} did not complete within {timeout}s")
 
 
+def _restore_user_backup(user_email: str) -> str:
+    """Submit a restore task for a user's mailbox backup. Returns taskId."""
+    result = _run([
+        "docker", "exec", "tmail-backend",
+        "curl", "-s", "-X", "POST",
+        f"http://localhost:{WEBADMIN_PORT}/users/{user_email}/mailboxes?task=restore&force=true",
+        "--data-binary", f"@{BACKUP_ZIP}",
+        "-H", "Content-Type: application/zip"
+    ])
+    resp = json.loads(result.stdout) if result.stdout.strip() else {}
+    task_id = resp.get("taskId")
+    if not task_id:
+        raise RuntimeError(f"restore for {user_email} returned no taskId: {resp}")
+    return task_id
+
+
+def _recreate_team_mailboxes() -> None:
+    """Recreate team mailbox and members after data deletion."""
+    _webadmin("PUT", f"/domains/{_TEST_DOMAIN}/team-mailboxes/bob-guests")
+    _webadmin("PUT", f"/domains/{_TEST_DOMAIN}/team-mailboxes/bob-guests/members/bob@{_TEST_DOMAIN}?role=member")
+    _webadmin("PUT", f"/domains/{_TEST_DOMAIN}/team-mailboxes/bob-guests/members/alice@{_TEST_DOMAIN}?role=member")
+
+
+def _set_quota() -> None:
+    """Set quota for bob after data deletion."""
+    _webadmin("PUT", f"/quota/users/bob@{_TEST_DOMAIN}",
+              data=json.dumps({"count": 200, "size": 50000000}))
+
+
 def reset_backend() -> None:
     print("[reset-server] Deleting user data for all test users...", flush=True)
 
@@ -107,9 +143,17 @@ def reset_backend() -> None:
     _wait_for_task(task_id)
     print(f"[reset-server]   cleared vault for {_TEST_DOMAIN}", flush=True)
 
-    print("[reset-server] Re-running provisioning...", flush=True)
-    # AddUser calls will log "already exists" errors — expected and harmless.
-    _run(["docker", "exec", "tmail-backend", PROVISION], check=True)
+    # Restore mailbox backup for bob.
+    print(f"[reset-server]   restoring {_BOB_USER}...", flush=True)
+    task_id = _restore_user_backup(_BOB_USER)
+    _wait_for_task(task_id)
+    print(f"[reset-server]   restored {_BOB_USER}", flush=True)
+
+    # Recreate team mailbox and quota (these are not restored by mailbox restore).
+    print("[reset-server] Recreating team mailboxes and quota...", flush=True)
+    _recreate_team_mailboxes()
+    _set_quota()
+
     print("[reset-server] Reset complete.", flush=True)
 
 
