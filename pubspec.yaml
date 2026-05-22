@@ -28,7 +28,7 @@ workspace:
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.29.0
+version: 0.29.1
 
 environment:
   sdk: ">=3.9.0 <4.0.0"
