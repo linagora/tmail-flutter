@@ -3,4 +3,4 @@
 set -eux
 
 flutter pub get
-pod install && pod update
+pod install --repo-update
