@@ -58,7 +58,7 @@ mixin ScenarioUtilsMixin {
         if (controller == null) return false;
         return controller.sessionCurrent != null &&
             controller.accountId.value != null &&
-            controller.outboxMailbox != null;
+            controller.selectedMailbox.value != null;
       },
     );
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
