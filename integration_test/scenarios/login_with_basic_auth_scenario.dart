@@ -18,6 +18,18 @@ class LoginWithBasicAuthScenario extends BaseTestScenario {
   final String email;
   final String password;
 
+  // Skip credential seeding — test the actual login UI flow.
+  @override
+  Future<void> execute() async {
+    await robots.loginRobot().loginWithBasicAuth(
+      username: username,
+      hostUrl: hostUrl,
+      email: email,
+      password: password,
+    );
+    await runTestLogic();
+  }
+
   @override
   Future<void> runTestLogic() async {
     await _expectThreadViewVisible();
