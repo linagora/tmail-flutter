@@ -207,6 +207,9 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
+          key: widget.menuAction.key != null
+              ? ValueKey(widget.menuAction.key!)
+              : null,
           onTap: () => widget.menuAction.onClick(widget.menuActionClick),
           hoverColor: AppColor.popupMenuItemHovered,
           onHover: (_) {

@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 
 class RuleFilterListActionWidget extends StatelessWidget {
   final String positiveLabel;
@@ -33,6 +34,7 @@ class RuleFilterListActionWidget extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 143),
       height: 48,
       child: ConfirmDialogButton(
+        key: const ValueKey(UiKeys.createRuleButton),
         label: positiveLabel,
         backgroundColor: AppColor.primaryMain,
         textColor: Colors.white,

@@ -47,7 +47,7 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> openMailbox() async {
-    await $(#mobile_mailbox_menu_button).tap();
+    await $(const ValueKey(UiKeys.mobileMailboxMenuButton)).tap();
   }
 
   Future<void> tapEmptyTrashBanner() => $(' ${AppLocalizations().empty_trash_now}').tap();

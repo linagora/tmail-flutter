@@ -17,6 +17,7 @@ import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -456,7 +457,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void createNewRuleFilter(BuildContext context) {
+  Future<void> createNewRuleFilter(BuildContext context) async {
     final appLocalizations = AppLocalizations.of(context);
     final errorName = _getErrorStringByInputValue(
       appLocalizations,
@@ -547,6 +548,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
       }
     }
 
+    if (await _submitRuleWithRejectAction(context)) {
+      return;
+    }
+
+    _buildAndSubmitRuleFilter();
+  }
+
+  void _buildAndSubmitRuleFilter() {
     late EquatableMixin ruleFilterRequest;
 
     List<MailboxId> mailboxIds = [];
@@ -614,6 +623,27 @@ class RulesFilterCreatorController extends BaseMailboxController {
       ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
     }
     popBack(result: ruleFilterRequest);
+  }
+
+  Future<bool> _submitRuleWithRejectAction(BuildContext context) async {
+    final appLocalizations = AppLocalizations.of(context);
+    final hasRejectAction = listEmailRuleFilterActionSelected
+        .any((action) => action is RejectItActionArguments);
+
+    if (hasRejectAction && context.mounted) {
+      await MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.messageConfirmationRuleWithRejectAction,
+        appLocalizations.confirm,
+        title: appLocalizations.titleConfirmRuleWithRejectAction,
+        cancelTitle: appLocalizations.cancel,
+        alignCenter: true,
+        onConfirmAction: _buildAndSubmitRuleFilter,
+      );
+      return true;
+    }
+
+    return false;
   }
 
   void closeView(BuildContext context) {

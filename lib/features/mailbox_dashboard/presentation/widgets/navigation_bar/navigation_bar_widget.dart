@@ -98,6 +98,7 @@ class NavigationBarWidget extends StatelessWidget {
                   }),
                 const SizedBox(width: 16),
                 ProfileSettingIcon(
+                  key: const ValueKey(UiKeys.userAvatar),
                   ownEmailAddress: ownEmailAddress,
                   settingActionTypes: settingActionTypes,
                   onProfileSettingActionTypeClick: onProfileSettingActionTypeClick,

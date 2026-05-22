@@ -85,6 +85,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                      itemBuilder: (context, index) => Obx(() {
                        final menuItem = controller.listAccountMenuItem[index];
                        return AccountMenuItemTileBuilder(
+                         key: menuItem.uiKey,
                          imagePaths: controller.imagePaths,
                          responsiveUtils: controller.responsiveUtils,
                          menuItem: menuItem,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -34,5 +35,9 @@ class SettingRobot extends CoreRobot {
 
   Future<void> closeSettings() async {
     await $(#settings_close_button).tap();
+  }
+
+  Future<void> openEmailRulesMenuItem() async {
+    await $(const ValueKey(UiKeys.emailRulesSettingMenuItem)).tap();
   }
 }

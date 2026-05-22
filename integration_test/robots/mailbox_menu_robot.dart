@@ -5,6 +5,7 @@ import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
@@ -30,8 +31,9 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await mailboxItem.tap();
   }
 
+  @override
   Future<void> openSetting() async {
-    await $(#user_avatar).tap();
+    await $(const ValueKey(UiKeys.userAvatar)).tap();
   }
 
   Future<void> longPressMailboxWithName(String name) async {

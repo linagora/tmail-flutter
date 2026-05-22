@@ -1,5 +1,7 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:flutter/foundation.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AccountMenuItem {
@@ -134,4 +136,9 @@ enum AccountMenuItem {
         return 'profiles';
     }
   }
+
+  Key? get uiKey => switch (this) {
+    AccountMenuItem.emailRules => const ValueKey(UiKeys.emailRulesSettingMenuItem),
+    _ => null
+  };
 }

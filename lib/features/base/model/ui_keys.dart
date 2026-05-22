@@ -11,4 +11,13 @@ class UiKeys {
   // Keep snake_case values — existing widgets and tests already reference these key names.
   static const String composerMoreButton = 'composer_more_button';
   static const String saveDraftPopupItem = 'save_as_draft_popup_item';
+
+  // Email rules / rules filter creator
+  static const String createRuleButton = 'createRuleButton';
+  static const String emailRulesSettingMenuItem = 'setting_email_rules';
+  static const String editEmailRuleButton = 'editEmailRuleButton';
+  static const String moreEmailRuleButton = 'moreEmailRuleButton';
+  static const String addActionButton = 'addActionButton';
+  static const String mobileMailboxMenuButton = 'mobileMailboxMenuButton';
+  static const String userAvatar = 'userAvatar';
 }
