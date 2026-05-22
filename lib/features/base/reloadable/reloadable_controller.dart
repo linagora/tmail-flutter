@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/cache/cache_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
-import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {
@@ -149,20 +149,14 @@ abstract class ReloadableController extends BaseController {
 
   void handleGetSessionFailure(GetSessionFailure failure) {
     final exception = failure.exception;
-    if (_isNetworkException(failure)) return;
     if (exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }
-    clearDataAndGoToLoginPage();
-  }
-
-  bool _isNetworkException(FeatureFailure failure) {
-    final exception = failure.exception;
-    if (exception is NetworkException) {
-      toastManager.showMessageFailure(failure);
-      return true;
+    if (exception is BadCredentialsException ||
+        exception is RefreshTokenFailedException ||
+        exception is CacheException) {
+      clearDataAndGoToLoginPage();
     }
-    return false;
   }
 
   void handleReloaded(Session session) {}

@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cach
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/cache/cache_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -162,6 +163,16 @@ void main() {
       'THEN clearDataAndGoToLoginPage MUST be called',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(RefreshTokenFailedException()));
+
+        expect(controller.wasLoggedOut, isTrue);
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries CacheException on mobile\n'
+      'THEN clearDataAndGoToLoginPage MUST be called',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const UnknownCacheError()));
 
         expect(controller.wasLoggedOut, isTrue);
       },
