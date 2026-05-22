@@ -52,18 +52,16 @@ platform :ios do
     )
     # Pass the pubspec version (X.Y.Z, no -rc suffix) to the Dart layer as SENTRY_RELEASE.
     # Read from pubspec.yaml (same source as CI release.yaml) to guarantee consistency.
-    # This is separate from increment_version_number (which stays numeric for
-    # App Store compatibility). Each dart-define must be base64-encoded.
-    require 'base64'
+    # Flutter 3.38.9+ (xcode_backend.dart) passes DART_DEFINES as-is to --DartDefines;
+    # plain KEY=VALUE format required — base64 encoding was removed in Flutter 3.38.9.
     pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
     sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
-    sentry_release_define = Base64.strict_encode64("SENTRY_RELEASE=#{sentry_release}")
     build_app(
       scheme: "Runner",
       configuration: "Release",
       workspace: "Runner.xcworkspace",
       export_method: "app-store",
-      xcargs: "DART_DEFINES=#{sentry_release_define}",
+      xcargs: "DART_DEFINES=SENTRY_RELEASE=#{sentry_release}",
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
