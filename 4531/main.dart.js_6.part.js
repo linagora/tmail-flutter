@@ -422,7 +422,7 @@ x=9
 break
 case 6:x=2
 break
-case 9:if(!r)A.hu(new A.ez("Could not launch link "+A.e(n),A.oE(),"url_launcher",A.dR("during launching a link"),null,null,!1))
+case 9:if(!r)A.hv(new A.ez("Could not launch link "+A.e(n),A.oE(),"url_launcher",A.dR("during launching a link"),null,null,!1))
 case 1:return A.m(v,w)
 case 2:return A.l(t.at(-1),w)}})
 return A.n($async$Pc,w)},
@@ -588,4 +588,4 @@ D.Ze=new A.rM("mailbox_list",A.ao("rM<h>"))
 D.a61=new A.b1("listViewAppGrid",y.O)
 D.EN=new A.b1("toggleAppGridButton",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"fam","e4w",()=>A.c([A.XV(20,C.U,C.n.ao(0.15),C.r,0)],y.V))})()};
-(a=>{a["OH2iR+HbF9xzBgfjaSFvYHdgKqI="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["mVVKdThI34fvdo/E/4KRhxe72jA="]=a.current})($__dart_deferred_initializers__);
