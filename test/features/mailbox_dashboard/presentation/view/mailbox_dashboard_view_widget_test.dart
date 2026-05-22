@@ -109,6 +109,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -656,7 +657,7 @@ void main() {
 
       testWidgets(
         'LoadMoreButton SHOULD be displayed\n'
-        'WHEN the load more action returns a non-empty list',
+        'WHEN the load more action returns a full page',
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
         final dpi = tester.view.devicePixelRatio;
@@ -684,21 +685,16 @@ void main() {
         mailboxDashboardController.setSelectedMailbox(MailboxFixtures.inboxMailbox.toPresentationMailbox());
         mailboxDashboardController.updateEmailList(listEmailsOfInbox);
 
-        // Perform load more action
-        final emailList = <PresentationEmail>[
-          PresentationEmail(
-            id: EmailId(Id('id_4')),
+        // A full page response signals more emails may exist on the server
+        final emailList = List.generate(
+          ThreadConstants.maxCountEmails,
+          (index) => PresentationEmail(
+            id: EmailId(Id('load_more_$index')),
             mailboxIds: {
               MailboxFixtures.inboxMailbox.id!: true
             }
           ),
-          PresentationEmail(
-            id: EmailId(Id('id_5')),
-            mailboxIds: {
-              MailboxFixtures.inboxMailbox.id!: true
-            }
-          ),
-        ];
+        );
         threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(emailList))));
 
         await tester.pump();
