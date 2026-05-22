@@ -53,13 +53,7 @@ mixin ScenarioUtilsMixin {
     ComposerBindings().dependencies();
 
     await waitForCondition(
-      () {
-        final controller = getBinding<MailboxDashBoardController>();
-        if (controller == null) return false;
-        return controller.sessionCurrent != null &&
-            controller.accountId.value != null &&
-            controller.selectedMailbox.value != null;
-      },
+      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
     );
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
@@ -108,6 +102,13 @@ mixin ScenarioUtilsMixin {
     }
 
     ComposerBindings().dispose();
+  }
+
+  bool _isMailboxReady(MailboxDashBoardController? mailboxDashBoardController) {
+    return mailboxDashBoardController != null &&
+        mailboxDashBoardController.sessionCurrent != null &&
+        mailboxDashBoardController.accountId.value != null &&
+        mailboxDashBoardController.selectedMailbox.value != null;
   }
 
   Future<void> simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient({
