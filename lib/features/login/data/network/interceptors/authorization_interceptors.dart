@@ -121,9 +121,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         exception: e,
         stackTrace: stackTrace,
       );
-      // Non-DioException types (e.g. FlutterAppAuthPlatformException from native
-      // OIDC refresh) must not carry the stale 401 response forward, as
-      // RemoteExceptionThrower would misclassify it as BadCredentialsException.
       return _handleThrownException(
         e,
         handler: handler,
