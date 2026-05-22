@@ -6,6 +6,8 @@ part 'spam_report_config.g.dart';
 
 @JsonSerializable()
 class SpamReportConfig extends PreferencesConfig {
+  static const keySuffix = 'SPAM_REPORT';
+
   final bool isEnabled;
   final int lastTimeDismissedMilliseconds;
 
@@ -13,6 +15,9 @@ class SpamReportConfig extends PreferencesConfig {
     this.isEnabled = true,
     this.lastTimeDismissedMilliseconds = 0,
   });
+
+  @override
+  String get configKey => keySuffix;
 
   factory SpamReportConfig.initial() => SpamReportConfig();
 
