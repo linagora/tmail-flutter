@@ -64,12 +64,30 @@ platform :ios do
     sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
     sentry_define = Base64.strict_encode64("SENTRY_RELEASE=#{sentry_release}")
     padding_define = Base64.strict_encode64("_FB_PAD=") # always encodes to "X0ZCX1BBRD0="
+    dart_defines_value = "#{sentry_define},#{padding_define}"
+
+    # Detect Flutter DART_DEFINES bug condition. Warn when the bare sentry_define
+    # has no '=' padding (would crash assemble.dart:282 without our workaround),
+    # then hard-fail if the final joined value somehow still lacks '=' so we never
+    # ship a build that would die in xcode_backend.dart.
+    if !sentry_define.include?('=')
+      UI.important("[DART_DEFINES] sentry_define '#{sentry_define}' has no '=' padding " \
+                   "(SENTRY_RELEASE=#{sentry_release} length divisible by 3). " \
+                   "Padding workaround active.")
+    end
+    if !dart_defines_value.include?('=')
+      UI.user_error!("[DART_DEFINES] joined value '#{dart_defines_value}' has no '=' — " \
+                     "Flutter assemble would crash with 'Improperly formatted define flag'. " \
+                     "Check ios/fastlane/Fastfile padding logic.")
+    end
+    UI.message("[DART_DEFINES] final value: #{dart_defines_value}")
+
     build_app(
       scheme: "Runner",
       configuration: "Release",
       workspace: "Runner.xcworkspace",
       export_method: "app-store",
-      xcargs: "DART_DEFINES=#{sentry_define},#{padding_define}",
+      xcargs: "DART_DEFINES=#{dart_defines_value}",
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
