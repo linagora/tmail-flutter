@@ -90,6 +90,11 @@ class HomeController extends ReloadableController {
 
   @override
   void onCancelReconnectWhenSessionExpired() {
+    logError(
+      '$runtimeType::onCancelReconnectWhenSessionExpired: '
+      'forcing logout — user cancelled session-expired reconnect dialog',
+      stackTrace: StackTrace.current,
+    );
     clearDataAndGoToLoginPage();
   }
 
@@ -289,6 +294,11 @@ class HomeController extends ReloadableController {
     } else if (failure is CheckOIDCIsAvailableFailure) {
       handleCheckOIDCIsAvailableFailure();
     } else if (isGetTokenOIDCFailure(failure)) {
+      logError(
+        '$runtimeType::handleFailureViewState: '
+        'OIDC sign-in flow failed (${failure.runtimeType}) — redirecting to login',
+        stackTrace: StackTrace.current,
+      );
       goToLogin();
     } else {
       super.handleFailureViewState(failure);
@@ -334,6 +344,11 @@ class HomeController extends ReloadableController {
     if (failure is CheckOIDCIsAvailableFailure) {
       handleCheckOIDCIsAvailableFailure();
     } else if (isGetTokenOIDCFailure(failure)) {
+      logError(
+        '$runtimeType::handleUrgentExceptionOnWeb: '
+        'OIDC sign-in flow failed urgently (${failure.runtimeType}) — redirecting to login',
+        stackTrace: StackTrace.current,
+      );
       goToLogin();
     } else {
       super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
@@ -343,6 +358,12 @@ class HomeController extends ReloadableController {
   @override
   void handleErrorViewState(Object error, StackTrace stackTrace) {
     if (PlatformInfo.isWeb) {
+      logError(
+        '$runtimeType::handleErrorViewState: '
+        'unhandled stream error on Home (web) — redirecting to login',
+        exception: error,
+        stackTrace: stackTrace,
+      );
       goToLogin();
     }
   }

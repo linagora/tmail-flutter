@@ -202,6 +202,11 @@ abstract class BaseController extends GetxController
   Future<void> _executeBeforeReconnectAndLogOut() async {
     twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
+    logError(
+      '$runtimeType::_executeBeforeReconnectAndLogOut: '
+      'forcing logout after web save-and-reconnect (urgent auth failure)',
+      stackTrace: StackTrace.current,
+    );
     clearDataAndGoToLoginPage();
   }
 
@@ -242,11 +247,21 @@ abstract class BaseController extends GetxController
     if (PlatformInfo.isWeb) {
       _executeBeforeReconnectAndLogOut();
     } else if (PlatformInfo.isMobile) {
+      logError(
+        '$runtimeType::_performSaveAndReconnection: '
+        'forcing logout on mobile after save-and-reconnect (urgent auth failure)',
+        stackTrace: StackTrace.current,
+      );
       clearDataAndGoToLoginPage();
     }
   }
 
   void _performReconnection() {
+    logError(
+      '$runtimeType::_performReconnection: '
+      'forcing logout (urgent auth failure, no composer to save)',
+      stackTrace: StackTrace.current,
+    );
     clearDataAndGoToLoginPage();
   }
 

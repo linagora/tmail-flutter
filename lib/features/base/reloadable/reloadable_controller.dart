@@ -155,6 +155,12 @@ abstract class ReloadableController extends BaseController {
     if (exception is BadCredentialsException ||
         exception is RefreshTokenFailedException ||
         exception is NotFoundSessionException) {
+      logError(
+        '$runtimeType::handleGetSessionFailure: '
+        'forcing logout — session definitively dead',
+        exception: exception,
+        stackTrace: StackTrace.current,
+      );
       clearDataAndGoToLoginPage();
     }
   }
