@@ -205,7 +205,6 @@ abstract class BaseController extends GetxController
     logError(
       '$runtimeType::_executeBeforeReconnectAndLogOut: '
       'forcing logout after web save-and-reconnect (urgent auth failure)',
-      stackTrace: StackTrace.current,
     );
     clearDataAndGoToLoginPage();
   }
@@ -250,7 +249,6 @@ abstract class BaseController extends GetxController
       logError(
         '$runtimeType::_performSaveAndReconnection: '
         'forcing logout on mobile after save-and-reconnect (urgent auth failure)',
-        stackTrace: StackTrace.current,
       );
       clearDataAndGoToLoginPage();
     }
@@ -260,7 +258,6 @@ abstract class BaseController extends GetxController
     logError(
       '$runtimeType::_performReconnection: '
       'forcing logout (urgent auth failure, no composer to save)',
-      stackTrace: StackTrace.current,
     );
     clearDataAndGoToLoginPage();
   }
