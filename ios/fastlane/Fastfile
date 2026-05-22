@@ -52,16 +52,24 @@ platform :ios do
     )
     # Pass the pubspec version (X.Y.Z, no -rc suffix) to the Dart layer as SENTRY_RELEASE.
     # Read from pubspec.yaml (same source as CI release.yaml) to guarantee consistency.
-    # Flutter 3.38.9+ (xcode_backend.dart) passes DART_DEFINES as-is to --DartDefines;
-    # plain KEY=VALUE format required — base64 encoding was removed in Flutter 3.38.9.
+    #
+    # DART_DEFINES must be a comma-separated list of base64-encoded "KEY=VALUE" entries
+    # (matches Flutter's encodeDartDefines in build_info.dart). Flutter 3.38.9 has a bug
+    # where assemble.dart:282 crashes if the base64 string has no '=' padding, which
+    # happens when "SENTRY_RELEASE=X.Y.Z" length is divisible by 3. We append a benign
+    # padding define ("_FB_PAD=") whose base64 always ends in '==' so the joined value
+    # is guaranteed to contain '=', avoiding the Flutter bug.
+    require 'base64'
     pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
     sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
+    sentry_define = Base64.strict_encode64("SENTRY_RELEASE=#{sentry_release}")
+    padding_define = Base64.strict_encode64("_FB_PAD=") # always encodes to "X0ZCX1BBRD0="
     build_app(
       scheme: "Runner",
       configuration: "Release",
       workspace: "Runner.xcworkspace",
       export_method: "app-store",
-      xcargs: "DART_DEFINES=SENTRY_RELEASE=#{sentry_release}",
+      xcargs: "DART_DEFINES=#{sentry_define},#{padding_define}",
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
