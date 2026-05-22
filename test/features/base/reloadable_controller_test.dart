@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache/cache_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -169,10 +170,22 @@ void main() {
     );
 
     test(
-      'WHEN GetSessionFailure carries CacheException on mobile\n'
-      'THEN clearDataAndGoToLoginPage MUST be called',
+      'WHEN GetSessionFailure carries UnknownCacheError on mobile\n'
+      'THEN clearDataAndGoToLoginPage MUST NOT be called\n'
+      '(cache read error is not an auth failure)',
       () {
         controller.handleGetSessionFailure(GetSessionFailure(const UnknownCacheError()));
+
+        expect(controller.wasLoggedOut, isFalse);
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries NotFoundSessionException on mobile\n'
+      'THEN clearDataAndGoToLoginPage MUST be called\n'
+      '(no cached session means user must re-authenticate)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(NotFoundSessionException()));
 
         expect(controller.wasLoggedOut, isTrue);
       },
