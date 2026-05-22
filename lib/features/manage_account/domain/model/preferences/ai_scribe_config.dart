@@ -5,11 +5,16 @@ part 'ai_scribe_config.g.dart';
 
 @JsonSerializable()
 class AIScribeConfig extends PreferencesConfig {
+  static const keySuffix = 'AI_SCRIBE';
+
   final bool isEnabled;
 
   AIScribeConfig({
     this.isEnabled = true,
   });
+
+  @override
+  String get configKey => keySuffix;
 
   factory AIScribeConfig.initial() => AIScribeConfig();
 

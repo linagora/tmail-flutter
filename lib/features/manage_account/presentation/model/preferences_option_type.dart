@@ -1,8 +1,13 @@
-
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef _OptionStrings = ({
+  String title,
+  String explanation,
+  String toggleDescription,
+});
 
 enum PreferencesOptionType {
   readReceipt(isLocal: false),
@@ -17,82 +22,69 @@ enum PreferencesOptionType {
 
   const PreferencesOptionType({required this.isLocal});
 
-  String getTitle(AppLocalizations appLocalizations) {
-    switch(this) {
-      case PreferencesOptionType.readReceipt:
-        return appLocalizations.emailReadReceipts;
-      case PreferencesOptionType.senderPriority:
-        return appLocalizations.senderSetImportantFlag;
-      case PreferencesOptionType.thread:
-        return appLocalizations.thread;
-      case PreferencesOptionType.spamReport:
-        return appLocalizations.spamReports;
-      case PreferencesOptionType.aiScribe:
-        return appLocalizations.aiScribe;
-      case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsAction;
-      case PreferencesOptionType.label:
-        return appLocalizations.labelVisibility;
-    }
-  }
+  static final _stringBuilders =
+      <PreferencesOptionType, _OptionStrings Function(AppLocalizations)>{
+        readReceipt: (l) => (
+          title: l.emailReadReceipts,
+          explanation: l.emailReadReceiptsSettingExplanation,
+          toggleDescription: l.emailReadReceiptsToggleDescription,
+        ),
+        senderPriority: (l) => (
+          title: l.senderSetImportantFlag,
+          explanation: l.senderImportantSettingExplanation,
+          toggleDescription: l.senderImportantSettingToggleDescription,
+        ),
+        thread: (l) => (
+          title: l.thread,
+          explanation: l.threadSettingExplanation,
+          toggleDescription: l.threadToggleDescription,
+        ),
+        spamReport: (l) => (
+          title: l.spamReports,
+          explanation: l.spamReportsSettingExplanation,
+          toggleDescription: l.spamReportToggleDescription,
+        ),
+        aiScribe: (l) => (
+          title: l.aiScribe,
+          explanation: l.aiScribeSettingExplanation,
+          toggleDescription: l.aiScribeToggleDescription,
+        ),
+        aiNeedsAction: (l) => (
+          title: l.aiNeedsAction,
+          explanation: l.aiNeedsActionSettingExplanation,
+          toggleDescription: l.aiNeedsActionToggleDescription,
+        ),
+        label: (l) => (
+          title: l.labelVisibility,
+          explanation: l.labelVisibilitySettingExplanation,
+          toggleDescription: l.labelVisibilityToggleDescription,
+        ),
+      };
 
-  String getExplanation(AppLocalizations appLocalizations) {
-    switch(this) {
-      case PreferencesOptionType.readReceipt:
-        return appLocalizations.emailReadReceiptsSettingExplanation;
-      case PreferencesOptionType.senderPriority:
-        return appLocalizations.senderImportantSettingExplanation;
-      case PreferencesOptionType.thread:
-        return appLocalizations.threadSettingExplanation;
-      case PreferencesOptionType.spamReport:
-        return appLocalizations.spamReportsSettingExplanation;
-      case PreferencesOptionType.aiScribe:
-        return appLocalizations.aiScribeSettingExplanation;
-      case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsActionSettingExplanation;
-      case PreferencesOptionType.label:
-        return appLocalizations.labelVisibilitySettingExplanation;
-    }
-  }
+  String getTitle(AppLocalizations l) => _stringBuilders[this]!(l).title;
 
-  String getToggleDescription(AppLocalizations appLocalizations) {
-    switch(this) {
-      case PreferencesOptionType.readReceipt:
-        return appLocalizations.emailReadReceiptsToggleDescription;
-      case PreferencesOptionType.senderPriority:
-        return appLocalizations.senderImportantSettingToggleDescription;
-      case PreferencesOptionType.thread:
-        return appLocalizations.threadToggleDescription;
-      case PreferencesOptionType.spamReport:
-        return appLocalizations.spamReportToggleDescription;
-      case PreferencesOptionType.aiScribe:
-        return appLocalizations.aiScribeToggleDescription;
-      case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsActionToggleDescription;
-      case PreferencesOptionType.label:
-        return appLocalizations.labelVisibilityToggleDescription;
-    }
-  }
+  String getExplanation(AppLocalizations l) =>
+      _stringBuilders[this]!(l).explanation;
+
+  String getToggleDescription(AppLocalizations l) =>
+      _stringBuilders[this]!(l).toggleDescription;
+
+  static final _enabledResolvers =
+      <
+        PreferencesOptionType,
+        bool Function(TMailServerSettingOptions?, PreferencesSetting)
+      >{
+        readReceipt: (s, _) => s?.isAlwaysReadReceipts ?? false,
+        senderPriority: (s, _) => s?.isDisplaySenderPriority ?? false,
+        thread: (_, p) => p.threadConfig.isEnabled,
+        spamReport: (_, p) => p.spamReportConfig.isEnabled,
+        aiScribe: (_, p) => p.aiScribeConfig.isEnabled,
+        aiNeedsAction: (s, _) => s?.isAINeedsActionEnabled ?? false,
+        label: (_, p) => p.labelConfig.isEnabled,
+      };
 
   bool isEnabled(
     TMailServerSettingOptions? settingOption,
     PreferencesSetting preferencesSetting,
-  ) {
-    switch(this) {
-      case PreferencesOptionType.readReceipt:
-        return settingOption?.isAlwaysReadReceipts ?? false;
-      case PreferencesOptionType.senderPriority:
-        return settingOption?.isDisplaySenderPriority ?? false;
-      case PreferencesOptionType.thread:
-        return preferencesSetting.threadConfig.isEnabled;
-      case PreferencesOptionType.spamReport:
-        return preferencesSetting.spamReportConfig.isEnabled;
-      case PreferencesOptionType.aiScribe:
-        return preferencesSetting.aiScribeConfig.isEnabled;
-      case PreferencesOptionType.aiNeedsAction:
-        return settingOption?.isAINeedsActionEnabled ?? false;
-      case PreferencesOptionType.label:
-        return preferencesSetting.labelConfig.isEnabled;
-    }
-  }
+  ) => _enabledResolvers[this]!(settingOption, preferencesSetting);
 }

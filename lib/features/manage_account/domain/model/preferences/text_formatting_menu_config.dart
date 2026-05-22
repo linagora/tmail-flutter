@@ -5,9 +5,14 @@ part 'text_formatting_menu_config.g.dart';
 
 @JsonSerializable()
 class TextFormattingMenuConfig extends PreferencesConfig {
+  static const keySuffix = 'TEXT_FORMATTING_MENU';
+
   final bool isDisplayed;
 
   TextFormattingMenuConfig({this.isDisplayed = false});
+
+  @override
+  String get configKey => keySuffix;
 
   factory TextFormattingMenuConfig.initial() => TextFormattingMenuConfig();
 
