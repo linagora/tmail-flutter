@@ -106,6 +106,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -199,12 +200,15 @@ const fallbackGenerators = {
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ILocalSettingsReader>(),
   MockSpec<ClearMailboxInteractor>(),
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
 ])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   // mock mailbox dashboard controller direct dependencies
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
   final deleteEmailPermanentlyInteractor =
@@ -310,6 +314,7 @@ void main() {
   final searchEmailInteractor = MockSearchEmailInteractor();
   final searchMoreEmailInteractor = MockSearchMoreEmailInteractor();
   late ThreadController threadController;
+  late MockILocalSettingsReader mockLocalSettingsReader;
 
   late AdvancedFilterController advancedFilterController;
 
@@ -408,6 +413,8 @@ void main() {
   group('search/sort/filter feature:', () {
     setUp(() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+      mockLocalSettingsReader = MockILocalSettingsReader();
+      when(mockLocalSettingsReader.isCollapseThreadsEnabled).thenReturn(false);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
@@ -440,7 +447,9 @@ void main() {
         searchEmailInteractor,
         searchMoreEmailInteractor,
         getEmailByIdInteractor,
-        cleanAndGetEmailsInMailboxInteractor);
+        cleanAndGetEmailsInMailboxInteractor,
+        mockLocalSettingsReader,
+      );
       Get.put(threadController);
 
       advancedFilterController = AdvancedFilterController();
@@ -684,6 +693,9 @@ void main() {
           refreshAllMailboxInteractor);
       mailboxController.onReady();
 
+      mockLocalSettingsReader = MockILocalSettingsReader();
+      when(mockLocalSettingsReader.isCollapseThreadsEnabled).thenReturn(false);
+
       threadController = ThreadController(
           getEmailsInMailboxInteractor,
           refreshChangesEmailsInMailboxInteractor,
@@ -692,6 +704,7 @@ void main() {
           searchMoreEmailInteractor,
           getEmailByIdInteractor,
           cleanAndGetEmailsInMailboxInteractor,
+          mockLocalSettingsReader,
       );
       Get.put(threadController);
 

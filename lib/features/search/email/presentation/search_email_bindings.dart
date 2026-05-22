@@ -1,6 +1,7 @@
 
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -20,6 +21,7 @@ class SearchEmailBindings extends BaseBindings {
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<RefreshChangesSearchEmailInteractor>(),
+      Get.find<ILocalSettingsReader>(),
     ));
   }
 

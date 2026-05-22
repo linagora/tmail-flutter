@@ -4706,6 +4706,34 @@ class AppLocalizations {
     );
   }
 
+  String get collapseThread {
+    return Intl.message(
+      'Collapse thread',
+      name: 'collapseThread',
+    );
+  }
+
+  String get collapseThreadSettingExplanation {
+    return Intl.message(
+      'Show only the latest email per thread in your inbox',
+      name: 'collapseThreadSettingExplanation',
+    );
+  }
+
+  String get collapseThreadToggleDescription {
+    return Intl.message(
+      'Enable collapse thread',
+      name: 'collapseThreadToggleDescription',
+    );
+  }
+
+  String get experimentalFeaturesEnabled {
+    return Intl.message(
+      'Experimental features enabled',
+      name: 'experimentalFeaturesEnabled',
+    );
+  }
+
   String get exportTraceLogFailed {
     return Intl.message(
       'Export trace log failed',

@@ -110,6 +110,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -211,6 +212,7 @@ const fallbackGenerators = {
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ILocalSettingsReader>(),
   MockSpec<ClearMailboxInteractor>(),
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
@@ -325,6 +327,70 @@ void main() {
     );
   }
 
+  MailboxDashBoardController createMailboxDashboardController() =>
+      MailboxDashBoardController(
+        moveToMailboxInteractor,
+        deleteEmailPermanentlyInteractor,
+        markAsMailboxReadInteractor,
+        getAllComposerCacheInteractor,
+        getIdentityCacheOnWebInteractor,
+        markAsEmailReadInteractor,
+        markAsStarEmailInteractor,
+        markAsMultipleEmailReadInteractor,
+        markAsStarMultipleEmailInteractor,
+        moveMultipleEmailToMailboxInteractor,
+        emptyTrashFolderInteractor,
+        deleteMultipleEmailsPermanentlyInteractor,
+        getEmailByIdInteractor,
+        sendEmailInteractor,
+        storeSendingEmailInteractor,
+        updateSendingEmailInteractor,
+        getAllSendingEmailInteractor,
+        storeSessionInteractor,
+        emptySpamFolderInteractor,
+        deleteSendingEmailInteractor,
+        unsubscribeEmailInteractor,
+        restoreDeletedMessageInteractor,
+        getRestoredDeletedMessageInteractor,
+        removeAllComposerCacheInteractor,
+        removeComposerCacheByIdInteractor,
+        getAllIdentitiesInteractor,
+        clearMailboxInteractor,
+        storeEmailSortOrderInteractor,
+        getStoredEmailSortOrderInteractor,
+      );
+
+  MailboxController createMailboxController() => MailboxController(
+        createNewMailboxInteractor,
+        deleteMultipleMailboxInteractor,
+        renameMailboxInteractor,
+        moveMailboxInteractor,
+        subscribeMailboxInteractor,
+        subscribeMultipleMailboxInteractor,
+        subaddressingInteractor,
+        createDefaultMailboxInteractor,
+        moveFolderContentInteractor,
+        treeBuilder,
+        verifyNameInteractor,
+        getAllMailboxInteractor,
+        refreshAllMailboxInteractor,
+      );
+
+  ThreadController createThreadController() {
+    final mockLocalSettingsReader = MockILocalSettingsReader();
+    when(mockLocalSettingsReader.isCollapseThreadsEnabled).thenReturn(false);
+    return ThreadController(
+      getEmailsInMailboxInteractor,
+      refreshChangesEmailsInMailboxInteractor,
+      loadMoreEmailsInMailboxInteractor,
+      searchEmailInteractor,
+      searchMoreEmailInteractor,
+      getEmailByIdInteractor,
+      cleanAndGetEmailsInMailboxInteractor,
+      mockLocalSettingsReader,
+    );
+  }
+
   group('MailboxDashboardView', () {
     setUpAll(() async {
       SharedPreferences.setMockInitialValues({});
@@ -373,77 +439,23 @@ void main() {
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      final isLabelSettingEnabled = RxBool(false);
-      when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
 
       searchController = SearchController(
         quickSearchEmailInteractor,
         saveRecentSearchInteractor,
-        getAllRecentSearchLatestInteractor
+        getAllRecentSearchLatestInteractor,
       );
       Get.put(searchController);
 
-      mailboxDashboardController = MailboxDashBoardController(
-        moveToMailboxInteractor,
-        deleteEmailPermanentlyInteractor,
-        markAsMailboxReadInteractor,
-        getAllComposerCacheInteractor,
-        getIdentityCacheOnWebInteractor,
-        markAsEmailReadInteractor,
-        markAsStarEmailInteractor,
-        markAsMultipleEmailReadInteractor,
-        markAsStarMultipleEmailInteractor,
-        moveMultipleEmailToMailboxInteractor,
-        emptyTrashFolderInteractor,
-        deleteMultipleEmailsPermanentlyInteractor,
-        getEmailByIdInteractor,
-        sendEmailInteractor,
-        storeSendingEmailInteractor,
-        updateSendingEmailInteractor,
-        getAllSendingEmailInteractor,
-        storeSessionInteractor,
-        emptySpamFolderInteractor,
-        deleteSendingEmailInteractor,
-        unsubscribeEmailInteractor,
-        restoreDeletedMessageInteractor,
-        getRestoredDeletedMessageInteractor,
-        removeAllComposerCacheInteractor,
-        removeComposerCacheByIdInteractor,
-        getAllIdentitiesInteractor,
-        clearMailboxInteractor,
-        storeEmailSortOrderInteractor,
-        getStoredEmailSortOrderInteractor,
-      );
+      mailboxDashboardController = createMailboxDashboardController();
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
 
-      mailboxController = MailboxController(
-        createNewMailboxInteractor,
-        deleteMultipleMailboxInteractor,
-        renameMailboxInteractor,
-        moveMailboxInteractor,
-        subscribeMailboxInteractor,
-        subscribeMultipleMailboxInteractor,
-        subaddressingInteractor,
-        createDefaultMailboxInteractor,
-        moveFolderContentInteractor,
-        treeBuilder,
-        verifyNameInteractor,
-        getAllMailboxInteractor,
-        refreshAllMailboxInteractor
-      );
+      mailboxController = createMailboxController();
       Get.put(mailboxController);
-      // mailboxController.onReady();
 
-      threadController = ThreadController(
-        getEmailsInMailboxInteractor,
-        refreshChangesEmailsInMailboxInteractor,
-        loadMoreEmailsInMailboxInteractor,
-        searchEmailInteractor,
-        searchMoreEmailInteractor,
-        getEmailByIdInteractor,
-        cleanAndGetEmailsInMailboxInteractor,
-      );
+      threadController = createThreadController();
       Get.put(threadController);
 
       quotasController = QuotasController(getQuotasInteractor);

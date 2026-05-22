@@ -7,28 +7,24 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mixin/enable_experimental_mode_mixin.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class PreferencesController extends BaseController {
+class PreferencesController extends BaseController with EnableExperimentalModeMixin {
   PreferencesController(
     this._getServerSettingInteractor,
     this._updateServerSettingInteractor,
@@ -157,24 +153,7 @@ class PreferencesController extends BaseController {
     PreferencesOptionType optionType,
     bool isEnabled,
   ) {
-    PreferencesConfig? config;
-    switch(optionType) {
-      case PreferencesOptionType.thread:
-        config = ThreadDetailConfig(isEnabled: !isEnabled);
-        break;
-      case PreferencesOptionType.spamReport:
-        config = SpamReportConfig(isEnabled: !isEnabled);
-        break;
-      case PreferencesOptionType.aiScribe:
-        config = AIScribeConfig(isEnabled: !isEnabled);
-        break;
-      case PreferencesOptionType.label:
-        config = LabelConfig(isEnabled: !isEnabled);
-        break;
-      default:
-        break;
-    }
-
+    final config = optionType.createToggledConfig(localSettings.value, isEnabled);
     if (config != null) {
       consumeState(_updateLocalSettingsInteractor.execute(config));
     }

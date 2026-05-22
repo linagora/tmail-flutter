@@ -41,11 +41,9 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -99,6 +97,7 @@ class ThreadController extends BaseController with EmailActionController {
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
   final CleanAndGetEmailsInMailboxInteractor cleanAndGetEmailsInMailboxInteractor;
+  final ILocalSettingsReader _localSettingsReader;
 
   final listEmailDrag = <PresentationEmail>[].obs;
   bool rangeSelectionMode = false;
@@ -119,7 +118,8 @@ class ThreadController extends BaseController with EmailActionController {
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
-  ProviderSubscription<PreferencesSetting>? _localSettingsSubscription;
+  void Function()? _cancelLocalSettings;
+  PreferencesSetting? _previousSettings;
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -133,8 +133,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
 
-  bool get _isCollapseThreadsEnabled =>
-      appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+  bool get _isCollapseThreadsEnabled => _localSettingsReader.isCollapseThreadsEnabled;
 
   bool get _shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
@@ -148,11 +147,13 @@ class ThreadController extends BaseController with EmailActionController {
     this._searchMoreEmailInteractor,
     this._getEmailByIdInteractor,
     this.cleanAndGetEmailsInMailboxInteractor,
+    this._localSettingsReader,
   );
 
   @override
   void onInit() {
     _registerObxStreamListener();
+    _registerLocalSettingsListener();
     if (PlatformInfo.isWeb) {
       _registerBrowserResizeListener();
       onKeyboardShortcutInit();
@@ -170,13 +171,14 @@ class ThreadController extends BaseController with EmailActionController {
   @override
   void onClose() {
     _currentMemoryMailboxId = null;
+    _previousSettings = null;
+    _cancelLocalSettings?.call();
     listEmailController.dispose();
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
       onKeyboardShortcutDispose();
     }
     _webSocketQueueHandler?.dispose();
-    _localSettingsSubscription?.close();
     super.onClose();
   }
 
@@ -438,26 +440,34 @@ class ThreadController extends BaseController with EmailActionController {
         _peakEmailCount = countEmails;
       }
     });
-
-    _registerLocalSettingsListener();
   }
 
   void _registerLocalSettingsListener() {
-    if (_localSettingsSubscription != null) return;
-    _localSettingsSubscription = appProviderContainer.listen(
-      localSettingsNotifierProvider,
-      (previous, next) {
-        if (previous?.threadConfig == next.threadConfig) return;
-        if (searchController.isSearchEmailRunning) {
-          _searchEmail(limit: limitEmailFetched);
-        } else if (forceEmailQuery) {
-          getAllEmailAction(
-            forceEmailQuery: forceEmailQuery,
-          );
-        }
-      },
-      fireImmediately: false,
-    );
+    _previousSettings = _localSettingsReader.currentSettings;
+    _cancelLocalSettings = _localSettingsReader.listen(_onLocalSettingsChanged);
+  }
+
+  void _onLocalSettingsChanged(PreferencesSetting next) {
+    final previous = _previousSettings;
+    _previousSettings = next;
+    _onCollapseThreadSettingChanged(previous, next);
+  }
+
+  void _onCollapseThreadSettingChanged(
+    PreferencesSetting? previous,
+    PreferencesSetting next,
+  ) {
+    // Both threadConfig and collapseThreadConfig affect the collapseThreads query
+    // parameter — refresh whenever either changes.
+    if (previous?.threadConfig == next.threadConfig &&
+        previous?.collapseThreadConfig == next.collapseThreadConfig) {
+      return;
+    }
+    if (searchController.isSearchEmailRunning) {
+      _searchEmail(limit: limitEmailFetched);
+    } else if (forceEmailQuery) {
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
+    }
   }
 
   void _handleMarkEmailsAsReadByMailboxId(MailboxId mailboxId) {

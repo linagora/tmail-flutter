@@ -4472,6 +4472,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "collapseThread": "Collapse thread",
+  "@collapseThread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapseThreadSettingExplanation": "Show only the latest email per thread in your inbox",
+  "@collapseThreadSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapseThreadToggleDescription": "Enable collapse thread",
+  "@collapseThreadToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "experimentalFeaturesEnabled": "Experimental features enabled",
+  "@experimentalFeaturesEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "exportTraceLogFailed": "Export trace log failed",
   "@exportTraceLogFailed": {
     "type": "text",

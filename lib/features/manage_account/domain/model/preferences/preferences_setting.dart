@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/collapse_thread_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -14,6 +15,7 @@ class PreferencesSetting with EquatableMixin {
   factory PreferencesSetting.initial() {
     return PreferencesSetting([
       ThreadDetailConfig.initial(),
+      CollapseThreadConfig.initial(),
       SpamReportConfig.initial(),
       TextFormattingMenuConfig.initial(),
       AIScribeConfig.initial(),
@@ -27,6 +29,9 @@ class PreferencesSetting with EquatableMixin {
   ThreadDetailConfig get threadConfig =>
       getConfigOrDefault(ThreadDetailConfig.initial());
 
+  CollapseThreadConfig get collapseThreadConfig =>
+      getConfigOrDefault(CollapseThreadConfig.initial());
+
   SpamReportConfig get spamReportConfig =>
       getConfigOrDefault(SpamReportConfig.initial());
 
@@ -38,6 +43,9 @@ class PreferencesSetting with EquatableMixin {
 
   LabelConfig get labelConfig =>
       getConfigOrDefault(LabelConfig.initial());
+
+  bool get isCollapseThreadsEnabled =>
+      threadConfig.isEnabled && collapseThreadConfig.isEnabled;
 
   @override
   List<Object?> get props => [configs];

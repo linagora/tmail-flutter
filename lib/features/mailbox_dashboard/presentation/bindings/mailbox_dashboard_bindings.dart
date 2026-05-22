@@ -127,6 +127,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/bindings/setting_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/riverpod_local_settings_reader.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -203,6 +206,7 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
     // Must be registered first so [localSettingsNotifierProvider] is populated
     // before any controller reads local settings.
     Get.put(LocalSettingsService(Get.find<GetLocalSettingsInteractor>()));
+    Get.put<ILocalSettingsReader>(RiverpodLocalSettingsReader(appProviderContainer));
 
     Get.put(AppGridDashboardController(
       Get.find<GetAppDashboardConfigurationInteractor>(),

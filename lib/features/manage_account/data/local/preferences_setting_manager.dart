@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/collapse_thread_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
@@ -21,6 +22,7 @@ class PreferencesSettingManager {
   static final Map<String, PreferencesConfig Function(Map<String, dynamic>)>
       _configFactories = Map.unmodifiable({
     _storageKey(ThreadDetailConfig.keySuffix): ThreadDetailConfig.fromJson,
+    _storageKey(CollapseThreadConfig.keySuffix): CollapseThreadConfig.fromJson,
     _storageKey(SpamReportConfig.keySuffix): SpamReportConfig.fromJson,
     _storageKey(TextFormattingMenuConfig.keySuffix): TextFormattingMenuConfig.fromJson,
     _storageKey(AIScribeConfig.keySuffix): AIScribeConfig.fromJson,

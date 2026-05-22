@@ -49,6 +49,10 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/collapse_thread_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -89,6 +93,7 @@ const fallbackGenerators = {
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ILocalSettingsReader>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +110,7 @@ void main() {
   late MockSearchMoreEmailInteractor mockSearchMoreEmailInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
   late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
+  late MockILocalSettingsReader mockLocalSettingsReader;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -169,6 +175,8 @@ void main() {
     mockSearchMoreEmailInteractor = MockSearchMoreEmailInteractor();
     mockGetEmailByIdInteractor = MockGetEmailByIdInteractor();
     mockCleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
+    mockLocalSettingsReader = MockILocalSettingsReader();
+    when(mockLocalSettingsReader.isCollapseThreadsEnabled).thenReturn(false);
 
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
@@ -182,6 +190,7 @@ void main() {
       mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
+      mockLocalSettingsReader,
     );
   });
 
@@ -281,6 +290,7 @@ void main() {
           mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
+          mockLocalSettingsReader,
         );
       });
 
@@ -480,6 +490,7 @@ void main() {
           mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
+          mockLocalSettingsReader,
         );
       });
 
@@ -557,6 +568,7 @@ void main() {
           mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
+          mockLocalSettingsReader,
         );
 
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
@@ -664,6 +676,25 @@ void main() {
         // Assert - peak should be 15, not stale 40
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(15));
       });
+    });
+
+    group('PreferencesSetting.isCollapseThreadsEnabled semantics', () {
+      final cases = [
+        (thread: true,  collapse: true,  active: true,  label: 'thread=true, collapse=true → collapse is active'),
+        (thread: true,  collapse: false, active: false, label: 'thread=true, collapse=false → collapse is inactive'),
+        (thread: false, collapse: true,  active: false, label: 'thread=false, collapse=true → collapse is inactive'),
+        (thread: false, collapse: false, active: false, label: 'both false → collapse is inactive'),
+      ];
+
+      for (final c in cases) {
+        test(c.label, () {
+          final settings = PreferencesSetting([
+            ThreadDetailConfig(isEnabled: c.thread),
+            CollapseThreadConfig(isEnabled: c.collapse),
+          ]);
+          expect(settings.isCollapseThreadsEnabled, equals(c.active));
+        });
+      }
     });
   });
 }

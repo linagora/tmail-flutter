@@ -52,8 +52,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_emails_with_new_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -106,6 +105,7 @@ class SearchEmailController extends BaseController
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final RefreshChangesSearchEmailInteractor _refreshChangesSearchEmailInteractor;
+  final ILocalSettingsReader _localSettingsReader;
 
   final textInputSearchController = TextEditingController();
   final resultSearchScrollController = ScrollController();
@@ -162,8 +162,7 @@ class SearchEmailController extends BaseController
 
   Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
 
-  bool get _isCollapseThreadsEnabled =>
-      appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+  bool get _isCollapseThreadsEnabled => _localSettingsReader.isCollapseThreadsEnabled;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,
@@ -172,6 +171,7 @@ class SearchEmailController extends BaseController
       this._searchEmailInteractor,
       this._searchMoreEmailInteractor,
       this._refreshChangesSearchEmailInteractor,
+      this._localSettingsReader,
   );
 
   @override

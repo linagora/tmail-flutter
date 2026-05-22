@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_mode_notifier.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SettingHeaderWidget extends StatelessWidget {
@@ -10,6 +11,7 @@ class SettingHeaderWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final TextStyle? textStyle;
   final VoidCallback? onMultiClickAction;
+  final int? multiClickCount;
 
   const SettingHeaderWidget({
     Key? key,
@@ -17,6 +19,7 @@ class SettingHeaderWidget extends StatelessWidget {
     this.padding,
     this.textStyle,
     this.onMultiClickAction,
+    this.multiClickCount,
   }) : super(key: key);
 
   @override
@@ -35,6 +38,7 @@ class SettingHeaderWidget extends StatelessWidget {
     if (onMultiClickAction != null) {
       titleWidget = MultiClickWidget(
         onMultiTap: onMultiClickAction!,
+        requiredClicks: multiClickCount ?? ExperimentalModeNotifier.activationTapCount,
         child: titleWidget,
       );
     }

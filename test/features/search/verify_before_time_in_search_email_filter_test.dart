@@ -89,6 +89,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_reader.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -170,6 +171,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ILocalSettingsReader>(),
   MockSpec<ClearMailboxInteractor>(),
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
@@ -418,6 +420,9 @@ void main() {
 
     Get.put<MailboxDashBoardController>(mailboxDashboardController);
 
+    final mockLocalSettingsReader = MockILocalSettingsReader();
+    when(mockLocalSettingsReader.isCollapseThreadsEnabled).thenReturn(false);
+
     threadController = ThreadController(
       mockGetEmailsInMailboxInteractor,
       mockRefreshChangesEmailsInMailboxInteractor,
@@ -426,6 +431,7 @@ void main() {
       mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
+      mockLocalSettingsReader,
     );
     threadController.onInit();
 
