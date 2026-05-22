@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -671,7 +672,7 @@ void main() {
         'WHEN content exactly fills the viewport '
         'THEN SHOULD return true',
       () {
-        expect(ThreadController.shouldAutoLoadMoreByScrollExtent(0), isTrue);
+        expect(AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(0), isTrue);
       });
 
       test(
@@ -679,7 +680,7 @@ void main() {
         'WHEN content overflows the viewport '
         'THEN SHOULD return false',
       () {
-        expect(ThreadController.shouldAutoLoadMoreByScrollExtent(1), isFalse);
+        expect(AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(1), isFalse);
       });
 
       test(
@@ -688,7 +689,7 @@ void main() {
         'THEN SHOULD return false to prevent infinite load-more loop',
       () {
         expect(
-          ThreadController.shouldAutoLoadMoreByScrollExtent(785.0459770114941),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(785.0459770114941),
           isFalse,
         );
       });
@@ -716,7 +717,7 @@ void main() {
         final maxScroll = scrollController.position.maxScrollExtent;
         expect(maxScroll, greaterThan(0));
         expect(
-          ThreadController.shouldAutoLoadMoreByScrollExtent(maxScroll),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(maxScroll),
           isFalse,
         );
       });
@@ -742,7 +743,7 @@ void main() {
         final maxScroll = scrollController.position.maxScrollExtent;
         expect(maxScroll, 0.0);
         expect(
-          ThreadController.shouldAutoLoadMoreByScrollExtent(maxScroll),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(maxScroll),
           isTrue,
         );
       });
@@ -871,7 +872,7 @@ void main() {
         'THEN SHOULD return false — nothing to trigger load from',
       () {
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(0, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(0, 816),
           isFalse,
         );
       });
@@ -882,7 +883,7 @@ void main() {
         'THEN SHOULD return true',
       () {
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(800, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(800, 816),
           isTrue,
         );
       });
@@ -893,7 +894,7 @@ void main() {
         'THEN SHOULD return false — actual rendered height likely already overflows',
       () {
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(816, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(816, 816),
           isFalse,
         );
       });
@@ -904,7 +905,7 @@ void main() {
         'THEN SHOULD return false',
       () {
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(1200, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(1200, 816),
           isFalse,
         );
       });
@@ -917,7 +918,7 @@ void main() {
         const estimatedHeight =
             20 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
           isTrue,
         );
       });
@@ -930,7 +931,7 @@ void main() {
         const estimatedHeight =
             21 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
         expect(
-          ThreadController.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
           isFalse,
         );
       });
