@@ -1,3 +1,18 @@
+## [0.29.0] - 2026-05-22
+### Fixed
+- Sentry noisy error cleanup 
+- #4524 Blank plain-text email not render by backslash 
+- #4532 Cannot scroll to the end of advertisement email
+- #4488 Ctrl+k/Cmd+k in composer
+- #4081 Prevent network error logout user in mobile
+- #4426 warning user when creating rule to drop email
+
+### Added
+- CollapsedThread on email list
+
+### Changed
+- From mono repo into workspace 
+
 ## [0.28.19] - 2026-05-15
 
 ### Fixed
