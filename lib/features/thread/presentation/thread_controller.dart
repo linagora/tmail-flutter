@@ -73,6 +73,7 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_key
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
@@ -523,7 +524,7 @@ class ThreadController extends BaseController with EmailActionController {
         ? 0
         : currentListEmails.length *
             ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
-    final isAutoLoadMore = shouldAutoLoadMoreByEstimatedHeight(
+    final isAutoLoadMore = AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(
       totalHeightListEmails,
       browserInnerHeight,
     );
@@ -539,17 +540,6 @@ class ThreadController extends BaseController with EmailActionController {
     return isAutoLoadMore;
   }
 
-  // Returns true only when the estimated list height has not yet filled the
-  // viewport (strictly less-than), so the list needs more items to fill the screen.
-  // Uses strict < to avoid triggering an extra load when estimated height equals
-  // the viewport — the actual rendered height is likely already overflowing.
-  @visibleForTesting
-  static bool shouldAutoLoadMoreByEstimatedHeight(
-    int totalHeight,
-    int viewportHeight,
-  ) =>
-      totalHeight > 0 && totalHeight < viewportHeight;
-
   bool get _isNonWebAutoLoadMore {
     if (!listEmailController.hasClients) {
       logTrace(
@@ -560,7 +550,7 @@ class ThreadController extends BaseController with EmailActionController {
 
     final maxScroll = listEmailController.position.maxScrollExtent;
     final viewport = listEmailController.position.viewportDimension;
-    final isAutoLoadMore = shouldAutoLoadMoreByScrollExtent(maxScroll);
+    final isAutoLoadMore = AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(maxScroll);
 
     logTrace(
       'ThreadController::_isNonWebAutoLoadMore():'
@@ -572,12 +562,6 @@ class ThreadController extends BaseController with EmailActionController {
 
     return isAutoLoadMore;
   }
-
-  // Returns true only when the content does not yet fill the viewport
-  // (maxScrollExtent == 0), so the list needs more items to fill the screen.
-  @visibleForTesting
-  static bool shouldAutoLoadMoreByScrollExtent(double maxScrollExtent) =>
-      maxScrollExtent <= 0;
 
   void _performAutomaticallyLoadMoreEmails() {
     log('ThreadController::_performAutomaticallyLoadMoreEmails:');
