@@ -6,6 +6,9 @@ class DefaultPreferencesConfig extends PreferencesConfig {
 
   DefaultPreferencesConfig(this.data);
 
+  @override
+  String get configKey => '';
+
   factory DefaultPreferencesConfig.fromJson(Map<String, dynamic> json) =>
       const DefaultPreferencesConfigConverter().fromJson(json);
 
