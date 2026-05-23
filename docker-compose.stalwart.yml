@@ -1,0 +1,14 @@
+services:
+  twake-webmail:
+    image: linagora/tmail-web:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./env.stalwart.file:/usr/share/nginx/html/assets/env.file:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
