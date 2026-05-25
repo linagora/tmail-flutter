@@ -159,7 +159,11 @@ class LocalNotificationManager {
   }
 
   Future<void> removeNotification(String id) async {
-    return _localNotificationsPlugin.cancel(id.hashCode);
+    try {
+      await _localNotificationsPlugin.cancel(id.hashCode);
+    } catch (e) {
+      logWarning('LocalNotificationManager::removeNotification(): id = $id | ERROR: $e');
+    }
   }
 
   Future<int> getCountActiveNotificationByGroupOnAndroid({required String groupId}) async {
@@ -207,7 +211,7 @@ class LocalNotificationManager {
     log('LocalNotificationManager::removeGroupPushNotification(): activeNotifications = ${activeNotifications.length} | listActiveNotificationByGroup = ${listActiveNotificationByGroup.length}');
     if (listActiveNotificationByGroup.length <= 1) {
       log('LocalNotificationManager::groupPushNotification():canceled');
-      await _localNotificationsPlugin.cancel(groupId.hashCode);
+      await removeNotification(groupId);
     }
   }
 
