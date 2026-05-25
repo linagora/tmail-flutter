@@ -1,4 +1,3 @@
-import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -16,7 +15,6 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
-    await ToastView.dismiss();
     await composerRobot.tapCloseComposer();
     await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
