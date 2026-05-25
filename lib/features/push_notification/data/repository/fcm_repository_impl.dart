@@ -125,7 +125,7 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<List<PresentationMailbox>> getMailboxesForNotification(
+  Future<List<PresentationMailbox>> getExcludedMailboxesForNotification(
     Session session,
     AccountId accountId,
   ) async {
@@ -139,7 +139,7 @@ class FCMRepositoryImpl extends FCMRepository {
           .map((m) => m.toPresentationMailbox())
           .where((m) => m.pushNotificationDeactivated)
           .toList();
-      log('FCMRepositoryImpl::getMailboxesForNotification(): cache hit — excluded=${excluded.length}');
+      log('FCMRepositoryImpl::getExcludedMailboxesForNotification(): cache hit — excluded=${excluded.length}');
       return excluded;
     }
 
@@ -149,7 +149,7 @@ class FCMRepositoryImpl extends FCMRepository {
         .map((m) => m.toPresentationMailbox())
         .where((m) => m.pushNotificationDeactivated)
         .toList();
-    log('FCMRepositoryImpl::getMailboxesForNotification(): network fetch — excluded=${excluded.length}');
+    log('FCMRepositoryImpl::getExcludedMailboxesForNotification(): network fetch — excluded=${excluded.length}');
     return excluded;
   }
 

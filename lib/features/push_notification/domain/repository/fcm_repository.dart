@@ -44,7 +44,7 @@ abstract class FCMRepository {
 
   Future<void> updateFirebaseRegistrationToken(UpdateTokenExpiredTimeRequest expiredTimeRequest);
 
-  Future<List<PresentationMailbox>> getMailboxesForNotification(Session session, AccountId accountId);
+  Future<List<PresentationMailbox>> getExcludedMailboxesForNotification(Session session, AccountId accountId);
 
   Future<List<EmailId>> getEmailChangesToRemoveNotification(
     Session session,
