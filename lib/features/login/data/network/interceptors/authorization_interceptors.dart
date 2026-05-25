@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -33,6 +34,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   OIDCConfiguration? _configOIDC;
   TokenOIDC? _token;
   String? _authorization;
+
+  late final void Function(
+    Object error,
+    DioException originalError,
+    ErrorInterceptorHandler handler,
+  ) _propagateRefreshError =
+      PlatformInfo.isWeb ? _propagateRefreshErrorOnWeb : _propagateRefreshErrorOnMobile;
 
   AuthorizationInterceptors(
     this._dio,
@@ -121,24 +129,45 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         exception: e,
         stackTrace: stackTrace,
       );
-      return _handleThrownException(
-        e,
-        handler: handler,
-        requestOptions: err.requestOptions,
-      );
+      return _propagateRefreshError(e, err, handler);
     }
   }
 
-  void _handleThrownException(
-    Object exception, {
-    required ErrorInterceptorHandler handler,
-    required RequestOptions requestOptions,
-  }) {
-    if (exception is DioException) {
-      return super.onError(exception, handler);
+  /// Web: preserve the original 401 response so
+  /// [RemoteExceptionThrower] classifies it as [BadCredentialsException] and
+  /// the user is logged out to login. Any refresh/retry failure ends the
+  /// session.
+  void _propagateRefreshErrorOnWeb(
+    Object error,
+    DioException originalError,
+    ErrorInterceptorHandler handler,
+  ) {
+    logWarning(
+      'AuthorizationInterceptors::_propagateRefreshErrorOnWeb: '
+      'web refresh/retry failed, ending session — error=$error',
+    );
+    if (error is ServerError || error is TemporarilyUnavailable) {
+      return super.onError(
+        DioException(requestOptions: originalError.requestOptions, error: error),
+        handler,
+      );
+    }
+    return super.onError(originalError.copyWith(error: error), handler);
+  }
+
+  /// Mobile: never carry the stale 401 forward — propagate the real
+  /// error without a response so a network failure is not misread as bad
+  /// credentials and the user is kept signed in.
+  void _propagateRefreshErrorOnMobile(
+    Object error,
+    DioException originalError,
+    ErrorInterceptorHandler handler,
+  ) {
+    if (error is DioException) {
+      return super.onError(error, handler);
     }
     return super.onError(
-      exception.toDioException(requestOptions: requestOptions),
+      error.toDioException(requestOptions: originalError.requestOptions),
       handler,
     );
   }
@@ -169,6 +198,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       requestOptions.extra[_refreshAttemptedKey] = true;
       return await _performRetry(requestOptions, err, handler);
     } on DioException catch (refreshError, st) {
+      // Mobile-only in practice: native AppAuth surfaces token-endpoint
+      // failures as DioException. On web, flutter_appauth_web flattens every
+      // non-200 to a non-Dio ArgumentError, so web never reaches this block —
+      // it falls to the outer catch → _propagateRefreshErrorOnWeb (logout).
+      // If web ever gains a Dio-based refresh, add a web guard here too.
       if (refreshError.response?.statusCode == 400) {
         logWarning(
           'AuthorizationInterceptors: Refresh Token Failed 400 - error=$refreshError | stackTrace=$st',
@@ -207,13 +241,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: '
         'Retry failed with error=$retryError',
       );
-      // Pass retry errors directly so the stale 401 response is not preserved
-      // via err.copyWith.
-      return _handleThrownException(
-        retryError,
-        handler: handler,
-        requestOptions: originalErr.requestOptions,
-      );
+      return _propagateRefreshError(retryError, originalErr, handler);
     }
   }
 
