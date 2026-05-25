@@ -302,7 +302,10 @@ class EmailChangeListener extends ChangeListener {
       return;
     }
 
-    for (var presentationEmail in emailList) {
+    final selectedEmails = emailList.selectEmailsForNotification();
+    log('EmailChangeListener::_handleLocalPushNotification(): SELECTED = ${selectedEmails.length}');
+
+    for (var presentationEmail in selectedEmails) {
       await _showLocalNotification(
         userName: userName,
         presentationEmail: presentationEmail,
