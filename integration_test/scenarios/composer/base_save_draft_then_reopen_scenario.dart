@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
+import '../../utils/wait_for_condition.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -9,6 +10,14 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
 
   @override
   String folderDisplayName(AppLocalizations l10n) => l10n.draftsMailboxDisplayName;
+
+  @override
+  Future<void> onAfterContentUploaded() async {
+    await $(AppLocalizations().attachments_uploaded_successfully).waitUntilVisible();
+    await waitForCondition(
+      () => !$(AppLocalizations().attachments_uploaded_successfully).exists,
+    );
+  }
 
   @override
   Future<void> performFirstSave(

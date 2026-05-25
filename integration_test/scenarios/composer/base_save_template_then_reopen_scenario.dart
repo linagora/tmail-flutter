@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
-import '../../utils/wait_for_condition.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -24,10 +23,7 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
 
   @override
   Future<void> onAfterContentUploaded() async {
-    await $(AppLocalizations().attachments_uploaded_successfully).waitUntilVisible();
-    await waitForCondition(
-      () => !$(AppLocalizations().attachments_uploaded_successfully).exists,
-    );
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
   }
 
   @override
