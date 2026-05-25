@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -1257,8 +1256,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       blobIds,
       TransformConfiguration.create(
         customTextTransformers: const [
-          SanitizeAutolinkHtmlTransformers(),
-          SanitizePlainTextHtmlOutputTransformer(),
+          SanitizeAutolinkUnescapeHtmlTransformer(),
+          StandardizeHtmlSanitizingTransformers(),
           NewLineTransformer(),
         ],
         customDomTransformers: [

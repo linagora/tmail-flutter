@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -33,14 +33,13 @@ void main() {
       );
     });
 
-    // Applies the same transformer chain as _parseCalendarEventAction.
     Future<String> transformDescription(String description) =>
         htmlAnalyzer.transformHtmlEmailContent(
           description,
           TransformConfiguration.create(
             customTextTransformers: const [
-              SanitizeAutolinkHtmlTransformers(),
-              SanitizePlainTextHtmlOutputTransformer(),
+              SanitizeAutolinkUnescapeHtmlTransformer(),
+              StandardizeHtmlSanitizingTransformers(),
               NewLineTransformer(),
             ],
           ),
@@ -48,9 +47,6 @@ void main() {
 
     group('Backslash-hex patterns — regression for \\XX false-positive', () {
       test('SHOULD NOT blank out an ICS description with PHP namespace separators', () async {
-        // ICS DESCRIPTION: "Server path: \Corp\DAV\Server\Exception\Forbidden"
-        // Before fix: the pipeline used escapeHtml:false + StandardizeHtmlSanitizingTransformers.
-        // \DA in a PHP-style namespace matched unicodeEscapeReg and stripped the entire text node → blank output.
         const description = r'Meeting exception: \Corp\DAV\Server\Exception\Forbidden — contact IT';
         final result = await transformDescription(description);
         expect(result, contains(r'\Corp\DAV\Server\Exception'));
@@ -83,22 +79,38 @@ void main() {
         expect(result, contains('Meeting notes'));
       });
 
-      test('SHOULD neutralise event handler injection — <img> becomes HTML-escaped text', () async {
-        // SanitizeAutolinkHtmlTransformers (escapeHtml: true) converts < and >
-        // to &lt; / &gt; before any parsing, so the <img onerror=...> tag can
-        // never be interpreted as an element. The text "onerror" may still appear
-        // in the escaped representation, but it cannot execute.
+      test('SHOULD strip event-handler attributes from HTML elements', () async {
         const description = '<img src="x" onerror="alert(1)"> Team photo';
         final result = await transformDescription(description);
-        expect(result, isNot(contains(RegExp(r'<img\b', caseSensitive: false))));
+        expect(result, isNot(contains('onerror')));
         expect(result, contains('Team photo'));
       });
 
-      test('SHOULD HTML-escape < and > so they render as text, not markup', () async {
-        const description = 'Status: a < b && b > 0';
+      test('SHOULD preserve HTML entities in ICS description', () async {
+        const description = 'Status: a &lt; b &amp;&amp; b &gt; 0';
         final result = await transformDescription(description);
         expect(result, contains('&lt;'));
         expect(result, contains('&gt;'));
+      });
+    });
+
+    group('HTML passthrough — HTML descriptions rendered as formatted content', () {
+      test('SHOULD pass through safe HTML tags so they render as formatted content', () async {
+        const description = '<p>Welcome to the <b>quarterly review</b></p>';
+        final result = await transformDescription(description);
+        expect(result, contains('<p>'));
+        expect(result, contains('<b>'));
+        expect(result, contains('quarterly review'));
+        // Verify tags are rendered, not escaped as visible text.
+        expect(result, isNot(contains('&lt;p&gt;')));
+        expect(result, isNot(contains('&lt;b&gt;')));
+      });
+
+      test('SHOULD preserve nested HTML list structure', () async {
+        const description = '<ul><li>Item 1</li><li>Item 2</li></ul>';
+        final result = await transformDescription(description);
+        expect(result, contains('Item 1'));
+        expect(result, contains('Item 2'));
       });
     });
 

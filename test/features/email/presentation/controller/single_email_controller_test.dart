@@ -313,9 +313,9 @@ void main() {
       // arrange
       const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
       const expectedEventDescription = '<html><head></head><body>'
-        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
+        '<a href="https://example1.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
+        '<a href="https://example2.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example2.com</a>'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
@@ -361,24 +361,20 @@ void main() {
     test(
       'should transform all calendar event description url to a tag '
       'and all new line to <br> tag '
-      'and neutralise all xss attempt by HTML-escaping them as text',
+      'and remove all xss attempt',
     () async {
       // arrange
-      // XSS tags in ICS descriptions are plain text — the new pipeline
-      // (SanitizeAutolinkHtmlTransformers with escapeHtml:true) converts
-      // < and > to &lt;/&gt; so they render as visible text, not markup.
       const eventDescription = '\nhttps://example1.com'
         '\nhttps://example2.com'
         '\n<script>alert(1)</script>'
         '\n<a href="javascript:alert(1)">href xss</a>';
       const expectedEventDescription = '<html><head></head><body>'
-        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
+        '<a href="https://example1.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
+        '<a href="https://example2.com" rel="noreferrer" style="white-space: nowrap; word-break: keep-all" target="_blank">example2.com</a>'
         '<br>'
-        '&lt;script&gt;alert(1)&lt;/script&gt;'
         '<br>'
-        '&lt;a href="javascript:alert(1)"&gt;href xss&lt;/a&gt;'
+        '<a>href xss</a>'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
@@ -410,7 +406,7 @@ void main() {
       );
       await untilCalled(calendarEventDataSource.parse(any, any));
       await Future.delayed(Duration.zero);
-      
+
       // assert
       expect(
         singleEmailController.blobCalendarEvent.value,
@@ -419,6 +415,49 @@ void main() {
           calendarEventList: [CalendarEvent(description: expectedEventDescription)],
         ),
       );
+    });
+
+    test(
+      'should render HTML markup in calendar event description as formatted HTML',
+    () async {
+      // arrange
+      const eventDescription = '<p>Hello <b>world</b></p>';
+      final blobId = Id('abc123');
+      final calendarEvent = CalendarEvent(description: eventDescription);
+      final blobCalendarEvents = [
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [calendarEvent],
+        ),
+      ];
+      when(calendarEventDataSource.parse(any, any))
+        .thenAnswer((_) async => blobCalendarEvents);
+
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+      when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+
+      singleEmailController.onInit();
+      mailboxDashboardController.accountId.refresh();
+
+      // act
+      singleEmailController.parseCalendarEventAction(
+        accountId: AccountFixtures.aliceAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+      await Future.delayed(Duration.zero);
+
+      // assert — HTML tags must be rendered, not escaped as visible text
+      final description = singleEmailController
+          .blobCalendarEvent.value?.calendarEventList.first.description ?? '';
+      expect(description, contains('<p>'));
+      expect(description, contains('<b>world</b>'));
+      expect(description, isNot(contains('&lt;p&gt;')));
+      expect(description, isNot(contains('&lt;b&gt;')));
     });
   });
 
