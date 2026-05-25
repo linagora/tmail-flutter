@@ -33,27 +33,19 @@ class PreferencesSettingManager {
   Future<PreferencesSetting> loadPreferences() async {
     await _sharedPreferences.reload();
 
-    final listConfigs = _sharedPreferences
+    final preferenceKeys = _sharedPreferences
         .getKeys()
-        .where((key) => key.startsWith(_storagePrefix))
-        .map((key) {
-          final jsonString = _sharedPreferences.getString(key);
-          if (jsonString == null) return EmptyPreferencesConfig();
-          try {
-            final json = jsonDecode(jsonString) as Map<String, dynamic>;
-            final factory = _configFactories[key];
-            return factory != null ? factory(json) : DefaultPreferencesConfig.fromJson(json);
-          } catch (_) {
-            return EmptyPreferencesConfig();
-          }
-        })
-        .toList();
+        .where((key) => key.startsWith('${_storagePrefix}_'))
+        .toList()
+      ..sort();
 
-    if (listConfigs.isEmpty) {
+    final configs = preferenceKeys.map(_parseConfig).toList();
+
+    if (configs.isEmpty) {
       return PreferencesSetting.initial();
     }
 
-    return PreferencesSetting(listConfigs);
+    return PreferencesSetting(configs);
   }
 
   // SpamReportConfig is read-merge-written to preserve lastTimeDismissedMilliseconds.
@@ -74,7 +66,6 @@ class PreferencesSettingManager {
         fromJson: SpamReportConfig.fromJson,
       );
 
-  // Used by spam-report logic that runs outside the preferences toggle flow.
   Future<void> updateSpamReport({
     bool? isEnabled,
     int? lastTimeDismissedMilliseconds,
@@ -117,6 +108,18 @@ class PreferencesSettingManager {
         defaultFactory: LabelConfig.initial,
         fromJson: LabelConfig.fromJson,
       );
+
+  PreferencesConfig _parseConfig(String key) {
+    final jsonString = _sharedPreferences.getString(key);
+    if (jsonString == null) return EmptyPreferencesConfig();
+    try {
+      final json = jsonDecode(jsonString) as Map<String, dynamic>;
+      final factory = _configFactories[key];
+      return factory != null ? factory(json) : DefaultPreferencesConfig.fromJson(json);
+    } catch (_) {
+      return EmptyPreferencesConfig();
+    }
+  }
 
   Future<T> _readConfig<T extends PreferencesConfig>({
     required String key,
