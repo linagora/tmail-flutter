@@ -1014,7 +1014,7 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
 
-    canLoadMore = emailList.length >= ThreadConstants.maxCountEmails;
+    canLoadMore = success.serverEmailCount >= ThreadConstants.maxCountEmails;
     if (_isAutoLoadMore && canLoadMore) {
       _performAutomaticallyLoadMoreEmails();
     } else {

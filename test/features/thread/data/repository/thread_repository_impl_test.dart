@@ -1057,6 +1057,84 @@ void main() {
         destroyed: anyNamed('created'),
       ));
     });
+
+    test(
+      'GIVEN server returns a full page and one email matches lastEmailId '
+      'WHEN loadMoreEmails strips the anchor '
+      'THEN serverEmailCount SHOULD equal the server count before stripping',
+    () async {
+      final anchorId = EmailId(Id('anchor'));
+      final serverEmails = [
+        Email(id: anchorId),
+        ...List.generate(
+          ThreadConstants.defaultLimit.value.toInt() - 1,
+          (i) => Email(id: EmailId(Id('email_$i'))),
+        ),
+      ];
+      // Capture before the call — removeWhere modifies serverEmails in-place
+      final expectedServerCount = serverEmails.length;
+
+      when(threadDataSource.getAllEmail(
+        any,
+        any,
+        position: anyNamed('position'),
+        filter: anyNamed('filter'),
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Future.value(EmailsResponse(
+        emailList: serverEmails,
+        state: State('s1'),
+      )));
+
+      final responses = await threadRepository
+          .loadMoreEmails(GetEmailRequest(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            lastEmailId: anchorId,
+          ))
+          .toList();
+
+      expect(responses.length, 1);
+      expect(responses[0].serverEmailCount, expectedServerCount);
+      expect(responses[0].emailList?.length, expectedServerCount - 1);
+    });
+
+    test(
+      'GIVEN server returns a full page and lastEmailId is absent from the response '
+      'WHEN loadMoreEmails finds nothing to strip '
+      'THEN serverEmailCount SHOULD equal emailList length',
+    () async {
+      final serverEmails = List.generate(
+        ThreadConstants.defaultLimit.value.toInt(),
+        (i) => Email(id: EmailId(Id('email_$i'))),
+      );
+
+      when(threadDataSource.getAllEmail(
+        any,
+        any,
+        position: anyNamed('position'),
+        filter: anyNamed('filter'),
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Future.value(EmailsResponse(
+        emailList: serverEmails,
+        state: State('s1'),
+      )));
+
+      final responses = await threadRepository
+          .loadMoreEmails(GetEmailRequest(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            lastEmailId: EmailId(Id('not_in_response')),
+          ))
+          .toList();
+
+      expect(responses.length, 1);
+      expect(responses[0].serverEmailCount, serverEmails.length);
+      expect(responses[0].emailList?.length, serverEmails.length);
+    });
   });
 
   group('ThreadRepositoryImpl::refreshChanges', () {

@@ -9,12 +9,14 @@ class EmailsResponse with EquatableMixin {
   final List<EmailId>? notFoundEmailIds;
   final State? state;
   final EmailChangeResponse? emailChangeResponse;
+  final int? serverEmailCount;
 
   const EmailsResponse({
     this.emailList,
     this.notFoundEmailIds,
     this.state,
     this.emailChangeResponse,
+    this.serverEmailCount,
   });
 
   bool hasEmails() => emailList != null && emailList!.isNotEmpty;
@@ -29,6 +31,7 @@ class EmailsResponse with EquatableMixin {
     notFoundEmailIds,
     state,
     emailChangeResponse,
+    serverEmailCount,
   ];
 
   EmailsResponse copyWith({
@@ -36,12 +39,14 @@ class EmailsResponse with EquatableMixin {
     List<EmailId>? notFoundEmailIds,
     State? state,
     EmailChangeResponse? emailChangeResponse,
+    int? serverEmailCount,
   }) {
     return EmailsResponse(
       emailList: emailList ?? this.emailList,
       notFoundEmailIds: notFoundEmailIds ?? this.notFoundEmailIds,
       state: state ?? this.state,
       emailChangeResponse: emailChangeResponse ?? this.emailChangeResponse,
+      serverEmailCount: serverEmailCount ?? this.serverEmailCount,
     );
   }
 }
