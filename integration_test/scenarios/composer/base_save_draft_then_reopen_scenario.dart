@@ -15,8 +15,6 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
-    // Wait for the previous toast to be closed
-    await Future.delayed(const Duration(seconds: 2));
     await composerRobot.tapCloseComposer();
     await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
