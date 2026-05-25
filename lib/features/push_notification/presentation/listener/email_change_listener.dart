@@ -110,6 +110,14 @@ class EmailChangeListener extends ChangeListener {
     if (PlatformInfo.isMobile) {
       _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
     }
+    if (PlatformInfo.isAndroid) {
+      // On Android, foreground sync must persist the new delivery state so the
+      // next background FCM push does not replay already-seen email changes.
+      final userName = action.session?.username;
+      if (userName != null) {
+        _storeEmailDeliveryStateAction(action.accountId, userName, action.newState);
+      }
+    }
   }
 
   void _onPushNotification(PushNotificationAction action) {
