@@ -798,6 +798,36 @@ void main() {
 
         expect(threadController.canLoadMore, isTrue);
       });
+
+      test(
+        'GIVEN server returns an empty list '
+        'WHEN getAllEmail stream completes (empty mailbox) '
+        'THEN canLoadMore SHOULD be false',
+      () {
+        setupMocksForOnDone();
+        threadController.viewState.value = Right(
+          GetAllEmailSuccess(emailList: makeEmails(0), currentMailboxId: mailboxId),
+        );
+
+        threadController.onDone();
+
+        expect(threadController.canLoadMore, isFalse);
+      });
+
+      test(
+        'GIVEN getAllEmail fails and auto-load is not active '
+        'WHEN the stream completes with GetAllEmailFailure '
+        'THEN canLoadMore SHOULD be false',
+      () {
+        setupMocksForOnDone();
+        threadController.canLoadMore = true;
+        threadController.viewState.value =
+            Left(GetAllEmailFailure(Exception('boom')));
+
+        threadController.onDone();
+
+        expect(threadController.canLoadMore, isFalse);
+      });
     });
 
     group('canLoadMore after loadMoreEmails completes test:', () {
@@ -834,7 +864,10 @@ void main() {
         setupMocksForLoadMore();
         final emails = makeEmails(5);
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(emails));
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
+          emails,
+          serverEmailCount: emails.length,
+        ));
 
         expect(threadController.canLoadMore, isFalse);
       });
@@ -847,7 +880,10 @@ void main() {
         setupMocksForLoadMore();
         final emails = makeEmails(ThreadConstants.maxCountEmails);
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(emails));
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
+          emails,
+          serverEmailCount: emails.length,
+        ));
 
         expect(threadController.canLoadMore, isTrue);
       });
@@ -859,9 +895,94 @@ void main() {
       () {
         setupMocksForLoadMore();
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess([]));
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
+          [],
+          serverEmailCount: 0,
+        ));
 
         expect(threadController.canLoadMore, isFalse);
+      });
+
+      test(
+        'REGRESSION GIVEN a full server page whose anchor was stripped by the repo '
+        '(arrives here as limit-1 = 19 all-new emails) '
+        'WHEN more pages still exist on the server '
+        'THEN canLoadMore SHOULD be true — a 19-item page must NOT be read as end-of-list',
+      () {
+        setupMocksForLoadMore();
+        final emails = makeEmails(ThreadConstants.maxCountEmails - 1);
+
+        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
+          emails,
+          serverEmailCount: ThreadConstants.maxCountEmails,
+        ));
+
+        expect(threadController.canLoadMore, isTrue);
+      });
+    });
+
+    group('canLoadMore lifecycle & guard regression:', () {
+      test(
+        'GIVEN canLoadMore was exhausted (false) '
+        'WHEN resetToOriginalValue runs (e.g. switching mailbox) '
+        'THEN canLoadMore SHOULD be re-enabled so the new mailbox can paginate',
+      () {
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.listEmailSelected)
+            .thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.currentSelectMode)
+            .thenReturn(Rx(SelectMode.INACTIVE));
+        threadController.canLoadMore = false;
+
+        threadController.resetToOriginalValue();
+
+        expect(threadController.canLoadMore, isTrue);
+      });
+
+      test(
+        'GIVEN a load-more request failed '
+        'WHEN handleFailureViewState receives LoadMoreEmailsFailure '
+        'THEN canLoadMore SHOULD be true so the user can retry',
+      () {
+        threadController.canLoadMore = false;
+
+        threadController.handleFailureViewState(
+          LoadMoreEmailsFailure(Exception('network')),
+        );
+
+        expect(threadController.canLoadMore, isTrue);
+      });
+
+      test(
+        'GIVEN canLoadMore is false and search is not active '
+        'WHEN handleLoadMoreEmailsRequest is invoked '
+        'THEN the load-more interactor SHOULD NOT be called — the guard blocks it',
+      () {
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+        threadController.canLoadMore = false;
+
+        threadController.handleLoadMoreEmailsRequest();
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+      });
+
+      test(
+        'GIVEN search is active '
+        'WHEN handleLoadMoreEmailsRequest is invoked '
+        'THEN it routes to search-more, NOT load-more (canLoadMore is not consulted)',
+      () {
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+        threadController.canSearchMore = false;
+        threadController.canLoadMore = true;
+
+        threadController.handleLoadMoreEmailsRequest();
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
       });
     });
 

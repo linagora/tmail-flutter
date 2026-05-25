@@ -25,6 +25,9 @@ class LoadMoreEmailsInMailboxInteractor {
     final presentationEmailList = emailResponse.emailList
       ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
 
-    return Right<Failure, Success>(LoadMoreEmailsSuccess(presentationEmailList));
+    return Right<Failure, Success>(LoadMoreEmailsSuccess(
+      presentationEmailList,
+      serverEmailCount: emailResponse.serverEmailCount ?? presentationEmailList.length,
+    ));
   }
 }

@@ -6,11 +6,12 @@ class LoadingMoreEmails extends LoadingState {}
 
 class LoadMoreEmailsSuccess extends UIState {
   final List<PresentationEmail> emailList;
+  final int serverEmailCount;
 
-  LoadMoreEmailsSuccess(this.emailList);
+  LoadMoreEmailsSuccess(this.emailList, {required this.serverEmailCount});
 
   @override
-  List<Object?> get props => [emailList];
+  List<Object?> get props => [emailList, serverEmailCount];
 }
 
 class LoadMoreEmailsFailure extends FeatureFailure {

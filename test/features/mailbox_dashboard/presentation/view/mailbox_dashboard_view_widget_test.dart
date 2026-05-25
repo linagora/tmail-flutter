@@ -695,7 +695,10 @@ void main() {
             }
           ),
         );
-        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(emailList))));
+        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(
+          emailList,
+          serverEmailCount: emailList.length,
+        ))));
 
         await tester.pump();
 
@@ -740,7 +743,10 @@ void main() {
 
         // Perform load more action
         final emailList = <PresentationEmail>[];
-        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(emailList))));
+        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(
+          emailList,
+          serverEmailCount: emailList.length,
+        ))));
 
         await tester.pump();
 
