@@ -48,7 +48,7 @@ void main() {
     role: PresentationMailbox.roleSpam,
   );
 
-  group('getMailboxesForNotification:', () {
+  group('getExcludedMailboxesForNotification:', () {
     setUp(() {
       fcmDatasource = MockFCMDatasource();
       cacheFCMDatasourceImpl = MockCacheFCMDatasourceImpl();
@@ -74,7 +74,7 @@ void main() {
         userNameFixture,
       )).thenAnswer((_) async => [spamMailbox, inboxMailbox]);
 
-      final result = await fcmRepository.getMailboxesForNotification(
+      final result = await fcmRepository.getExcludedMailboxesForNotification(
         sessionFixture,
         accountIdFixture,
       );
@@ -90,7 +90,7 @@ void main() {
         userNameFixture,
       )).thenAnswer((_) async => [inboxMailbox]);
 
-      final result = await fcmRepository.getMailboxesForNotification(
+      final result = await fcmRepository.getExcludedMailboxesForNotification(
         sessionFixture,
         accountIdFixture,
       );
@@ -110,13 +110,14 @@ void main() {
         accountIdFixture,
       )).thenAnswer((_) async => JmapMailboxResponse(mailboxes: [spamMailbox]));
 
-      final result = await fcmRepository.getMailboxesForNotification(
+      final result = await fcmRepository.getExcludedMailboxesForNotification(
         sessionFixture,
         accountIdFixture,
       );
 
       expect(result, hasLength(1));
       expect(result.first.pushNotificationDeactivated, isTrue);
+      verify(mailboxDataSource.getAllMailbox(sessionFixture, accountIdFixture)).called(1);
     });
 
     test('falls back to network and returns excluded mailboxes when cache has no inbox', () async {
@@ -132,13 +133,14 @@ void main() {
         mailboxes: [spamMailbox, inboxMailbox],
       ));
 
-      final result = await fcmRepository.getMailboxesForNotification(
+      final result = await fcmRepository.getExcludedMailboxesForNotification(
         sessionFixture,
         accountIdFixture,
       );
 
       expect(result, hasLength(1));
       expect(result.first.pushNotificationDeactivated, isTrue);
+      verify(mailboxDataSource.getAllMailbox(sessionFixture, accountIdFixture)).called(1);
     });
   });
 }
