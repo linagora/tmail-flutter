@@ -15,6 +15,8 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_ou
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/utils/platform_info.dart';
@@ -104,6 +106,17 @@ class TransformConfiguration {
        const ImageTransformer(),
      ],
    );
+
+  factory TransformConfiguration.forCalendarEvent() => TransformConfiguration.create(
+    customTextTransformers: const [
+      SanitizeAutolinkUnescapeHtmlTransformer(),
+      StandardizeHtmlSanitizingTransformers(),
+      NewLineTransformer(),
+    ],
+    customDomTransformers: [
+      SanitizeHyperLinkTagInHtmlTransformer(),
+    ],
+  );
 
   /// Provides easy access to a standard configuration that does not block external images.
   static TransformConfiguration standardConfiguration = TransformConfiguration(

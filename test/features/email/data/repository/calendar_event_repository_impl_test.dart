@@ -1,8 +1,4 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -131,16 +127,7 @@ void main() {
   });
 
   group('transformCalendarEventDescription:', () {
-    final transformConfiguration = TransformConfiguration.create(
-      customTextTransformers: const [
-        SanitizeAutolinkUnescapeHtmlTransformer(),
-        StandardizeHtmlSanitizingTransformers(),
-        NewLineTransformer(),
-      ],
-      customDomTransformers: [
-        SanitizeHyperLinkTagInHtmlTransformer(),
-      ],
-    );
+    final transformConfiguration = TransformConfiguration.forCalendarEvent();
 
     setUp(() => reset(htmlDatasource));
 
@@ -157,7 +144,7 @@ void main() {
       when(htmlDatasource.transformHtmlEmailContent(any, any))
         .thenAnswer((_) async => sanitized);
       final result = await transformSingle(CalendarEvent(description: raw));
-      verify(htmlDatasource.transformHtmlEmailContent(raw, any)).called(1);
+      verify(htmlDatasource.transformHtmlEmailContent(raw, transformConfiguration)).called(1);
       expect(result.first.calendarEventList.first.description, sanitized);
     }
 
@@ -202,7 +189,7 @@ void main() {
         await transformSingle(CalendarEvent(description: rawDescription));
 
         // assert
-        verify(htmlDatasource.transformHtmlEmailContent(rawDescription, any)).called(1);
+        verify(htmlDatasource.transformHtmlEmailContent(rawDescription, transformConfiguration)).called(1);
       });
 
       test('should replace description with the result returned by htmlDataSource', () async {
