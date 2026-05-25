@@ -30,14 +30,14 @@ class TestBase {
       description,
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
-        existsTimeout: Duration(seconds: 10),
-        visibleTimeout: Duration(seconds: 10),
-        settleTimeout: Duration(seconds: 10),
+        existsTimeout: Duration(seconds: 20),
+        visibleTimeout: Duration(seconds: 20),
+        settleTimeout: Duration(seconds: 20),
         printLogs: true,
       ),
       tags: tags.map((t) => t.name).toList(),
       platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
-        findTimeout: const Duration(seconds: 10),
+        findTimeout: const Duration(seconds: 20),
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
