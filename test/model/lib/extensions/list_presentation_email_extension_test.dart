@@ -66,5 +66,13 @@ void main() {
       final result = [older, middle, newer].selectEmailsForNotification();
       expect(result.map((e) => e.id?.id.value).toList(), ['newer', 'middle', 'older']);
     });
+
+    test('treats null receivedAt as oldest — excluded when cap is exceeded', () {
+      final withDate = _makeEmail(id: 'dated', receivedAt: DateTime(2024, 1, 2));
+      final withoutDate = _makeEmail(id: 'undated');
+      final result = [withoutDate, withDate].selectEmailsForNotification();
+      expect(result.first.id?.id.value, 'dated');
+      expect(result.last.id?.id.value, 'undated');
+    });
   });
 }
