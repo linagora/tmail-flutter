@@ -224,6 +224,59 @@ void main() {
         ));
       });
     });
+
+    group('Responsive transformer coexistence with standard pipeline', () {
+      test('RemoveScriptTransformer: script inside td is removed AND td still gets overflow-wrap', () async {
+        const input =
+            '<table><tr><td><script>alert(1)</script>safe content</td></tr></table>';
+        final out = await transform(input);
+        expect(out, isNot(contains('<script')), reason: 'script must be stripped');
+        expect(out, contains('safe content'));
+        expect(out, contains('overflow-wrap: anywhere'),
+            reason: 'td must still get overflow-wrap after script removal');
+      });
+
+      test('SanitizeHyperLinkTagTransformer: link in td gets target/rel AND td gets overflow-wrap', () async {
+        const input =
+            '<table><tr><td><a href="https://example.com">click</a></td></tr></table>';
+        final out = await transform(input);
+        expect(out, contains('target="_blank"'),
+            reason: 'link sanitization must still run');
+        expect(out, contains('rel="noreferrer"'));
+        expect(out, contains('overflow-wrap: anywhere'),
+            reason: 'td must also get overflow-wrap');
+      });
+
+      test('NormalizeLineHeightTransformer: bad line-height removed from td AND overflow-wrap added', () async {
+        const input =
+            '<table><tr><td style="line-height: 1px; padding: 8px;">text</td></tr></table>';
+        final out = await transform(input);
+        expect(out, isNot(contains('line-height: 1px')),
+            reason: 'NormalizeLineHeight must strip the bad line-height value');
+        expect(out, contains('padding: 8px'),
+            reason: 'other styles must be preserved');
+        expect(out, contains('overflow-wrap: anywhere'),
+            reason: 'ResponsiveTableCellTransformer must still run after NormalizeLineHeight');
+      });
+
+      test('NormalizeLineHeightTransformer: td with only bad line-height ends up with overflow-wrap only', () async {
+        const input =
+            '<table><tr><td style="line-height: 1px;">text</td></tr></table>';
+        final out = await transform(input);
+        expect(out, isNot(contains('line-height: 1px')));
+        expect(out, contains('overflow-wrap: anywhere'),
+            reason: 'after NormalizeLineHeight removes the sole style, Responsive must add overflow-wrap');
+      });
+
+      test('full complex email: table cells get overflow-wrap AND existing links are preserved', () async {
+        final out = await transform(HtmlEmailCorpus.htmlComplexNested);
+        expect(out, contains('overflow-wrap: anywhere'),
+            reason: 'all td/th cells in the complex email must get overflow-wrap');
+        expect(out, contains('href="https://finance.example.com/budget"'),
+            reason: 'link sanitization must not remove safe https links');
+        expect(out, contains('Monthly Performance Report'));
+      });
+    });
   });
 
   group('HtmlTransform.transformToHtml — fromDomTransformers', () {

@@ -96,5 +96,47 @@ void main() {
       expect(style, contains('padding: 20px'));
       expect(style, contains('overflow-wrap: anywhere'));
     });
+
+    test('is idempotent — running twice does not duplicate overflow-wrap', () async {
+      final doc = parse('<table><tr><td>text</td></tr></table>');
+      await transformer.process(document: doc, dioClient: dioClient);
+      await transformer.process(document: doc, dioClient: dioClient);
+      final style = doc.querySelector('td')!.attributes['style']!;
+      expect(
+        'overflow-wrap'.allMatches(style).length,
+        1,
+        reason: 'overflow-wrap must appear exactly once even after multiple passes',
+      );
+    });
+
+    test('does not add overflow-wrap to non-table elements', () async {
+      final doc = await run('<div style="color: red"><p>text</p><span>more</span></div>');
+      for (final el in doc.querySelectorAll('div, p, span')) {
+        expect(
+          el.attributes['style'] ?? '',
+          isNot(contains('overflow-wrap')),
+          reason: 'Only td/th must be modified — not div, p, or span',
+        );
+      }
+    });
+
+    test('processes all td and th elements in nested tables', () async {
+      final doc = await run('''
+        <table>
+          <tr><td>outer
+            <table>
+              <tr><th>inner header</th><td>inner cell</td></tr>
+            </table>
+          </td></tr>
+        </table>
+      ''');
+      for (final cell in doc.querySelectorAll('td, th')) {
+        expect(
+          cell.attributes['style'],
+          contains('overflow-wrap: anywhere'),
+          reason: 'Every td/th in nested tables must have overflow-wrap: anywhere',
+        );
+      }
+    });
   });
 }
