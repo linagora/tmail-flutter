@@ -1,4 +1,6 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -72,7 +74,6 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -763,6 +764,11 @@ void main() {
     });
 
     group('markCleanClose - platform guard:', () {
+      setUp(() async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        initAppProviderContainer(prefs);
+      });
       test(
           'Should set isCleanClose flag in the notifier\n'
           'When on Android with valid autoSaveComposerId', () {

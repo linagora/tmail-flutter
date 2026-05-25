@@ -1,4 +1,6 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -119,7 +121,9 @@ void main() {
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
-  setUpAll(() {
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    initAppProviderContainer(await SharedPreferences.getInstance());
     Get.testMode = true;
     // Mock base controller
     mockCachingManager = MockCachingManager();

@@ -1,4 +1,6 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -318,6 +320,11 @@ void main() {
       Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    initAppProviderContainer(await SharedPreferences.getInstance());
+  });
 
   setUp(() {
     Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
