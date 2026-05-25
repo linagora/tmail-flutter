@@ -39,6 +39,22 @@ docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
 
 cd ..
 
+export RESET_PORT=9999
+
+RESET_SERVER_LOG="/tmp/backend-reset-server.log"
+echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
+RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
+RESET_SERVER_PID=$!
+
+cleanup() {
+    echo "Cleaning up test environment..."
+    kill "$RESET_SERVER_PID" 2>/dev/null || true
+    cd backend-docker || exit 0
+    docker compose down
+    cd ..
+}
+trap cleanup EXIT
+
 echo "Copying integration_test/integration_test_env.file to env.file..."
 cp integration_test/integration_test_env.file env.file
 
@@ -52,10 +68,5 @@ patrol test -v \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
-    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL"
-
-# Clean up
-echo "Cleaning up test environment..."
-cd backend-docker
-docker compose down
-cd ..
+    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT"

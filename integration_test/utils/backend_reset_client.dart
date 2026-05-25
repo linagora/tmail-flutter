@@ -1,16 +1,12 @@
-import 'dart:io';
-
 import 'package:core/utils/app_logger.dart';
+import 'package:dio/dio.dart';
 
 /// Calls the backend reset server running on the CI host.
 ///
-/// The Android emulator reaches the host at 10.0.2.2. The reset server
-/// (scripts/backend-reset-server.py) stops the running tmail-backend
-/// container and starts a fresh one from the provisioned snapshot, then
-/// returns 200 once James reports "server started".
-///
 /// Only active when RESET_SERVER_URL is provided via --dart-define,
 /// so local runs without the reset server are unaffected.
+///
+/// Uses Dio instead of dart:io so it works on all platforms including web.
 class BackendResetClient {
   static const String _resetUrl = String.fromEnvironment(
     'RESET_SERVER_URL',
@@ -26,19 +22,23 @@ class BackendResetClient {
   }) async {
     if (!isEnabled) return;
 
-    final uri = Uri.parse('$_resetUrl/reset');
-    final client = HttpClient()..connectionTimeout = timeout;
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: timeout,
+        receiveTimeout: timeout,
+        sendTimeout: timeout,
+      ),
+    );
 
     try {
-      final request = await client.postUrl(uri);
-      final response = await request.close().timeout(timeout);
+      final response = await dio.post('$_resetUrl/reset');
       if (response.statusCode != 200) {
         throw Exception('Backend reset failed with status ${response.statusCode}');
       }
     } catch (e) {
       logWarning('Backend reset failed: $e');
     } finally {
-      client.close();
+      dio.close();
     }
   }
 }

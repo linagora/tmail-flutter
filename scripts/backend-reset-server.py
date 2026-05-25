@@ -28,7 +28,7 @@ import os
 import subprocess
 import sys
 import time
-from typing import Optional
+from typing import List, Optional
 
 RESET_PORT    = int(os.environ.get("RESET_PORT", "9999"))
 WEBADMIN_PORT = int(os.environ.get("WEBADMIN_PORT", "8000"))
@@ -49,11 +49,11 @@ _TEST_DOMAIN = "example.com"
 _BOB_USER = "bob@example.com"
 
 
-def _run(cmd: list[str], check: bool = False) -> subprocess.CompletedProcess:
+def _run(cmd: List[str], check: bool = False) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, check=check, capture_output=True, text=True)
 
 
-def _webadmin(method: str, path: str, data: str | None = None) -> dict:
+def _webadmin(method: str, path: str, data: Optional[str] = None) -> dict:
     """Call the James WebAdmin API inside the container via docker exec curl."""
     cmd = [
         "curl", "-s", "-X", method,
@@ -158,20 +158,33 @@ def reset_backend() -> None:
 
 
 class ResetHandler(http.server.BaseHTTPRequestHandler):
+    def _send_cors_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "content-type")
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self._send_cors_headers()
+        self.end_headers()
+
     def do_POST(self):
         if self.path != "/reset":
             self.send_response(404)
+            self._send_cors_headers()
             self.end_headers()
             return
 
         try:
             reset_backend()
             self.send_response(200)
+            self._send_cors_headers()
             self.end_headers()
             self.wfile.write(b"ok")
         except Exception as exc:
             print(f"[reset-server] ERROR: {exc}", file=sys.stderr, flush=True)
             self.send_response(500)
+            self._send_cors_headers()
             self.end_headers()
             self.wfile.write(str(exc).encode())
 
