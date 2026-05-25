@@ -4,6 +4,40 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 void main() {
+  group('PreferencesSetting.isCollapseThreadsEnabled', () {
+    test('true when both thread and collapse are enabled', () {
+      final s = PreferencesSetting([
+        ThreadDetailConfig(isEnabled: true),
+        CollapseThreadConfig(isEnabled: true),
+      ]);
+      expect(s.isCollapseThreadsEnabled, isTrue);
+    });
+
+    test('false when thread is disabled', () {
+      final s = PreferencesSetting([
+        ThreadDetailConfig(isEnabled: false),
+        CollapseThreadConfig(isEnabled: true),
+      ]);
+      expect(s.isCollapseThreadsEnabled, isFalse);
+    });
+
+    test('false when collapse is disabled', () {
+      final s = PreferencesSetting([
+        ThreadDetailConfig(isEnabled: true),
+        CollapseThreadConfig(isEnabled: false),
+      ]);
+      expect(s.isCollapseThreadsEnabled, isFalse);
+    });
+
+    test('false when both are disabled', () {
+      final s = PreferencesSetting([
+        ThreadDetailConfig(isEnabled: false),
+        CollapseThreadConfig(isEnabled: false),
+      ]);
+      expect(s.isCollapseThreadsEnabled, isFalse);
+    });
+  });
+
   group('PreferencesSetting.collapseThreadConfig', () {
     test('returns CollapseThreadConfig when present in configs', () {
       final config = CollapseThreadConfig(isEnabled: true);

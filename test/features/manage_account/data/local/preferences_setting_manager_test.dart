@@ -55,6 +55,19 @@ void main() {
         final setting = await manager.loadPreferences();
         expect(setting.configs.isEmpty, isFalse);
       });
+
+      test('skips corrupt JSON entries and returns remaining configs', () async {
+        await prefs.setString(
+          _threadKey,
+          jsonEncode(ThreadDetailConfig(isEnabled: true).toJson()),
+        );
+        await prefs.setString(_collapseThreadKey, 'not-valid-json{{{');
+
+        final setting = await manager.loadPreferences();
+
+        expect(setting.threadConfig.isEnabled, isTrue);
+        expect(setting.collapseThreadConfig.isEnabled, isFalse);
+      });
     });
 
     group('savePreferences', () {

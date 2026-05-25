@@ -4,6 +4,13 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/c
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+// Returns empty strings for all localization getters — used by smoke tests only.
+class _FakeL10n implements AppLocalizations {
+  @override
+  dynamic noSuchMethod(Invocation _) => '';
+}
 
 // All options that are standard (not experimental) and top-level (no parent).
 // collapseThread is the only exception: experimental + child.
@@ -36,7 +43,43 @@ PreferencesVisibilityContext _serverCtx({
   isLabelVisibility: false,
 );
 
+final _fakeL10n = _FakeL10n();
+
+final _smokeCtx = _ctx(
+  isExperimentalEnabled: true,
+  isAIScribeAvailable: true,
+  isLabelVisibility: true,
+  localSettings: PreferencesSetting.initial(),
+);
+
 void main() {
+  group('smoke: all enum values covered by maps', () {
+    for (final type in PreferencesOptionType.values) {
+      test('${type.name}: getTitle does not throw', () {
+        expect(() => type.getTitle(_fakeL10n), returnsNormally);
+      });
+
+      test('${type.name}: getExplanation does not throw', () {
+        expect(() => type.getExplanation(_fakeL10n), returnsNormally);
+      });
+
+      test('${type.name}: getToggleDescription does not throw', () {
+        expect(() => type.getToggleDescription(_fakeL10n), returnsNormally);
+      });
+
+      test('${type.name}: isEnabled does not throw', () {
+        expect(
+          () => type.isEnabled(null, PreferencesSetting.initial()),
+          returnsNormally,
+        );
+      });
+
+      test('${type.name}: isVisible does not throw', () {
+        expect(() => type.isVisible(_smokeCtx), returnsNormally);
+      });
+    }
+  });
+
   group('collapseThread is experimental and a child of thread', () {
     test('isExperimental is true', () {
       expect(PreferencesOptionType.collapseThread.isExperimental, isTrue);
