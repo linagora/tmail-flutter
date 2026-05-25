@@ -30,7 +30,11 @@ class ResponsiveTableCellTransformer extends DomTransformer {
 
       for (final cell in cells) {
         final currentStyle = cell.attributes['style'] ?? '';
-        if (currentStyle.contains('overflow-wrap')) continue;
+        final hasOverflowWrapDeclaration = RegExp(
+          r'(^|;)\s*overflow-wrap\s*:',
+          caseSensitive: false,
+        ).hasMatch(currentStyle);
+        if (hasOverflowWrapDeclaration) continue;
 
         final trimmed = currentStyle.trimRight();
         final separator = trimmed.isEmpty ? '' : (trimmed.endsWith(';') ? ' ' : '; ');

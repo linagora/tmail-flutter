@@ -65,6 +65,39 @@ void main() {
       );
     });
 
+    group('does not add overflow-wrap: anywhere when the property is already declared', () {
+      const existingDeclarationCases = {
+        'declared after other properties': 'color: red; overflow-wrap: break-word; padding: 4px;',
+        'declared using uppercase letters': 'OVERFLOW-WRAP: break-word;',
+      };
+
+      for (final MapEntry(:key, :value) in existingDeclarationCases.entries) {
+        test(key, () async {
+          final doc = await run(
+            '<table><tr><td style="$value">url</td></tr></table>',
+          );
+          final style = doc.querySelector('td')!.attributes['style']!;
+          expect(
+            RegExp(r'overflow-wrap\s*:\s*anywhere').hasMatch(style),
+            isFalse,
+            reason: 'Existing overflow-wrap declaration must be detected and must not be appended again',
+          );
+        });
+      }
+    });
+
+    test('appends overflow-wrap when style contains overflow-wrap only inside a custom property name', () async {
+      final doc = await run(
+        '<table><tr><td style="--custom-overflow-wrap: 1;">text</td></tr></table>',
+      );
+      final style = doc.querySelector('td')!.attributes['style']!;
+      expect(
+        style,
+        contains('overflow-wrap: anywhere'),
+        reason: 'A custom property name containing overflow-wrap must not prevent the declaration from being added',
+      );
+    });
+
     test('processes all td and th elements in the document', () async {
       final doc = await run('''
         <table>
@@ -106,6 +139,20 @@ void main() {
         'overflow-wrap'.allMatches(style).length,
         1,
         reason: 'overflow-wrap must appear exactly once even after multiple passes',
+      );
+    });
+
+    test('is idempotent when cell already has a custom property whose name contains overflow-wrap', () async {
+      final doc = parse(
+        '<table><tr><td style="--custom-overflow-wrap: 1;">text</td></tr></table>',
+      );
+      await transformer.process(document: doc, dioClient: dioClient);
+      await transformer.process(document: doc, dioClient: dioClient);
+      final style = doc.querySelector('td')!.attributes['style']!;
+      expect(
+        RegExp(r'overflow-wrap\s*:\s*anywhere').allMatches(style).length,
+        1,
+        reason: 'overflow-wrap: anywhere must appear exactly once even when a custom property name contains the substring',
       );
     });
 
