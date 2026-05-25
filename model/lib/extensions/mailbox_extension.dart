@@ -16,6 +16,8 @@ extension MailboxExtension on Mailbox {
 
   bool get isSent => role == PresentationMailbox.roleSent;
 
+  bool get isInbox => role == PresentationMailbox.roleInbox;
+
   bool get isOutbox => name?.name == PresentationMailbox.outboxRole || role == PresentationMailbox.roleOutbox;
 
   bool get pushNotificationDeactivated => isOutbox || isSent || isDrafts || isTrash || isSpam;

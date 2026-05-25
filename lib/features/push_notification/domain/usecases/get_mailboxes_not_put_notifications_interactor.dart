@@ -14,7 +14,7 @@ class GetMailboxesNotPutNotificationsInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId) async* {
     try {
       yield Right<Failure, Success>(GetMailboxesNotPutNotificationsLoading());
-      final mailboxes = await _fcmRepository.getMailboxesNotPutNotifications(session, accountId);
+      final mailboxes = await _fcmRepository.getMailboxesForNotification(session, accountId);
       yield Right<Failure, Success>(GetMailboxesNotPutNotificationsSuccess(mailboxes, session.username));
     } catch (e) {
       yield Left<Failure, Success>(GetMailboxesNotPutNotificationsFailure(e, session.username));

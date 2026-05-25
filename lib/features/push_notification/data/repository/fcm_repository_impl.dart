@@ -125,24 +125,32 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<List<PresentationMailbox>> getMailboxesNotPutNotifications(Session session, AccountId accountId) async {
-    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username);
-    final mailboxesCacheNotPutNotifications = mailboxesCache
-      .map((mailbox) => mailbox.toPresentationMailbox())
-      .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
-      .toList();
-    log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesCacheNotPutNotifications: $mailboxesCacheNotPutNotifications');
-    if (mailboxesCacheNotPutNotifications.isNotEmpty) {
-      return mailboxesCacheNotPutNotifications;
-    } else {
-      final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
-      final mailboxesNotPutNotifications = mailboxResponse.mailboxes
-        .map((mailbox) => mailbox.toPresentationMailbox())
-        .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
-        .toList();
-      log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesNotPutNotifications: $mailboxesNotPutNotifications');
-      return mailboxesNotPutNotifications;
+  Future<List<PresentationMailbox>> getMailboxesForNotification(
+    Session session,
+    AccountId accountId,
+  ) async {
+    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!
+        .getAllMailboxCache(accountId, session.username);
+
+    // Use inbox presence as a cache quality signal; if inbox is cached,
+    // the full mailbox structure is reliably available locally.
+    if (mailboxesCache.any((m) => m.isInbox)) {
+      final excluded = mailboxesCache
+          .map((m) => m.toPresentationMailbox())
+          .where((m) => m.pushNotificationDeactivated)
+          .toList();
+      log('FCMRepositoryImpl::getMailboxesForNotification(): cache hit — excluded=${excluded.length}');
+      return excluded;
     }
+
+    final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!
+        .getAllMailbox(session, accountId);
+    final excluded = mailboxResponse.mailboxes
+        .map((m) => m.toPresentationMailbox())
+        .where((m) => m.pushNotificationDeactivated)
+        .toList();
+    log('FCMRepositoryImpl::getMailboxesForNotification(): network fetch — excluded=${excluded.length}');
+    return excluded;
   }
 
   @override
