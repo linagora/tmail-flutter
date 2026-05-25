@@ -63,7 +63,7 @@ class FcmReceiver {
       } catch (e, st) {
         if (attempt < MAX_COUNT_RETRY_TO_GET_FCM_TOKEN) {
           logWarning('FcmReceiver::_getInitialToken: attempt $attempt failed: $e');
-          await Future.delayed(Duration(seconds: attempt));
+          await Future.delayed(Duration(seconds: 1 << (attempt - 1)));
         } else {
           logError(
             'FcmReceiver::_getInitialToken: all $MAX_COUNT_RETRY_TO_GET_FCM_TOKEN attempts failed',
