@@ -35,7 +35,9 @@ class ExperimentalModeNotifier extends StateNotifier<bool> {
     final result = await _enableInteractor.execute();
     result.fold(
       (_) {},
-      (_) => state = true,
+      (success) {
+        if (success is EnableExperimentalModeSuccess) state = true;
+      },
     );
   }
 }

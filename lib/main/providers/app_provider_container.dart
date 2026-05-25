@@ -18,6 +18,7 @@ ProviderContainer get appProviderContainer {
 }
 
 void initAppProviderContainer(SharedPreferences prefs) {
+  if (_appProviderContainer != null) return;
   _appProviderContainer = ProviderContainer(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
