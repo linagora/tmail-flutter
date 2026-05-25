@@ -64,8 +64,10 @@ enum PreferencesOptionType {
   // CHECKLIST: when adding a new PreferencesOptionType value, add an entry here.
   _OptionStrings _strings(AppLocalizations l) {
     final fn = _stringBuilders[this];
-    assert(fn != null, 'PreferencesOptionType.$name missing from _stringBuilders');
-    return fn!(l);
+    if (fn == null) {
+      throw StateError('PreferencesOptionType.$name missing from _stringBuilders');
+    }
+    return fn(l);
   }
 
   String getTitle(AppLocalizations l) => _strings(l).title;
@@ -95,7 +97,9 @@ enum PreferencesOptionType {
     PreferencesSetting preferencesSetting,
   ) {
     final fn = _enabledResolvers[this];
-    assert(fn != null, 'PreferencesOptionType.$name missing from _enabledResolvers');
-    return fn!(settingOption, preferencesSetting);
+    if (fn == null) {
+      throw StateError('PreferencesOptionType.$name missing from _enabledResolvers');
+    }
+    return fn(settingOption, preferencesSetting);
   }
 }

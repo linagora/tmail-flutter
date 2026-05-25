@@ -125,8 +125,11 @@ class PreferencesSettingManager {
   }) async {
     await _sharedPreferences.reload();
     final jsonString = _sharedPreferences.getString(key);
-    return jsonString == null
-        ? defaultFactory()
-        : fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
+    if (jsonString == null) return defaultFactory();
+    try {
+      return fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
+    } catch (_) {
+      return defaultFactory();
+    }
   }
 }
