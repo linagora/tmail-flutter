@@ -5181,6 +5181,13 @@ class AppLocalizations {
     );
   }
 
+  String get experimentalFeaturesEnabled {
+    return Intl.message(
+      'Experimental features enabled',
+      name: 'experimentalFeaturesEnabled',
+    );
+  }
+
   String showMoreAttachmentButton(int count) {
     return Intl.message(
       'Show +$count more',

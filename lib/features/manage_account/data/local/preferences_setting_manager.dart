@@ -120,7 +120,7 @@ class PreferencesSettingManager {
       );
 
   Future<bool> getExperimentalModeEnabled() async {
-    // Write-once flag — no reload needed.
+    await _sharedPreferences.reload();
     return _sharedPreferences.getBool(_experimentalModeKey) ?? false;
   }
 

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-04-17T18:25:40.778609",
+  "@@last_modified": "2026-05-25T10:48:23.465659",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4894,6 +4894,12 @@
   },
   "aiScribeToggleDescription": "Enable AI Scribe",
   "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "experimentalFeaturesEnabled": "Experimental features enabled",
+  "@experimentalFeaturesEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
