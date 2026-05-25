@@ -4,7 +4,7 @@ import '../../scenarios/composer/open_insert_link_dialog_via_keyboard_shortcut_s
 
 void main() {
   TestBase().runPatrolTest(
-    description: 'Should open custom insert-link dialog when pressing Ctrl+K / Cmd+K in the composer editor',
+    description: 'Should open custom insert-link dialog when pressing Ctrl+K or Cmd+K in the composer editor',
     scenarioBuilder: ($, robots) =>
         OpenInsertLinkDialogViaKeyboardShortcutScenario($, robots),
     tags: [TestTags.web],
