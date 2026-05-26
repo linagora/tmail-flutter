@@ -39,8 +39,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     Object error,
     DioException originalError,
     ErrorInterceptorHandler handler,
-  ) _propagateRefreshError =
-      PlatformInfo.isWeb ? _propagateRefreshErrorOnWeb : _propagateRefreshErrorOnMobile;
+  ) _handleRefreshError =
+      PlatformInfo.isWeb ? _handleRefreshErrorOnWeb : _handleRefreshErrorOnMobile;
 
   AuthorizationInterceptors(
     this._dio,
@@ -137,58 +137,50 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         stackTrace: stackTrace,
         webConsoleEnabled: true,
       );
-      return _propagateRefreshError(e, err, handler);
+      return _handleRefreshError(e, err, handler);
     }
   }
 
-  /// Web: end the session ONLY when the auth server actually responded (the
-  /// grant was rejected or the returned token was invalid) — the original 401
-  /// is preserved so [RemoteExceptionThrower] classifies it as
-  /// [BadCredentialsException] → logout.
-  ///
   /// A failure with NO server response (network/transport drop, timeout) keeps
   /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
   /// a flaky connection does not log the web user out.
-  void _propagateRefreshErrorOnWeb(
+  void _handleRefreshErrorOnWeb(
     Object error,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
     if (_isWebRefreshRejectedByServer(error)) {
       logWarning(
-        'AuthorizationInterceptors::_propagateRefreshErrorOnWeb: '
+        'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
         'web refresh rejected by server, ending session — error=$error',
         webConsoleEnabled: true,
       );
       return super.onError(originalError.copyWith(error: error), handler);
     }
     logWarning(
-      'AuthorizationInterceptors::_propagateRefreshErrorOnWeb: '
+      'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
       'web refresh network/transient failure, keeping session — error=$error',
       webConsoleEnabled: true,
     );
-    return _propagateRefreshErrorOnMobile(error, originalError, handler);
+    return _handleRefreshErrorOnMobile(error, originalError, handler);
   }
 
-  /// Whether a web refresh/retry failure came WITH a server response (grant
-  /// rejected or token invalid) as opposed to a network/transport failure.
+  /// Whether a web REFRESH failure came WITH a server response (grant rejected
+  /// or token invalid) as opposed to a network/transport failure.
   ///
   /// flutter_appauth_web throws [ArgumentError] only after parsing a non-200
   /// token response, and [AccessTokenInvalidException] after a 200 that yields
-  /// an invalid token — both mean the server responded. A Dio retry that came
-  /// back with an HTTP status likewise responded. Everything else (no
+  /// an invalid token — both mean the server responded. Everything else (no
   /// response: timeouts, transport errors, ServerError/TemporarilyUnavailable)
   /// is treated as a network failure → session kept.
   bool _isWebRefreshRejectedByServer(Object error) {
     return error is ArgumentError ||
         error is AccessTokenInvalidException ||
+        error is UnsupportedError || 
         (error is DioException && error.response != null);
   }
 
-  /// Mobile: never carry the stale 401 forward — propagate the real
-  /// error without a response so a network failure is not misread as bad
-  /// credentials and the user is kept signed in.
-  void _propagateRefreshErrorOnMobile(
+  void _handleRefreshErrorOnMobile(
     Object error,
     DioException originalError,
     ErrorInterceptorHandler handler,
@@ -198,6 +190,28 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
     return super.onError(
       error.toDioException(requestOptions: originalError.requestOptions),
+      handler,
+    );
+  }
+
+  /// A retry that comes back 401 then surfaces downstream as
+  /// [BadCredentialsException]; a 5xx/network retry failure is propagated
+  /// without forcing a logout.
+  void _handleRetryError(
+    Object retryError,
+    RequestOptions requestOptions,
+    ErrorInterceptorHandler handler,
+  ) {
+    logWarning(
+      'AuthorizationInterceptors::_handleRetryError: '
+      'retry with new token failed — error=$retryError',
+      webConsoleEnabled: true,
+    );
+    if (retryError is DioException) {
+      return super.onError(retryError, handler);
+    }
+    return super.onError(
+      retryError.toDioException(requestOptions: requestOptions),
       handler,
     );
   }
@@ -231,11 +245,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       requestOptions.extra[_refreshAttemptedKey] = true;
       return await _performRetry(requestOptions, err, handler);
     } on DioException catch (refreshError, st) {
-      // Mobile-only in practice: native AppAuth surfaces token-endpoint
-      // failures as DioException. On web, flutter_appauth_web flattens every
-      // non-200 to a non-Dio ArgumentError, so web never reaches this block —
-      // it falls to the outer catch → _propagateRefreshErrorOnWeb (logout).
-      // If web ever gains a Dio-based refresh, add a web guard here too.
+      // Web routes ALL refresh failures (Dio or non-Dio) through the single
+      // web handler, so the session decision is uniform regardless of how the
+      // failure surfaced. (In practice flutter_appauth_web throws a non-Dio
+      // ArgumentError, but a Dio-based refresh must behave identically.)
+      if (PlatformInfo.isWeb) {
+        return _handleRefreshError(refreshError, err, handler);
+      }
+      // Mobile: 400 → session dead (RefreshTokenFailedException); other
+      // statuses / no-response → network-tolerant via _handleDioRefreshError.
       if (refreshError.response?.statusCode == 400) {
         logWarning(
           'AuthorizationInterceptors: Refresh Token Failed 400 - error=$refreshError | stackTrace=$st',
@@ -270,11 +288,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final response = await _retryRequest(requestOptions, requestOptions.extra);
       return handler.resolve(response);
     } catch (retryError) {
-      logError(
-        'AuthorizationInterceptors::onError: '
-        'Retry failed with error=$retryError',
-      );
-      return _propagateRefreshError(retryError, originalErr, handler);
+      return _handleRetryError(retryError, originalErr.requestOptions, handler);
     }
   }
 

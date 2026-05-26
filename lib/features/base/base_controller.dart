@@ -258,7 +258,7 @@ abstract class BaseController extends GetxController
 
   void _performSaveAndReconnection() {
     if (PlatformInfo.isWeb) {
-      logWarning(
+      log(
         '$runtimeType::_performSaveAndReconnection: web save-and-reconnect path',
         webConsoleEnabled: true,
       );
@@ -477,13 +477,13 @@ abstract class BaseController extends GetxController
 
   void navigateToLoginPage() {
     if (Get.currentRoute == AppRoutes.login) {
-      logWarning(
+      log(
         '$runtimeType::navigateToLoginPage: SKIPPED — already on login route',
         webConsoleEnabled: true,
       );
       return;
     }
-    logWarning(
+    log(
       '$runtimeType::navigateToLoginPage: navigating to login from '
       'currentRoute=${Get.currentRoute}',
       webConsoleEnabled: true,
@@ -627,7 +627,7 @@ abstract class BaseController extends GetxController
     );
     SentryManager.instance.clearUser();
     await clearAllData();
-    logWarning(
+    log(
       '$runtimeType::clearDataAndGoToLoginPage: data cleared, calling removeAllPageAndGoToLogin',
       webConsoleEnabled: true,
     );
