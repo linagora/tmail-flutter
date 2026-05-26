@@ -336,6 +336,202 @@ void main() {
     });
 
     test(
+      'executeBatchSetEmail SHOULD rethrow DioException with 401 status — '
+      'stops processing and propagates for upstream auth handling',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            10, (index) => EmailId(Id('email_$index')));
+
+        httpClient.setError(
+          0,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            response: Response(
+              statusCode: 401,
+              requestOptions: RequestOptions(path: ''),
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        expect(
+          () => testMixin.executeBatchSetEmail(
+            session: session,
+            accountId: AccountFixtures.aliceAccountId,
+            emailIds: emailIds,
+            httpClient: httpClient,
+            onGenerateUpdates: (batchIds) =>
+                {for (final id in batchIds) id.id: PatchObject({})},
+          ),
+          throwsA(isA<DioException>().having(
+            (e) => e.response?.statusCode,
+            'statusCode',
+            401,
+          )),
+        );
+      },
+    );
+
+    test(
+      'executeBatchSetEmail SHOULD rethrow DioException with 401 in a later batch — '
+      'does not return partial results',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            20, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: Success
+        httpClient.setResponse(0, {
+          'sessionState': 'session_state',
+          'methodResponses': [
+            [
+              'Email/set',
+              {
+                'accountId': AccountFixtures.aliceAccountId.id.value,
+                'updated': {for (var i = 0; i < 10; i++) 'email_$i': null},
+              },
+              'c0',
+            ]
+          ]
+        });
+
+        // Batch 2: 401
+        httpClient.setError(
+          1,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            response: Response(
+              statusCode: 401,
+              requestOptions: RequestOptions(path: ''),
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        expect(
+          () => testMixin.executeBatchSetEmail(
+            session: session,
+            accountId: AccountFixtures.aliceAccountId,
+            emailIds: emailIds,
+            httpClient: httpClient,
+            onGenerateUpdates: (batchIds) =>
+                {for (final id in batchIds) id.id: PatchObject({})},
+          ),
+          throwsA(isA<DioException>().having(
+            (e) => e.response?.statusCode,
+            'statusCode',
+            401,
+          )),
+        );
+      },
+    );
+
+    test(
+      'executeBatchSetEmail should NOT rethrow DioException with non-401 status — '
+      'continues processing remaining batches',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            20, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: 500 error — should be swallowed
+        httpClient.setError(
+          0,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            response: Response(
+              statusCode: 500,
+              requestOptions: RequestOptions(path: ''),
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        // Batch 2: Success
+        httpClient.setResponse(1, {
+          'sessionState': 'session_state',
+          'methodResponses': [
+            [
+              'Email/set',
+              {
+                'accountId': AccountFixtures.aliceAccountId.id.value,
+                'updated': {for (var i = 10; i < 20; i++) 'email_$i': null},
+              },
+              'c0',
+            ]
+          ]
+        });
+
+        final result = await testMixin.executeBatchSetEmail(
+          session: session,
+          accountId: AccountFixtures.aliceAccountId,
+          emailIds: emailIds,
+          httpClient: httpClient,
+          onGenerateUpdates: (batchIds) =>
+              {for (final id in batchIds) id.id: PatchObject({})},
+        );
+
+        expect(result.emailIdsSuccess.length, 10);
+        expect(httpClient.postCallCount, 2);
+      },
+    );
+
+    test(
+      'executeBatchSetEmail should NOT rethrow DioException with no response (network error) — '
+      'continues processing remaining batches',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            20, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: Network error (no response) — should be swallowed
+        httpClient.setError(
+          0,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            type: DioExceptionType.connectionTimeout,
+          ),
+        );
+
+        // Batch 2: Success
+        httpClient.setResponse(1, {
+          'sessionState': 'session_state',
+          'methodResponses': [
+            [
+              'Email/set',
+              {
+                'accountId': AccountFixtures.aliceAccountId.id.value,
+                'updated': {for (var i = 10; i < 20; i++) 'email_$i': null},
+              },
+              'c0',
+            ]
+          ]
+        });
+
+        final result = await testMixin.executeBatchSetEmail(
+          session: session,
+          accountId: AccountFixtures.aliceAccountId,
+          emailIds: emailIds,
+          httpClient: httpClient,
+          onGenerateUpdates: (batchIds) =>
+              {for (final id in batchIds) id.id: PatchObject({})},
+        );
+
+        expect(result.emailIdsSuccess.length, 10);
+        expect(httpClient.postCallCount, 2);
+      },
+    );
+
+    test(
       'executeBatchSetEmail should continue processing subsequent batches even when one batch throws an exception',
       () async {
         // Setup: 3 batches of 10 emails each (Total 30)

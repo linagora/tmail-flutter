@@ -1,6 +1,7 @@
 import 'dart:math' hide log;
 
 import 'package:core/utils/app_logger.dart';
+import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -74,6 +75,7 @@ mixin BatchSetEmailProcessingMixin
         logWarning(
           'BatchSetEmailProcessingMixin::$debugLabel: Error processing batch ${start + 1}-$end: $e',
         );
+        if (e is DioException && e.response?.statusCode == 401) rethrow;
       }
     }
 
