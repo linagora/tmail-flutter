@@ -2795,11 +2795,13 @@ void main() {
   });
 
   // ============================================================
-  // onError: WEB refresh failures (legacy pre-TF-4081 behaviour)
-  // Web logs out on ANY refresh/retry failure by preserving the original
-  // 401 response → BadCredentialsException downstream → login.
+  // onError: WEB refresh failures
+  // Server rejection (got a response: ArgumentError / AccessTokenInvalid /
+  // Dio retry with response) → preserve original 401 → logout.
+  // Network/transport failure (no response) → keep session (carve-out),
+  // so a flaky connection does NOT log the web user out.
   // ============================================================
-  group('onError: web refresh failure forces logout (legacy)', () {
+  group('onError: web refresh failure handling', () {
     setUp(() => PlatformInfo.isTestingForWeb = true);
     tearDown(() => PlatformInfo.isTestingForWeb = false);
 
@@ -2954,6 +2956,85 @@ void main() {
             return e.response?.statusCode == responseStatusCode401 &&
                 e.error is DioException;
           })),
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh fails with a network DioException (no response) on web\n'
+      'THEN session is KEPT — propagated error has NO HTTP response (no logout)\n'
+      'AND OIDC state is NOT cleared (carve-out vs bad network)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+        );
+
+        final refreshNetworkError = DioException(
+          requestOptions: RequestOptions(path: '/token'),
+          type: DioExceptionType.connectionError,
+        );
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(refreshNetworkError);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) => e.response == null)),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh fails with a non-Dio transport error (e.g. ClientException) on web\n'
+      'THEN session is KEPT — propagated error has NO HTTP response (no logout)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+        );
+
+        // Simulates package:http throwing on a browser network drop (no
+        // server response was ever received).
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(Exception('XMLHttpRequest error'));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is Exception;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
         );
       },
     );

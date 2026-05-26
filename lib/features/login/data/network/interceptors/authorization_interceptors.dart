@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart' show AccessTokenInvalidException;
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -133,26 +133,48 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
   }
 
-  /// Web: preserve the original 401 response so
-  /// [RemoteExceptionThrower] classifies it as [BadCredentialsException] and
-  /// the user is logged out to login. Any refresh/retry failure ends the
-  /// session.
+  /// Web: end the session ONLY when the auth server actually responded (the
+  /// grant was rejected or the returned token was invalid) — the original 401
+  /// is preserved so [RemoteExceptionThrower] classifies it as
+  /// [BadCredentialsException] → logout.
+  ///
+  /// A failure with NO server response (network/transport drop, timeout) keeps
+  /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
+  /// a flaky connection does not log the web user out.
   void _propagateRefreshErrorOnWeb(
     Object error,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
+    if (_isWebRefreshRejectedByServer(error)) {
+      logWarning(
+        'AuthorizationInterceptors::_propagateRefreshErrorOnWeb: '
+        'web refresh rejected by server, ending session — error=$error',
+        webConsoleEnabled: true,
+      );
+      return super.onError(originalError.copyWith(error: error), handler);
+    }
     logWarning(
       'AuthorizationInterceptors::_propagateRefreshErrorOnWeb: '
-      'web refresh/retry failed, ending session — error=$error',
+      'web refresh network/transient failure, keeping session — error=$error',
+      webConsoleEnabled: true,
     );
-    if (error is ServerError || error is TemporarilyUnavailable) {
-      return super.onError(
-        DioException(requestOptions: originalError.requestOptions, error: error),
-        handler,
-      );
-    }
-    return super.onError(originalError.copyWith(error: error), handler);
+    return _propagateRefreshErrorOnMobile(error, originalError, handler);
+  }
+
+  /// Whether a web refresh/retry failure came WITH a server response (grant
+  /// rejected or token invalid) as opposed to a network/transport failure.
+  ///
+  /// flutter_appauth_web throws [ArgumentError] only after parsing a non-200
+  /// token response, and [AccessTokenInvalidException] after a 200 that yields
+  /// an invalid token — both mean the server responded. A Dio retry that came
+  /// back with an HTTP status likewise responded. Everything else (no
+  /// response: timeouts, transport errors, ServerError/TemporarilyUnavailable)
+  /// is treated as a network failure → session kept.
+  bool _isWebRefreshRejectedByServer(Object error) {
+    return error is ArgumentError ||
+        error is AccessTokenInvalidException ||
+        (error is DioException && error.response != null);
   }
 
   /// Mobile: never carry the stale 401 forward — propagate the real
