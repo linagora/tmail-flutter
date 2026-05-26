@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 
 typedef OnGeneratePatchObjectUpdates = Map<Id, PatchObject> Function(
   List<EmailId> batchIds,
@@ -71,11 +72,12 @@ mixin BatchSetEmailProcessingMixin
         } else {
           throw Exception('SetEmailResponse is null');
         }
-      } catch (e) {
-        logWarning(
-          'BatchSetEmailProcessingMixin::$debugLabel: Error processing batch ${start + 1}-$end: $e',
+      } catch (e, stackTrace) {
+        _handleBatchSetEmailErrors(
+          e,
+          stackTrace,
+          '$debugLabel: batch ${start + 1}-$end',
         );
-        if (e is DioException && e.response?.statusCode == 401) rethrow;
       }
     }
 
@@ -85,6 +87,31 @@ mixin BatchSetEmailProcessingMixin
     }
 
     return (emailIdsSuccess: updatedEmailIds, mapErrors: finalMapErrors);
+  }
+
+  bool _isSessionTerminatedError(Object error) {
+    return error is DioException &&
+        (error.response?.statusCode == 401 ||
+            error.error is RefreshTokenFailedException);
+  }
+
+  void _handleBatchSetEmailErrors(
+    Object error,
+    StackTrace stackTrace,
+    String batchContext,
+  ) {
+    if (_isSessionTerminatedError(error)) {
+      logError(
+        'BatchSetEmailProcessingMixin::$batchContext: session terminated: $error',
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      throw error;
+    } else {
+      logWarning(
+        'BatchSetEmailProcessingMixin::$batchContext: Error processing batch: $error',
+      );
+    }
   }
 
   Future<SetEmailResponse?> _executeSetEmailBatch({

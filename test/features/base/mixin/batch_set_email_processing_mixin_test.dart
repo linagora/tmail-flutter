@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mix
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -428,6 +429,140 @@ void main() {
             401,
           )),
         );
+      },
+    );
+
+    test(
+      'executeBatchSetEmail SHOULD rethrow DioException wrapping RefreshTokenFailedException — '
+      'treated as session terminated even without a 401 status',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            10, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: DioException carrying a RefreshTokenFailedException.
+        // Note: status code is NOT 401 — the refresh-token branch must trigger.
+        httpClient.setError(
+          0,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            error: RefreshTokenFailedException(),
+            type: DioExceptionType.unknown,
+          ),
+        );
+
+        expect(
+          () => testMixin.executeBatchSetEmail(
+            session: session,
+            accountId: AccountFixtures.aliceAccountId,
+            emailIds: emailIds,
+            httpClient: httpClient,
+            onGenerateUpdates: (batchIds) =>
+                {for (final id in batchIds) id.id: PatchObject({})},
+          ),
+          throwsA(isA<DioException>().having(
+            (e) => e.error,
+            'error',
+            isA<RefreshTokenFailedException>(),
+          )),
+        );
+      },
+    );
+
+    test(
+      'executeBatchSetEmail SHOULD rethrow DioException wrapping RefreshTokenFailedException in a later batch — '
+      'does not return partial results',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            20, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: Success
+        httpClient.setResponse(0, {
+          'sessionState': 'session_state',
+          'methodResponses': [
+            [
+              'Email/set',
+              {
+                'accountId': AccountFixtures.aliceAccountId.id.value,
+                'updated': {for (var i = 0; i < 10; i++) 'email_$i': null},
+              },
+              'c0',
+            ]
+          ]
+        });
+
+        // Batch 2: refresh token failed
+        httpClient.setError(
+          1,
+          DioException(
+            requestOptions: RequestOptions(path: ''),
+            error: RefreshTokenFailedException(),
+            type: DioExceptionType.unknown,
+          ),
+        );
+
+        expect(
+          () => testMixin.executeBatchSetEmail(
+            session: session,
+            accountId: AccountFixtures.aliceAccountId,
+            emailIds: emailIds,
+            httpClient: httpClient,
+            onGenerateUpdates: (batchIds) =>
+                {for (final id in batchIds) id.id: PatchObject({})},
+          ),
+          throwsA(isA<DioException>().having(
+            (e) => e.error,
+            'error',
+            isA<RefreshTokenFailedException>(),
+          )),
+        );
+      },
+    );
+
+    test(
+      'executeBatchSetEmail should NOT rethrow a bare RefreshTokenFailedException '
+      '(not wrapped in DioException) — session-terminated detection requires a DioException',
+      () async {
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            20, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1: bare exception (not a DioException) — should be swallowed
+        httpClient.setError(0, RefreshTokenFailedException());
+
+        // Batch 2: Success
+        httpClient.setResponse(1, {
+          'sessionState': 'session_state',
+          'methodResponses': [
+            [
+              'Email/set',
+              {
+                'accountId': AccountFixtures.aliceAccountId.id.value,
+                'updated': {for (var i = 10; i < 20; i++) 'email_$i': null},
+              },
+              'c0',
+            ]
+          ]
+        });
+
+        final result = await testMixin.executeBatchSetEmail(
+          session: session,
+          accountId: AccountFixtures.aliceAccountId,
+          emailIds: emailIds,
+          httpClient: httpClient,
+          onGenerateUpdates: (batchIds) =>
+              {for (final id in batchIds) id.id: PatchObject({})},
+        );
+
+        expect(result.emailIdsSuccess.length, 10);
+        expect(httpClient.postCallCount, 2);
       },
     );
 
