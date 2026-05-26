@@ -648,7 +648,10 @@ class ThreadController extends BaseController with EmailActionController {
     log('ThreadController::_handleOnDoneGetAllEmailSuccess: EmailCount = ${emailList.length}');
     final hasMore = emailList.length >= ThreadConstants.maxCountEmails;
     canLoadMore = hasMore;
-    if (_isAutoLoadMore && hasMore) {
+    if (_isAutoLoadMore && emailList.isNotEmpty) {
+      // collapseThreads can return < limit; re-enable so _loadMoreEmails guard passes.
+      // _loadMoreEmailsSuccess will reset canLoadMore from serverEmailCount afterward.
+      canLoadMore = true;
       _performAutomaticallyLoadMoreEmails();
     }
   }
