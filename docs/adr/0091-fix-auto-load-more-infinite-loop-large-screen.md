@@ -21,11 +21,15 @@ Root cause: the condition `maxScrollExtent <= viewportDimension` is equivalent t
 
 **Non-web:** Change auto-load threshold from `maxScrollExtent <= viewportDimension` to `maxScrollExtent <= 0` — trigger only when content has not yet filled the viewport.
 
-**Web:** Change estimated-height check from `totalHeight <= viewport` to `totalHeight < viewport` (strict) to avoid an extra load at the exact boundary.
+**Web:** Change estimated-height check from `totalHeightListEmails > 0 && totalHeightListEmails <= browserInnerHeight` to strict `totalHeight > 0 && totalHeight < viewportHeight` to avoid a spurious load when estimated height equals viewport height exactly.
 
-**Pagination:** Replace `canLoadMore = emailList.isNotEmpty` with `canLoadMore = emailList.length >= maxCountEmails`. A partial-page response means no more pages exist — no need to show Load More or make an empty request.
+**Pagination — initial load:** Replace `canLoadMore = emailList.isNotEmpty` with `canLoadMore = emailList.length >= maxCountEmails`. A partial-page response signals the last page — no further requests needed.
 
-Both detection methods extracted into `AutoLoadMorePolicy` for testability.
+**Pagination — load more:** Replace `canLoadMore = emailList.isNotEmpty` with `canLoadMore = serverEmailCount >= maxCountEmails`. For load-more, the repository removes the pagination-cursor email (last email of the previous page) from the response before returning, so `emailList.length` is always `maxCountEmails - 1` for a full page and would never satisfy `>= maxCountEmails`. `serverEmailCount` is captured before that removal and correctly reflects the server's actual response size.
+
+In both pagination paths, `canLoadMore` is now set unconditionally before the auto-load decision — not only in the `else` branch — ensuring the flag is always accurate regardless of whether auto-load fires.
+
+The two scroll-detection methods are extracted into `AutoLoadMorePolicy` for testability.
 
 ## Consequences
 
