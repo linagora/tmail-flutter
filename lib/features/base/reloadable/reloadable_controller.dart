@@ -157,11 +157,20 @@ abstract class ReloadableController extends BaseController {
         exception is NotFoundSessionException) {
       logError(
         '$runtimeType::handleGetSessionFailure: '
-        'forcing logout — session definitively dead',
+        'forcing logout — session definitively dead — '
+        'exception=${exception.runtimeType}',
         exception: exception,
         stackTrace: StackTrace.current,
+        webConsoleEnabled: true,
       );
       clearDataAndGoToLoginPage();
+    } else {
+      logWarning(
+        '$runtimeType::handleGetSessionFailure: NOT logging out — '
+        'exception=${exception.runtimeType} not in {BadCredentials, '
+        'RefreshTokenFailed, NotFoundSession}',
+        webConsoleEnabled: true,
+      );
     }
   }
 

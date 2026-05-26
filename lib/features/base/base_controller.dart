@@ -187,7 +187,11 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    logWarning('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
+    logWarning(
+      '$runtimeType::handleUrgentExceptionOnWeb(): exception=${exception.runtimeType} | '
+      'failure=${failure.runtimeType}',
+      webConsoleEnabled: true,
+    );
     if (exception is NoNetworkError) {
       _handleNotNetworkErrorException();
     } else if (exception is ConnectionError) {
@@ -196,6 +200,12 @@ abstract class BaseController extends GetxController
       handleBadCredentialsException();
     } else if (exception is RefreshTokenFailedException) {
       handleRefreshTokenFailedException();
+    } else {
+      logWarning(
+        '$runtimeType::handleUrgentExceptionOnWeb(): NO branch matched — '
+        'will NOT navigate to login. exception=${exception.runtimeType}',
+        webConsoleEnabled: true,
+      );
     }
   }
 
@@ -205,6 +215,7 @@ abstract class BaseController extends GetxController
     logError(
       '$runtimeType::_executeBeforeReconnectAndLogOut: '
       'forcing logout after web save-and-reconnect (urgent auth failure)',
+      webConsoleEnabled: true,
     );
     clearDataAndGoToLoginPage();
   }
@@ -234,7 +245,10 @@ abstract class BaseController extends GetxController
   }
 
   void handleBadCredentialsException() {
-    log('$runtimeType::handleBadCredentialsException:');
+    log(
+      '$runtimeType::handleBadCredentialsException: hasComposer=${twakeAppManager.hasComposer}',
+      webConsoleEnabled: true,
+    );
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
@@ -244,6 +258,10 @@ abstract class BaseController extends GetxController
 
   void _performSaveAndReconnection() {
     if (PlatformInfo.isWeb) {
+      logWarning(
+        '$runtimeType::_performSaveAndReconnection: web save-and-reconnect path',
+        webConsoleEnabled: true,
+      );
       _executeBeforeReconnectAndLogOut();
     } else if (PlatformInfo.isMobile) {
       logError(
@@ -258,12 +276,16 @@ abstract class BaseController extends GetxController
     logError(
       '$runtimeType::_performReconnection: '
       'forcing logout (urgent auth failure, no composer to save)',
+      webConsoleEnabled: true,
     );
     clearDataAndGoToLoginPage();
   }
 
   void handleRefreshTokenFailedException() {
-    log('$runtimeType::handleRefreshTokenFailedException:');
+    log(
+      '$runtimeType::handleRefreshTokenFailedException: hasComposer=${twakeAppManager.hasComposer}',
+      webConsoleEnabled: true,
+    );
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
@@ -455,8 +477,17 @@ abstract class BaseController extends GetxController
 
   void navigateToLoginPage() {
     if (Get.currentRoute == AppRoutes.login) {
+      logWarning(
+        '$runtimeType::navigateToLoginPage: SKIPPED — already on login route',
+        webConsoleEnabled: true,
+      );
       return;
     }
+    logWarning(
+      '$runtimeType::navigateToLoginPage: navigating to login from '
+      'currentRoute=${Get.currentRoute}',
+      webConsoleEnabled: true,
+    );
     pushAndPopAll(
       AppRoutes.login,
       arguments: LoginArguments(LoginFormType.none));
@@ -590,9 +621,16 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
-    log('$runtimeType::clearDataAndGoToLoginPage:');
+    log(
+      '$runtimeType::clearDataAndGoToLoginPage: clearing data then routing to login',
+      webConsoleEnabled: true,
+    );
     SentryManager.instance.clearUser();
     await clearAllData();
+    logWarning(
+      '$runtimeType::clearDataAndGoToLoginPage: data cleared, calling removeAllPageAndGoToLogin',
+      webConsoleEnabled: true,
+    );
     removeAllPageAndGoToLogin();
   }
 

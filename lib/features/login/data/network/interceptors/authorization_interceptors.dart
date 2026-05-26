@@ -93,7 +93,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    logWarning('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    logWarning(
+      'AuthorizationInterceptors::onError(): DIO_ERROR = $err | '
+      'statusCode=${err.response?.statusCode} | authType=$_authenticationType',
+      webConsoleEnabled: true,
+    );
     try {
       final requestOptions = err.requestOptions;
       final hasAttemptedRefresh = requestOptions.extra[_refreshAttemptedKey] == true;
@@ -103,7 +107,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError: Request using old token, retry with updated token');
+        log(
+          'AuthorizationInterceptors::onError: Request using old token, retry with updated token',
+          webConsoleEnabled: true,
+        );
         return await _performRetry(requestOptions, err, handler);
       } else if (!hasAttemptedRefresh && validateToRefreshToken(
         responseStatusCode: err.response?.statusCode,
@@ -128,6 +135,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError:Exception: $e',
         exception: e,
         stackTrace: stackTrace,
+        webConsoleEnabled: true,
       );
       return _propagateRefreshError(e, err, handler);
     }
@@ -200,7 +208,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     ErrorInterceptorHandler handler,
   ) async {
     try {
-      log('AuthorizationInterceptors::onError: Perform get New Token');
+      log(
+        'AuthorizationInterceptors::onError: Perform get New Token',
+        webConsoleEnabled: true,
+      );
       final newTokenOidc = PlatformInfo.isIOS
         ? await _getNewTokenForIOSPlatform()
         : await _getNewTokenForOtherPlatform();
