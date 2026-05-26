@@ -155,6 +155,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'web refresh rejected by server, ending session — error=$error',
         webConsoleEnabled: true,
       );
+      clear();
       return super.onError(originalError.copyWith(error: error), handler);
     }
     logWarning(
