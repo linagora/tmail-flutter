@@ -986,6 +986,120 @@ void main() {
       });
     });
 
+    group('auto-load-more collapseThreads partial-page edge case test:', () {
+      final mailboxId = MailboxId(Id('inbox'));
+
+      List<PresentationEmail> makeEmails(int count) => List.generate(
+        count,
+        (i) => PresentationEmail(
+          id: EmailId(Id('ct$i')),
+          mailboxIds: {mailboxId: true},
+        ),
+      );
+
+      late ThreadController collapseController;
+
+      setUp(() {
+        collapseController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        collapseController.onClose();
+      });
+
+      testWidgets(
+        'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN getAllEmail stream completes '
+        'THEN auto-load-more IS triggered to fill the viewport '
+        'AND canLoadMore reflects the subsequent load-more server response',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = false;
+
+        final partialEmails = makeEmails(15); // fewer than maxCountEmails = 20
+
+        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+        when(mockMailboxDashBoardController.sessionCurrent)
+            .thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId)
+            .thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList(partialEmails));
+        when(mockMailboxDashBoardController.filterMessageOption)
+            .thenReturn(Rx(FilterMessageOption.all));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+        when(mockLoadMoreEmailsInMailboxInteractor.execute(any))
+            .thenAnswer((_) => Stream.value(
+              Right(LoadMoreEmailsSuccess([], serverEmailCount: 0)),
+            ));
+
+        // Mount an empty ListView so listEmailController.hasClients = true
+        // and maxScrollExtent = 0 (content does not fill viewport).
+        await tester.pumpWidget(MaterialApp(
+          home: SizedBox(
+            height: 600,
+            child: ListView(controller: collapseController.listEmailController),
+          ),
+        ));
+
+        expect(
+          collapseController.listEmailController.position.maxScrollExtent,
+          0.0,
+        );
+
+        collapseController.viewState.value = Right(
+          GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
+        );
+
+        collapseController.onDone();
+        await tester.pumpAndSettle();
+
+        // Load-more interactor MUST be called to attempt filling the viewport.
+        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+
+        // After the empty load-more response (serverEmailCount = 0 < maxCountEmails),
+        // canLoadMore is set to false by _loadMoreEmailsSuccess.
+        expect(collapseController.canLoadMore, isFalse);
+      });
+
+      test(
+        'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
+        'AND canLoadMore is initially true before the call '
+        'WHEN viewport is already full (_isAutoLoadMore = false) '
+        'THEN canLoadMore SHOULD be false — no spurious Load More button',
+      () {
+        PlatformInfo.isTestingForWeb = false;
+        // No scroll controller client → _isAutoLoadMore = false
+        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+
+        final partialEmails = makeEmails(15);
+        threadController.canLoadMore = true;
+        threadController.viewState.value = Right(
+          GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
+        );
+
+        threadController.onDone();
+
+        expect(threadController.canLoadMore, isFalse);
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+      });
+    });
+
     group('shouldAutoLoadMoreByEstimatedHeight unit test:', () {
       test(
         'GIVEN totalHeight is 0 (empty list) '
