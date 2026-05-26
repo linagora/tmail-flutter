@@ -40,7 +40,7 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'language')
   final String? language;
 
-  @JsonKey(name: 'ai.needs-action.enabled')
+  @JsonKey(name: 'ai.label-categorization.enabled')
   final bool? aiNeedsActionEnabled;
 
   TMailServerSettingOptions({

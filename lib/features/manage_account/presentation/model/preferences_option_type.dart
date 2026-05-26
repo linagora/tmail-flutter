@@ -30,7 +30,7 @@ enum PreferencesOptionType {
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribe;
       case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsAction;
+        return appLocalizations.aiLabelCategorization;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibility;
     }
@@ -49,7 +49,7 @@ enum PreferencesOptionType {
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribeSettingExplanation;
       case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsActionSettingExplanation;
+        return appLocalizations.aiLabelCategorizationSettingExplanation;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilitySettingExplanation;
     }
@@ -68,7 +68,7 @@ enum PreferencesOptionType {
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribeToggleDescription;
       case PreferencesOptionType.aiNeedsAction:
-        return appLocalizations.aiNeedsActionToggleDescription;
+        return appLocalizations.aiLabelCategorizationToggleDescription;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilityToggleDescription;
     }
