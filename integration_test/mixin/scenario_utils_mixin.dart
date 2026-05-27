@@ -44,6 +44,7 @@ import '../resources/test_images.dart';
 import '../utils/wait_for_condition.dart';
 
 mixin ScenarioUtilsMixin {
+  @Deprecated('Provision email from CommonRobot instead.')
   Future<void> provisionEmail(
     List<ProvisioningEmail> provisioningEmails, {
     bool refreshEmailView = true,

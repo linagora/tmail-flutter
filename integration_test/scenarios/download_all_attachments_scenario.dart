@@ -1,13 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
 import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
-import '../robots/email_robot.dart';
-import '../robots/thread_robot.dart';
 
 class DownloadAllAttachmentsScenario extends BaseTestScenario {
-
   const DownloadAllAttachmentsScenario(super.$, super.robots);
 
   @override
@@ -16,47 +10,29 @@ class DownloadAllAttachmentsScenario extends BaseTestScenario {
     final List<String> attachmentContents = ['file1', 'file2', 'file3'];
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
 
-    final threadRobot = ThreadRobot($);
-    final emailRobot = EmailRobot($);
+    final commonRobot = robots.commonRobot();
+    final threadRobot = robots.threadRobot();
+    final emailRobot = robots.emailRobot();
 
     // Prepare attachment files
-    final attachmentFiles = await Future.wait(
-      attachmentContents.map(
-        (attachmentContent) => preparingTxtFile(attachmentContent),
-      ),
+    final fileInfos = await Future.wait(
+      attachmentContents.map(commonRobot.prepareTxtFile),
     );
 
     // Provisioning email
-    await provisionEmail(
+    await commonRobot.provisionEmail(
       [ProvisioningEmail(
         toEmail: email,
         subject: subject,
         content: 'download all attachments content',
-        attachmentPaths: attachmentFiles.map((file) => file.path).toList(),
+        fileInfos: fileInfos,
       )],
       requestReadReceipt: false,
     );
     await $.pumpAndSettle();
 
     await threadRobot.openEmailWithSubject(subject);
-    await $.pumpAndSettle();
     await emailRobot.tapDownloadAllButton();
-    await _expectNativeSaveButtonVisible();
-  }
-
-  Future<void> _expectNativeSaveButtonVisible() async {
-    await $.platformAutomator.mobile.waitUntilVisible(
-      MobileSelector(
-        android: AndroidSelector(text: 'SAVE'),
-      ),
-      timeout: const Duration(seconds: 20),
-    );
-    await expectLater(
-      $.platformAutomator.tap(
-        Selector(text: 'SAVE'),
-        timeout: const Duration(seconds: 20),
-      ),
-      completes,
-    );
+    await emailRobot.expectDownloadSaveDialogVisible();
   }
 }

@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AttachmentsInfo extends StatelessWidget {
@@ -68,7 +69,7 @@ class AttachmentsInfo extends StatelessWidget {
         ),
         if (onTapDownloadAllButton != null)
           TMailButtonWidget(
-            key: const Key('download_all_attachments_button'),
+            key: const ValueKey(UiKeys.downloadAllAttachmentsButton),
             text: AppLocalizations.of(context).downloadAll,
             icon: !responsiveUtils.isMobile(context)
                 ? imagePaths.icDownloadAttachment
