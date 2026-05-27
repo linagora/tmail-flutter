@@ -8,57 +8,79 @@ class SanitizeAutolinkFilter {
 
   final HtmlEscape htmlEscape;
   final bool escapeHtml;
-  final _linkifyOption = const LinkifyOptions(
+
+  // Static to avoid re-allocating per instance — SanitizeAutolinkFilter is
+  // instantiated on every transform call from the transformer wrappers.
+  static const _linkifyOption = LinkifyOptions(
     humanize: true,
     looseUrl: true,
     defaultToHttps: true,
-    removeWww: true
+    removeWww: true,
   );
-  final _linkifier = <Linkifier>[
+  static final _linkifier = <Linkifier>[
     const EmailLinkifier(),
-    const UrlLinkifier()
+    const UrlLinkifier(),
   ];
+
+  // Matches a complete HTML tag, correctly handling quoted attribute values
+  // that may contain the > character (e.g. title="a > b").
+  static final _htmlTagPattern = RegExp(r'''<(?:[^>"']*|"[^"]*"|'[^']*')*>''');
 
   SanitizeAutolinkFilter(this.htmlEscape, {this.escapeHtml = true});
 
   String process(String inputText) {
     try {
-      if (inputText.isEmpty) {
-        return '';
-      }
+      if (inputText.isEmpty) return '';
 
-      final elements = linkify(
-        inputText,
-        options: _linkifyOption,
-        linkifiers: _linkifier,
-      );
-      final htmlTextBuffer = StringBuffer();
+      final result = escapeHtml
+          ? _linkifyText(inputText)
+          : _linkifyHtmlAware(inputText);
 
-      for (var element in elements) {
-        if (element is TextElement) {
-          final escapedHtml = escapeHtml ? htmlEscape.convert(element.text) : element.text;
-          htmlTextBuffer.write(escapedHtml);
-        } else if (element is EmailElement) {
-          final emailLinkTag = _buildEmailLinkTag(
-            mailToLink: element.url,
-            value: element.text
-          );
-          htmlTextBuffer.write(emailLinkTag);
-        } else if (element is UrlElement) {
-          final urlLinkTag = _buildUrlLinkTag(
-            urlLink: element.url,
-            value: element.text
-          );
-          htmlTextBuffer.write(urlLinkTag);
-        }
-      }
-      final textSanitized = htmlTextBuffer.toString();
-      log('SanitizeAutolinkFilter::process:htmlTextBuffer = $textSanitized');
-      return textSanitized;
+      log('SanitizeAutolinkFilter::process:htmlTextBuffer = $result');
+      return result;
     } catch (e) {
       logWarning('$runtimeType::process:Exception = $e');
       return inputText;
     }
+  }
+
+  // Linkifies only text nodes between HTML tags, leaving existing tags intact.
+  // This prevents re-linkifying URLs that already appear inside href/src attributes,
+  // which would produce broken HTML like href="<a href="...">".
+  String _linkifyHtmlAware(String inputText) {
+    final buffer = StringBuffer();
+    int cursor = 0;
+
+    for (final tagMatch in _htmlTagPattern.allMatches(inputText)) {
+      if (tagMatch.start > cursor) {
+        buffer.write(_linkifyText(inputText.substring(cursor, tagMatch.start)));
+      }
+      buffer.write(tagMatch.group(0));
+      cursor = tagMatch.end;
+    }
+
+    if (cursor < inputText.length) {
+      buffer.write(_linkifyText(inputText.substring(cursor)));
+    }
+
+    return buffer.toString();
+  }
+
+  String _linkifyText(String text) {
+    final elements = linkify(text, options: _linkifyOption, linkifiers: _linkifier);
+    final buffer = StringBuffer();
+
+    for (final element in elements) {
+      if (element is TextElement) {
+        buffer.write(escapeHtml ? htmlEscape.convert(element.text) : element.text);
+      } else if (element is EmailElement) {
+        buffer.write(_buildEmailLinkTag(mailToLink: element.url, value: element.text));
+      } else if (element is UrlElement) {
+        buffer.write(_buildUrlLinkTag(urlLink: element.url, value: element.text));
+      }
+    }
+
+    return buffer.toString();
   }
 
   String _buildUrlLinkTag({required String urlLink, required String value}) {

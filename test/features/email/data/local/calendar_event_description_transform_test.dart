@@ -95,6 +95,18 @@ void main() {
     });
 
     group('HTML passthrough — HTML descriptions rendered as formatted content', () {
+      test('SHOULD preserve an existing HTML link destination and text', () async {
+        // Real-world calendar invites embed join links as HTML <a href>.
+        const description = '<a href="https://example.com/meeting">Join Zoom</a>';
+        final result = await transformDescription(description);
+        // The original destination URL must survive intact.
+        expect(result, contains('href="https://example.com/meeting"'));
+        // The visible link text must survive.
+        expect(result, contains('Join Zoom'));
+        // The markup must not be mangled into garbage by the linkifier.
+        expect(result, isNot(contains('<ahref')));
+      });
+
       test('SHOULD pass through safe HTML tags so they render as formatted content', () async {
         const description = '<p>Welcome to the <b>quarterly review</b></p>';
         final result = await transformDescription(description);
@@ -111,6 +123,33 @@ void main() {
         final result = await transformDescription(description);
         expect(result, contains('Item 1'));
         expect(result, contains('Item 2'));
+      });
+
+      test('SHOULD NOT corrupt an HTML link whose visible text is also a URL', () async {
+        // href and anchor text both contain a URL — the linkifier must not
+        // double-process the attribute and break the tag.
+        const description = '<a href="https://example.com/a">https://example.com/a</a>';
+        final result = await transformDescription(description);
+        expect(result, contains('href="https://example.com/a"'));
+        expect(result, isNot(contains('<ahref')));
+      });
+
+      test('SHOULD preserve a URL sitting in an <img> src attribute without mangling text', () async {
+        // URL lives in the src attribute, not body text. <img> may be stripped
+        // by the sanitizer, but the surrounding description must stay intact.
+        const description = '<img src="https://cdn.example.com/a.png"> Team photo';
+        final result = await transformDescription(description);
+        expect(result, contains('Team photo'));
+        expect(result, isNot(contains('<ahref')));
+      });
+
+      test('SHOULD autolink a bare URL that appears inside an HTML element', () async {
+        // Positive guard: a URL in text content (not an attribute) must still
+        // become a clickable link, even when wrapped in an element.
+        const description = '<p>Join the call at https://meet.example.com/room/9</p>';
+        final result = await transformDescription(description);
+        expect(result, contains('href="https://meet.example.com/room/9"'));
+        expect(result, contains('<p>'));
       });
     });
 
@@ -176,6 +215,38 @@ void main() {
         // an empty description must leave the body element empty.
         final result = await transformDescription('');
         expect(result, contains('<body></body>'));
+      });
+    });
+
+    // Verify the exact production config factory — forCalendarEvent() uses a
+    // custom DOM transformer (SanitizeHyperLinkTagInHtmlTransformer) instead of
+    // the standard DOM stack. The cases below guard against regressions where a
+    // change to the factory silently breaks the calendar description pipeline.
+    group('Production config — TransformConfiguration.forCalendarEvent()', () {
+      Future<String> transformWithProductionConfig(String description) =>
+          htmlAnalyzer.transformHtmlEmailContent(
+            description,
+            TransformConfiguration.forCalendarEvent(),
+          );
+
+      test('SHOULD preserve existing <a href> through the production DOM transformer', () async {
+        const description = '<a href="https://example.com/meeting">Join Zoom</a>';
+        final result = await transformWithProductionConfig(description);
+        expect(result, contains('href="https://example.com/meeting"'));
+        expect(result, contains('Join Zoom'));
+      });
+
+      test('SHOULD autolink a bare URL through the production DOM transformer', () async {
+        const description = 'Join at https://meet.example.com/room/123';
+        final result = await transformWithProductionConfig(description);
+        expect(result, contains('href="https://meet.example.com/room/123"'));
+      });
+
+      test('SHOULD block XSS in the production config pipeline', () async {
+        const description = 'Notes: <script>document.cookie</script>';
+        final result = await transformWithProductionConfig(description);
+        expect(result, isNot(contains(RegExp(r'<script\b', caseSensitive: false))));
+        expect(result, contains('Notes'));
       });
     });
   });
