@@ -3,6 +3,7 @@ class UiKeys {
 
   static const String composeEmailButton = 'composeEmailButton';
   static const String sendEmailButton = 'sendEmailButton';
+  static const String downloadAllAttachmentsButton = 'download_all_attachments_button';
   static const String listViewAppGrid = 'listViewAppGrid';
   static const String toggleAppGridButton = 'toggleAppGridButton';
   static const String closeComposerButton = 'closeComposerButton';

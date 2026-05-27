@@ -1,8 +1,12 @@
 import 'package:patrol/patrol.dart';
 
+import '../robots/abstract/abstract_common_robot.dart';
+import '../robots/web/web_common_robot.dart';
+import '../robots/web/web_email_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
 import '../robots/abstract/abstract_email_rules_setting_robot.dart';
+import '../robots/abstract/abstract_email_robot.dart';
 import '../robots/abstract/abstract_login_robot.dart';
 import '../robots/abstract/abstract_mailbox_menu_robot.dart';
 import '../robots/abstract/abstract_rules_filter_creator_robot.dart';
@@ -20,6 +24,9 @@ class WebRobotFactory implements RobotFactory {
   final PatrolIntegrationTester $;
 
   WebRobotFactory(this.$);
+
+  @override
+  AbstractCommonRobot commonRobot() => WebCommonRobot();
 
   @override
   AbstractLoginRobot loginRobot() => WebLoginRobot($);
@@ -41,4 +48,7 @@ class WebRobotFactory implements RobotFactory {
 
   @override
   AbstractEmailRulesSettingRobot emailRulesSettingRobot() => WebEmailRulesSettingRobot($);
+
+  @override
+  AbstractEmailRobot emailRobot() => WebEmailRobot($);
 }

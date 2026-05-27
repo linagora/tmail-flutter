@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/tag_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
@@ -19,7 +20,7 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapDownloadAllButton() async {
-    await $(#download_all_attachments_button).tap();
+    await $(const ValueKey(UiKeys.downloadAllAttachmentsButton)).tap();
   }
 
   Future<void> onTapReplyEmail() async {
