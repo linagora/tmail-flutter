@@ -40,14 +40,19 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'language')
   final String? language;
 
-  @JsonKey(name: 'ai.label-categorization.enabled')
+  // Legacy key from older BE versions — read-only, never written back to server
+  @JsonKey(name: 'ai.needs-action.enabled', includeToJson: false)
   final bool? aiNeedsActionEnabled;
+
+  @JsonKey(name: 'ai.label-categorization.enabled')
+  final bool? aiLabelCategorizationEnabled;
 
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
     this.aiNeedsActionEnabled,
+    this.aiLabelCategorizationEnabled,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -59,13 +64,14 @@ class TMailServerSettingOptions with EquatableMixin {
     bool? alwaysReadReceipts,
     bool? displaySenderPriority,
     String? language,
-    bool? aiNeedsActionEnabled,
+    bool? aiLabelCategorizationEnabled,
   }) {
     return TMailServerSettingOptions(
       alwaysReadReceipts: alwaysReadReceipts ?? this.alwaysReadReceipts,
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
-      aiNeedsActionEnabled: aiNeedsActionEnabled ?? this.aiNeedsActionEnabled,
+      aiNeedsActionEnabled: aiNeedsActionEnabled,
+      aiLabelCategorizationEnabled: aiLabelCategorizationEnabled ?? this.aiLabelCategorizationEnabled,
     );
   }
 
@@ -75,5 +81,6 @@ class TMailServerSettingOptions with EquatableMixin {
     displaySenderPriority,
     language,
     aiNeedsActionEnabled,
+    aiLabelCategorizationEnabled,
   ];
 }

@@ -198,7 +198,7 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.aiNeedsAction:
         newSettingOption = settingOption.value?.copyWith(
-          aiNeedsActionEnabled: !isEnabled,
+          aiLabelCategorizationEnabled: !isEnabled,
         );
         break;
       default:

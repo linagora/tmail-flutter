@@ -6,5 +6,6 @@ extension TmailServerSettingsExtension on TMailServerSettingOptions {
 
   bool get isAlwaysReadReceipts => alwaysReadReceipts ?? false;
 
-  bool get isAINeedsActionEnabled => aiNeedsActionEnabled ?? false;
+  // Prefer new key; fall back to legacy for older BE versions
+  bool get isAINeedsActionEnabled => aiLabelCategorizationEnabled ?? aiNeedsActionEnabled ?? false;
 }
