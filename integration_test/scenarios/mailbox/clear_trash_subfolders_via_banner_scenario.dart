@@ -1,0 +1,51 @@
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+import '../../base/base_test_scenario.dart';
+import '../../models/provisioning_email.dart';
+
+class ClearTrashSubfoldersViaBannerScenario extends BaseTestScenario {
+  const ClearTrashSubfoldersViaBannerScenario(super.$, super.robots);
+
+  static const _subfolderName = 'Trash subfolder banner test';
+
+  @override
+  Future<void> runTestLogic() async {
+    const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    const subject = 'Empty trash';
+    final appLocalizations = AppLocalizations();
+    final mailboxMenuRobot = robots.mailboxMenuRobot();
+    final threadRobot = robots.threadRobot();
+
+    await provisionTrashSubfolder(_subfolderName);
+
+    await provisionEmail(
+      [
+        ProvisioningEmail(
+          toEmail: emailUser,
+          subject: subject,
+          content: subject,
+        ),
+      ],
+      folderLocationRole: PresentationMailbox.roleTrash,
+    );
+
+    await threadRobot.openMailbox();
+    await mailboxMenuRobot.openFolderByName(
+      appLocalizations.trashMailboxDisplayName,
+    );
+    await threadRobot.expectTrashBannerVisible();
+
+    await threadRobot.tapEmptyTrashBanner();
+    await threadRobot.confirmEmptyTrashViaBanner();
+
+    await threadRobot.openMailbox();
+    await mailboxMenuRobot.expectSubfolderNotExist(_subfolderName);
+
+    await mailboxMenuRobot.openFolderByName(
+      appLocalizations.trashMailboxDisplayName,
+    );
+    await threadRobot.expectEmptyTrashThreadView();
+    await threadRobot.expectTrashBannerInvisible();
+  }
+}

@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
 import '../exceptions/mailbox/null_quota_exception.dart';
+import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_mailbox_menu_robot.dart';
 
 class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
@@ -193,5 +194,29 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   @override
   Future<void> pullToRefresh() async {
     await $.platformAutomator.mobile.pullToRefresh();
+  }
+
+  @override
+  Future<void> expectSubfolderNotExist(String subfolderName) async {
+    await waitForCondition(
+      () => !$(
+        MailboxItemWidget,
+      ).$(LabelMailboxItemWidget).containing($(subfolderName)).exists,
+    );
+  }
+
+  @override
+  Future<void> tapEmptyTrashInContextMenu() async {
+    await $(AppLocalizations().emptyTrash).tap();
+  }
+
+  @override
+  Future<void> confirmEmptyTrashInContextMenu() async {
+    await $(AppLocalizations().delete).tap();
+  }
+
+  @override
+  Future<void> openTrashContextMenu(String trashFolderName) async {
+    await $(trashFolderName).longPress();
   }
 }

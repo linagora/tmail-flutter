@@ -108,6 +108,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/providers/delete_trash_subfolders_provider.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
@@ -443,6 +445,10 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     loadAIScribeConfig();
+    appProviderContainer.listen<DeleteTrashSubfoldersStatus>(
+      deleteTrashSubfoldersProvider,
+      (_, next) => _onDeleteTrashSubfoldersStateChanged(next),
+    );
     super.onReady();
   }
 
@@ -1879,6 +1885,8 @@ class MailboxDashBoardController extends ReloadableController
     Function? onCancelSelectionEmail,
     PresentationMailbox? trashMailbox,
   }) {
+    if (appProviderContainer.read(deleteTrashSubfoldersProvider) == DeleteTrashSubfoldersStatus.loading) return;
+
     onCancelSelectionEmail?.call();
 
     final trashFolder = trashMailbox
@@ -1931,6 +1939,52 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     toastManager.showMessageSuccess(success);
+
+    triggerTrashSubfolderDeletion(success.mailboxId);
+  }
+
+  void triggerTrashSubfolderDeletion(MailboxId? trashId) {
+    final session = sessionCurrent;
+    final account = accountId.value;
+    if (trashId == null || session == null || account == null) return;
+    appProviderContainer
+        .read(deleteTrashSubfoldersProvider.notifier)
+        .execute(trashId, Map.unmodifiable(mapMailboxById), session, account);
+  }
+
+  void _onDeleteTrashSubfoldersStateChanged(DeleteTrashSubfoldersStatus status) {
+    switch (status) {
+      case DeleteTrashSubfoldersStatus.idle:
+      case DeleteTrashSubfoldersStatus.loading:
+        return;
+      case DeleteTrashSubfoldersStatus.success:
+      case DeleteTrashSubfoldersStatus.partialSuccess:
+        _showDeleteTrashSubfoldersToast(status);
+        _refreshMailboxTreeAfterSubfolderDeletion();
+      case DeleteTrashSubfoldersStatus.failed:
+        _showDeleteTrashSubfoldersToast(status);
+    }
+  }
+
+  void _showDeleteTrashSubfoldersToast(DeleteTrashSubfoldersStatus status) {
+    if (currentContext == null || currentOverlayContext == null) return;
+    final l10n = AppLocalizations.of(currentContext!);
+    switch (status) {
+      case DeleteTrashSubfoldersStatus.success:
+        appToast.showToastSuccessMessage(currentOverlayContext!, l10n.clearTrashSubfoldersSuccess);
+      case DeleteTrashSubfoldersStatus.partialSuccess:
+        appToast.showToastMessage(currentOverlayContext!, l10n.clearTrashSubfoldersPartialSuccess);
+      case DeleteTrashSubfoldersStatus.failed:
+        appToast.showToastErrorMessage(currentOverlayContext!, l10n.clearTrashSubfoldersFailed);
+      default:
+        return;
+    }
+  }
+
+  void _refreshMailboxTreeAfterSubfolderDeletion() {
+    dispatchMailboxUIAction(RefreshChangeMailboxAction(
+      newState: jmap.State('trash-subfolder-refresh-${DateTime.now().millisecondsSinceEpoch}'),
+    ));
   }
 
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> listEmails, {Function? onCancelSelectionEmail}) {

@@ -253,7 +253,7 @@ class ThreadView extends GetWidget<ThreadController>
                         );
                       } else {
                         return const SizedBox.shrink(
-                          key: Key('clean_message_banner_not_visible'),
+                          key: Key(UiKeys.cleanMessageBannerNotVisible),
                         );
                       }
                     }),
@@ -799,7 +799,7 @@ class ThreadView extends GetWidget<ThreadController>
             deepRefreshText: AppLocalizations.of(context).deepRefresh,
             pullHarderForText: AppLocalizations.of(context).pullHarderFor,
             child: EmptyEmailsWidget(
-              key: const Key('empty_thread_view'),
+              key: const Key(UiKeys.emptyThreadView),
               isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,

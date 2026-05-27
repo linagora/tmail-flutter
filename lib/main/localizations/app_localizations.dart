@@ -1135,6 +1135,15 @@ class AppLocalizations {
         name: 'toast_message_empty_trash_folder_success');
   }
 
+  String get clearTrashSubfoldersSuccess =>
+      Intl.message('Trash subfolders deleted', name: 'clearTrashSubfoldersSuccess');
+
+  String get clearTrashSubfoldersPartialSuccess =>
+      Intl.message('Some subfolders in Trash could not be deleted', name: 'clearTrashSubfoldersPartialSuccess');
+
+  String get clearTrashSubfoldersFailed =>
+      Intl.message('Failed to delete subfolders in Trash', name: 'clearTrashSubfoldersFailed');
+
   String get version {
     return Intl.message(
         'Version',

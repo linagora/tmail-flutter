@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -290,6 +291,42 @@ mixin ScenarioUtilsMixin {
     }
 
     IdentityInteractorsBindings().dispose();
+  }
+
+  Future<void> provisionTrashSubfolder(String subfolderName) async {
+    await waitForCondition(
+      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
+    );
+
+    final dashboardController = Get.find<MailboxDashBoardController>();
+    final session = dashboardController.sessionCurrent;
+    final accountId = dashboardController.accountId.value;
+    final trashMailboxId =
+        dashboardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
+
+    if (session == null || accountId == null || trashMailboxId == null) return;
+
+    final requestBuilder = JmapRequestBuilder(
+      Get.find<HttpClient>(),
+      ProcessingInvocation(),
+    );
+
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addCreate(
+        Id(const Uuid().v1()),
+        Mailbox(
+          name: MailboxName(subfolderName),
+          parentId: trashMailboxId,
+        ),
+      );
+
+    requestBuilder.invocation(setMailboxMethod);
+
+    await (requestBuilder
+          ..usings(setMailboxMethod.requiredCapabilities
+              .toCapabilitiesSupportTeamMailboxes(session, accountId)))
+        .build()
+        .execute();
   }
 
   void hideKeyboard() {

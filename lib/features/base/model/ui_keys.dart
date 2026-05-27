@@ -20,4 +20,8 @@ class UiKeys {
   static const String addActionButton = 'addActionButton';
   static const String mobileMailboxMenuButton = 'mobileMailboxMenuButton';
   static const String userAvatar = 'userAvatar';
+
+  static const String mailboxMoreActionButton = 'mailbox_more_action_button';
+  static const String emptyThreadView = 'empty_thread_view';
+  static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
 }
