@@ -14,135 +14,65 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
+final _systemFolderIconMap = Map<String, String Function(ImagePaths)>.unmodifiable({
+  PresentationMailbox.inboxRole:          (paths) => paths.icMailboxInbox,
+  PresentationMailbox.favoriteRole:       (paths) => paths.icMailboxFavorite,
+  PresentationMailbox.actionRequiredRole: (paths) => paths.icMailboxActionRequired,
+  PresentationMailbox.draftsRole:         (paths) => paths.icMailboxDrafts,
+  PresentationMailbox.outboxRole:         (paths) => paths.icMailboxOutbox,
+  PresentationMailbox.archiveRole:        (paths) => paths.icMailboxArchived,
+  PresentationMailbox.sentRole:           (paths) => paths.icMailboxSent,
+  PresentationMailbox.trashRole:          (paths) => paths.icMailboxTrash,
+  PresentationMailbox.spamRole:           (paths) => paths.icMailboxSpam,
+  PresentationMailbox.junkRole:           (paths) => paths.icMailboxSpam,
+  PresentationMailbox.templatesRole:      (paths) => paths.icMailboxTemplate,
+  PresentationMailbox.recoveredRole:      (paths) => paths.icRecoverDeletedMessages,
+  'all_mail':                             (paths) => paths.icMailboxAllMail,
+});
+
+final _systemFolderDisplayNameMap = Map<String, String Function(AppLocalizations)>.unmodifiable({
+  PresentationMailbox.inboxRole:          (l10n) => l10n.inboxMailboxDisplayName,
+  PresentationMailbox.favoriteRole:       (l10n) => l10n.favoriteMailboxDisplayName,
+  PresentationMailbox.actionRequiredRole: (l10n) => l10n.actionRequiredMailboxDisplayName,
+  PresentationMailbox.archiveRole:        (l10n) => l10n.archiveMailboxDisplayName,
+  PresentationMailbox.draftsRole:         (l10n) => l10n.draftsMailboxDisplayName,
+  PresentationMailbox.sentRole:           (l10n) => l10n.sentMailboxDisplayName,
+  PresentationMailbox.outboxRole:         (l10n) => l10n.outboxMailboxDisplayName,
+  PresentationMailbox.trashRole:          (l10n) => l10n.trashMailboxDisplayName,
+  PresentationMailbox.spamRole:           (l10n) => l10n.spamMailboxDisplayName,
+  PresentationMailbox.junkRole:           (l10n) => l10n.spamMailboxDisplayName,
+  PresentationMailbox.templatesRole:      (l10n) => l10n.templatesMailboxDisplayName,
+  PresentationMailbox.recoveredRole:      (l10n) => l10n.recoveredMailboxDisplayName,
+});
+
 extension PresentationMailboxExtension on PresentationMailbox {
 
-  String getDisplayName(BuildContext context) {
-    if (isLabelMailbox) {
-      return (this as PresentationLabelMailbox).label.safeDisplayName;
-    }
+  String getDisplayName(BuildContext context) =>
+      getDisplayNameWithoutContext(AppLocalizations.of(context));
 
+  String getDisplayNameWithoutContext(AppLocalizations l10n) {
+    if (isLabelMailbox) return (this as PresentationLabelMailbox).label.safeDisplayName;
     if (isDefault) {
-      switch(role!.value.toLowerCase()) {
-        case PresentationMailbox.inboxRole:
-          return AppLocalizations.of(context).inboxMailboxDisplayName;
-        case PresentationMailbox.favoriteRole:
-          return AppLocalizations.of(context).favoriteMailboxDisplayName;
-        case PresentationMailbox.actionRequiredRole:
-          return AppLocalizations.of(context).actionRequiredMailboxDisplayName;
-        case PresentationMailbox.archiveRole:
-          return AppLocalizations.of(context).archiveMailboxDisplayName;
-        case PresentationMailbox.draftsRole:
-          return AppLocalizations.of(context).draftsMailboxDisplayName;
-        case PresentationMailbox.sentRole:
-          return AppLocalizations.of(context).sentMailboxDisplayName;
-        case PresentationMailbox.outboxRole:
-          return AppLocalizations.of(context).outboxMailboxDisplayName;
-        case PresentationMailbox.trashRole:
-          return AppLocalizations.of(context).trashMailboxDisplayName;
-        case PresentationMailbox.spamRole:
-        case PresentationMailbox.junkRole:
-          return AppLocalizations.of(context).spamMailboxDisplayName;
-        case PresentationMailbox.templatesRole:
-          return AppLocalizations.of(context).templatesMailboxDisplayName;
-        case PresentationMailbox.recoveredRole:
-          return AppLocalizations.of(context).recoveredMailboxDisplayName;
-      }
-    }
-    return name?.name ?? '';
-  }
-
-  String getDisplayNameWithoutContext(AppLocalizations appLocalizations) {
-    if (isLabelMailbox) {
-      return (this as PresentationLabelMailbox).label.safeDisplayName;
-    }
-
-    if (isDefault) {
-      switch(role!.value.toLowerCase()) {
-        case PresentationMailbox.inboxRole:
-          return appLocalizations.inboxMailboxDisplayName;
-        case PresentationMailbox.favoriteRole:
-          return appLocalizations.favoriteMailboxDisplayName;
-        case PresentationMailbox.actionRequiredRole:
-          return appLocalizations.actionRequiredMailboxDisplayName;
-        case PresentationMailbox.archiveRole:
-          return appLocalizations.archiveMailboxDisplayName;
-        case PresentationMailbox.draftsRole:
-          return appLocalizations.draftsMailboxDisplayName;
-        case PresentationMailbox.sentRole:
-          return appLocalizations.sentMailboxDisplayName;
-        case PresentationMailbox.outboxRole:
-          return appLocalizations.outboxMailboxDisplayName;
-        case PresentationMailbox.trashRole:
-          return appLocalizations.trashMailboxDisplayName;
-        case PresentationMailbox.spamRole:
-        case PresentationMailbox.junkRole:
-          return appLocalizations.spamMailboxDisplayName;
-        case PresentationMailbox.templatesRole:
-          return appLocalizations.templatesMailboxDisplayName;
-        case PresentationMailbox.recoveredRole:
-          return appLocalizations.recoveredMailboxDisplayName;
-      }
+      final nameResolver = _systemFolderDisplayNameMap[role!.value.toLowerCase()];
+      if (nameResolver != null) return nameResolver(l10n);
     }
     return name?.name ?? '';
   }
 
   String getMailboxIcon(ImagePaths imagePaths) {
-    if (hasRole()) {
-      switch(role!.value) {
-        case PresentationMailbox.inboxRole:
-          return imagePaths.icMailboxInbox;
-        case PresentationMailbox.favoriteRole:
-          return imagePaths.icMailboxFavorite;
-        case PresentationMailbox.actionRequiredRole:
-          return imagePaths.icMailboxActionRequired;
-        case PresentationMailbox.draftsRole:
-          return imagePaths.icMailboxDrafts;
-        case PresentationMailbox.outboxRole:
-          return imagePaths.icMailboxOutbox;
-        case PresentationMailbox.archiveRole:
-          return imagePaths.icMailboxArchived;
-        case PresentationMailbox.sentRole:
-          return imagePaths.icMailboxSent;
-        case PresentationMailbox.trashRole:
-          return imagePaths.icMailboxTrash;
-        case PresentationMailbox.spamRole:
-        case PresentationMailbox.junkRole:
-          return imagePaths.icMailboxSpam;
-        case PresentationMailbox.templatesRole:
-          return imagePaths.icMailboxTemplate;
-        case PresentationMailbox.recoveredRole:
-          return imagePaths.icRecoverDeletedMessages;
-        case 'all_mail':
-          return imagePaths.icMailboxAllMail;
-        default:
-          return imagePaths.icFolderMailbox;
+    if (hasRole()) return _resolveSystemFolderIcon(role!.value, imagePaths);
+    if (isChildOfTeamMailboxes && myRights?.mayDelete == false) {
+      final nameKey = name?.name.toLowerCase();
+      if (nameKey != null) {
+        return _resolveSystemFolderIcon(nameKey, imagePaths);
       }
-    } else if (isChildOfTeamMailboxes) {
-      switch(name!.name.toLowerCase()) {
-        case 'inbox':
-          return imagePaths.icMailboxInbox;
-        case 'outbox':
-          return imagePaths.icMailboxOutbox;
-        case 'drafts':
-          return imagePaths.icMailboxDrafts;
-        case 'archive':
-          return imagePaths.icMailboxArchived;
-        case 'sent':
-          return imagePaths.icMailboxSent;
-        case 'trash':
-          return imagePaths.icMailboxTrash;
-        case 'spam':
-          return imagePaths.icMailboxSpam;
-        case 'templates':
-          return imagePaths.icMailboxTemplate;
-        case 'restored messages':
-          return imagePaths.icRecoverDeletedMessages;
-        default:
-          return imagePaths.icFolderMailbox;
-      }
-    } else {
-      return imagePaths.icFolderMailbox;
     }
+    return imagePaths.icFolderMailbox;
+  }
+
+  String _resolveSystemFolderIcon(String roleKey, ImagePaths imagePaths) {
+    final resolver = _systemFolderIconMap[roleKey];
+    return resolver != null ? resolver(imagePaths) : imagePaths.icFolderMailbox;
   }
 
   Uri get mailboxRouteWeb => RouteUtils.createUrlWebLocationBar(

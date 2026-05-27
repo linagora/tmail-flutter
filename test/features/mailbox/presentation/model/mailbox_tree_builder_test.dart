@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/extensions/list_presentation_mailbox_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -14,113 +15,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 
 void main() {
-  group('generate mailbox tree: ', () {
-    final expectedTree = MailboxTree(
-      MailboxNode(
-        PresentationMailbox(MailboxId(Id('root'))),
-        childrenItems: [
-          MailboxNode(
-              PresentationMailbox(MailboxId(Id("3")), parentId: null),
-              childrenItems: [
-                MailboxNode(
-                    PresentationMailbox(MailboxId(Id("3_2")), parentId: MailboxId(Id('3'))),
-                    childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("3_2_1")), parentId: MailboxId(Id('3_2'))))]
-                ),
-                MailboxNode(
-                    PresentationMailbox(MailboxId(Id("3_1")), parentId: MailboxId(Id('3'))),
-                    childrenItems: [
-                      MailboxNode(PresentationMailbox(MailboxId(Id("3_1_1")), parentId: MailboxId(Id('3_1'))))
-                    ]
-                ),
-              ]
-          ),
-          MailboxNode(
-              PresentationMailbox(MailboxId(Id("1")), parentId: null),
-              childrenItems: [
-                MailboxNode(
-                    PresentationMailbox(MailboxId(Id("1_2")), parentId: MailboxId(Id('1'))),
-                    childrenItems: [
-                      MailboxNode(PresentationMailbox(MailboxId(Id("1_2_1")), parentId: MailboxId(Id('1_2'))))
-                    ]
-                ),
-                MailboxNode(PresentationMailbox(MailboxId(Id("1_1")), parentId: MailboxId(Id('1')))),
-              ]
-          ),
-          MailboxNode(
-              PresentationMailbox(MailboxId(Id("2")), parentId: null),
-              childrenItems: [
-                MailboxNode(PresentationMailbox(MailboxId(Id("2_2")), parentId: MailboxId(Id('2')))),
-                MailboxNode(PresentationMailbox(MailboxId(Id("2_1")), parentId: MailboxId(Id('2'))),
-                    childrenItems: [
-                      MailboxNode(PresentationMailbox(MailboxId(Id("2_1_2")), parentId: MailboxId(Id('2_1')))),
-                      MailboxNode(
-                          PresentationMailbox(MailboxId(Id("2_1_1")), parentId: MailboxId(Id('2_1'))),
-                          childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("2_1_1_1")), parentId: MailboxId(Id('2_1_1'))))]
-                      ),
-                    ]
-                ),
-              ]
-          ),
-        ]
-      )
-    );
-
-    // Shared mailbox instances across all input-ordering tests
-    final m1     = PresentationMailbox(MailboxId(Id('1')),     parentId: null);
-    final m2     = PresentationMailbox(MailboxId(Id('2')),     parentId: null);
-    final m3     = PresentationMailbox(MailboxId(Id('3')),     parentId: null);
-    final m1_1   = PresentationMailbox(MailboxId(Id('1_1')),   parentId: MailboxId(Id('1')));
-    final m1_2   = PresentationMailbox(MailboxId(Id('1_2')),   parentId: MailboxId(Id('1')));
-    final m1_2_1 = PresentationMailbox(MailboxId(Id('1_2_1')), parentId: MailboxId(Id('1_2')));
-    // Items below appear in the same position across all unordered tests
-    final commonSuffix = <PresentationMailbox>[
-      PresentationMailbox(MailboxId(Id('2_1')),     parentId: MailboxId(Id('2'))),
-      PresentationMailbox(MailboxId(Id('2_2')),     parentId: MailboxId(Id('2'))),
-      PresentationMailbox(MailboxId(Id('2_1_1')),   parentId: MailboxId(Id('2_1'))),
-      PresentationMailbox(MailboxId(Id('2_1_1_1')), parentId: MailboxId(Id('2_1_1'))),
-      PresentationMailbox(MailboxId(Id('2_1_2')),   parentId: MailboxId(Id('2_1'))),
-      PresentationMailbox(MailboxId(Id('3_1')),     parentId: MailboxId(Id('3'))),
-      PresentationMailbox(MailboxId(Id('3_2')),     parentId: MailboxId(Id('3'))),
-      PresentationMailbox(MailboxId(Id('3_1_1')),   parentId: MailboxId(Id('3_1'))),
-      PresentationMailbox(MailboxId(Id('3_2_1')),   parentId: MailboxId(Id('3_2'))),
-    ];
-
-    test('mailbox list is in order: parent first, then children', () async {
-      final generatedTree = await TreeBuilder().generateMailboxTree(
-        [m1, m2, m3, m1_1, m1_2, m1_2_1, ...commonSuffix],
-      );
-      expect(generatedTree, equals(expectedTree));
-    });
-
-    // Tests that verify tree correctness regardless of input ordering.
-    // Each tuple: (test description, the 6-item prefix whose order varies).
-    final unorderedCases = <(String, List<PresentationMailbox>)>[
-      ('mailbox list is not ordered: parent first, then children, then grandparent',  [m2, m3, m1_1, m1_2, m1_2_1, m1]),
-      ('mailbox list is not ordered: parent first, then grandparent, then children',  [m2, m3, m1_1, m1_2, m1,     m1_2_1]),
-      ('mailbox list is not ordered: children first, then grandparent, then parent',  [m2, m3, m1_2_1, m1, m1_1,   m1_2]),
-      ('mailbox list is not ordered: children first, then parent, then grandparent',  [m2, m3, m1_2_1, m1_1, m1_2, m1]),
-    ];
-    for (final (description, prefix) in unorderedCases) {
-      test(description, () async {
-        final generatedTree = await TreeBuilder().generateMailboxTree([...prefix, ...commonSuffix]);
-        final expectedChildren = expectedTree.root.childrenItems!;
-        final generatedChildren = generatedTree.root.childrenItems!;
-        expect(generatedChildren.length, equals(expectedChildren.length));
-        expect(generatedChildren, containsAll(expectedChildren));
-        expect(generatedChildren[2], equals(expectedChildren[0]));
-      });
-    }
-
-    test('item have parent but not found in tree will become root child', () async {
-      final orphan = PresentationMailbox(MailboxId(Id('e3_2_1')), parentId: MailboxId(Id('id42')));
-      final generatedTree = await TreeBuilder().generateMailboxTree(
-        [m2, m3, m1_2_1, m1_1, m1_2, m1, ...commonSuffix, orphan],
-      );
-      expect(generatedTree.root.childrenItems?.length, equals(4));
-      expect(generatedTree.root.childrenItems, contains(MailboxNode(orphan)));
-    });
-  });
-
   group('generate default mailbox tree base on sortOrder: ', () {
     final expectedTree = MailboxTree(
         MailboxNode(
@@ -748,13 +642,18 @@ void main() {
     final teamNamespace = Namespace('Delegated[team@example.com]');
     final teamRootId = MailboxId(Id('team_root'));
 
-    PresentationMailbox teamItem(String id, String name, {Role? role}) => PresentationMailbox(
+    PresentationMailbox teamItem(String id, String name, {Role? role, MailboxRights? myRights}) => PresentationMailbox(
       MailboxId(Id(id)),
       parentId: teamRootId,
       name: MailboxName(name),
       namespace: teamNamespace,
       role: role,
+      myRights: myRights,
     );
+
+    // mayReadItems, mayAddItems, mayRemoveItems, maySetSeen, maySetKeywords, mayCreateChild, mayRename, mayDelete, maySubmit
+    final systemRights = MailboxRights(true, true, true, true, true, true, false, false, true);
+    final userRights   = MailboxRights(true, true, true, true, true, true, true,  true,  true);
 
     Future<List<MailboxNode>> getSubfolders(List<PresentationMailbox> children) async {
       final result = await TreeBuilder().generateMailboxTreeInUI(
@@ -776,16 +675,62 @@ void main() {
       expect(children.map((n) => n.item.name?.name).toList(), equals(['Alpha', 'Medium', 'Zebra']));
     });
 
-    test('system folder detection uses role, not display name', () async {
+    test('role takes priority over mayDelete+name fallback', () async {
       final children = await getSubfolders([
         teamItem('inbox_fr', 'Boîte de réception', role: Role('inbox')),
-        teamItem('inbox_name', 'inbox'),
-        teamItem('aaa', 'aaa'),
+        teamItem('inbox_sys', 'INBOX', myRights: systemRights),
+        teamItem('aaa', 'aaa', myRights: userRights),
       ]);
       expect(
         children.map((n) => n.item.name?.name).toList(),
-        equals(['Boîte de réception', 'aaa', 'inbox']),
-        reason: 'System folders are identified by role — a localized inbox sorts first; a folder named "inbox" without a role is a user folder',
+        equals(['Boîte de réception', 'INBOX', 'aaa']),
+        reason: 'Role is the primary signal; mayDelete=false+name is the fallback — both land before user folders',
+      );
+    });
+
+    test('no-role system folders (mayDelete=false) sort before user folders via name — on both build paths', () async {
+      final teamRoot = PresentationMailbox(teamRootId, parentId: null, name: MailboxName('team'), namespace: teamNamespace);
+      final noRoleMailboxes = [
+        teamRoot,
+        teamItem('abd', 'ABD', myRights: userRights),
+        teamItem('inbox', 'INBOX', myRights: systemRights),
+        teamItem('drafts', 'Drafts', myRights: systemRights),
+        teamItem('sent', 'Sent', myRights: systemRights),
+        teamItem('outbox', 'Outbox', myRights: systemRights),
+        teamItem('trash', 'Trash', myRights: systemRights),
+        teamItem('templates', 'Templates', myRights: systemRights),
+      ];
+      const expected = ['INBOX', 'Drafts', 'Outbox', 'Sent', 'Trash', 'Templates', 'ABD'];
+
+      final inUIResult = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: noRoleMailboxes,
+        currentCollection: MailboxCollection.empty(),
+      );
+      final afterRefreshResult = await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
+        allMailboxes: noRoleMailboxes,
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      for (final result in [inUIResult, afterRefreshResult]) {
+        final children = result.teamMailboxTree.root.childrenItems?.first.childrenItems ?? [];
+        expect(
+          children.map((n) => n.item.name?.name).toList(),
+          equals(expected),
+          reason: 'When system folders carry no role, mayDelete=false+name-based fallback places them before user folders in canonical order',
+        );
+      }
+    });
+
+    test('user folder named like a system folder (mayDelete=true) sorts alphabetically', () async {
+      final children = await getSubfolders([
+        teamItem('inbox_sys', 'INBOX', myRights: systemRights),
+        teamItem('inbox_user', 'Inbox', myRights: userRights),
+        teamItem('abd', 'ABD', myRights: userRights),
+      ]);
+      expect(
+        children.map((n) => n.item.name?.name).toList(),
+        equals(['INBOX', 'ABD', 'Inbox']),
+        reason: 'mayDelete=true marks a user-created folder — even if the name matches a system folder, it sorts alphabetically with other user folders',
       );
     });
 

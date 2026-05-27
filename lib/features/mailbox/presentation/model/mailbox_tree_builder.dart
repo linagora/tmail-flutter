@@ -14,30 +14,6 @@ import 'mailbox_node.dart';
 import 'mailbox_tree.dart';
 
 class TreeBuilder {
-  Future<MailboxTree> generateMailboxTree(List<PresentationMailbox> mailboxesList) async {
-    final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
-
-    final tree = MailboxTree(MailboxNode.root());
-    for (var mailbox in mailboxesList) {
-      mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
-    }
-    for (var mailbox in mailboxesList) {
-      final node = mailboxDictionary[mailbox.id];
-      if (node == null) continue;
-
-      final parentId = mailbox.parentId;
-      final parentNode = mailboxDictionary[parentId];
-      if (parentNode != null) {
-        parentNode.addChildNode(node);
-        sortByMailboxNameNodeChildren(parentNode);
-      } else {
-        tree.root.addChildNode(node);
-        sortByMailboxNameNodeChildren(tree.root);
-      }
-    }
-    return tree;
-  }
-
   Future<MailboxCollection> generateMailboxTreeInUI({
     required List<PresentationMailbox> allMailboxes,
     required MailboxCollection currentCollection,
@@ -51,12 +27,10 @@ class TreeBuilder {
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
   
     final List<PresentationMailbox> newAllMailboxes = <PresentationMailbox>[];
+    final nodeLookup = _buildNodeLookup(currentCollection);
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = findExistingNode(
-        id: mailbox.id,
-        currentCollection: currentCollection,
-      );
+      final currentMailboxNode = nodeLookup[mailbox.id];
 
       final isDeactivated = mailbox.id == mailboxIdSelected;
       final newMailboxNode = MailboxNode(
@@ -80,8 +54,7 @@ class TreeBuilder {
         defaultTree: newDefaultTree,
         personalTree: newPersonalTree,
         teamMailboxTree: newTeamMailboxTree,
-        onBeforeAddToParent: (parent, child) =>
-            _propagateDeactivationIfNeeded(parent, child, mailbox),
+        onBeforeAddToParent: _propagateDeactivationIfNeeded,
       );
 
       newAllMailboxes.add(currentNode.item);
@@ -106,12 +79,10 @@ class TreeBuilder {
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newPersonalTree = MailboxTree(MailboxNode.root());
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
+    final nodeLookup = _buildNodeLookup(currentCollection);
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = findExistingNode(
-        id: mailbox.id,
-        currentCollection: currentCollection,
-      );
+      final currentMailboxNode = nodeLookup[mailbox.id];
 
       final newMailboxNode = MailboxNode(
         mailbox,
@@ -169,17 +140,16 @@ class TreeBuilder {
 
   void _finalizeTrees(MailboxTree defaultTree, MailboxTree personalTree, MailboxTree teamMailboxTree) {
     sortNodeChildren(defaultTree.root);
-    for (final child in defaultTree.root.childrenItems ?? []) {
-      _sortChildrenAlphabetically(child);
-    }
+    defaultTree.root.childrenItems?.forEach(_sortChildrenAlphabetically);
     _sortChildrenAlphabetically(personalTree.root);
     _applyTeamMailboxSorting(teamMailboxTree.root);
   }
 
   void _sortChildrenAlphabetically(MailboxNode node) {
-    if (node.childrenItems == null || node.childrenItems!.isEmpty) return;
+    final children = node.childrenItems;
+    if (children == null || children.isEmpty) return;
     sortByMailboxNameNodeChildren(node);
-    for (final child in node.childrenItems!) {
+    for (final child in children) {
       _sortChildrenAlphabetically(child);
     }
   }
@@ -208,14 +178,27 @@ class TreeBuilder {
   };
 
   int _systemFolderSortIndex(MailboxNode node) {
-    return _systemFolderRoleIndex[node.item.role?.value ?? '']
-        ?? _systemFolderRoleIndex.length;
+    final roleValue = node.item.role?.value ?? '';
+    if (roleValue.isNotEmpty) {
+      return _systemFolderRoleIndex[roleValue] ?? _systemFolderRoleIndex.length;
+    }
+    // No role: mayDelete=false means the server does not allow deletion,
+    // which identifies a system folder. Fall back to case-insensitive name
+    // matching to determine its canonical sort position.
+    if (node.item.myRights?.mayDelete == false) {
+      final nameLower = node.item.name?.name.toLowerCase() ?? '';
+      return _systemFolderRoleIndex[nameLower] ?? _systemFolderRoleIndex.length;
+    }
+    return _systemFolderRoleIndex.length;
   }
 
   void _sortWithSystemFoldersFirst(MailboxNode node) {
-    node.childrenItems?.sort((a, b) {
-      final aIndex = _systemFolderSortIndex(a);
-      final bIndex = _systemFolderSortIndex(b);
+    final children = node.childrenItems;
+    if (children == null || children.isEmpty) return;
+    final indexCache = {for (final child in children) child: _systemFolderSortIndex(child)};
+    children.sort((a, b) {
+      final aIndex = indexCache[a]!;
+      final bIndex = indexCache[b]!;
       final aIsSystem = aIndex < _systemFolderRoleIndex.length;
       final bIsSystem = bIndex < _systemFolderRoleIndex.length;
       if (aIsSystem && bIsSystem) return aIndex.compareTo(bIndex);
@@ -225,25 +208,39 @@ class TreeBuilder {
     });
   }
 
+  // Traversal strategy by depth:
+  //   virtual root (isPersonal=true)  → alphabetical — orders team account roots
+  //   team account root (isTeamMailboxes=true, depth=1) → system folders first, then alphabetical
+  //   children/grandchildren (hasParentId=true) → alphabetical
   void _applyTeamMailboxSorting(MailboxNode node) {
-    if (node.childrenItems == null || node.childrenItems!.isEmpty) return;
+    final children = node.childrenItems;
+    if (children == null || children.isEmpty) return;
     if (node.item.isTeamMailboxes) {
       _sortWithSystemFoldersFirst(node);
     } else {
       sortByMailboxNameNodeChildren(node);
     }
-    for (final child in node.childrenItems!) {
+    for (final child in children) {
       _applyTeamMailboxSorting(child);
     }
   }
 
-  MailboxNode? findExistingNode({
-    required MailboxId id,
-    required MailboxCollection currentCollection,
-  }) {
-    return currentCollection.defaultTree.findNode((node) => node.item.id == id) ??
-      currentCollection.personalTree.findNode((node) => node.item.id == id) ??
-      currentCollection.teamMailboxTree.findNode((node) => node.item.id == id);
+  // Flattens all three trees into a single O(1) lookup map.
+  // Avoids repeated O(n) DFS calls when resolving existing nodes for each mailbox.
+  Map<MailboxId, MailboxNode> _buildNodeLookup(MailboxCollection collection) {
+    final lookup = HashMap<MailboxId, MailboxNode>();
+    final stack = <MailboxNode>[
+      ...?collection.defaultTree.root.childrenItems,
+      ...?collection.personalTree.root.childrenItems,
+      ...?collection.teamMailboxTree.root.childrenItems,
+    ];
+    while (stack.isNotEmpty) {
+      final node = stack.removeLast();
+      lookup[node.item.id] = node;
+      final children = node.childrenItems;
+      if (children != null) stack.addAll(children);
+    }
+    return lookup;
   }
 
   MailboxTree _resolveTargetTree(
@@ -256,13 +253,9 @@ class TreeBuilder {
     return mailbox.isPersonal ? personalTree : teamMailboxTree;
   }
 
-  void _propagateDeactivationIfNeeded(
-    MailboxNode parentNode,
-    MailboxNode currentNode,
-    PresentationMailbox mailbox,
-  ) {
+  void _propagateDeactivationIfNeeded(MailboxNode parentNode, MailboxNode currentNode) {
     if (parentNode.nodeState != MailboxState.deactivated) return;
-    currentNode.updateItem(mailbox.withMailboxSate(MailboxState.deactivated));
+    currentNode.updateItem(currentNode.item.withMailboxSate(MailboxState.deactivated));
     currentNode.updateNodeState(MailboxState.deactivated);
   }
 }
