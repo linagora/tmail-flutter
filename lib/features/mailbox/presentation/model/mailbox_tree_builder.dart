@@ -87,7 +87,7 @@ class TreeBuilder {
       newAllMailboxes.add(currentNode.item);
     }
 
-    _finalizeTrees(newDefaultTree, newTeamMailboxTree);
+    _finalizeTrees(newDefaultTree, newPersonalTree, newTeamMailboxTree);
 
     return MailboxCollection(
       allMailboxes: newAllMailboxes,
@@ -136,7 +136,7 @@ class TreeBuilder {
       );
     }
 
-    _finalizeTrees(newDefaultTree, newTeamMailboxTree);
+    _finalizeTrees(newDefaultTree, newPersonalTree, newTeamMailboxTree);
 
     return MailboxCollection(
       allMailboxes: allMailboxes,
@@ -161,17 +161,27 @@ class TreeBuilder {
     if (parentNode != null) {
       onBeforeAddToParent?.call(parentNode, currentNode);
       parentNode.addChildNode(currentNode);
-      sortByMailboxNameNodeChildren(parentNode);
     } else {
       final targetTree = _resolveTargetTree(mailbox, defaultTree, personalTree, teamMailboxTree);
       targetTree.root.addChildNode(currentNode);
-      sortByMailboxNameNodeChildren(targetTree.root);
     }
   }
 
-  void _finalizeTrees(MailboxTree defaultTree, MailboxTree teamMailboxTree) {
+  void _finalizeTrees(MailboxTree defaultTree, MailboxTree personalTree, MailboxTree teamMailboxTree) {
     sortNodeChildren(defaultTree.root);
-    _sortTeamMailboxChildrenAlphabetically(teamMailboxTree.root);
+    for (final child in defaultTree.root.childrenItems ?? []) {
+      _sortChildrenAlphabetically(child);
+    }
+    _sortChildrenAlphabetically(personalTree.root);
+    _applyTeamMailboxSorting(teamMailboxTree.root);
+  }
+
+  void _sortChildrenAlphabetically(MailboxNode node) {
+    if (node.childrenItems == null || node.childrenItems!.isEmpty) return;
+    sortByMailboxNameNodeChildren(node);
+    for (final child in node.childrenItems!) {
+      _sortChildrenAlphabetically(child);
+    }
   }
 
   void sortNodeChildren(MailboxNode mailboxNode) {
@@ -215,7 +225,7 @@ class TreeBuilder {
     });
   }
 
-  void _sortTeamMailboxChildrenAlphabetically(MailboxNode node) {
+  void _applyTeamMailboxSorting(MailboxNode node) {
     if (node.childrenItems == null || node.childrenItems!.isEmpty) return;
     if (node.item.isTeamMailboxes) {
       _sortWithSystemFoldersFirst(node);
@@ -223,7 +233,7 @@ class TreeBuilder {
       sortByMailboxNameNodeChildren(node);
     }
     for (final child in node.childrenItems!) {
-      _sortTeamMailboxChildrenAlphabetically(child);
+      _applyTeamMailboxSorting(child);
     }
   }
 

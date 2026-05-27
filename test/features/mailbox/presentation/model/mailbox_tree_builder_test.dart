@@ -85,7 +85,7 @@ void main() {
       PresentationMailbox(MailboxId(Id('3_2_1')),   parentId: MailboxId(Id('3_2'))),
     ];
 
-    test('list mailbox is in ordered, parent come first, then children', () async {
+    test('mailbox list is in order: parent first, then children', () async {
       final generatedTree = await TreeBuilder().generateMailboxTree(
         [m1, m2, m3, m1_1, m1_2, m1_2_1, ...commonSuffix],
       );
@@ -95,16 +95,19 @@ void main() {
     // Tests that verify tree correctness regardless of input ordering.
     // Each tuple: (test description, the 6-item prefix whose order varies).
     final unorderedCases = <(String, List<PresentationMailbox>)>[
-      ('list mailbox is not in ordered, parent come first, then children, then grandpa',  [m2, m3, m1_1, m1_2, m1_2_1, m1]),
-      ('list mailbox is not in ordered, parent come first, then grandpa, then children',  [m2, m3, m1_1, m1_2, m1,     m1_2_1]),
-      ('list mailbox is not in ordered, children come first, then grandpa, then parent',  [m2, m3, m1_2_1, m1, m1_1,   m1_2]),
-      ('list mailbox is not in ordered, children come first, then parent, then grandpa',  [m2, m3, m1_2_1, m1_1, m1_2, m1]),
+      ('mailbox list is not ordered: parent first, then children, then grandparent',  [m2, m3, m1_1, m1_2, m1_2_1, m1]),
+      ('mailbox list is not ordered: parent first, then grandparent, then children',  [m2, m3, m1_1, m1_2, m1,     m1_2_1]),
+      ('mailbox list is not ordered: children first, then grandparent, then parent',  [m2, m3, m1_2_1, m1, m1_1,   m1_2]),
+      ('mailbox list is not ordered: children first, then parent, then grandparent',  [m2, m3, m1_2_1, m1_1, m1_2, m1]),
     ];
     for (final (description, prefix) in unorderedCases) {
       test(description, () async {
         final generatedTree = await TreeBuilder().generateMailboxTree([...prefix, ...commonSuffix]);
-        expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems!));
-        expect(generatedTree.root.childrenItems![2], equals(expectedTree.root.childrenItems![0]));
+        final expectedChildren = expectedTree.root.childrenItems!;
+        final generatedChildren = generatedTree.root.childrenItems!;
+        expect(generatedChildren.length, equals(expectedChildren.length));
+        expect(generatedChildren, containsAll(expectedChildren));
+        expect(generatedChildren[2], equals(expectedChildren[0]));
       });
     }
 
