@@ -73,23 +73,21 @@ class TreeBuilder {
       final currentNode = mailboxDictionary[mailbox.id];
       if (currentNode == null) continue;
 
-      final parentId = mailbox.parentId;
-      final parentNode = parentId != null ? mailboxDictionary[parentId] : null;
-
-      if (parentNode != null) {
-        _propagateDeactivationIfNeeded(parentNode, currentNode, mailbox);
-        parentNode.addChildNode(currentNode);
-        sortByMailboxNameNodeChildren(parentNode);
-      } else {
-        final targetTree = _resolveTargetTree(mailbox, newDefaultTree, newPersonalTree, newTeamMailboxTree);
-        targetTree.root.addChildNode(currentNode);
-        sortByMailboxNameNodeChildren(targetTree.root);
-      }
+      _placeNodeInTree(
+        mailbox: mailbox,
+        currentNode: currentNode,
+        mailboxDictionary: mailboxDictionary,
+        defaultTree: newDefaultTree,
+        personalTree: newPersonalTree,
+        teamMailboxTree: newTeamMailboxTree,
+        onBeforeAddToParent: (parent, child) =>
+            _propagateDeactivationIfNeeded(parent, child, mailbox),
+      );
 
       newAllMailboxes.add(currentNode.item);
     }
 
-    sortNodeChildren(newDefaultTree.root);
+    _finalizeTrees(newDefaultTree, newTeamMailboxTree);
 
     return MailboxCollection(
       allMailboxes: newAllMailboxes,
@@ -128,20 +126,17 @@ class TreeBuilder {
       final currentNode = mailboxDictionary[mailbox.id];
       if (currentNode == null) continue;
 
-      final parentId = mailbox.parentId;
-      final parentNode = parentId != null ? mailboxDictionary[parentId] : null;
-
-      if (parentNode != null) {
-        parentNode.addChildNode(currentNode);
-        sortByMailboxNameNodeChildren(parentNode);
-      } else {
-        final targetTree = _resolveTargetTree(mailbox, newDefaultTree, newPersonalTree, newTeamMailboxTree);
-        targetTree.root.addChildNode(currentNode);
-        sortByMailboxNameNodeChildren(targetTree.root);
-      }
+      _placeNodeInTree(
+        mailbox: mailbox,
+        currentNode: currentNode,
+        mailboxDictionary: mailboxDictionary,
+        defaultTree: newDefaultTree,
+        personalTree: newPersonalTree,
+        teamMailboxTree: newTeamMailboxTree,
+      );
     }
 
-    sortNodeChildren(newDefaultTree.root);
+    _finalizeTrees(newDefaultTree, newTeamMailboxTree);
 
     return MailboxCollection(
       allMailboxes: allMailboxes,
@@ -149,6 +144,34 @@ class TreeBuilder {
       personalTree: newPersonalTree,
       teamMailboxTree: newTeamMailboxTree,
     );
+  }
+
+  void _placeNodeInTree({
+    required PresentationMailbox mailbox,
+    required MailboxNode currentNode,
+    required Map<MailboxId, MailboxNode> mailboxDictionary,
+    required MailboxTree defaultTree,
+    required MailboxTree personalTree,
+    required MailboxTree teamMailboxTree,
+    void Function(MailboxNode parent, MailboxNode child)? onBeforeAddToParent,
+  }) {
+    final parentId = mailbox.parentId;
+    final parentNode = parentId != null ? mailboxDictionary[parentId] : null;
+
+    if (parentNode != null) {
+      onBeforeAddToParent?.call(parentNode, currentNode);
+      parentNode.addChildNode(currentNode);
+      sortByMailboxNameNodeChildren(parentNode);
+    } else {
+      final targetTree = _resolveTargetTree(mailbox, defaultTree, personalTree, teamMailboxTree);
+      targetTree.root.addChildNode(currentNode);
+      sortByMailboxNameNodeChildren(targetTree.root);
+    }
+  }
+
+  void _finalizeTrees(MailboxTree defaultTree, MailboxTree teamMailboxTree) {
+    sortNodeChildren(defaultTree.root);
+    _sortTeamMailboxChildrenAlphabetically(teamMailboxTree.root);
   }
 
   void sortNodeChildren(MailboxNode mailboxNode) {
@@ -160,6 +183,48 @@ class TreeBuilder {
       (node) => node.item.name,
       (name, other) => name?.compareAlphabetically(other) ?? -1,
     );
+  }
+
+  static const Map<String, int> _systemFolderRoleIndex = {
+    PresentationMailbox.inboxRole:     0,
+    PresentationMailbox.draftsRole:    1,
+    PresentationMailbox.outboxRole:    2,
+    PresentationMailbox.sentRole:      3,
+    PresentationMailbox.trashRole:     4,
+    PresentationMailbox.spamRole:      5,
+    PresentationMailbox.junkRole:      6,
+    PresentationMailbox.templatesRole: 7,
+    PresentationMailbox.archiveRole:   8,
+  };
+
+  int _systemFolderSortIndex(MailboxNode node) {
+    return _systemFolderRoleIndex[node.item.role?.value ?? '']
+        ?? _systemFolderRoleIndex.length;
+  }
+
+  void _sortWithSystemFoldersFirst(MailboxNode node) {
+    node.childrenItems?.sort((a, b) {
+      final aIndex = _systemFolderSortIndex(a);
+      final bIndex = _systemFolderSortIndex(b);
+      final aIsSystem = aIndex < _systemFolderRoleIndex.length;
+      final bIsSystem = bIndex < _systemFolderRoleIndex.length;
+      if (aIsSystem && bIsSystem) return aIndex.compareTo(bIndex);
+      if (aIsSystem) return -1;
+      if (bIsSystem) return 1;
+      return a.item.name?.compareAlphabetically(b.item.name) ?? -1;
+    });
+  }
+
+  void _sortTeamMailboxChildrenAlphabetically(MailboxNode node) {
+    if (node.childrenItems == null || node.childrenItems!.isEmpty) return;
+    if (node.item.isTeamMailboxes) {
+      _sortWithSystemFoldersFirst(node);
+    } else {
+      sortByMailboxNameNodeChildren(node);
+    }
+    for (final child in node.childrenItems!) {
+      _sortTeamMailboxChildrenAlphabetically(child);
+    }
   }
 
   MailboxNode? findExistingNode({
