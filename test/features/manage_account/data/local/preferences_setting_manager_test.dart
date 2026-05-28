@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -104,7 +103,7 @@ void main() {
 
     test(
       'WHEN a prefixed key holds malformed JSON\n'
-      'THEN an EmptyPreferencesConfig is included in the result',
+      'THEN that config is excluded and falls back to default',
       () async {
         await sharedPreferences.setString(
           storageKey(ThreadDetailConfig.keySuffix),
@@ -113,7 +112,8 @@ void main() {
 
         final result = await manager.loadPreferences();
 
-        expect(result.configs.whereType<EmptyPreferencesConfig>(), isNotEmpty);
+        expect(result.configs.whereType<ThreadDetailConfig>(), isEmpty);
+        expect(result.threadConfig, ThreadDetailConfig.initial());
       },
     );
 
