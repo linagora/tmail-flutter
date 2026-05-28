@@ -1,5 +1,6 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/dom/autolink_text_node_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' as html_parser;
@@ -581,9 +582,13 @@ void main() {
       test('SHOULD have AutolinkTextNodeTransformer before SanitizeHyperLinkTagInHtmlTransformer in forCalendarEvent()', () {
         final transformers = TransformConfiguration.forCalendarEvent().domTransformers;
         final autolinkIdx = transformers.indexWhere((t) => t is AutolinkTextNodeTransformer);
-        // SanitizeHyperLinkTagInHtmlTransformer must exist and come after
+        final sanitizeIdx = transformers.indexWhere((t) => t is SanitizeHyperLinkTagInHtmlTransformer);
         expect(autolinkIdx, greaterThanOrEqualTo(0),
             reason: 'AutolinkTextNodeTransformer must be in the list');
+        expect(sanitizeIdx, greaterThanOrEqualTo(0),
+            reason: 'SanitizeHyperLinkTagInHtmlTransformer must be in the list');
+        expect(autolinkIdx, lessThan(sanitizeIdx),
+            reason: 'AutolinkTextNodeTransformer must come before SanitizeHyperLinkTagInHtmlTransformer');
       });
     });
   });

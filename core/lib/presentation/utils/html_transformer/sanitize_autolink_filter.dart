@@ -29,11 +29,11 @@ class SanitizeAutolinkFilter {
 
       final result = _linkifyText(inputText);
 
-      log('SanitizeAutolinkFilter::process:htmlTextBuffer = $result');
+      log('SanitizeAutolinkFilter::process:resultLength = ${result.length}');
       return result;
     } catch (e) {
       logWarning('$runtimeType::process:Exception = $e');
-      return inputText;
+      return htmlEscape.convert(inputText);
     }
   }
 
