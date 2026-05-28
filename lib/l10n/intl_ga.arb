@@ -5411,7 +5411,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToEmailSuccessfullyMessage": "Seoladh ríomhphoist curtha leis an lipéad \"{labelName}\"",
+  "addLabelToEmailSuccessfullyMessage": "Cuireadh an lipéad \"{labelName}\" leis an ríomhphost",
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5421,7 +5421,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "Ní féidir ríomhphost a chur leis an lipéad \"{labelName}\"",
+  "addLabelToEmailFailureMessage": "Ní féidir an lipéad \"{labelName}\" a chur leis an ríomhphost",
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5437,7 +5437,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToThreadSuccessfullyMessage": "Cuireadh gach ríomhphost sa snáithe leis an lipéad \"{labelName}\"",
+  "addLabelToThreadSuccessfullyMessage": "Cuireadh an lipéad \"{labelName}\" le gach ríomhphost sa snáithe",
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5447,7 +5447,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "Ní féidir gach ríomhphost sa snáithe a chur leis an lipéad \"{labelName}\"",
+  "addLabelToThreadFailureMessage": "Ní féidir an lipéad \"{labelName}\" a chur le gach ríomhphost sa snáithe",
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5497,7 +5497,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "removeLabelFromEmailSuccessfullyMessage": "Baineadh an ríomhphost ón lipéad \"{labelName}\"",
+  "removeLabelFromEmailSuccessfullyMessage": "Baineadh an lipéad \"{labelName}\" den ríomhphost",
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5507,7 +5507,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "Ní féidir ríomhphost a bhaint den lipéad \"{labelName}\"",
+  "removeLabelFromEmailFailureMessage": "Ní féidir an lipéad \"{labelName}\" a bhaint den ríomhphost",
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5517,7 +5517,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "Baineadh gach ríomhphost sa snáithe den lipéad \"{labelName}\"",
+  "removeLabelFromThreadSuccessfullyMessage": "Baineadh an lipéad \"{labelName}\" de gach ríomhphost sa snáithe",
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5527,7 +5527,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Ní féidir gach ríomhphost sa snáithe a bhaint den lipéad \"{labelName}\"",
+  "removeLabelFromThreadFailureMessage": "Ní féidir an lipéad \"{labelName}\" a bhaint de gach ríomhphost sa snáithe",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

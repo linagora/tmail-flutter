@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-05-26T13:37:50.997089",
+  "@@last_modified": "2026-05-28T18:17:44.649881",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5290,7 +5290,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToEmailSuccessfullyMessage": "Email added to the \"{labelName}\" label",
+  "addLabelToEmailSuccessfullyMessage": "Label \"{labelName}\" added to email",
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5300,7 +5300,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "Cannot add email to the \"{labelName}\" label",
+  "addLabelToEmailFailureMessage": "Cannot add label \"{labelName}\" to email",
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5316,7 +5316,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToThreadSuccessfullyMessage": "All emails in thread added to the \"{labelName}\" label",
+  "addLabelToThreadSuccessfullyMessage": "Label \"{labelName}\" added to all emails in thread",
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5326,7 +5326,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "Cannot add all emails in thread to the \"{labelName}\" label",
+  "addLabelToThreadFailureMessage": "Cannot add label \"{labelName}\" to all emails in thread",
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5376,7 +5376,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "removeLabelFromEmailSuccessfullyMessage": "Email removed from the \"{labelName}\" label",
+  "removeLabelFromEmailSuccessfullyMessage": "Label \"{labelName}\" removed from email",
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5386,7 +5386,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "Cannot remove email from the \"{labelName}\" label",
+  "removeLabelFromEmailFailureMessage": "Cannot remove label \"{labelName}\" from email",
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5396,7 +5396,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "All emails in thread removed from the \"{labelName}\" label",
+  "removeLabelFromThreadSuccessfullyMessage": "Label \"{labelName}\" removed from all emails in thread",
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5406,7 +5406,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Cannot remove all emails in thread from the \"{labelName}\" label",
+  "removeLabelFromThreadFailureMessage": "Cannot remove label \"{labelName}\" from all emails in thread",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

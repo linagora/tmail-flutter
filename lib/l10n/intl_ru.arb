@@ -5672,7 +5672,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailSuccessfullyMessage": "Письмо добавлено в метку \"{labelName}\"",
+  "addLabelToEmailSuccessfullyMessage": "Метка \"{labelName}\" добавлена к письму",
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5682,7 +5682,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "Не удалось добавить письмо в метку \"{labelName}\"",
+  "addLabelToEmailFailureMessage": "Не удалось добавить метку \"{labelName}\" к письму",
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5692,7 +5692,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailSuccessfullyMessage": "Письмо удалено из метки \"{labelName}\"",
+  "removeLabelFromEmailSuccessfullyMessage": "Метка \"{labelName}\" удалена с письма",
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5702,7 +5702,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "Не удалось удалить письмо из метки \"{labelName}\"",
+  "removeLabelFromEmailFailureMessage": "Не удалось удалить метку \"{labelName}\" с письма",
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5712,7 +5712,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadSuccessfullyMessage": "Все письма в цепочке добавлены в метку \"{labelName}\"",
+  "addLabelToThreadSuccessfullyMessage": "Метка \"{labelName}\" добавлена ко всем письмам в цепочке",
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5722,7 +5722,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "Не удалось добавить все письма в цепочке в метку \"{labelName}\"",
+  "addLabelToThreadFailureMessage": "Не удалось добавить метку \"{labelName}\" ко всем письмам в цепочке",
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5732,7 +5732,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "Все письма в цепочке удалены из метки \"{labelName}\"",
+  "removeLabelFromThreadSuccessfullyMessage": "Метка \"{labelName}\" удалена со всех писем в цепочке",
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5742,7 +5742,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Не удалось удалить все письма в цепочке из метки \"{labelName}\"",
+  "removeLabelFromThreadFailureMessage": "Не удалось удалить метку \"{labelName}\" со всех писем в цепочке",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

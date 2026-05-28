@@ -5405,7 +5405,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToEmailSuccessfullyMessage": "邮件已添加至“{labelName}”标签",
+  “addLabelToEmailSuccessfullyMessage”: “标签”{labelName}”已添加至邮件”,
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5415,7 +5415,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "无法将邮件添加至“{labelName}”标签",
+  “addLabelToEmailFailureMessage”: “无法将标签”{labelName}”添加至邮件”,
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5431,7 +5431,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addLabelToThreadSuccessfullyMessage": "线程中的所有邮件已添加至“{labelName}”标签",
+  “addLabelToThreadSuccessfullyMessage”: “标签”{labelName}”已添加至线程中的所有邮件”,
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5441,7 +5441,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "无法将线程中的所有邮件添加至“{labelName}”标签",
+  “addLabelToThreadFailureMessage”: “无法将标签”{labelName}”添加至线程中的所有邮件”,
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5491,7 +5491,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "removeLabelFromEmailSuccessfullyMessage": "邮件已从“{labelName}”标签移除",
+  “removeLabelFromEmailSuccessfullyMessage”: “标签”{labelName}”已从邮件移除”,
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5501,7 +5501,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "无法从“{labelName}”标签移除邮件",
+  “removeLabelFromEmailFailureMessage”: “无法从邮件移除标签”{labelName}””,
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5511,7 +5511,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "线程中的所有邮件已从“{labelName}”标签移除",
+  “removeLabelFromThreadSuccessfullyMessage”: “标签”{labelName}”已从线程中的所有邮件移除”,
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5521,7 +5521,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "无法从“{labelName}”标签移除线程中的所有邮件",
+  “removeLabelFromThreadFailureMessage”: “无法从线程中的所有邮件移除标签”{labelName}””,
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

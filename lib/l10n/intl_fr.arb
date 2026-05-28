@@ -5654,7 +5654,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailSuccessfullyMessage": "E-mail ajouté au libellé \"{labelName}\"",
+  "addLabelToEmailSuccessfullyMessage": "Libellé \"{labelName}\" ajouté à l'e-mail",
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5664,7 +5664,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "Impossible d'ajouter l'e-mail au libellé \"{labelName}\"",
+  "addLabelToEmailFailureMessage": "Impossible d'ajouter le libellé \"{labelName}\" à l'e-mail",
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5674,7 +5674,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailSuccessfullyMessage": "E-mail retiré du libellé \"{labelName}\"",
+  "removeLabelFromEmailSuccessfullyMessage": "Libellé \"{labelName}\" retiré de l'e-mail",
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5684,7 +5684,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "Impossible de retirer l'e-mail du libellé \"{labelName}\"",
+  "removeLabelFromEmailFailureMessage": "Impossible de retirer le libellé \"{labelName}\" de l'e-mail",
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5694,7 +5694,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadSuccessfullyMessage": "Tous les e-mails du fil ont été ajoutés au libellé \"{labelName}\"",
+  "addLabelToThreadSuccessfullyMessage": "Libellé \"{labelName}\" ajouté à tous les e-mails du fil",
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5704,7 +5704,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "Impossible d'ajouter tous les e-mails du fil au libellé \"{labelName}\"",
+  "addLabelToThreadFailureMessage": "Impossible d'ajouter le libellé \"{labelName}\" à tous les e-mails du fil",
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5714,7 +5714,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "Tous les e-mails du fil ont été retirés du libellé \"{labelName}\"",
+  "removeLabelFromThreadSuccessfullyMessage": "Libellé \"{labelName}\" retiré de tous les e-mails du fil",
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5724,7 +5724,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Impossible de retirer tous les e-mails du fil du libellé \"{labelName}\"",
+  "removeLabelFromThreadFailureMessage": "Impossible de retirer le libellé \"{labelName}\" de tous les e-mails du fil",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
