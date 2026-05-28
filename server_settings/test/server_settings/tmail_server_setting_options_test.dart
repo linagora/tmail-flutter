@@ -54,7 +54,7 @@ void main() {
     group('copyWith', () {
       test('overrides aiLabelCategorizationEnabled', () {
         final original = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
-        final copy = original.copyWith(aiNeedsActionEnabled: true);
+        final copy = original.copyWith(aiLabelCategorizationEnabled: true);
         expect(copy.aiLabelCategorizationEnabled, isTrue);
       });
 
