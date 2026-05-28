@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-04-17T18:25:40.778609",
+  "@@last_modified": "2026-05-26T13:37:50.997089",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5184,24 +5184,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiNeedsAction": "AI needs-action",
-  "@aiNeedsAction": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiNeedsActionToggleDescription": "Enable AI needs-action",
-  "@aiNeedsActionToggleDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiNeedsActionSettingExplanation": "Detect emails that need your attention using AI. When turned off, AI will not process any emails.",
-  "@aiNeedsActionSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "labels": "Labels",
   "@labels": {
     "type": "text",
@@ -5546,6 +5528,24 @@
   },
   "createALabel": "Create a label",
   "@createALabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorization": "Label categorisation",
+  "@aiLabelCategorization": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationToggleDescription": "Enable label categorisation",
+  "@aiLabelCategorizationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationSettingExplanation": "Apply my labels on incoming emails using their description",
+  "@aiLabelCategorizationSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

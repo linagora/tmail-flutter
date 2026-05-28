@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 extension SetupAiNeedsActionSettingExtension on MailboxDashBoardController {
   void setupAINeedsActionSetting({TMailServerSettingOptions? options}) {
     if (options != null) {
-      isAINeedsActionSettingEnabled.value = options.isAINeedsActionEnabled;
+      isAINeedsActionSettingEnabled.value = options.isAILabelCategorizationEnabled;
     } else {
       isAINeedsActionSettingEnabled.value = false;
     }

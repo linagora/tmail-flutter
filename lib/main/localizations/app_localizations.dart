@@ -5500,27 +5500,6 @@ class AppLocalizations {
     );
   }
 
-  String get aiNeedsAction {
-    return Intl.message(
-      'AI needs-action',
-      name: 'aiNeedsAction',
-    );
-  }
-
-  String get aiNeedsActionToggleDescription {
-    return Intl.message(
-      'Enable AI needs-action',
-      name: 'aiNeedsActionToggleDescription',
-    );
-  }
-
-  String get aiNeedsActionSettingExplanation {
-    return Intl.message(
-      'Detect emails that need your attention using AI. When turned off, AI will not process any emails.',
-      name: 'aiNeedsActionSettingExplanation',
-    );
-  }
-
   String get labels {
     return Intl.message(
       'Labels',
@@ -5879,6 +5858,27 @@ class AppLocalizations {
     return Intl.message(
       'Create a label',
       name: 'createALabel',
+    );
+  }
+
+  String get aiLabelCategorization {
+    return Intl.message(
+      'Label categorisation',
+      name: 'aiLabelCategorization',
+    );
+  }
+
+  String get aiLabelCategorizationToggleDescription {
+    return Intl.message(
+      'Enable label categorisation',
+      name: 'aiLabelCategorizationToggleDescription',
+    );
+  }
+
+  String get aiLabelCategorizationSettingExplanation {
+    return Intl.message(
+      'Apply my labels on incoming emails using their description',
+      name: 'aiLabelCategorizationSettingExplanation',
     );
   }
 }
