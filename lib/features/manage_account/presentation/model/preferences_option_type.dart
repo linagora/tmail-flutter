@@ -10,7 +10,7 @@ enum PreferencesOptionType {
   thread(isLocal: true),
   spamReport(isLocal: true),
   aiScribe(isLocal: true),
-  aiNeedsAction(isLocal: false),
+  aiLabelCategorization(isLocal: false),
   label(isLocal: true);
 
   final bool isLocal;
@@ -29,7 +29,7 @@ enum PreferencesOptionType {
         return appLocalizations.spamReports;
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribe;
-      case PreferencesOptionType.aiNeedsAction:
+      case PreferencesOptionType.aiLabelCategorization:
         return appLocalizations.aiLabelCategorization;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibility;
@@ -48,7 +48,7 @@ enum PreferencesOptionType {
         return appLocalizations.spamReportsSettingExplanation;
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribeSettingExplanation;
-      case PreferencesOptionType.aiNeedsAction:
+      case PreferencesOptionType.aiLabelCategorization:
         return appLocalizations.aiLabelCategorizationSettingExplanation;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilitySettingExplanation;
@@ -67,7 +67,7 @@ enum PreferencesOptionType {
         return appLocalizations.spamReportToggleDescription;
       case PreferencesOptionType.aiScribe:
         return appLocalizations.aiScribeToggleDescription;
-      case PreferencesOptionType.aiNeedsAction:
+      case PreferencesOptionType.aiLabelCategorization:
         return appLocalizations.aiLabelCategorizationToggleDescription;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilityToggleDescription;
@@ -89,8 +89,8 @@ enum PreferencesOptionType {
         return preferencesSetting.spamReportConfig.isEnabled;
       case PreferencesOptionType.aiScribe:
         return preferencesSetting.aiScribeConfig.isEnabled;
-      case PreferencesOptionType.aiNeedsAction:
-        return settingOption?.isAINeedsActionEnabled ?? false;
+      case PreferencesOptionType.aiLabelCategorization:
+        return settingOption?.isAILabelCategorizationEnabled ?? false;
       case PreferencesOptionType.label:
         return preferencesSetting.labelConfig.isEnabled;
     }

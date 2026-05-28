@@ -72,7 +72,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                         ...PreferencesOptionType.values.where(
                           (type) =>
                               !type.isLocal &&
-                              type != PreferencesOptionType.aiNeedsAction,
+                              type != PreferencesOptionType.aiLabelCategorization,
                         ),
                       if (localSettingOption.configs.isNotEmpty)
                         ...PreferencesOptionType.values.where(
@@ -84,7 +84,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                         ),
                       if (settingOption != null &&
                           controller.isAICapabilitySupported)
-                        PreferencesOptionType.aiNeedsAction,
+                        PreferencesOptionType.aiLabelCategorization,
                       if (isLabelVisibility.isTrue)
                         PreferencesOptionType.label,
                     ];

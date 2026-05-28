@@ -9,31 +9,31 @@ void main() {
         final options = TMailServerSettingOptions.fromJson({
           'ai.label-categorization.enabled': 'true',
         });
-        expect(options.aiNeedsActionEnabled, isTrue);
+        expect(options.aiLabelCategorizationEnabled, isTrue);
       });
 
       test('parses ai.label-categorization.enabled as false', () {
         final options = TMailServerSettingOptions.fromJson({
           'ai.label-categorization.enabled': 'false',
         });
-        expect(options.aiNeedsActionEnabled, isFalse);
+        expect(options.aiLabelCategorizationEnabled, isFalse);
       });
 
       test('leaves aiNeedsActionEnabled null when key absent', () {
         final options = TMailServerSettingOptions.fromJson({});
-        expect(options.aiNeedsActionEnabled, isNull);
+        expect(options.aiLabelCategorizationEnabled, isNull);
       });
     });
 
     group('toJson', () {
       test('serializes ai.label-categorization.enabled when set to true', () {
-        final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
+        final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
         final json = options.toJson();
         expect(json['ai.label-categorization.enabled'], isNotNull);
       });
 
       test('serializes ai.label-categorization.enabled when set to false', () {
-        final options = TMailServerSettingOptions(aiNeedsActionEnabled: false);
+        final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
         final json = options.toJson();
         expect(json['ai.label-categorization.enabled'], isNotNull);
       });
@@ -45,47 +45,47 @@ void main() {
       });
 
       test('does not include legacy ai.needs-action.enabled key', () {
-        final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
+        final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
         final json = options.toJson();
         expect(json.containsKey('ai.needs-action.enabled'), isFalse);
       });
     });
 
     group('copyWith', () {
-      test('overrides aiNeedsActionEnabled', () {
-        final original = TMailServerSettingOptions(aiNeedsActionEnabled: false);
+      test('overrides aiLabelCategorizationEnabled', () {
+        final original = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
         final copy = original.copyWith(aiNeedsActionEnabled: true);
-        expect(copy.aiNeedsActionEnabled, isTrue);
+        expect(copy.aiLabelCategorizationEnabled, isTrue);
       });
 
-      test('preserves aiNeedsActionEnabled when not supplied', () {
-        final original = TMailServerSettingOptions(aiNeedsActionEnabled: true);
+      test('preserves aiLabelCategorizationEnabled when not supplied', () {
+        final original = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
         final copy = original.copyWith(alwaysReadReceipts: false);
-        expect(copy.aiNeedsActionEnabled, isTrue);
+        expect(copy.aiLabelCategorizationEnabled, isTrue);
       });
 
-      test('preserves aiNeedsActionEnabled as null when not supplied', () {
+      test('preserves aiLabelCategorizationEnabled as null when not supplied', () {
         final original = TMailServerSettingOptions();
         final copy = original.copyWith(alwaysReadReceipts: false);
-        expect(copy.aiNeedsActionEnabled, isNull);
+        expect(copy.aiLabelCategorizationEnabled, isNull);
       });
     });
   });
 
   group('TmailServerSettingsExtension', () {
-    test('isAINeedsActionEnabled returns true when aiNeedsActionEnabled is true', () {
-      final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
-      expect(options.isAINeedsActionEnabled, isTrue);
+    test('isAILabelCategorizationEnabled returns true when aiLabelCategorizationEnabled is true', () {
+      final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
+      expect(options.isAILabelCategorizationEnabled, isTrue);
     });
 
-    test('isAINeedsActionEnabled returns false when aiNeedsActionEnabled is false', () {
-      final options = TMailServerSettingOptions(aiNeedsActionEnabled: false);
-      expect(options.isAINeedsActionEnabled, isFalse);
+    test('isAILabelCategorizationEnabled returns false when aiLabelCategorizationEnabled is false', () {
+      final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
+      expect(options.isAILabelCategorizationEnabled, isFalse);
     });
 
-    test('isAINeedsActionEnabled defaults to false when aiNeedsActionEnabled is null', () {
+    test('isAILabelCategorizationEnabled defaults to false when aiLabelCategorizationEnabled is null', () {
       final options = TMailServerSettingOptions();
-      expect(options.isAINeedsActionEnabled, isFalse);
+      expect(options.isAILabelCategorizationEnabled, isFalse);
     });
   });
 }

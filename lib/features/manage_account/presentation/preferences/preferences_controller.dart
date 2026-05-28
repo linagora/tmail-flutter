@@ -196,9 +196,9 @@ class PreferencesController extends BaseController {
           displaySenderPriority: !isEnabled,
         );
         break;
-      case PreferencesOptionType.aiNeedsAction:
+      case PreferencesOptionType.aiLabelCategorization:
         newSettingOption = settingOption.value?.copyWith(
-          aiNeedsActionEnabled: !isEnabled,
+          aiLabelCategorizationEnabled: !isEnabled,
         );
         break;
       default:
