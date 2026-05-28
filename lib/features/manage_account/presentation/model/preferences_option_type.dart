@@ -61,6 +61,9 @@ enum PreferencesOptionType {
         ),
       };
 
+  static List<PreferencesOptionType> get missingFromStringBuilders =>
+      values.where((e) => !_stringBuilders.containsKey(e)).toList();
+
   // CHECKLIST: when adding a new PreferencesOptionType value, add an entry here.
   _OptionStrings _strings(AppLocalizations l) {
     final fn = _stringBuilders[this];
@@ -75,6 +78,9 @@ enum PreferencesOptionType {
   String getExplanation(AppLocalizations l) => _strings(l).explanation;
 
   String getToggleDescription(AppLocalizations l) => _strings(l).toggleDescription;
+
+  static List<PreferencesOptionType> get missingFromEnabledResolvers =>
+      values.where((e) => !_enabledResolvers.containsKey(e)).toList();
 
   // CHECKLIST: when adding a new PreferencesOptionType value, add an entry here.
   static final _enabledResolvers =
