@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
-import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -36,13 +33,7 @@ void main() {
     Future<String> transformDescription(String description) =>
         htmlAnalyzer.transformHtmlEmailContent(
           description,
-          TransformConfiguration.create(
-            customTextTransformers: const [
-              SanitizeAutolinkUnescapeHtmlTransformer(),
-              StandardizeHtmlSanitizingTransformers(),
-              NewLineTransformer(),
-            ],
-          ),
+          TransformConfiguration.forCalendarEvent(),
         );
 
     group('Backslash-hex patterns — regression for \\XX false-positive', () {
@@ -215,38 +206,6 @@ void main() {
         // an empty description must leave the body element empty.
         final result = await transformDescription('');
         expect(result, contains('<body></body>'));
-      });
-    });
-
-    // Verify the exact production config factory — forCalendarEvent() uses a
-    // custom DOM transformer (SanitizeHyperLinkTagInHtmlTransformer) instead of
-    // the standard DOM stack. The cases below guard against regressions where a
-    // change to the factory silently breaks the calendar description pipeline.
-    group('Production config — TransformConfiguration.forCalendarEvent()', () {
-      Future<String> transformWithProductionConfig(String description) =>
-          htmlAnalyzer.transformHtmlEmailContent(
-            description,
-            TransformConfiguration.forCalendarEvent(),
-          );
-
-      test('SHOULD preserve existing <a href> through the production DOM transformer', () async {
-        const description = '<a href="https://example.com/meeting">Join Zoom</a>';
-        final result = await transformWithProductionConfig(description);
-        expect(result, contains('href="https://example.com/meeting"'));
-        expect(result, contains('Join Zoom'));
-      });
-
-      test('SHOULD autolink a bare URL through the production DOM transformer', () async {
-        const description = 'Join at https://meet.example.com/room/123';
-        final result = await transformWithProductionConfig(description);
-        expect(result, contains('href="https://meet.example.com/room/123"'));
-      });
-
-      test('SHOULD block XSS in the production config pipeline', () async {
-        const description = 'Notes: <script>document.cookie</script>';
-        final result = await transformWithProductionConfig(description);
-        expect(result, isNot(contains(RegExp(r'<script\b', caseSensitive: false))));
-        expect(result, contains('Notes'));
       });
     });
   });
