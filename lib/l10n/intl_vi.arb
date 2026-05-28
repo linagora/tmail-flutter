@@ -5660,7 +5660,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailSuccessfullyMessage": "Đã thêm email vào nhãn \"{labelName}\"",
+  "addLabelToEmailSuccessfullyMessage": "Nhãn \"{labelName}\" đã được thêm vào email",
   "@addLabelToEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5670,7 +5670,7 @@
       "labelName": {}
     }
   },
-  "addLabelToEmailFailureMessage": "Không thể thêm email vào nhãn \"{labelName}\"",
+  "addLabelToEmailFailureMessage": "Không thể thêm nhãn \"{labelName}\" vào email",
   "@addLabelToEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5680,7 +5680,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailSuccessfullyMessage": "Đã gỡ email khỏi nhãn \"{labelName}\"",
+  "removeLabelFromEmailSuccessfullyMessage": "Nhãn \"{labelName}\" đã được gỡ khỏi email",
   "@removeLabelFromEmailSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5690,7 +5690,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromEmailFailureMessage": "Không thể gỡ email khỏi nhãn \"{labelName}\"",
+  "removeLabelFromEmailFailureMessage": "Không thể gỡ nhãn \"{labelName}\" khỏi email",
   "@removeLabelFromEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5700,7 +5700,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadSuccessfullyMessage": "Tất cả email trong chuỗi đã được thêm vào nhãn \"{labelName}\"",
+  "addLabelToThreadSuccessfullyMessage": "Nhãn \"{labelName}\" đã được thêm vào tất cả email trong chuỗi",
   "@addLabelToThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5710,7 +5710,7 @@
       "labelName": {}
     }
   },
-  "addLabelToThreadFailureMessage": "Không thể thêm tất cả email trong chuỗi vào nhãn \"{labelName}\"",
+  "addLabelToThreadFailureMessage": "Không thể thêm nhãn \"{labelName}\" vào tất cả email trong chuỗi",
   "@addLabelToThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5720,7 +5720,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadSuccessfullyMessage": "Tất cả email trong chuỗi đã được gỡ khỏi nhãn \"{labelName}\"",
+  "removeLabelFromThreadSuccessfullyMessage": "Nhãn \"{labelName}\" đã được gỡ khỏi tất cả email trong chuỗi",
   "@removeLabelFromThreadSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -5730,7 +5730,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Không thể gỡ tất cả email trong chuỗi khỏi nhãn \"{labelName}\"",
+  "removeLabelFromThreadFailureMessage": "Không thể gỡ nhãn \"{labelName}\" khỏi tất cả email trong chuỗi",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

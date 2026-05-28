@@ -5622,7 +5622,7 @@ class AppLocalizations {
 
   String addLabelToEmailSuccessfullyMessage(String labelName) {
     return Intl.message(
-      'Email added to the "$labelName" label',
+      'Label "$labelName" added to email',
       name: 'addLabelToEmailSuccessfullyMessage',
       args: [labelName],
     );
@@ -5630,7 +5630,7 @@ class AppLocalizations {
 
   String addLabelToEmailFailureMessage(String labelName) {
     return Intl.message(
-      'Cannot add email to the "$labelName" label',
+      'Cannot add label "$labelName" to email',
       name: 'addLabelToEmailFailureMessage',
       args: [labelName],
     );
@@ -5645,7 +5645,7 @@ class AppLocalizations {
 
   String addLabelToThreadSuccessfullyMessage(String labelName) {
     return Intl.message(
-      'All emails in thread added to the "$labelName" label',
+      'Label "$labelName" added to all emails in thread',
       name: 'addLabelToThreadSuccessfullyMessage',
       args: [labelName],
     );
@@ -5653,7 +5653,7 @@ class AppLocalizations {
 
   String addLabelToThreadFailureMessage(String labelName) {
     return Intl.message(
-      'Cannot add all emails in thread to the "$labelName" label',
+      'Cannot add label "$labelName" to all emails in thread',
       name: 'addLabelToThreadFailureMessage',
       args: [labelName],
     );
@@ -5704,7 +5704,7 @@ class AppLocalizations {
   }
   String removeLabelFromEmailSuccessfullyMessage(String labelName) {
     return Intl.message(
-      'Email removed from the "$labelName" label',
+      'Label "$labelName" removed from email',
       name: 'removeLabelFromEmailSuccessfullyMessage',
       args: [labelName],
     );
@@ -5712,7 +5712,7 @@ class AppLocalizations {
 
   String removeLabelFromEmailFailureMessage(String labelName) {
     return Intl.message(
-      'Cannot remove email from the "$labelName" label',
+      'Cannot remove label "$labelName" from email',
       name: 'removeLabelFromEmailFailureMessage',
       args: [labelName],
     );
@@ -5720,7 +5720,7 @@ class AppLocalizations {
 
   String removeLabelFromThreadSuccessfullyMessage(String labelName) {
     return Intl.message(
-      'All emails in thread removed from the "$labelName" label',
+      'Label "$labelName" removed from all emails in thread',
       name: 'removeLabelFromThreadSuccessfullyMessage',
       args: [labelName],
     );
@@ -5728,7 +5728,7 @@ class AppLocalizations {
 
   String removeLabelFromThreadFailureMessage(String labelName) {
     return Intl.message(
-      'Cannot remove all emails in thread from the "$labelName" label',
+      'Cannot remove label "$labelName" from all emails in thread',
       name: 'removeLabelFromThreadFailureMessage',
       args: [labelName],
     );
