@@ -1,6 +1,6 @@
+import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
