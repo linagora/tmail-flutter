@@ -4,7 +4,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
@@ -44,7 +43,7 @@ class PreferencesSettingManager {
       return PreferencesSetting.initial();
     }
 
-    return PreferencesSetting(preferenceKeys.map(_parseConfig).toList());
+    return PreferencesSetting(preferenceKeys.map(_parseConfig).nonNulls.toList());
   }
 
   // SpamReportConfig is read-merge-written to preserve lastTimeDismissedMilliseconds.
@@ -97,16 +96,16 @@ class PreferencesSettingManager {
         fromJson: LabelConfig.fromJson,
       );
 
-  PreferencesConfig _parseConfig(String key) {
+  PreferencesConfig? _parseConfig(String key) {
     final jsonString = _sharedPreferences.getString(key);
-    if (jsonString == null) return EmptyPreferencesConfig();
+    if (jsonString == null) return null;
     try {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       final factory = _configFactories[key];
       return factory != null ? factory(json) : DefaultPreferencesConfig.fromJson(json);
     } catch (e) {
       log('PreferencesSettingManager::_parseConfig(): failed to parse key=$key error=$e');
-      return EmptyPreferencesConfig();
+      return null;
     }
   }
 
