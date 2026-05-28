@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
-import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -33,24 +30,14 @@ void main() {
       );
     });
 
-    // Applies the same transformer chain as _parseCalendarEventAction.
     Future<String> transformDescription(String description) =>
         htmlAnalyzer.transformHtmlEmailContent(
           description,
-          TransformConfiguration.create(
-            customTextTransformers: const [
-              SanitizeAutolinkHtmlTransformers(),
-              SanitizePlainTextHtmlOutputTransformer(),
-              NewLineTransformer(),
-            ],
-          ),
+          TransformConfiguration.forCalendarEvent(),
         );
 
     group('Backslash-hex patterns — regression for \\XX false-positive', () {
       test('SHOULD NOT blank out an ICS description with PHP namespace separators', () async {
-        // ICS DESCRIPTION: "Server path: \Corp\DAV\Server\Exception\Forbidden"
-        // Before fix: the pipeline used escapeHtml:false + StandardizeHtmlSanitizingTransformers.
-        // \DA in a PHP-style namespace matched unicodeEscapeReg and stripped the entire text node → blank output.
         const description = r'Meeting exception: \Corp\DAV\Server\Exception\Forbidden — contact IT';
         final result = await transformDescription(description);
         expect(result, contains(r'\Corp\DAV\Server\Exception'));
@@ -83,22 +70,77 @@ void main() {
         expect(result, contains('Meeting notes'));
       });
 
-      test('SHOULD neutralise event handler injection — <img> becomes HTML-escaped text', () async {
-        // SanitizeAutolinkHtmlTransformers (escapeHtml: true) converts < and >
-        // to &lt; / &gt; before any parsing, so the <img onerror=...> tag can
-        // never be interpreted as an element. The text "onerror" may still appear
-        // in the escaped representation, but it cannot execute.
+      test('SHOULD strip event-handler attributes from HTML elements', () async {
         const description = '<img src="x" onerror="alert(1)"> Team photo';
         final result = await transformDescription(description);
-        expect(result, isNot(contains(RegExp(r'<img\b', caseSensitive: false))));
+        expect(result, isNot(contains('onerror')));
         expect(result, contains('Team photo'));
       });
 
-      test('SHOULD HTML-escape < and > so they render as text, not markup', () async {
-        const description = 'Status: a < b && b > 0';
+      test('SHOULD preserve HTML entities in ICS description', () async {
+        const description = 'Status: a &lt; b &amp;&amp; b &gt; 0';
         final result = await transformDescription(description);
         expect(result, contains('&lt;'));
         expect(result, contains('&gt;'));
+      });
+    });
+
+    group('HTML passthrough — HTML descriptions rendered as formatted content', () {
+      test('SHOULD preserve an existing HTML link destination and text', () async {
+        // Real-world calendar invites embed join links as HTML <a href>.
+        const description = '<a href="https://example.com/meeting">Join Zoom</a>';
+        final result = await transformDescription(description);
+        // The original destination URL must survive intact.
+        expect(result, contains('href="https://example.com/meeting"'));
+        // The visible link text must survive.
+        expect(result, contains('Join Zoom'));
+        // The markup must not be mangled into garbage by the linkifier.
+        expect(result, isNot(contains('<ahref')));
+      });
+
+      test('SHOULD pass through safe HTML tags so they render as formatted content', () async {
+        const description = '<p>Welcome to the <b>quarterly review</b></p>';
+        final result = await transformDescription(description);
+        expect(result, contains('<p>'));
+        expect(result, contains('<b>'));
+        expect(result, contains('quarterly review'));
+        // Verify tags are rendered, not escaped as visible text.
+        expect(result, isNot(contains('&lt;p&gt;')));
+        expect(result, isNot(contains('&lt;b&gt;')));
+      });
+
+      test('SHOULD preserve nested HTML list structure', () async {
+        const description = '<ul><li>Item 1</li><li>Item 2</li></ul>';
+        final result = await transformDescription(description);
+        expect(result, contains('Item 1'));
+        expect(result, contains('Item 2'));
+      });
+
+      test('SHOULD NOT corrupt an HTML link whose visible text is also a URL', () async {
+        // href and anchor text both contain a URL — the linkifier must not
+        // double-process the attribute and break the tag.
+        const description = '<a href="https://example.com/a">https://example.com/a</a>';
+        final result = await transformDescription(description);
+        expect(result, contains('href="https://example.com/a"'));
+        expect(result, isNot(contains('<ahref')));
+      });
+
+      test('SHOULD preserve a URL sitting in an <img> src attribute without mangling text', () async {
+        // URL lives in the src attribute, not body text. <img> may be stripped
+        // by the sanitizer, but the surrounding description must stay intact.
+        const description = '<img src="https://cdn.example.com/a.png"> Team photo';
+        final result = await transformDescription(description);
+        expect(result, contains('Team photo'));
+        expect(result, isNot(contains('<ahref')));
+      });
+
+      test('SHOULD autolink a bare URL that appears inside an HTML element', () async {
+        // Positive guard: a URL in text content (not an attribute) must still
+        // become a clickable link, even when wrapped in an element.
+        const description = '<p>Join the call at https://meet.example.com/room/9</p>';
+        final result = await transformDescription(description);
+        expect(result, contains('href="https://meet.example.com/room/9"'));
+        expect(result, contains('<p>'));
       });
     });
 
