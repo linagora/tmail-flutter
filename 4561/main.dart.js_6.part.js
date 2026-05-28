@@ -140,7 +140,7 @@ _.Q=j
 _.a=k},
 d0J:function d0J(d){this.a=d},
 d0K:function d0K(d){this.a=d},
-ehR(d){return new B.ZP(d,null)},
+ehQ(d){return new B.ZP(d,null)},
 aUu:function aUu(d,e,f){this.c=d
 this.d=e
 this.a=f},
@@ -287,13 +287,13 @@ return new B.aUv(s,A.cs(!1,C.D,!0,u,A.co(!1,C.bY,!0,A.a8(u,A.aC(x,C.o,C.l,C.p,0,
 B.beu.prototype={}
 B.bev.prototype={}
 B.aG3.prototype={
-t(d){var x=null,w=this.gbNG(),v=A.eX(24),u=$.e4z(),t=this.c,s=t.$ti.h("E<am.E,MU>")
+t(d){var x=null,w=this.gbNG(),v=A.eX(24),u=$.e4y(),t=this.c,s=t.$ti.h("E<am.E,MU>")
 t=A.A(new A.E(t,new B.bD_(this),s),s.h("a2.E"))
-return A.cZ(x,A.a8(x,A.jU(C.aG,t,C.dm,C.Y,D.a62,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tQ,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bD0(),x,x,x,x,x,x,x,x,!1,C.a2)},
+return A.cZ(x,A.a8(x,A.jU(C.aG,t,C.dm,C.Y,D.a62,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tP,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bD0(),x,x,x,x,x,x,x,x,!1,C.a2)},
 gbNG(){var x=this.c
-if(J.at(x.gi(0))>=3)return 240+D.tQ.ghz()
-else if(J.at(x.gi(0))===2)return 160+D.tQ.ghz()
-else return 80+D.tQ.ghz()}}
+if(J.at(x.gi(0))>=3)return 240+D.tP.ghz()
+else if(J.at(x.gi(0))===2)return 160+D.tP.ghz()
+else return 80+D.tP.ghz()}}
 B.Jt.prototype={
 t(d){var x,w=this,v=null,u=y.p,t=A.c([new A.b4(226,v,A.ap(A.c([E.bDx(v,w.y),C.e2],u),C.o,v,C.l,C.z,0,v),v)],u)
 if(w.r!=null)t.push(A.aA(A.eM(new B.cuA(w)),1))
@@ -323,7 +323,7 @@ t(d){var x,w,v,u,t,s=this,r=null,q=$.L.v$.d.c
 q=q==null?r:q.gHo()
 x=A.c([new A.c7(0,C.U,C.n.ao(0.3),C.r,2),new A.c7(2,C.U,C.n.ao(0.15),C.eh,6)],y.V)
 w=y.p
-v=A.c([C.E_,new B.b1P(s.c,"assets/images/ic_copy.svg",s.f,r),C.qY,A.HX(C.t0.ao(0.12),r,1,r,r,r)],w)
+v=A.c([C.E_,new B.b1P(s.c,"assets/images/ic_copy.svg",s.f,r),C.qY,A.HX(C.t_.ao(0.12),r,1,r,r,r)],w)
 u=s.d
 t=A.T(u).h("E<1,n4>")
 u=A.A(new A.E(u,new B.czS(s,d),t),t.h("a2.E"))
@@ -388,7 +388,7 @@ return A.aC(p,C.o,C.aT,C.z,0,C.u)}}
 B.aUu.prototype={
 gc3V(){return!1},
 gbi7(){var x=$.dBt().gaPG()
-return x==null?B.eVw():x},
+return x==null?B.eVv():x},
 t(d){return this.bi8(this)},
 $iaUy:1,
 bi8(d){return this.gbi7().$1(d)}}
@@ -402,7 +402,7 @@ n=o
 x=!n.gC9()?3:4
 break
 case 3:x=5
-return A.i(A.e3Z(d,o.l(0)),$async$Pb)
+return A.i(A.e3Y(d,o.l(0)),$async$Pb)
 case 5:x=1
 break
 case 4:r=null
@@ -542,7 +542,7 @@ $S:3};(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u,v=a._sta
 x(B.qx.prototype,"gaPH","c4P",1)
 w(B.avH.prototype,"gbKQ","bKR",0)
 w(B.azk.prototype,"gbKU","bKV",0)
-v(B,"eVw","ehR",3)})();(function inheritance(){var x=a.mixin,w=a.inherit,v=a.inheritMany
+v(B,"eVv","ehQ",3)})();(function inheritance(){var x=a.mixin,w=a.inherit,v=a.inheritMany
 w(B.Sb,A.Bk)
 v(A.ai,[B.ao9,B.Xy,B.F3])
 v(A.ag,[B.bpN,B.avH,B.azk])
@@ -566,14 +566,14 @@ D.a7w=new A.H8(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,null)
 D.FB=new A.H8(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,D.a7w)
 D.oY=new A.I(1,0.9176470588235294,0.9294117647058824,0.9490196078431372,C.j)
 D.Gi=new A.ba(D.oY,null,null,C.bM,null,null,null,C.B)
-D.wm=new A.bf(100,100)
-D.G2=new A.dw(D.wm,D.wm,D.wm,D.wm)
+D.wl=new A.bf(100,100)
+D.G2=new A.dw(D.wl,D.wl,D.wl,D.wl)
 D.aPz=new A.C(0,0.5)
 D.aaT=new A.c7(1,C.U,C.i_,D.aPz,1)
 D.Hx=new A.I(1,1,0.9607843137254902,0.7607843137254902,C.j)
 D.agk=new A.I(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
 D.aid=new A.I(1,0.5019607843137255,0.7411764705882353,1,C.j)
-D.tQ=new A.aB(10,14,10,14)
+D.tP=new A.aB(10,14,10,14)
 D.aq6=new A.aB(30,0,30,0)
 D.JE=new A.aB(40,0,40,0)
 D.jx=new A.aB(8,0,8,0)
@@ -583,10 +583,10 @@ D.arh=new A.aG(12,5,12,5)
 D.mK=new A.aG(16,12,16,12)
 D.zV=new A.aG(8,3,8,3)
 D.be6=x([],A.ao("N<vS>"))
-D.w0=new B.Sb(null)
+D.w_=new B.Sb(null)
 D.Ze=new A.rN("mailbox_list",A.ao("rN<h>"))
 D.a62=new A.aU("listViewAppGrid",y.O)
 D.EN=new A.aU("toggleAppGridButton",y.O)
 D.a69=new A.aU("userAvatar",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"fap","e4z",()=>A.c([A.XV(20,C.U,C.n.ao(0.15),C.r,0)],y.V))})()};
-(a=>{a["bE4O0jGJPjMrs6gTaWlypO+eTsA="]=a.current})($__dart_deferred_initializers__);
+x($,"fao","e4y",()=>A.c([A.XV(20,C.U,C.n.ao(0.15),C.r,0)],y.V))})()};
+(a=>{a["hPPB/Z2rAgZRSAkB7HprO8OmJrw="]=a.current})($__dart_deferred_initializers__);
