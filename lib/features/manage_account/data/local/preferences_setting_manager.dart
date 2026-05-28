@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
@@ -103,7 +104,8 @@ class PreferencesSettingManager {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       final factory = _configFactories[key];
       return factory != null ? factory(json) : DefaultPreferencesConfig.fromJson(json);
-    } catch (_) {
+    } catch (e) {
+      log('PreferencesSettingManager::_parseConfig(): failed to parse key=$key error=$e');
       return EmptyPreferencesConfig();
     }
   }
