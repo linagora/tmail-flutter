@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
@@ -129,7 +130,14 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   }
 
   Widget _buildTitle() {
-    return Text(
+    if (PlatformInfo.isWeb) {
+      return Text(
+        _title,
+        style: EmailSubjectStyles.textStyle,
+        maxLines: EmailSubjectStyles.maxLines,
+      );
+    }
+    return SelectableText(
       _title,
       style: EmailSubjectStyles.textStyle,
       maxLines: EmailSubjectStyles.maxLines,
