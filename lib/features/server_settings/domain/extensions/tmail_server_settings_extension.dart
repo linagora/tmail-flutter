@@ -12,7 +12,6 @@ extension TmailServerSettingsExtension on TMailServerSettings {
           alwaysReadReceipts: settings?.alwaysReadReceipts,
           displaySenderPriority: settings?.displaySenderPriority,
           aiNeedsActionEnabled: settings?.aiNeedsActionEnabled,
-          aiLabelCategorizationEnabled: settings?.aiLabelCategorizationEnabled,
         ),
       );
     }

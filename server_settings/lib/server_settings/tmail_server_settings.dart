@@ -8,8 +8,8 @@ import 'package:server_settings/server_settings/server_settings_id.dart';
 part 'tmail_server_settings.g.dart';
 
 @JsonSerializable(
-  explicitToJson: true, 
-  includeIfNull: false, 
+  explicitToJson: true,
+  includeIfNull: false,
   converters: [ServerSettingsIdNullableConverter()])
 class TMailServerSettings extends ServerSettings {
   final ServerSettingsId? id;
@@ -26,7 +26,7 @@ class TMailServerSettings extends ServerSettings {
 }
 
 @JsonSerializable(
-  explicitToJson: true, 
+  explicitToJson: true,
   includeIfNull: false,
   converters: [BooleanNullableConverter()]
 )
@@ -40,19 +40,14 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'language')
   final String? language;
 
-  // Legacy key from older BE versions — read-only, never written back to server
-  @JsonKey(name: 'ai.needs-action.enabled', includeToJson: false)
-  final bool? aiNeedsActionEnabled;
-
   @JsonKey(name: 'ai.label-categorization.enabled')
-  final bool? aiLabelCategorizationEnabled;
+  final bool? aiNeedsActionEnabled;
 
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
     this.aiNeedsActionEnabled,
-    this.aiLabelCategorizationEnabled,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -64,14 +59,13 @@ class TMailServerSettingOptions with EquatableMixin {
     bool? alwaysReadReceipts,
     bool? displaySenderPriority,
     String? language,
-    bool? aiLabelCategorizationEnabled,
+    bool? aiNeedsActionEnabled,
   }) {
     return TMailServerSettingOptions(
       alwaysReadReceipts: alwaysReadReceipts ?? this.alwaysReadReceipts,
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
-      aiNeedsActionEnabled: aiNeedsActionEnabled,
-      aiLabelCategorizationEnabled: aiLabelCategorizationEnabled ?? this.aiLabelCategorizationEnabled,
+      aiNeedsActionEnabled: aiNeedsActionEnabled ?? this.aiNeedsActionEnabled,
     );
   }
 
@@ -81,6 +75,5 @@ class TMailServerSettingOptions with EquatableMixin {
     displaySenderPriority,
     language,
     aiNeedsActionEnabled,
-    aiLabelCategorizationEnabled,
   ];
 }

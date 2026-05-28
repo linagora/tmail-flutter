@@ -9,49 +9,31 @@ void main() {
         final options = TMailServerSettingOptions.fromJson({
           'ai.label-categorization.enabled': 'true',
         });
-        expect(options.aiLabelCategorizationEnabled, isTrue);
+        expect(options.aiNeedsActionEnabled, isTrue);
       });
 
       test('parses ai.label-categorization.enabled as false', () {
         final options = TMailServerSettingOptions.fromJson({
           'ai.label-categorization.enabled': 'false',
         });
-        expect(options.aiLabelCategorizationEnabled, isFalse);
-      });
-
-      test('parses legacy ai.needs-action.enabled as true', () {
-        final options = TMailServerSettingOptions.fromJson({
-          'ai.needs-action.enabled': 'true',
-        });
-        expect(options.aiNeedsActionEnabled, isTrue);
-      });
-
-      test('parses legacy ai.needs-action.enabled as false', () {
-        final options = TMailServerSettingOptions.fromJson({
-          'ai.needs-action.enabled': 'false',
-        });
         expect(options.aiNeedsActionEnabled, isFalse);
       });
 
-      test('parses both keys independently when both present', () {
-        final options = TMailServerSettingOptions.fromJson({
-          'ai.needs-action.enabled': 'false',
-          'ai.label-categorization.enabled': 'true',
-        });
-        expect(options.aiNeedsActionEnabled, isFalse);
-        expect(options.aiLabelCategorizationEnabled, isTrue);
-      });
-
-      test('leaves both fields null when neither key present', () {
+      test('leaves aiNeedsActionEnabled null when key absent', () {
         final options = TMailServerSettingOptions.fromJson({});
         expect(options.aiNeedsActionEnabled, isNull);
-        expect(options.aiLabelCategorizationEnabled, isNull);
       });
     });
 
     group('toJson', () {
       test('serializes ai.label-categorization.enabled when set to true', () {
-        final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
+        final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
+        final json = options.toJson();
+        expect(json['ai.label-categorization.enabled'], isNotNull);
+      });
+
+      test('serializes ai.label-categorization.enabled when set to false', () {
+        final options = TMailServerSettingOptions(aiNeedsActionEnabled: false);
         final json = options.toJson();
         expect(json['ai.label-categorization.enabled'], isNotNull);
       });
@@ -62,7 +44,7 @@ void main() {
         expect(json.containsKey('ai.label-categorization.enabled'), isFalse);
       });
 
-      test('never includes legacy ai.needs-action.enabled key', () {
+      test('does not include legacy ai.needs-action.enabled key', () {
         final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
         final json = options.toJson();
         expect(json.containsKey('ai.needs-action.enabled'), isFalse);
@@ -70,51 +52,38 @@ void main() {
     });
 
     group('copyWith', () {
-      test('overrides aiLabelCategorizationEnabled', () {
-        final original = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
-        final copy = original.copyWith(aiLabelCategorizationEnabled: true);
-        expect(copy.aiLabelCategorizationEnabled, isTrue);
+      test('overrides aiNeedsActionEnabled', () {
+        final original = TMailServerSettingOptions(aiNeedsActionEnabled: false);
+        final copy = original.copyWith(aiNeedsActionEnabled: true);
+        expect(copy.aiNeedsActionEnabled, isTrue);
       });
 
-      test('preserves aiLabelCategorizationEnabled when not supplied', () {
-        final original = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
-        final copy = original.copyWith(alwaysReadReceipts: false);
-        expect(copy.aiLabelCategorizationEnabled, isTrue);
-      });
-
-      test('carries through legacy aiNeedsActionEnabled unchanged', () {
+      test('preserves aiNeedsActionEnabled when not supplied', () {
         final original = TMailServerSettingOptions(aiNeedsActionEnabled: true);
         final copy = original.copyWith(alwaysReadReceipts: false);
         expect(copy.aiNeedsActionEnabled, isTrue);
+      });
+
+      test('preserves aiNeedsActionEnabled as null when not supplied', () {
+        final original = TMailServerSettingOptions();
+        final copy = original.copyWith(alwaysReadReceipts: false);
+        expect(copy.aiNeedsActionEnabled, isNull);
       });
     });
   });
 
   group('TmailServerSettingsExtension', () {
-    test('isAINeedsActionEnabled returns true from new key', () {
-      final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: true);
-      expect(options.isAINeedsActionEnabled, isTrue);
-    });
-
-    test('isAINeedsActionEnabled returns false from new key', () {
-      final options = TMailServerSettingOptions(aiLabelCategorizationEnabled: false);
-      expect(options.isAINeedsActionEnabled, isFalse);
-    });
-
-    test('isAINeedsActionEnabled falls back to legacy key when new key absent', () {
+    test('isAINeedsActionEnabled returns true when aiNeedsActionEnabled is true', () {
       final options = TMailServerSettingOptions(aiNeedsActionEnabled: true);
       expect(options.isAINeedsActionEnabled, isTrue);
     });
 
-    test('isAINeedsActionEnabled new key takes precedence over legacy key', () {
-      final options = TMailServerSettingOptions(
-        aiNeedsActionEnabled: false,
-        aiLabelCategorizationEnabled: true,
-      );
-      expect(options.isAINeedsActionEnabled, isTrue);
+    test('isAINeedsActionEnabled returns false when aiNeedsActionEnabled is false', () {
+      final options = TMailServerSettingOptions(aiNeedsActionEnabled: false);
+      expect(options.isAINeedsActionEnabled, isFalse);
     });
 
-    test('isAINeedsActionEnabled defaults to false when both fields null', () {
+    test('isAINeedsActionEnabled defaults to false when aiNeedsActionEnabled is null', () {
       final options = TMailServerSettingOptions();
       expect(options.isAINeedsActionEnabled, isFalse);
     });
