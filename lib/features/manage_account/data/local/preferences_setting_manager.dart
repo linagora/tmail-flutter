@@ -39,13 +39,11 @@ class PreferencesSettingManager {
         .toList()
       ..sort();
 
-    final configs = preferenceKeys.map(_parseConfig).toList();
-
-    if (configs.isEmpty) {
+    if (preferenceKeys.isEmpty) {
       return PreferencesSetting.initial();
     }
 
-    return PreferencesSetting(configs);
+    return PreferencesSetting(preferenceKeys.map(_parseConfig).toList());
   }
 
   // SpamReportConfig is read-merge-written to preserve lastTimeDismissedMilliseconds.
@@ -85,17 +83,6 @@ class PreferencesSettingManager {
         defaultFactory: ThreadDetailConfig.initial,
         fromJson: ThreadDetailConfig.fromJson,
       );
-
-  Future<TextFormattingMenuConfig> getTextFormattingMenuConfig() => _readConfig(
-        key: _storageKey(TextFormattingMenuConfig.keySuffix),
-        defaultFactory: TextFormattingMenuConfig.initial,
-        fromJson: TextFormattingMenuConfig.fromJson,
-      );
-
-  Future<void> updateTextFormattingMenu({required bool isDisplayed}) async {
-    final current = await getTextFormattingMenuConfig();
-    await savePreferences(current.copyWith(isDisplayed: isDisplayed));
-  }
 
   Future<AIScribeConfig> getAIScribeConfig() => _readConfig(
         key: _storageKey(AIScribeConfig.keySuffix),
