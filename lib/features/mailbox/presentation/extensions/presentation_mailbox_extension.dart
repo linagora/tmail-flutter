@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
-final _systemFolderIconMap = Map<String, String Function(ImagePaths)>.unmodifiable({
+final _systemFolderIconMap = Map<String, String Function(ImagePaths)>.unmodifiable(<String, String Function(ImagePaths)>{
   PresentationMailbox.inboxRole:          (paths) => paths.icMailboxInbox,
   PresentationMailbox.favoriteRole:       (paths) => paths.icMailboxFavorite,
   PresentationMailbox.actionRequiredRole: (paths) => paths.icMailboxActionRequired,
@@ -30,7 +30,7 @@ final _systemFolderIconMap = Map<String, String Function(ImagePaths)>.unmodifiab
   'all_mail':                             (paths) => paths.icMailboxAllMail,
 });
 
-final _systemFolderDisplayNameMap = Map<String, String Function(AppLocalizations)>.unmodifiable({
+final _systemFolderDisplayNameMap = Map<String, String Function(AppLocalizations)>.unmodifiable(<String, String Function(AppLocalizations)>{
   PresentationMailbox.inboxRole:          (l10n) => l10n.inboxMailboxDisplayName,
   PresentationMailbox.favoriteRole:       (l10n) => l10n.favoriteMailboxDisplayName,
   PresentationMailbox.actionRequiredRole: (l10n) => l10n.actionRequiredMailboxDisplayName,
