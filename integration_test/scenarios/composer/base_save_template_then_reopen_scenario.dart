@@ -36,6 +36,11 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   }
 
   @override
+  Future<void> onAfterComposerReopened() async {
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
+  }
+
+  @override
   Future<void> performSubsequentSave(
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
