@@ -35,6 +35,8 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
 
   Future<void> onAfterContentUploaded() async {}
 
+  Future<void> onAfterComposerReopened() async {}
+
   @override
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
@@ -71,6 +73,8 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
     await threadRobot.openEmailWithSubject(uniqueSubject);
     await composerRobot.expectComposerViewVisible();
     await composerRobot.grantContactPermission();
+
+    await onAfterComposerReopened();
 
     await composerRobot.addSubject(' edited');
     await performSubsequentSave(composerRobot, appLocalizations);
