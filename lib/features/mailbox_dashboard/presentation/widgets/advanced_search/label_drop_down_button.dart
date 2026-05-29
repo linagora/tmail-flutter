@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -28,16 +27,17 @@ class LabelDropDownButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return DropdownButtonHideUnderline(
       child: PointerInterceptor(
-        child: DropdownButton2<Label>(
+        child: DropdownButton2<Label?>(
           isExpanded: true,
           value: labelSelected,
-          items: _buildItems(),
+          items: _buildItems(localizations),
           customButton: _LabelDropdownButtonView(
             imagePaths: imagePaths,
             labelSelected: labelSelected,
-            localizations: AppLocalizations.of(context),
+            localizations: localizations,
           ),
           onChanged: onSelectLabelsActions,
           dropdownStyleData: _dropdownStyleData,
@@ -47,17 +47,31 @@ class LabelDropDownButton extends StatelessWidget {
     );
   }
 
-  List<DropdownMenuItem<Label>> _buildItems() {
-    return labels.map((label) {
-      return DropdownMenuItem<Label>(
+  List<DropdownMenuItem<Label?>> _buildItems(AppLocalizations localizations) {
+    final allLabelsItem = DropdownMenuItem<Label?>(
+      value: null,
+      enabled: labelSelected != null,
+      child: _LabelDropdownMenuItem(
+        displayName: localizations.allLabels,
+        isSelected: labelSelected == null,
+        imagePaths: imagePaths,
+      ),
+    );
+
+    final labelItems = labels.map((label) {
+      final isSelected = labelSelected?.id == label.id;
+      return DropdownMenuItem<Label?>(
         value: label,
+        enabled: !isSelected,
         child: _LabelDropdownMenuItem(
-          label: label,
-          isSelected: labelSelected?.id == label.id,
+          displayName: label.safeDisplayName,
+          isSelected: isSelected,
           imagePaths: imagePaths,
         ),
       );
-    }).toList(growable: false);
+    });
+
+    return [allLabelsItem, ...labelItems];
   }
 
   final DropdownStyleData _dropdownStyleData = DropdownStyleData(
@@ -77,12 +91,12 @@ class LabelDropDownButton extends StatelessWidget {
 }
 
 class _LabelDropdownMenuItem extends StatelessWidget {
-  final Label label;
+  final String displayName;
   final bool isSelected;
   final ImagePaths imagePaths;
 
   const _LabelDropdownMenuItem({
-    required this.label,
+    required this.displayName,
     required this.isSelected,
     required this.imagePaths,
   });
@@ -91,65 +105,23 @@ class _LabelDropdownMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return PointerInterceptor(
       child: Row(
-        spacing: 16,
         children: [
-          _CheckboxIcon(
-            isSelected: isSelected,
-            imagePaths: imagePaths,
+          Expanded(
+            child: Text(
+              displayName,
+              style: LabelDropDownStyle.menuItemStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          _LabelName(text: label.safeDisplayName),
+          if (isSelected)
+            SvgPicture.asset(
+              imagePaths.icChecked,
+              width: LabelDropDownStyle.checkedIconSize,
+              height: LabelDropDownStyle.checkedIconSize,
+              fit: BoxFit.fill,
+            ),
         ],
-      ),
-    );
-  }
-}
-
-class _CheckboxIcon extends StatelessWidget {
-  final bool isSelected;
-  final ImagePaths imagePaths;
-
-  const _CheckboxIcon({
-    required this.isSelected,
-    required this.imagePaths,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      _iconPath,
-      width: LabelDropDownStyle.checkedIconSize,
-      height: LabelDropDownStyle.checkedIconSize,
-      colorFilter: _iconColor.asFilter(),
-      fit: BoxFit.fill,
-    );
-  }
-
-  String get _iconPath {
-    return isSelected
-        ? imagePaths.icCheckboxSelected
-        : imagePaths.icCheckboxUnselected;
-  }
-
-  Color get _iconColor {
-    return isSelected
-        ? LabelDropDownStyle.checkedIconColor
-        : LabelDropDownStyle.unCheckedIconColor;
-  }
-}
-
-class _LabelName extends StatelessWidget {
-  final String text;
-
-  const _LabelName({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Text(
-        text,
-        style: LabelDropDownStyle.menuItemStyle,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
