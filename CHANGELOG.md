@@ -1,3 +1,20 @@
+## [0.29.3] - 2026-05-29
+
+### Fixed
+- #4529 Fix email subject not copyable on mobile
+- #4558 Calendar event HTML description rendered as plain text
+- #4520 Team mailbox folder should be sorted correctly
+- Fix auto-load-more over-trigger and infinite loop on large screens
+- #4559 Handle refresh token failure on web
+- Fix FCM token retry with exponential backoff and delivery state
+- Fix notification removal guard against PlatformException
+- #4482 Fix invitation email overflowing on narrow mobile screens
+- Fix Flutter 3.38.9 DART_DEFINES build regression
+
+### Added
+- #4535 Enable label classification in preferences
+- Cap push notifications at 20 per burst
+
 ## [0.29.0] - 2026-05-22
 ### Fixed
 - Sentry noisy error cleanup 
