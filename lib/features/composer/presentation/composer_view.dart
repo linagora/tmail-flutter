@@ -97,6 +97,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       context,
                       _pickAttachmentsActionTiles(context)
                     ),
+                    remoteAttachFileAction: () => controller.openNewModalMobile(context),
                     insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                     openRichToolbarAction: () =>
                       controller.richTextMobileTabletController?.showFormatStyleBottomSheet(
