@@ -22,11 +22,6 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   }
 
   @override
-  Future<void> onAfterContentUploaded() async {
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
-  }
-
-  @override
   Future<void> performFirstSave(
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
@@ -41,11 +36,6 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   }
 
   @override
-  Future<void> onAfterComposerReopened() async {
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
-  }
-
-  @override
   Future<void> performSubsequentSave(
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
@@ -55,10 +45,10 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   }
 
   Future<void> _expectSaveTemplateSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(find.text(l10n.saveMessageToTemplateSuccess)));
+    await expectViewVisible($(l10n.saveMessageToTemplateSuccess));
   }
 
   Future<void> _expectUpdateTemplateSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(find.text(l10n.updateMessageToTemplateSuccess)));
+    await expectViewVisible($(l10n.updateMessageToTemplateSuccess));
   }
 }
