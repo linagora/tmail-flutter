@@ -25,6 +25,19 @@ import '../../models/provisioning_email.dart';
 import '../../utils/wait_for_condition.dart';
 
 abstract class AbstractCommonRobot {
+  /// Waits until the mailbox dashboard is fully loaded (session, account id and
+  /// selected mailbox are available). The app reaches this state only after the
+  /// silent (seeded-credentials) login completes, so callers that provision data
+  /// directly through controllers must await this before touching them.
+  Future<void> waitForMailboxReady({
+    Duration timeout = const Duration(seconds: 90),
+  }) async {
+    await waitForCondition(
+      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
+      timeout: timeout,
+    );
+  }
+
   Future<void> provisionEmail(
     List<ProvisioningEmail> provisioningEmails, {
     bool refreshEmailView = true,
@@ -33,9 +46,7 @@ abstract class AbstractCommonRobot {
   }) async {
     ComposerBindings().dependencies();
 
-    await waitForCondition(
-      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
-    );
+    await waitForMailboxReady();
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
         Get.find<CreateNewAndSendEmailInteractor>();

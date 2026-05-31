@@ -1,6 +1,4 @@
 import 'package:patrol/patrol.dart';
-import 'package:core/presentation/views/text/rich_text_builder.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
