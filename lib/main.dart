@@ -2,6 +2,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
@@ -10,6 +11,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/runner/app_runner_mobile.dart'
     if (dart.library.html) 'package:tmail_ui_user/main/runner/app_runner_web.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
@@ -41,7 +43,9 @@ class _TMailAppState extends State<TMailApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return UncontrolledProviderScope(
+      container: appProviderContainer,
+      child: GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeUtils.buildAppTheme(context),
       supportedLocales: LocalizationService.supportedLocales,
@@ -75,6 +79,7 @@ class _TMailAppState extends State<TMailApp> {
       initialRoute: AppRoutes.home,
       getPages: AppPages.pages,
       builder: FlutterSmartDialog.init(),
+    ),
     );
   }
 
