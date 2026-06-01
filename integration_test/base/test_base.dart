@@ -29,7 +29,7 @@ class TestBase {
     patrolTest(
       description,
       config: const PatrolTesterConfig(
-        settlePolicy: SettlePolicy.trySettle,
+        settlePolicy: SettlePolicy.noSettle,
         existsTimeout: Duration(seconds: 30),
         visibleTimeout: Duration(seconds: 30),
         settleTimeout: Duration(seconds: 30),
