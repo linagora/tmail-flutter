@@ -163,7 +163,7 @@ class SearchEmailController extends BaseController
   Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
 
   bool get _isCollapseThreadsEnabled =>
-      appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+      appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,

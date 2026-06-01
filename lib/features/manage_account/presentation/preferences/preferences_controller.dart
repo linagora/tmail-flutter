@@ -88,7 +88,7 @@ class PreferencesController extends BaseController {
     } else if (success is UpdateLocalSettingsSuccess) {
       _updateLocalSettingOptionValue(success.preferencesSetting);
       appProviderContainer
-          .read(localSettingsNotifierProvider.notifier)
+          .read(localSettingsProvider.notifier)
           .update(success.preferencesSetting);
     } else if (success is GettingLocalSettingsState) {
       _localSettingLoaderStatus = LoaderStatus.loading;

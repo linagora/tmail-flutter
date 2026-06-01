@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/providers/loc
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 /// Responsible for loading local settings from cache on startup and pushing
-/// the result into [localSettingsNotifierProvider] so all Riverpod consumers
+/// the result into [localSettingsProvider] so all Riverpod consumers
 /// receive the initial value automatically.
 class LocalSettingsService extends GetxService {
   final GetLocalSettingsInteractor _getLocalSettingsInteractor;
@@ -28,7 +28,7 @@ class LocalSettingsService extends GetxService {
         (success) {
           if (success is GetLocalSettingsSuccess) {
             appProviderContainer
-                .read(localSettingsNotifierProvider.notifier)
+                .read(localSettingsProvider.notifier)
                 .update(success.preferencesSetting);
           }
         },
