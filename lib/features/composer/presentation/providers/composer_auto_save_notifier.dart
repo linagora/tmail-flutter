@@ -3,11 +3,13 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:tmail_ui_user/features/composer/presentation/providers/composer_cache_providers.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/resolve_composer_cache_for_restore_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/resolve_composer_cache_for_restore_interactor.dart';
+
+part 'composer_auto_save_notifier.g.dart';
 
 class ComposerAutoSaveState extends Equatable {
   final bool hasRecoverableSnapshot;
@@ -39,19 +41,25 @@ class ComposerAutoSaveState extends Equatable {
       ];
 }
 
-/// Riverpod [StateNotifier] for Android composer auto-save (see ADR-0086).
+/// Riverpod [Notifier] for Android composer auto-save (see ADR-0086).
 /// Keyed by composerId so each [ComposerController] gets an isolated instance.
 /// Must be invalidated from [ComposerController.onClose] to prevent unbounded
 /// family-instance growth in the global [ProviderContainer].
-class ComposerAutoSaveNotifier extends StateNotifier<ComposerAutoSaveState> {
-  final ResolveComposerCacheForRestoreInteractor _resolveInteractor;
-  final RemoveAllComposerCacheInteractor _removeInteractor;
+@Riverpod(keepAlive: true)
+class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
+  bool _mounted = true;
+  late final ResolveComposerCacheForRestoreInteractor _resolveInteractor;
+  late final RemoveAllComposerCacheInteractor _removeInteractor;
 
-  ComposerAutoSaveNotifier(
-    this._resolveInteractor,
-    this._removeInteractor,
-  ) : super(const ComposerAutoSaveState());
+  @override
+  ComposerAutoSaveState build(String composerId) {
+    _resolveInteractor = ref.read(resolveComposerCacheForRestoreProvider);
+    _removeInteractor = ref.read(removeAllComposerCacheProvider);
+    ref.onDispose(() => _mounted = false);
+    return const ComposerAutoSaveState();
+  }
 
+  bool get mounted => _mounted;
   bool get hasRecoverableSnapshot => state.hasRecoverableSnapshot;
   bool get isCleanClose => state.isCleanClose;
   String get lastKnownHtmlContent => state.lastKnownHtmlContent;
@@ -103,11 +111,3 @@ class ComposerAutoSaveNotifier extends StateNotifier<ComposerAutoSaveState> {
     );
   }
 }
-
-final composerAutoSaveProvider = StateNotifierProvider.family<
-    ComposerAutoSaveNotifier, ComposerAutoSaveState, String>(
-  (ref, composerId) => ComposerAutoSaveNotifier(
-    ref.read(resolveComposerCacheForRestoreProvider),
-    ref.read(removeAllComposerCacheProvider),
-  ),
-);
