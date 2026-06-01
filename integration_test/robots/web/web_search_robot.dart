@@ -21,10 +21,12 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> verifySearchSuggestionHighlights(String keyword) async {
-    // Web: suggestions are in an OverlayEntry from QuickSearchInputForm,
-    // so RichTextBuilder is not hit-testable via waitUntilVisible.
-    // Wait for suggestion items to appear, then assert existence.
-    await $.waitUntilVisible($(EmailQuickSearchItemTileWidget));
-    expect($(RichTextBuilder).evaluate().isNotEmpty, isTrue);
+    // Web: suggestions render inside an OverlayEntry wrapped by PointerInterceptor,
+    // so they are not hit-testable. Use waitUntilExists instead of waitUntilVisible.
+    await $.waitUntilExists($(EmailQuickSearchItemTileWidget));
+    expect(
+      $(EmailQuickSearchItemTileWidget).$(RichTextBuilder).evaluate().isNotEmpty,
+      isTrue,
+    );
   }
 }
