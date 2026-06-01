@@ -1,9 +1,13 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
+
+part 'composer_persistent_cache_datasource_impl.g.dart';
 
 class ComposerPersistentCacheDatasourceImpl extends ComposerCacheDatasource {
   final ComposerHiveCacheClient _cacheClient;
@@ -50,3 +54,10 @@ class ComposerPersistentCacheDatasourceImpl extends ComposerCacheDatasource {
     ).catchError(_exceptionThrower.throwException);
   }
 }
+
+@Riverpod(keepAlive: true)
+ComposerCacheDatasource composerCacheDatasource(Ref ref) =>
+    ComposerPersistentCacheDatasourceImpl(
+      ref.watch(composerHiveCacheClientProvider),
+      ref.watch(cacheExceptionThrowerProvider),
+    );

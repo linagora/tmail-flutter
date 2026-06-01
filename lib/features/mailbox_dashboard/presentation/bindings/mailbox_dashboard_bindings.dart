@@ -200,7 +200,7 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    // Must be registered first so [localSettingsNotifierProvider] is populated
+    // Must be registered first so [localSettingsProvider] is populated
     // before any controller reads local settings.
     Get.put(LocalSettingsService(Get.find<GetLocalSettingsInteractor>()));
 
