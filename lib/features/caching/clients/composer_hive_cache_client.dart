@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -9,6 +10,8 @@ import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
+
+part 'composer_hive_cache_client.g.dart';
 
 class ComposerHiveCacheClient extends HiveCacheClient<String> {
   @override
@@ -67,3 +70,7 @@ class ComposerHiveCacheClient extends HiveCacheClient<String> {
   ) =>
       deleteItem(_entryKey(accountId, userName, composerId));
 }
+
+@Riverpod(keepAlive: true)
+ComposerHiveCacheClient composerHiveCacheClient(Ref ref) =>
+    ComposerHiveCacheClient();
