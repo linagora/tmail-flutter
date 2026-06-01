@@ -270,13 +270,17 @@ dependencies:
 
   sentry_dio: 9.8.0
 
-  flutter_riverpod: ^2.6.1
+  flutter_riverpod: ^3.3.1
+
+  riverpod_annotation: ^4.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   build_runner: ^2.15.0
+
+  riverpod_generator: 4.0.4-dev.3
 
   mockito: 5.6.4
 
@@ -337,6 +341,11 @@ dependency_overrides:
   meta: ^1.18.0
   dart_style: 3.1.8
   analyzer: ">=12.0.0 <13.0.0"
+  riverpod_annotation: ^4.0.2
+  # riverpod_generator 4.0.4-dev.3 requires freezed_annotation ^3.0.0,
+  # but super_dns_client 0.3.8 pins ^2.4.4. freezed_annotation is annotation-only
+  # (no behavioral difference between 2.x and 3.x) so overriding is safe.
+  freezed_annotation: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
