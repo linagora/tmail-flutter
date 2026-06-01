@@ -1,6 +1,7 @@
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -37,7 +38,7 @@ class SearchRobot extends CoreRobot {
 
   Future<void> selectSortOrder(String sortOrderName) async {
     await $(find.text(sortOrderName)).tap();
-    await $.pump(const Duration(seconds: 2));
+    await $.pumpAndTrySettle();
   }
 
   Future<void> enterKeyword(String keyword) async {
@@ -71,7 +72,7 @@ class SearchRobot extends CoreRobot {
 
   Future<void> selectDateTime(String dateTimeType) async {
     await $(find.text(dateTimeType)).tap();
-    await $.pump(const Duration(seconds: 2));
+    await $.pumpAndTrySettle();
   }
 
   Future<void> openEmailWithSubject(String subject) async {
@@ -79,7 +80,7 @@ class SearchRobot extends CoreRobot {
       .which<EmailTileBuilder>((view) => view.presentationEmail.subject == subject);
     await $.waitUntilVisible(email);
     await email.tap();
-    await $.pump(const Duration(seconds: 2));
+    await $.waitUntilVisible($(EmailViewBackButton));
   }
 
   Future<void> tapBackButton() async {

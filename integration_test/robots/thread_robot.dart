@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
@@ -31,7 +32,7 @@ class ThreadRobot extends CoreRobot {
       .which<EmailTileBuilder>((view) => view.presentationEmail.subject == subject);
     await $.waitUntilVisible(email);
     await email.tap();
-    await $.pump(const Duration(seconds: 2));
+    await $.waitUntilVisible($(EmailViewBackButton));
   }
 
   Future<void> openEmailWithLabel(String labelDisplayName) async {
@@ -43,7 +44,7 @@ class ThreadRobot extends CoreRobot {
     );
     await $.waitUntilVisible(email);
     await email.tap();
-    await $.pump(const Duration(seconds: 2));
+    await $.waitUntilVisible($(EmailViewBackButton));
   }
 
   Future<void> openMailbox() async {

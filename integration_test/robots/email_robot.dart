@@ -16,7 +16,6 @@ class EmailRobot extends CoreRobot {
 
   Future<void> onTapForwardEmail() async {
     await $(#forward_email_button).tap();
-    await $.pump(const Duration(seconds: 2));
   }
 
   Future<void> tapDownloadAllButton() async {
