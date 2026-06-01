@@ -135,7 +135,7 @@ class ThreadController extends BaseController with EmailActionController {
   SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
 
   bool get _isCollapseThreadsEnabled =>
-      appProviderContainer.read(localSettingsNotifierProvider).threadConfig.isEnabled;
+      appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
   bool get _shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
@@ -446,7 +446,7 @@ class ThreadController extends BaseController with EmailActionController {
   void _registerLocalSettingsListener() {
     if (_localSettingsSubscription != null) return;
     _localSettingsSubscription = appProviderContainer.listen(
-      localSettingsNotifierProvider,
+      localSettingsProvider,
       (previous, next) {
         if (previous?.threadConfig == next.threadConfig) return;
         if (searchController.isSearchEmailRunning) {
