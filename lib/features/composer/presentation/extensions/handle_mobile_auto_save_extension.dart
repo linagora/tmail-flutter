@@ -10,7 +10,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_auto_save_notifier.dart';
-import 'package:tmail_ui_user/features/composer/presentation/providers/composer_cache_providers.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_composer_cache_clean_close_interactor.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension HandleMobileAutoSaveExtension on ComposerController {

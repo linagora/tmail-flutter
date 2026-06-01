@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
@@ -23,6 +24,7 @@ import 'composer_auto_save_notifier_test.mocks.dart';
 void main() {
   late MockResolveComposerCacheForRestoreInteractor mockResolveInteractor;
   late MockRemoveAllComposerCacheInteractor mockRemoveInteractor;
+  late ProviderContainer container;
   late ComposerAutoSaveNotifier notifier;
 
   final testAccountId = AccountFixtures.aliceAccountId;
@@ -42,10 +44,16 @@ void main() {
   setUp(() {
     mockResolveInteractor = MockResolveComposerCacheForRestoreInteractor();
     mockRemoveInteractor = MockRemoveAllComposerCacheInteractor();
-    notifier = ComposerAutoSaveNotifier(mockResolveInteractor, mockRemoveInteractor);
+    container = ProviderContainer(overrides: [
+      resolveComposerCacheForRestoreProvider.overrideWithValue(mockResolveInteractor),
+      removeAllComposerCacheProvider.overrideWithValue(mockRemoveInteractor),
+    ]);
+    notifier = container.read(composerAutoSaveProvider('test-id').notifier);
     when(mockRemoveInteractor.execute(any, any))
         .thenAnswer((_) async => Right(RemoveAllComposerCacheSuccess()));
   });
+
+  tearDown(() => container.dispose());
 
   group('ComposerAutoSaveNotifier', () {
     group('initial state', () {
