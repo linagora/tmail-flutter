@@ -47,7 +47,6 @@ class ComposerAutoSaveState extends Equatable {
 /// family-instance growth in the global [ProviderContainer].
 @Riverpod(keepAlive: true)
 class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
-  bool _mounted = true;
   late final ResolveComposerCacheForRestoreInteractor _resolveInteractor;
   late final RemoveAllComposerCacheInteractor _removeInteractor;
 
@@ -55,11 +54,10 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
   ComposerAutoSaveState build(String composerId) {
     _resolveInteractor = ref.read(resolveComposerCacheForRestoreProvider);
     _removeInteractor = ref.read(removeAllComposerCacheProvider);
-    ref.onDispose(() => _mounted = false);
     return const ComposerAutoSaveState();
   }
 
-  bool get mounted => _mounted;
+  bool get mounted => ref.mounted;
   bool get hasRecoverableSnapshot => state.hasRecoverableSnapshot;
   bool get isCleanClose => state.isCleanClose;
   String get lastKnownHtmlContent => state.lastKnownHtmlContent;
