@@ -47,6 +47,19 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   @override
   Future<void> tapOnSearchField() async {
     await $(SearchInputFormWidget).$(TextField).tap();
+    // Give the dashboard's background sync (Email/changes, Mailbox/changes,
+    // triggered by the test's email provisioning) time to finish before typing.
+    //
+    // Quick-search suggestions are held in a transient overlay widget. If a sync
+    // response arrives while the suggestion request is in flight, the dashboard
+    // rebuilds and disposes that overlay, so the returned suggestions are dropped
+    // and no tiles ever render — the test then fails even though the search worked.
+    //
+    // This is a wall-clock wait on purpose: the dependency is real backend/network
+    // time, which pumpAndSettle()/waitForCondition() cannot observe (the Flutter
+    // frame scheduler goes idle between network responses, so they return too early).
+    // Scoped to web only; it does not affect mobile or production code.
+    await $.pump(const Duration(seconds: 3));
   }
 
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
