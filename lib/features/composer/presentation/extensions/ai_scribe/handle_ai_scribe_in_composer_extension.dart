@@ -42,8 +42,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
   Future<void> insertTextInEditor(String text) async {    
     try {
-      final escapedText = StringConvert.escapeTextContent(text);
-      final htmlContent = StringConvert.convertTextContentToHtmlContent(escapedText);
+      final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
       if (PlatformInfo.isWeb) {
         await richTextWebController?.editorController.evaluateJavascriptWeb(
@@ -62,8 +61,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
   Future<void> setTextInEditor(String text) async {
     try {
-      final escapedText = StringConvert.escapeTextContent(text);
-      final htmlContent = StringConvert.convertTextContentToHtmlContent(escapedText);
+      final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
       
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText(htmlContent);
