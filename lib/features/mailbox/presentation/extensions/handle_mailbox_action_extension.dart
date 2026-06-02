@@ -16,9 +16,8 @@ extension HandleMailboxActionExtension on MailboxController {
 
   void handleLongPressMailboxNodeAction(
     BuildContext context,
-    PresentationMailbox mailbox, {
-    VoidCallback? onDeleteTrashSubfolders,
-  }) {
+    PresentationMailbox mailbox,
+  ) {
     final deletedMessageVaultSupported =
       MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
 
@@ -43,12 +42,7 @@ extension HandleMailboxActionExtension on MailboxController {
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
         popBack();
-        handleMailboxAction(
-          context,
-          menuAction.action,
-          mailbox,
-          onDeleteTrashSubfolders: onDeleteTrashSubfolders,
-        );
+        handleMailboxAction(context, menuAction.action, mailbox);
       },
     );
   }
@@ -73,9 +67,8 @@ extension HandleMailboxActionExtension on MailboxController {
   Future<void> openMailboxContextMenuAction(
     BuildContext context,
     RelativeRect position,
-    PresentationMailbox mailbox, {
-    VoidCallback? onDeleteTrashSubfolders,
-  }) {
+    PresentationMailbox mailbox,
+  ) {
     final deletedMessageVaultSupported =
       MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
 
@@ -100,12 +93,7 @@ extension HandleMailboxActionExtension on MailboxController {
           menuAction: menuAction,
           menuActionClick: (menuAction) {
             popBack();
-            handleMailboxAction(
-              context,
-              menuAction.action,
-              mailbox,
-              onDeleteTrashSubfolders: onDeleteTrashSubfolders,
-            );
+            handleMailboxAction(context, menuAction.action, mailbox);
           },
         ),
       );

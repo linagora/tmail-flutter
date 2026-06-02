@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_delete_trash_subfolders_extension.dart';
 
-/// Combines [ConsumerWidget] (for Riverpod delete-subfolders access) and
-/// [Obx] (for GetX reactive state) to render a single [MailboxItemWidget].
-class MailboxItemConsumerWidget extends ConsumerWidget {
+class MailboxItemConsumerWidget extends StatelessWidget {
   final MailboxNode mailboxNode;
   final MailboxController controller;
   final bool isHighlighted;
@@ -23,23 +18,8 @@ class MailboxItemConsumerWidget extends ConsumerWidget {
     required this.isHighlighted,
   });
 
-  VoidCallback? _buildDeleteSubfoldersCallback(
-    BuildContext context,
-    WidgetRef ref,
-    PresentationMailbox mailbox,
-  ) {
-    if (!mailbox.isTrash) return null;
-    return () => controller.mailboxDashBoardController
-        .executeDeleteTrashSubfolders(mailbox.id, ref);
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deleteSubfoldersCallback = _buildDeleteSubfoldersCallback(
-      context,
-      ref,
-      mailboxNode.item,
-    );
+  Widget build(BuildContext context) {
     return Obx(
       () => MailboxItemWidget(
         mailboxNode: mailboxNode,
@@ -63,7 +43,6 @@ class MailboxItemConsumerWidget extends ConsumerWidget {
             controller.handleLongPressMailboxNodeAction(
               context,
               mailboxNode.item,
-              onDeleteTrashSubfolders: deleteSubfoldersCallback,
             ),
         onDragItemAccepted: controller.handleDragItemAccepted,
         onMenuActionClick: (position, mailboxNode) =>
@@ -71,14 +50,18 @@ class MailboxItemConsumerWidget extends ConsumerWidget {
               context,
               position,
               mailboxNode.item,
-              onDeleteTrashSubfolders: deleteSubfoldersCallback,
             ),
-        onEmptyMailboxActionCallback: (mailboxNode) =>
-            controller.emptyMailboxAction(
+        onEmptyMailboxActionCallback: (mailboxNode) {
+          if (mailboxNode.item.isTrash) {
+            controller.emptyTrashAction(
               context,
               mailboxNode.item,
-              onDeleteTrashSubfolders: deleteSubfoldersCallback,
-            ),
+              controller.mailboxDashBoardController,
+            );
+          } else {
+            controller.emptyMailboxAction(context, mailboxNode.item);
+          }
+        },
       ),
     );
   }
