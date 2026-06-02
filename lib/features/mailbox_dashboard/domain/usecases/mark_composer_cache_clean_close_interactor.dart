@@ -3,13 +3,9 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_composer_cache_clean_close_state.dart';
-
-part 'mark_composer_cache_clean_close_interactor.g.dart';
 
 /// Two-step write (mark then remove) ensures the entry is not treated as a
 /// recoverable snapshot if removal is interrupted
@@ -51,6 +47,3 @@ class MarkComposerCacheCleanCloseInteractor {
   }
 }
 
-@Riverpod(keepAlive: true)
-MarkComposerCacheCleanCloseInteractor markComposerLocalCacheCleanClose(Ref ref) =>
-    MarkComposerCacheCleanCloseInteractor(ref.watch(composerCacheRepositoryProvider));
