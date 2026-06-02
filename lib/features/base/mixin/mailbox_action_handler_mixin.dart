@@ -56,11 +56,14 @@ mixin MailboxActionHandlerMixin {
   void emptyTrashAction(
     BuildContext context,
     PresentationMailbox mailbox,
-    MailboxDashBoardController dashboardController, {
-    VoidCallback? onDeleteTrashSubfolders,
-  }) {
+    MailboxDashBoardController dashboardController
+  ) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final appToast = Get.find<AppToast>();
+
+    final hasSubfolders = dashboardController.mapMailboxById.values
+        .any((m) => m.parentId == mailbox.id);
+    final hasContent = mailbox.countTotalEmails > 0 || hasSubfolders;
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
@@ -68,13 +71,14 @@ mixin MailboxActionHandlerMixin {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
-            _onConfirmEmptyTrash(
-              context,
-              mailbox,
-              dashboardController,
-              appToast,
-              onDeleteTrashSubfolders: onDeleteTrashSubfolders,
-            );
+            if (hasContent) {
+              dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
+            } else {
+              appToast.showToastWarningMessage(
+                context,
+                AppLocalizations.of(context).noEmailInYourCurrentFolder
+              );
+            }
         }))
       .show();
     } else {
@@ -88,34 +92,17 @@ mixin MailboxActionHandlerMixin {
         onCloseButtonAction: popBack,
         onConfirmAction: () {
           popBack();
-          _onConfirmEmptyTrash(
-            context,
-            mailbox,
-            dashboardController,
-            appToast,
-            onDeleteTrashSubfolders: onDeleteTrashSubfolders,
-          );
+          if (hasContent) {
+            dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
+          } else {
+            appToast.showToastWarningMessage(
+              context,
+              AppLocalizations.of(context).noEmailInYourCurrentFolder
+            );
+          }
         },
       );
     }
-  }
-
-  void _onConfirmEmptyTrash(
-    BuildContext context,
-    PresentationMailbox mailbox,
-    MailboxDashBoardController dashboardController,
-    AppToast appToast, {
-    VoidCallback? onDeleteTrashSubfolders,
-  }) {
-    if (mailbox.countTotalEmails > 0) {
-      dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
-    } else {
-      appToast.showToastWarningMessage(
-        context,
-        AppLocalizations.of(context).noEmailInYourCurrentFolder,
-      );
-    }
-    onDeleteTrashSubfolders?.call();
   }
 
   void emptySpamAction(
