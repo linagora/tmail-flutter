@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_delete_trash_subfolders_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -35,6 +36,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/fil
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/compose_button_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
@@ -252,19 +254,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   );
 
                                 if (showTrashBanner) {
-                                  return CleanMessagesBanner(
+                                  return EmptyTrashBannerWidget(
+                                    trashMailboxId: selectedMailbox!.id,
                                     responsiveUtils: controller.responsiveUtils,
-                                    message: AppLocalizations
-                                      .of(context)
-                                      .message_delete_all_email_in_trash_button,
-                                    positiveAction: AppLocalizations
-                                      .of(context)
-                                      .empty_trash_now,
-                                    onPositiveAction: controller.emptyTrashAction,
-                                    margin: const EdgeInsetsDirectional.only(
-                                      bottom: 8,
-                                      end: 16,
-                                    ),
+                                    confirmCallback: controller.emptyTrashWithSubfolders,
+                                    margin: const EdgeInsetsDirectional.only(bottom: 8, end: 16),
                                   );
                                 } else if (showSpamBanner) {
                                   return CleanMessagesBanner(

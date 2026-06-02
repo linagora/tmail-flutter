@@ -13,7 +13,6 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
@@ -27,8 +26,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/labels_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_consumer_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -200,45 +200,11 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     }
 
     return parentNode.childrenItems!.map((mailboxNode) {
-      final mailboxItemWidget = Obx(() => MailboxItemWidget(
+      final mailboxItemWidget = MailboxItemConsumerWidget(
         mailboxNode: mailboxNode,
-        mailboxNodeSelected: controller
-          .mailboxDashBoardController
-          .selectedMailbox
-          .value,
-        isDraggingMailbox: controller
-            .mailboxDashBoardController
-            .isDraggingMailbox,
+        controller: controller,
         isHighlighted: isFolderHighlighted(mailboxNode),
-        onOpenMailboxFolderClick: (mailboxNode) =>
-            mailboxNode != null
-                ? controller.openMailbox(context, mailboxNode.item)
-                : null,
-        onExpandFolderActionClick: mailboxNode.hasChildren()
-          ? (mailboxNode, itemKey) => controller.toggleMailboxFolder(
-              mailboxNode,
-              controller.mailboxListScrollController,
-              itemKey,
-            )
-          : null,
-        onSelectMailboxFolderClick: controller.selectMailboxNode,
-        onLongPressMailboxNodeAction: (mailboxNode) => controller.handleLongPressMailboxNodeAction(
-          context,
-          mailboxNode.item,
-        ),
-        onDragItemAccepted: controller.handleDragItemAccepted,
-        onMenuActionClick: (position, mailboxNode) {
-          return controller.openMailboxContextMenuAction(
-            context,
-            position,
-            mailboxNode.item,
-          );
-        },
-        onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(
-            context,
-            mailboxNode.item,
-          ),
-      ));
+      );
 
       if (mailboxNode.hasChildren()) {
         return TreeViewChild(
@@ -271,7 +237,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         .responsiveUtils
         .isScreenWithShortestSide(context);
 
-    return SingleChildScrollView(
+    return MailboxProviderListenerWidget(child: SingleChildScrollView(
       controller: controller.mailboxListScrollController,
       key: const PageStorageKey('mailbox_list'),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -351,7 +317,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         buildLabelsBar(context, isDesktop),
         buildLabelsList(context, isDesktop, isMobileResponsive),
       ]),
-    );
+    ));
   }
 
   Widget buildLabelsBar(BuildContext context, bool isDesktop) {

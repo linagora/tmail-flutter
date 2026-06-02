@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -46,7 +47,6 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pul
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_select_message_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_shift_selection_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_more_action_context_menu_mixin.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_delete_trash_subfolders_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController>
@@ -215,20 +216,10 @@ class ThreadView extends GetWidget<ThreadController>
                         );
 
                       if (showTrashBanner) {
-                        return CleanMessagesBanner(
+                        return EmptyTrashBannerWidget(
+                          trashMailboxId: selectedMailbox!.id,
                           responsiveUtils: controller.responsiveUtils,
-                          key: const Key('empty_trash_banner'),
-                          message: AppLocalizations
-                            .of(context)
-                            .message_delete_all_email_in_trash_button,
-                          positiveAction: AppLocalizations
-                            .of(context)
-                            .empty_trash_now,
-                          onPositiveAction: () =>
-                            controller.deleteSelectionEmailsPermanently(
-                              context,
-                              DeleteActionType.all,
-                            ),
+                          confirmCallback: dashboardController.emptyTrashWithSubfolders,
                           margin: ThreadViewStyle.getBannerMargin(
                             context,
                             controller.responsiveUtils,
@@ -253,7 +244,7 @@ class ThreadView extends GetWidget<ThreadController>
                         );
                       } else {
                         return const SizedBox.shrink(
-                          key: Key('clean_message_banner_not_visible'),
+                          key: Key(UiKeys.cleanMessageBannerNotVisible),
                         );
                       }
                     }),
@@ -799,7 +790,7 @@ class ThreadView extends GetWidget<ThreadController>
             deepRefreshText: AppLocalizations.of(context).deepRefresh,
             pullHarderForText: AppLocalizations.of(context).pullHarderFor,
             child: EmptyEmailsWidget(
-              key: const Key('empty_thread_view'),
+              key: const Key(UiKeys.emptyThreadView),
               isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,

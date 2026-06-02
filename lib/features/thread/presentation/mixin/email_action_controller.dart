@@ -378,6 +378,7 @@ mixin EmailActionController {
       List<PresentationEmail>? listEmails,
       PresentationMailbox? mailboxCurrent,
       Function? onCancelSelectionEmail,
+      VoidCallback? onConfirm,
     }
   ) {
     mailboxDashBoardController.deleteSelectionEmailsPermanently(
@@ -385,7 +386,9 @@ mixin EmailActionController {
       actionType,
       listEmails: listEmails,
       mailboxCurrent: mailboxCurrent,
-      onCancelSelectionEmail: onCancelSelectionEmail);
+      onCancelSelectionEmail: onCancelSelectionEmail,
+      onConfirm: onConfirm,
+    );
   }
 
   void openEmailInNewTabAction(PresentationEmail email) {

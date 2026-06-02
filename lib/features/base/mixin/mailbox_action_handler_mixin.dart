@@ -56,8 +56,9 @@ mixin MailboxActionHandlerMixin {
   void emptyTrashAction(
     BuildContext context,
     PresentationMailbox mailbox,
-    MailboxDashBoardController dashboardController
-  ) {
+    MailboxDashBoardController dashboardController, {
+    VoidCallback? onDeleteTrashSubfolders,
+  }) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final appToast = Get.find<AppToast>();
 
@@ -67,14 +68,13 @@ mixin MailboxActionHandlerMixin {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
-            if (mailbox.countTotalEmails > 0) {
-              dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
-            } else {
-              appToast.showToastWarningMessage(
-                context,
-                AppLocalizations.of(context).noEmailInYourCurrentFolder
-              );
-            }
+            _onConfirmEmptyTrash(
+              context,
+              mailbox,
+              dashboardController,
+              appToast,
+              onDeleteTrashSubfolders: onDeleteTrashSubfolders,
+            );
         }))
       .show();
     } else {
@@ -88,17 +88,34 @@ mixin MailboxActionHandlerMixin {
         onCloseButtonAction: popBack,
         onConfirmAction: () {
           popBack();
-          if (mailbox.countTotalEmails > 0) {
-            dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
-          } else {
-            appToast.showToastWarningMessage(
-              context,
-              AppLocalizations.of(context).noEmailInYourCurrentFolder
-            );
-          }
+          _onConfirmEmptyTrash(
+            context,
+            mailbox,
+            dashboardController,
+            appToast,
+            onDeleteTrashSubfolders: onDeleteTrashSubfolders,
+          );
         },
       );
     }
+  }
+
+  void _onConfirmEmptyTrash(
+    BuildContext context,
+    PresentationMailbox mailbox,
+    MailboxDashBoardController dashboardController,
+    AppToast appToast, {
+    VoidCallback? onDeleteTrashSubfolders,
+  }) {
+    if (mailbox.countTotalEmails > 0) {
+      dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
+    } else {
+      appToast.showToastWarningMessage(
+        context,
+        AppLocalizations.of(context).noEmailInYourCurrentFolder,
+      );
+    }
+    onDeleteTrashSubfolders?.call();
   }
 
   void emptySpamAction(

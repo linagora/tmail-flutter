@@ -1186,8 +1186,9 @@ class MailboxController extends BaseMailboxController
   void handleMailboxAction(
       BuildContext context,
       MailboxActions actions,
-      PresentationMailbox mailbox
-  ) {
+      PresentationMailbox mailbox, {
+      VoidCallback? onDeleteTrashSubfolders,
+  }) {
     switch(actions) {
       case MailboxActions.delete:
         openConfirmationDialogDeleteMailboxAction(
@@ -1266,7 +1267,12 @@ class MailboxController extends BaseMailboxController
         _handleSubaddressingAction(mailbox.id, mailbox.rights, actions);
         break;
       case MailboxActions.emptyTrash:
-        emptyTrashAction(context, mailbox, mailboxDashBoardController);
+        emptyTrashAction(
+          context,
+          mailbox,
+          mailboxDashBoardController,
+          onDeleteTrashSubfolders: onDeleteTrashSubfolders,
+        );
         break;
       case MailboxActions.emptySpam:
         emptySpamAction(context, mailbox, mailboxDashBoardController);
@@ -1618,12 +1624,17 @@ class MailboxController extends BaseMailboxController
     });
   }
 
-  void emptyMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+  void emptyMailboxAction(
+    BuildContext context,
+    PresentationMailbox presentationMailbox, {
+    VoidCallback? onDeleteTrashSubfolders,
+  }) {
     log('MailboxController::emptyMailboxAction:presentationMailbox: ${presentationMailbox.name}');
     if (presentationMailbox.isTrash) {
       mailboxDashBoardController.emptyTrashFolderAction(
         trashMailbox: presentationMailbox,
       );
+      onDeleteTrashSubfolders?.call();
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(
         spamFolderId: presentationMailbox.id,
