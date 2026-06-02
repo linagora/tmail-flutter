@@ -42,7 +42,11 @@ extension HandleMailboxActionExtension on MailboxController {
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
         popBack();
-        handleMailboxAction(context, menuAction.action, mailbox);
+        handleMailboxAction(
+          context,
+          menuAction.action,
+          mailbox,
+        );
       },
     );
   }

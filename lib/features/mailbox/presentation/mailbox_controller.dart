@@ -1186,7 +1186,7 @@ class MailboxController extends BaseMailboxController
   void handleMailboxAction(
       BuildContext context,
       MailboxActions actions,
-      PresentationMailbox mailbox,
+      PresentationMailbox mailbox
   ) {
     switch(actions) {
       case MailboxActions.delete:
@@ -1618,15 +1618,16 @@ class MailboxController extends BaseMailboxController
     });
   }
 
-  void emptyMailboxAction(
-    BuildContext context,
-    PresentationMailbox presentationMailbox,
-  ) {
+  void emptyMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
     log('MailboxController::emptyMailboxAction:presentationMailbox: ${presentationMailbox.name}');
-    if (presentationMailbox.isSpam) {
+    if (presentationMailbox.isTrash) {
+      mailboxDashBoardController.emptyTrashFolderAction(
+        trashMailbox: presentationMailbox,
+      );
+    } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(
         spamFolderId: presentationMailbox.id,
-        totalEmails: presentationMailbox.countTotalEmails,
+        totalEmails: presentationMailbox.countTotalEmails
       );
     }
   }
