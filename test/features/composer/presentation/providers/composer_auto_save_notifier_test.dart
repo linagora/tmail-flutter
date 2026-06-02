@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/resolve_composer_cache_for_restore_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/resolve_composer_cache_for_restore_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/composer_cache_interactor_providers.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';

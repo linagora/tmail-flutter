@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_per
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/resolve_composer_cache_for_restore_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/resolve_composer_cache_for_restore_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/composer_cache_interactor_providers.dart';
 
 part 'composer_auto_save_notifier.g.dart';
 
@@ -89,7 +90,7 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
       (success) {
         if (success is! ResolveComposerCacheForRestoreSuccess) return null;
         final cache = success.cache;
-        if (cache != null) {
+        if (cache != null && mounted) {
           state = state.copyWith(hasRecoverableSnapshot: true);
           log('ComposerAutoSaveNotifier::restore: found snapshot');
         }
@@ -103,7 +104,9 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
     result.fold(
       (failure) => log('ComposerAutoSaveNotifier::clearCache: failure=${failure.runtimeType}'),
       (_) {
-        state = state.copyWith(hasRecoverableSnapshot: false);
+        if (mounted) {
+          state = state.copyWith(hasRecoverableSnapshot: false);
+        }
         log('ComposerAutoSaveNotifier::clearCache: cleared');
       },
     );
