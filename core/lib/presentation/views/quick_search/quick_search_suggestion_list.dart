@@ -237,7 +237,12 @@ class QuickSearchSuggestionListState<T, P, R>
 
     if (queryString.isEmpty) {
       final recentItems = await _getListRecent(queryString);
-      if (!mounted) return;
+      // If the overlay was deactivated mid-fetch, invalidate so a later
+      // reactivation re-runs the fetch instead of keeping stale empty state.
+      if (!mounted) {
+        _suggestionsValid = false;
+        return;
+      }
 
       setState(() {
         _animationController?.forward(from: widget.animationStart);
@@ -269,7 +274,13 @@ class QuickSearchSuggestionListState<T, P, R>
           : null;
     }
 
-    if (!mounted) return;
+    // The suggestions box can be deactivated (parent rebuild) while this fetch is
+    // in flight; applying the result would be lost. Invalidate so the fetch re-runs
+    // when the overlay is reactivated, instead of dropping the results permanently.
+    if (!mounted) {
+      _suggestionsValid = false;
+      return;
+    }
     setState(() {
       final animationStart = suggestions?.isNotEmpty == true
           ? widget.animationStart
@@ -280,6 +291,17 @@ class QuickSearchSuggestionListState<T, P, R>
       _recentItems = recentItems;
       _contacts = contacts;
     });
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    // If this state was deactivated while a suggestion fetch was in flight, the
+    // result was dropped (it was unmounted). Re-run the fetch on reactivation so
+    // the suggestions render instead of staying empty.
+    if (!_suggestionsValid) {
+      _getSuggestions();
+    }
   }
 
   @override
