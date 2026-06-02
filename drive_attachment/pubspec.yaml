@@ -1,0 +1,41 @@
+name: drive_attachment
+description: External drive file picker integration for TMail composer
+publish_to: "none"
+
+resolution: workspace
+
+version: 0.1.0
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  core:
+    path: ../core
+
+  model:
+    path: ../model
+
+  equatable: 2.0.5
+  dio: 5.2.0
+  flutter_riverpod: ^3.3.1
+  riverpod_annotation: ^4.0.2
+  json_annotation: ^4.9.0
+  pointer_interceptor: 0.10.1+2
+  dartz: 0.10.1
+  flutter_inappwebview: 6.1.0
+  universal_html: 2.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  build_runner: ^2.15.0
+  json_serializable: ^6.11.3
+  flutter_lints: 2.0.1
+
+flutter:
+  uses-material-design: true

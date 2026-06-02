@@ -33,6 +33,9 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_c
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_drop_zone_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drive_attachment_button.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drive_attachment_list_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
@@ -278,6 +281,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                 ),
                               ),
                               attachmentWidget,
+                              DriveAttachmentListWidget(
+                                composerId: composerId ?? '',
+                              ),
                               Obx(() {
                                 if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                   return ToolbarRichTextWidget(
@@ -523,6 +529,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                       ),
                                     ),
                                     attachmentWidget,
+                                    DriveAttachmentListWidget(
+                                      composerId: composerId ?? '',
+                                    ),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                         return ToolbarRichTextWidget(
@@ -551,6 +560,14 @@ class ComposerView extends GetWidget<ComposerController> {
                               isMarkAsImportant: controller.isMarkAsImportant.value,
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
+                              driveAttachmentButton: DriveAttachmentButton(
+                                composerId: composerId ?? '',
+                                imagePaths: controller.imagePaths,
+                                iconColor: BottomBarComposerWidgetStyle.iconColor,
+                                iconSize: BottomBarComposerWidgetStyle.iconSize,
+                                borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                                padding: BottomBarComposerWidgetStyle.iconPadding,
+                              ),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               deleteComposerAction: controller.handleClickDeleteComposer,
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
@@ -800,6 +817,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                       ),
                                     ),
                                     attachmentWidget,
+                                    DriveAttachmentListWidget(
+                                      composerId: composerId ?? '',
+                                    ),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                         return ToolbarRichTextWidget(
@@ -828,6 +848,14 @@ class ComposerView extends GetWidget<ComposerController> {
                               isMarkAsImportant: controller.isMarkAsImportant.value,
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
+                              driveAttachmentButton: DriveAttachmentButton(
+                                composerId: composerId ?? '',
+                                imagePaths: controller.imagePaths,
+                                iconColor: BottomBarComposerWidgetStyle.iconColor,
+                                iconSize: BottomBarComposerWidgetStyle.iconSize,
+                                borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                                padding: BottomBarComposerWidgetStyle.iconPadding,
+                              ),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               deleteComposerAction: controller.handleClickDeleteComposer,
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),

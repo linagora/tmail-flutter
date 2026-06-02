@@ -23,8 +23,10 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
+import 'package:drive_attachment/drive_attachment/presentation/provider/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {
@@ -48,6 +50,7 @@ abstract class ReloadableController extends BaseController {
         apiUrl: failure.apiUrl);
     } else if (failure is GetOidcUserInfoFailure) {
       twakeAppManager.clearOidcUserInfo();
+      appProviderContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -74,6 +77,9 @@ abstract class ReloadableController extends BaseController {
     } else if (success is GetOidcUserInfoSuccess) {
       log('$runtimeType::handleSuccessViewState:GetOidcUserInfoSuccess: OidcUserInfo = ${success.oidcUserInfo.toJson().toString()}');
       twakeAppManager.setOidcUserInfo(success.oidcUserInfo);
+      appProviderContainer
+          .read(workplaceFqdnProvider.notifier)
+          .setFqdn(success.oidcUserInfo.workplaceFqdn);
     } else {
       super.handleSuccessViewState(success);
     }

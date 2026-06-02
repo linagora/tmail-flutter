@@ -1,4 +1,5 @@
 
+import 'package:drive_attachment/drive_attachment/domain/entity/drive_attachment.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -50,6 +51,7 @@ class CreateEmailRequest with EquatableMixin {
   final EmailId? savedEmailDraftId;
   final List<KeyWordIdentifier>? keywords;
   final bool isUpdateDraftToClose;
+  final List<DriveAttachment>? driveAttachments;
 
   CreateEmailRequest({
     required this.session,
@@ -88,6 +90,7 @@ class CreateEmailRequest with EquatableMixin {
     this.savedEmailDraftId,
     this.keywords,
     this.isUpdateDraftToClose = false,
+    this.driveAttachments,
   });
 
   @override
@@ -128,5 +131,6 @@ class CreateEmailRequest with EquatableMixin {
     savedEmailDraftId,
     keywords,
     isUpdateDraftToClose,
+    driveAttachments,
   ];
 }

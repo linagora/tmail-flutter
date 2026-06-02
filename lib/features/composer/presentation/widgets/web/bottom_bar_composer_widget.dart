@@ -33,6 +33,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
+  final Widget? driveAttachmentButton;
   final OnMenuChanged? onPopupMenuChanged;
   final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
@@ -57,6 +58,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
+    this.driveAttachmentButton,
     this.onPopupMenuChanged,
     this.onOpenAiAssistantModal,
   });
@@ -99,6 +101,10 @@ class BottomBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
+          if (driveAttachmentButton != null) ...[
+            const SizedBox(width: BottomBarComposerWidgetStyle.space),
+            driveAttachmentButton!,
+          ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           AbsorbPointer(
             absorbing: isCodeViewEnabled,

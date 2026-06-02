@@ -25,6 +25,8 @@ import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/ai_scribe/composer_ai_scribe_selection_overlay.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drive_attachment_button.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drive_attachment_list_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/landscape_app_bar_composer_widget.dart';
@@ -96,6 +98,12 @@ class ComposerView extends GetWidget<ComposerController> {
                     attachFileAction: () => controller.openPickAttachmentMenu(
                       context,
                       _pickAttachmentsActionTiles(context)
+                    ),
+                    driveAttachmentButton: DriveAttachmentButton(
+                      composerId: controller.composerId ?? '',
+                      imagePaths: controller.imagePaths,
+                      iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                      iconSize: MobileAppBarComposerWidgetStyle.iconSize,
                     ),
                     insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                     openRichToolbarAction: () =>
@@ -233,6 +241,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                   return const SizedBox.shrink();
                                 }
                               }),
+                              DriveAttachmentListWidget(
+                                composerId: controller.composerId ?? '',
+                              ),
                               Obx(() => Center(
                                 child: InsertImageLoadingBarWidget(
                                   uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
@@ -424,6 +435,9 @@ class ComposerView extends GetWidget<ComposerController> {
                           return const SizedBox.shrink();
                         }
                       }),
+                      DriveAttachmentListWidget(
+                        composerId: controller.composerId ?? '',
+                      ),
                       Obx(() => Center(
                         child: InsertImageLoadingBarWidget(
                           uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,

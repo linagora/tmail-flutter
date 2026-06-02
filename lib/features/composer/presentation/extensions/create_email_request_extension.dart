@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:drive_attachment/drive_attachment/domain/entity/drive_attachment.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -136,6 +137,16 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     return null;
   }
 
+  Map<IndividualHeaderIdentifier, List<String>>? _buildLinkedFileHeader(
+    List<DriveAttachment>? attachments,
+  ) {
+    if (attachments == null || attachments.isEmpty) return null;
+    return {
+      IndividualHeaderIdentifier.xLinkedFileHeader:
+          attachments.map((a) => a.linkedFileHeader).toList(),
+    };
+  }
+
   Email generateEmail({
     required String newEmailContent,
     required Set<EmailBodyPart> newEmailAttachments,
@@ -199,6 +210,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       priorityHeader: isMarkAsImportant
         ? {IndividualHeaderIdentifier.priorityHeader: MailPriorityHeader.urgentPriority}
         : null,
+      xLinkedFileHeader: _buildLinkedFileHeader(driveAttachments),
     );
   }
 

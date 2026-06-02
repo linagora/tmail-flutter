@@ -17,6 +17,7 @@ workspace:
   - scribe
   - labels
   - cozy
+  - drive_attachment
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -72,6 +73,9 @@ dependencies:
 
   labels:
     path: labels
+
+  drive_attachment:
+    path: drive_attachment
 
   ### Dependencies from git ###
   rich_text_composer:
@@ -316,7 +320,7 @@ dependency_overrides:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: feature/linked-file-header
 
   linagora_design_flutter:
     git:

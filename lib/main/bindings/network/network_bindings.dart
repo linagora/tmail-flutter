@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:drive_attachment/drive_attachment/presentation/provider/drive_attachment_providers.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -66,6 +67,7 @@ class NetworkBindings extends Bindings {
 
   void _bindingDio() {
     Get.put(Dio(Get.find<BaseOptions>()));
+    setupDriveAttachment(Get.find<Dio>());
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(const FlutterAppAuth());
     Get.put(AppAuthWebPlugin());
@@ -98,6 +100,9 @@ class NetworkBindings extends Bindings {
     ));
     dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
     dio.interceptors.add(Get.find<AuthorizationInterceptors>());
+    setupDriveAttachmentOidcTokenGetter(
+      () => Get.find<AuthorizationInterceptors>().currentOidcIdToken,
+    );
     if (BuildUtils.isDebugMode) {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }

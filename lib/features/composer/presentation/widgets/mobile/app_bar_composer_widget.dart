@@ -16,6 +16,7 @@ class AppBarComposerWidget extends StatelessWidget {
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
   final VoidCallback? attachFileAction;
+  final Widget? driveAttachmentButton;
   final VoidCallback? insertImageAction;
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
@@ -31,6 +32,7 @@ class AppBarComposerWidget extends StatelessWidget {
     required this.openRichToolbarAction,
     this.isNetworkConnectionAvailable = false,
     this.attachFileAction,
+    this.driveAttachmentButton,
     this.insertImageAction,
     this.onOpenAiAssistantModal,
   });
@@ -82,6 +84,10 @@ class AppBarComposerWidget extends StatelessWidget {
                 tooltipMessage: AppLocalizations.of(context).attach_file,
                 onTapActionCallback: attachFileAction,
               ),
+              if (driveAttachmentButton != null) ...[
+                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                driveAttachmentButton!,
+              ],
               const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               TMailButtonWidget.fromIcon(
                 icon: imagePaths.icInsertImage,
