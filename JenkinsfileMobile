@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'heavy'
+        label 'mobile'
     }
 
     options {
