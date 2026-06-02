@@ -1,6 +1,6 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 part 'cache_exception_thrower.g.dart';

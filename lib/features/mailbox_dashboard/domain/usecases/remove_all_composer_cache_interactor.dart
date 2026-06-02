@@ -3,12 +3,8 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_all_composer_cache_state.dart';
-
-part 'remove_all_composer_cache_interactor.g.dart';
 
 class RemoveAllComposerCacheInteractor {
   final ComposerCacheRepository _composerCacheRepository;
@@ -24,7 +20,3 @@ class RemoveAllComposerCacheInteractor {
     }
   }
 }
-
-@Riverpod(keepAlive: true)
-RemoveAllComposerCacheInteractor removeAllComposerCache(Ref ref) =>
-    RemoveAllComposerCacheInteractor(ref.watch(composerCacheRepositoryProvider));
