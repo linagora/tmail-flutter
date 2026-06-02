@@ -212,7 +212,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
@@ -275,7 +274,6 @@ class MailboxDashBoardController extends ReloadableController
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
-  final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
   final SendEmailInteractor _sendEmailInteractor;
@@ -319,6 +317,8 @@ class MailboxDashBoardController extends ReloadableController
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
   final viewStateMailboxActionProgress = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final _emptyTrashStreamController = StreamController<PresentationMailbox>.broadcast();
+  Stream<PresentationMailbox> get onEmptyTrashRequested => _emptyTrashStreamController.stream;
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, dynamic>>();
   final _isDraggingMailbox = RxBool(false);
@@ -384,7 +384,6 @@ class MailboxDashBoardController extends ReloadableController
     this._markAsMultipleEmailReadInteractor,
     this._markAsStarMultipleEmailInteractor,
     this._moveMultipleEmailToMailboxInteractor,
-    this._emptyTrashFolderInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._getEmailByIdInteractor,
     this._sendEmailInteractor,
@@ -1884,36 +1883,13 @@ class MailboxDashBoardController extends ReloadableController
     final trashFolder = trashMailbox
         ?? (selectedMailbox.value?.isTrash == true ? selectedMailbox.value : null)
         ?? mapMailboxById[mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash]];
-    final accountId = this.accountId.value;
-    final session = sessionCurrent;
-
-    if (accountId == null || session == null) {
-      consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundSessionException()))));
-      return;
-    }
 
     if (trashFolder == null) {
       consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundMailboxException()))));
       return;
     }
 
-    if (CapabilityIdentifier.jmapMailboxClear.isSupported(session, accountId) &&
-        !trashFolder.isFirstLevelTeamSystemFolder(mapMailboxById, PresentationMailbox.trashRole)) {
-      clearMailbox(
-        session,
-        accountId,
-        trashFolder.id,
-        PresentationMailbox.roleTrash,
-      );
-    } else {
-      consumeState(_emptyTrashFolderInteractor.execute(
-        session,
-        accountId,
-        trashFolder.id,
-        trashFolder.countTotalEmails,
-        progressStateController,
-      ));
-    }
+    _emptyTrashStreamController.add(trashFolder);
   }
 
   void syncViewStateMailboxActionProgress({
@@ -3477,6 +3453,7 @@ class MailboxDashBoardController extends ReloadableController
     }
     progressStateController.close();
     _refreshActionEventController.close();
+    _emptyTrashStreamController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
     ApplicationManager().releaseUserAgent();

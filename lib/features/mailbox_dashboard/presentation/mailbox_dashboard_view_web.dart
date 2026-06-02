@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_delete_trash_subfolders_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -255,9 +255,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                                 if (showTrashBanner) {
                                   return EmptyTrashBannerWidget(
-                                    trashMailboxId: selectedMailbox!.id,
+                                    trashMailbox: selectedMailbox!,
                                     responsiveUtils: controller.responsiveUtils,
-                                    confirmCallback: controller.emptyTrashWithSubfolders,
+                                    confirmCallback: controller.requestEmptyTrash,
                                     margin: const EdgeInsetsDirectional.only(bottom: 8, end: 16),
                                   );
                                 } else if (showSpamBanner) {

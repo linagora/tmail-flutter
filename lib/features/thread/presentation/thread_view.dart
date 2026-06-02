@@ -58,7 +58,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_delete_trash_subfolders_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController>
@@ -217,9 +217,9 @@ class ThreadView extends GetWidget<ThreadController>
 
                       if (showTrashBanner) {
                         return EmptyTrashBannerWidget(
-                          trashMailboxId: selectedMailbox!.id,
+                          trashMailbox: selectedMailbox!,
                           responsiveUtils: controller.responsiveUtils,
-                          confirmCallback: dashboardController.emptyTrashWithSubfolders,
+                          confirmCallback: dashboardController.requestEmptyTrash,
                           margin: ThreadViewStyle.getBannerMargin(
                             context,
                             controller.responsiveUtils,
