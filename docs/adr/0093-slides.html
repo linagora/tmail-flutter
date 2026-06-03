@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADR-0093 — Remove Trash Subfolders with Riverpod</title>
+<style>
+  /* ─── Reset & base ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0f1117;
+    --surface: #1a1d27;
+    --border:  #2a2d3e;
+    --accent:  #7c6af7;
+    --accent2: #56cfb2;
+    --accent3: #f77c6a;
+    --text:    #e2e4f0;
+    --muted:   #7b7f9e;
+    --code-bg: #0d1117;
+    --green:   #56d38f;
+    --red:     #f77c6a;
+    --yellow:  #f7c56a;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 18px;
+    overflow: hidden;
+  }
+
+  /* ─── Slide engine ──────────────────────────────────────── */
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateX(60px);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+    overflow: hidden;           /* clip during transition */
+  }
+  .slide.active {
+    opacity: 1; transform: translateX(0);
+    pointer-events: all;
+    overflow-y: auto;           /* allow scroll only when visible */
+    overflow-x: hidden;
+  }
+  .slide.exit {
+    opacity: 0; transform: translateX(-60px);
+  }
+
+  /* ─── Scrollable inner content ──────────────────────────── */
+  .slide-inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 52px 72px 72px;    /* bottom pad clears nav bar */
+    min-height: min-content;
+  }
+
+  @media (max-width: 900px) {
+    .slide-inner { padding: 32px 28px 80px; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.4rem; margin-bottom: 18px; }
+    h3 { font-size: 1rem; }
+    html, body { font-size: 15px; }
+    .cols-2, .cols-3, .cols-60-40, .cols-40-60 {
+      grid-template-columns: 1fr !important;
+    }
+    pre { font-size: .75rem; }
+  }
+
+  @media (max-width: 600px) {
+    .slide-inner { padding: 24px 16px 80px; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+    html, body { font-size: 13px; }
+    pre { font-size: .7rem; }
+    #nav button { padding: 5px 10px; font-size: .75rem; }
+  }
+
+  /* ─── Typography ────────────────────────────────────────── */
+  .slide-label {
+    font-size: .75rem; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 10px;
+  }
+  h1 { font-size: 2.8rem; font-weight: 700; line-height: 1.15; }
+  h2 { font-size: 1.9rem; font-weight: 700; margin-bottom: 28px; color: var(--text); }
+  h3 { font-size: 1.2rem; font-weight: 600; color: var(--accent2); margin-bottom: 12px; }
+  p, li { line-height: 1.65; color: #bdc1d8; }
+  li { margin-bottom: 8px; }
+  ul { padding-left: 1.4em; }
+  strong { color: var(--text); font-weight: 600; }
+  .accent  { color: var(--accent); }
+  .accent2 { color: var(--accent2); }
+  .accent3 { color: var(--accent3); }
+  .green   { color: var(--green); }
+  .red     { color: var(--red); }
+  .yellow  { color: var(--yellow); }
+  .muted   { color: var(--muted); font-size: .9rem; }
+
+  /* ─── Code ──────────────────────────────────────────────── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    color: #c9d1d9;
+  }
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: .85em;
+    background: #1e2235;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent2);
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+
+  /* Syntax colouring */
+  .kw  { color: #ff7b72; }
+  .cl  { color: #79c0ff; }
+  .fn  { color: #d2a8ff; }
+  .st  { color: #a5d6ff; }
+  .cm  { color: #6a737d; font-style: italic; }
+  .num { color: #79c0ff; }
+  .op  { color: #ff7b72; }
+  .an  { color: var(--accent2); }
+  .cn  { color: var(--yellow); }
+
+  /* ─── Layout helpers ────────────────────────────────────── */
+  .cols { display: grid; gap: 28px; flex: 1; min-height: 0; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cols-60-40 { grid-template-columns: 60fr 40fr; }
+  .cols-40-60 { grid-template-columns: 40fr 60fr; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+  }
+  .card.good  { border-left: 4px solid var(--green); }
+  .card.bad   { border-left: 4px solid var(--red); }
+  .card.info  { border-left: 4px solid var(--accent); }
+  .card.warn  { border-left: 4px solid var(--yellow); }
+
+  /* ─── Tables ────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th {
+    background: #1e2235; color: var(--accent);
+    font-weight: 600; letter-spacing: .06em; font-size: .78rem;
+    text-transform: uppercase; padding: 10px 14px; text-align: left;
+  }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: #bdc1d8; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #1e2235; }
+
+  /* ─── Flow diagram (CSS-only) ────────────────────────────── */
+  .flow {
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: 0; font-size: .82rem; font-family: 'JetBrains Mono', monospace;
+  }
+  .flow-row { display: flex; align-items: center; gap: 8px; }
+  .flow-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 14px;
+    white-space: nowrap;
+  }
+  .flow-box.trigger  { border-color: var(--accent3); color: var(--accent3); }
+  .flow-box.getx     { border-color: var(--yellow);  color: var(--yellow); }
+  .flow-box.riverpod { border-color: var(--accent);  color: var(--accent); }
+  .flow-box.notifier { border-color: var(--accent2); color: var(--accent2); }
+  .flow-box.ui       { border-color: var(--green);   color: var(--green); }
+  .flow-arrow { color: var(--muted); }
+  .flow-line { width: 2px; height: 12px; background: var(--border); margin-left: 26px; }
+  .flow-label { color: var(--muted); font-size: .72rem; margin-left: 8px; font-style: italic; }
+
+  /* ─── State chips ───────────────────────────────────────── */
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chip {
+    padding: 8px 18px; border-radius: 999px;
+    font-size: .85rem; font-family: monospace; font-weight: 600;
+    border: 1.5px solid;
+  }
+  .chip.idle    { border-color: var(--muted);   color: var(--muted); }
+  .chip.loading { border-color: var(--yellow);  color: var(--yellow); }
+  .chip.success { border-color: var(--green);   color: var(--green); }
+  .chip.failure { border-color: var(--red);     color: var(--red); }
+
+  /* ─── Badge ─────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+    padding: 3px 10px; border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .badge.green { background: var(--green); color: #0f1117; }
+  .badge.red   { background: var(--red);   color: #0f1117; }
+
+  /* ─── Divider ────────────────────────────────────────────── */
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ─── Progress bar & nav ────────────────────────────────── */
+  #progress {
+    position: fixed; bottom: 0; left: 0;
+    height: 3px; background: var(--accent);
+    transition: width .3s ease;
+    z-index: 100;
+  }
+  #nav {
+    position: fixed; bottom: 18px; right: 28px;
+    display: flex; align-items: center; gap: 14px;
+    font-size: .8rem; color: var(--muted);
+    z-index: 100;
+  }
+  #nav button {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 14px; border-radius: 7px;
+    cursor: pointer; font-size: .82rem;
+    transition: background .15s;
+  }
+  #nav button:hover { background: var(--border); }
+  #slide-counter { font-variant-numeric: tabular-nums; }
+
+  /* ─── Title slide special ───────────────────────────────── */
+  .slide-title {
+    justify-content: center; align-items: flex-start;
+  }
+  .slide-title .adr-tag {
+    font-size: .85rem; font-weight: 600; letter-spacing: .1em;
+    color: var(--accent); text-transform: uppercase;
+    border: 1.5px solid var(--accent); border-radius: 6px;
+    padding: 4px 12px; display: inline-block; margin-bottom: 28px;
+  }
+  .slide-title h1 { font-size: 3rem; max-width: 820px; margin-bottom: 20px; }
+  .slide-title .subtitle { color: var(--muted); font-size: 1rem; margin-top: 14px; }
+  .slide-title .meta { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+  .slide-title .meta span { margin-right: 24px; }
+
+  /* glow bar behind title — fixed to viewport so it ignores slide-inner scroll */
+  .glow-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 220px;
+    background: radial-gradient(ellipse at 30% 100%, rgba(124,106,247,.18) 0%, transparent 70%),
+                radial-gradient(ellipse at 70% 100%, rgba(86,207,178,.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .scroll-inner { overflow-y: auto; flex: 1; min-height: 0; }
+  .scroll-inner::-webkit-scrollbar { width: 4px; }
+  .scroll-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ─── 01 TITLE ─────────────────────────────────────────── -->
+  <div class="slide slide-title active" id="s1">
+    <div class="glow-bar"></div>
+    <div class="adr-tag">ADR-0093 · TF-4479</div>
+    <h1>Remove Trash Subfolders<br>on Empty-Trash<br><span class="accent">via Riverpod</span></h1>
+    <p class="subtitle">How we used <strong>@riverpod Notifier</strong> + <strong>sealed classes</strong> + a<br><strong>stream bridge</strong> to ship a feature the GetX model couldn't express.</p>
+    <div class="meta">
+      <span>Author: dab246</span>
+      <span>Date: 2026-06-03</span>
+      <span class="badge green">Accepted</span>
+    </div>
+  </div>
+
+  <!-- ─── 02 AGENDA ─────────────────────────────────────────── -->
+  <div class="slide" id="s2">
+    <div class="slide-label">Overview</div>
+    <h2>What we will cover</h2>
+    <div class="cols cols-2" style="flex:unset; gap:16px; margin-top: 4px;">
+      <div class="card info">
+        <h3>Problem &amp; Context</h3>
+        <ul>
+          <li>The bug: subfolders never deleted</li>
+          <li>Why the old GetX approach couldn't extend</li>
+          <li>Why Riverpod fits</li>
+        </ul>
+      </div>
+      <div class="card info">
+        <h3>Architecture Comparison</h3>
+        <ul>
+          <li>Before: monolithic GetX method</li>
+          <li>After: stream bridge + Notifier</li>
+          <li>Structural diff table</li>
+        </ul>
+      </div>
+      <div class="card info">
+        <h3>Sealed Classes Deep-dive</h3>
+        <ul>
+          <li>What sealed means in Dart 3</li>
+          <li>Exhaustive pattern matching</li>
+          <li>Two hierarchies in this feature</li>
+        </ul>
+      </div>
+      <div class="card info">
+        <h3>Key Design Decisions</h3>
+        <ul>
+          <li>Stream bridge + mounted guard</li>
+          <li>ConsumerWidget wiring</li>
+          <li>Unit tests &amp; consequences</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 03 THE BUG ────────────────────────────────────────── -->
+  <div class="slide" id="s3">
+    <div class="slide-label">Context — The Problem</div>
+    <h2>The bug: subfolders survived Empty Trash</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <div class="card bad" style="margin-bottom:18px;">
+          <h3 style="color:var(--red)">What users expected</h3>
+          <p>Empty Trash → deletes <strong>all emails</strong> inside Trash<br>AND <strong>all child mailboxes</strong> (subfolders) under Trash.</p>
+        </div>
+        <div class="card bad">
+          <h3 style="color:var(--red)">What actually happened</h3>
+          <p>Only emails were deleted. Subfolders were silently left behind — there was <strong>no code path</strong> in the old flow to delete them.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card warn">
+          <h3>Why the old GetX flow couldn't fix this cleanly</h3>
+          <ul>
+            <li><code>emptyTrashFolderAction</code> used <code>consumeState(stream)</code> — a single-stream pipe into the GetX observable</li>
+            <li><strong>Sequential async</strong> (delete emails → <em>then</em> delete subfolders) is impossible in this model</li>
+            <li>Business logic (capability check, null guards, strategy selection) was already crowding the controller</li>
+            <li>Untestable without full GetX binding setup</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 04 BEFORE ─────────────────────────────────────────── -->
+  <div class="slide" id="s4">
+    <div class="slide-label">Architecture — Before</div>
+    <h2>Before: monolithic method in <code>MailboxDashBoardController</code></h2>
+    <pre><code><span class="fn">emptyTrashFolderAction</span>()
+  │
+  ├── accountId == <span class="kw">null</span>?   ──► <span class="fn">consumeState</span>(<span class="cl">Left</span>(<span class="cl">EmptyTrashFolderFailure</span>))
+  ├── session == <span class="kw">null</span>?     ──► <span class="fn">consumeState</span>(<span class="cl">Left</span>(<span class="cl">EmptyTrashFolderFailure</span>))
+  ├── trashFolder == <span class="kw">null</span>?  ──► <span class="fn">consumeState</span>(<span class="cl">Left</span>(<span class="cl">EmptyTrashFolderFailure</span>))
+  │
+  ├── JMAP clear supported AND not team folder?
+  │       └── <span class="fn">clearMailbox</span>(session, accountId, id, role)
+  │               └── <span class="fn">consumeState</span>(stream of <span class="cl">ClearMailboxInteractor</span>)
+  │                                                         ↑
+  └── <span class="kw">else</span>                                    NO subfolder deletion here
+          └── <span class="fn">consumeState</span>(_emptyTrashFolderInteractor.<span class="fn">execute</span>(...))
+                                                            ↑
+                                               NO subfolder deletion here either</code></pre>
+    <div class="cols cols-2" style="margin-top:18px; flex:unset; gap:14px;">
+      <div class="card bad"><strong class="red">Sequential async impossible</strong><br><span class="muted">consumeState pipes one stream. No hook after it completes.</span></div>
+      <div class="card bad"><strong class="red">Business logic in the controller</strong><br><span class="muted">Capability check, null guards, strategy selection all mixed in.</span></div>
+      <div class="card bad"><strong class="red">Subfolders ignored entirely</strong><br><span class="muted">No code path exists for child mailbox deletion.</span></div>
+      <div class="card bad"><strong class="red">Untestable in isolation</strong><br><span class="muted">Requires full GetX bindings to mock a single interactor.</span></div>
+    </div>
+  </div>
+
+  <!-- ─── 05 AFTER ──────────────────────────────────────────── -->
+  <div class="slide" id="s5">
+    <div class="slide-label">Architecture — After</div>
+    <h2>After: stream bridge + Riverpod Notifier</h2>
+    <div class="cols cols-40-60" style="align-items:start;">
+      <div class="flow" style="gap:0; margin-top:4px;">
+        <div class="flow-row"><div class="flow-box trigger">User taps "Empty Trash"</div></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box getx">emptyTrashFolderAction()</div><span class="flow-label">GetX, API unchanged</span></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box getx">StreamController.add(trashMailbox)</div><span class="flow-label">just emit</span></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box riverpod">emptyTrashRequestedProvider</div><span class="flow-label">@riverpod</span></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box riverpod">MailboxProviderListenerWidget</div><span class="flow-label">ref.listen</span></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box notifier">EmptyTrashNotifier.execute()</div><span class="flow-label">pure orchestrator</span></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box notifier">EmptyTrashState (sealed)</div></div>
+        <div class="flow-line"></div>
+        <div class="flow-row"><div class="flow-box ui">toasts + progress + refresh</div><span class="flow-label">back to GetX</span></div>
+      </div>
+      <div>
+        <table>
+          <tr><th>Concern</th><th>Before</th><th>After</th></tr>
+          <tr>
+            <td>Strategy selection</td>
+            <td class="red">Controller</td>
+            <td class="green">Widget layer</td>
+          </tr>
+          <tr>
+            <td>Sequential async</td>
+            <td class="red">Impossible</td>
+            <td class="green">Notifier.execute()</td>
+          </tr>
+          <tr>
+            <td>Result handling</td>
+            <td class="red">Scattered handlers</td>
+            <td class="green">Single exhaustive switch</td>
+          </tr>
+          <tr>
+            <td>Testing</td>
+            <td class="red">GetX bindings required</td>
+            <td class="green">ProviderContainer only</td>
+          </tr>
+          <tr>
+            <td>Controller responsibility</td>
+            <td class="red">Picks strategy + calls interactors + handles results</td>
+            <td class="green">Emits one event</td>
+          </tr>
+          <tr>
+            <td>Subfolder deletion</td>
+            <td class="red">Missing entirely</td>
+            <td class="green">Sequenced, all outcomes surfaced</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 06 SEALED WHAT ────────────────────────────────────── -->
+  <div class="slide" id="s6">
+    <div class="slide-label">Sealed Classes — Concept</div>
+    <h2>What is a <code>sealed</code> class in Dart?</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <p style="margin-bottom:16px;">A <code>sealed</code> class <strong>closes</strong> its subtype hierarchy to a single library file. Every direct subtype must be declared in the <em>same file</em>. The compiler knows the complete, finite set at compile time.</p>
+        <pre><code><span class="cm">// Declare the sealed base</span>
+<span class="kw">sealed class</span> <span class="cl">EmptyTrashState</span> { <span class="kw">const</span> <span class="cl">EmptyTrashState</span>(); }
+
+<span class="cm">// All subtypes → same file ✓</span>
+<span class="kw">class</span> <span class="cl">EmptyTrashIdle</span>    <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> { ... }
+<span class="kw">class</span> <span class="cl">EmptyTrashLoading</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> { ... }
+<span class="kw">class</span> <span class="cl">EmptyTrashSuccess</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> { ... }
+<span class="kw">class</span> <span class="cl">EmptyTrashFailure</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> { ... }
+
+<span class="cm">// In another file → compile error ✗</span>
+<span class="kw">class</span> <span class="cl">MyCoolState</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> { ... }</code></pre>
+      </div>
+      <div>
+        <div class="card warn" style="margin-bottom:16px;">
+          <h3>The key property: exhaustive pattern matching</h3>
+          <p>Because the compiler knows <em>every</em> subtype, a <code>switch</code> on a sealed class <strong>must cover all cases</strong>. A missing case is a <strong>compile error</strong>, not a runtime crash.</p>
+        </div>
+        <pre><code><span class="kw">switch</span> (state) {
+  <span class="kw">case</span> <span class="cl">EmptyTrashLoading</span>():
+    <span class="cm">// show progress bar</span>
+  <span class="kw">case</span> <span class="cl">EmptyTrashSuccess</span>(<span class="cn">:final</span> subfoldersStatus):
+    <span class="cm">// show toast, refresh mailbox</span>
+  <span class="kw">case</span> <span class="cl">EmptyTrashFailure</span>(<span class="cn">:final</span> exception):
+    <span class="cm">// show error toast</span>
+  <span class="kw">case</span> <span class="cl">EmptyTrashIdle</span>():
+    <span class="kw">break</span>;
+  <span class="cm">// No default: needed — compiler guarantees coverage</span>
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 07 SEALED WHY ─────────────────────────────────────── -->
+  <div class="slide" id="s7">
+    <div class="slide-label">Sealed Classes — Why</div>
+    <h2>Why not <code>abstract class</code> or <code>enum</code>?</h2>
+    <table style="margin-bottom:28px;">
+      <tr>
+        <th>Approach</th>
+        <th>Custom fields per variant</th>
+        <th>Exhaustiveness enforced by compiler</th>
+        <th>Verdict</th>
+      </tr>
+      <tr>
+        <td><code>abstract class</code> + <code>is</code> checks</td>
+        <td class="green">Yes</td>
+        <td class="red">No — adding a subtype silently breaks unhandled chains at runtime</td>
+        <td class="red">Risky</td>
+      </tr>
+      <tr>
+        <td><code>enum</code></td>
+        <td class="red">No — all variants share the same type, no custom fields</td>
+        <td class="green">Yes</td>
+        <td class="red">Too rigid</td>
+      </tr>
+      <tr>
+        <td><code>sealed class</code></td>
+        <td class="green">Yes — each subtype is its own class</td>
+        <td class="green">Yes — missing case = compile error</td>
+        <td class="green">Best of both</td>
+      </tr>
+    </table>
+    <div class="card bad">
+      <h3 style="color:var(--red)">Why not return <code>bool</code> from sub-operations?</h3>
+      <pre style="margin-top:10px;"><code><span class="cm">// Tempting but dangerous — exception is silently discarded</span>
+<span class="cl">Future</span>&lt;<span class="kw">bool</span>&gt; <span class="fn">_clearMailbox</span>(...) <span class="kw">async</span> {
+  <span class="kw">try</span> { ...; <span class="kw">return true</span>; }
+  <span class="kw">catch</span> (e) { <span class="kw">return false</span>; }  <span class="cm">// ← e is gone forever</span>
+}</code></pre>
+      <p style="margin-top:10px;">A <code>bool</code> discards the exception. <code>EmptyTrashFailure</code> can't carry it to <code>UrgentExceptionHandler</code>. Sealed result types preserve exceptions through the pipeline without exposing them in the public API.</p>
+    </div>
+  </div>
+
+  <!-- ─── 08 SEALED TWO TIERS ───────────────────────────────── -->
+  <div class="slide" id="s8">
+    <div class="slide-label">Sealed Classes — Two Hierarchies in This Feature</div>
+    <h2>Public state vs private sub-operation results</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <h3>Public — <code>EmptyTrashState</code></h3>
+        <p class="muted" style="margin-bottom:10px;">Consumed by <code>MailboxProviderListenerWidget</code></p>
+        <pre><code><span class="kw">sealed class</span> <span class="cl">EmptyTrashState</span> {}
+
+<span class="kw">class</span> <span class="cl">EmptyTrashIdle</span>    <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> {}
+<span class="kw">class</span> <span class="cl">EmptyTrashLoading</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> {}
+
+<span class="kw">class</span> <span class="cl">EmptyTrashSuccess</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> {
+  <span class="kw">final</span> <span class="cl">List</span>&lt;<span class="cl">EmailId</span>&gt; clearedEmailIds;
+  <span class="kw">final</span> <span class="cl">MailboxId</span>? mailboxId;
+  <span class="kw">final</span> <span class="cl">SubfoldersDeleteStatus</span> subfoldersStatus;
+}
+
+<span class="kw">class</span> <span class="cl">EmptyTrashFailure</span> <span class="kw">extends</span> <span class="cl">EmptyTrashState</span> {
+  <span class="kw">final</span> <span class="cl">Object</span>? exception;
+}</code></pre>
+        <div class="divider"></div>
+        <table style="font-size:.8rem;">
+          <tr><th>subfoldersStatus</th><th>Toast shown</th></tr>
+          <tr><td><code>none</code></td><td>Trash emptied only</td></tr>
+          <tr><td><code>allDeleted</code></td><td>+ All subfolders deleted</td></tr>
+          <tr><td><code>someDeleted</code></td><td>+ Some could not be deleted</td></tr>
+          <tr><td><code>failed</code></td><td>+ Failed to delete subfolders</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Private — file-only result types</h3>
+        <p class="muted" style="margin-bottom:10px;">Used only inside <code>execute()</code>, never exported</p>
+        <pre><code><span class="kw">sealed class</span> <span class="cn">_ClearEmailResult</span> {}
+<span class="kw">class</span> <span class="cn">_ClearEmailSuccess</span> <span class="kw">extends</span> <span class="cn">_ClearEmailResult</span> {
+  <span class="kw">final</span> <span class="cl">List</span>&lt;<span class="cl">EmailId</span>&gt; emailIds;
+}
+<span class="kw">class</span> <span class="cn">_ClearEmailFailure</span> <span class="kw">extends</span> <span class="cn">_ClearEmailResult</span> {
+  <span class="kw">final</span> <span class="cl">Object</span>? exception; <span class="cm">// preserved ✓</span>
+}
+
+<span class="kw">sealed class</span> <span class="cn">_SubfoldersResult</span> {}
+<span class="kw">class</span> <span class="cn">_SubfoldersAllDeleted</span>   <span class="kw">extends</span> <span class="cn">_SubfoldersResult</span> {}
+<span class="kw">class</span> <span class="cn">_SubfoldersSomeDeleted</span>  <span class="kw">extends</span> <span class="cn">_SubfoldersResult</span> {}
+<span class="kw">class</span> <span class="cn">_SubfoldersDeleteFailed</span> <span class="kw">extends</span> <span class="cn">_SubfoldersResult</span> {
+  <span class="kw">final</span> <span class="cl">Object</span>? exception;
+}
+
+<span class="cm">// Exhaustive mapping → compile-safe</span>
+subfoldersStatus = <span class="kw">switch</span> (subfoldersResult) {
+  <span class="cn">_SubfoldersAllDeleted</span>()   => <span class="cl">SubfoldersDeleteStatus</span>.allDeleted,
+  <span class="cn">_SubfoldersSomeDeleted</span>()  => <span class="cl">SubfoldersDeleteStatus</span>.someDeleted,
+  <span class="cn">_SubfoldersDeleteFailed</span>() => <span class="cl">SubfoldersDeleteStatus</span>.failed,
+};</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 09 STREAM BRIDGE ──────────────────────────────────── -->
+  <div class="slide" id="s9">
+    <div class="slide-label">Key Design Decision #1</div>
+    <h2>Stream bridge: GetX → Riverpod</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <h3>The bridge</h3>
+        <pre><code><span class="cm">// MailboxDashBoardController — before</span>
+<span class="fn">emptyTrashFolderAction</span>() {
+  <span class="kw">if</span> (useJmapClear) {
+    <span class="fn">clearMailbox</span>(session, accountId, ...);
+  } <span class="kw">else</span> {
+    <span class="fn">consumeState</span>(_interactor.<span class="fn">execute</span>(...));
+  }
+}
+
+<span class="cm">// After — controller just emits</span>
+<span class="fn">emptyTrashFolderAction</span>() {
+  _emptyTrashStreamCtrl.<span class="fn">add</span>(trashFolder); <span class="cm">// ← one line</span>
+}
+
+<span class="cm">// Riverpod wraps the stream</span>
+<span class="an">@riverpod</span>
+<span class="cl">Stream</span>&lt;<span class="cl">PresentationMailbox</span>&gt; <span class="fn">emptyTrashRequested</span>(<span class="cl">Ref</span> ref) =>
+    <span class="cl">Get</span>.<span class="fn">find</span>&lt;<span class="cl">MailboxDashBoardController</span>&gt;()
+        .onEmptyTrashRequested;</code></pre>
+        <div class="card info" style="margin-top:16px;">
+          <h3>Why a broadcast stream, not a direct call?</h3>
+          <p>Three code paths trigger empty-trash: mailbox panel, thread view banner, search mailbox controller. All already funnel through <code>emptyTrashFolderAction</code>. A stream means <strong>zero callers change</strong> — the Riverpod layer reacts automatically.</p>
+        </div>
+      </div>
+      <div>
+        <h3>The Notifier — pure async orchestrator</h3>
+        <pre><code><span class="an">@riverpod</span>
+<span class="kw">class</span> <span class="cl">EmptyTrashNotifier</span> <span class="kw">extends</span> <span class="cn">_$EmptyTrashNotifier</span> {
+
+  <span class="an">@override</span>
+  <span class="cl">EmptyTrashState</span> <span class="fn">build</span>() => <span class="kw">const</span> <span class="cl">EmptyTrashIdle</span>();
+
+  <span class="kw">Future</span>&lt;<span class="kw">void</span>&gt; <span class="fn">execute</span>(session, accountId,
+      trashMailbox, childIds, useJmapClear) <span class="kw">async</span> {
+    <span class="kw">if</span> (_isExecuting) <span class="kw">return</span>;  <span class="cm">// guard double-tap</span>
+    state = <span class="kw">const</span> <span class="cl">EmptyTrashLoading</span>();
+
+    <span class="kw">final</span> emailResult = trashMailbox.countTotalEmails == <span class="num">0</span>
+        ? <span class="cn">_ClearEmailSuccess</span>(emailIds: <span class="kw">const</span> [])
+        : useJmapClear
+            ? <span class="kw">await</span> <span class="fn">_clearMailbox</span>(...)
+            : <span class="kw">await</span> <span class="fn">_emptyTrashByEmailDeletion</span>(...);
+
+    <span class="kw">if</span> (!mounted) <span class="kw">return</span>;  <span class="cm">// guard after await</span>
+
+    <span class="kw">if</span> (childIds.isNotEmpty) {
+      <span class="kw">final</span> subfoldersResult = <span class="kw">await</span> <span class="fn">_deleteSubfolders</span>(...);
+      <span class="kw">if</span> (!mounted) <span class="kw">return</span>;
+      <span class="cm">// map result → subfoldersStatus</span>
+    }
+
+    state = <span class="cl">EmptyTrashSuccess</span>(...);
+  }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 10 MOUNTED GUARD ───────────────────────────────────── -->
+  <div class="slide" id="s10">
+    <div class="slide-label">Key Design Decision #2 &amp; #3</div>
+    <h2><code>mounted</code> guard &amp; skip-empty optimisation</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <h3><code>ref.mounted</code> guard after every <code>await</code></h3>
+        <pre><code><span class="kw">final</span> emailResult = <span class="kw">await</span> <span class="fn">_clearMailbox</span>(...);
+
+<span class="kw">if</span> (!mounted) <span class="kw">return</span>;   <span class="cm">// ← user may have navigated away</span>
+
+<span class="kw">if</span> (emailResult <span class="kw">is</span> <span class="cn">_ClearEmailFailure</span>) {
+  state = <span class="cl">EmptyTrashFailure</span>(...);
+  <span class="kw">return</span>;
+}
+
+<span class="kw">final</span> subfoldersResult = <span class="kw">await</span> <span class="fn">_deleteSubfolders</span>(...);
+
+<span class="kw">if</span> (!mounted) <span class="kw">return</span>;   <span class="cm">// ← guard again before final write</span>
+
+state = <span class="cl">EmptyTrashSuccess</span>(...);
+</code></pre>
+        <div class="card warn" style="margin-top:14px;">
+          <p>Without this guard: if the user navigates away mid-operation, writing to <code>state</code> on a disposed notifier throws. <code>ref.mounted</code> is Riverpod's built-in answer to the problem <code>StatefulWidget.mounted</code> solves in Flutter.</p>
+        </div>
+      </div>
+      <div>
+        <h3>Skip email clearing when Trash is empty</h3>
+        <pre><code><span class="kw">final</span> emailResult =
+    trashMailbox.countTotalEmails == <span class="num">0</span>
+    <span class="cm">// Skip the network call entirely</span>
+    ? <span class="cn">_ClearEmailSuccess</span>(emailIds: <span class="kw">const</span> [])
+    : useJmapClear
+        ? <span class="kw">await</span> <span class="fn">_clearMailbox</span>(...)
+        : <span class="kw">await</span> <span class="fn">_emptyTrashByEmailDeletion</span>(...);</code></pre>
+        <div class="card good" style="margin-top:14px;">
+          <h3 style="color:var(--green)">Bug fixed by this</h3>
+          <p>Previously: Trash with 0 emails but with subfolders → exited early with a warning toast, subfolders never deleted.</p>
+          <p style="margin-top:8px;">Now: 0 emails → skip email step → proceed to subfolder deletion normally.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 11 CONSUMER WIDGET ───────────────────────────────── -->
+  <div class="slide" id="s11">
+    <div class="slide-label">Key Design Decision #4</div>
+    <h2><code>MailboxProviderListenerWidget</code> — the two-way bridge</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <pre><code><span class="kw">class</span> <span class="cl">MailboxProviderListenerWidget</span>
+    <span class="kw">extends</span> <span class="cl">ConsumerWidget</span> {
+
+  <span class="an">@override</span>
+  <span class="cl">Widget</span> <span class="fn">build</span>(<span class="cl">BuildContext</span> context, <span class="cl">WidgetRef</span> ref) {
+
+    <span class="cm">// ① Listen to trigger → call notifier</span>
+    ref.<span class="fn">listen</span>(emptyTrashRequestedProvider, (_, val) {
+      val.<span class="fn">whenData</span>((trash) => <span class="fn">_executeEmptyTrash</span>(...));
+    });
+
+    <span class="cm">// ② Listen to state → bridge to GetX</span>
+    ref.<span class="fn">listen</span>(emptyTrashProvider, (_, next) {
+      <span class="fn">_handleEmptyTrashStateChange</span>(context, next);
+    });
+
+    <span class="kw">return</span> child; <span class="cm">// never rebuilds child</span>
+  }
+}</code></pre>
+        <div class="card info" style="margin-top:14px;">
+          <h3><code>ref.listen</code> vs <code>ref.watch</code></h3>
+          <p><code>ref.listen</code> reacts to state changes via a callback — it does <strong>not</strong> trigger a widget rebuild. The mailbox list beneath it remains untouched.</p>
+        </div>
+      </div>
+      <div>
+        <h3>State → GetX side effects</h3>
+        <pre><code><span class="kw">switch</span> (state) {
+  <span class="kw">case</span> <span class="cl">EmptyTrashLoading</span>():
+    dashboardCtrl.viewStateMailboxActionProgress
+        .<span class="fn">value</span> = <span class="cl">Right</span>(<span class="cl">ClearingMailbox</span>());
+
+  <span class="kw">case</span> <span class="cl">EmptyTrashSuccess</span>(<span class="cn">:final</span> clearedEmailIds,
+                          <span class="cn">:final</span> subfoldersStatus):
+    dashboardCtrl.viewStateMailboxActionProgress
+        .<span class="fn">value</span> = <span class="cl">Right</span>(<span class="cl">UIState</span>.idle);
+    dashboardCtrl.<span class="fn">handleDeleteEmailsInMailbox</span>(...);
+    <span class="fn">_showSuccessToast</span>(context, subfoldersStatus);
+    dashboardCtrl.<span class="fn">dispatchMailboxUIAction</span>(
+        <span class="cl">RefreshAllMailboxAction</span>());
+
+  <span class="kw">case</span> <span class="cl">EmptyTrashFailure</span>(<span class="cn">:final</span> exception):
+    <span class="fn">_showErrorToast</span>(context);
+    <span class="fn">getBinding</span>&lt;<span class="cl">UrgentExceptionHandler</span>&gt;()
+        ?.<span class="fn">handleUrgentException</span>(exception: exception);
+
+  <span class="kw">case</span> <span class="cl">EmptyTrashIdle</span>():
+    <span class="kw">break</span>;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 12 COMPONENT MAP ──────────────────────────────────── -->
+  <div class="slide" id="s12">
+    <div class="slide-label">Architecture — Component Map</div>
+    <h2>Who owns what</h2>
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Type</th>
+        <th>Responsibility</th>
+      </tr>
+      <tr>
+        <td><code>MailboxDashBoardController.<br>_emptyTrashStreamController</code></td>
+        <td><span class="badge" style="background:var(--yellow);color:#0f1117">GetX</span></td>
+        <td>Trigger source — emits <code>PresentationMailbox</code> when the user confirms</td>
+      </tr>
+      <tr>
+        <td><code>emptyTrashRequestedProvider</code></td>
+        <td><span class="badge">Riverpod</span></td>
+        <td>Wraps the stream so <code>ConsumerWidget</code>s can <code>ref.listen</code> to it</td>
+      </tr>
+      <tr>
+        <td><code>EmptyTrashNotifier</code></td>
+        <td><span class="badge">Riverpod</span></td>
+        <td>Pure async orchestrator — sequences email clearing → subfolder deletion, owns <code>EmptyTrashState</code></td>
+      </tr>
+      <tr>
+        <td><code>MailboxProviderListenerWidget</code></td>
+        <td><span class="badge">ConsumerWidget</span></td>
+        <td>Two-way bridge — listens to Riverpod, calls back into GetX side effects (toasts, progress, refresh)</td>
+      </tr>
+      <tr>
+        <td><code>MailboxItemConsumerWidget</code></td>
+        <td><span class="badge" style="background:#3a3a3a">Flutter</span></td>
+        <td>Extracts <code>Obx(MailboxItemWidget(...))</code> to resolve widget hierarchy conflict when <code>ConsumerWidget</code> wraps the list</td>
+      </tr>
+      <tr>
+        <td><code>UrgentExceptionHandler</code></td>
+        <td><span class="badge" style="background:#3a3a3a">Abstract</span></td>
+        <td>Contract for fatal error escalation — keeps <code>MailboxProviderListenerWidget</code> decoupled from the concrete GetX implementation</td>
+      </tr>
+    </table>
+    <div class="card info" style="margin-top:18px;">
+      <p><strong>Layer rule (from ADR-0092):</strong> <code>empty_trash_provider.dart</code> lives in the <strong>presentation</strong> layer, not domain or data. Providers use <code>@riverpod</code> (auto-dispose) — kept alive by the persistent <code>ref.listen</code> in <code>MailboxProviderListenerWidget</code>.</p>
+    </div>
+  </div>
+
+  <!-- ─── 13 UNIT TESTS ─────────────────────────────────────── -->
+  <div class="slide" id="s13">
+    <div class="slide-label">Unit Tests</div>
+    <h2>Testing <code>EmptyTrashNotifier</code> without GetX</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <pre><code><span class="cm">// No GetX bindings needed</span>
+<span class="fn">setUp</span>(() {
+  container = <span class="cl">ProviderContainer</span>(overrides: [
+    <span class="cm">// Inject mocks via GetX.put() only</span>
+    <span class="cm">// for the interactors the notifier reads</span>
+  ]);
+});
+
+<span class="fn">test</span>(<span class="st">'success with JMAP clear and no subfolders'</span>, () <span class="kw">async</span> {
+  <span class="kw">final</span> notifier =
+      container.<span class="fn">read</span>(emptyTrashProvider.notifier);
+
+  <span class="kw">await</span> notifier.<span class="fn">execute</span>(
+    session, accountId, trashMailbox,
+    [], <span class="cm">/* childIds */</span>
+    <span class="kw">true</span>, <span class="cm">/* useJmapClear */</span>
+  );
+
+  <span class="fn">expect</span>(container.<span class="fn">read</span>(emptyTrashProvider),
+    isA&lt;<span class="cl">EmptyTrashSuccess</span>&gt;().<span class="fn">having</span>(
+      (s) => s.subfoldersStatus,
+      <span class="st">'subfoldersStatus'</span>,
+      <span class="cl">SubfoldersDeleteStatus</span>.none,
+    ));
+});</code></pre>
+      </div>
+      <div>
+        <h3>Covered scenarios</h3>
+        <table style="font-size:.82rem;">
+          <tr><th>Scenario</th><th>Expected state</th></tr>
+          <tr>
+            <td>Emails + JMAP clear, no subfolders</td>
+            <td class="green">Success / none</td>
+          </tr>
+          <tr>
+            <td>Emails + email-deletion path, no subfolders</td>
+            <td class="green">Success / none</td>
+          </tr>
+          <tr>
+            <td>No emails, has subfolders</td>
+            <td class="green">Success / allDeleted</td>
+          </tr>
+          <tr>
+            <td>Email clearing fails</td>
+            <td class="red">Failure</td>
+          </tr>
+          <tr>
+            <td>Email clear OK, subfolders partial fail</td>
+            <td class="yellow">Success / someDeleted</td>
+          </tr>
+          <tr>
+            <td>Already executing (double-tap guard)</td>
+            <td class="yellow">Stays Loading, no re-execute</td>
+          </tr>
+        </table>
+        <div class="card good" style="margin-top:16px;">
+          <h3 style="color:var(--green)">Zero GetX overhead in tests</h3>
+          <p>Each test creates a <code>ProviderContainer</code>, overrides interactors with mocks, and reads the notifier directly. No routing, no binding registration, no controller lifecycle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 14 CONSEQUENCES ───────────────────────────────────── -->
+  <div class="slide" id="s14">
+    <div class="slide-label">Consequences</div>
+    <h2>Trade-offs &amp; migration notes</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div>
+        <h3 style="color:var(--green)">Positive</h3>
+        <div class="card good" style="margin-bottom:10px;">
+          <p>Subfolder deletion is sequenced deterministically after email clearing; all outcomes surfaced to the user via differentiated toasts</p>
+        </div>
+        <div class="card good" style="margin-bottom:10px;">
+          <p><code>MailboxDashBoardController</code> loses one interactor dependency and its entire email-clearing branch — the controller is thinner</p>
+        </div>
+        <div class="card good" style="margin-bottom:10px;">
+          <p><code>EmptyTrashNotifier</code> is independently unit-testable with no GetX binding setup</p>
+        </div>
+        <div class="card good">
+          <p><code>mounted</code> guard + <code>UrgentExceptionHandler</code> contract established as conventions for future Riverpod notifiers</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--red)">Constraints / future work</h3>
+        <div class="card bad" style="margin-bottom:10px;">
+          <p><code>emptyTrashRequestedProvider</code> still calls <code>Get.find&lt;MailboxDashBoardController&gt;()</code> — intentional for the transition; will be removed when the controller migrates to Riverpod</p>
+        </div>
+        <div class="card bad" style="margin-bottom:10px;">
+          <p><code>MailboxProviderListenerWidget</code> writes back to <code>viewStateMailboxActionProgress</code> (a GetX <code>Rx</code>) — deliberate two-way bridge, disappears when progress observation migrates</p>
+        </div>
+        <div class="card bad">
+          <p><code>MailboxItemConsumerWidget</code> is a wrapper whose only job is resolving a hierarchy conflict — unnecessary once <code>BaseMailboxView</code> is a <code>ConsumerWidget</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 15 SUMMARY ───────────────────────────────────────── -->
+  <div class="slide" id="s15">
+    <div class="slide-label">Summary</div>
+    <h2>Three patterns, one feature</h2>
+    <div class="cols cols-3" style="align-items:start; margin-bottom:28px;">
+      <div class="card" style="border-color:var(--accent3);">
+        <h3 style="color:var(--accent3)">① Stream Bridge</h3>
+        <p>GetX controller emits a <code>PresentationMailbox</code> event. Riverpod wraps the stream as a provider. Multiple callers → zero changes. The boundary is clean and explicit.</p>
+      </div>
+      <div class="card" style="border-color:var(--accent);">
+        <h3 style="color:var(--accent)">② @riverpod Notifier</h3>
+        <p>Owns the sequential async logic. <code>mounted</code> guard after every <code>await</code>. No GetX dependency. Pure, testable orchestration with an explicit state machine.</p>
+      </div>
+      <div class="card" style="border-color:var(--accent2);">
+        <h3 style="color:var(--accent2)">③ Sealed State</h3>
+        <p>Public <code>EmptyTrashState</code> + private <code>_ClearEmailResult</code> / <code>_SubfoldersResult</code>. Every <code>switch</code> is compiler-enforced. Exceptions travel through the pipeline without being lost.</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex; gap:40px; margin-top:18px; justify-content:center; flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:var(--accent)">1</div>
+        <div class="muted">controller thinned<br>of interactor calls</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:var(--accent2)">2</div>
+        <div class="muted">sealed hierarchies<br>(public + private)</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:var(--accent3)">3</div>
+        <div class="muted">trigger code paths<br>zero changes needed</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:var(--green)">6</div>
+        <div class="muted">unit test scenarios<br>no GetX in tests</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:2rem; font-weight:700; color:var(--yellow)">4</div>
+        <div class="muted">distinct toast outcomes<br>for subfolder status</div>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:28px; color:var(--muted); font-size:.9rem;">ADR-0093 · <span class="accent">dab246</span> · 2026-06-03 · Related: ADR-0092</p>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Progress + nav -->
+<div id="progress"></div>
+<div id="nav">
+  <button id="btn-prev">← Prev</button>
+  <span id="slide-counter"></span>
+  <button id="btn-next">Next →</button>
+</div>
+
+<script>
+  // Wrap each slide's content in a scrollable .slide-inner div
+  document.querySelectorAll('.slide').forEach(slide => {
+    const inner = document.createElement('div');
+    inner.className = 'slide-inner';
+    while (slide.firstChild) inner.appendChild(slide.firstChild);
+    slide.appendChild(inner);
+  });
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let   cur    = 0;
+
+  function go(next) {
+    if (next < 0 || next >= total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('exit');
+    setTimeout(() => slides[cur].classList.remove('exit'), 380);
+    cur = next;
+    slides[cur].classList.add('active');
+    // Reset scroll to top when entering a new slide
+    const inner = slides[cur].querySelector('.slide-inner');
+    if (inner) inner.scrollTop = 0;
+    slides[cur].scrollTop = 0;
+    document.getElementById('progress').style.width =
+        ((cur + 1) / total * 100) + '%';
+    document.getElementById('slide-counter').textContent =
+        (cur + 1) + ' / ' + total;
+  }
+
+  document.getElementById('btn-prev').onclick = () => go(cur - 1);
+  document.getElementById('btn-next').onclick = () => go(cur + 1);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(cur + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    go(cur - 1);
+  });
+
+  // touch/swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? cur + 1 : cur - 1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
