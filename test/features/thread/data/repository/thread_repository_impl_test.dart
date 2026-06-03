@@ -46,9 +46,6 @@ void main() {
     reset(stateDataSource);
   });
 
-  // ---- Shared arrange/act/verify for the getLatestChanges sync tests ----
-  // The mockito matcher signatures are long; keeping them in one place avoids
-  // copy-pasting the same stub/verify blocks across every sync test.
   void stubLocalEmailCache(List<Email> emails) {
     when(threadDataSource.getAllEmailCache(
       any,
@@ -58,6 +55,8 @@ void main() {
       limit: anyNamed('limit'),
       sort: anyNamed('sort'),
     )).thenAnswer((_) => Future.value(emails));
+    when(threadDataSource.getAllEmailCache(any, any))
+        .thenAnswer((_) => Future.value(emails));
   }
 
   void stubLocalState([String value = 'local_state']) {
@@ -93,7 +92,7 @@ void main() {
       )
       .toList();
 
-  VerificationResult verifyGetAllEmailChanges() => verify(
+  void verifyGetAllEmailChanges() => verify(
         threadDataSource.getAllEmailChanges(
           any,
           any,
@@ -101,7 +100,7 @@ void main() {
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
         ),
-      );
+      ).called(1);
 
   group('getAllEmail:', () {
     test('when local cache is empty should fetch from network', () async {
@@ -450,7 +449,7 @@ void main() {
 
       // Assert
       expect(responses.length, 2);
-      verifyGetAllEmailChanges().called(1);
+      verifyGetAllEmailChanges();
       verify(threadDataSource.update(
         any,
         any,
@@ -776,7 +775,7 @@ void main() {
 
       // Assert
       expect(responses.length, 2);
-      verifyGetAllEmailChanges().called(1);
+      verifyGetAllEmailChanges();
       verify(threadDataSource.update(
         any,
         any,
