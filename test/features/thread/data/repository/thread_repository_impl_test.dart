@@ -46,6 +46,63 @@ void main() {
     reset(stateDataSource);
   });
 
+  // ---- Shared arrange/act/verify for the getLatestChanges sync tests ----
+  // The mockito matcher signatures are long; keeping them in one place avoids
+  // copy-pasting the same stub/verify blocks across every sync test.
+  void stubLocalEmailCache(List<Email> emails) {
+    when(threadDataSource.getAllEmailCache(
+      any,
+      any,
+      filterOption: anyNamed('filterOption'),
+      inMailboxId: anyNamed('inMailboxId'),
+      limit: anyNamed('limit'),
+      sort: anyNamed('sort'),
+    )).thenAnswer((_) => Future.value(emails));
+  }
+
+  void stubLocalState([String value = 'local_state']) {
+    when(stateDataSource.getState(any, any, any))
+        .thenAnswer((_) => Future.value(State(value)));
+  }
+
+  void stubGetAllEmailChanges(EmailChangeResponse response) {
+    when(threadDataSource.getAllEmailChanges(
+      any,
+      any,
+      any,
+      propertiesCreated: anyNamed('propertiesCreated'),
+      propertiesUpdated: anyNamed('propertiesUpdated'),
+    )).thenAnswer((_) => Future.value(response));
+  }
+
+  void stubGetAllEmailChangesError(Object error) {
+    when(threadDataSource.getAllEmailChanges(
+      any,
+      any,
+      any,
+      propertiesCreated: anyNamed('propertiesCreated'),
+      propertiesUpdated: anyNamed('propertiesUpdated'),
+    )).thenThrow(error);
+  }
+
+  Future<List<EmailsResponse>> getAllEmailWithLatestChanges() => threadRepository
+      .getAllEmail(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        getLatestChanges: true,
+      )
+      .toList();
+
+  VerificationResult verifyGetAllEmailChanges() => verify(
+        threadDataSource.getAllEmailChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        ),
+      );
+
   group('getAllEmail:', () {
     test('when local cache is empty should fetch from network', () async {
       // Arrange
@@ -345,50 +402,23 @@ void main() {
       final localEmails = List.generate(
         ThreadConstants.defaultLimit.value as int,
         (index) => Email(id: EmailId(Id('local_$index'))));
-      when(threadDataSource.getAllEmailCache(
-        any,
-        any,
-        filterOption: anyNamed('filterOption'),
-        inMailboxId: anyNamed('inMailboxId'),
-        limit: anyNamed('limit'),
-        sort: anyNamed('sort'),
-      )).thenAnswer((_) => Future.value(localEmails));
-
-      when(stateDataSource.getState(any, any, any))
-          .thenAnswer((_) => Future.value(State('local_state')));
-
       final changedEmails =
           List.generate(5, (index) => Email(id: EmailId(Id('changed_$index'))));
-      when(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).thenAnswer((_) => Future.value(EmailChangeResponse(
-          hasMoreChanges: false,
-          created: changedEmails,
-          newStateEmail: State('new_state'))));
+      stubLocalEmailCache(localEmails);
+      stubLocalState();
+      stubGetAllEmailChanges(EmailChangeResponse(
+        hasMoreChanges: false,
+        created: changedEmails,
+        newStateEmail: State('new_state'),
+      ));
 
       // Act
-      final responses = await threadRepository
-          .getAllEmail(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId,
-            getLatestChanges: true,
-          )
-          .toList();
+      final responses = await getAllEmailWithLatestChanges();
 
       // Assert
       expect(responses.length, 2);
       verifyNever(threadDataSource.getAllEmail(any, any));
-      verify(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      ));
+      verifyGetAllEmailChanges();
       verify(threadDataSource.update(
         any,
         any,
@@ -402,67 +432,25 @@ void main() {
       final localEmails = List.generate(
           ThreadConstants.defaultLimit.value as int,
           (index) => Email(id: EmailId(Id('local_$index'))));
-      when(threadDataSource.getAllEmailCache(
-        any,
-        any,
-        filterOption: anyNamed('filterOption'),
-        inMailboxId: anyNamed('inMailboxId'),
-        limit: anyNamed('limit'),
-        sort: anyNamed('sort'),
-      )).thenAnswer((_) => Future.value(localEmails));
-
-      when(stateDataSource.getState(any, any, any))
-          .thenAnswer((_) => Future.value(State('local_state')));
-
       final firstChanges = List.generate(
           5, (index) => Email(id: EmailId(Id('change1_$index'))));
       final secondChanges = List.generate(
           5, (index) => Email(id: EmailId(Id('change2_$index'))));
-
-      var callCount = 0;
-      when(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).thenAnswer((_) {
-        callCount++;
-        if (callCount == 1) {
-          return Future.value(EmailChangeResponse(
-            hasMoreChanges: true,
-            created: firstChanges,
-            newStateChanges: State('intermediate_state'),
-            newStateEmail: State('intermediate_state_email'),
-          ));
-        } else {
-          return Future.value(EmailChangeResponse(
-            hasMoreChanges: false,
-            created: secondChanges,
-            newStateChanges: State('final_state'),
-            newStateEmail: State('final_state_email'),
-          ));
-        }
-      });
+      stubLocalEmailCache(localEmails);
+      stubLocalState();
+      stubGetAllEmailChanges(EmailChangeResponse(
+        hasMoreChanges: false,
+        created: [...firstChanges, ...secondChanges],
+        newStateChanges: State('final_state'),
+        newStateEmail: State('final_state_email'),
+      ));
 
       // Act
-      final responses = await threadRepository
-          .getAllEmail(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId,
-            getLatestChanges: true,
-          )
-          .toList();
+      final responses = await getAllEmailWithLatestChanges();
 
       // Assert
       expect(responses.length, 2);
-      verify(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).called(2);
+      verifyGetAllEmailChanges().called(1);
       verify(threadDataSource.update(
         any,
         any,
@@ -691,58 +679,30 @@ void main() {
         ThreadConstants.defaultLimit.value.toInt(),
         (index) => Email(id: EmailId(Id('local_$index'))),
       );
-      when(threadDataSource.getAllEmailCache(
-        any,
-        any,
-        filterOption: anyNamed('filterOption'),
-        inMailboxId: anyNamed('inMailboxId'),
-        limit: anyNamed('limit'),
-        sort: anyNamed('sort'),
-      )).thenAnswer((_) => Future.value(localEmails));
-
-      when(stateDataSource.getState(any, any, any))
-          .thenAnswer((_) => Future.value(State('local_state')));
-
       final changedEmails = List.generate(
         5,
         (index) => Email(id: EmailId(Id('changed_$index'))),
       );
-
       final destroyedEmailIds = List.generate(
         5,
         (index) => EmailId(Id('destroyed_mail_$index')),
       );
-      when(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).thenAnswer((_) => Future.value(EmailChangeResponse(
-          hasMoreChanges: false,
-          created: changedEmails,
-          destroyed: destroyedEmailIds,
-          newStateEmail: State('new_state'))));
+      stubLocalEmailCache(localEmails);
+      stubLocalState();
+      stubGetAllEmailChanges(EmailChangeResponse(
+        hasMoreChanges: false,
+        created: changedEmails,
+        destroyed: destroyedEmailIds,
+        newStateEmail: State('new_state'),
+      ));
 
       // Act
-      final responses = await threadRepository
-          .getAllEmail(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId,
-            getLatestChanges: true,
-          )
-          .toList();
+      final responses = await getAllEmailWithLatestChanges();
 
       // Assert
       expect(responses.length, 2);
       verifyNever(threadDataSource.getAllEmail(any, any));
-      verify(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      ));
+      verifyGetAllEmailChanges();
       verify(threadDataSource.update(
         any,
         any,
@@ -761,35 +721,13 @@ void main() {
         ThreadConstants.defaultLimit.value.toInt(),
         (index) => Email(id: EmailId(Id('local_$index'))),
       );
-      when(threadDataSource.getAllEmailCache(
-        any,
-        any,
-        filterOption: anyNamed('filterOption'),
-        inMailboxId: anyNamed('inMailboxId'),
-        limit: anyNamed('limit'),
-        sort: anyNamed('sort'),
-      )).thenAnswer((_) => Future.value(localEmails));
-
-      when(stateDataSource.getState(any, any, any))
-          .thenAnswer((_) => Future.value(State('local_state')));
-
-      when(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).thenThrow(Exception('Too many items in get method'));
+      stubLocalEmailCache(localEmails);
+      stubLocalState();
+      stubGetAllEmailChangesError(Exception('Too many items in get method'));
 
       // Assert
       expectLater(
-        () => threadRepository
-            .getAllEmail(
-              SessionFixtures.aliceSession,
-              AccountFixtures.aliceAccountId,
-              getLatestChanges: true,
-            )
-            .toList(),
+        () => getAllEmailWithLatestChanges(),
         throwsA(isA<Exception>().having((e) => e.toString(), 'description', contains('Too many items in get method'))),
       );
       verifyNever(threadDataSource.update(
@@ -811,18 +749,6 @@ void main() {
         ThreadConstants.defaultLimit.value.toInt(),
         (index) => Email(id: EmailId(Id('local_$index'))),
       );
-      when(threadDataSource.getAllEmailCache(
-        any,
-        any,
-        filterOption: anyNamed('filterOption'),
-        inMailboxId: anyNamed('inMailboxId'),
-        limit: anyNamed('limit'),
-        sort: anyNamed('sort'),
-      )).thenAnswer((_) => Future.value(localEmails));
-
-      when(stateDataSource.getState(any, any, any))
-          .thenAnswer((_) => Future.value(State('local_state')));
-
       final firstChanges = List.generate(
         5,
         (index) => Email(id: EmailId(Id('change1_$index'))),
@@ -831,58 +757,26 @@ void main() {
         5,
         (index) => Email(id: EmailId(Id('change2_$index'))),
       );
-
-      var callCount = 0;
-
       final firstDestroyedEmailIds = List.generate(
         5,
         (index) => EmailId(Id('destroyed_mail_$index')),
       );
-
-      when(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).thenAnswer((_) {
-        callCount++;
-        if (callCount == 1) {
-          return Future.value(EmailChangeResponse(
-            hasMoreChanges: true,
-            created: firstChanges,
-            destroyed: firstDestroyedEmailIds,
-            newStateChanges: State('intermediate_state'),
-            newStateEmail: State('intermediate_state_email'),
-          ));
-        } else {
-          return Future.value(EmailChangeResponse(
-            hasMoreChanges: false,
-            created: secondChanges,
-            newStateChanges: State('final_state'),
-            newStateEmail: State('final_state_email'),
-          ));
-        }
-      });
+      stubLocalEmailCache(localEmails);
+      stubLocalState();
+      stubGetAllEmailChanges(EmailChangeResponse(
+        hasMoreChanges: false,
+        created: [...firstChanges, ...secondChanges],
+        destroyed: firstDestroyedEmailIds,
+        newStateChanges: State('final_state'),
+        newStateEmail: State('final_state_email'),
+      ));
 
       // Act
-      final responses = await threadRepository
-          .getAllEmail(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId,
-            getLatestChanges: true,
-          )
-          .toList();
+      final responses = await getAllEmailWithLatestChanges();
 
       // Assert
       expect(responses.length, 2);
-      verify(threadDataSource.getChanges(
-        any,
-        any,
-        any,
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-      )).called(2);
+      verifyGetAllEmailChanges().called(1);
       verify(threadDataSource.update(
         any,
         any,
@@ -1172,7 +1066,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
@@ -1237,7 +1131,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
@@ -1300,7 +1194,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
@@ -1352,31 +1246,20 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        int callCount = 0;
-
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-        )).thenAnswer((_) async {
-          callCount++;
-
-          if (callCount == 1) {
-            return EmailChangeResponse(
-              hasMoreChanges: true,
-              created: [Email(id: EmailId(Id('created1')))],
-              newStateChanges: State('mid'),
-            );
-          }
-
-          return EmailChangeResponse(
-            hasMoreChanges: false,
-            created: [Email(id: EmailId(Id('created2')))],
-            newStateChanges: State('final'),
-          );
-        });
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+              created: [
+                Email(id: EmailId(Id('created1'))),
+                Email(id: EmailId(Id('created2'))),
+              ],
+              newStateChanges: State('final'),
+            ));
 
         final result = await refreshChangesThreadRepository
             .refreshChanges(
@@ -1386,13 +1269,13 @@ void main() {
             )
             .first;
 
-        verify(networkDataSource.getChanges(
+        verify(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-        )).called(2);
+        )).called(1);
 
         expect(result.emailChangeResponse, isNotNull);
         expect(
@@ -1431,7 +1314,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
@@ -1485,7 +1368,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
@@ -1553,7 +1436,7 @@ void main() {
         when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
-        when(networkDataSource.getChanges(
+        when(networkDataSource.getAllEmailChanges(
           any,
           any,
           any,
