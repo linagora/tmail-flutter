@@ -1,14 +1,11 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_persistent_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/resolve_composer_cache_for_restore_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/resolve_composer_cache_for_restore_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/composer_cache_interactor_providers.dart';
+import 'package:tmail_ui_user/features/composer/presentation/providers/composer_cache_interactor_providers.dart';
 
 part 'composer_auto_save_notifier.g.dart';
 
@@ -48,15 +45,8 @@ class ComposerAutoSaveState extends Equatable {
 /// family-instance growth in the global [ProviderContainer].
 @Riverpod(keepAlive: true)
 class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
-  late final ResolveComposerCacheForRestoreInteractor _resolveInteractor;
-  late final RemoveAllComposerCacheInteractor _removeInteractor;
-
   @override
-  ComposerAutoSaveState build(String composerId) {
-    _resolveInteractor = ref.read(resolveComposerCacheForRestoreProvider);
-    _removeInteractor = ref.read(removeAllComposerCacheProvider);
-    return const ComposerAutoSaveState();
-  }
+  ComposerAutoSaveState build(String composerId) => const ComposerAutoSaveState();
 
   bool get mounted => ref.mounted;
   bool get hasRecoverableSnapshot => state.hasRecoverableSnapshot;
@@ -81,7 +71,7 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
     AccountId accountId,
     UserName userName,
   ) async {
-    final result = await _resolveInteractor.execute(accountId, userName);
+    final result = await ref.read(resolveComposerCacheForRestoreProvider).execute(accountId, userName);
     return result.fold(
       (failure) {
         log('ComposerAutoSaveNotifier::restore: failure=${failure.runtimeType}');
@@ -100,13 +90,12 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
   }
 
   Future<void> clearCache(AccountId accountId, UserName userName) async {
-    final result = await _removeInteractor.execute(accountId, userName);
+    final result = await ref.read(removeAllComposerCacheProvider).execute(accountId, userName);
     result.fold(
       (failure) => log('ComposerAutoSaveNotifier::clearCache: failure=${failure.runtimeType}'),
       (_) {
-        if (mounted) {
-          state = state.copyWith(hasRecoverableSnapshot: false);
-        }
+        if (!mounted) return;
+        state = state.copyWith(hasRecoverableSnapshot: false);
         log('ComposerAutoSaveNotifier::clearCache: cleared');
       },
     );
