@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/model/update_tok
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
-import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
@@ -51,28 +50,13 @@ class FCMRepositoryImpl extends FCMRepository {
       Properties? propertiesUpdated
     }
   ) async {
-    EmailChangeResponse? emailChangeResponse;
-    bool hasMoreChanges = true;
-    jmap.State? sinceState = currentState;
-
-    while (hasMoreChanges && sinceState != null) {
-      final changesResponse = await _threadDataSource.getChanges(
-        session,
-        accountId,
-        sinceState,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated
-      );
-
-      hasMoreChanges = changesResponse.hasMoreChanges;
-      sinceState = changesResponse.newStateChanges;
-
-      if (emailChangeResponse != null) {
-        emailChangeResponse.union(changesResponse);
-      } else {
-        emailChangeResponse = changesResponse;
-      }
-    }
+    final emailChangeResponse = await _threadDataSource.getAllEmailChanges(
+      session,
+      accountId,
+      currentState,
+      propertiesCreated: propertiesCreated,
+      propertiesUpdated: propertiesUpdated
+    );
 
     final listEmails = emailChangeResponse?.created ?? [];
     listEmails.sortBy(EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(true));
@@ -163,28 +147,13 @@ class FCMRepositoryImpl extends FCMRepository {
       Properties? propertiesUpdated
     }
   ) async {
-    EmailChangeResponse? emailChangeResponse;
-    bool hasMoreChanges = true;
-    jmap.State? sinceState = currentState;
-
-    while (hasMoreChanges && sinceState != null) {
-      final changesResponse = await _threadDataSource.getChanges(
-        session,
-        accountId,
-        sinceState,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated
-      );
-
-      hasMoreChanges = changesResponse.hasMoreChanges;
-      sinceState = changesResponse.newStateChanges;
-
-      if (emailChangeResponse != null) {
-        emailChangeResponse.union(changesResponse);
-      } else {
-        emailChangeResponse = changesResponse;
-      }
-    }
+    final emailChangeResponse = await _threadDataSource.getAllEmailChanges(
+      session,
+      accountId,
+      currentState,
+      propertiesCreated: propertiesCreated,
+      propertiesUpdated: propertiesUpdated
+    );
 
     if (emailChangeResponse != null) {
       final listEmailIdMarkAsRead = emailChangeResponse.updated
