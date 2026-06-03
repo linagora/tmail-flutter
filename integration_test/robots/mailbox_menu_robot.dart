@@ -25,8 +25,11 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
 
   @override
   Future<void> openFolderByName(String name) async {
-    final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
-    await $(mailboxItem).waitUntilExists();
+    final mailboxItem = $(MailboxItemWidget)
+      .which<MailboxItemWidget>((widget) =>
+        widget.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase(),
+      );
+    await mailboxItem.waitUntilExists();
     await $.scrollUntilVisible(finder: mailboxItem);
     await mailboxItem.tap();
   }
