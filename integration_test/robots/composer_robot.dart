@@ -59,7 +59,6 @@ class ComposerRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await $.pumpAndTrySettle();
     await finder.enterTextWithoutTapAction(subject);
   }
 

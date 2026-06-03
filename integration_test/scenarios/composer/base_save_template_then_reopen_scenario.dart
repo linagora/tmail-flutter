@@ -15,7 +15,6 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   Future<void> onPreComposerSetup() async {
     if (PlatformInfo.isMobile) {
       await robots.threadRobot().openMailbox();
-      await $.pumpAndTrySettle();
       await robots.mailboxMenuRobot().pullToRefresh();
       await mobileBack($);
     }
@@ -28,17 +27,12 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   ) async {
     await composerRobot.tapSaveAsTemplateButton();
     await _expectSaveTemplateSuccessToast(l10n);
-    await $.pumpAndTrySettle();
     await composerRobot.tapCloseComposer();
-    await $.pumpAndTrySettle();
     await composerRobot.tapDiscardChanges();
-    await $.pumpAndTrySettle();
   }
 
   @override
-  Future<void> onAfterComposerReopened() async {
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
-  }
+  Future<void> onAfterComposerReopened() async {}
 
   @override
   Future<void> performSubsequentSave(

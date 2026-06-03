@@ -10,6 +10,7 @@ class WebMailboxMenuRobot extends MobileMailboxMenuRobot {
   @override
   Future<void> openSetting() async {
     await $(const ValueKey(UiKeys.userAvatar)).tap();
+    await $.waitUntilExists($(ValueKey(ProfileSettingActionType.manageAccount.name)));
     await $(ValueKey(ProfileSettingActionType.manageAccount.name)).tap();
   }
 }

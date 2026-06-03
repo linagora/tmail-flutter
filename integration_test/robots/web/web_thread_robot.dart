@@ -3,6 +3,7 @@ import 'package:labels/extensions/label_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../abstract/abstract_thread_robot.dart';
@@ -10,8 +11,6 @@ import '../thread_robot.dart';
 
 class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   WebThreadRobot(super.$);
-
-  static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
 
   @override
   Future<void> expectAppGridVisible() async {
@@ -65,6 +64,6 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
     await $.waitUntilVisible(emailFinder);
     await emailFinder.tap();
-    await $.pump(_emailOpenPumpDuration);
+    await $.waitUntilVisible($(EmailViewBackButton));
   }
 }

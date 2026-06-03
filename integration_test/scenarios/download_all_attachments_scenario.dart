@@ -29,7 +29,6 @@ class DownloadAllAttachmentsScenario extends BaseTestScenario {
       )],
       requestReadReceipt: false,
     );
-    await $.pumpAndSettle();
 
     await threadRobot.openEmailWithSubject(subject);
     await emailRobot.tapDownloadAllButton();

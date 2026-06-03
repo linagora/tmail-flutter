@@ -36,7 +36,6 @@ class WebComposerRobot extends MobileComposerRobot {
   @override
   Future<void> tapSaveAsDraftButton() async {
     await $(const Key(UiKeys.saveDraftButton)).tap();
-    await $.pumpAndSettle();
   }
 
   /// Resolves the [ComposerController] from the web [ComposerView] widget in
@@ -55,9 +54,7 @@ class WebComposerRobot extends MobileComposerRobot {
   @override
   Future<void> tapSaveAsTemplateButton() async {
     await $(const Key(UiKeys.composerMoreButton)).tap();
-    await $.pumpAndSettle();
     await $(const Key(UiKeys.saveTemplatePopupItem)).tap();
-    await $.pumpAndSettle();
   }
 
   @override
@@ -75,7 +72,6 @@ class WebComposerRobot extends MobileComposerRobot {
     await $.platformAutomator.web.pressKeyCombo(
       keys: isMac ? ['Meta', 'k'] : ['Control', 'k'],
     );
-    await $.pumpAndTrySettle();
   }
 
   // "Apply" is unique to the custom overlay; Summernote's native dialog never

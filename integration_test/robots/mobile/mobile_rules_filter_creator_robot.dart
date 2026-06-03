@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
 
+import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_rules_filter_creator_robot.dart';
 
 class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
@@ -23,7 +24,6 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     String selectActionHint,
   ) async {
     await $(find.text(selectActionHint)).tap();
-    await $.pumpAndTrySettle();
     await $(find.text(actionName)).tap();
   }
 
@@ -51,6 +51,6 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
 
   @override
   Future<void> expectCreatorViewClosed() async {
-    expect($(RuleFilterCreatorView), findsNothing);
+    await waitForCondition(() => !$(RuleFilterCreatorView).exists);
   }
 }

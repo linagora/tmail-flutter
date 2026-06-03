@@ -6,9 +6,7 @@ class SaveTemplateWithInlineImageThenOpenAndSaveTemplateAgainScenario
   const SaveTemplateWithInlineImageThenOpenAndSaveTemplateAgainScenario(super.$, super.robots);
 
   @override
-  Future<void> onAfterContentUploaded() async {
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
-  }
+  Future<void> onAfterContentUploaded() async {}
 
   @override
   String get subject => 'Template with inline image - second save';
