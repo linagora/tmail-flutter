@@ -56,6 +56,22 @@ abstract class ThreadDataSource {
     }
   );
 
+  /// Drains every page of `Email/changes` starting from [sinceState] and
+  /// returns the accumulated result (or `null` when there were no changes).
+  ///
+  /// Pagination is bounded: it stops as soon as the server stops advancing the
+  /// state cursor or a hard iteration cap is reached, so a stale/looping state
+  /// can no longer fan out into hundreds of back-to-back requests.
+  Future<EmailChangeResponse?> getAllEmailChanges(
+    Session session,
+    AccountId accountId,
+    State sinceState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  );
+
   Future<List<Email>> getAllEmailCache(
     AccountId accountId,
     UserName userName,

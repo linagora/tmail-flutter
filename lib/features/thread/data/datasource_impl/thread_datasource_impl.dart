@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -105,6 +106,68 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         sinceState,
         propertiesCreated: propertiesCreated,
         propertiesUpdated: propertiesUpdated);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  /// Upper bound on `Email/changes` pages drained in a single sync. With a page
+  /// size of 128 this caps one sync at ~12.8k changes; beyond that the local
+  /// state is hopelessly stale and a full reload is cheaper than paginating.
+  static const int _maxGetAllEmailChangesIterations = 100;
+
+  @override
+  Future<EmailChangeResponse?> getAllEmailChanges(
+    Session session,
+    AccountId accountId,
+    State sinceState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) {
+    return Future.sync(() async {
+      EmailChangeResponse? emailChangeResponse;
+      bool hasMoreChanges = true;
+      State? currentSinceState = sinceState;
+      int iterationCount = 0;
+
+      while (hasMoreChanges && currentSinceState != null) {
+        final State previousSinceState = currentSinceState;
+
+        final changesResponse = await threadAPI.getChanges(
+          session,
+          accountId,
+          currentSinceState,
+          propertiesCreated: propertiesCreated,
+          propertiesUpdated: propertiesUpdated);
+
+        emailChangeResponse = emailChangeResponse == null
+          ? changesResponse
+          : emailChangeResponse.union(changesResponse);
+
+        hasMoreChanges = changesResponse.hasMoreChanges;
+        currentSinceState = changesResponse.newStateChanges;
+
+        // Progress guard: the server claims more changes but the state cursor
+        // did not advance. Continuing would re-request the same page forever
+        // (self-inflicted DDoS), so stop here.
+        if (hasMoreChanges &&
+            (currentSinceState == null || currentSinceState == previousSinceState)) {
+          logWarning(
+            'ThreadDataSourceImpl::getAllEmailChanges(): state did not advance '
+            '($previousSinceState) while hasMoreChanges=true. Aborting pagination.');
+          break;
+        }
+
+        iterationCount++;
+        if (iterationCount >= _maxGetAllEmailChangesIterations) {
+          logWarning(
+            'ThreadDataSourceImpl::getAllEmailChanges(): reached max iterations '
+            '($_maxGetAllEmailChangesIterations) from $sinceState. Aborting pagination.');
+          break;
+        }
+      }
+
+      return emailChangeResponse;
     }).catchError(_exceptionThrower.throwException);
   }
 
