@@ -1,10 +1,5 @@
-import 'package:core/presentation/views/text/rich_text_builder.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
-import '../robots/search_robot.dart';
-import '../robots/thread_robot.dart';
 
 class SearchSuggestionHighlightsScenario extends BaseTestScenario {
   SearchSuggestionHighlightsScenario(super.$, super.robots);
@@ -19,33 +14,29 @@ class SearchSuggestionHighlightsScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
-    // Robots
-    final threadRobot = ThreadRobot($);
-    final searchRobot = SearchRobot($);
 
-    // Prepare attachment file
-    final file = await preparingTxtFile(keyword);
+    final commonRobot = robots.commonRobot();
+    final threadRobot = robots.threadRobot();
+    final searchRobot = robots.searchRobot();
 
-    // Provisioning some emails
-    await provisionEmail(longEmailContents
+    final file = await commonRobot.prepareTxtFile(keyword);
+
+    await commonRobot.provisionEmail(longEmailContents
       .map(
         (emailContent) => ProvisioningEmail(
           toEmail: email,
           subject: keyword,
           content: emailContent,
-          attachmentPaths: emailContent == longEmailContents.first
-            ? [file.path]
+          fileInfos: emailContent == longEmailContents.first
+            ? [file]
             : [],
         ),
       )
       .toList());
     await $.waitUntilVisible($(keyword));
 
-    // Search
     await threadRobot.tapOnSearchField();
     await searchRobot.enterKeyword(keyword);
-    await $.waitUntilVisible($(RichTextBuilder));
-    // Maximum 10 suggestions
-    expect($(RichTextBuilder).$(keyword.split(' ').first).evaluate().length, 10);
+    await searchRobot.verifySearchSuggestionHighlights(keyword);
   }
 }

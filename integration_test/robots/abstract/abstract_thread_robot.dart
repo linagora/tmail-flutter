@@ -4,4 +4,5 @@ abstract class AbstractThreadRobot {
   Future<void> openAppGrid();
   Future<void> openMailbox();
   Future<void> openEmailWithSubject(String subject);
+  Future<void> tapOnSearchField();
 }
