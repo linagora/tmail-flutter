@@ -1,7 +1,7 @@
 ((a,b)=>{a[b]=a[b]||{}})(self,"$__dart_deferred_initializers__")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,B,C={
 cae(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){return new C.R5(f,a2,l,h,g,x,k,r,t,v,u,d,w,j,i,p,m,n,s,a1,e,a0,o,q)},
-epp(d,e,f,g){if(g===e)return!1
+epq(d,e,f,g){if(g===e)return!1
 return d?g>=f:g>f},
 R5:function R5(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){var _=this
 _.c=d
@@ -67,7 +67,7 @@ _.d=g
 _.e=h
 _.f=i},
 cd1:function cd1(d){this.a=d},
-epx(d){var x,w,v,u,t,s,r,q,p="text/html"
+epy(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(B.d.q(d,$.e9w())&&B.d.q(d,$.e9v())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
@@ -184,7 +184,7 @@ x=t.e
 x===$&&A.d()
 u=t.y
 u===$&&A.d()
-if(C.epp(t.a.fr,x,u,v))t.X(new C.di1(t,v))}if(t.c!=null&&t.x)t.X(new C.di2(t))},
+if(C.epq(t.a.fr,x,u,v))t.X(new C.di1(t,v))}if(t.c!=null&&t.x)t.X(new C.di2(t))},
 bp0(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
@@ -245,7 +245,7 @@ aFR(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dU1(10),r=u.a,q=r.c,
 k=k?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 m=m?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.epx(q)
+if(r.ch)q=C.epy(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -418,6 +418,6 @@ return{v:x("J5"),V:x("N<c7>"),s:x("N<h>"),p:x("N<j>"),w:x("oL"),_:x("xY"),P:x("b
 D.aQF=new A.a_(B.cq,D.aZe,null)
 D.a7B=new A.e3(B.d6,null,null,D.aQF,null)
 D.b2V=new A.an(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"fhH","e9w",()=>A.b1("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"fhG","e9v",()=>A.b1("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
-(a=>{a["VJEqSp27aAFZjAjTy9efKG3Xs94="]=a.current})($__dart_deferred_initializers__);
+x($,"fhI","e9w",()=>A.b1("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"fhH","e9v",()=>A.b1("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+(a=>{a["ySse4gzFOfU39VFvv85XU+eY6VI="]=a.current})($__dart_deferred_initializers__);
