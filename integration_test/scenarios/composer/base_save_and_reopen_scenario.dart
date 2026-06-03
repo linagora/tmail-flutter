@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -69,6 +70,10 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
       await threadRobot.openMailbox();
     }
     await mailboxMenuRobot.openFolderByName(folderDisplayName(appLocalizations));
+
+    // Wait for email list loading to complete
+    await waitForCondition(() => !$(find.bySemanticsLabel('Mail list loading icon')).exists);
+
     await waitForCondition(() => $(uniqueSubject).exists);
     await threadRobot.openEmailWithSubject(uniqueSubject);
     await composerRobot.expectComposerViewVisible();
