@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.70"
+  analysis_server_plugin:
+    dependency: transitive
+    description:
+      name: analysis_server_plugin
+      sha256: c4021359e7a673ecd9c6db5f11fea12fabb55e0ba96fa08c78920ae81936f1d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.15"
   analyzer:
     dependency: "direct overridden"
     description:
@@ -33,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.2"
+  analyzer_plugin:
+    dependency: transitive
+    description:
+      name: analyzer_plugin
+      sha256: "9a81dc36f7f71890d7cf83960a3a7df1e6c9a24035f98eb848e91ad48b1d21c6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.9"
   ansicolor:
     dependency: transitive
     description:
@@ -2039,6 +2055,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.4-dev.3"
+  riverpod_lint:
+    dependency: "direct dev"
+    description:
+      name: riverpod_lint
+      sha256: "7bdbdf5038777d499be78cae9008673be8c1afaffe7b07e9a7c987064d62e54d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.4-dev.1"
   rxdart:
     dependency: "direct main"
     description:
@@ -2678,6 +2702,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  yaml_edit:
+    dependency: transitive
+    description:
+      name: yaml_edit
+      sha256: "07c9e63ba42519745182b88ca12264a7ba2484d8239958778dfe4d44fe760488"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.4"
   yaml_writer:
     dependency: transitive
     description:
@@ -2687,5 +2719,5 @@ packages:
     source: hosted
     version: "2.1.0"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.10.0 <4.0.0"
   flutter: ">=3.32.0"
