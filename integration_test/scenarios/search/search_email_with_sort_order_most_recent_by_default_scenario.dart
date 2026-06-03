@@ -1,22 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_email.dart';
-import '../../robots/search_robot.dart';
-import '../../robots/thread_robot.dart';
 
-class SearchEmailWithSortOrderRelevanceByDefaultScenario
+class SearchEmailWithSortOrderMostRecentByDefaultScenario
     extends BaseTestScenario {
-  const SearchEmailWithSortOrderRelevanceByDefaultScenario(super.$, super.robots);
+  const SearchEmailWithSortOrderMostRecentByDefaultScenario(super.$, super.robots);
 
-  static const queryString = 'Relevance by default';
+  static const queryString = 'Most recent by default';
   static const listUsername = ['Alice', 'Brian', 'Charlotte', 'David', 'Emma'];
 
   @override
   Future<void> runTestLogic() async {
+    final commonRobot = robots.commonRobot();
+    final threadRobot = robots.threadRobot();
+    final searchRobot = robots.searchRobot();
+
     final listProvisioningEmail = listUsername
         .map((username) => ProvisioningEmail(
               toEmail: '${username.toLowerCase()}@example.com',
@@ -25,33 +26,26 @@ class SearchEmailWithSortOrderRelevanceByDefaultScenario
             ))
         .toList();
 
-    await provisionEmail(listProvisioningEmail);
+    await commonRobot.provisionEmail(listProvisioningEmail);
     await $.pumpAndSettle();
 
-    final threadRobot = ThreadRobot($);
-    await threadRobot.openSearchView();
-    await _expectSearchViewVisible();
+    await threadRobot.tapOnSearchField();
 
-    final searchRobot = SearchRobot($);
-    await searchRobot.enterQueryString(queryString);
+    await searchRobot.enterKeyword(queryString);
     await searchRobot.tapOnShowAllResultsText();
     await _expectSearchResultEmailListVisible();
 
     await searchRobot.scrollToEndListSearchFilter();
-    await _expectRelevanceSortOrderButtonVisible();
-  }
-
-  Future<void> _expectSearchViewVisible() async {
-    await expectViewVisible($(SearchEmailView));
+    await _expectMostRecentSortOrderButtonVisible();
   }
 
   Future<void> _expectSearchResultEmailListVisible() async {
     await expectViewVisible($(#search_email_list_notification_listener));
   }
 
-  Future<void> _expectRelevanceSortOrderButtonVisible() async {
+  Future<void> _expectMostRecentSortOrderButtonVisible() async {
     await expectViewVisible(
-      $(SearchFilterButton).$(AppLocalizations().relevance),
+      $(SearchFilterButton).$(AppLocalizations().mostRecent),
     );
   }
 }

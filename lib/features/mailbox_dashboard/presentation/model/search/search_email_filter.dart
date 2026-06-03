@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchEmailFilter with EquatableMixin, OptionParamMixin {
 
-  static const EmailSortOrderType defaultSortOrder = EmailSortOrderType.relevance;
+  static const EmailSortOrderType defaultSortOrder = EmailSortOrderType.mostRecent;
 
   final Set<String> from;
   final Set<String> to;

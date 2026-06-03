@@ -552,8 +552,11 @@ void main() {
         forceEmailQuery: anyNamed('forceEmailQuery'),
         collapseThreads: anyNamed('collapseThreads'),
       ));
-      expect(searchController.sortOrderFiltered, SearchEmailFilter.defaultSortOrder);
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
+      // Reset clears all filters but preserves the selected sort order
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.relevance);
+      expect(
+        searchController.searchEmailFilter.value,
+        SearchEmailFilter.withSortOrder(EmailSortOrderType.relevance));
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
@@ -598,7 +601,6 @@ void main() {
         text: SearchQuery(queryString),
         emailReceiveTimeType: EmailReceiveTimeType.last30Days,
         hasAttachment: true,
-        position: 0,
       )
     );
   });
