@@ -43,7 +43,7 @@ import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_la
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
