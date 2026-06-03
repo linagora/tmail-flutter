@@ -350,7 +350,7 @@ $0(){return this.a},
 $S:2232}
 B.dw4.prototype={
 $1(d){return d.b===this.a},
-$S:511}
+$S:614}
 B.bFL.prototype={
 $0(){var x=this.a,w=$.aa()
 A.y(x)
@@ -370,7 +370,7 @@ return new B.Tw(e,x.k(0,null,y.q),null,y.Y)},
 $S:z+1}
 B.bFO.prototype={
 $1(d){return C.fy},
-$S:393}
+$S:406}
 B.bFM.prototype={
 $1(d){var x=this.a,w=$.aa()
 A.y(x)
@@ -429,7 +429,7 @@ $1(d){var x=this.a,w=$.aa()
 A.y(x)
 switch(A.r(x).h("W.S").a(w.a.get(x)).h1.gi(0).a){case 3:return x.aK9(this.b)
 default:return C.y}},
-$S:121}
+$S:117}
 B.cjN.prototype={
 $1(d){var x,w
 if(d instanceof A.qv)return D.aZh
@@ -438,7 +438,7 @@ w=$.aa()
 A.y(x)
 switch(A.r(x).h("W.S").a(w.a.get(x)).h1.gi(0).a){case 3:return x.aK9(this.b)
 default:return C.y}}},
-$S:68}
+$S:71}
 B.cAC.prototype={
 $0(){return A.zD("https://github.com/linagora/tmail-flutter/blob/master/privacy.md")},
 $S:0}
@@ -532,4 +532,4 @@ D.b8g=new A.aV("credential_input_form",y.O)
 D.b8S=new A.aV("loginSubmitForm",y.O)
 D.b8U=new A.aV("login_password_input",y.O)
 D.b8V=new A.aV("login_username_input",y.O)})()};
-(a=>{a["GTKK3Wq4Y9vVT6ffOMKHji0A6G4="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["JhQ2YjVymLcj/a4rRWBzCSUVkC8="]=a.current})($__dart_deferred_initializers__);
