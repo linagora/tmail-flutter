@@ -64,6 +64,5 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
     await $.waitUntilVisible(emailFinder);
     await emailFinder.tap();
-    await $.waitUntilVisible($(EmailViewBackButton));
   }
 }
