@@ -61,13 +61,17 @@ mixin MailboxActionHandlerMixin {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final appToast = Get.find<AppToast>();
 
+    final hasSubfolders = dashboardController.mapMailboxById.values
+        .any((m) => m.parentId == mailbox.id);
+    final hasContent = mailbox.countTotalEmails > 0 || hasSubfolders;
+
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(AppLocalizations.of(context).empty_trash_dialog_message)
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
-            if (mailbox.countTotalEmails > 0) {
+            if (hasContent) {
               dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
             } else {
               appToast.showToastWarningMessage(
@@ -88,7 +92,7 @@ mixin MailboxActionHandlerMixin {
         onCloseButtonAction: popBack,
         onConfirmAction: () {
           popBack();
-          if (mailbox.countTotalEmails > 0) {
+          if (hasContent) {
             dashboardController.emptyTrashFolderAction(trashMailbox: mailbox);
           } else {
             appToast.showToastWarningMessage(

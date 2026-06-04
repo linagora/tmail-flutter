@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-05-28T18:17:44.649881",
+  "@@last_modified": "2026-06-02T10:52:48.670230",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5546,6 +5546,24 @@
   },
   "aiLabelCategorizationSettingExplanation": "Apply my labels on incoming emails using their description",
   "@aiLabelCategorizationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "Trash subfolders deleted",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "Some subfolders in Trash could not be deleted",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "Failed to delete subfolders in Trash",
+  "@clearTrashSubfoldersFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

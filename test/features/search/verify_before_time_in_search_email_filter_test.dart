@@ -46,8 +46,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
@@ -76,7 +76,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_e
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -150,7 +149,6 @@ const fallbackGenerators = {
   MockSpec<MarkAsMultipleEmailReadInteractor>(),
   MockSpec<MarkAsStarMultipleEmailInteractor>(),
   MockSpec<MoveMultipleEmailToMailboxInteractor>(),
-  MockSpec<EmptyTrashFolderInteractor>(),
   MockSpec<DeleteMultipleEmailsPermanentlyInteractor>(),
   MockSpec<SendEmailInteractor>(),
   MockSpec<StoreSendingEmailInteractor>(),
@@ -235,7 +233,6 @@ void main() {
   late MockMarkAsMultipleEmailReadInteractor markAsMultipleEmailReadInteractor;
   late MockMarkAsStarMultipleEmailInteractor markAsStarMultipleEmailInteractor;
   late MockMoveMultipleEmailToMailboxInteractor moveMultipleEmailToMailboxInteractor;
-  late MockEmptyTrashFolderInteractor emptyTrashFolderInteractor;
   late MockDeleteMultipleEmailsPermanentlyInteractor deleteMultipleEmailsPermanentlyInteractor;
   late MockSendEmailInteractor sendEmailInteractor;
   late MockStoreSendingEmailInteractor storeSendingEmailInteractor;
@@ -332,7 +329,6 @@ void main() {
     markAsMultipleEmailReadInteractor = MockMarkAsMultipleEmailReadInteractor();
     markAsStarMultipleEmailInteractor = MockMarkAsStarMultipleEmailInteractor();
     moveMultipleEmailToMailboxInteractor = MockMoveMultipleEmailToMailboxInteractor();
-    emptyTrashFolderInteractor = MockEmptyTrashFolderInteractor();
     deleteMultipleEmailsPermanentlyInteractor = MockDeleteMultipleEmailsPermanentlyInteractor();
     sendEmailInteractor = MockSendEmailInteractor();
     storeSendingEmailInteractor = MockStoreSendingEmailInteractor();
@@ -386,7 +382,6 @@ void main() {
       markAsMultipleEmailReadInteractor,
       markAsStarMultipleEmailInteractor,
       moveMultipleEmailToMailboxInteractor,
-      emptyTrashFolderInteractor,
       deleteMultipleEmailsPermanentlyInteractor,
       mockGetEmailByIdInteractor,
       sendEmailInteractor,

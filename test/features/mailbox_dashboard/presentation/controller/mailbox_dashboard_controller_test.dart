@@ -93,7 +93,6 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -130,7 +129,6 @@ const fallbackGenerators = {
   MockSpec<MarkAsMultipleEmailReadInteractor>(),
   MockSpec<MarkAsStarMultipleEmailInteractor>(),
   MockSpec<MoveMultipleEmailToMailboxInteractor>(),
-  MockSpec<EmptyTrashFolderInteractor>(),
   MockSpec<DeleteMultipleEmailsPermanentlyInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
   MockSpec<SendEmailInteractor>(),
@@ -218,7 +216,6 @@ void main() {
       MockMarkAsStarMultipleEmailInteractor();
   final moveMultipleEmailToMailboxInteractor =
       MockMoveMultipleEmailToMailboxInteractor();
-  final emptyTrashFolderInteractor = MockEmptyTrashFolderInteractor();
   final deleteMultipleEmailsPermanentlyInteractor =
       MockDeleteMultipleEmailsPermanentlyInteractor();
   final getEmailByIdInteractor = MockGetEmailByIdInteractor();
@@ -376,7 +373,6 @@ void main() {
       markAsMultipleEmailReadInteractor,
       markAsStarMultipleEmailInteractor,
       moveMultipleEmailToMailboxInteractor,
-      emptyTrashFolderInteractor,
       deleteMultipleEmailsPermanentlyInteractor,
       getEmailByIdInteractor,
       sendEmailInteractor,

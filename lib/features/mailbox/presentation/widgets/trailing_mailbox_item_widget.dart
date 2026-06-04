@@ -29,7 +29,7 @@ class TrailingMailboxItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
       if (isShowMoreButton ||
-          responsiveUtils.isDesktop(context) && mailboxNode.item.allowedHasEmptyAction) {
+          responsiveUtils.isDesktop(context) && mailboxNode.allowedHasEmptyAction) {
         return const SizedBox();
       } else if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
