@@ -5,6 +5,7 @@ import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/empty_folder_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
@@ -65,6 +66,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       ),
     );
 
-    return MailboxDashboardProviderListenerWidget(child: child);
+    return MailboxDashboardProviderListenerWidget(
+      delegateFactories: const [EmptyFolderProviderListenerDelegate.trash],
+      child: child,
+    );
   }
 }
