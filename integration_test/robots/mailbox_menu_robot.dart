@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
@@ -24,11 +25,8 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
 
   @override
   Future<void> openFolderByName(String name) async {
-    final mailboxItem = $(MailboxItemWidget)
-      .which<MailboxItemWidget>((widget) =>
-        widget.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase(),
-      );
-    await mailboxItem.waitUntilExists();
+    final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
+    await $(mailboxItem).waitUntilExists();
     await $.scrollUntilVisible(finder: mailboxItem);
     await mailboxItem.tap();
   }
