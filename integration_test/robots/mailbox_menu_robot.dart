@@ -29,6 +29,7 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await $(mailboxItem).waitUntilExists();
     await $.scrollUntilVisible(finder: mailboxItem);
     await mailboxItem.tap();
+    await $.pumpAndTrySettle();
   }
 
   @override
