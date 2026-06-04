@@ -1,26 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/adapters/trash_folder_adapter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/dashboard_provider_listener_delegate.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/empty_folder_provider_listener_delegate.dart';
 
-class MailboxDashboardProviderListenerWidget extends ConsumerWidget {
+class MailboxDashboardProviderListenerWidget extends ConsumerStatefulWidget {
   final Widget child;
-  final List<DashboardProviderListenerDelegate> delegates;
 
-  MailboxDashboardProviderListenerWidget({
+  // Caller provides factory tear-offs (e.g. [EmptyFolderProviderListenerDelegate.trash]).
+  // Adding a new feature (MarkAsRead, Spam, …) = create a new delegate + add its
+  // factory to the caller's list. This widget and its State need no modification.
+  final List<DashboardDelegateFactory> delegateFactories;
+
+  const MailboxDashboardProviderListenerWidget({
     super.key,
     required this.child,
-    List<DashboardProviderListenerDelegate>? delegates,
-  }) : delegates = delegates ?? [
-          EmptyFolderProviderListenerDelegate(adapter: const TrashFolderAdapter()),
-        ];
+    required this.delegateFactories,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    for (final delegate in delegates) {
+  ConsumerState<MailboxDashboardProviderListenerWidget> createState() =>
+      _MailboxDashboardProviderListenerWidgetState();
+}
+
+class _MailboxDashboardProviderListenerWidgetState
+    extends ConsumerState<MailboxDashboardProviderListenerWidget> {
+  late final List<DashboardProviderListenerDelegate> _delegates;
+
+  @override
+  void initState() {
+    super.initState();
+    _delegates = widget.delegateFactories.map((factory) => factory()).toList();
+  }
+
+  @override
+  void dispose() {
+    for (final delegate in _delegates) {
+      delegate.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    for (final delegate in _delegates) {
       delegate.listen(context, ref);
     }
-    return child;
+    return widget.child;
   }
 }

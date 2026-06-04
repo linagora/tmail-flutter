@@ -1,16 +1,20 @@
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/adapters/empty_folder_adapter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/strategies/empty_folder_strategy.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/strategies/trash_folder_strategy.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/dashboard_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
@@ -21,23 +25,41 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmptyFolderProviderListenerDelegate
     implements DashboardProviderListenerDelegate {
-  final EmptyFolderAdapter adapter;
+  // Named factories — callers use tear-offs (e.g. EmptyFolderProviderListenerDelegate.trash)
+  // so the widget stays generic and knows nothing about specific strategies.
+  static EmptyFolderProviderListenerDelegate trash() =>
+      EmptyFolderProviderListenerDelegate(strategy: const TrashFolderStrategy());
+
+  final EmptyFolderStrategy strategy;
 
   // Tracks the active notifier subscription so it can be replaced without
   // accumulating listeners when the user triggers empty-folder multiple times.
   ProviderSubscription<EmptyFolderState>? _stateSubscription;
 
-  EmptyFolderProviderListenerDelegate({required this.adapter});
+  EmptyFolderProviderListenerDelegate({required this.strategy});
 
   @override
   void listen(BuildContext context, WidgetRef ref) {
-    ref.listen(emptyFolderRequestedProvider(adapter.tag), (_, asyncValue) {
-      asyncValue.whenData((mailbox) {
-        final dashboardController = getBinding<MailboxDashBoardController>();
-        if (dashboardController == null) return;
-        _executeEmptyFolder(context, ref, mailbox, dashboardController);
-      });
+    ref.listen(emptyFolderRequestedProvider(strategy.tag), (_, asyncValue) {
+      asyncValue.when(
+        data: (mailbox) {
+          final dashboardController = getBinding<MailboxDashBoardController>();
+          if (dashboardController == null) return;
+          _executeEmptyFolder(context, ref, mailbox, dashboardController);
+        },
+        error: (error, _) => logError(
+          'EmptyFolderProviderListenerDelegate::listen',
+          exception: error,
+        ),
+        loading: () {},
+      );
     });
+  }
+
+  @override
+  void dispose() {
+    _stateSubscription?.close();
+    _stateSubscription = null;
   }
 
   void _executeEmptyFolder(
@@ -56,31 +78,44 @@ class EmptyFolderProviderListenerDelegate
         CapabilityIdentifier.jmapMailboxClear.isSupported(session, accountId) &&
         !mailbox.isFirstLevelTeamSystemFolder(
           dashboardController.mapMailboxById,
-          adapter.teamMailboxRole,
+          strategy.teamMailboxRole,
         );
 
     _stateSubscription?.close();
     _stateSubscription = ref.listenManual(
-      emptyFolderNotifierProvider(mailbox.id),
-      (_, state) => _handleEmptyFolderStateChange(context, state),
+      emptyFolderProvider(mailbox.id),
+      (_, state) => _handleEmptyFolderStateChange(
+        context,
+        state,
+        dashboardController,
+      ),
     );
 
     ref
-        .read(emptyFolderNotifierProvider(mailbox.id).notifier)
+        .read(emptyFolderProvider(mailbox.id).notifier)
         .execute(session, accountId, mailbox, childIds, useJmapClear);
   }
 
   void _handleEmptyFolderStateChange(
     BuildContext context,
     EmptyFolderState state,
+    MailboxDashBoardController dashboardController,
   ) {
-    final dashboardController = getBinding<MailboxDashBoardController>();
-    if (dashboardController == null) return;
-
     switch (state) {
       case EmptyFolderLoading():
-        dashboardController.viewStateMailboxActionProgress.value = Right(
-          ClearingMailbox(),
+        dashboardController.syncViewStateMailboxActionProgress(
+          newState: Right(ClearingMailbox()),
+        );
+
+      case EmptyFolderInProgress(
+        :final mailboxId,
+        :final countEmailsDeleted,
+        :final totalEmails,
+      ):
+        dashboardController.syncViewStateMailboxActionProgress(
+          newState: Right(
+            EmptyingFolderState(mailboxId, countEmailsDeleted, totalEmails),
+          ),
         );
 
       case EmptyFolderSuccess(
@@ -89,14 +124,7 @@ class EmptyFolderProviderListenerDelegate
         :final subfoldersStatus,
       ):
         _resetProgress(dashboardController);
-        if (clearedEmailIds.isEmpty) {
-          dashboardController.handleClearAllEmailsInMailbox(mailboxId);
-        } else {
-          dashboardController.handleDeleteEmailsInMailbox(
-            emailIds: clearedEmailIds,
-            affectedMailboxId: mailboxId,
-          );
-        }
+        _applyEmailChanges(dashboardController, clearedEmailIds, mailboxId);
         _showEmptyFolderSuccessToast(
           context,
           subfoldersStatus: subfoldersStatus,
@@ -106,23 +134,43 @@ class EmptyFolderProviderListenerDelegate
       case EmptyFolderFailure(:final exception):
         _resetProgress(dashboardController);
         _showEmptyFolderFailureToast(context);
-        if (exception != null) {
-          final handler = getBinding<UrgentExceptionHandler>();
-          if (handler != null && handler.validateUrgentException(exception)) {
-            handler.handleUrgentException(
-              exception: exception is Exception ? exception : null,
-            );
-          }
-        }
+        _handleUrgentException(exception, dashboardController);
 
       case EmptyFolderIdle():
         break;
     }
   }
 
+  void _applyEmailChanges(
+    MailboxDashBoardController dashboardController,
+    List<EmailId> clearedEmailIds,
+    MailboxId mailboxId,
+  ) {
+    if (clearedEmailIds.isEmpty) {
+      dashboardController.handleClearAllEmailsInMailbox(mailboxId);
+    } else {
+      dashboardController.handleDeleteEmailsInMailbox(
+        emailIds: clearedEmailIds,
+        affectedMailboxId: mailboxId,
+      );
+    }
+  }
+
+  void _handleUrgentException(
+    Object? exception,
+    MailboxDashBoardController dashboardController,
+  ) {
+    if (exception == null) return;
+    if (dashboardController.validateUrgentException(exception)) {
+      dashboardController.handleUrgentException(
+        exception: exception is Exception ? exception : null,
+      );
+    }
+  }
+
   void _resetProgress(MailboxDashBoardController dashboardController) {
-    dashboardController.viewStateMailboxActionProgress.value = Right(
-      UIState.idle,
+    dashboardController.syncViewStateMailboxActionProgress(
+      newState: Right(UIState.idle),
     );
   }
 
@@ -133,17 +181,19 @@ class EmptyFolderProviderListenerDelegate
     final appToast = getBinding<AppToast>();
     final l10n = AppLocalizations.of(context);
 
-    appToast?.showToastSuccessMessage(context, adapter.successMessage(l10n));
+    appToast?.showToastSuccessMessage(context, strategy.successMessage(l10n));
 
     switch (subfoldersStatus) {
       case SubfoldersDeleteStatus.allDeleted:
-        final message = adapter.subfoldersAllDeletedMessage(l10n);
-        if (message != null) appToast?.showToastSuccessMessage(context, message);
+        final message = strategy.subfoldersAllDeletedMessage(l10n);
+        if (message != null) {
+          appToast?.showToastSuccessMessage(context, message);
+        }
       case SubfoldersDeleteStatus.someDeleted:
-        final message = adapter.subfoldersPartiallyDeletedMessage(l10n);
+        final message = strategy.subfoldersPartiallyDeletedMessage(l10n);
         if (message != null) appToast?.showToastMessage(context, message);
       case SubfoldersDeleteStatus.failed:
-        final message = adapter.subfoldersDeleteFailedMessage(l10n);
+        final message = strategy.subfoldersDeleteFailedMessage(l10n);
         if (message != null) appToast?.showToastErrorMessage(context, message);
       case SubfoldersDeleteStatus.none:
         break;
@@ -154,7 +204,7 @@ class EmptyFolderProviderListenerDelegate
     final l10n = AppLocalizations.of(context);
     getBinding<AppToast>()?.showToastErrorMessage(
       context,
-      adapter.failureMessage(l10n),
+      strategy.failureMessage(l10n),
     );
   }
 }

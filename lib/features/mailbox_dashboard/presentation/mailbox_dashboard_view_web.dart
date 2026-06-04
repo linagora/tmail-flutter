@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_web_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/empty_folder_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -374,7 +375,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         _buildDownloadTaskStateWidget(AppLocalizations.of(context)),
       ]),
     );
-    return MailboxDashboardProviderListenerWidget(child: child);
+    return MailboxDashboardProviderListenerWidget(
+      delegateFactories: const [EmptyFolderProviderListenerDelegate.trash],
+      child: child,
+    );
   }
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
