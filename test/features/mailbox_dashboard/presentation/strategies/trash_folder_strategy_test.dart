@@ -27,29 +27,58 @@ void main() {
       expect(strategy.teamMailboxRole, PresentationMailbox.trashRole);
     });
 
-    test('successMessage delegates to toast_message_empty_trash_folder_success', () {
-      when(mockL10n.toast_message_empty_trash_folder_success).thenReturn('All messages deleted');
-      expect(strategy.successMessage(mockL10n), 'All messages deleted');
-    });
+    test(
+      'successMessage delegates to toast_message_empty_trash_folder_success',
+      () {
+        when(
+          mockL10n.toast_message_empty_trash_folder_success,
+        ).thenReturn('All messages deleted');
+        expect(strategy.successMessage(mockL10n), 'All messages deleted');
+      },
+    );
 
     test('failureMessage delegates to emptyTrashFolderFailed', () {
       when(mockL10n.emptyTrashFolderFailed).thenReturn('Empty trash failed');
       expect(strategy.failureMessage(mockL10n), 'Empty trash failed');
     });
 
-    test('subfoldersAllDeletedMessage is non-null and delegates to clearTrashSubfoldersSuccess', () {
-      when(mockL10n.clearTrashSubfoldersSuccess).thenReturn('Trash subfolders deleted');
-      expect(strategy.subfoldersAllDeletedMessage(mockL10n), 'Trash subfolders deleted');
-    });
+    test(
+      'subfoldersAllDeletedMessage is non-null and delegates to clearTrashSubfoldersSuccess',
+      () {
+        when(
+          mockL10n.clearTrashSubfoldersSuccess,
+        ).thenReturn('Trash subfolders deleted');
+        expect(
+          strategy.subfoldersAllDeletedMessage(mockL10n),
+          'Trash subfolders deleted',
+        );
+      },
+    );
 
-    test('subfoldersPartiallyDeletedMessage is non-null and delegates to clearTrashSubfoldersPartialSuccess', () {
-      when(mockL10n.clearTrashSubfoldersPartialSuccess).thenReturn('Some subfolders not deleted');
-      expect(strategy.subfoldersPartiallyDeletedMessage(mockL10n), 'Some subfolders not deleted');
-    });
+    test(
+      'subfoldersPartiallyDeletedMessage is non-null and delegates to clearTrashSubfoldersPartialSuccess',
+      () {
+        when(
+          mockL10n.clearTrashSubfoldersPartialSuccess,
+        ).thenReturn('Some subfolders not deleted');
+        expect(
+          strategy.subfoldersPartiallyDeletedMessage(mockL10n),
+          'Some subfolders not deleted',
+        );
+      },
+    );
 
-    test('subfoldersDeleteFailedMessage is non-null and delegates to clearTrashSubfoldersFailed', () {
-      when(mockL10n.clearTrashSubfoldersFailed).thenReturn('Failed to delete subfolders');
-      expect(strategy.subfoldersDeleteFailedMessage(mockL10n), 'Failed to delete subfolders');
-    });
+    test(
+      'subfoldersDeleteFailedMessage is non-null and delegates to clearTrashSubfoldersFailed',
+      () {
+        when(
+          mockL10n.clearTrashSubfoldersFailed,
+        ).thenReturn('Failed to delete subfolders');
+        expect(
+          strategy.subfoldersDeleteFailedMessage(mockL10n),
+          'Failed to delete subfolders',
+        );
+      },
+    );
   });
 }
