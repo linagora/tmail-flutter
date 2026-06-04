@@ -541,28 +541,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
   ) async {
     final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(accountId, session.username);
 
-    EmailChangeResponse? emailChangeResponse;
-    bool hasMoreChanges = true;
-    jmap.State? sinceState = currentState;
-
-    while(hasMoreChanges && sinceState != null) {
-      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');
-      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
-        session,
-        accountId,
-        sinceState,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated);
-
-      hasMoreChanges = changesResponse.hasMoreChanges;
-      sinceState = changesResponse.newStateChanges;
-
-      if (emailChangeResponse != null) {
-        emailChangeResponse.union(changesResponse);
-      } else {
-        emailChangeResponse = changesResponse;
-      }
-    }
+    final emailChangeResponse = await mapDataSource[DataSourceType.network]!.getAllEmailChanges(
+      session,
+      accountId,
+      currentState,
+      propertiesCreated: propertiesCreated,
+      propertiesUpdated: propertiesUpdated);
 
     if (emailChangeResponse != null) {
       final newEmailUpdated = await _combineEmailCache(

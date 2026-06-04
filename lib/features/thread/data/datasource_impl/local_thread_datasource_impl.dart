@@ -81,6 +81,19 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
+  Future<EmailChangeResponse?> getAllEmailChanges(
+    Session session,
+    AccountId accountId,
+    State sinceState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<Email>> getAllEmailCache(
     AccountId accountId,
     UserName userName, {
