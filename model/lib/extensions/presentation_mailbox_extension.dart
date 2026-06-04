@@ -64,6 +64,10 @@ extension PresentationMailboxExtension on PresentationMailbox {
   bool get isTrashTeamMailbox =>
       _isTeamMailboxWithRole(PresentationMailbox.trashRole);
 
+  bool get isEmptyableTrash =>
+      isTrashPersonal ||
+      (isTrashTeamMailbox && myRights?.mayRemoveItems == true);
+
   bool get isDrafts {
     if (isPersonal) {
       return role == PresentationMailbox.roleDrafts;
