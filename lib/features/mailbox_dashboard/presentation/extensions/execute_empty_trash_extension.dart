@@ -8,27 +8,27 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension ExecuteEmptyTrashExtension on MailboxDashBoardController {
-  List<MailboxId> childMailboxIds(PresentationMailbox parent) =>
-      mapMailboxById.values
-          .where((m) => m.parentId == parent.id)
-          .map((m) => m.id)
-          .toList();
+  List<MailboxId> childMailboxIds(PresentationMailbox parent) => mapMailboxById
+      .values
+      .where((m) => m.parentId == parent.id)
+      .map((m) => m.id)
+      .toList();
 
-  void requestEmptyTrash(BuildContext context, PresentationMailbox trashMailbox) {
+  void requestEmptyTrash(
+    BuildContext context,
+    PresentationMailbox trashMailbox,
+  ) {
     final appLocalizations = AppLocalizations.of(context);
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(appLocalizations.empty_trash_dialog_message)
-        ..onCancelAction(appLocalizations.cancel, popBack)
-        ..onConfirmAction(
-          appLocalizations.delete,
-          () {
-            popBack();
-            emptyTrashFolderAction(trashMailbox: trashMailbox);
-          },
-        ))
-      .show();
+            ..messageText(appLocalizations.empty_trash_dialog_message)
+            ..onCancelAction(appLocalizations.cancel, popBack)
+            ..onConfirmAction(appLocalizations.delete, () {
+              popBack();
+              emptyTrashFolderAction(trashMailbox: trashMailbox);
+            }))
+          .show();
     } else {
       MessageDialogActionManager().showConfirmDialogAction(
         key: const Key('confirm_dialog_empty_trash'),
