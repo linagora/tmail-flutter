@@ -29,6 +29,9 @@ class _MailboxDashboardProviderListenerWidgetState
   void initState() {
     super.initState();
     _delegates = widget.delegateFactories.map((factory) => factory()).toList();
+    for (final delegate in _delegates) {
+      delegate.setup(ref, () => context);
+    }
   }
 
   @override
@@ -40,10 +43,5 @@ class _MailboxDashboardProviderListenerWidgetState
   }
 
   @override
-  Widget build(BuildContext context) {
-    for (final delegate in _delegates) {
-      delegate.listen(context, ref);
-    }
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 }
