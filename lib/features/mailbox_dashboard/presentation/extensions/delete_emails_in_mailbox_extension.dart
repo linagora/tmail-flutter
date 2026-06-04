@@ -13,4 +13,9 @@ extension DeleteEmailsInMailboxExtension on MailboxDashBoardController {
 
     emailsInCurrentMailbox.removeWhere((email) => emailIds.contains(email.id));
   }
+
+  void handleClearAllEmailsInMailbox(MailboxId mailboxId) {
+    if (selectedMailbox.value?.id != mailboxId) return;
+    emailsInCurrentMailbox.clear();
+  }
 }

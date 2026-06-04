@@ -141,7 +141,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
             offstage: !_shouldShowMorePopupMenu,
             child: TMailButtonWidget.fromIcon(
               margin: _responsiveUtils.isDesktop(context) &&
-                      widget.mailboxNode.item.allowedHasEmptyAction
+                      widget.mailboxNode.allowedHasEmptyAction
                   ? EdgeInsets.zero
                   : TrailingMailboxItemWidgetStyles.menuIconMargin,
               icon: _imagePaths.icMoreVertical,
@@ -214,7 +214,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
 
   bool _showCleanButton(BuildContext context) {
     return _responsiveUtils.isWebDesktop(context) &&
-        widget.mailboxNode.item.allowedHasEmptyAction;
+        widget.mailboxNode.allowedHasEmptyAction;
   }
 
   bool _showMoreButton(BuildContext context) => PlatformInfo.isWeb;

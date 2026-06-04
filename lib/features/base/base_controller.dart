@@ -66,11 +66,13 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
-    with PopupContextMenuActionMixin, LogoutMixin, EmitStateMixin {
+    with PopupContextMenuActionMixin, LogoutMixin, EmitStateMixin
+    implements UrgentExceptionHandler {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();
@@ -156,6 +158,7 @@ abstract class BaseController extends GetxController
 
   void onDone() {}
 
+  @override
   bool validateUrgentException(dynamic exception) {
     return exception is NoNetworkError
       || exception is BadCredentialsException
@@ -165,6 +168,7 @@ abstract class BaseController extends GetxController
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
 
+  @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
     if (PlatformInfo.isWeb) {
       handleUrgentExceptionOnWeb(failure: failure, exception: exception);

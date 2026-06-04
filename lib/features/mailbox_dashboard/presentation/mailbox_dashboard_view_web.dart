@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -35,6 +36,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/fil
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/compose_button_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
@@ -56,6 +58,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_web_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -65,7 +68,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    return Portal(
+    final child = Portal(
       child: Stack(children: [
         ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
@@ -251,16 +254,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                     selectedMailbox,
                                   );
 
-                                if (showTrashBanner) {
-                                  return CleanMessagesBanner(
+                                if (showTrashBanner && selectedMailbox != null) {
+                                  return EmptyTrashBannerWidget(
                                     responsiveUtils: controller.responsiveUtils,
-                                    message: AppLocalizations
-                                      .of(context)
-                                      .message_delete_all_email_in_trash_button,
-                                    positiveAction: AppLocalizations
-                                      .of(context)
-                                      .empty_trash_now,
-                                    onPositiveAction: controller.emptyTrashAction,
+                                    mailbox: selectedMailbox,
+                                    confirmCallback: controller.requestEmptyTrash,
                                     margin: const EdgeInsetsDirectional.only(
                                       bottom: 8,
                                       end: 16,
@@ -376,6 +374,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         _buildDownloadTaskStateWidget(AppLocalizations.of(context)),
       ]),
     );
+    return MailboxDashboardProviderListenerWidget(child: child);
   }
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {

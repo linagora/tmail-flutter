@@ -177,4 +177,7 @@ extension MailboxNodeExtension on MailboxNode {
 
   MailboxNode? findNodeOnFirstLevel(NodeQuery nodeQuery) =>
       childrenItems?.firstWhereOrNull(nodeQuery);
+
+  bool get allowedHasEmptyAction =>
+      item.allowedHasEmptyAction || (item.isTrash && hasChildren());
 }

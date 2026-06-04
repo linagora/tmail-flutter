@@ -5881,4 +5881,25 @@ class AppLocalizations {
       name: 'aiLabelCategorizationSettingExplanation',
     );
   }
+
+  String get clearTrashSubfoldersSuccess {
+    return Intl.message(
+      'Trash subfolders deleted',
+      name: 'clearTrashSubfoldersSuccess',
+    );
+  }
+
+  String get clearTrashSubfoldersPartialSuccess {
+    return Intl.message(
+      'Some subfolders in Trash could not be deleted',
+      name: 'clearTrashSubfoldersPartialSuccess',
+    );
+  }
+
+  String get clearTrashSubfoldersFailed {
+    return Intl.message(
+      'Failed to delete subfolders in Trash',
+      name: 'clearTrashSubfoldersFailed',
+    );
+  }
 }

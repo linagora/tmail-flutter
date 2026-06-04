@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -67,8 +68,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
@@ -93,12 +94,12 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_send
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -109,7 +110,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -143,7 +143,6 @@ const fallbackGenerators = {
   MockSpec<MarkAsMultipleEmailReadInteractor>(),
   MockSpec<MarkAsStarMultipleEmailInteractor>(),
   MockSpec<MoveMultipleEmailToMailboxInteractor>(),
-  MockSpec<EmptyTrashFolderInteractor>(),
   MockSpec<DeleteMultipleEmailsPermanentlyInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
   MockSpec<SendEmailInteractor>(),
@@ -226,7 +225,6 @@ void main() {
   final markAsMultipleEmailReadInteractor = MockMarkAsMultipleEmailReadInteractor();
   final markAsStarMultipleEmailInteractor = MockMarkAsStarMultipleEmailInteractor();
   final moveMultipleEmailToMailboxInteractor = MockMoveMultipleEmailToMailboxInteractor();
-  final emptyTrashFolderInteractor = MockEmptyTrashFolderInteractor();
   final deleteMultipleEmailsPermanentlyInteractor = MockDeleteMultipleEmailsPermanentlyInteractor();
   final getEmailByIdInteractor = MockGetEmailByIdInteractor();
   final cleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
@@ -311,16 +309,18 @@ void main() {
   late QuotasController quotasController;
 
   Widget makeTestableWidget({required Widget child}) {
-    return GetMaterialApp(
-      localizationsDelegates: const [
-        AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: LocalizationService.supportedLocales,
-      locale: LocalizationService.defaultLocale,
-      home: Scaffold(body: child),
+    return ProviderScope(
+      child: GetMaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: LocalizationService.supportedLocales,
+        locale: LocalizationService.defaultLocale,
+        home: Scaffold(body: child),
+      ),
     );
   }
 
@@ -388,7 +388,6 @@ void main() {
         markAsMultipleEmailReadInteractor,
         markAsStarMultipleEmailInteractor,
         moveMultipleEmailToMailboxInteractor,
-        emptyTrashFolderInteractor,
         deleteMultipleEmailsPermanentlyInteractor,
         getEmailByIdInteractor,
         sendEmailInteractor,

@@ -5,6 +5,7 @@ import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
@@ -28,7 +29,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    return FocusDetector(
+    final child = FocusDetector(
       onForegroundGained: controller.handleOnForegroundGained,
       child: Scaffold(
         drawerEnableOpenDragGesture:
@@ -63,5 +64,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }),
       ),
     );
+
+    return MailboxDashboardProviderListenerWidget(child: child);
   }
 }
