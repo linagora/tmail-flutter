@@ -27,12 +27,21 @@ class EmptyFolderSuccess extends EmptyFolderState {
   });
 }
 
+class EmptyFolderInProgress extends EmptyFolderState {
+  final MailboxId mailboxId;
+  final int countEmailsDeleted;
+  final int totalEmails;
+
+  const EmptyFolderInProgress({
+    required this.mailboxId,
+    required this.countEmailsDeleted,
+    required this.totalEmails,
+  });
+}
+
 class EmptyFolderFailure extends EmptyFolderState {
   final Object? exception;
   final MailboxId mailboxId;
 
-  const EmptyFolderFailure({
-    this.exception,
-    required this.mailboxId,
-  });
+  const EmptyFolderFailure({this.exception, required this.mailboxId});
 }

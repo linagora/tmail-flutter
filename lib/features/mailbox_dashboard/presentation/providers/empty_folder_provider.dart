@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/empty_folder_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -25,12 +26,17 @@ export 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/empty_fold
 
 part 'empty_folder_provider.g.dart';
 
+typedef EmptyFolderProgressCallback =
+    void Function(int countDeleted, int totalEmails);
+
 @riverpod
-Stream<PresentationMailbox> emptyFolderRequested(Ref ref, String tag) =>
-    getBinding<MailboxDashBoardController>()!
-        .onEmptyFolderRequested
-        .where((request) => request.tag == tag)
-        .map((request) => request.mailbox);
+Stream<PresentationMailbox> emptyFolderRequested(Ref ref, String tag) {
+  final controller = getBinding<MailboxDashBoardController>();
+  if (controller == null) return const Stream.empty();
+  return controller.onEmptyFolderRequested
+      .where((request) => request.tag == tag)
+      .map((request) => request.mailbox);
+}
 
 sealed class _ClearEmailResult {}
 
@@ -64,6 +70,7 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
   EmptyFolderState build(MailboxId mailboxId) => const EmptyFolderIdle();
 
   bool get mounted => ref.mounted;
+
   bool get _isExecuting => state is EmptyFolderLoading;
 
   Future<void> execute(
@@ -76,12 +83,21 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
     if (_isExecuting) return;
     state = const EmptyFolderLoading();
 
-    final emailResult = mailbox.countTotalEmails == 0
-        ? _ClearEmailSuccess(emailIds: const [])
-        : useJmapClear
-            ? await _clearMailbox(session, accountId, mailbox)
-            : await _emptyByEmailDeletion(session, accountId, mailbox);
-
+    final emailResult = await _resolveEmailClearResult(
+      session,
+      accountId,
+      mailbox,
+      useJmapClear,
+      onProgress: (countDeleted, totalEmails) {
+        if (mounted) {
+          state = EmptyFolderInProgress(
+            mailboxId: mailbox.id,
+            countEmailsDeleted: countDeleted,
+            totalEmails: totalEmails,
+          );
+        }
+      },
+    );
     if (!mounted) return;
 
     if (emailResult is _ClearEmailFailure) {
@@ -92,25 +108,51 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
       return;
     }
 
-    final emailSuccess = emailResult as _ClearEmailSuccess;
-
-    var subfoldersStatus = SubfoldersDeleteStatus.none;
-
-    if (childIds.isNotEmpty) {
-      final subfoldersResult = await _deleteSubfolders(session, accountId, childIds);
-      if (!mounted) return;
-      subfoldersStatus = switch (subfoldersResult) {
-        _SubfoldersAllDeleted() => SubfoldersDeleteStatus.allDeleted,
-        _SubfoldersSomeDeleted() => SubfoldersDeleteStatus.someDeleted,
-        _SubfoldersDeleteFailed() => SubfoldersDeleteStatus.failed,
-      };
-    }
+    final subfoldersStatus = await _resolveSubfoldersStatus(
+      session,
+      accountId,
+      childIds,
+    );
+    if (!mounted) return;
 
     state = EmptyFolderSuccess(
-      clearedEmailIds: emailSuccess.emailIds,
+      clearedEmailIds: (emailResult as _ClearEmailSuccess).emailIds,
       mailboxId: mailbox.id,
       subfoldersStatus: subfoldersStatus,
     );
+  }
+
+  Future<_ClearEmailResult> _resolveEmailClearResult(
+    Session session,
+    AccountId accountId,
+    PresentationMailbox mailbox,
+    bool useJmapClear, {
+    EmptyFolderProgressCallback? onProgress,
+  }) async {
+    if (mailbox.countTotalEmails == 0) {
+      return _ClearEmailSuccess(emailIds: const []);
+    }
+    if (useJmapClear) return _clearMailbox(session, accountId, mailbox);
+    return _emptyByEmailDeletion(
+      session,
+      accountId,
+      mailbox,
+      onProgress: onProgress,
+    );
+  }
+
+  Future<SubfoldersDeleteStatus> _resolveSubfoldersStatus(
+    Session session,
+    AccountId accountId,
+    List<MailboxId> childIds,
+  ) async {
+    if (childIds.isEmpty) return SubfoldersDeleteStatus.none;
+    final result = await _deleteSubfolders(session, accountId, childIds);
+    return switch (result) {
+      _SubfoldersAllDeleted() => SubfoldersDeleteStatus.allDeleted,
+      _SubfoldersSomeDeleted() => SubfoldersDeleteStatus.someDeleted,
+      _SubfoldersDeleteFailed() => SubfoldersDeleteStatus.failed,
+    };
   }
 
   Future<_ClearEmailResult> _clearMailbox(
@@ -135,8 +177,8 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
             ? _ClearEmailSuccess(emailIds: const [])
             : _ClearEmailFailure(),
       );
-    } catch (e) {
-      logError('EmptyFolderNotifier::_clearMailbox: $e');
+    } catch (e, s) {
+      logError('EmptyFolderNotifier::_clearMailbox', exception: e, stackTrace: s);
       return _ClearEmailFailure(exception: e);
     }
   }
@@ -144,12 +186,21 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
   Future<_ClearEmailResult> _emptyByEmailDeletion(
     Session session,
     AccountId accountId,
-    PresentationMailbox mailbox,
-  ) async {
-    // progressCtrl is required by the interactor API but progress is not
-    // displayed at this call site — use a broadcast controller so events
-    // are silently discarded without buffering.
-    final progressCtrl = StreamController<Either<Failure, Success>>.broadcast();
+    PresentationMailbox mailbox, {
+    EmptyFolderProgressCallback? onProgress,
+  }) async {
+    final progressCtrl = StreamController<Either<Failure, Success>>.broadcast(
+      sync: true,
+    );
+    final progressSub = onProgress != null
+        ? progressCtrl.stream.listen((event) {
+            event.fold((_) => null, (success) {
+              if (success is EmptyingFolderState) {
+                onProgress(success.countEmailsDeleted, success.totalEmails);
+              }
+            });
+          })
+        : null;
     try {
       final result = await getBinding<EmptyTrashFolderInteractor>()
           ?.execute(
@@ -160,7 +211,6 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
             progressCtrl,
           )
           .last;
-      unawaited(progressCtrl.close());
 
       if (result == null) return _ClearEmailFailure();
       return result.fold(
@@ -171,10 +221,12 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
             ? _ClearEmailSuccess(emailIds: success.emailIds)
             : _ClearEmailFailure(),
       );
-    } catch (e) {
-      logError('EmptyFolderNotifier::_emptyByEmailDeletion: $e');
-      unawaited(progressCtrl.close());
+    } catch (e, s) {
+      logError('EmptyFolderNotifier::_emptyByEmailDeletion', exception: e, stackTrace: s);
       return _ClearEmailFailure(exception: e);
+    } finally {
+      await progressSub?.cancel();
+      unawaited(progressCtrl.close());
     }
   }
 
@@ -194,13 +246,17 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
           exception: failure is FeatureFailure ? failure.exception : null,
         ),
         (success) {
-          if (success is DeleteMultipleMailboxAllSuccess) return _SubfoldersAllDeleted();
-          if (success is DeleteMultipleMailboxHasSomeSuccess) return _SubfoldersSomeDeleted();
+          if (success is DeleteMultipleMailboxAllSuccess) {
+            return _SubfoldersAllDeleted();
+          }
+          if (success is DeleteMultipleMailboxHasSomeSuccess) {
+            return _SubfoldersSomeDeleted();
+          }
           return _SubfoldersDeleteFailed();
         },
       );
-    } catch (e) {
-      logError('EmptyFolderNotifier::_deleteSubfolders: $e');
+    } catch (e, s) {
+      logError('EmptyFolderNotifier::_deleteSubfolders', exception: e, stackTrace: s);
       return _SubfoldersDeleteFailed(exception: e);
     }
   }

@@ -125,7 +125,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/adapters/empty_folder_tag.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/strategies/empty_folder_tag.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -512,8 +512,6 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
         success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       _moveSelectedMultipleEmailToMailboxSuccess(success);
-    } else if (success is EmptyTrashFolderSuccess) {
-      _emptyTrashFolderSuccess(success);
     } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess ||
         success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
       _deleteMultipleEmailsPermanentlySuccess(success);
@@ -1900,17 +1898,6 @@ class MailboxDashBoardController extends ReloadableController
     required Either<Failure, Success> newState,
   }) {
     viewStateMailboxActionProgress.value = newState;
-  }
-
-  void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
-    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
-
-    handleDeleteEmailsInMailbox(
-      emailIds: success.emailIds,
-      affectedMailboxId: success.mailboxId,
-    );
-
-    toastManager.showMessageSuccess(success);
   }
 
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> listEmails, {Function? onCancelSelectionEmail}) {
