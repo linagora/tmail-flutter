@@ -1889,7 +1889,11 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     final trashFolder = trashMailbox
-        ?? (selectedMailbox.value?.isTrash == true ? selectedMailbox.value : null)
+        ?? ((selectedMailbox.value?.isTrash == true ||
+                (selectedMailbox.value?.isTrashTeamMailbox == true &&
+                    selectedMailbox.value?.myRights?.mayRemoveItems == true))
+            ? selectedMailbox.value
+            : null)
         ?? mapMailboxById[mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash]];
 
     if (trashFolder == null) {
