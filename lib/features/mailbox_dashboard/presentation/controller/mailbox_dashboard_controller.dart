@@ -1007,6 +1007,14 @@ class MailboxDashBoardController extends ReloadableController
     mapMailboxById = newMapMailboxById;
   }
 
+  void removeMailboxesFromMap(List<MailboxId> mailboxIds) {
+    if (mailboxIds.isEmpty) return;
+    for (final id in mailboxIds) {
+      mapMailboxById.remove(id);
+    }
+    selectedMailbox.refresh();
+  }
+
   void setOutboxMailbox(PresentationMailbox? newOutbox) {
     outboxMailbox = newOutbox;
     log('MailboxDashBoardController::setOutboxMailbox(): $newOutbox');
@@ -2409,13 +2417,17 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  bool _trashHasContent(PresentationMailbox mailbox) =>
+      mailbox.countTotalEmails > 0 ||
+      mapMailboxById.values.any((m) => m.parentId == mailbox.id);
+
   bool isEmptyTrashBannerEnabledOnWeb(
     BuildContext context,
     PresentationMailbox? mailbox
   ) {
     return mailbox != null &&
       (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
-      mailbox.countTotalEmails > 0 &&
+      _trashHasContent(mailbox) &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
   }
@@ -2426,7 +2438,7 @@ class MailboxDashBoardController extends ReloadableController
   ) {
     return mailbox != null &&
       (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
-      mailbox.countTotalEmails > 0 &&
+      _trashHasContent(mailbox) &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);
   }

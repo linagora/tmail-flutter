@@ -207,8 +207,21 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
-    return mapDataSource[DataSourceType.network]!.deleteMultipleMailbox(session, accountId, mailboxIds);
+  Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
+    final errorMap = await mapDataSource[DataSourceType.network]!.deleteMultipleMailbox(session, accountId, mailboxIds);
+    final deletedIds = mailboxIds.where((id) => !errorMap.containsKey(id.id)).toList();
+    if (deletedIds.isNotEmpty) {
+      try {
+        await mapDataSource[DataSourceType.local]!.update(
+          accountId,
+          session.username,
+          destroyed: deletedIds,
+        );
+      } catch (e) {
+        logWarning('MailboxRepositoryImpl::deleteMultipleMailbox(): cache update failed: $e');
+      }
+    }
+    return errorMap;
   }
 
   @override

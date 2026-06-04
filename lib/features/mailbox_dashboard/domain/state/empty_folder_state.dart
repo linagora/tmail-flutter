@@ -19,11 +19,15 @@ class EmptyFolderSuccess extends EmptyFolderState {
   final List<EmailId> clearedEmailIds;
   final MailboxId mailboxId;
   final SubfoldersDeleteStatus subfoldersStatus;
+  final List<MailboxId> deletedSubfolderIds;
+  final Object? subfoldersException;
 
   const EmptyFolderSuccess({
     required this.clearedEmailIds,
     required this.mailboxId,
     this.subfoldersStatus = SubfoldersDeleteStatus.none,
+    this.deletedSubfolderIds = const [],
+    this.subfoldersException,
   });
 }
 

@@ -9,6 +9,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -25,39 +27,43 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmptyFolderProviderListenerDelegate
     implements DashboardProviderListenerDelegate {
-  // Named factories — callers use tear-offs (e.g. EmptyFolderProviderListenerDelegate.trash)
-  // so the widget stays generic and knows nothing about specific strategies.
   static EmptyFolderProviderListenerDelegate trash() =>
       EmptyFolderProviderListenerDelegate(strategy: const TrashFolderStrategy());
 
   final EmptyFolderStrategy strategy;
 
-  // Tracks the active notifier subscription so it can be replaced without
-  // accumulating listeners when the user triggers empty-folder multiple times.
+  ProviderSubscription<AsyncValue<EmptyFolderRequest>>? _requestSubscription;
+
+  // Replaced on each trigger to avoid accumulating listeners across repeated executions.
   ProviderSubscription<EmptyFolderState>? _stateSubscription;
 
   EmptyFolderProviderListenerDelegate({required this.strategy});
 
   @override
-  void listen(BuildContext context, WidgetRef ref) {
-    ref.listen(emptyFolderRequestedProvider(strategy.tag), (_, asyncValue) {
-      asyncValue.when(
-        data: (mailbox) {
-          final dashboardController = getBinding<MailboxDashBoardController>();
-          if (dashboardController == null) return;
-          _executeEmptyFolder(context, ref, mailbox, dashboardController);
-        },
-        error: (error, _) => logError(
-          'EmptyFolderProviderListenerDelegate::listen',
-          exception: error,
-        ),
-        loading: () {},
-      );
-    });
+  void setup(WidgetRef ref, BuildContext Function() contextOf) {
+    _requestSubscription = ref.listenManual(
+      emptyFolderRequestedProvider(strategy.tag),
+      (_, asyncValue) {
+        asyncValue.when(
+          data: (request) {
+            final dashboardController = getBinding<MailboxDashBoardController>();
+            if (dashboardController == null) return;
+            _executeEmptyFolder(contextOf(), ref, request.mailbox, dashboardController);
+          },
+          error: (error, _) => logError(
+            'EmptyFolderProviderListenerDelegate::setup',
+            exception: error,
+          ),
+          loading: () {},
+        );
+      },
+    );
   }
 
   @override
   void dispose() {
+    _requestSubscription?.close();
+    _requestSubscription = null;
     _stateSubscription?.close();
     _stateSubscription = null;
   }
@@ -122,16 +128,25 @@ class EmptyFolderProviderListenerDelegate
         :final clearedEmailIds,
         :final mailboxId,
         :final subfoldersStatus,
+        :final deletedSubfolderIds,
+        :final subfoldersException,
       ):
+        _stateSubscription?.close();
+        _stateSubscription = null;
         _resetProgress(dashboardController);
         _applyEmailChanges(dashboardController, clearedEmailIds, mailboxId);
+        dashboardController.removeMailboxesFromMap(deletedSubfolderIds);
         _showEmptyFolderSuccessToast(
           context,
           subfoldersStatus: subfoldersStatus,
         );
+        _handleUrgentException(subfoldersException, dashboardController);
         dashboardController.dispatchMailboxUIAction(RefreshAllMailboxAction());
+        dashboardController.dispatchEmailUIAction(RefreshAllEmailAction());
 
       case EmptyFolderFailure(:final exception):
+        _stateSubscription?.close();
+        _stateSubscription = null;
         _resetProgress(dashboardController);
         _showEmptyFolderFailureToast(context);
         _handleUrgentException(exception, dashboardController);

@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/empty_folder_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
@@ -29,13 +30,13 @@ part 'empty_folder_provider.g.dart';
 typedef EmptyFolderProgressCallback =
     void Function(int countDeleted, int totalEmails);
 
+// EmptyFolderRequest has no custom == so consecutive clicks on the same mailbox are never deduplicated.
 @riverpod
-Stream<PresentationMailbox> emptyFolderRequested(Ref ref, String tag) {
+Stream<EmptyFolderRequest> emptyFolderRequested(Ref ref, String tag) {
   final controller = getBinding<MailboxDashBoardController>();
   if (controller == null) return const Stream.empty();
   return controller.onEmptyFolderRequested
-      .where((request) => request.tag == tag)
-      .map((request) => request.mailbox);
+      .where((request) => request.tag == tag);
 }
 
 sealed class _ClearEmailResult {}
@@ -54,9 +55,17 @@ class _ClearEmailFailure extends _ClearEmailResult {
 
 sealed class _SubfoldersResult {}
 
-class _SubfoldersAllDeleted extends _SubfoldersResult {}
+class _SubfoldersAllDeleted extends _SubfoldersResult {
+  final List<MailboxId> deletedIds;
 
-class _SubfoldersSomeDeleted extends _SubfoldersResult {}
+  _SubfoldersAllDeleted({required this.deletedIds});
+}
+
+class _SubfoldersSomeDeleted extends _SubfoldersResult {
+  final List<MailboxId> deletedIds;
+
+  _SubfoldersSomeDeleted({required this.deletedIds});
+}
 
 class _SubfoldersDeleteFailed extends _SubfoldersResult {
   final Object? exception;
@@ -71,7 +80,7 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
 
   bool get mounted => ref.mounted;
 
-  bool get _isExecuting => state is EmptyFolderLoading;
+  bool get _isExecuting => state is EmptyFolderLoading || state is EmptyFolderInProgress;
 
   Future<void> execute(
     Session session,
@@ -108,7 +117,7 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
       return;
     }
 
-    final subfoldersStatus = await _resolveSubfoldersStatus(
+    final subfoldersResult = await _resolveSubfoldersStatus(
       session,
       accountId,
       childIds,
@@ -118,7 +127,9 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
     state = EmptyFolderSuccess(
       clearedEmailIds: (emailResult as _ClearEmailSuccess).emailIds,
       mailboxId: mailbox.id,
-      subfoldersStatus: subfoldersStatus,
+      subfoldersStatus: subfoldersResult.status,
+      deletedSubfolderIds: subfoldersResult.deletedSubfolderIds,
+      subfoldersException: subfoldersResult.exception,
     );
   }
 
@@ -141,17 +152,17 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
     );
   }
 
-  Future<SubfoldersDeleteStatus> _resolveSubfoldersStatus(
+  Future<({SubfoldersDeleteStatus status, List<MailboxId> deletedSubfolderIds, Object? exception})> _resolveSubfoldersStatus(
     Session session,
     AccountId accountId,
     List<MailboxId> childIds,
   ) async {
-    if (childIds.isEmpty) return SubfoldersDeleteStatus.none;
+    if (childIds.isEmpty) return (status: SubfoldersDeleteStatus.none, deletedSubfolderIds: <MailboxId>[], exception: null);
     final result = await _deleteSubfolders(session, accountId, childIds);
     return switch (result) {
-      _SubfoldersAllDeleted() => SubfoldersDeleteStatus.allDeleted,
-      _SubfoldersSomeDeleted() => SubfoldersDeleteStatus.someDeleted,
-      _SubfoldersDeleteFailed() => SubfoldersDeleteStatus.failed,
+      _SubfoldersAllDeleted(:final deletedIds) => (status: SubfoldersDeleteStatus.allDeleted, deletedSubfolderIds: deletedIds, exception: null),
+      _SubfoldersSomeDeleted(:final deletedIds) => (status: SubfoldersDeleteStatus.someDeleted, deletedSubfolderIds: deletedIds, exception: null),
+      _SubfoldersDeleteFailed(:final exception) => (status: SubfoldersDeleteStatus.failed, deletedSubfolderIds: <MailboxId>[], exception: exception),
     };
   }
 
@@ -247,10 +258,10 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
         ),
         (success) {
           if (success is DeleteMultipleMailboxAllSuccess) {
-            return _SubfoldersAllDeleted();
+            return _SubfoldersAllDeleted(deletedIds: success.listMailboxIdDeleted);
           }
           if (success is DeleteMultipleMailboxHasSomeSuccess) {
-            return _SubfoldersSomeDeleted();
+            return _SubfoldersSomeDeleted(deletedIds: success.listMailboxIdDeleted);
           }
           return _SubfoldersDeleteFailed();
         },

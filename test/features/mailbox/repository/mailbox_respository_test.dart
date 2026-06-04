@@ -1,5 +1,9 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -225,6 +229,90 @@ void main() {
           state: StateFixtures.newMailboxState
         ))
       );
+    });
+  });
+
+  group('[deleteMultipleMailbox] method test', () {
+    final mailboxIdA = MailboxId(Id('A'));
+    final mailboxIdB = MailboxId(Id('B'));
+    final mailboxIdC = MailboxId(Id('C'));
+
+    setUp(() {
+      mailboxDataSource = MockMailboxDataSource();
+      mailboxCacheDataSourceImpl = MockMailboxCacheDataSourceImpl();
+      stateDataSource = MockStateDataSource();
+      mailboxRepository = MailboxRepositoryImpl(
+        {
+          DataSourceType.network: mailboxDataSource,
+          DataSourceType.local: mailboxCacheDataSourceImpl,
+        },
+        stateDataSource,
+      );
+    });
+
+    test(
+      'SHOULD call local update with all IDs as destroyed \n'
+      'WHEN network returns an empty error map (all deleted)',
+    () async {
+      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]))
+        .thenAnswer((_) async => {});
+      when(mailboxCacheDataSourceImpl.update(accountIdFixture, userNameFixture, destroyed: anyNamed('destroyed')))
+        .thenAnswer((_) async {});
+
+      await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]);
+
+      verify(mailboxCacheDataSourceImpl.update(
+        accountIdFixture,
+        userNameFixture,
+        destroyed: [mailboxIdA, mailboxIdB],
+      )).called(1);
+    });
+
+    test(
+      'SHOULD call local update with only successfully deleted IDs \n'
+      'WHEN network returns a non-empty error map (partial failure)',
+    () async {
+      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB, mailboxIdC]))
+        .thenAnswer((_) async => {mailboxIdB.id: SetError(ErrorType('serverFail'))});
+      when(mailboxCacheDataSourceImpl.update(accountIdFixture, userNameFixture, destroyed: anyNamed('destroyed')))
+        .thenAnswer((_) async {});
+
+      await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB, mailboxIdC]);
+
+      verify(mailboxCacheDataSourceImpl.update(
+        accountIdFixture,
+        userNameFixture,
+        destroyed: [mailboxIdA, mailboxIdC],
+      )).called(1);
+    });
+
+    test(
+      'SHOULD return the original error map \n'
+      'WHEN local cache update throws',
+    () async {
+      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA]))
+        .thenAnswer((_) async => {});
+      when(mailboxCacheDataSourceImpl.update(accountIdFixture, userNameFixture, destroyed: anyNamed('destroyed')))
+        .thenThrow(Exception('cache error'));
+
+      final result = await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA]);
+
+      expect(result, isEmpty);
+    });
+
+    test(
+      'SHOULD NOT call local update \n'
+      'WHEN all IDs are in the network error map (all failed)',
+    () async {
+      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]))
+        .thenAnswer((_) async => {
+          mailboxIdA.id: SetError(ErrorType('serverFail')),
+          mailboxIdB.id: SetError(ErrorType('serverFail')),
+        });
+
+      await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]);
+
+      verifyNever(mailboxCacheDataSourceImpl.update(accountIdFixture, userNameFixture, destroyed: anyNamed('destroyed')));
     });
   });
 }
