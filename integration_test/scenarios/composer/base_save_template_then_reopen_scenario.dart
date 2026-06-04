@@ -1,8 +1,11 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
+import '../../utils/wait_for_condition.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -18,6 +21,18 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
       await robots.mailboxMenuRobot().pullToRefresh();
       await mobileBack($);
     }
+  }
+
+  @override
+  Future<void> waitForEmailListLoaded() async {
+    // Templates with content (inline images/attachments) load slowly on web.
+    // Wait for the controller's email list to populate instead of relying
+    // on the loading indicator widget which may disappear before the list
+    // is actually rendered.
+    await waitForCondition(
+      () => Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.isNotEmpty,
+      timeout: const Duration(seconds: 60),
+    );
   }
 
   @override

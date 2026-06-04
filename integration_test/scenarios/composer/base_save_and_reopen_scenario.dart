@@ -38,6 +38,13 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
 
   Future<void> onAfterComposerReopened() async {}
 
+  Future<void> waitForEmailListLoaded() async {
+    // Default: wait for loading indicator to disappear
+    await waitForCondition(
+      () => !$(find.bySemanticsLabel('Mail list loading icon')).exists,
+    );
+  }
+
   @override
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
@@ -71,8 +78,7 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
     }
     await mailboxMenuRobot.openFolderByName(folderDisplayName(appLocalizations));
 
-    // Wait for email list loading to complete
-    await waitForCondition(() => !$(find.bySemanticsLabel('Mail list loading icon')).exists);
+    await waitForEmailListLoaded();
 
     await waitForCondition(() => $(uniqueSubject).exists);
     await threadRobot.openEmailWithSubject(uniqueSubject);
