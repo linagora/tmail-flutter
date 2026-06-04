@@ -3481,22 +3481,22 @@ return B.eq8(A.bx(w,"\t",""))},
 dYN(d){var w,v=d.cx,u=v==null
 if(u)w=null
 else{w=v.ax
-w=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.jj(v,"trash")}if(w==null)if(u)v=null
+w=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.j0(v,"trash")}if(w==null)if(u)v=null
 else{v=v.d
 u=J.dv(v)
 v=u.m(v,$.hc())||u.m(v,$.hh())}else v=w
 return v===!0},
 eHh(d,e,f){var w,v
-if(!A.jj(d,f))return!1
+if(!A.j0(d,f))return!1
 w=d.c
 v=w!=null?e.j(0,w):null
 if(v==null)w=null
 else{w=v.ax
-w=!(w==null||w.m(0,new A.dN("Personal")))&&!A.j0(v)}return w===!0},
+w=!(w==null||w.m(0,new A.dN("Personal")))&&!A.j1(v)}return w===!0},
 dYU(d){var w=d.b
 return(w==null?null:w.a)==="outbox"||J.v(d.d,$.aFO())},
 b2T(d){var w=d.ax,v=!0
-if(!((w==null||w.m(0,new A.dN("Personal")))&&J.v(d.d,$.i8())||A.jj(d,"trash")))if(!A.Bs(d)){w=d.d
+if(!((w==null||w.m(0,new A.dN("Personal")))&&J.v(d.d,$.i8())||A.j0(d,"trash")))if(!A.Bs(d)){w=d.d
 v=J.dv(w)
 w=v.m(w,$.hc())||v.m(w,$.hh())}else w=v
 else w=v
@@ -3829,13 +3829,13 @@ if(A.Q(d,i,x.w).w.a.gbq()<60)return C.y
 w=j.a
 v=w.f
 u=v/2
-t=A.j8(new A.bf(u,u))
+t=A.j9(new A.bf(u,u))
 s=j.d
 r=s?w.e:v
-q=A.j8(new A.bf(u,u))
-p=A.j8(new A.bf(u,u))
+q=A.j9(new A.bf(u,u))
+p=A.j9(new A.bf(u,u))
 o=w.c
-u=A.j8(new A.bf(u,u))
+u=A.j9(new A.bf(u,u))
 n=w.as
 m=s?C.qd:C.aT
 s=s?10:16
@@ -6087,7 +6087,7 @@ t(d){return A.b2t(!1,A.eM(new B.c0_(this)),new B.c00(this),x.K)},
 gRM(){var w,v=this.r,u=v==null
 if(u)w=null
 else{w=v.ax
-w=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.jj(v,"trash")}if(w!==!0){if(u)v=null
+w=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.j0(v,"trash")}if(w!==!0){if(u)v=null
 else{v=v.d
 u=J.dv(v)
 v=u.m(v,$.hc())||u.m(v,$.hh())}v=v===!0}else v=!0
@@ -7524,7 +7524,7 @@ B.azn.prototype={
 t(d){return A.aP5(new B.dkH(this,d),null,new B.dkI(this),null,null,x.e)},
 bdP(d){var w,v,u,t,s=this,r=null,q=$.va().j(0,"flutterCanvasKit")==null?s.gbBF():r,p=A.eV(8),o=s.aY9(d),n=A.e_9(d,s.e),m=s.a.c,l=m.as
 if((l==null?r:l.length!==0)!==!0){l=m.ax
-m=!(l==null||l.m(0,new A.dN("Personal")))&&!A.j0(m)}else m=!0
+m=!(l==null||l.m(0,new A.dN("Personal")))&&!A.j1(m)}else m=!0
 m=m?C.E:C.o
 l=s.a.c
 if(!A.t6(l)){l=l.d
@@ -7545,7 +7545,7 @@ if(v!==0)w.w.$1(w.c)},
 byL(){var w=this.a.c,v=w.as,u=v==null
 if((u?null:v.length!==0)===!0){w=u?"":v
 return A.yQ(w,$.aQ().bf(C.a_,11,C.C))}else{v=w.ax
-if(!(v==null||v.m(0,new A.dN("Personal")))&&!A.j0(w))return A.yQ(A.Fv(this.a.c),$.aQ().bf(C.a_,11,C.C))
+if(!(v==null||v.m(0,new A.dN("Personal")))&&!A.j1(w))return A.yQ(A.Fv(this.a.c),$.aQ().bf(C.a_,11,C.C))
 else return C.y}},
 bdS(d){var w,v,u=this,t=null,s=u.a.x.length
 if(s!==0){s=u.f
@@ -8047,7 +8047,7 @@ else return null}},
 gRM(){var w,v=this.a.e
 if(v==null)v=null
 else{w=v.ax
-v=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.jj(v,"trash")}w=!0
+v=(w==null||w.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.j0(v,"trash")}w=!0
 if(v!==!0){v=this.a.e
 if((v==null?null:A.Bs(v))!==!0){v=this.a.e
 if(v==null)v=null
@@ -8164,7 +8164,7 @@ v.a.toString
 if(u<=50)if(v.c!=null)v.X(new B.ds8(v))}},
 t(d){var w=null,v=this.d,u=this.a
 u.toString
-return new A.e4(C.oC,w,w,A.dKF(A.Dj(!0,A.cq(!1,A.j8(new A.bf(32,32)),!0,A.ces(u.y,new A.ba(C.du,w,w,A.j8(new A.bf(32,32)),w,w,w,C.B),C.bj),w,!0,w,w,w,w,w,w,w,w,w,w,w,u.d,w,w,w,w,w,w,w),w,w,5,w,C.eu),!1,!1,!1,!1,v),w)}}
+return new A.e4(C.oC,w,w,A.dKF(A.Dj(!0,A.cq(!1,A.j9(new A.bf(32,32)),!0,A.ces(u.y,new A.ba(C.du,w,w,A.j9(new A.bf(32,32)),w,w,w,C.B),C.bj),w,!0,w,w,w,w,w,w,w,w,w,w,w,u.d,w,w,w,w,w,w,w),w,w,5,w,C.eu),!1,!1,!1,!1,v),w)}}
 B.a8o.prototype={
 t(d){return this.c.bj(0,new B.cYO(),new B.cYP())}}
 B.aw6.prototype={
@@ -8656,7 +8656,7 @@ B.cjm.prototype={
 $1(d){var w=A.jV(d,this.a),v=w==null
 if((v?null:J.v(w.d,$.zB()))!==!0){if(v)v=null
 else{v=w.ax
-v=!(v==null||v.m(0,new A.dN("Personal")))&&A.j0(w)}v=v!==!0}else v=!1
+v=!(v==null||v.m(0,new A.dN("Personal")))&&A.j1(w)}v=v!==!0}else v=!1
 return v},
 $S:25}
 B.cjp.prototype={
@@ -9719,7 +9719,7 @@ t=A.r(t).h("W.S").a(s.a.get(t))
 s=d.a
 A.x("MailboxController::emptyMailboxAction:presentationMailbox: "+A.e(s.b),u,u,C.h,u,!1)
 w=s.ax
-if((w==null||w.m(0,new A.dN("Personal")))&&J.v(s.d,$.i8())||A.jj(s,"trash"))t.ai.SR(s)
+if((w==null||w.m(0,new A.dN("Personal")))&&J.v(s.d,$.i8())||A.j0(s,"trash"))t.ai.SR(s)
 else{w=s.d
 v=J.dv(w)
 if(v.m(w,$.hc())||v.m(w,$.hh()))t.ai.SP(s.a,A.lD(s))}return u},
@@ -10207,7 +10207,7 @@ t=this.b
 s=v!=null
 r=!1
 if(s){q=v.ax
-if(!((q==null||q.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.jj(v,"trash")))if(A.jj(v,"trash")){q=v.y
+if(!((q==null||q.m(0,new A.dN("Personal")))&&J.v(v.d,$.i8())||A.j0(v,"trash")))if(A.j0(v,"trash")){q=v.y
 q=(q==null?n:q.c)===!0}else q=!1
 else q=!0
 if(q){if(u.aHm(v))if(u.I.a9.gi(0).a!==C.e0)u=A.Q(t,C.w,x.w).w.a.a>=1200
@@ -10369,7 +10369,7 @@ u=w.a(p.get(q)).cD
 t=!1
 if(u.gi(0)!=null){s=u.gi(0)
 r=s.ax
-if(!((r==null||r.m(0,new A.dN("Personal")))&&J.v(s.d,$.i8())||A.jj(s,"trash"))){s=u.gi(0).d
+if(!((r==null||r.m(0,new A.dN("Personal")))&&J.v(s.d,$.i8())||A.j0(s,"trash"))){s=u.gi(0).d
 r=J.dv(s)
 s=r.m(s,$.hc())||r.m(s,$.hh())}else s=!0
 if(s){u=u.gi(0)
@@ -11975,7 +11975,7 @@ t=this.b
 s=u!=null
 r=!1
 if(s){q=u.ax
-if(!((q==null||q.m(0,new A.dN("Personal")))&&J.v(u.d,$.i8())||A.jj(u,"trash")))if(A.jj(u,"trash")){q=u.y
+if(!((q==null||q.m(0,new A.dN("Personal")))&&J.v(u.d,$.i8())||A.j0(u,"trash")))if(A.j0(u,"trash")){q=u.y
 q=(q==null?n:q.c)===!0}else q=!1
 else q=!0
 if(q){if(v.aHm(u))if(v.I.a9.gi(0).a!==C.e0){q=A.Q(t,C.w,x.w).w
@@ -12049,7 +12049,7 @@ A.y(r)
 u=w.a(q.get(r)).aF$.cD.gi(0)
 if(u==null)u=s
 else{t=u.ax
-u=(t==null||t.m(0,new A.dN("Personal")))&&J.v(u.d,$.i8())||A.jj(u,"trash")}A.y(r)
+u=(t==null||t.m(0,new A.dN("Personal")))&&J.v(u.d,$.i8())||A.j0(u,"trash")}A.y(r)
 t=w.a(q.get(r)).aF$.e1.gi(0)
 A.y(r)
 if(w.a(q.get(r)).aF$.I.a9.gi(0).a!==C.e0&&!v&&u!==!0&&t!==C.aY){A.y(r)
@@ -12521,7 +12521,7 @@ B.c6R.prototype={
 $1(d){var w,v=this.a.aN.ey.j(0,d)
 if(v==null)v=null
 else{w=v.ax
-v=!(w==null||w.m(0,new A.dN("Personal")))&&A.j0(v)}return v===!0},
+v=!(w==null||w.m(0,new A.dN("Personal")))&&A.j1(v)}return v===!0},
 $S:403}
 B.c6P.prototype={
 $1(d){var w=d.c
@@ -13140,7 +13140,7 @@ A.Hc(b.typeUniverse,JSON.parse('{"arM":{"ai":[],"j":[],"p":[]},"aBI":{"af":["arM
 A.e3A(b.typeUniverse,JSON.parse('{"aaQ":3,"aER":3,"afE":1,"a3t":1,"aap":1,"azm":1,"aaV":1,"aAJ":1,"aFo":2,"aFm":5,"aFp":1,"aFq":1,"awr":1,"Ts":1,"aA8":1,"aA9":1,"OE":1,"axn":1,"axo":1}'))
 var y={q:"::handleMailSearchListShortcutAction: \ud83d\udd25 Shortcut triggered: ",a:"::onKeyDownEventAction:\ud83d\udd25Shortcut triggered: ",F:"All messages in Spam will be deleted if you reach limited storage.",b:"MailboxDashBoardController::dispatchAction(): ",s:"MailboxDashBoardController::dispatchEmailUIAction():newAction: ",x:"MailboxDashBoardController::dispatchMailboxUIAction():newAction: ",d:'Using "ref" when a widget is about to or has been unmounted is unsafe.\nRef relies on BuildContext, and BuildContext is unsafe to use when the widget is deactivated.\nTo safely refer to the state of providers inside State.dispose(), save the provider state in a field of your State class.'}
 var x=(function rtii(){var w=A.ao
-return{gS:w("tF<vk<ht,ht>,ht,Y?,Y?>"),bb:w("XC<iS<is>,is,c_<is>>"),h4:w("ro<S<is>>"),bM:w("ro<c_<is>>"),fm:w("Ht<ht,ht>"),g_:w("XE<is>"),h9:w("xg"),G:w("dl<aq>"),J:w("lZ"),I:w("Yl"),dD:w("iS<is>"),bn:w("ej"),h2:w("ND"),k:w("as"),ah:w("jq"),ai:w("Od"),ek:w("kU"),Q:w("qm"),av:w("Du"),g:w("k9"),fP:w("po<h>"),fW:w("It"),bp:w("tV"),i:w("ea<au,a3>"),t:w("by"),cc:w("hr"),d:w("hs"),du:w("E1"),c0:w("is"),bv:w("ht"),bi:w("Q8"),g8:w("aR"),m:w("S<ea<au,a3>?>"),bq:w("S<~>"),y:w("u6<af<ai>>"),q:w("vP"),_:w("N<ej>"),V:w("N<c7>"),dg:w("N<n0>"),b:w("N<dD>"),fv:w("N<by>"),a:w("N<hP>"),o:w("N<lx>"),c:w("N<vG>"),h:w("N<kv>"),gD:w("N<S<F<Y?>?>>"),R:w("N<pD>"),gu:w("N<cU>"),bP:w("N<cI>"),f:w("N<Y>"),d2:w("N<t9<Y?>>"),aT:w("N<t8<Y?>>"),f1:w("N<ih>"),a1:w("N<wl>"),s:w("N<h>"),bL:w("N<pS>"),p:w("N<j>"),aP:w("hm"),u:w("cU"),C:w("bu<af<ai>>"),r:w("ae<au,a3>"),cv:w("H<bU>"),e:w("H<c6>"),A:w("vY"),aC:w("cI"),cl:w("E<dD,tQ>"),eb:w("E<dD,we>"),bx:w("E<hP,Oz>"),as:w("E<hs,OC>"),bz:w("E<kv,Ow>"),cz:w("E<hP,ki<@>>"),fB:w("E<hs,iV<hs>>"),dh:w("E<hs,ki<@>>"),dX:w("E<kv,ki<@>>"),g4:w("bE"),w:w("oM"),bG:w("el<n0>"),eM:w("el<dD>"),dZ:w("el<cI>"),hc:w("el<h>"),T:w("fp<o5>"),P:w("b0"),K:w("Y"),X:w("t4<h>"),D:w("qO"),fr:w("h7"),n:w("c6"),dz:w("yi<Y?>"),c9:w("t8<Y?>"),W:w("a5l<@,@,@>"),a7:w("FB"),cK:w("ih"),aD:w("+deletedSubfolderIds,exception,status(H<cI>,Y?,Vo)"),N:w("aq8"),aL:w("eI3"),h8:w("KO<xY>"),dO:w("KO<lE>"),eU:w("U_"),fC:w("FM"),bs:w("KU"),L:w("KV<ja<fi>>"),x:w("Uc"),d8:w("ii<Y?>"),v:w("V<au,a3>"),Z:w("UA"),ck:w("BY"),S:w("BZ"),Y:w("a7r"),fZ:w("aty"),gY:w("ci<hs>"),bk:w("ci<cz<h>>"),g9:w("ci<K>"),bA:w("Z"),aw:w("h"),bK:w("pS"),cm:w("jF"),gR:w("Gs"),az:w("yW"),dJ:w("bF<C>"),e7:w("bF<aq>"),gI:w("LP<@,@,@>"),ay:w("lc"),O:w("aV<h>"),fi:w("aV<bU?>"),h0:w("cR<B>"),d_:w("bG<B>"),gA:w("cW<c6>"),j:w("j"),fA:w("e1N"),M:w("cr<B>"),dI:w("cr<aq>"),aB:w("ho<is>"),fd:w("bb<h>"),U:w("Me"),gi:w("WE"),eQ:w("ay5"),gv:w("aE<h>"),l:w("Mt"),cA:w("X9<@,@,@>"),gj:w("Ha"),an:w("q8<ea<au,a3>>"),ac:w("abM"),cJ:w("B"),z:w("@"),E:w("K"),F:w("ea<au,a3>?"),a9:w("F<Y?>?"),fG:w("cI?"),dy:w("ac<h,@>?"),B:w("a7?"),aQ:w("KT?"),cC:w("rg<S<is>>?"),aq:w("rg<c_<is>>?"),aA:w("abM?"),H:w("~"),ge:w("~()")}})();(function constants(){var w=a.makeConstList
+return{gS:w("tF<vk<ht,ht>,ht,Y?,Y?>"),bb:w("XC<iS<is>,is,c_<is>>"),h4:w("ro<S<is>>"),bM:w("ro<c_<is>>"),fm:w("Ht<ht,ht>"),g_:w("XE<is>"),h9:w("xg"),G:w("dl<aq>"),J:w("lZ"),I:w("Yl"),dD:w("iS<is>"),bn:w("ej"),h2:w("ND"),k:w("as"),ah:w("jq"),ai:w("Od"),ek:w("kU"),Q:w("qm"),av:w("Du"),g:w("k9"),fP:w("po<h>"),fW:w("It"),bp:w("tV"),i:w("ea<au,a3>"),t:w("by"),cc:w("hr"),d:w("hs"),du:w("E1"),c0:w("is"),bv:w("ht"),bi:w("Q8"),g8:w("aR"),m:w("S<ea<au,a3>?>"),bq:w("S<~>"),y:w("u6<af<ai>>"),q:w("vP"),_:w("N<ej>"),V:w("N<c7>"),dg:w("N<n0>"),b:w("N<dD>"),fv:w("N<by>"),a:w("N<hP>"),o:w("N<lx>"),c:w("N<vG>"),h:w("N<kv>"),gD:w("N<S<F<Y?>?>>"),R:w("N<pD>"),gu:w("N<cU>"),bP:w("N<cI>"),f:w("N<Y>"),d2:w("N<t9<Y?>>"),aT:w("N<t8<Y?>>"),f1:w("N<ih>"),a1:w("N<wl>"),s:w("N<h>"),bL:w("N<pS>"),p:w("N<j>"),aP:w("hm"),u:w("cU"),C:w("bu<af<ai>>"),r:w("ae<au,a3>"),cv:w("H<bU>"),e:w("H<c6>"),A:w("vY"),aC:w("cI"),cl:w("E<dD,tQ>"),eb:w("E<dD,we>"),bx:w("E<hP,Oz>"),as:w("E<hs,OC>"),bz:w("E<kv,Ow>"),cz:w("E<hP,ki<@>>"),fB:w("E<hs,iV<hs>>"),dh:w("E<hs,ki<@>>"),dX:w("E<kv,ki<@>>"),g4:w("bE"),w:w("oM"),bG:w("el<n0>"),eM:w("el<dD>"),dZ:w("el<cI>"),hc:w("el<h>"),T:w("fp<o5>"),P:w("b0"),K:w("Y"),X:w("t4<h>"),D:w("qO"),fr:w("h7"),n:w("c6"),dz:w("yi<Y?>"),c9:w("t8<Y?>"),W:w("a5l<@,@,@>"),a7:w("FB"),cK:w("ih"),aD:w("+deletedSubfolderIds,exception,status(H<cI>,Y?,Vo)"),N:w("aq8"),aL:w("eI3"),h8:w("KO<xY>"),dO:w("KO<lE>"),eU:w("U_"),fC:w("FM"),bs:w("KU"),L:w("KV<jb<fi>>"),x:w("Uc"),d8:w("ii<Y?>"),v:w("V<au,a3>"),Z:w("UA"),ck:w("BY"),S:w("BZ"),Y:w("a7r"),fZ:w("aty"),gY:w("ci<hs>"),bk:w("ci<cz<h>>"),g9:w("ci<K>"),bA:w("Z"),aw:w("h"),bK:w("pS"),cm:w("jF"),gR:w("Gs"),az:w("yW"),dJ:w("bF<C>"),e7:w("bF<aq>"),gI:w("LP<@,@,@>"),ay:w("lc"),O:w("aV<h>"),fi:w("aV<bU?>"),h0:w("cR<B>"),d_:w("bG<B>"),gA:w("cW<c6>"),j:w("j"),fA:w("e1N"),M:w("cr<B>"),dI:w("cr<aq>"),aB:w("ho<is>"),fd:w("bb<h>"),U:w("Me"),gi:w("WE"),eQ:w("ay5"),gv:w("aE<h>"),l:w("Mt"),cA:w("X9<@,@,@>"),gj:w("Ha"),an:w("q8<ea<au,a3>>"),ac:w("abM"),cJ:w("B"),z:w("@"),E:w("K"),F:w("ea<au,a3>?"),a9:w("F<Y?>?"),fG:w("cI?"),dy:w("ac<h,@>?"),B:w("a7?"),aQ:w("KT?"),cC:w("rg<S<is>>?"),aq:w("rg<c_<is>>?"),aA:w("abM?"),H:w("~"),ge:w("~()")}})();(function constants(){var w=a.makeConstList
 D.a7x=new B.aGB(null)
 D.lY=new B.Ya(C.cy,null,null,null)
 D.a7z=new B.Ya(C.iI,null,null,null)
@@ -13486,4 +13486,4 @@ w($,"flW","ebN",()=>A.wD(null,null).em(C.fO,14,1.4285714285714286,0))
 w($,"fmB","eca",()=>$.aQ().bf(C.ds,13,C.N))
 w($,"fkI","ebi",()=>A.ob(null,C.V,null))
 w($,"fkJ","ebj",()=>$.aQ().bf(C.n,21,C.b0))})()};
-(a=>{a["/fYPUHYFbIrwYFurxsNVpoEqvTs="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["GsBAWsf/QZP+TMwoRfvicEF6ujA="]=a.current})($__dart_deferred_initializers__);
