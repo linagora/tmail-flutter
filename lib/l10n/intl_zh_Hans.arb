@@ -5405,52 +5405,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  “addLabelToEmailSuccessfullyMessage”: “标签”{labelName}”已添加至邮件”,
-  "@addLabelToEmailSuccessfullyMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  “addLabelToEmailFailureMessage”: “无法将标签”{labelName}”添加至邮件”,
-  "@addLabelToEmailFailureMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  "addLabel": "添加标签",
-  "@addLabel": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  “addLabelToThreadSuccessfullyMessage”: “标签”{labelName}”已添加至线程中的所有邮件”,
-  "@addLabelToThreadSuccessfullyMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  “addLabelToThreadFailureMessage”: “无法将标签”{labelName}”添加至线程中的所有邮件”,
-  "@addLabelToThreadFailureMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
   "youDoNotHaveAnyEmailTaggedWithThis": "您没有使用此标签标记的邮件。",
   "@youDoNotHaveAnyEmailTaggedWithThis": {
     "type": "text",
@@ -5491,61 +5445,11 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  “removeLabelFromEmailSuccessfullyMessage”: “标签”{labelName}”已从邮件移除”,
-  "@removeLabelFromEmailSuccessfullyMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  “removeLabelFromEmailFailureMessage”: “无法从邮件移除标签”{labelName}””,
-  "@removeLabelFromEmailFailureMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  “removeLabelFromThreadSuccessfullyMessage”: “标签”{labelName}”已从线程中的所有邮件移除”,
-  "@removeLabelFromThreadSuccessfullyMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
-  “removeLabelFromThreadFailureMessage”: “无法从线程中的所有邮件移除标签”{labelName}””,
-  "@removeLabelFromThreadFailureMessage": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
-  },
   "deleteLabel": "删除标签",
   "@deleteLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "areYouSureYouWantToDeleteTheLabel": "是否确定要删除标签“{labelName}”？",
-  "@areYouSureYouWantToDeleteTheLabel": {
-    "type": "text",
-    "placeholders_order": [
-      "labelName"
-    ],
-    "placeholders": {
-      "labelName": {}
-    }
   },
   "deleteLabelSuccessfullyMessage": "您已成功删除 {labelName} 标签",
   "@deleteLabelSuccessfullyMessage": {
