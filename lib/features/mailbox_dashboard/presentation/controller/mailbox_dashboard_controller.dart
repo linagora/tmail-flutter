@@ -1889,11 +1889,7 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     final trashFolder = trashMailbox
-        ?? ((selectedMailbox.value?.isTrash == true ||
-                (selectedMailbox.value?.isTrashTeamMailbox == true &&
-                    selectedMailbox.value?.myRights?.mayRemoveItems == true))
-            ? selectedMailbox.value
-            : null)
+        ?? (selectedMailbox.value?.isEmptyableTrash == true ? selectedMailbox.value : null)
         ?? mapMailboxById[mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash]];
 
     if (trashFolder == null) {
@@ -2425,27 +2421,17 @@ class MailboxDashBoardController extends ReloadableController
       mailbox.countTotalEmails > 0 ||
       mapMailboxById.values.any((m) => m.parentId == mailbox.id);
 
-  bool isEmptyTrashBannerEnabledOnWeb(
-    BuildContext context,
-    PresentationMailbox? mailbox
-  ) {
-    return mailbox != null &&
-      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
+  bool _isEmptyTrashBannerEnabled(PresentationMailbox? mailbox) =>
+      mailbox != null &&
+      mailbox.isEmptyableTrash &&
       _trashHasContent(mailbox) &&
-      !searchController.isSearchActive() &&
-      responsiveUtils.isWebDesktop(context);
-  }
+      !searchController.isSearchActive();
 
-  bool isEmptyTrashBannerEnabledOnMobile(
-    BuildContext context,
-    PresentationMailbox? mailbox
-  ) {
-    return mailbox != null &&
-      (mailbox.isTrash || (mailbox.isTrashTeamMailbox && mailbox.myRights?.mayRemoveItems == true)) &&
-      _trashHasContent(mailbox) &&
-      !searchController.isSearchActive() &&
-      !responsiveUtils.isWebDesktop(context);
-  }
+  bool isEmptyTrashBannerEnabledOnWeb(BuildContext context, PresentationMailbox? mailbox) =>
+      _isEmptyTrashBannerEnabled(mailbox) && responsiveUtils.isWebDesktop(context);
+
+  bool isEmptyTrashBannerEnabledOnMobile(BuildContext context, PresentationMailbox? mailbox) =>
+      _isEmptyTrashBannerEnabled(mailbox) && !responsiveUtils.isWebDesktop(context);
 
   void emptyTrashAction() {
     dispatchAction(EmptyTrashAction());
