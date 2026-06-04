@@ -290,14 +290,22 @@ void main() {
       'SHOULD return the original error map \n'
       'WHEN local cache update throws',
     () async {
-      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA]))
-        .thenAnswer((_) async => {});
+      final networkErrors = {
+        mailboxIdB.id: SetError(ErrorType('serverFail')),
+      };
+      when(mailboxDataSource.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]))
+        .thenAnswer((_) async => networkErrors);
       when(mailboxCacheDataSourceImpl.update(accountIdFixture, userNameFixture, destroyed: anyNamed('destroyed')))
         .thenThrow(Exception('cache error'));
 
-      final result = await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA]);
+      final result = await mailboxRepository.deleteMultipleMailbox(sessionFixture, accountIdFixture, [mailboxIdA, mailboxIdB]);
 
-      expect(result, isEmpty);
+      expect(result, same(networkErrors));
+      verify(mailboxCacheDataSourceImpl.update(
+        accountIdFixture,
+        userNameFixture,
+        destroyed: [mailboxIdA],
+      )).called(1);
     });
 
     test(
