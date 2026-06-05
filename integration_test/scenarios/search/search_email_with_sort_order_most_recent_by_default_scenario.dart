@@ -33,14 +33,10 @@ class SearchEmailWithSortOrderMostRecentByDefaultScenario
 
     await searchRobot.enterKeyword(queryString);
     await searchRobot.tapOnShowAllResultsText();
-    await _expectSearchResultEmailListVisible();
+    await searchRobot.expectSearchResultEmailListVisible();
 
     await searchRobot.scrollToEndListSearchFilter();
     await _expectMostRecentSortOrderButtonVisible();
-  }
-
-  Future<void> _expectSearchResultEmailListVisible() async {
-    await expectViewVisible($(#search_email_list_notification_listener));
   }
 
   Future<void> _expectMostRecentSortOrderButtonVisible() async {

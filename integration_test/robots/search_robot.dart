@@ -31,13 +31,27 @@ class SearchRobot extends CoreRobot {
     );
   }
 
-  Future<void> openSortOrderBottomDialog() async {
+  Future<void> openSortOrderBottomDialog() => openSortOrderMenu();
+
+  Future<void> openSortOrderMenu() async {
     await $(#mobile_sortBy_search_filter_button).tap();
   }
 
   Future<void> selectSortOrder(String sortOrderName) async {
     await $(find.text(sortOrderName)).tap();
     await $.pump(const Duration(seconds: 2));
+  }
+
+  // Mobile: in-page suggestion ListView carries the #suggestion_search_list_view key.
+  // Web overrides this — suggestions live in a PointerInterceptor overlay with no key.
+  Future<void> expectSuggestionListVisible() async {
+    await $.waitUntilVisible($(#suggestion_search_list_view));
+  }
+
+  // Mobile: sortBy opens a bottom sheet keyed #sort_filter_context_menu.
+  // Web overrides this — sortBy opens a showMenu popup that has no container key.
+  Future<void> expectSortOrderMenuVisible() async {
+    await $.waitUntilVisible($(#sort_filter_context_menu));
   }
 
   Future<void> enterKeyword(String keyword) async {

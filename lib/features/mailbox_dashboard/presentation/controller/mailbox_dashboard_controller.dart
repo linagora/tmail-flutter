@@ -2358,7 +2358,12 @@ class MailboxDashBoardController extends ReloadableController
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
-    searchController.updateFilterEmail(sortOrderTypeOption: Some(sortOrder));
+    searchController.updateFilterEmail(
+      sortOrderTypeOption: Some(sortOrder),
+      beforeOption: const None(),
+      startDateOption: const None(),
+      positionOption: const None(),
+    );
     storeEmailSortOrder(sortOrder);
     dispatchAction(StartSearchEmailAction());
   }

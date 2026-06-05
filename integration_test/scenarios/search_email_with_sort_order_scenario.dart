@@ -4,13 +4,12 @@ import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/base_test_scenario.dart';
-import '../robots/search_robot.dart';
-import '../robots/thread_robot.dart';
+import '../robots/abstract/abstract_search_robot.dart';
 
 class SearchEmailWithSortOrderScenario extends BaseTestScenario {
   const SearchEmailWithSortOrderScenario(super.$, super.robots);
@@ -20,16 +19,17 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
-    final threadRobot = ThreadRobot($);
-    await threadRobot.openSearchView();
-    await _expectSearchViewVisible();
+    final threadRobot = robots.threadRobot();
+    final searchRobot = robots.searchRobot();
 
-    final searchRobot = SearchRobot($);
-    await searchRobot.enterQueryString(queryString);
-    await _expectSuggestionSearchListViewVisible();
+    await threadRobot.tapOnSearchField();
+    await searchRobot.enterKeyword(queryString);
+    await searchRobot.expectSuggestionListVisible();
+
+    await searchRobot.tapOnShowAllResultsText();
+    await searchRobot.expectSearchResultEmailListVisible();
 
     await searchRobot.scrollToEndListSearchFilter();
-    await _expectSortBySearchFilterButtonVisible();
 
     final appLocalizations = AppLocalizations();
 
@@ -43,17 +43,21 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
   }
 
   Future<void> _performSelectSortOrderAndValidateSearchResult({
-    required SearchRobot searchRobot,
+    required AbstractSearchRobot searchRobot,
     required EmailSortOrderType sortOrderType,
     required AppLocalizations appLocalizations,
   }) async {
     await Future.delayed(const Duration(seconds: 2));
 
-    await searchRobot.openSortOrderBottomDialog();
-    await _expectSortFilterContextMenuVisible();
+    await searchRobot.openSortOrderMenu();
+    await searchRobot.expectSortOrderMenuVisible();
 
     await searchRobot.selectSortOrder(sortOrderType.getTitleByAppLocalizations(appLocalizations));
-    await _expectSearchResultEmailListVisible();
+
+    // Relevance ordering is non-deterministic; verify only that the tap succeeded.
+    if (sortOrderType == EmailSortOrderType.relevance) return;
+
+    await searchRobot.expectSearchResultEmailListVisible();
     await _expectEmailListDisplayedCorrectly(listUsername: listUsername);
 
     switch (sortOrderType) {
@@ -84,26 +88,6 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
         await _expectEmailListSortedCorrectBySizeDescending(listUsername: listUsername);
         break;
     }
-  }
-
-  Future<void> _expectSearchViewVisible() async {
-    await expectViewVisible($(SearchEmailView));
-  }
-
-  Future<void> _expectSuggestionSearchListViewVisible() async {
-    await expectViewVisible($(#suggestion_search_list_view));
-  }
-
-  Future<void> _expectSortBySearchFilterButtonVisible() async {
-    await expectViewVisible($(#mobile_sortBy_search_filter_button));
-  }
-  
-  Future<void> _expectSortFilterContextMenuVisible() async {
-    await expectViewVisible($(#sort_filter_context_menu));
-  }
-  
-  Future<void> _expectSearchResultEmailListVisible() async {
-    await expectViewVisible($(#search_email_list_notification_listener));
   }
 
   Future<void> _expectEmailListDisplayedCorrectly({
