@@ -137,6 +137,36 @@ abstract final class HtmlEmailCorpus {
       '<td style="color: green; padding: 8px">Revenue +12%</td>'
       '</tr></table>';
 
+  // ─── Negative-margin float (GitLab-style heading anchors) ────────────────
+  /// Mirrors the exact pattern emitted by GitLab's markdown renderer:
+  /// empty anchor tags with `float: left; margin-left: -20px` are injected
+  /// before every heading for gutter deep-link navigation.
+  static const String htmlGitLabHeadingAnchors =
+      '<div class="md">'
+      '<h2>'
+      '<a aria-hidden="true" class="anchor"'
+      ' style="margin-top: 0; float: left; margin-left: -20px;'
+      ' text-decoration: none; outline: none;"></a>'
+      'Optimize fetch strategy'
+      '</h2>'
+      '<h3>'
+      '<a aria-hidden="true" class="anchor"'
+      ' style="margin-top: 0; float: left; margin-left: -20px;'
+      ' text-decoration: none; outline: none;"></a>'
+      'Summary'
+      '</h3>'
+      '<p>Body text here.</p>'
+      '</div>';
+
+  /// Floated image with a *positive* margin — must be left untouched by the
+  /// negative-margin-float transformer.
+  static const String htmlWithFloatLeftPositiveMargin =
+      '<p>'
+      '<img src="logo.png"'
+      ' style="float: left; margin-left: 10px; margin-right: 8px;">'
+      'Company logo beside this text.'
+      '</p>';
+
   // ─── Multi-language ────────────────────────────────────────────────────────
   static const String htmlRtlArabic =
       '<div dir="rtl"><p>مرحبا بالعالم</p><p>البريد الإلكتروني</p></div>';
