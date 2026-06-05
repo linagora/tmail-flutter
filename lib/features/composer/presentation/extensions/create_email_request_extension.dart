@@ -141,7 +141,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   ) {
     if (headers == null || headers.isEmpty) return null;
     return {
-      IndividualHeaderIdentifier.xLinkedFileHeader: headers,
+      IndividualHeaderIdentifier('header:X-LinkedFile:all:asText'): headers,
     };
   }
 
@@ -208,7 +208,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       priorityHeader: isMarkAsImportant
         ? {IndividualHeaderIdentifier.priorityHeader: MailPriorityHeader.urgentPriority}
         : null,
-      xLinkedFileHeader: _buildLinkedFileHeader(linkedFileHeaders),
+      additionalHeaders: _buildLinkedFileHeader(linkedFileHeaders),
     );
   }
 
