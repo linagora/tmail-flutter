@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+import '../utils/wait_for_condition.dart';
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
 import '../exceptions/mailbox/null_quota_exception.dart';
@@ -28,7 +29,12 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
     await $(mailboxItem).waitUntilExists();
     await $.scrollUntilVisible(finder: mailboxItem);
+    final previousMailboxId = Get.find<MailboxDashBoardController>().selectedMailbox.value?.id;
     await mailboxItem.tap();
+    await waitForCondition(
+      () => Get.find<MailboxDashBoardController>().selectedMailbox.value?.id != previousMailboxId,
+      timeout: const Duration(seconds: 10),
+    );
   }
 
   @override
