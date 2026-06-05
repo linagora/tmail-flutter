@@ -202,7 +202,7 @@ x=(x==null?d.e:x).a>0}else x=!1
 if(x){w=w.a
 x=d.d
 return w/(x==null?d.e:x).a}else return 0},
-dWO(d,e){if(B.aoH(d))return C.dM
+dWO(d,e){if(B.aoH(d))return C.dN
 else if(B.cBk(d))return C.kD
 else return e?D.agr:D.aik}},D
 J=c[1]
@@ -295,9 +295,9 @@ if(J.at(x.gi(0))>=3)return 240+D.tT.ghz()
 else if(J.at(x.gi(0))===2)return 160+D.tT.ghz()
 else return 80+D.tT.ghz()}}
 B.Jy.prototype={
-t(d){var x,w=this,v=null,u=y.p,t=A.c([new A.b4(226,v,A.ap(A.c([E.bDz(v,w.y),C.e3],u),C.o,v,C.l,C.z,0,v),v)],u)
+t(d){var x,w=this,v=null,u=y.p,t=A.c([new A.b4(226,v,A.ap(A.c([E.bDz(v,w.y),C.e4],u),C.o,v,C.l,C.z,0,v),v)],u)
 if(w.r!=null)t.push(A.aA(A.eN(new B.cuD(w)),1))
-else{u=A.c([C.e3],u)
+else{u=A.c([C.e4],u)
 x=w.f
 if((x==null?v:x.gTw())===!0){A.z(d,C.e,y.J).toString
 u.push(A.bK(C.t,v,20,v,v,v,"assets/images/ic_help.svg",C.da,v,v,C.cM,1/0,v,new B.cuE(w),v,A.u("Get help or report a bug",v,"getHelpOrReportABug",v,v),v))}if(w.w!=null)u.push(new A.au(new B.cuF(w),v))
@@ -432,7 +432,7 @@ B.cf2.prototype={
 $2(d,e){return this.a.d},
 $S:2238}
 B.d6w.prototype={
-$3(d,e,f){var x,w=null,v=this.a,u=v.gbKX(),t=A.d_(C.aQ,w,C.O,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,u,w,w,w,w,w,w,w,w,!1,C.a2),s=y.w,r=A.hb(d.av(s).r.f.gdP(0))?C.cV:C.kk
+$3(d,e,f){var x,w=null,v=this.a,u=v.gbKX(),t=A.d_(C.aQ,w,C.O,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,u,w,w,w,w,w,w,w,w,!1,C.a2),s=y.w,r=A.hb(d.av(s).r.f.gdP(0))?C.cW:C.kk
 r=A.bCq(r,C.r,A.hb(d.av(s).r.f.gdP(0))?C.kl:C.kj)
 v=v.a
 x=v.d
@@ -452,7 +452,7 @@ $1(d){return new B.MW(d,this.a.d,null)},
 $S:z+2}
 B.cuD.prototype={
 $2(d,e){var x,w=null,v=e.b,u=this.a
-v=A.c([new A.b4(Math.min(Math.max(v/2,576),v),52,u.r,w),C.e3],y.p)
+v=A.c([new A.b4(Math.min(Math.max(v/2,576),v),52,u.r,w),C.e4],y.p)
 x=u.f
 if((x==null?w:x.gTw())===!0){A.z(d,C.e,y.J).toString
 v.push(A.bK(C.t,w,20,w,w,w,"assets/images/ic_help.svg",C.da,w,w,C.cM,1/0,w,new B.cuB(u),w,A.u("Get help or report a bug",w,"getHelpOrReportABug",w,w),w))}if(u.w!=null)v.push(new A.au(new B.cuC(u),w))
@@ -485,14 +485,14 @@ if(!w.gac(w))return new B.Xz(x.c,w,D.ER)
 return C.y},
 $S:6}
 B.dmM.prototype={
-$3(d,e,f){var x,w,v=null,u=this.a,t=u.gbL0(),s=A.d_(C.aQ,v,C.O,!1,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,t,v,v,v,v,v,v,v,v,!1,C.a2),r=y.w,q=A.hb(d.av(r).r.f.gdP(0))?C.cV:C.kk
+$3(d,e,f){var x,w,v=null,u=this.a,t=u.gbL0(),s=A.d_(C.aQ,v,C.O,!1,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,t,v,v,v,v,v,v,v,v,!1,C.a2),r=y.w,q=A.hb(d.av(r).r.f.gdP(0))?C.cW:C.kk
 r=A.hb(d.av(r).r.f.gdP(0))?C.kl:C.kj
 x=u.a
 w=x.f
 r=A.bCq(q,new A.C(w?-16:0,8),r)
 q=x.c
 x=x.d
-if(w)w=A.bK(C.t,v,20,v,v,v,"assets/images/ic_setting.svg",C.V,v,v,C.dO,1/0,new B.dmJ(u),v,v,v,v)
+if(w)w=A.bK(C.t,v,20,v,v,v,"assets/images/ic_setting.svg",C.V,v,v,C.dP,1/0,new B.dmJ(u),v,v,v,v)
 else{w=new A.XH()
 w.c=q.length!==0?q[0].toUpperCase():""
 w.e=C.m
@@ -589,4 +589,4 @@ D.a65=new A.aU("listViewAppGrid",y.O)
 D.ER=new A.aU("toggleAppGridButton",y.O)
 D.a6c=new A.aU("userAvatar",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"faZ","e56",()=>A.c([A.XW(20,C.U,C.n.ao(0.15),C.r,0)],y.V))})()};
-(a=>{a["OnRnwKd5+y2uItbHh9aha9EUOQk="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["PR3d1iieUSs38dbV5FuhIj3HSvU="]=a.current})($__dart_deferred_initializers__);
