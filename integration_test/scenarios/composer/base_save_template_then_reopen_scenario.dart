@@ -25,12 +25,19 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
 
   @override
   Future<void> waitForEmailListLoaded() async {
-    // Templates with content (inline images/attachments) load slowly on web.
-    // Wait for the controller's email list to populate instead of relying
-    // on the loading indicator widget which may disappear before the list
-    // is actually rendered.
+    var elapsed = 0;
     await waitForCondition(
-      () => Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.isNotEmpty,
+      () {
+        final count = Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.length;
+        if (elapsed % 5 == 0) {
+          // ignore: avoid_print
+          print('⏳ waitForEmailListLoaded: emailsInCurrentMailbox.length=$count, '
+            'selectedMailbox=${Get.find<MailboxDashBoardController>().selectedMailbox.value?.name?.name}, '
+            'elapsed≈${elapsed * 200}ms');
+        }
+        elapsed++;
+        return count > 0;
+      },
       timeout: const Duration(seconds: 60),
     );
   }
