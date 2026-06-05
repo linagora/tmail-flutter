@@ -67,7 +67,7 @@ void main() {
           session,
           accountId,
           limit: anyNamed('limit'),
-          sort: sortOrderType?.getSortOrder().toNullable(),
+          sort: SearchEmailFilter(sortOrderType: sortOrderType).sortOrderType.getSortOrder().toNullable(),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
         )).called(1);
