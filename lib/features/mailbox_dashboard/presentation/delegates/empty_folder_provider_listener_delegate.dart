@@ -1,5 +1,4 @@
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +18,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/strategies
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/strategies/trash_folder_strategy.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/dashboard_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/map_mailbox_by_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/empty_folder_provider.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmptyFolderProviderListenerDelegate
@@ -76,9 +76,12 @@ class EmptyFolderProviderListenerDelegate
   ) {
     final session = dashboardController.sessionCurrent;
     final accountId = dashboardController.accountId.value;
-    if (session == null || accountId == null) return;
+    if (session == null || accountId == null) {
+      _showEmptyFolderFailureToast(context, ref);
+      return;
+    }
 
-    final childIds = dashboardController.childMailboxIds(mailbox);
+    final childIds = dashboardController.mapMailboxById.childMailboxIds(mailbox);
 
     final useJmapClear =
         CapabilityIdentifier.jmapMailboxClear.isSupported(session, accountId) &&
@@ -92,6 +95,7 @@ class EmptyFolderProviderListenerDelegate
       emptyFolderProvider(mailbox.id),
       (_, state) => _handleEmptyFolderStateChange(
         context,
+        ref,
         state,
         dashboardController,
       ),
@@ -104,6 +108,7 @@ class EmptyFolderProviderListenerDelegate
 
   void _handleEmptyFolderStateChange(
     BuildContext context,
+    WidgetRef ref,
     EmptyFolderState state,
     MailboxDashBoardController dashboardController,
   ) {
@@ -138,6 +143,7 @@ class EmptyFolderProviderListenerDelegate
         dashboardController.removeMailboxesFromMap(deletedSubfolderIds);
         _showEmptyFolderSuccessToast(
           context,
+          ref,
           subfoldersStatus: subfoldersStatus,
         );
         _handleUrgentException(subfoldersException, dashboardController);
@@ -148,7 +154,7 @@ class EmptyFolderProviderListenerDelegate
         _stateSubscription?.close();
         _stateSubscription = null;
         _resetProgress(dashboardController);
-        _showEmptyFolderFailureToast(context);
+        _showEmptyFolderFailureToast(context, ref);
         _handleUrgentException(exception, dashboardController);
 
       case EmptyFolderIdle():
@@ -190,34 +196,35 @@ class EmptyFolderProviderListenerDelegate
   }
 
   void _showEmptyFolderSuccessToast(
-    BuildContext context, {
+    BuildContext context,
+    WidgetRef ref, {
     required SubfoldersDeleteStatus subfoldersStatus,
   }) {
-    final appToast = getBinding<AppToast>();
+    final appToast = ref.read(appToastProvider);
     final l10n = AppLocalizations.of(context);
 
-    appToast?.showToastSuccessMessage(context, strategy.successMessage(l10n));
+    appToast.showToastSuccessMessage(context, strategy.successMessage(l10n));
 
     switch (subfoldersStatus) {
       case SubfoldersDeleteStatus.allDeleted:
         final message = strategy.subfoldersAllDeletedMessage(l10n);
         if (message != null) {
-          appToast?.showToastSuccessMessage(context, message);
+          appToast.showToastSuccessMessage(context, message);
         }
       case SubfoldersDeleteStatus.someDeleted:
         final message = strategy.subfoldersPartiallyDeletedMessage(l10n);
-        if (message != null) appToast?.showToastMessage(context, message);
+        if (message != null) appToast.showToastMessage(context, message);
       case SubfoldersDeleteStatus.failed:
         final message = strategy.subfoldersDeleteFailedMessage(l10n);
-        if (message != null) appToast?.showToastErrorMessage(context, message);
+        if (message != null) appToast.showToastErrorMessage(context, message);
       case SubfoldersDeleteStatus.none:
         break;
     }
   }
 
-  void _showEmptyFolderFailureToast(BuildContext context) {
+  void _showEmptyFolderFailureToast(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    getBinding<AppToast>()?.showToastErrorMessage(
+    ref.read(appToastProvider).showToastErrorMessage(
       context,
       strategy.failureMessage(l10n),
     );

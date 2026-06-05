@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
@@ -21,7 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/dialogs/empty_trash_confirmation_dialog.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -256,15 +257,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   );
 
                                 if (showTrashBanner && selectedMailbox != null) {
-                                  return EmptyTrashBannerWidget(
-                                    responsiveUtils: controller.responsiveUtils,
-                                    mailbox: selectedMailbox,
-                                    confirmCallback: controller.requestEmptyTrash,
-                                    margin: const EdgeInsetsDirectional.only(
-                                      bottom: 8,
-                                      end: 16,
-                                    ),
-                                  );
+                                  return _buildEmptyTrashBanner(selectedMailbox);
                                 } else if (showSpamBanner) {
                                   return CleanMessagesBanner(
                                     responsiveUtils: controller.responsiveUtils,
@@ -631,6 +624,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         return const SizedBox.shrink();
       }
     });
+  }
+
+  Widget _buildEmptyTrashBanner(PresentationMailbox mailbox) {
+    return EmptyTrashBannerWidget(
+      responsiveUtils: controller.responsiveUtils,
+      mailbox: mailbox,
+      confirmCallback: (ctx, mailbox) => EmptyTrashConfirmationDialog.show(
+        ctx,
+        responsiveUtils: controller.responsiveUtils,
+        onConfirm: () => controller.emptyTrashFolderAction(trashMailbox: mailbox),
+      ),
+      margin: const EdgeInsetsDirectional.only(bottom: 8, end: 16),
+    );
   }
 
   Widget _buildVacationNotificationMessage(BuildContext context) {
