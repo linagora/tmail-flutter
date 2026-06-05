@@ -3,17 +3,21 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
+import 'package:drive_attachment/drive_attachment/presentation/provider/workplace_fqdn_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
+import 'package:drive_attachment/drive_attachment/presentation/widget/drive_attachment_picker_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class BottomBarComposerWidget extends StatelessWidget {
 
+  final String composerId;
   final ImagePaths imagePaths;
   final bool isCodeViewEnabled;
   final bool isEmailChanged;
@@ -33,12 +37,12 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
-  final Widget? driveAttachmentButton;
   final OnMenuChanged? onPopupMenuChanged;
   final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
   const BottomBarComposerWidget({
     super.key,
+    required this.composerId,
     required this.imagePaths,
     required this.isCodeViewEnabled,
     required this.isEmailChanged,
@@ -58,7 +62,6 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
-    this.driveAttachmentButton,
     this.onPopupMenuChanged,
     this.onOpenAiAssistantModal,
   });
@@ -101,10 +104,26 @@ class BottomBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
-          if (driveAttachmentButton != null) ...[
-            const SizedBox(width: BottomBarComposerWidgetStyle.space),
-            driveAttachmentButton!,
-          ],
+          Consumer(
+            builder: (_, ref, __) {
+              final fqdn = ref.watch(workplaceFqdnProvider);
+              if (fqdn == null || fqdn.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  start: BottomBarComposerWidgetStyle.space,
+                ),
+                child: DriveAttachmentPickerButton(
+                  composerId: composerId,
+                  imagePaths: imagePaths,
+                  tooltipLabel: AppLocalizations.of(context).browse,
+                  iconColor: BottomBarComposerWidgetStyle.iconColor,
+                  iconSize: BottomBarComposerWidgetStyle.iconSize,
+                  borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                  padding: BottomBarComposerWidgetStyle.iconPadding,
+                ),
+              );
+            },
+          ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           AbsorbPointer(
             absorbing: isCodeViewEnabled,

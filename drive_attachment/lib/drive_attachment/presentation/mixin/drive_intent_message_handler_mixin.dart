@@ -41,14 +41,17 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
       case DriveIntentReadyMessage():
         _cancelTimeout();
         sendAck();
+        break;
       case DriveIntentDoneMessage():
         closeModal(msg.documents);
+        break;
       case DriveIntentErrorMessage():
-        closeModal(null);
       case DriveIntentCancelMessage():
         closeModal(null);
+        break;
       case DriveIntentUnknownMessage():
         log('driveIntent: unknown message type ${msg.type}, discarded');
+        break;
     }
   }
 

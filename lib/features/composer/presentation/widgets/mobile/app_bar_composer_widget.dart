@@ -1,22 +1,25 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:drive_attachment/drive_attachment/presentation/provider/workplace_fqdn_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
+import 'package:drive_attachment/drive_attachment/presentation/widget/drive_attachment_picker_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenContextMenuAction = Function(RelativeRect position);
 
 class AppBarComposerWidget extends StatelessWidget {
 
+  final String composerId;
   final ImagePaths imagePaths;
   final bool isSendButtonEnabled;
   final bool isNetworkConnectionAvailable;
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
   final VoidCallback? attachFileAction;
-  final Widget? driveAttachmentButton;
   final VoidCallback? insertImageAction;
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
@@ -24,6 +27,7 @@ class AppBarComposerWidget extends StatelessWidget {
 
   const AppBarComposerWidget({
     super.key,
+    required this.composerId,
     required this.imagePaths,
     required this.isSendButtonEnabled,
     required this.onCloseViewAction,
@@ -32,7 +36,6 @@ class AppBarComposerWidget extends StatelessWidget {
     required this.openRichToolbarAction,
     this.isNetworkConnectionAvailable = false,
     this.attachFileAction,
-    this.driveAttachmentButton,
     this.insertImageAction,
     this.onOpenAiAssistantModal,
   });
@@ -84,10 +87,24 @@ class AppBarComposerWidget extends StatelessWidget {
                 tooltipMessage: AppLocalizations.of(context).attach_file,
                 onTapActionCallback: attachFileAction,
               ),
-              if (driveAttachmentButton != null) ...[
-                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-                driveAttachmentButton!,
-              ],
+              Consumer(
+                builder: (_, ref, __) {
+                  final fqdn = ref.watch(workplaceFqdnProvider);
+                  if (fqdn == null || fqdn.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsetsDirectional.only(
+                      start: MobileAppBarComposerWidgetStyle.space,
+                    ),
+                    child: DriveAttachmentPickerButton(
+                      composerId: composerId,
+                      imagePaths: imagePaths,
+                      tooltipLabel: AppLocalizations.of(context).browse,
+                      iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                      iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                    ),
+                  );
+                },
+              ),
               const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               TMailButtonWidget.fromIcon(
                 icon: imagePaths.icInsertImage,

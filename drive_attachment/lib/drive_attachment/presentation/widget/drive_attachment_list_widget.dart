@@ -11,7 +11,7 @@ class DriveAttachmentListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final attachments = ref
-        .watch(driveAttachmentNotifierProvider(composerId))
+        .watch(driveAttachmentProvider(composerId))
         .attachments;
     if (attachments.isEmpty) return const SizedBox.shrink();
     return Padding(
@@ -23,7 +23,7 @@ class DriveAttachmentListWidget extends ConsumerWidget {
             .map((a) => DriveAttachmentChip(
                   attachment: a,
                   onRemove: () => ref
-                      .read(driveAttachmentNotifierProvider(composerId).notifier)
+                      .read(driveAttachmentProvider(composerId).notifier)
                       .remove(a),
                 ))
             .toList(),

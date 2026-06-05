@@ -1,9 +1,12 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:drive_attachment/drive_attachment/presentation/provider/drive_attachment_providers.dart';
 import 'package:drive_attachment/drive_attachment/presentation/provider/workplace_fqdn_notifier.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class DriveAccessTokenNotifier extends AsyncNotifier<String?> {
+part 'drive_access_token_notifier.g.dart';
+
+@riverpod
+class DriveAccessTokenNotifier extends _$DriveAccessTokenNotifier {
   @override
   Future<String?> build() async {
     final fqdn = ref.watch(workplaceFqdnProvider);
@@ -15,15 +18,10 @@ class DriveAccessTokenNotifier extends AsyncNotifier<String?> {
     try {
       return await ref.read(driveAttachmentRepositoryProvider).exchangeToken(platformUrl, oidcIdToken);
     } catch (e) {
-      log('DriveAccessTokenNotifier: token exchange failed: $e');
+      logError('DriveAccessTokenNotifier: token exchange failed: $e');
       return null;
     }
   }
 
   void onUnauthorized() => ref.invalidateSelf();
 }
-
-final driveAccessTokenProvider =
-    AsyncNotifierProvider<DriveAccessTokenNotifier, String?>(
-  DriveAccessTokenNotifier.new,
-);

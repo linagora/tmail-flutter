@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:drive_attachment/drive_attachment/data/datasource/drive_attachment_datasource.dart';
+import 'package:drive_attachment/drive_attachment/data/model/drive_intent_enums.dart';
+import 'package:drive_attachment/drive_attachment/data/model/drive_intent_request.dart';
 import 'package:drive_attachment/drive_attachment/data/model/drive_intent_response.dart';
 import 'package:drive_attachment/drive_attachment/domain/entity/drive_intent.dart';
 
@@ -17,18 +21,22 @@ class DriveAttachmentDataSourceImpl implements DriveAttachmentDataSource {
         headers: {'Authorization': 'Bearer $accessToken'},
         extra: {'withCredentials': true},
       ),
-      data: {
-        'data': {
-          'type': 'io.cozy.intents',
-          'attributes': {
-            'action': 'PICK',
-            'type': 'io.cozy.files',
-            'permissions': ['GET'],
-          },
-        },
-      },
+      data: const DriveIntentRequest(
+        data: DriveIntentDataRequest(
+          type: 'io.cozy.intents',
+          attributes: DriveIntentAttributesRequest(
+            action: DriveIntentAction.pick,
+            type: 'io.cozy.files',
+            permissions: [DriveIntentPermission.get],
+          ),
+        ),
+      ).toJson(),
     );
-    final parsed = DriveIntentResponse.fromJson(response.data as Map<String, dynamic>);
+    final parsed = DriveIntentResponse.fromJson(
+      response.data is Map<String, dynamic>
+          ? response.data
+          : jsonDecode(response.data),
+    );
     final intentId = parsed.data.id;
     final href = parsed.data.attributes.services.first.href;
     final intentUrl = Uri.parse(href);

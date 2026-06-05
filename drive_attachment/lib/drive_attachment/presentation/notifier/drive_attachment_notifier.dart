@@ -5,16 +5,16 @@ import 'package:drive_attachment/drive_attachment/domain/state/drive_intent_stat
 import 'package:drive_attachment/drive_attachment/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:drive_attachment/drive_attachment/presentation/notifier/drive_attachment_state.dart';
 import 'package:drive_attachment/drive_attachment/presentation/provider/drive_attachment_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class DriveAttachmentNotifier extends Notifier<DriveAttachmentState> {
-  final String composerId;
+part 'drive_attachment_notifier.g.dart';
+
+@riverpod
+class DriveAttachmentNotifier extends _$DriveAttachmentNotifier {
   late CreateDriveIntentInteractor _createIntentInteractor;
 
-  DriveAttachmentNotifier(this.composerId);
-
   @override
-  DriveAttachmentState build() {
+  DriveAttachmentState build(String composerId) {
     _createIntentInteractor = ref.read(createDriveIntentInteractorProvider);
     return const DriveAttachmentIdle();
   }
@@ -73,8 +73,3 @@ class DriveAttachmentNotifier extends Notifier<DriveAttachmentState> {
     state = const DriveAttachmentIdle();
   }
 }
-
-final driveAttachmentNotifierProvider = NotifierProvider.family<
-    DriveAttachmentNotifier, DriveAttachmentState, String>(
-  (composerId) => DriveAttachmentNotifier(composerId),
-);

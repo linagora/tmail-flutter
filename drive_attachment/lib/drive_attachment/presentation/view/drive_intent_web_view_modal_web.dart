@@ -10,7 +10,7 @@ class DriveIntentWebViewModal extends StatefulWidget {
   final String intentId;
   // ADR-93: composer registers the window listener at composer-init time and
   // forwards messages here, so the handler is ready before the iframe loads.
-  final void Function(void Function(String raw, String? origin))? onRegisterExternalHandler;
+  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,

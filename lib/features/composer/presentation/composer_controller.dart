@@ -130,8 +130,7 @@ import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
-import 'package:drive_attachment/drive_attachment/domain/entity/drive_attachment.dart';
-import 'package:drive_attachment/drive_attachment/presentation/notifier/drive_attachment_notifier.dart';
+import 'package:tmail_ui_user/features/composer/domain/service/external_attachment_service.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -1007,11 +1006,11 @@ class ComposerController extends BaseController
     }
   }
 
-  List<DriveAttachment> _getDriveAttachments() {
+  List<String> _getDriveLinkedFileHeaders() {
     if (composerId == null) return const [];
     return appProviderContainer
-        .read(driveAttachmentNotifierProvider(composerId!))
-        .attachments;
+        .read(externalAttachmentServiceProvider)
+        .getLinkedFileHeaders(composerId!);
   }
 
   Future<dynamic> _showSendingMessageDialog({
@@ -1051,7 +1050,7 @@ class ComposerController extends BaseController
           emailSendingQueue: arguments.sendingEmail,
           displayMode: screenDisplayMode.value,
           uploadUri: uploadUri,
-          driveAttachments: _getDriveAttachments(),
+          linkedFileHeaders: _getDriveLinkedFileHeaders(),
         ),
         createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
         onCancelSendingEmailAction: _handleCancelSendingMessage,

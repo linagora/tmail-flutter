@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class WorkplaceFqdnNotifier extends Notifier<String?> {
+part 'workplace_fqdn_notifier.g.dart';
+
+@riverpod
+class WorkplaceFqdnNotifier extends _$WorkplaceFqdnNotifier {
   @override
   String? build() => null;
 
@@ -15,7 +18,3 @@ class WorkplaceFqdnNotifier extends Notifier<String?> {
     state = uri != null && (uri.scheme == 'https' || kDebugMode) ? fqdn : null;
   }
 }
-
-final workplaceFqdnProvider = NotifierProvider<WorkplaceFqdnNotifier, String?>(
-  WorkplaceFqdnNotifier.new,
-);

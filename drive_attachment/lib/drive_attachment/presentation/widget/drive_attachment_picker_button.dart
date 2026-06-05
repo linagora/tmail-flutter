@@ -1,29 +1,30 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:drive_attachment/drive_attachment/domain/entity/drive_document.dart';
 import 'package:drive_attachment/drive_attachment/presentation/notifier/drive_attachment_notifier.dart';
 import 'package:drive_attachment/drive_attachment/presentation/notifier/drive_attachment_state.dart';
 import 'package:drive_attachment/drive_attachment/presentation/provider/drive_access_token_notifier.dart';
 import 'package:drive_attachment/drive_attachment/presentation/provider/workplace_fqdn_notifier.dart';
+import 'package:drive_attachment/drive_attachment/domain/entity/drive_document.dart';
 import 'package:drive_attachment/drive_attachment/presentation/view/drive_intent_web_view_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' as html;
 
-class DriveAttachmentButton extends ConsumerStatefulWidget {
+class DriveAttachmentPickerButton extends ConsumerStatefulWidget {
   final String composerId;
   final ImagePaths imagePaths;
+  final String? tooltipLabel;
   final Color? iconColor;
   final double iconSize;
   final double borderRadius;
   final EdgeInsetsGeometry? padding;
 
-  const DriveAttachmentButton({
+  const DriveAttachmentPickerButton({
     super.key,
     required this.composerId,
     required this.imagePaths,
+    this.tooltipLabel,
     this.iconColor,
     this.iconSize = 20,
     this.borderRadius = 20,
@@ -31,11 +32,12 @@ class DriveAttachmentButton extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<DriveAttachmentButton> createState() =>
-      _DriveAttachmentButtonState();
+  ConsumerState<DriveAttachmentPickerButton> createState() =>
+      _DriveAttachmentPickerButtonState();
 }
 
-class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
+class _DriveAttachmentPickerButtonState
+    extends ConsumerState<DriveAttachmentPickerButton> {
   bool _modalOpen = false;
 
   // ADR-93: register window listener once at composer init (web only).
@@ -67,7 +69,7 @@ class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
 
   Future<void> _openModal(DriveIntentPending state) async {
     _modalOpen = true;
-    final List<DriveDocument>? result = await showDialog<List<DriveDocument>?>(
+    final result = await showDialog<List<DriveDocument>?>(
       context: context,
       builder: (_) => DriveIntentWebViewModal(
         url: state.intent.intentUrl,
@@ -81,7 +83,7 @@ class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
     _modalOpen = false;
     if (mounted) {
       ref
-          .read(driveAttachmentNotifierProvider(widget.composerId).notifier)
+          .read(driveAttachmentProvider(widget.composerId).notifier)
           .onPickResult(result);
     }
   }
@@ -96,14 +98,14 @@ class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
     if (accessToken == null || !mounted) return;
 
     ref
-        .read(driveAttachmentNotifierProvider(widget.composerId).notifier)
+        .read(driveAttachmentProvider(widget.composerId).notifier)
         .openDrivePicker(platformUrl: platformUrl, accessToken: accessToken);
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<DriveAttachmentState>(
-      driveAttachmentNotifierProvider(widget.composerId),
+      driveAttachmentProvider(widget.composerId),
       (_, next) {
         if (next is DriveIntentPending && !_modalOpen) {
           _openModal(next);
@@ -114,8 +116,7 @@ class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
     final fqdn = ref.watch(workplaceFqdnProvider);
     if (fqdn == null || fqdn.isEmpty) return const SizedBox.shrink();
 
-    final driveState =
-        ref.watch(driveAttachmentNotifierProvider(widget.composerId));
+    final driveState = ref.watch(driveAttachmentProvider(widget.composerId));
     if (driveState is DriveAttachmentFetchingIntent) {
       return SizedBox(
         width: widget.iconSize,
@@ -134,7 +135,7 @@ class _DriveAttachmentButtonState extends ConsumerState<DriveAttachmentButton> {
       iconSize: widget.iconSize,
       borderRadius: widget.borderRadius,
       padding: widget.padding,
-      tooltipMessage: AppLocalizations.of(context).browse,
+      tooltipMessage: widget.tooltipLabel,
       onTapActionCallback: _onTap,
     );
   }

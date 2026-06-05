@@ -11,7 +11,7 @@ class DriveIntentWebViewModal extends StatefulWidget {
   final Uri url;
   final String intentId;
   // Ignored on mobile — only used by the web variant (ADR-93).
-  final void Function(void Function(String raw, String? origin))? onRegisterExternalHandler;
+  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
