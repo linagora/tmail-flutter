@@ -22,7 +22,7 @@ Uri? _computeUri(Ref ref) {
       .driveAttachmentConfig
       .isEnabled;
   if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) return null;
-  return Uri.tryParse(fqdn!);
+  return Uri.tryParse(fqdn!.startsWith('http') ? fqdn : 'https://$fqdn');
 }
 
 @Riverpod(keepAlive: true)
