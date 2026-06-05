@@ -2358,10 +2358,20 @@ class MailboxDashBoardController extends ReloadableController
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
+    // Clear pagination cursors accumulated by the previous sort's load-more so
+    // the new search doesn't inherit a stale cursor (e.g. `after: lastEmail.receivedAt`
+    // set by `oldest` load-more) that would return 0 results.
+    //
+    // startDate/endDate are only cleared when no user date-range filter is active.
+    // If the user picked a range (e.g. "Last 7 days"), those values belong to the
+    // filter — clearing them would silently drop it while the UI chip stays selected.
+    final isDateFilterActive =
+        searchController.receiveTimeFiltered != EmailReceiveTimeType.allTime;
     searchController.updateFilterEmail(
       sortOrderTypeOption: Some(sortOrder),
       beforeOption: const None(),
-      startDateOption: const None(),
+      startDateOption: isDateFilterActive ? null : const None(),
+      endDateOption: isDateFilterActive ? null : const None(),
       positionOption: const None(),
     );
     storeEmailSortOrder(sortOrder);
