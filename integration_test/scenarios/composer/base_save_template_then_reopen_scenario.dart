@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
-import '../../utils/wait_for_condition.dart';
+// import '../../utils/wait_for_condition.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -25,21 +25,12 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
 
   @override
   Future<void> waitForEmailListLoaded() async {
-    var elapsed = 0;
-    await waitForCondition(
-      () {
-        final count = Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.length;
-        if (elapsed % 5 == 0) {
-          // ignore: avoid_print
-          print('⏳ waitForEmailListLoaded: emailsInCurrentMailbox.length=$count, '
-            'selectedMailbox=${Get.find<MailboxDashBoardController>().selectedMailbox.value?.name?.name}, '
-            'elapsed≈${elapsed * 200}ms');
-        }
-        elapsed++;
-        return count > 0;
-      },
-      timeout: const Duration(seconds: 60),
-    );
+    final dashboardController = Get.find<MailboxDashBoardController>();
+    
+    // Diagnostic 1: Is the mailbox actually switched?
+    final selectedName = dashboardController.selectedMailbox.value?.name?.name;
+    fail('DIAG: selectedMailbox=$selectedName, '
+      'emailCount=${dashboardController.emailsInCurrentMailbox.length}');
   }
 
   @override
