@@ -10,6 +10,7 @@ typedef OnOpenContextMenuAction = Function(RelativeRect position);
 
 class AppBarComposerWidget extends StatelessWidget {
 
+  final String composerId;
   final ImagePaths imagePaths;
   final bool isSendButtonEnabled;
   final bool isNetworkConnectionAvailable;
@@ -23,6 +24,7 @@ class AppBarComposerWidget extends StatelessWidget {
 
   const AppBarComposerWidget({
     super.key,
+    required this.composerId,
     required this.imagePaths,
     required this.isSendButtonEnabled,
     required this.onCloseViewAction,

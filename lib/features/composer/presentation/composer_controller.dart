@@ -130,6 +130,9 @@ import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_notifier.dart';
+import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
@@ -1001,6 +1004,56 @@ class ComposerController extends BaseController
       }
     } else {
       _sendButtonState = ButtonState.enabled;
+    }
+  }
+
+  void handleDrivePickResult(List<DriveDocument> result) {
+    for (final doc in result) {
+      if (doc.sharingLink != null) {
+        _insertDriveLinkHtml(doc);
+        _storeDriveLinkAttachment(doc);
+      } else if (doc.downloadLink != null) {
+        _downloadAndUploadDriveFile(doc);
+      }
+    }
+  }
+
+  void _insertDriveLinkHtml(DriveDocument doc) {
+    final linkHtml = '<a href="${doc.sharingLink}">${doc.name}</a>';
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.editorController.insertHtml(linkHtml);
+    } else {
+      htmlEditorApi?.insertHtml(linkHtml);
+    }
+  }
+
+  void _storeDriveLinkAttachment(DriveDocument doc) {
+    if (composerId == null) return;
+    appProviderContainer
+        .read(driveAttachmentProvider(composerId!).notifier)
+        .addSharingLinkDoc(doc);
+  }
+
+  Future<void> _downloadAndUploadDriveFile(DriveDocument doc) async {
+    try {
+      final response = await Get.find<Dio>().get<List<int>>(
+        doc.downloadLink.toString(),
+        options: Options(responseType: ResponseType.bytes),
+      );
+      final data = response.data;
+      if (data == null) return;
+      final fileInfo = FileInfo(
+        fileName: doc.name,
+        fileSize: doc.size,
+        bytes: Uint8List.fromList(data),
+        type: doc.mimeType,
+      );
+      uploadController.validateTotalSizeAttachmentsBeforeUpload(
+        totalSizePreparedFiles: doc.size,
+        onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: [fileInfo]),
+      );
+    } catch (e) {
+      logWarning('ComposerController::_downloadAndUploadDriveFile: $e');
     }
   }
 

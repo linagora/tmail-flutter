@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_providers.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
@@ -531,6 +533,7 @@ void main() {
               isMarkAsImportant: false,
             );
 
+            setupDriveAttachment(Dio());
             await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
               child: const Stack(children: [ComposerView()])));
             await tester.pump();
@@ -611,6 +614,7 @@ void main() {
               isMarkAsImportant: false,
             );
 
+            setupDriveAttachment(Dio());
             await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
               child: const Stack(children: [ComposerView()])));
             await tester.pump();
