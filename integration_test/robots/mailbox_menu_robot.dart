@@ -26,13 +26,18 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
 
   @override
   Future<void> openFolderByName(String name) async {
+    // Poll for the widget using waitForCondition (doesn't rely on settle)
     final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
-    await $(mailboxItem).waitUntilExists();
+    await waitForCondition(() => mailboxItem.exists, timeout: const Duration(seconds: 10));
+    
     await $.scrollUntilVisible(finder: mailboxItem);
-    final previousMailboxId = Get.find<MailboxDashBoardController>().selectedMailbox.value?.id;
+    
+    // Use controller-based verification instead of relying on settled widget tree
+    final controller = Get.find<MailboxDashBoardController>();
+    final previousMailboxId = controller.selectedMailbox.value?.id;
     await mailboxItem.tap();
     await waitForCondition(
-      () => Get.find<MailboxDashBoardController>().selectedMailbox.value?.id != previousMailboxId,
+      () => controller.selectedMailbox.value?.id != previousMailboxId,
       timeout: const Duration(seconds: 10),
     );
   }
