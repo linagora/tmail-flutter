@@ -270,7 +270,7 @@ void main() {
       });
 
       test('SHOULD preserve all HTML structure around a deeply nested URL', () async {
-        final html = '<table><tr><td><p><span>https://deep.example.com</span></p></td></tr></table>';
+        const html = '<table><tr><td><p><span>https://deep.example.com</span></p></td></tr></table>';
         final result = await transform(html);
         expect(result, allOf(
           contains('href="https://deep.example.com"'),

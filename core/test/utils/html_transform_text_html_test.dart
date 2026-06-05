@@ -277,6 +277,68 @@ void main() {
         expect(out, contains('Monthly Performance Report'));
       });
     });
+
+    group(
+        'RemoveNegativeMarginFloatTransformer coexistence with standard pipeline', () {
+      test(
+        'SHOULD remove float:left + negative margin-left from GitLab heading anchors'
+            ' AND preserve heading text',
+            () async {
+          final out = await transform(HtmlEmailCorpus.htmlGitLabHeadingAnchors);
+          expect(out, isNot(contains('float: left')),
+              reason: 'float:left on anchor elements must be stripped');
+          expect(out, isNot(contains('margin-left: -20px')),
+              reason: 'negative margin-left must be stripped');
+          expect(out,
+              allOf(contains('Optimize fetch strategy'), contains('Summary')),
+              reason: 'heading text content must be preserved');
+          expect(out, contains('Body text here'),
+              reason: 'paragraph body must be preserved');
+        },
+      );
+
+      test(
+        'SHOULD preserve positive margin-left on non-aria-hidden element',
+            () async {
+          // The CSS sanitizer strips `float` from all inline styles (not in
+          // allowedCssProperties). The transformer must not touch margin-left
+          // when the element is not an aria-hidden anchor.
+          final out = await transform(
+              HtmlEmailCorpus.htmlWithFloatLeftPositiveMargin);
+          expect(out, contains('margin-left: 10px'),
+              reason: 'positive margin-left on a non-aria-hidden element must not be altered');
+        },
+      );
+
+      test(
+        'SHOULD strip anchor float styles AND still add target/rel to other links'
+            ' in the same email',
+            () async {
+          const input = '${HtmlEmailCorpus
+              .htmlGitLabHeadingAnchors}<p>See <a href="https://example.com">the docs</a>.</p>';
+          final out = await transform(input);
+          expect(out, isNot(contains('float: left')),
+              reason: 'float:left on anchor elements must be stripped');
+          expect(out, contains('target="_blank"'),
+              reason: 'SanitizeHyperLinkTagTransformer must still run');
+          expect(out, contains('rel="noreferrer"'));
+        },
+      );
+
+      test(
+        'SHOULD strip anchor float styles AND still add overflow-wrap to table cells'
+            ' in the same email',
+            () async {
+          const input = HtmlEmailCorpus.htmlGitLabHeadingAnchors +
+              HtmlEmailCorpus.htmlTableSimple;
+          final out = await transform(input);
+          expect(out, isNot(contains('float: left')),
+              reason: 'float:left on anchor elements must be stripped');
+          expect(out, contains('overflow-wrap: anywhere'),
+              reason: 'ResponsiveTableCellTransformer must still run');
+        },
+      );
+    });
   });
 
   group('HtmlTransform.transformToHtml — fromDomTransformers', () {
