@@ -58,7 +58,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/execute_empty_trash_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/dialogs/empty_trash_confirmation_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController>
@@ -216,15 +216,7 @@ class ThreadView extends GetWidget<ThreadController>
                         );
 
                       if (showTrashBanner && selectedMailbox != null) {
-                        return EmptyTrashBannerWidget(
-                          responsiveUtils: controller.responsiveUtils,
-                          mailbox: selectedMailbox,
-                          confirmCallback: dashboardController.requestEmptyTrash,
-                          margin: ThreadViewStyle.getBannerMargin(
-                            context,
-                            controller.responsiveUtils,
-                          ),
-                        );
+                        return _buildEmptyTrashBanner(context, selectedMailbox);
                       } else if (showSpamBanner) {
                         return CleanMessagesBanner(
                           responsiveUtils: controller.responsiveUtils,
@@ -802,6 +794,20 @@ class ThreadView extends GetWidget<ThreadController>
         }
       }
     ));
+  }
+
+  Widget _buildEmptyTrashBanner(BuildContext context, PresentationMailbox mailbox) {
+    final dashboardController = controller.mailboxDashBoardController;
+    return EmptyTrashBannerWidget(
+      responsiveUtils: controller.responsiveUtils,
+      mailbox: mailbox,
+      confirmCallback: (ctx, mailbox) => EmptyTrashConfirmationDialog.show(
+        ctx,
+        responsiveUtils: controller.responsiveUtils,
+        onConfirm: () => dashboardController.emptyTrashFolderAction(trashMailbox: mailbox),
+      ),
+      margin: ThreadViewStyle.getBannerMargin(context, controller.responsiveUtils),
+    );
   }
 
   Widget _buildMailboxActionProgressBanner(BuildContext context) {

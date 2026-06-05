@@ -1,32 +1,24 @@
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-extension ExecuteEmptyTrashExtension on MailboxDashBoardController {
-  List<MailboxId> childMailboxIds(PresentationMailbox parent) => mapMailboxById
-      .values
-      .where((m) => m.parentId == parent.id)
-      .map((m) => m.id)
-      .toList();
-
-  void requestEmptyTrash(
-    BuildContext context,
-    PresentationMailbox trashMailbox,
-  ) {
+class EmptyTrashConfirmationDialog {
+  static void show(
+    BuildContext context, {
+    required ResponsiveUtils responsiveUtils,
+    required VoidCallback onConfirm,
+  }) {
     final appLocalizations = AppLocalizations.of(context);
-
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
             ..messageText(appLocalizations.empty_trash_dialog_message)
             ..onCancelAction(appLocalizations.cancel, popBack)
             ..onConfirmAction(appLocalizations.delete, () {
               popBack();
-              emptyTrashFolderAction(trashMailbox: trashMailbox);
+              onConfirm();
             }))
           .show();
     } else {
@@ -40,7 +32,7 @@ extension ExecuteEmptyTrashExtension on MailboxDashBoardController {
         onCloseButtonAction: popBack,
         onConfirmAction: () {
           popBack();
-          emptyTrashFolderAction(trashMailbox: trashMailbox);
+          onConfirm();
         },
       );
     }
