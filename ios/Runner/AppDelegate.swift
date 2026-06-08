@@ -48,6 +48,38 @@ import flutter_local_notifications
     override func applicationWillTerminate(_ application: UIApplication) {
         updateApplicationStateInUserDefaults(false)
     }
+
+    // FCM data-only pushes (aps present, aps.alert absent) delivered when the app is
+    // foreground/inactive trigger EXC_BAD_ACCESS in FLTFirebaseMessagingPlugin._channel
+    // (KERN_INVALID_ADDRESS at 0x80) because the plugin's FlutterMethodChannel becomes a
+    // dangling pointer after a scene disconnect tears down the Flutter engine.
+    //
+    // GULAppDelegateSwizzler holds the plugin via a weak reference; when the engine is
+    // released the channel object is freed, but the swizzler still dispatches the next
+    // notification to that stale pointer before the weak container is zeroed.
+    //
+    // Fix: intercept this exact combination (FCM, non-background, no alert) ourselves
+    // and relay Messaging#onMessage via the AppDelegate's own fcmMethodChannel, which
+    // is tied to the current engine. For background pushes we still delegate to super so
+    // the headless Dart isolate (Messaging#onBackgroundMessage) continues to work.
+    override func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) -> Bool {
+        if isForegroundFcmDataOnlyNotification(userInfo) {
+            fcmMethodChannel?.invokeMethod(CoreUtils.FCM_ON_MESSAGE_METHOD_NAME, arguments: userInfo)
+            completionHandler(.noData)
+            return true
+        }
+        return super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+    }
+
+    private func isForegroundFcmDataOnlyNotification(_ userInfo: [AnyHashable: Any]) -> Bool {
+        guard userInfo["gcm.message_id"] != nil else { return false }
+        guard let aps = userInfo["aps"] as? [String: Any], aps["alert"] == nil else { return false }
+        return UIApplication.shared.applicationState != .background
+    }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let sharingIntent = SwiftReceiveSharingIntentPlugin.instance
