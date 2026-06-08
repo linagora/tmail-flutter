@@ -59,6 +59,7 @@ cp integration_test/integration_test_env.file env.file
 
 echo "Building the app and running tests..."
 patrol test -v \
+    --target integration_test/tests/composer/save_draft_with_attachment_then_open_and_save_draft_again_test.dart \
     --target integration_test/tests/composer/save_template_with_attachment_then_open_and_save_template_again_test.dart \
     --show-flutter-logs \
     --tags=web \
