@@ -2,6 +2,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
@@ -26,14 +27,12 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
   @override
   Future<void> waitForEmailListLoaded() async {
     await waitForCondition(
-      () async {
-        await $.pump(); // Advance frames so the browser/test runner interleaves
-        return Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.isNotEmpty;
-      },
+      () => Get.find<MailboxDashBoardController>().emailsInCurrentMailbox.isNotEmpty
+          && $(EmailTileBuilder).exists,
       timeout: const Duration(seconds: 60),
       interval: const Duration(milliseconds: 500),
     );
-}
+  }
 
   @override
   Future<void> performFirstSave(
