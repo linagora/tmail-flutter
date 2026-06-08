@@ -70,7 +70,8 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT"
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" \
+    2>&1 | tee /tmp/patrol-test-output.log
 TEST_EXIT_CODE=$?
 
 exit $TEST_EXIT_CODE
