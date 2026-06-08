@@ -289,14 +289,18 @@ class ThreadController extends BaseController with EmailActionController {
         _currentMemoryMailboxId = mailbox.id;
         consumeState(Stream.value(Right(GetAllEmailLoading())));
         resetToOriginalValue();
+        log('ThreadController::_registerObxStreamListener: TRIGGERING getAllEmailAction for mailbox=${mailbox.name?.name}, isFirstSessionLoad=${mailboxDashBoardController.isFirstSessionLoad}');
         getAllEmailAction(
           getLatestChanges: mailboxDashBoardController.isFirstSessionLoad,
           forceEmailQuery: forceEmailQuery,
         );
         mailboxDashBoardController.setIsFirstSessionLoad(false);
       } else if (mailbox == null) { // disable current mailbox when search active
+        log('ThreadController::_registerObxStreamListener: mailbox is NULL - resetting');
         _currentMemoryMailboxId = null;
         resetToOriginalValue();
+      } else {
+        log('ThreadController::_registerObxStreamListener: SKIPPED getAllEmailAction - same mailbox or not PresentationMailbox');
       }
     });
 
@@ -612,6 +616,7 @@ class ThreadController extends BaseController with EmailActionController {
     final currentMailboxId = success.currentMailboxId;
     final isVirtualFolder = selectedMailbox?.isVirtualFolder == true;
 
+    log('ThreadController::_getAllEmailSuccess: GuardCheck - currentMailboxId=$currentMailboxId, selectedMailboxId=$selectedMailboxId, isVirtualFolder=$isVirtualFolder, willReturnEarly=${currentMailboxId != null && (isVirtualFolder || currentMailboxId != selectedMailboxId)}');
     if (currentMailboxId != null &&
         (isVirtualFolder || currentMailboxId != selectedMailboxId)) {
       return;
