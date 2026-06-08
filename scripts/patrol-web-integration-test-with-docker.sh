@@ -59,6 +59,8 @@ cp integration_test/integration_test_env.file env.file
 
 echo "Building the app and running tests..."
 patrol test -v \
+    --target integration_test/tests/composer/save_template_with_attachment_then_open_and_save_template_again_test.dart \
+    --show-flutter-logs \
     --tags=web \
     --device=chrome \
     --web-port=3000 \
@@ -70,8 +72,7 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" \
-    2>&1 | tee /tmp/patrol-test-output.log
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT"
 TEST_EXIT_CODE=$?
 
 exit $TEST_EXIT_CODE
