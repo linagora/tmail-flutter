@@ -64,12 +64,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
         debounceDuration: const Duration(milliseconds: 300),
-        listActionButton: const [
-          QuickSearchFilter.hasAttachment,
-          QuickSearchFilter.last7Days,
-          QuickSearchFilter.fromMe,
-          QuickSearchFilter.starred,
-        ],
+        listActionButton: QuickSearchFilter.suggestionPopupFilters,
         actionButtonBuilder: (context, filterAction, suggestionsListState) {
           if (filterAction is QuickSearchFilter) {
             return buildListButtonForQuickSearchForm(
@@ -186,6 +181,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       _searchController.applyFilterSuggestionToSearchFilter(
         _dashBoardController.ownEmailAddress.value,
       );
+      _searchController.clearFilterSuggestion();
     }
 
     _dashBoardController.searchEmailByQueryString(trimmedQueryString);
@@ -222,6 +218,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.applyFilterSuggestionToSearchFilter(
       _dashBoardController.ownEmailAddress.value,
     );
+    _searchController.clearFilterSuggestion();
     _dashBoardController.searchEmailByQueryString(recent.value);
   }
 
@@ -306,7 +303,15 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     QuickSearchSuggestionListState suggestionsListState
   ) {
     return Obx(() {
-      final isSelected = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);
+      final isAppliedInSuggestion = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);
+      final isRemovedFromSuggestion = _searchController.removedSuggestionFilters.contains(searchFilter);
+      final isAppliedInFilter = !isRemovedFromSuggestion && searchFilter.isSelected(
+        context,
+        _searchController.searchEmailFilter.value,
+        _searchController.sortOrderFiltered,
+        _dashBoardController.ownEmailAddress.value,
+      );
+      final isSelected = isAppliedInSuggestion || isAppliedInFilter;
 
       return SearchFilterButton(
         searchFilter: searchFilter,
@@ -316,6 +321,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         backgroundColor: searchFilter.getSuggestionBackgroundColor(isSelected: isSelected),
         onDeleteSearchFilterAction: (searchFilter) {
           _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
+          if (!isAppliedInSuggestion && isAppliedInFilter) {
+            // Post-search: filter lives in searchEmailFilter; track removal without mutating it
+            _searchController.syncFromSuggestionPostSearch(searchFilter);
+          }
           suggestionsListState.invalidateSuggestions();
         },
       );

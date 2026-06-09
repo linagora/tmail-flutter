@@ -36,6 +36,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final searchState = SearchState.initial().obs;
   final isAdvancedSearchViewOpen = false.obs;
   final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
+  final removedSuggestionFilters = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
   final isSearchInputFocused = RxBool(false);
@@ -91,6 +92,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     if (!listFilterOnSuggestionForm.contains(searchFilter)) {
       listFilterOnSuggestionForm.add(searchFilter);
     }
+    removedSuggestionFilters.remove(searchFilter);
   }
 
   void deleteQuickSearchFilterFromSuggestionSearchView(QuickSearchFilter searchFilter) {
@@ -98,36 +100,90 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void applyFilterSuggestionToSearchFilter(String currentUserEmail) {
-    final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-      ? EmailReceiveTimeType.last7Days
-      : null;
+    searchEmailFilter.value = mergeWithSuggestionFilters(currentUserEmail);
+    searchEmailFilter.refresh();
+  }
 
-    final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
-        ? true
-        : null;
+  /// Returns a copy of [searchEmailFilter] merged with pending suggestion filters
+  /// and with [removedSuggestionFilters] cleared.
+  /// Does NOT modify [searchEmailFilter] — dashboard chips unaffected.
+  SearchEmailFilter mergeWithSuggestionFilters(String currentUserEmail) {
+    final base = searchEmailFilter.value;
 
-    var listFromAddress = searchEmailFilter.value.from;
-    if (currentUserEmail.isNotEmpty &&
-        listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
-      listFromAddress.add(currentUserEmail);
-    }
+    final emailReceiveTimeTypeOption = _mergeReceiveTime();
+    final hasAttachmentOption = _mergeHasAttachment();
+    final hasKeywordOption = _mergeHasKeyword();
+    final fromOption = _mergeFrom(currentUserEmail);
 
-    final listHasKeyword = listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
-      ? {KeyWordIdentifier.emailFlagged.value}
-      : null;
-
-    updateFilterEmail(
-      emailReceiveTimeTypeOption: receiveTime != null ? Some(receiveTime) : null,
-      hasAttachmentOption: hasAttachment != null ? Some(hasAttachment) : null,
-      fromOption: Some(listFromAddress),
-      hasKeywordOption: listHasKeyword != null ? Some(listHasKeyword) : null,
+    return base.copyWith(
+      emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+      hasAttachmentOption: hasAttachmentOption,
+      hasKeywordOption: hasKeywordOption,
+      fromOption: fromOption,
     );
+  }
 
-    clearFilterSuggestion();
+  Option<EmailReceiveTimeType>? _mergeReceiveTime() {
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption;
+    if (listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)) {
+      emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.last7Days);
+    } else if (removedSuggestionFilters.contains(QuickSearchFilter.last7Days)) {
+      emailReceiveTimeTypeOption = const None();
+    }
+    return emailReceiveTimeTypeOption;
+  }
+
+  Option<bool>? _mergeHasAttachment() {
+    Option<bool>? hasAttachmentOption;
+    if (listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)) {
+      hasAttachmentOption = const Some(true);
+    } else if (removedSuggestionFilters.contains(QuickSearchFilter.hasAttachment)) {
+      hasAttachmentOption = const None();
+    }
+    return hasAttachmentOption;
+  }
+
+  Option<Set<String>>? _mergeHasKeyword() {
+    Option<Set<String>>? hasKeywordOption;
+    if (listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)) {
+      hasKeywordOption = Some({KeyWordIdentifier.emailFlagged.value});
+    } else if (removedSuggestionFilters.contains(QuickSearchFilter.starred)) {
+      hasKeywordOption = const None();
+    }
+    return hasKeywordOption;
+  }
+
+  Option<Set<String>>? _mergeFrom(String currentUserEmail) {
+    var listFromAddress = Set<String>.from(searchEmailFilter.value.from);
+    Option<Set<String>>? fromOption;
+    if (currentUserEmail.isNotEmpty) {
+      if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
+        listFromAddress.add(currentUserEmail);
+        fromOption = Some(listFromAddress);
+      } else if (removedSuggestionFilters.contains(QuickSearchFilter.fromMe)) {
+        listFromAddress.remove(currentUserEmail);
+        fromOption = Some(listFromAddress);
+      }
+    }
+    return fromOption;
   }
 
   void clearFilterSuggestion() {
     listFilterOnSuggestionForm.clear();
+    removedSuggestionFilters.clear();
+  }
+
+  void clearSuggestionFilterState(QuickSearchFilter filter) {
+    listFilterOnSuggestionForm.remove(filter);
+    removedSuggestionFilters.remove(filter);
+  }
+
+  /// Marks [filter] as removed from suggestion view post-search.
+  /// Does NOT touch [searchEmailFilter] — dashboard chips unaffected.
+  void syncFromSuggestionPostSearch(QuickSearchFilter filter) {
+    if (!removedSuggestionFilters.contains(filter)) {
+      removedSuggestionFilters.add(filter);
+    }
   }
 
   void updateFilterEmail({
@@ -149,6 +205,11 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
   }) {
+    if (fromOption != null) clearSuggestionFilterState(QuickSearchFilter.fromMe);
+    if (hasAttachmentOption != null) clearSuggestionFilterState(QuickSearchFilter.hasAttachment);
+    if (emailReceiveTimeTypeOption != null) clearSuggestionFilterState(QuickSearchFilter.last7Days);
+    if (hasKeywordOption != null) clearSuggestionFilterState(QuickSearchFilter.starred);
+
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
       toOption: toOption,
@@ -280,6 +341,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     hideSimpleSearchFormView();
 
     clearSearchFilter();
+    clearFilterSuggestion();
     deactivateAdvancedSearch();
     hideAdvancedSearchFormView();
   }

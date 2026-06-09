@@ -9,6 +9,7 @@ import 'package:labels/labels.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/advanced_search_open_sync_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -63,9 +64,11 @@ class AdvancedFilterController extends BaseController {
   late SearchEmailFilter _memorySearchFilter;
 
   late Worker _dashboardActionWorker;
+  late Worker _searchViewOpenWorker;
 
   @override
   void onInit() {
+    _searchViewOpenWorker = createSearchViewOpenSyncWorker();
     _registerWorkerListener();
     _registerFocusListener();
     super.onInit();
@@ -102,7 +105,6 @@ class AdvancedFilterController extends BaseController {
     destinationMailboxSelected.value = presentationMailbox;
   }
 
-  @visibleForTesting
   SearchEmailFilter get memorySearchFilter => _memorySearchFilter;
 
   @visibleForTesting
@@ -272,7 +274,9 @@ class AdvancedFilterController extends BaseController {
       )) ?? [];
   }
 
-  void initSearchFilterField(BuildContext? context) {
+  void initSearchFilterField(BuildContext? context, {SearchEmailFilter? filterOverride}) {
+    _memorySearchFilter = filterOverride ?? searchController.searchEmailFilter.value;
+
     subjectFilterInputController.text = StringConvert.writeNullToEmpty(
       _memorySearchFilter.subject);
 
@@ -296,6 +300,9 @@ class AdvancedFilterController extends BaseController {
         .contains(KeyWordIdentifier.emailFlagged.value);
 
     notIncludeEvents.value = _memorySearchFilter.notIncludeEvents;
+
+    startDate.value = _memorySearchFilter.startDate?.value.toLocal();
+    endDate.value = _memorySearchFilter.endDate?.value.toLocal();
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -532,6 +539,7 @@ class AdvancedFilterController extends BaseController {
 
   void _unregisterWorkerListener() {
     _dashboardActionWorker.dispose();
+    _searchViewOpenWorker.dispose();
   }
 
   void _removeFocusListener() {
@@ -551,7 +559,6 @@ class AdvancedFilterController extends BaseController {
   }
 
   void _handleStartSearchEmailAction() {
-    _memorySearchFilter = searchController.searchEmailFilter.value;
     initSearchFilterField(currentContext);
   }
 

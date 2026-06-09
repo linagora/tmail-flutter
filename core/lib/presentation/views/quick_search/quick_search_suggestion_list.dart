@@ -240,7 +240,9 @@ class QuickSearchSuggestionListState<T, P, R>
       if (!mounted) return;
 
       setState(() {
-        _animationController?.forward(from: widget.animationStart);
+        if (_animationController?.isDismissed ?? true) {
+          _animationController?.forward(from: widget.animationStart);
+        }
         _isLoading = false;
         _suggestions = null;
         _recentItems = recentItems;
@@ -271,10 +273,12 @@ class QuickSearchSuggestionListState<T, P, R>
 
     if (!mounted) return;
     setState(() {
-      final animationStart = suggestions?.isNotEmpty == true
-          ? widget.animationStart
-          : 1.0;
-      _animationController?.forward(from: animationStart);
+      if (_animationController?.isDismissed ?? true) {
+        final animationStart = suggestions?.isNotEmpty == true
+            ? widget.animationStart
+            : 1.0;
+        _animationController?.forward(from: animationStart);
+      }
       _isLoading = false;
       _suggestions = suggestions;
       _recentItems = recentItems;

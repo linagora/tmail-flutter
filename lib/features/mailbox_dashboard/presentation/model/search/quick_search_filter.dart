@@ -28,6 +28,14 @@ enum QuickSearchFilter {
   folder,
   labels;
 
+  // The subset shown as toggleable chips in the suggestion popup.
+  static const List<QuickSearchFilter> suggestionPopupFilters = [
+    QuickSearchFilter.hasAttachment,
+    QuickSearchFilter.last7Days,
+    QuickSearchFilter.fromMe,
+    QuickSearchFilter.starred,
+  ];
+
   String getTitle(
     BuildContext context, {
     EmailReceiveTimeType? receiveTimeType,
@@ -148,9 +156,8 @@ enum QuickSearchFilter {
       case QuickSearchFilter.last7Days:
         return searchFilter.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchFilter.from.length == 1 &&
-          currentUserEmail?.isNotEmpty == true &&
-          currentUserEmail == searchFilter.from.first;
+        return currentUserEmail?.isNotEmpty == true &&
+          searchFilter.from.contains(currentUserEmail);
       case QuickSearchFilter.sortBy:
         return sortOrderType != SearchEmailFilter.defaultSortOrder;
       case QuickSearchFilter.dateTime:
