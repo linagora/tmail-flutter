@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
@@ -166,5 +168,43 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   @override
   Future<void> expectEmptyResults() async {
     await $(const Key(UiKeys.emptyThreadView)).waitUntilVisible();
+  }
+
+  @override
+  Future<void> expectSuggestionFilterSelected(QuickSearchFilter filter, bool selected) async {
+    await $.waitUntilExists(
+      $(Key('mobile_${filter.name}_search_filter_button'))
+        .which<SearchFilterButton>((w) => w.isSelected == selected),
+    );
+  }
+
+  @override
+  Future<void> tapSuggestionFilter(QuickSearchFilter filter) async {
+    await $(Key('mobile_${filter.name}_search_filter_button')).tap();
+  }
+
+  @override
+  Future<void> deleteSuggestionFilter(QuickSearchFilter filter) async {
+    await $(Key('delete_${filter.name}_search_filter_button')).tap();
+  }
+
+  @override
+  Future<void> expectQuickFilterDateTimeSelected(bool selected) async {
+    await $.waitUntilExists(
+      $(const Key('dateTime_search_filter_button'))
+        .which<SearchFilterButton>((w) => w.isSelected == selected),
+    );
+  }
+
+  @override
+  Future<void> tapQuickFilterDateTimeChip() async {
+    await $(const Key('dateTime_search_filter_button')).tap();
+    await $.pump(const Duration(milliseconds: 300));
+  }
+
+  @override
+  Future<void> selectQuickFilterDateTimeOption(String dateTimeName) async {
+    await $(find.text(dateTimeName)).tap();
+    await $.pump(const Duration(seconds: 2));
   }
 }

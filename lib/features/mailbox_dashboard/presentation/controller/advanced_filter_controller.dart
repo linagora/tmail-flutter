@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -64,11 +65,13 @@ class AdvancedFilterController extends BaseController {
   late SearchEmailFilter _memorySearchFilter;
 
   late Worker _dashboardActionWorker;
-  late Worker _searchViewOpenWorker;
+  late final ProviderContainer _searchViewOpenContainer;
+  late final ProviderSubscription<AsyncValue<bool>> _searchViewOpenSub;
 
   @override
   void onInit() {
-    _searchViewOpenWorker = createSearchViewOpenSyncWorker();
+    _searchViewOpenContainer = ProviderContainer();
+    _searchViewOpenSub = createSearchViewOpenSyncWorker(_searchViewOpenContainer);
     _registerWorkerListener();
     _registerFocusListener();
     super.onInit();
@@ -539,7 +542,8 @@ class AdvancedFilterController extends BaseController {
 
   void _unregisterWorkerListener() {
     _dashboardActionWorker.dispose();
-    _searchViewOpenWorker.dispose();
+    _searchViewOpenSub.close();
+    _searchViewOpenContainer.dispose();
   }
 
   void _removeFocusListener() {

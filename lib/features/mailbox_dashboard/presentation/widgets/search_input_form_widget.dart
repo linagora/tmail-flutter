@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -142,6 +143,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       return PortalTarget(
         visible: _searchController.isAdvancedSearchViewOpen.isTrue,
         portalFollower: PointerInterceptor(
+          key: const ValueKey(UiKeys.advancedSearchCloseOverlay),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _searchController.closeAdvanceSearch
@@ -314,6 +316,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       final isSelected = isAppliedInSuggestion || isAppliedInFilter;
 
       return SearchFilterButton(
+        key: Key('mobile_${searchFilter.name}_search_filter_button'),
         searchFilter: searchFilter,
         imagePaths: _imagePaths,
         responsiveUtils: _responsiveUtils,

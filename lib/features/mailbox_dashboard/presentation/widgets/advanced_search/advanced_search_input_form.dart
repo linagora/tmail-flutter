@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_autocomplete_input_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_button_arrow_down_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_date_drop_down_field_widget.dart';
@@ -29,6 +30,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
             filterField: FilterField.from,
             useHeight: false,
             child: Obx(() => DefaultAutocompleteInputFieldWidget(
+              key: const ValueKey(UiKeys.advancedSearchFromEmailField),
               field: FilterField.from,
               listEmailAddress: controller.listFromEmailAddress,
               expandMode: controller.fromAddressExpandMode.value,

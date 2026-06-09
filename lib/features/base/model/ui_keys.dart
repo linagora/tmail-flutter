@@ -28,4 +28,9 @@ class UiKeys {
   static const String openAdvancedSearchButton = 'open_advanced_search_button';
   static const String advancedSearchLabelDropDown = 'advanced_search_label_drop_down';
   static const String advancedSearchSearchButton = 'advanced_search_search_button';
+
+  // Advanced search
+  static const String advancedSearchHasAttachmentCheckbox = 'advanced_search_has_attachment_checkbox';
+  static const String advancedSearchFromEmailField = 'advanced_search_from_email_field';
+  static const String advancedSearchCloseOverlay = 'advanced_search_close_overlay';
 }

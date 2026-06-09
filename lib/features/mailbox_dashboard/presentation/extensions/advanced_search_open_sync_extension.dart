@@ -1,27 +1,36 @@
 import 'package:dartz/dartz.dart';
-import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/search_view_open_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension AdvancedSearchOpenSyncExtension on AdvancedFilterController {
-  Worker createSearchViewOpenSyncWorker() {
-    return ever(searchController.isAdvancedSearchViewOpen, (bool isOpen) {
-      if (isOpen) {
-        final hasSuggestionOverrides =
-            searchController.listFilterOnSuggestionForm.isNotEmpty ||
-            searchController.removedSuggestionFilters.isNotEmpty;
-        if (!hasSuggestionOverrides) return;
-        initSearchFilterField(
-          currentContext,
-          filterOverride: searchController.mergeWithSuggestionFilters(
-            mailboxDashBoardController.ownEmailAddress.value,
-          ),
-        );
-      } else {
-        _syncSuggestionFiltersOnDialogClose();
-      }
-    });
+  ProviderSubscription<AsyncValue<bool>> createSearchViewOpenSyncWorker(
+    ProviderContainer container,
+  ) {
+    return container.listen<AsyncValue<bool>>(
+      searchViewOpenProvider,
+      (prev, next) {
+        next.whenData((isOpen) {
+          if (isOpen) {
+            final hasSuggestionOverrides =
+                searchController.listFilterOnSuggestionForm.isNotEmpty ||
+                searchController.removedSuggestionFilters.isNotEmpty;
+            if (!hasSuggestionOverrides) return;
+            initSearchFilterField(
+              currentContext,
+              filterOverride: searchController.mergeWithSuggestionFilters(
+                mailboxDashBoardController.ownEmailAddress.value,
+              ),
+            );
+          } else {
+            _syncSuggestionFiltersOnDialogClose();
+          }
+        });
+      },
+      fireImmediately: false,
+    );
   }
 
   void _syncSuggestionFiltersOnDialogClose() {
@@ -43,7 +52,11 @@ extension AdvancedSearchOpenSyncExtension on AdvancedFilterController {
         searchController.syncFromSuggestionPostSearch(filter);
       }
     }
-    // Persist the from field so manually added addresses survive a close-without-apply.
-    searchController.updateFilterEmail(fromOption: Some(dialogFilter.from));
+    // Persist from addresses directly — bypasses updateFilterEmail's side-effect of
+    // calling clearSuggestionFilterState(fromMe), which would undo the loop above.
+    searchController.searchEmailFilter.value = searchController.searchEmailFilter.value.copyWith(
+      fromOption: Some(dialogFilter.from),
+    );
+    searchController.searchEmailFilter.refresh();
   }
 }

@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
@@ -262,6 +263,36 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   
   @override
   Future<void> searchByLabel(String labelName) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteSuggestionFilter(QuickSearchFilter filter) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> expectQuickFilterDateTimeSelected(bool selected) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> expectSuggestionFilterSelected(QuickSearchFilter filter, bool selected) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> selectQuickFilterDateTimeOption(String dateTimeName) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> tapQuickFilterDateTimeChip() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> tapSuggestionFilter(QuickSearchFilter filter) {
     throw UnimplementedError();
   }
 }

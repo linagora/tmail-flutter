@@ -67,6 +67,16 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
     await $.pump(const Duration(seconds: 3));
   }
 
+  @override
+  Future<void> openSearchSuggestion() async {
+    await $(SearchInputFormWidget).$(TextField).tap();
+  }
+
+  @override
+  Future<void> selectMailboxByName(String name) async {
+    await tapOnMailboxWithName(name);
+  }
+
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
     await $.waitUntilVisible(emailFinder);
     await emailFinder.tap();

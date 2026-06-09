@@ -3,6 +3,7 @@ import 'package:patrol/patrol.dart';
 import '../robots/abstract/abstract_common_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/mobile/mobile_common_robot.dart';
+import '../robots/abstract/abstract_advanced_search_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
 import '../robots/abstract/abstract_email_rules_setting_robot.dart';
@@ -61,4 +62,7 @@ class MobileRobotFactory implements RobotFactory {
   
   @override
   AbstractSettingsRobot settingsRobot() => MobileSettingsRobot($);
+
+  @override
+  AbstractAdvancedSearchRobot advancedSearchRobot() => throw UnimplementedError('Web only');
 }

@@ -18,4 +18,14 @@ class MobileThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   Future<void> openAppGrid() async {
     await $(const ValueKey(UiKeys.toggleAppGridButton)).tap();
   }
+
+  @override
+  Future<void> openSearchSuggestion() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> selectMailboxByName(String name) {
+    throw UnimplementedError('Web only');
+  }
 }

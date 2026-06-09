@@ -205,10 +205,8 @@ void main() {
           from: {'user1@example.com'},
           to: {'user2@example.com'},
         );
-        advancedFilterController.setMemorySearchFilter(memorySearchFilter);
-
         // Act
-        advancedFilterController.initSearchFilterField(mockBuildContext);
+        advancedFilterController.initSearchFilterField(mockBuildContext, filterOverride: memorySearchFilter);
 
         // Assert
         expect(advancedFilterController.subjectFilterInputController.text, equals('subject'));

@@ -1,5 +1,6 @@
 import 'package:patrol/patrol.dart';
 
+import '../robots/abstract/abstract_advanced_search_robot.dart';
 import '../robots/abstract/abstract_common_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/web/web_common_robot.dart';
@@ -13,6 +14,7 @@ import '../robots/abstract/abstract_mailbox_menu_robot.dart';
 import '../robots/abstract/abstract_rules_filter_creator_robot.dart';
 import '../robots/abstract/abstract_search_robot.dart';
 import '../robots/abstract/abstract_thread_robot.dart';
+import '../robots/web/web_advanced_search_robot.dart';
 import '../robots/web/web_app_grid_robot.dart';
 import '../robots/web/web_composer_robot.dart';
 import '../robots/web/web_email_rules_setting_robot.dart';
@@ -61,4 +63,7 @@ class WebRobotFactory implements RobotFactory {
 
   @override
   AbstractSettingsRobot settingsRobot() => WebSettingsRobot($);
+
+  @override
+  AbstractAdvancedSearchRobot advancedSearchRobot() => WebAdvancedSearchRobot($);
 }

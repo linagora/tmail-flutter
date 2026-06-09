@@ -81,6 +81,7 @@ class _SearchFilterButtonState extends State<SearchFilterButton> {
     );
 
     final deleteButtonWidget = TMailButtonWidget.fromIcon(
+      key: Key('delete_${widget.searchFilter.name}_search_filter_button'),
       icon: widget.imagePaths.icDeleteSelection,
       iconSize: SearchFilterButtonStyle.deleteIconSize,
       iconColor: AppColor.colorTextBody,

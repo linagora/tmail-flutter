@@ -3393,6 +3393,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void openAdvancedSearchView() {
+    if (searchController.isAdvancedSearchViewOpen.isTrue) return;
     dispatchAction(OpenAdvancedSearchViewAction());
     searchController.openAdvanceSearch();
   }

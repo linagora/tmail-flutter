@@ -81,6 +81,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
               constraints: const BoxConstraints(minWidth: 112),
               height: 48,
               child: ConfirmDialogButton(
+                key: const ValueKey(UiKeys.advancedSearchSearchButton),
                 label: AppLocalizations.of(context).search,
                 backgroundColor: AppColor.primaryMain,
                 textColor: Colors.white,
@@ -99,6 +100,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
   ) {
     return Obx(
       () => CustomIconLabeledCheckbox(
+        key: const ValueKey(UiKeys.advancedSearchHasAttachmentCheckbox),
         label: AppLocalizations.of(context).hasAttachment,
         svgIconPath: controller.imagePaths.icCheckboxUnselected,
         selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,

@@ -5,6 +5,7 @@ import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
@@ -45,4 +46,28 @@ class MobileSearchRobot extends SearchRobot implements AbstractSearchRobot {
   Future<void> expectEmptyResults() async {
     await $(const Key(UiKeys.emptySearchEmailView)).waitUntilVisible();
   }
+
+  @override
+  Future<void> expectSuggestionFilterSelected(QuickSearchFilter filter, bool selected) =>
+      throw UnimplementedError('Web only');
+
+  @override
+  Future<void> tapSuggestionFilter(QuickSearchFilter filter) =>
+      throw UnimplementedError('Web only');
+
+  @override
+  Future<void> deleteSuggestionFilter(QuickSearchFilter filter) =>
+      throw UnimplementedError('Web only');
+
+  @override
+  Future<void> expectQuickFilterDateTimeSelected(bool selected) =>
+      throw UnimplementedError('Web only');
+
+  @override
+  Future<void> tapQuickFilterDateTimeChip() =>
+      throw UnimplementedError('Web only');
+
+  @override
+  Future<void> selectQuickFilterDateTimeOption(String dateTimeName) =>
+      throw UnimplementedError('Web only');
 }
