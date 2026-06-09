@@ -48,7 +48,7 @@ const RESOURCES = {"js/sentry-tracing.min.js": "4c3761aae8334da7f24727796d090923
 "main.dart.js_4.part.js": "8283137526b03b38ea6318ab8a727a09",
 "main.dart.js_3.part.js": "66fc28e3c6360c20ee9bd82aa527a2c8",
 "main.dart.js_5.part.js": "53e00eb187a803503b643c0556f83e7b",
-"flutter_bootstrap.js": "b675f99607ad283d3fdc441fedf87121",
+"flutter_bootstrap.js": "7c91b5b3491d761308d0ca59aaac946f",
 "main.dart.js_2.part.js": "2a98dac7679915b1c76f976f1af6ee03",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
