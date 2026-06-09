@@ -244,4 +244,24 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
     }
     return true;
   }
+  
+  @override
+  Future<void> expectEmailWithSubjectVisible(String subject) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> expectEmptyResults() {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> openSearch() {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> searchByLabel(String labelName) {
+    throw UnimplementedError();
+  }
 }

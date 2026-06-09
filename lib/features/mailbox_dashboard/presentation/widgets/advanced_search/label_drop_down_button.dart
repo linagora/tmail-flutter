@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/label_drop_down_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -31,6 +32,7 @@ class LabelDropDownButton extends StatelessWidget {
     return DropdownButtonHideUnderline(
       child: PointerInterceptor(
         child: DropdownButton2<Label?>(
+          key: const ValueKey(UiKeys.advancedSearchLabelDropDown),
           isExpanded: true,
           value: labelSelected,
           items: _buildItems(localizations),

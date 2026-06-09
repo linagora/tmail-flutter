@@ -12,6 +12,8 @@ class UiKeys {
   // Keep snake_case values — existing widgets and tests already reference these key names.
   static const String composerMoreButton = 'composer_more_button';
   static const String saveDraftPopupItem = 'save_as_draft_popup_item';
+  static const String emptyThreadView = 'empty_thread_view';
+  static const String emptySearchEmailView = 'empty_search_email_view';
 
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
@@ -21,4 +23,9 @@ class UiKeys {
   static const String addActionButton = 'addActionButton';
   static const String mobileMailboxMenuButton = 'mobileMailboxMenuButton';
   static const String userAvatar = 'userAvatar';
+
+  // Advanced search
+  static const String openAdvancedSearchButton = 'open_advanced_search_button';
+  static const String advancedSearchLabelDropDown = 'advanced_search_label_drop_down';
+  static const String advancedSearchSearchButton = 'advanced_search_search_button';
 }

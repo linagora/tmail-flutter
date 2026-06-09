@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../base/core_robot.dart';
+import '../../extensions/mailbox_dashboard_controller_integration_test_extensions.dart';
 import '../../models/provisioning_email.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
@@ -37,7 +38,7 @@ abstract class AbstractCommonRobot extends CoreRobot {
     Duration timeout = TestTimeouts.long,
   }) async {
     await waitForCondition(
-      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
+      () => getBinding<MailboxDashBoardController>().isReady,
       timeout: timeout,
     );
   }
@@ -98,13 +99,6 @@ abstract class AbstractCommonRobot extends CoreRobot {
     }
 
     ComposerBindings().dispose();
-  }
-
-  bool _isMailboxReady(MailboxDashBoardController? mailboxDashBoardController) {
-    return mailboxDashBoardController != null &&
-        mailboxDashBoardController.sessionCurrent != null &&
-        mailboxDashBoardController.accountId.value != null &&
-        mailboxDashBoardController.selectedMailbox.value != null;
   }
 
   Future<Identity?> _getIdentity() async {

@@ -6,4 +6,9 @@ abstract class AbstractSearchRobot
     implements
         AbstractSearchInputRobot,
         AbstractSearchFilterRobot,
-        AbstractSearchAssertionRobot {}
+        AbstractSearchAssertionRobot {
+  Future<void> openSearch();
+  Future<void> searchByLabel(String labelName);
+  Future<void> expectEmailWithSubjectVisible(String subject);
+  Future<void> expectEmptyResults();
+}

@@ -3,6 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 
@@ -36,7 +37,7 @@ class EmptySearchEmailWidget extends StatelessWidget {
   Widget _suggestionViewStateToUI(Either<Failure, Success> viewState) {
     return viewState.fold(
       (failure) => EmptyEmailsWidget(
-        key: const Key('empty_search_email_view'),
+        key: const Key(UiKeys.emptySearchEmailView),
         isNetworkConnectionAvailable: isNetworkConnectionAvailable,
         isSearchActive: true
       ),
@@ -45,7 +46,7 @@ class EmptySearchEmailWidget extends StatelessWidget {
           return const SizedBox.shrink();
         } else {
           return EmptyEmailsWidget(
-            key: const Key('empty_search_email_view'),
+            key: const Key(UiKeys.emptySearchEmailView),
             isNetworkConnectionAvailable: isNetworkConnectionAvailable,
             isSearchActive: true
           );

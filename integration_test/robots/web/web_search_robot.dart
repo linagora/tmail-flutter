@@ -3,14 +3,14 @@ import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
-import '../../utils/test_timeouts.dart';
-
 import '../../extensions/patrol_finder_extension.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
@@ -141,5 +141,30 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   Future<void> expectDateTimeFilterContextMenuVisible() async {
     // showMenu popup has no container key — assert via the item widget type.
     await $.waitUntilVisible($(PopupMenuItemActionWidget));
+  }
+
+  @override
+  Future<void> openSearch() async {
+    await $(const ValueKey(UiKeys.openAdvancedSearchButton)).tap();
+  }
+
+  @override
+  Future<void> searchByLabel(String labelName) async {
+    await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
+    await $(find.text(labelName)).tap();
+    await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
+  }
+
+  @override
+  Future<void> expectEmailWithSubjectVisible(String subject) async {
+    final email = $(EmailTileBuilder).which<EmailTileBuilder>(
+      (view) => view.presentationEmail.subject?.contains(subject) == true,
+    );
+    await $.waitUntilVisible(email);
+  }
+
+  @override
+  Future<void> expectEmptyResults() async {
+    await $(const Key(UiKeys.emptyThreadView)).waitUntilVisible();
   }
 }

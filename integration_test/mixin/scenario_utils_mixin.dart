@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../extensions/mailbox_dashboard_controller_integration_test_extensions.dart';
 import '../extensions/patrol_file_extensions.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_identity.dart';
@@ -55,7 +56,7 @@ mixin ScenarioUtilsMixin {
     ComposerBindings().dependencies();
 
     await waitForCondition(
-      () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
+      () => getBinding<MailboxDashBoardController>().isReady,
       timeout: TestTimeouts.long,
     );
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -105,13 +106,6 @@ mixin ScenarioUtilsMixin {
     }
 
     ComposerBindings().dispose();
-  }
-
-  bool _isMailboxReady(MailboxDashBoardController? mailboxDashBoardController) {
-    return mailboxDashBoardController != null &&
-        mailboxDashBoardController.sessionCurrent != null &&
-        mailboxDashBoardController.accountId.value != null &&
-        mailboxDashBoardController.selectedMailbox.value != null;
   }
 
   Future<void> simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient({
