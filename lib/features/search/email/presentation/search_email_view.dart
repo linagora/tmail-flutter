@@ -446,12 +446,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
-    bool isFirst = true;
     final popupMenuItems = EmailReceiveTimeType.valuesForSearch.map((timeType) {
-      final key = isFirst ? const Key('date_time_filter_context_menu') : null;
-      isFirst = false;
       return PopupMenuItem(
-        key: key,
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemDateFilterAction(
@@ -499,12 +495,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
-    bool isFirst = true;
     final popupMenuItems = EmailSortOrderType.values.map((sortType) {
-      final key = isFirst ? const Key('sort_filter_context_menu') : null;
-      isFirst = false;
       return PopupMenuItem(
-        key: key,
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemSortOrderTypeAction(

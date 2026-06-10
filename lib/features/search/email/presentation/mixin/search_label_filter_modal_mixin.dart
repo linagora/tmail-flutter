@@ -45,12 +45,8 @@ mixin SearchLabelFilterModalMixin on PopupContextMenuActionMixin {
     required ImagePaths imagePaths,
     required OnSelectLabelsActions onSelectLabelsActions,
   }) {
-    bool isFirst = true;
     final popupMenuItems = labels.map((label) {
-      final key = isFirst ? const Key('label_list_bottom_sheet_context_menu') : null;
-      isFirst = false;
       return PopupMenuItem(
-        key: key,
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemLabelTypeAction(
