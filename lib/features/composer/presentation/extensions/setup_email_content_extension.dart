@@ -80,7 +80,7 @@ extension SetupEmailContentExtension on ComposerController {
   }
 
   void _loadSimpleEmailContent(String content) {
-    if (PlatformInfo.isWeb) setTextEditorWeb(content);
+    if (PlatformInfo.isWeb && content.isNotEmpty) setTextEditorWeb(content);
     emailContentsViewState.value = Right(GetEmailContentSuccess(htmlEmailContent: content));
   }
 

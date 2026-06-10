@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
@@ -1147,6 +1148,57 @@ void main() {
         expect(composerController?.currentTemplateEmailId, equals(newEmailId));
         verify(mockUploadController.refreshAllAttachments([], [])).called(1);
       });
+    });
+
+    group('setupEmailContent - mailto textEditorWeb:', () {
+      for (final actionType in [
+        EmailActionType.composeFromMailtoUri,
+        EmailActionType.composeFromUnsubscribeMailtoLink,
+      ]) {
+        test(
+          'Should NOT set textEditorWeb\n'
+          'When $actionType with empty body\n'
+          'So that web editor falls back to editorStartTags (2 blank lines before signature)',
+        () async {
+          PlatformInfo.isTestingForWeb = true;
+          try {
+            composerController?.currentEmailActionType = actionType;
+            final arguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.normal,
+              body: '',
+            );
+
+            await composerController?.setupEmailContent(arguments);
+
+            expect(composerController?.textEditorWeb, isNull);
+          } finally {
+            PlatformInfo.isTestingForWeb = false;
+          }
+        });
+
+        test(
+          'Should set textEditorWeb to body content\n'
+          'When $actionType with non-empty body',
+        () async {
+          PlatformInfo.isTestingForWeb = true;
+          try {
+            composerController?.currentEmailActionType = actionType;
+            const body = '<p>Hello from mailto body</p>';
+            final arguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.normal,
+              body: body,
+            );
+
+            await composerController?.setupEmailContent(arguments);
+
+            expect(composerController?.textEditorWeb, equals(body));
+          } finally {
+            PlatformInfo.isTestingForWeb = false;
+          }
+        });
+      }
     });
   });
 }
