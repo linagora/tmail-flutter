@@ -209,12 +209,13 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _executeBeforeReconnectAndLogOut() async {
+  Future<void> _executeBeforeReconnectAndLogOut({required String reason}) async {
     twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
     logError(
       '$runtimeType::_executeBeforeReconnectAndLogOut: '
-      'forcing logout after web save-and-reconnect (urgent auth failure)',
+      'forcing logout after web save-and-reconnect | reason=$reason',
+      extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
     clearDataAndGoToLoginPage();
@@ -250,32 +251,34 @@ abstract class BaseController extends GetxController
       webConsoleEnabled: true,
     );
     if (twakeAppManager.hasComposer) {
-      _performSaveAndReconnection();
+      _performSaveAndReconnection(reason: 'bad_credentials_401');
     } else {
-      _performReconnection();
+      _performReconnection(reason: 'bad_credentials_401');
     }
   }
 
-  void _performSaveAndReconnection() {
+  void _performSaveAndReconnection({required String reason}) {
     if (PlatformInfo.isWeb) {
       log(
         '$runtimeType::_performSaveAndReconnection: web save-and-reconnect path',
         webConsoleEnabled: true,
       );
-      _executeBeforeReconnectAndLogOut();
+      _executeBeforeReconnectAndLogOut(reason: reason);
     } else if (PlatformInfo.isMobile) {
       logError(
         '$runtimeType::_performSaveAndReconnection: '
-        'forcing logout on mobile after save-and-reconnect (urgent auth failure)',
+        'forcing logout on mobile after save-and-reconnect | reason=$reason',
+        extras: {'auth_error_type': reason},
       );
       clearDataAndGoToLoginPage();
     }
   }
 
-  void _performReconnection() {
+  void _performReconnection({required String reason}) {
     logError(
       '$runtimeType::_performReconnection: '
-      'forcing logout (urgent auth failure, no composer to save)',
+      'forcing logout | reason=$reason',
+      extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
     clearDataAndGoToLoginPage();
@@ -287,9 +290,9 @@ abstract class BaseController extends GetxController
       webConsoleEnabled: true,
     );
     if (twakeAppManager.hasComposer) {
-      _performSaveAndReconnection();
+      _performSaveAndReconnection(reason: 'refresh_token_400');
     } else {
-      _performReconnection();
+      _performReconnection(reason: 'refresh_token_400');
     }
   }
 
