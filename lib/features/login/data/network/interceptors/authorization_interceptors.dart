@@ -120,16 +120,24 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return await _refreshTokenThenRetry(err, requestOptions, handler);
       }
 
-      logTrace(
-        'AuthorizationInterceptors::onError: '
-        'No retry or refresh applicable. '
-        'statusCode = ${err.response?.statusCode} | '
-        'authType = $_authenticationType | '
-        'hasConfig = ${_configOIDC != null} | '
-        'hasAttemptedRefresh = $hasAttemptedRefresh | '
-        'url = ${err.requestOptions.uri}',
-        webConsoleEnabled: true,
-      );
+      if (err.response?.statusCode == 401) {
+        _logForcedLogoutFor401(
+          authErrorType: _classifySkippedRefresh401(hasAttemptedRefresh),
+          err: err,
+          hasAttemptedRefresh: hasAttemptedRefresh,
+        );
+      } else {
+        logTrace(
+          'AuthorizationInterceptors::onError: '
+          'No retry or refresh applicable. '
+          'statusCode = ${err.response?.statusCode} | '
+          'authType = $_authenticationType | '
+          'hasConfig = ${_configOIDC != null} | '
+          'hasAttemptedRefresh = $hasAttemptedRefresh | '
+          'url = ${err.requestOptions.uri}',
+          webConsoleEnabled: true,
+        );
+      }
       return super.onError(err, handler);
     } catch (e, stackTrace) {
       logError(
@@ -140,6 +148,36 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       );
       return _handleRefreshError(e, err, handler);
     }
+  }
+
+  String _classifySkippedRefresh401(bool hasAttemptedRefresh) {
+    if (hasAttemptedRefresh) {
+      return 'forced_logout_401_after_refresh_attempted';
+    }
+    if (_authenticationType != AuthenticationType.oidc) {
+      return 'forced_logout_401_non_oidc_session';
+    }
+    if (_configOIDC == null) {
+      return 'forced_logout_401_oidc_config_missing';
+    }
+    return 'forced_logout_401_refresh_preconditions_unmet';
+  }
+
+  void _logForcedLogoutFor401({
+    required String authErrorType,
+    required DioException err,
+    required bool hasAttemptedRefresh,
+  }) {
+    logError(
+      'AuthorizationInterceptors: auth_error_type=$authErrorType | will_logout=true | '
+      'authType=$_authenticationType | hasConfig=${_configOIDC != null} | '
+      'hasToken=${_isTokenNotEmpty(_token)} | hasRefreshToken=${_isRefreshTokenNotEmpty(_token)} | '
+      'tokenExpired=${_isTokenExpired(_token)} | hasAttemptedRefresh=$hasAttemptedRefresh | '
+      'statusCode=${err.response?.statusCode} | url=${err.requestOptions.uri}',
+      exception: err,
+      stackTrace: err.stackTrace,
+      webConsoleEnabled: true,
+    );
   }
 
   /// A failure with NO server response (network/transport drop, timeout) keeps
@@ -210,6 +248,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       webConsoleEnabled: true,
     );
     if (retryError is DioException) {
+      if (retryError.response?.statusCode == 401) {
+        // Retried with a fresh/updated token and STILL got 401 → server rejects
+        // the new token. Genuine auth failure heading to logout; tag it.
+        _logForcedLogoutFor401(
+          authErrorType: 'forced_logout_401_retry_rejected',
+          err: retryError,
+          hasAttemptedRefresh: requestOptions.extra[_refreshAttemptedKey] == true,
+        );
+      }
       return super.onError(retryError, handler);
     }
     return super.onError(
@@ -233,7 +280,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         : await _getNewTokenForOtherPlatform();
 
       if (newTokenOidc.token == _token?.token) {
-        logError('AuthorizationInterceptors::onError: Token duplicated', exception: err);
+        // Refresh returned the SAME token — retrying cannot clear the 401, so it
+        // propagates to logout. Real auth death, but tag it for forensics.
+        _logForcedLogoutFor401(
+          authErrorType: 'forced_logout_401_refreshed_token_duplicated',
+          err: err,
+          hasAttemptedRefresh: true,
+        );
         return super.onError(err, handler);
       }
       _updateNewToken(newTokenOidc);
@@ -260,6 +313,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         logError(
           'AuthorizationInterceptors: auth_error_type=token_endpoint_400 | '
           'will_logout=true — error=$refreshError',
+          exception: refreshError,
           stackTrace: st,
         );
         clear();
@@ -274,6 +328,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors: auth_error_type=token_endpoint_other | '
         'statusCode=${refreshError.response?.statusCode} | '
         'will_logout=false — error=$refreshError',
+        exception: refreshError,
         stackTrace: st,
       );
       return _handleDioRefreshError(
@@ -290,6 +345,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors: auth_error_type=token_refresh_platform_network_failure | '
         'platformCode=${e.code} | '
         'will_logout=false — error=$e',
+        exception: e,
         stackTrace: st,
       );
       return super.onError(

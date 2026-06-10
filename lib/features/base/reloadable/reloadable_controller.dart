@@ -155,12 +155,14 @@ abstract class ReloadableController extends BaseController {
     if (exception is BadCredentialsException ||
         exception is RefreshTokenFailedException ||
         exception is NotFoundSessionException) {
+      final authErrorType = _sessionLogoutAuthErrorType(exception);
       logError(
         '$runtimeType::handleGetSessionFailure: '
-        'forcing logout — session definitively dead — '
-        'exception=${exception.runtimeType}',
+        'auth_error_type=$authErrorType | will_logout=true — '
+        'session definitively dead — exception=${exception.runtimeType}',
         exception: exception,
         stackTrace: StackTrace.current,
+        extras: {'auth_error_type': authErrorType},
         webConsoleEnabled: true,
       );
       clearDataAndGoToLoginPage();
@@ -172,6 +174,18 @@ abstract class ReloadableController extends BaseController {
         webConsoleEnabled: true,
       );
     }
+  }
+
+  /// Tags the forced-logout cause from a definitively-dead session so every
+  /// logout is queryable in Sentry by a single `auth_error_type` field.
+  String _sessionLogoutAuthErrorType(Object? exception) {
+    if (exception is RefreshTokenFailedException) {
+      return 'forced_logout_session_refresh_token_failed';
+    }
+    if (exception is NotFoundSessionException) {
+      return 'forced_logout_session_not_found';
+    }
+    return 'forced_logout_session_bad_credentials';
   }
 
   void handleReloaded(Session session) {}
