@@ -1,3 +1,4 @@
+import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +33,13 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
       await finder.tap();
     }
     await finder.enterTextWithoutTapAction(queryString);
+  }
+
+  @override
+  Future<void> verifySearchSuggestionHighlights(String keyword) async {
+    // Mobile/native: SearchEmailView renders suggestions directly in its widget tree.
+    await $.waitUntilVisible($(RichTextBuilder));
+    expect($(RichTextBuilder).$(keyword.split(' ').first).evaluate().length, 10);
   }
 
   @override
