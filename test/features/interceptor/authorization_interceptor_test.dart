@@ -812,6 +812,58 @@ void main() {
   });
 
   // ============================================================
+  // onError: refresh fails with PlatformException (network failure)
+  // ============================================================
+  group('onError: refresh fails with PlatformException (network failure)', () {
+    test(
+      'WHEN refresh throws PlatformException(token_failed) due to network error\n'
+      'THEN propagates as DioException with type=connectionError (no response)\n'
+      'AND OIDC state is NOT cleared',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(PlatformException(
+          code: 'token_failed',
+          message: 'Failed to get token: [error: null, description: Network error]',
+          details: 'Unable to resolve host "sso.linagora.com": No address associated with hostname',
+        ));
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.type == DioExceptionType.connectionError &&
+                e.error is PlatformException &&
+                e.response == null;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+  });
+
+  // ============================================================
   // onError: skip refresh scenarios
   // ============================================================
   group('onError: skip refresh scenarios', () {

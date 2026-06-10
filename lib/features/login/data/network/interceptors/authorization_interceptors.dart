@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/services.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -279,6 +280,25 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         refreshError: refreshError,
         originalError: err,
         handler: handler,
+      );
+    } on PlatformException catch (e, st) {
+      // flutter_appauth throws PlatformException when the native token request
+      // fails at the OS level (e.g. DNS resolution failure, no network to SSO).
+      // This is a connectivity failure, NOT a server rejection — keep the
+      // session alive and surface a connection-error toast instead of logging out.
+      logError(
+        'AuthorizationInterceptors: auth_error_type=token_refresh_platform_network_failure | '
+        'platformCode=${e.code} | '
+        'will_logout=false — error=$e',
+        stackTrace: st,
+      );
+      return super.onError(
+        DioException(
+          requestOptions: err.requestOptions,
+          error: e,
+          type: DioExceptionType.connectionError,
+        ),
+        handler,
       );
     }
   }
