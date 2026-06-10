@@ -8,16 +8,24 @@ class LabelListContextMenuRobot extends CoreRobot {
   LabelListContextMenuRobot(super.$);
 
   Future<void> selectLabelByName(String name) async {
-    // Mobile: bottom sheet uses ContextMenuDialogItem.
-    // Web: showMenu popup uses PopupMenuItemActionWidget.
     if ($(ContextMenuDialogItem).evaluate().isNotEmpty) {
-      final item = $(ContextMenuDialogItem).$(name);
-      await $.scrollUntilVisible(finder: item);
-      await item.tap();
+      await _selectLabelFromBottomSheet(name);
     } else {
-      final item = $(PopupMenuItemActionWidget).$(name);
-      await $.waitUntilVisible(item);
-      await item.tap();
+      await _selectLabelFromPopupMenu(name);
     }
+  }
+
+  // Mobile: bottom sheet uses ContextMenuDialogItem.
+  Future<void> _selectLabelFromBottomSheet(String name) async {
+    final item = $(ContextMenuDialogItem).$(name);
+    await $.scrollUntilVisible(finder: item);
+    await item.tap();
+  }
+
+  // Web: showMenu popup uses PopupMenuItemActionWidget.
+  Future<void> _selectLabelFromPopupMenu(String name) async {
+    final item = $(PopupMenuItemActionWidget).$(name);
+    await $.waitUntilVisible(item);
+    await item.tap();
   }
 }
