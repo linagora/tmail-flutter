@@ -2,8 +2,9 @@
 """
 HTTP server that resets tmail-backend to a clean provisioned state.
 
-The Android emulator reaches the host at 10.0.2.2, so Dart tests call:
-  POST http://10.0.2.2:9999/reset
+The device (emulator or Firebase Test Lab) reaches the host at the
+configured URL, so Dart tests call:
+  POST http://<host>:9999/reset
 
 Reset strategy: call the James WebAdmin `deleteData` action for every test
 user, which runs all DeleteUserDataTaskStep hooks (clearing mailboxes, emails,
@@ -17,9 +18,10 @@ Returns 200 OK only once all deleteData tasks complete and provisioning
 finishes, so Dart tearDown blocks until the next test can safely start.
 
 Environment variables:
-  RESET_PORT      Listening port (default: 9999)
-  WORK_DIR        Repo root, used to resolve the compose file (default: cwd)
-  WEBADMIN_PORT   James WebAdmin port inside the container (default: 8000)
+  RESET_PORT        Listening port (default: 9999)
+  WORK_DIR          Repo root, used to resolve the compose file (default: cwd)
+  WEBADMIN_PORT     James WebAdmin port (default: 8000)
+  BACKUP_ZIP        Path to backup.zip on the host (default: provisioning/... relative to WORK_DIR)
 """
 
 import http.server
@@ -32,7 +34,11 @@ from typing import List, Optional
 
 RESET_PORT    = int(os.environ.get("RESET_PORT", "9999"))
 WEBADMIN_PORT = int(os.environ.get("WEBADMIN_PORT", "8000"))
-BACKUP_ZIP    = "/root/conf/integration_test/backup.zip"
+WORK_DIR      = os.environ.get("WORK_DIR", os.getcwd())
+BACKUP_ZIP    = os.environ.get(
+    "BACKUP_ZIP",
+    os.path.join(WORK_DIR, "provisioning", "integration_test", "backup.zip")
+)
 
 # Must match the users created by provisioning.sh
 _TEST_USERS = [
@@ -54,7 +60,7 @@ def _run(cmd: List[str], check: bool = False) -> subprocess.CompletedProcess:
 
 
 def _webadmin(method: str, path: str, data: Optional[str] = None) -> dict:
-    """Call the James WebAdmin API inside the container via docker exec curl."""
+    """Call the James WebAdmin API via HTTP on localhost:WEBADMIN_PORT."""
     cmd = [
         "curl", "-s", "-X", method,
         f"http://localhost:{WEBADMIN_PORT}{path}",
@@ -104,7 +110,6 @@ def _wait_for_task(task_id: str, timeout: float = 30.0) -> None:
 def _restore_user_backup(user_email: str) -> str:
     """Submit a restore task for a user's mailbox backup. Returns taskId."""
     result = _run([
-        "docker", "exec", "tmail-backend",
         "curl", "-s", "-X", "POST",
         f"http://localhost:{WEBADMIN_PORT}/users/{user_email}/mailboxes?task=restore&force=true",
         "--data-binary", f"@{BACKUP_ZIP}",
