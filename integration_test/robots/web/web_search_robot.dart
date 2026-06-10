@@ -8,6 +8,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
+import '../../utils/test_timeouts.dart';
+
 import '../../extensions/patrol_finder_extension.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
@@ -113,7 +115,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     // allowing JMAP responses to arrive.
     await waitForCondition(
       () async => $(EmailTileBuilder).evaluate().isNotEmpty,
-      timeout: const Duration(seconds: 30),
+      timeout: TestTimeouts.medium,
     );
   }
 

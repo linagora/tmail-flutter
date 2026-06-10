@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
 import '../../robots/labels/label_list_context_menu_robot.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 
 class SearchEmailWithTagScenario extends BaseTestScenario
@@ -49,7 +50,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     if (labels.isNotEmpty) {
       await waitForCondition(
         () async => $(labels.first.safeDisplayName).evaluate().isNotEmpty,
-        timeout: const Duration(seconds: 30),
+        timeout: TestTimeouts.medium,
       );
     }
 
@@ -78,7 +79,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       () async =>
         $(#label_list_bottom_sheet_context_menu).evaluate().isNotEmpty ||
         $(PopupMenuItemActionWidget).evaluate().isNotEmpty,
-      timeout: const Duration(seconds: 15),
+      timeout: TestTimeouts.short,
     );
   }
 
@@ -94,7 +95,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
             widget.subjectContains(tagDisplayName)).evaluate().length;
         return count >= emailCount;
       },
-      timeout: const Duration(seconds: 30),
+      timeout: TestTimeouts.medium,
     );
 
     final listEmailTileWithTag = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>

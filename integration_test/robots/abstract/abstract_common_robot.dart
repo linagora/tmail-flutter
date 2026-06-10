@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../models/provisioning_email.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 
 abstract class AbstractCommonRobot {
@@ -30,7 +31,7 @@ abstract class AbstractCommonRobot {
   /// silent (seeded-credentials) login completes, so callers that provision data
   /// directly through controllers must await this before touching them.
   Future<void> waitForMailboxReady({
-    Duration timeout = const Duration(seconds: 90),
+    Duration timeout = TestTimeouts.long,
   }) async {
     await waitForCondition(
       () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
