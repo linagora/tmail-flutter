@@ -41,6 +41,7 @@ import '../extensions/patrol_file_extensions.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_identity.dart';
 import '../resources/test_images.dart';
+import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
 
 mixin ScenarioUtilsMixin {
@@ -55,6 +56,7 @@ mixin ScenarioUtilsMixin {
 
     await waitForCondition(
       () => _isMailboxReady(getBinding<MailboxDashBoardController>()),
+      timeout: TestTimeouts.long,
     );
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
