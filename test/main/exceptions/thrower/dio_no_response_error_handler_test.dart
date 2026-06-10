@@ -86,5 +86,32 @@ void main() {
         );
       },
     );
+
+    test(
+      'WHEN DioException type=unknown with HttpException (connection abort)\n'
+      'THEN throws ConnectionError (not logout)\n'
+      'AND OIDC session is preserved (no forced logout path)',
+      () {
+        final error = DioException(
+          requestOptions: RequestOptions(path: '/jmap'),
+          type: DioExceptionType.unknown,
+          error: const HttpException(
+            'Software caused connection abort',
+            uri: null,
+          ),
+        );
+
+        expect(
+          () => handler.handle(error),
+          throwsA(
+            isA<ConnectionError>().having(
+              (e) => e.message,
+              'message',
+              contains('Software caused connection abort'),
+            ),
+          ),
+        );
+      },
+    );
   });
 }
