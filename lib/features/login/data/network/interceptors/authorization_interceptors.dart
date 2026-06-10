@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
@@ -20,7 +19,6 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
-import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
@@ -191,38 +189,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     if (error is DioException) {
       return super.onError(error, handler);
     }
-    if (_isMobileNetworkRefreshError(error)) {
-      logWarning(
-        'AuthorizationInterceptors::_handleRefreshErrorOnMobile: '
-        'network failure during token refresh, keeping session — error=$error',
-      );
-      return super.onError(
-        error.toDioException(
-          requestOptions: originalError.requestOptions,
-          type: DioExceptionType.connectionError,
-        ),
-        handler,
-      );
-    }
     return super.onError(
       error.toDioException(requestOptions: originalError.requestOptions),
       handler,
     );
-  }
-
-  /// Returns true for network/DNS failures during mobile token refresh.
-  ///
-  /// Two sources:
-  /// - [ConnectionError]: produced by [handleException] when [FlutterAppAuthPlatformException]
-  ///   has a null OAuth error code (i.e. a transport failure, not a grant rejection).
-  /// - [FlutterAppAuthPlatformException] with null error code: same condition, reached
-  ///   directly when the caller bypasses [handleException] (e.g. in tests).
-  bool _isMobileNetworkRefreshError(Object error) {
-    if (error is ConnectionError) return true;
-    if (error is FlutterAppAuthPlatformException) {
-      return error.platformErrorDetails.error == null;
-    }
-    return false;
   }
 
   /// A retry that comes back 401 then surfaces downstream as
@@ -286,9 +256,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // Mobile: 400 → session dead (RefreshTokenFailedException); other
       // statuses / no-response → network-tolerant via _handleDioRefreshError.
       if (refreshError.response?.statusCode == 400) {
-        logWarning(
+        logError(
           'AuthorizationInterceptors: auth_error_type=token_endpoint_400 | '
-          'will_logout=true — error=$refreshError | stackTrace=$st',
+          'will_logout=true — error=$refreshError',
+          stackTrace: st,
         );
         clear();
         return handler.reject(DioException(
@@ -298,10 +269,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           response: refreshError.response,
         ));
       }
-      logWarning(
+      logError(
         'AuthorizationInterceptors: auth_error_type=token_endpoint_other | '
         'statusCode=${refreshError.response?.statusCode} | '
-        'will_logout=false — error=$refreshError | stackTrace=$st',
+        'will_logout=false — error=$refreshError',
+        stackTrace: st,
       );
       return _handleDioRefreshError(
         refreshError: refreshError,
