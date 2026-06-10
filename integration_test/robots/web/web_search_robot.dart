@@ -24,7 +24,10 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     // Tap the search icon button so isSearchEmailRunning becomes true and filter
     // buttons appear in the dashboard bar before any keyword is entered.
     await $(SearchInputFormWidget).$(TMailButtonWidget).tap();
-    await Future.delayed(const Duration(seconds: 2));
+    await waitForCondition(
+      () async => $(#sortBy_search_filter_button).evaluate().isNotEmpty,
+      timeout: TestTimeouts.short,
+    );
   }
 
   @override
@@ -52,7 +55,10 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     // focused search field triggers onSubmitted → _invokeSearchEmailAction which
     // commits the search and sets isSearchEmailRunning = true.
     await $.platformAutomator.web.pressKeyCombo(keys: ['Enter']);
-    await Future.delayed(const Duration(seconds: 2));
+    await waitForCondition(
+      () async => $(EmailTileBuilder).evaluate().isNotEmpty,
+      timeout: TestTimeouts.medium,
+    );
   }
 
   @override
@@ -86,14 +92,21 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   @override
   Future<void> selectSortOrder(String sortOrderName) async {
     await $(find.text(sortOrderName)).tap();
-    await Future.delayed(const Duration(seconds: 4));
+    // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
+    await waitForCondition(
+      () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,
+      timeout: TestTimeouts.short,
+    );
   }
 
   @override
   Future<void> selectDateTime(String dateTimeType) async {
     await $(find.text(dateTimeType)).tap();
-    // pump() does not yield to browser XHR — use Future.delayed so JMAP response arrives.
-    await Future.delayed(const Duration(seconds: 4));
+    // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
+    await waitForCondition(
+      () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,
+      timeout: TestTimeouts.short,
+    );
   }
 
   @override

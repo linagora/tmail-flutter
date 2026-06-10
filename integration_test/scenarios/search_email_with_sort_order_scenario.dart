@@ -38,7 +38,7 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
     required EmailSortOrderType sortOrderType,
     required AppLocalizations appLocalizations,
   }) async {
-    await Future.delayed(const Duration(seconds: 2));
+    await searchRobot.expectSearchResultEmailListVisible();
 
     await searchRobot.openSortOrderMenu();
     await searchRobot.expectSortOrderMenuVisible();

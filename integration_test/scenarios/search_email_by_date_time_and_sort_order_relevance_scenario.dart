@@ -38,8 +38,6 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseTestScenari
     await searchRobot.scrollToDateTimeButtonFilter();
     await searchRobot.expectDateTimeSearchFilterButtonVisible();
 
-    await Future.delayed(const Duration(seconds: 2));
-
     await searchRobot.openDateTimeBottomDialog();
     await searchRobot.expectDateTimeFilterContextMenuVisible();
 
@@ -48,8 +46,6 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseTestScenari
       EmailReceiveTimeType.last7Days.getTitleByAppLocalizations(appLocalizations),
     );
     await searchRobot.expectSearchResultEmailListVisible();
-
-    await Future.delayed(const Duration(seconds: 2));
 
     await searchRobot.scrollToEndListSearchFilter();
     await searchRobot.expectSortBySearchFilterButtonVisible();

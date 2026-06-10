@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/base_test_scenario.dart';
+import '../utils/wait_for_condition.dart';
 import '../robots/composer_robot.dart';
 import '../robots/email_robot.dart';
 import '../robots/search_robot.dart';
@@ -65,7 +66,9 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
       '${appLocalizations.prefix_reply_email} $emailSubject'
     );
     await _expectEmailViewVisible();
-    await Future.delayed(const Duration(seconds: 3));
+    await waitForCondition(
+      () async => $(HtmlContentViewer).evaluate().isNotEmpty,
+    );
     await _ensureHtmlContentViewerVisible();
     await _expectEmailViewWithCidImage();
   }
