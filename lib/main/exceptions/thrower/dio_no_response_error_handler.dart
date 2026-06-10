@@ -27,26 +27,35 @@ class DioNoResponseErrorHandler {
       logWarning('RemoteExceptionThrower: socket error');
       throw const SocketError();
     }
-    if (underlyingError is HandshakeException) {
-      logError(
-        'RemoteExceptionThrower: TLS handshake error — will_logout=false | ${underlyingError.message}',
-        exception: underlyingError,
-        stackTrace: stackTrace,
-      );
-      throw ConnectionError(message: underlyingError.message);
-    }
-    if (underlyingError is HttpException) {
-      logError(
-        'RemoteExceptionThrower: HTTP connection abort — will_logout=false | ${underlyingError.message}',
-        exception: underlyingError,
-        stackTrace: stackTrace,
-      );
-      throw ConnectionError(message: underlyingError.message);
-    }
     if (underlyingError is OAuthAuthorizationError) {
       throw underlyingError;
     }
+    final ioConnectionError = _asIoConnectionError(underlyingError, stackTrace);
+    if (ioConnectionError != null) throw ioConnectionError;
     _throwUnknownRemoteException(underlyingError, stackTrace);
+  }
+
+  /// Maps dart:io transport errors that are connectivity failures (not server
+  /// rejections) to [ConnectionError], so the session is kept and a toast is
+  /// shown instead of logging the user out.
+  ConnectionError? _asIoConnectionError(dynamic error, StackTrace? stackTrace) {
+    if (error is HandshakeException) {
+      logError(
+        'RemoteExceptionThrower: TLS handshake error — will_logout=false | ${error.message}',
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      return ConnectionError(message: error.message);
+    }
+    if (error is HttpException) {
+      logError(
+        'RemoteExceptionThrower: HTTP connection abort — will_logout=false | ${error.message}',
+        exception: error,
+        stackTrace: stackTrace,
+      );
+      return ConnectionError(message: error.message);
+    }
+    return null;
   }
 
   void _throwUnknownRemoteException(dynamic underlyingError, [StackTrace? stackTrace]) {
