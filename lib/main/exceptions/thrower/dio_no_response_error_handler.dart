@@ -27,6 +27,14 @@ class DioNoResponseErrorHandler {
       logWarning('RemoteExceptionThrower: socket error');
       throw const SocketError();
     }
+    if (underlyingError is HandshakeException) {
+      logError(
+        'RemoteExceptionThrower: TLS handshake error — will_logout=false | ${underlyingError.message}',
+        exception: underlyingError,
+        stackTrace: stackTrace,
+      );
+      throw ConnectionError(message: underlyingError.message);
+    }
     if (underlyingError is OAuthAuthorizationError) {
       throw underlyingError;
     }
