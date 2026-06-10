@@ -45,6 +45,11 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   }
 
   @override
+  Future<void> openMailbox() async {
+    // Web desktop: mailbox sidebar is always visible — no hamburger menu to tap.
+  }
+
+  @override
   Future<void> tapOnSearchField() async {
     await $(SearchInputFormWidget).$(TextField).tap();
     // Give the dashboard's background sync (Email/changes, Mailbox/changes,
