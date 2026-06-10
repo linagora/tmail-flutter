@@ -185,7 +185,7 @@ aJC(d){var x,w=this,v=null,u=$.aa()
 A.y(w)
 A.r(w).h("V.S").a(u.a.get(w)).toString
 u=A.Q(d,C.w,y.w).w
-x=A.a_K(v,v,C.I,v,v,v,v,v,v,v,C.m,v,v,v,v,new A.ea(A.eX(10),D.a9_),v,v,v,v,v)
+x=A.a_K(v,v,C.I,v,v,v,v,v,v,v,C.m,v,v,v,v,new A.ea(A.eX(10),D.a90),v,v,v,v,v)
 A.z(d,C.e,y.J).toString
 return A.a8(v,A.a_J(!1,A.aj(A.u("Sign In",v,"signIn",v,v),v,v,v,v,v,$.aQ().eM(C.m,16),v,v,v),v,v,D.b8N,v,v,v,new B.bF4(w,d),v,x),C.k,v,v,v,v,48,v,G.tY,v,v,v,u.a.a)},
 aJz(d){return new B.ad2(new A.Y(C.jw,A.a0i(A.aC(A.c([this.bQV(d),C.hf,this.bQN(d),D.aZj],y.p),C.o,C.l,C.p,0,C.u),new B.d2w(A.D(y.j,y.C),A.e3n())),null),D.b8c)},
@@ -217,7 +217,7 @@ v=A.u(s,null,s,null,null)
 A.y(t)
 u=x.a(r.get(t)).eP
 A.y(t)
-return new B.alm(v,C.dD,w,u,D.aGG,x.a(r.get(t)).gc8i(),new B.bF5(t,d),D.b8P)}}
+return new B.alm(v,C.dE,w,u,D.aGG,x.a(r.get(t)).gc8i(),new B.bF5(t,d),D.b8P)}}
 B.Rt.prototype={
 t(d){var x,w=this,v=null,u=$.aa()
 A.y(w)
@@ -227,11 +227,11 @@ return A.m_(v,C.m,A.cT(A.f_(A.Bf(w.bdk(d),v,v,x,u,v,v),v,v,v,v,v,C.L),v,v),v,v,!
 bcB(d){var x,w,v=this,u=null,t=F.bDz(u,u)
 A.z(d,C.e,y.J).toString
 x=y.p
-t=A.aC(A.c([new A.Y(D.zS,t,u),new A.Y(D.zS,A.aj(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aQ().bf(C.n,32,C.pN),u,u,u),u),new A.au(new B.cjb(v),u),new A.au(new B.cjc(v,d),u),v.aup(d),D.Zg,D.FI],x),C.o,C.l,C.p,0,C.u)
+t=A.aC(A.c([new A.Y(D.zS,t,u),new A.Y(D.zS,A.aj(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aQ().bf(C.n,32,C.pN),u,u,u),u),new A.au(new B.cjb(v),u),new A.au(new B.cjc(v,d),u),v.aup(d),D.Zh,D.FI],x),C.o,C.l,C.p,0,C.u)
 w=$.aa()
 A.y(v)
 A.r(v).h("V.S").a(w.a.get(v)).toString
-return new A.cu(C.a3,u,C.Z,C.F,A.c([new A.fs(D.a9w,t,u),A.jv(24,new A.e3(C.dp,u,u,A.bi("assets/images/power_by_linagora.svg",C.v,u,C.P,44,u,u,97),u),u)],x),u)},
+return new A.cu(C.a3,u,C.Z,C.F,A.c([new A.fs(D.a9x,t,u),A.jv(24,new A.e3(C.dp,u,u,A.bi("assets/images/power_by_linagora.svg",C.v,u,C.P,44,u,u,97),u),u)],x),u)},
 bdk(d){var x,w,v,u,t,s,r,q,p=this,o=null,n=y.J
 A.z(d,C.e,n).toString
 x=A.aj(A.u("JMAP-based\ncollaborative team mail solution",o,"jmapBasedMailSolution",o,o),o,o,o,o,o,$.aQ().bf(C.n,36,C.pN),o,o,o)
@@ -260,7 +260,7 @@ q=y.p
 r=A.aC(A.c([x,new A.Y(D.ar2,u,o),new A.Y(C.hu,t,o),new A.Y(C.hu,s,o),new A.Y(C.hu,r,o),new A.Y(D.ar9,A.bi("assets/images/ic_login_graphic.svg",C.v,o,C.P,o,o,o,o),o)],q),C.E,C.aT,C.p,0,C.u)
 s=F.bDz(o,o)
 A.z(d,C.e,n).toString
-s=A.a8(o,A.aC(A.c([new A.Y(D.ark,s,o),new A.Y(D.zS,A.aj(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aQ().bf(C.n,32,C.pN),o,o,o),o),new A.au(new B.cjd(p),o),new A.au(new B.cje(p,d),o),p.aup(d),D.Zg,D.FI],q),C.o,C.l,C.p,0,C.u),C.ai,o,o,D.aXx,o,684,o,o,D.arK,o,o,458)
+s=A.a8(o,A.aC(A.c([new A.Y(D.ark,s,o),new A.Y(D.zS,A.aj(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aQ().bf(C.n,32,C.pN),o,o,o),o),new A.au(new B.cjd(p),o),new A.au(new B.cje(p,d),o),p.aup(d),D.Zh,D.FI],q),C.o,C.l,C.p,0,C.u),C.ai,o,o,D.aXx,o,684,o,o,D.arK,o,o,458)
 A.y(p)
 v.a(w.get(p)).toString
 return new A.Y(D.arj,A.ap(A.c([new A.Y(D.aqW,r,o),A.aC(A.c([s,new A.Y(D.ara,A.bi("assets/images/power_by_linagora.svg",C.v,o,C.P,44,o,o,97),o)],q),C.o,C.l,C.p,0,C.u)],q),C.E,o,C.aT,C.p,0,o),o)},
@@ -277,12 +277,12 @@ v.O=new B.czZ(this)
 return A.aC(A.c([x,A.Ku(u,u,u,C.c6,u,u,!0,u,A.cd(u,u,u,v,w,t),C.a6,u,u,C.aR,C.aB)],y.p),C.o,C.l,C.z,0,C.u)}}
 B.aVq.prototype={
 ct(){var x,w,v,u,t,s,r,q=this,p=null,o=q.w
-if(o==null)o=D.Zb
+if(o==null)o=D.Zc
 x=q.y
 if(x==null)x=D.aQk
 w=q.a
 v=q.c
-u=$.aQ().eM(C.HR,16)
+u=$.aQ().eM(C.HS,16)
 t=q.e
 s=q.f
 if(s==null)s=$.aQ().eM(C.i1,16)
@@ -322,7 +322,7 @@ s.f=$.aQ().bf(C.a_,16,C.C)
 $.aQ().bf(C.a_,16,C.C)
 s.Q=$.aQ().bf(C.dM,13,C.C)
 s.y=C.wb
-s.w=D.Zb
+s.w=D.Zc
 s.x=C.nI
 v=A.c([A.dZa(!1,p,w,s.ct(),t,q,m,n,o,x,v)],y.p)
 r.a.toString
@@ -454,9 +454,9 @@ $S:2234}
 B.cj5.prototype={
 $1(d){var x=null,w=this.a.c
 if(w===C.Ch)return A.u("Enter your credentials to sign in",x,"loginInputCredentialMessage",x,x)
-else if(w===C.Xs)return A.u("To login and access your message please enter your email",x,"dnsLookupLoginMessage",x,x)
-else if(w===C.Xr)return A.u("Enter your password to sign in",x,"enterYourPasswordToSignIn",x,x)
-else if(w===C.Xq)return A.u("To login and access your message please connect to your JMAP server",x,"loginInputUrlMessage",x,x)
+else if(w===C.Xt)return A.u("To login and access your message please enter your email",x,"dnsLookupLoginMessage",x,x)
+else if(w===C.Xs)return A.u("Enter your password to sign in",x,"enterYourPasswordToSignIn",x,x)
+else if(w===C.Xr)return A.u("To login and access your message please connect to your JMAP server",x,"loginInputUrlMessage",x,x)
 else return""},
 $S:2235}
 B.cj6.prototype={
@@ -499,8 +499,8 @@ var y=(function rtii(){var x=A.ao
 return{J:x("lK"),e:x("CE"),j:x("pi"),q:x("vt"),s:x("N<f>"),p:x("N<k>"),P:x("ac<f,@>"),w:x("oA"),Y:x("Ta<ir>"),t:x("ir"),N:x("f"),S:x("au8"),O:x("aU<f>"),C:x("awW"),H:x("~")}})();(function constants(){var x=a.makeConstList
 D.FI=new H.XB(I.jy,null,null,null)
 D.bdx=new B.bEB(0,"commit")
-D.a9_=new A.c1(C.I,0,C.S,-1)
-D.a9w=new A.as(200,720,720,1/0)
+D.a90=new A.c1(C.I,0,C.S,-1)
+D.a9x=new A.as(200,720,720,1/0)
 D.aqd=new A.aB(25,15,25,15)
 D.aqe=new A.aB(25,15,40,15)
 D.aqC=new A.aB(58,11,58,36)
@@ -514,22 +514,22 @@ D.zS=new A.aG(0,67,0,0)
 D.arK=new A.aG(31,0,31,0)
 D.aEc=x(["email"],y.s)
 D.aGG=x(["password"],y.s)
-D.a8U=new A.c1(C.fN,1,C.S,-1)
-D.Zb=new A.fW(4,C.aI,D.a8U)
-D.a8R=new A.c1(C.I,2,C.S,-1)
-D.aQk=new A.fW(4,C.aI,D.a8R)
+D.a8V=new A.c1(C.fN,1,C.S,-1)
+D.Zc=new A.fW(4,C.aI,D.a8V)
+D.a8S=new A.c1(C.I,2,C.S,-1)
+D.aQk=new A.fW(4,C.aI,D.a8S)
 D.aTZ=new B.b1Q(null)
-D.Zg=new A.Y(C.hu,D.aTZ,null)
+D.Zh=new A.Y(C.hu,D.aTZ,null)
 D.ajF=new A.I(0.23921568627450981,0.7372549019607844,0.7372549019607844,0.7372549019607844,C.j)
-D.aaI=new A.c7(2,C.U,D.ajF,C.ei,40)
-D.ay9=x([D.aaI],A.ao("N<c7>"))
+D.aaJ=new A.c7(2,C.U,D.ajF,C.ei,40)
+D.ay9=x([D.aaJ],A.ao("N<c7>"))
 D.aVf=new A.ea(C.kq,C.M)
 D.aXx=new A.iH(C.m,null,null,D.ay9,D.aVf)
 D.b8O=new A.aU("login_loading_icon",y.O)
-D.aZd=new A.b4(40,40,C.Hf,D.b8O)
+D.aZd=new A.b4(40,40,C.Hg,D.b8O)
 D.aZj=new A.b4(null,40,null,null)
 D.b8c=new A.aU("credential_input_form",y.O)
 D.b8N=new A.aU("loginSubmitForm",y.O)
 D.b8P=new A.aU("login_password_input",y.O)
 D.b8Q=new A.aU("login_username_input",y.O)})()};
-(a=>{a["CEXPf8gt6b/dPKESGweCQijTcX4="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["IIbUNIodVvwycxZnLOPQEkJmZsw="]=a.current})($__dart_deferred_initializers__);
