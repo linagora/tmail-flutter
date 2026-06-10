@@ -35,6 +35,14 @@ class DioNoResponseErrorHandler {
       );
       throw ConnectionError(message: underlyingError.message);
     }
+    if (underlyingError is HttpException) {
+      logError(
+        'RemoteExceptionThrower: HTTP connection abort — will_logout=false | ${underlyingError.message}',
+        exception: underlyingError,
+        stackTrace: stackTrace,
+      );
+      throw ConnectionError(message: underlyingError.message);
+    }
     if (underlyingError is OAuthAuthorizationError) {
       throw underlyingError;
     }
