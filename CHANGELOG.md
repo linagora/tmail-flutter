@@ -1,3 +1,7 @@
+## [0.29.5] - 2026-06-12
+### Fixed
+- fix: ios build failed with `didReceiveRemoteNotification` in xcode 26
+
 ## [0.29.4] - 2026-06-11
 
 ### Fixed
