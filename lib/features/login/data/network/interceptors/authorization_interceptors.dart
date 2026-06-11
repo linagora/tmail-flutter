@@ -16,7 +16,7 @@ import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart' show AccessTokenInvalidException;
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/web_refresh_token_error_classifier.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -35,6 +35,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   OIDCConfiguration? _configOIDC;
   TokenOIDC? _token;
   String? _authorization;
+
+  final _webErrorClassifier = WebRefreshTokenErrorClassifier();
 
   late final void Function(
     Object error,
@@ -183,44 +185,54 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// A failure with NO server response (network/transport drop, timeout) keeps
   /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
   /// a flaky connection does not log the web user out.
+  ///
+  /// Error routing delegates RFC 6749 classification to [WebRefreshTokenErrorClassifier]:
+  /// - Server rejection (400/401 or RFC 6749 bad-grant code) → logout.
+  /// - [ArgumentError] with unknown OAuth2 code → Sentry trace, keep session.
+  /// - Network/transport failure → keep session silently.
   void _handleRefreshErrorOnWeb(
     Object error,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
-    if (_isWebRefreshRejectedByServer(error)) {
+    final isRejected = _webErrorClassifier.isServerRejection(error);
+
+    if (isRejected) {
       logError(
         'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
-        'auth_error_type=web_server_rejected_refresh | will_logout=true — error=$error',
+        'will_logout=true — error=$error',
         exception: error,
         stackTrace: StackTrace.current,
-        extras: {'auth_error_type': 'web_server_rejected_refresh'},
+        extras: _webErrorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
       clear();
-      return super.onError(originalError.copyWith(error: error), handler);
+      return handler.reject(DioException(
+        requestOptions: originalError.requestOptions,
+        error: RefreshTokenFailedException(),
+        type: DioExceptionType.badResponse,
+      ));
     }
+
+    if (error is ArgumentError) {
+      // Non-standard OAuth2 code — log to Sentry for investigation, keep session.
+      logError(
+        'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
+        'will_logout=false — error=$error',
+        exception: error,
+        stackTrace: StackTrace.current,
+        extras: _webErrorClassifier.buildSentryExtras(error),
+        webConsoleEnabled: true,
+      );
+      return _handleRefreshErrorOnMobile(error, originalError, handler);
+    }
+
     logWarning(
       'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
       'web refresh network/transient failure, keeping session — error=$error',
       webConsoleEnabled: true,
     );
     return _handleRefreshErrorOnMobile(error, originalError, handler);
-  }
-
-  /// Whether a web REFRESH failure came WITH a server response (grant rejected
-  /// or token invalid) as opposed to a network/transport failure.
-  ///
-  /// flutter_appauth_web throws [ArgumentError] only after parsing a non-200
-  /// token response, and [AccessTokenInvalidException] after a 200 that yields
-  /// an invalid token — both mean the server responded. Everything else (no
-  /// response: timeouts, transport errors, ServerError/TemporarilyUnavailable)
-  /// is treated as a network failure → session kept.
-  bool _isWebRefreshRejectedByServer(Object error) {
-    return error is ArgumentError ||
-        error is AccessTokenInvalidException ||
-        error is UnsupportedError || 
-        (error is DioException && error.response != null);
   }
 
   void _handleRefreshErrorOnMobile(
@@ -359,26 +371,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
         handler,
       );
-    } on ArgumentError catch (e, st) {
-      // flutter_appauth_web throws ArgumentError when the token endpoint returns a
-      // non-200 response (e.g. 400 invalid_grant). This is always a server rejection
-      // (no-response network drops surface differently). Treat identically to mobile
-      // 400: session dead, force logout via RefreshTokenFailedException.
-      if (!PlatformInfo.isWeb) rethrow;
-      logError(
-        'AuthorizationInterceptors: auth_error_type=web_invalid_grant | '
-        'will_logout=true — ${e.message}',
-        exception: e,
-        stackTrace: st,
-        extras: {'auth_error_type': 'web_invalid_grant'},
-        webConsoleEnabled: true,
-      );
-      clear();
-      return handler.reject(DioException(
-        requestOptions: err.requestOptions,
-        error: RefreshTokenFailedException(),
-        type: DioExceptionType.badResponse,
-      ));
     }
   }
 

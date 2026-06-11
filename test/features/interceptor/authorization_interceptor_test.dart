@@ -2873,13 +2873,15 @@ void main() {
     setUp(() => PlatformInfo.isTestingForWeb = true);
     tearDown(() => PlatformInfo.isTestingForWeb = false);
 
+    // ---- RFC 6749 standard error codes → logout ----
+
     test(
-      'WHEN refresh throws ArgumentError (flutter_appauth_web invalid_grant/non-200)\n'
+      'WHEN refresh throws ArgumentError with standard invalid_grant code\n'
       'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
       'AND OIDC state is cleared',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError(
-          'Failed to get token: [error: token_failed, description: invalid_grant]',
+          'Failed to get token: [error: invalid_grant, description: Refresh token expired]',
         ));
         stubAccountCache();
 
@@ -2898,8 +2900,109 @@ void main() {
     );
 
     test(
+      'WHEN refresh throws ArgumentError with standard invalid_client code\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: invalid_client, description: Client authentication failed]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.error is RefreshTokenFailedException;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
+        );
+      },
+    );
+
+    // ---- Non-standard OAuth2 code → session kept, logged for investigation ----
+
+    test(
+      'WHEN refresh throws ArgumentError with non-standard "token_failed" code '
+      'and description invalid_request (Sentry issue)\n'
+      'THEN session is KEPT — error propagated with NO HTTP response\n'
+      'AND OIDC state is NOT cleared (HTTP status unknown, cannot confirm 400/401)',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: token_failed, description: invalid_request]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is ArgumentError;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh throws ArgumentError with non-standard "token_failed" code '
+      'and description invalid_grant (Sentry issue)\n'
+      'THEN session is KEPT — error propagated with NO HTTP response\n'
+      'AND OIDC state is NOT cleared',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: token_failed, description: invalid_grant]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is ArgumentError;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh throws ArgumentError "Invalid or corrupted pad block" (local crypto failure)\n'
+      'THEN session is KEPT — error propagated with NO HTTP response\n'
+      'AND OIDC state is NOT cleared',
+      () async {
+        stubWebRefresh401ThenThrow(
+          ArgumentError('Invalid or corrupted pad block'),
+        );
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response == null && e.error is ArgumentError;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+
+    test(
       'WHEN refresh throws AccessTokenInvalidException\n'
-      'THEN original 401 response is preserved (→ logout)',
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
       () async {
         stubWebRefresh401ThenThrow(AccessTokenInvalidException());
         stubAccountCache();
@@ -2907,9 +3010,13 @@ void main() {
         await expectLater(
           () => dio.post(baseUrl),
           throwsA(predicate<DioException>((e) {
-            return e.response?.statusCode == responseStatusCode401 &&
-                e.error is AccessTokenInvalidException;
+            return e.error is RefreshTokenFailedException;
           })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
         );
       },
     );
@@ -2936,11 +3043,70 @@ void main() {
       );
     }
 
+    // ---- DioException from token endpoint: only 400/401 → logout ----
+
     test(
-      'WHEN refresh throws DioException WITH response (e.g. 503) on web\n'
-      'THEN treated as server rejection → original 401 preserved (→ logout)',
+      'WHEN refresh throws DioException WITH 400 response on web\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
       () async {
-        final refreshDioError = DioException(
+        final refreshDioError400 = DioException(
+          requestOptions: RequestOptions(path: '/token'),
+          response: Response(
+            statusCode: 400,
+            requestOptions: RequestOptions(path: '/token'),
+          ),
+          type: DioExceptionType.badResponse,
+        );
+        stubWebRefresh401ThenThrow(refreshDioError400);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) => e.error is RefreshTokenFailedException)),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh throws DioException WITH 401 response on web\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
+      () async {
+        final refreshDioError401 = DioException(
+          requestOptions: RequestOptions(path: '/token'),
+          response: Response(
+            statusCode: responseStatusCode401,
+            requestOptions: RequestOptions(path: '/token'),
+          ),
+          type: DioExceptionType.badResponse,
+        );
+        stubWebRefresh401ThenThrow(refreshDioError401);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) => e.error is RefreshTokenFailedException)),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh throws DioException WITH 503 response on web\n'
+      'THEN session is KEPT — 503 is not a 400/401 rejection\n'
+      'AND OIDC state is NOT cleared',
+      () async {
+        final refreshDioError503 = DioException(
           requestOptions: RequestOptions(path: '/token'),
           response: Response(
             statusCode: 503,
@@ -2948,21 +3114,24 @@ void main() {
           ),
           type: DioExceptionType.badResponse,
         );
-        stubWebRefresh401ThenThrow(refreshDioError);
+        stubWebRefresh401ThenThrow(refreshDioError503);
         stubAccountCache();
 
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(predicate<DioException>((e) =>
-            e.response?.statusCode == responseStatusCode401 &&
-            e.error is DioException)),
+          throwsA(predicate<DioException>((e) => e.response?.statusCode == 503)),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
         );
       },
     );
 
     test(
       'INVARIANT: flutter_appauth_web throws ArgumentError for non-200 token response\n'
-      'IF THIS TEST FAILS, update ArgumentError catch in _refreshTokenThenRetry',
+      'Standard RFC 6749 codes (invalid_grant) are routed through _handleWebTokenArgumentError',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError('Failed to get token: [error: invalid_grant]'));
         stubAccountCache();
