@@ -109,17 +109,26 @@ class HiveCacheConfig {
   Future<Uint8List?> getEncryptionKey() async {
     final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
-      log('HiveCacheConfig::getEncryptionKey(): encryptionKeyCacheManager not found');
+      // No key → an encrypted box (incl. the OIDC token box) opens without a
+      // cipher and cannot be decrypted, surfacing later as a "no token" startup
+      // logout. Emit remotely so this silent root cause is observable.
+      logError(
+        'HiveCacheConfig::getEncryptionKey(): '
+        'encryption_key_unavailable=true | reason=cache_manager_binding_missing',
+      );
       return null;
     }
     var encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
 
     if (encryptionKeyCache != null) {
-      final encryptionKey = encryptionKeyCache.value;
-      log('HiveCacheConfig::getEncryptionKey(): encryptionKey: $encryptionKey');
+      log('HiveCacheConfig::getEncryptionKey(): encryption key resolved');
       final encryptionKeyDecode = base64Decode(encryptionKeyCache.value);
       return encryptionKeyDecode;
     } else {
+      logError(
+        'HiveCacheConfig::getEncryptionKey(): '
+        'encryption_key_unavailable=true | reason=key_cache_empty',
+      );
       return null;
     }
   }

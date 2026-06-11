@@ -481,8 +481,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
-    await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
-
+    // Persist the new token BEFORE mutating the account cache. persistOneTokenOidc
+    // is crash-safe (write-before-prune), so the token box always holds a usable
+    // token even if the process is killed mid-update.
     await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
 
     final personalAccount = PersonalAccount(

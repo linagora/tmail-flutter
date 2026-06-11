@@ -30,18 +30,35 @@ class AccountCacheManager extends CacheManagerInteraction {
     final newAccountCache = newAccount.toCache();
     final allAccounts = await _accountCacheClient.getAll();
     log('AccountCacheManager::setCurrentAccount::allAccounts(): length: ${allAccounts.length}, $allAccounts');
+
+    // Crash-safe: write the new (selected) account FIRST so the box is never
+    // empty / never without a selected account if the process is killed mid-write.
+    await _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
+
     if (allAccounts.isNotEmpty) {
-      final newAllAccounts = allAccounts
+      // Keep the OTHER accounts, unselected & de-duplicated, minus the stale
+      // version of the account we just wrote (same accountId, different hash id).
+      final otherAccounts = allAccounts
         .unselected()
         .removeDuplicated()
         .whereNot((account) => account.accountId == newAccountCache.accountId)
         .toList();
-      await _accountCacheClient.clearAllData();
-      if (newAllAccounts.isNotEmpty) {
-        await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
+      if (otherAccounts.isNotEmpty) {
+        await _accountCacheClient.updateMultipleItem(otherAccounts.toMap());
+      }
+
+      final keepKeys = {
+        newAccountCache.id,
+        ...otherAccounts.map((account) => account.id),
+      };
+      final staleKeys = allAccounts
+        .map((account) => account.id)
+        .where((id) => !keepKeys.contains(id))
+        .toList();
+      if (staleKeys.isNotEmpty) {
+        await _accountCacheClient.deleteMultipleItem(staleKeys);
       }
     }
-    return _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
   }
 
   Future<void> deleteCurrentAccount(String hashId) {

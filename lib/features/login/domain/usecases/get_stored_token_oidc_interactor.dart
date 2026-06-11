@@ -46,11 +46,35 @@ class GetStoredTokenOidcInteractor {
       } else {
         yield Left(GetStoredTokenOidcFailure(InvalidBaseUrl()));
       }
-    } catch (e) {
-      log('GetStoredTokenOidcInteractor::execute(): $e');
+    } catch (e, stackTrace) {
+      // Startup token read failed → the app silently routes to the login form.
+      logError(
+        'GetStoredTokenOidcInteractor::execute(): '
+        'startup_token_unavailable=true | reason=${_classifyStartupFailure(e)} | '
+        'accountId=${personalAccount.id} | error=$e',
+        exception: e,
+        stackTrace: stackTrace,
+        extras: {
+          'startup_token_unavailable': true,
+          'reason': _classifyStartupFailure(e),
+          'error_type': e.runtimeType.toString(),
+        },
+      );
       yield Left(GetStoredTokenOidcFailure(e));
     }
   }
 
   bool _isCredentialValid(Uri baseUrl) => baseUrl.isBaseUrlValid();
+
+  String _classifyStartupFailure(Object error) {
+    if (error is NotFoundStoredTokenException) {
+      return 'no_stored_token';
+    }
+    final typeName = error.runtimeType.toString();
+    if (typeName.contains('Hive') || error.toString().contains('Hive')) {
+      // e.g. HiveError: unknown typeId / corrupted box / wrong encryption key.
+      return 'hive_read_or_decrypt_error';
+    }
+    return 'other';
+  }
 }

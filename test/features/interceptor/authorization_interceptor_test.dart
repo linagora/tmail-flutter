@@ -2531,7 +2531,7 @@ void main() {
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         when(accountCacheManager.getCurrentAccount())
             .thenAnswer((_) async => AccountFixtures.aliceAccount);
-        when(accountCacheManager.deleteCurrentAccount(AccountFixtures.aliceAccount.id))
+        when(tokenOidcCacheManager.persistOneTokenOidc(OIDCFixtures.newTokenOidc))
             .thenThrow(Exception('Cache write failure'));
 
         await expectLater(
