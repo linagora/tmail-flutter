@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
 import '../exceptions/mailbox/null_quota_exception.dart';
+import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_mailbox_menu_robot.dart';
 
 class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
@@ -45,12 +46,14 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await $(AppLocalizations().newSubfolder).tap();
   }
 
+  @override
   Future<void> enterNewFolderName(String name) async {
     await $(MailboxCreatorView)
         .$(TextFieldBuilder)
         .enterText(name);
   }
 
+  @override
   Future<void> confirmCreateNewFolder() async {
     await $(MailboxCreatorView)
         .$(AppLocalizations().createFolder)
@@ -173,8 +176,16 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     await $.pumpAndSettle(duration: const Duration(seconds: 2));
   }
 
+  @override
   Future<void> tapAddNewFolderButton() async {
     await $(#add_new_folder_button).tap();
+  }
+
+  @override
+  Future<void> expectMailboxWithNameVisible(String name) async {
+    final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
+    await waitForCondition(() async => mailboxItem.evaluate().isNotEmpty);
+    expect(mailboxItem, findsWidgets);
   }
 
   Future<void> tapMarkAsRead() async {
