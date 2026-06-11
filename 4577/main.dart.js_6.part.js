@@ -204,7 +204,7 @@ x=d.d
 return w/(x==null?d.e:x).a}else return 0},
 dZz(d,e){if(B.apK(d))return C.dM
 else if(B.cDP(d))return C.kD
-else return e?D.agA:D.ait}},D
+else return e?D.agB:D.aiu}},D
 J=c[1]
 A=c[0]
 C=c[2]
@@ -289,7 +289,7 @@ B.bfQ.prototype={}
 B.aHd.prototype={
 t(d){var x=null,w=this.gbPz(),v=A.eW(24),u=$.e7W(),t=this.c,s=t.$ti.h("E<am.E,NA>")
 t=A.A(new A.E(t,new B.bEE(this),s),s.h("a2.E"))
-return A.d_(x,A.a8(x,A.k_(C.aG,t,C.dm,C.Y,D.a6b,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tT,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bEF(),x,x,x,x,x,x,x,x,!1,C.a2)},
+return A.d_(x,A.a8(x,A.k_(C.aG,t,C.dm,C.Y,D.a6c,C.aG,0,0,x,C.u),C.k,x,x,new A.ba(C.m,x,x,v,u,x,x,C.B),x,x,x,x,D.tT,x,x,w),C.O,!1,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,new B.bEF(),x,x,x,x,x,x,x,x,!1,C.a2)},
 gbPz(){var x=this.c
 if(J.at(x.gi(0))>=3)return 240+D.tT.ghz()
 else if(J.at(x.gi(0))===2)return 160+D.tT.ghz()
@@ -303,7 +303,7 @@ if((x==null?v:x.gTX())===!0){A.z(d,C.e,y.J).toString
 u.push(A.bM(C.t,v,20,v,v,v,"assets/images/ic_help.svg",C.d9,v,v,C.cM,1/0,v,new B.cwN(w),v,A.u("Get help or report a bug",v,"getHelpOrReportABug",v,v),v))}if(w.w!=null)u.push(new A.aw(new B.cwO(w),v))
 u.push(C.el)
 u.push(new B.FC(w.e,w.x,w.Q,!1,v))
-C.c.D(t,u)}return A.a8(v,A.ap(t,C.o,v,C.l,C.p,0,v),C.k,C.m,v,v,v,80,v,v,D.aqp,v,v,v)}}
+C.c.D(t,u)}return A.a8(v,A.ap(t,C.o,v,C.l,C.p,0,v),C.k,C.m,v,v,v,80,v,v,D.aqq,v,v,v)}}
 B.b37.prototype={
 t(d){var x=null
 return A.a8(x,A.dGE(x,x,this.d,this.c,this.e,x),C.k,x,x,x,x,40,x,x,C.bA,x,x,x)}}
@@ -332,7 +332,7 @@ v.push(C.cI)
 return A.d_(r,A.a8(r,new A.cv(C.a3,r,C.Z,C.F,A.c([A.aC(v,C.o,C.l,C.z,0,C.u),A.kB(r,A.bM(C.t,r,24,r,r,r,"assets/images/ic_composer_close.svg",C.d9,22,r,r,1/0,r,s.w,C.fl,r,r),6,r,6,r)],w),r),C.k,r,r,new A.ba(C.m,r,r,C.m2,x,r,r,C.B),r,r,r,r,r,r,r,260),C.O,!1,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,q,r,r,r,r,r,r,r,r,!1,C.a2)}}
 B.bce.prototype={
 t(d){var x,w,v,u,t,s,r,q=this,p=null,o=q.r
-if(o==null)o=D.arA
+if(o==null)o=D.arB
 x=A.eW(8)
 $.q()
 w=$.b
@@ -457,7 +457,7 @@ x=u.f
 if((x==null?w:x.gTX())===!0){A.z(d,C.e,y.J).toString
 v.push(A.bM(C.t,w,20,w,w,w,"assets/images/ic_help.svg",C.d9,w,w,C.cM,1/0,w,new B.cwK(u),w,A.u("Get help or report a bug",w,"getHelpOrReportABug",w,w),w))}if(u.w!=null)v.push(new A.aw(new B.cwL(u),w))
 v.push(C.el)
-v.push(new B.FC(u.e,u.x,u.Q,!1,D.a6i))
+v.push(new B.FC(u.e,u.x,u.Q,!1,D.a6j))
 return A.ap(v,C.o,w,C.l,C.p,0,w)},
 $S:460}
 B.cwK.prototype={
@@ -500,7 +500,7 @@ w.f=C.n
 w.a=d
 w.d=48
 w.r=t
-w.y=A.c([D.ab1],y.V)
+w.y=A.c([D.ab2],y.V)
 w=w.c7()}return A.uF(C.kw,A.uF(r,w,new B.b38(q,x,u.e,new B.dpf(u,d),new B.dpg(u),t,v),e),s,e)},
 $S:462}
 B.dpf.prototype={
@@ -562,31 +562,31 @@ x(B.bfQ,E.akU)})()
 A.Hf(b.typeUniverse,JSON.parse('{"apd":{"ai":[],"j":[],"p":[]},"brd":{"af":["apd"]},"qS":{"cp":[],"ce":[],"j":[],"p":[]},"b2I":{"c9":[],"bl":[],"j":[],"p":[]},"Ua":{"a7":[],"bZ":["a7"],"a6":[],"p":[],"bg":[]},"aeX":{"Z":[],"j":[],"p":[]},"aVO":{"Z":[],"j":[],"p":[]},"aZk":{"Z":[],"j":[],"p":[]},"b2E":{"kA":["wi"],"k":[]},"Yl":{"ai":[],"j":[],"p":[]},"awN":{"af":["Yl"]},"NA":{"Z":[],"j":[],"p":[]},"aHd":{"Z":[],"j":[],"p":[]},"K8":{"Z":[],"j":[],"p":[]},"b37":{"Z":[],"j":[],"p":[]},"FC":{"ai":[],"j":[],"p":[]},"aAo":{"af":["FC"]},"b38":{"Z":[],"j":[],"p":[]},"bce":{"Z":[],"j":[],"p":[]},"a_E":{"Z":[],"j":[],"p":[]},"aVN":{"Z":[],"j":[],"p":[],"aVR":[]}}'))
 var y=(function rtii(){var x=A.ao
 return{J:x("lZ"),k:x("as"),R:x("DA"),v:x("k9"),V:x("N<c7>"),f:x("N<Y>"),p:x("N<j>"),l:x("TA"),x:x("Uf"),O:x("aU<h>"),z:x("cR<B>"),G:x("bG<B>"),w:x("Mw"),H:x("~")}})();(function constants(){var x=a.makeConstList
-D.a7F=new A.HK(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,null)
-D.FG=new A.HK(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,D.a7F)
+D.a7G=new A.HK(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,null)
+D.FG=new A.HK(1,null,C.kk,C.kj,C.v,C.jg,C.jg,C.r,D.a7G)
 D.oX=new A.I(1,0.9176470588235294,0.9294117647058824,0.9490196078431372,C.j)
 D.Gn=new A.ba(D.oX,null,null,C.bM,null,null,null,C.B)
 D.wp=new A.bf(100,100)
 D.G7=new A.dx(D.wp,D.wp,D.wp,D.wp)
-D.aPV=new A.C(0,0.5)
-D.ab1=new A.c7(1,C.U,C.i_,D.aPV,1)
+D.aPW=new A.C(0,0.5)
+D.ab2=new A.c7(1,C.U,C.i_,D.aPW,1)
 D.HC=new A.I(1,1,0.9607843137254902,0.7607843137254902,C.j)
-D.agA=new A.I(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
-D.ait=new A.I(1,0.5019607843137255,0.7411764705882353,1,C.j)
+D.agB=new A.I(1,0.1450980392156863,0.6823529411764706,0.996078431372549,C.j)
+D.aiu=new A.I(1,0.5019607843137255,0.7411764705882353,1,C.j)
 D.tT=new A.aB(10,14,10,14)
-D.aqp=new A.aB(30,0,30,0)
+D.aqq=new A.aB(30,0,30,0)
 D.JJ=new A.aB(40,0,40,0)
 D.jx=new A.aB(8,0,8,0)
 D.JP=new A.aB(8,4,8,0)
 D.zT=new A.aG(0,6,0,6)
-D.arA=new A.aG(12,5,12,5)
+D.arB=new A.aG(12,5,12,5)
 D.mK=new A.aG(16,12,16,12)
 D.zX=new A.aG(8,3,8,3)
 D.bew=x([],A.ao("N<wi>"))
 D.w2=new B.ST(null)
 D.Zl=new A.t6("mailbox_list",A.ao("t6<h>"))
-D.a6b=new A.aU("listViewAppGrid",y.O)
+D.a6c=new A.aU("listViewAppGrid",y.O)
 D.ES=new A.aU("toggleAppGridButton",y.O)
-D.a6i=new A.aU("userAvatar",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
+D.a6j=new A.aU("userAvatar",y.O)})();(function lazyInitializers(){var x=a.lazyFinal
 x($,"fea","e7W",()=>A.c([A.YI(20,C.U,C.n.aq(0.15),C.r,0)],y.V))})()};
-(a=>{a["7eObpWVJaoQSw3oyseZPK7Xy6sQ="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["GSPQb9KhFosiEFQ0On+TZGYVxYI="]=a.current})($__dart_deferred_initializers__);
