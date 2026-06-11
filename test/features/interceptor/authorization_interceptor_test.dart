@@ -2874,9 +2874,9 @@ void main() {
     tearDown(() => PlatformInfo.isTestingForWeb = false);
 
     test(
-      'WHEN refresh throws ArgumentError (flutter_appauth_web non-200, e.g. 400)\n'
-      'THEN original 401 response is preserved (→ BadCredentialsException → logout)\n'
-      'AND error carries the ArgumentError',
+      'WHEN refresh throws ArgumentError (flutter_appauth_web invalid_grant/non-200)\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError(
           'Failed to get token: [error: token_failed, description: invalid_grant]',
@@ -2886,9 +2886,13 @@ void main() {
         await expectLater(
           () => dio.post(baseUrl),
           throwsA(predicate<DioException>((e) {
-            return e.response?.statusCode == responseStatusCode401 &&
-                e.error is ArgumentError;
+            return e.error is RefreshTokenFailedException;
           })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
         );
       },
     );
@@ -2958,17 +2962,14 @@ void main() {
 
     test(
       'INVARIANT: flutter_appauth_web throws ArgumentError for non-200 token response\n'
-      'IF THIS TEST FAILS, update _isWebRefreshRejectedByServer',
+      'IF THIS TEST FAILS, update ArgumentError catch in _refreshTokenThenRetry',
       () async {
-        // Arrange
         stubWebRefresh401ThenThrow(ArgumentError('Failed to get token: [error: invalid_grant]'));
         stubAccountCache();
 
-        // Act & Assert: ArgumentError → logout path (response preserved)
         await expectLater(
           () => dio.post(baseUrl),
-          throwsA(predicate<DioException>((e) =>
-            e.response?.statusCode == 401 && e.error is ArgumentError)),
+          throwsA(predicate<DioException>((e) => e.error is RefreshTokenFailedException)),
         );
       },
     );

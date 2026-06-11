@@ -356,6 +356,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
         handler,
       );
+    } on ArgumentError catch (e, st) {
+      // flutter_appauth_web throws ArgumentError when the token endpoint returns a
+      // non-200 response (e.g. 400 invalid_grant). This is always a server rejection
+      // (no-response network drops surface differently). Treat identically to mobile
+      // 400: session dead, force logout via RefreshTokenFailedException.
+      if (!PlatformInfo.isWeb) rethrow;
+      logError(
+        'AuthorizationInterceptors: auth_error_type=web_invalid_grant | '
+        'will_logout=true — ${e.message}',
+        exception: e,
+        stackTrace: st,
+        extras: {'auth_error_type': 'web_invalid_grant'},
+        webConsoleEnabled: true,
+      );
+      clear();
+      return handler.reject(DioException(
+        requestOptions: err.requestOptions,
+        error: RefreshTokenFailedException(),
+        type: DioExceptionType.badResponse,
+      ));
     }
   }
 
