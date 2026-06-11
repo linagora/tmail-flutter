@@ -201,11 +201,9 @@ abstract class BaseController extends GetxController
     } else if (exception is RefreshTokenFailedException) {
       handleRefreshTokenFailedException();
     } else {
-      logError(
+      logWarning(
         '$runtimeType::handleUrgentExceptionOnWeb(): NO branch matched — '
         'will NOT navigate to login. exception=${exception.runtimeType}',
-        exception: exception,
-        stackTrace: StackTrace.current,
         webConsoleEnabled: true,
       );
     }
