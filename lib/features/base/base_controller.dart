@@ -201,9 +201,11 @@ abstract class BaseController extends GetxController
     } else if (exception is RefreshTokenFailedException) {
       handleRefreshTokenFailedException();
     } else {
-      logWarning(
+      logError(
         '$runtimeType::handleUrgentExceptionOnWeb(): NO branch matched — '
         'will NOT navigate to login. exception=${exception.runtimeType}',
+        exception: exception,
+        stackTrace: StackTrace.current,
         webConsoleEnabled: true,
       );
     }
@@ -285,8 +287,13 @@ abstract class BaseController extends GetxController
   }
 
   void handleRefreshTokenFailedException() {
-    log(
-      '$runtimeType::handleRefreshTokenFailedException: hasComposer=${twakeAppManager.hasComposer}',
+    logError(
+      '$runtimeType::handleRefreshTokenFailedException: '
+      'auth_error_type=refresh_token_failed | will_logout=true | '
+      'hasComposer=${twakeAppManager.hasComposer}',
+      exception: RefreshTokenFailedException(),
+      stackTrace: StackTrace.current,
+      extras: {'auth_error_type': 'refresh_token_failed'},
       webConsoleEnabled: true,
     );
     if (twakeAppManager.hasComposer) {

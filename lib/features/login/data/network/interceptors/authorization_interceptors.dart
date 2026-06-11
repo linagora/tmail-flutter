@@ -189,9 +189,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     ErrorInterceptorHandler handler,
   ) {
     if (_isWebRefreshRejectedByServer(error)) {
-      logWarning(
+      logError(
         'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
-        'web refresh rejected by server, ending session — error=$error',
+        'auth_error_type=web_server_rejected_refresh | will_logout=true — error=$error',
+        exception: error,
+        stackTrace: StackTrace.current,
+        extras: {'auth_error_type': 'web_server_rejected_refresh'},
         webConsoleEnabled: true,
       );
       clear();
