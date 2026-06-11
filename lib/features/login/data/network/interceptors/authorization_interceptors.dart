@@ -40,6 +40,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   late final void Function(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) _handleRefreshError =
@@ -148,7 +149,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         stackTrace: stackTrace,
         webConsoleEnabled: true,
       );
-      return _handleRefreshError(e, err, handler);
+      return _handleRefreshError(e, stackTrace, err, handler);
     }
   }
 
@@ -192,6 +193,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// - Network/transport failure → keep session silently.
   void _handleRefreshErrorOnWeb(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
@@ -202,7 +204,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
         'will_logout=true — error=$error',
         exception: error,
-        stackTrace: StackTrace.current,
+        stackTrace: stackTrace,
         extras: _webErrorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
@@ -220,11 +222,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
         'will_logout=false — error=$error',
         exception: error,
-        stackTrace: StackTrace.current,
+        stackTrace: stackTrace,
         extras: _webErrorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
-      return _handleRefreshErrorOnMobile(error, originalError, handler);
+      return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
     }
 
     logWarning(
@@ -232,11 +234,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       'web refresh network/transient failure, keeping session — error=$error',
       webConsoleEnabled: true,
     );
-    return _handleRefreshErrorOnMobile(error, originalError, handler);
+    return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
   }
 
   void _handleRefreshErrorOnMobile(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
@@ -320,7 +323,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // failure surfaced. (In practice flutter_appauth_web throws a non-Dio
       // ArgumentError, but a Dio-based refresh must behave identically.)
       if (PlatformInfo.isWeb) {
-        return _handleRefreshError(refreshError, err, handler);
+        return _handleRefreshError(refreshError, st, err, handler);
       }
       // Mobile: 400 → session dead (RefreshTokenFailedException); other
       // statuses / no-response → network-tolerant via _handleDioRefreshError.

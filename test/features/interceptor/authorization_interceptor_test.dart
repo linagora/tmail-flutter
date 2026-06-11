@@ -3131,7 +3131,7 @@ void main() {
 
     test(
       'INVARIANT: flutter_appauth_web throws ArgumentError for non-200 token response\n'
-      'Standard RFC 6749 codes (invalid_grant) are routed through _handleWebTokenArgumentError',
+      'Standard RFC 6749 codes (invalid_grant) are classified as server rejections and trigger logout',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError('Failed to get token: [error: invalid_grant]'));
         stubAccountCache();
