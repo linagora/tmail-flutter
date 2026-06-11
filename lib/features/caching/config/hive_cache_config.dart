@@ -115,6 +115,7 @@ class HiveCacheConfig {
       logError(
         'HiveCacheConfig::getEncryptionKey(): '
         'encryption_key_unavailable=true | reason=cache_manager_binding_missing',
+        stackTrace: StackTrace.current,
       );
       return null;
     }
@@ -128,6 +129,7 @@ class HiveCacheConfig {
       logError(
         'HiveCacheConfig::getEncryptionKey(): '
         'encryption_key_unavailable=true | reason=key_cache_empty',
+        stackTrace: StackTrace.current,
       );
       return null;
     }
