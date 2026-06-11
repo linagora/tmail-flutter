@@ -500,6 +500,103 @@ void main() {
     );
   });
 
+  group('onError: _updateCurrentAccount persists token before account', () {
+    // Drives a full successful refresh so onError → _refreshTokenThenRetry →
+    // _updateCurrentAccount runs, then asserts the crash-safe contract.
+    Future<void> arrangeSuccessfulRefresh() async {
+      authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: OIDCFixtures.tokenOidcExpiredTime,
+        newConfig: OIDCFixtures.oidcConfiguration,
+      );
+
+      dioAdapter.onPost(
+        baseUrl,
+        (server) => server.throws(responseStatusCode401, makeDioError401()),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+        },
+      );
+      dioAdapter.onPost(
+        baseUrl,
+        (server) =>
+            server.reply(responseStatusCode200, dataRequestSuccessfully),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${OIDCFixtures.newTokenOidc.token}',
+        },
+      );
+
+      when(authenticationClient.refreshingTokensOIDC(
+        OIDCFixtures.oidcConfiguration.clientId,
+        OIDCFixtures.oidcConfiguration.redirectUrl,
+        OIDCFixtures.oidcConfiguration.discoveryUrl,
+        OIDCFixtures.oidcConfiguration.scopes,
+        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+      )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+      stubAccountCache();
+    }
+
+    // The account _updateCurrentAccount builds from the refreshed token + the
+    // current account (aliceAccount).
+    final expectedAccount = PersonalAccount(
+      OIDCFixtures.newTokenOidc.tokenIdHash,
+      AuthenticationType.oidc,
+      isSelected: true,
+      accountId: AccountFixtures.aliceAccountId,
+      apiUrl: AccountFixtures.aliceAccount.apiUrl,
+      userName: AccountFixtures.aliceAccount.userName,
+    );
+
+    test(
+      'WHEN refresh succeeds\n'
+      'THEN the new token is persisted AND the new account is set',
+      () async {
+        await arrangeSuccessfulRefresh();
+
+        final response = await dio.post(baseUrl);
+        expect(response.statusCode, responseStatusCode200);
+
+        verify(tokenOidcCacheManager
+                .persistOneTokenOidc(OIDCFixtures.newTokenOidc))
+            .called(1);
+        verify(accountCacheManager.setCurrentAccount(expectedAccount))
+            .called(1);
+      },
+    );
+
+    test(
+      'WHEN refresh succeeds\n'
+      'THEN the token is persisted BEFORE the account is set\n'
+      '(crash-safe: token box is never the empty one mid-update)',
+      () async {
+        await arrangeSuccessfulRefresh();
+
+        await dio.post(baseUrl);
+
+        verifyInOrder([
+          accountCacheManager.getCurrentAccount(),
+          tokenOidcCacheManager.persistOneTokenOidc(OIDCFixtures.newTokenOidc),
+          accountCacheManager.setCurrentAccount(expectedAccount),
+        ]);
+      },
+    );
+
+    test(
+      'WHEN refresh succeeds\n'
+      'THEN the redundant pre-delete of the current account is NOT performed\n'
+      '(setCurrentAccount already replaces it — no destroy-before-write window)',
+      () async {
+        await arrangeSuccessfulRefresh();
+
+        await dio.post(baseUrl);
+
+        verifyNever(
+            accountCacheManager.deleteCurrentAccount(AccountFixtures.aliceAccount.id));
+      },
+    );
+  });
+
   // ============================================================
   // onError: refresh fails with DioException
   // ============================================================
@@ -2531,7 +2628,7 @@ void main() {
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         when(accountCacheManager.getCurrentAccount())
             .thenAnswer((_) async => AccountFixtures.aliceAccount);
-        when(accountCacheManager.deleteCurrentAccount(AccountFixtures.aliceAccount.id))
+        when(tokenOidcCacheManager.persistOneTokenOidc(OIDCFixtures.newTokenOidc))
             .thenThrow(Exception('Cache write failure'));
 
         await expectLater(

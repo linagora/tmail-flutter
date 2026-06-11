@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/account/personal_account.dart';
@@ -46,11 +47,43 @@ class GetStoredTokenOidcInteractor {
       } else {
         yield Left(GetStoredTokenOidcFailure(InvalidBaseUrl()));
       }
-    } catch (e) {
-      log('GetStoredTokenOidcInteractor::execute(): $e');
+    } catch (e, stackTrace) {
+      // Startup token read failed → the app silently routes to the login form.
+      // Report to remote logging on MOBILE only: that is where a missing token
+      // means a real "logged out overnight" regression.
+      final message =
+        'GetStoredTokenOidcInteractor::execute(): '
+        'startup_token_unavailable=true | reason=${_classifyStartupFailure(e)} | '
+        'accountId=${personalAccount.id} | error=$e';
+      if (PlatformInfo.isMobile) {
+        logError(
+          message,
+          exception: e,
+          stackTrace: stackTrace,
+          extras: {
+            'startup_token_unavailable': true,
+            'reason': _classifyStartupFailure(e),
+            'error_type': e.runtimeType.toString(),
+          },
+        );
+      } else {
+        logWarning(message);
+      }
       yield Left(GetStoredTokenOidcFailure(e));
     }
   }
 
   bool _isCredentialValid(Uri baseUrl) => baseUrl.isBaseUrlValid();
+
+  String _classifyStartupFailure(Object error) {
+    if (error is NotFoundStoredTokenException) {
+      return 'no_stored_token';
+    }
+    final typeName = error.runtimeType.toString();
+    if (typeName.contains('Hive') || error.toString().contains('Hive')) {
+      // e.g. HiveError: unknown typeId / corrupted box / wrong encryption key.
+      return 'hive_read_or_decrypt_error';
+    }
+    return 'other';
+  }
 }

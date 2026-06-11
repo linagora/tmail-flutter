@@ -23,13 +23,22 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
-    await clear();
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
+    // Crash-safe persist: write the new token FIRST, then prune stale entries, so
+    // the box is never empty if the process is killed mid-write → forced re-login.
+    log('TokenOidcCacheManager::persistOneTokenOidc(): keyHash: ${tokenOIDC.tokenIdHash}');
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);
     log('TokenOidcCacheManager::persistOneTokenOidc(): done');
+  }
+
+  /// Removes every token except [keepKey] so the box keeps exactly one entry
+  Future<void> _removeStaleTokens({required String keepKey}) async {
+    final allItems = await _tokenOidcCacheClient.getMapItems();
+    final staleKeys = allItems.keys.where((key) => key != keepKey).toList();
+    if (staleKeys.isNotEmpty) {
+      log('TokenOidcCacheManager::_removeStaleTokens(): removing ${staleKeys.length} stale token(s)');
+      await _tokenOidcCacheClient.deleteMultipleItem(staleKeys);
+    }
   }
 
   Future<void> clear() async {
