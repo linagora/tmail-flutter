@@ -66,13 +66,13 @@ import flutter_local_notifications
         _ application: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
-    ) -> Bool {
+    ) {
         if isForegroundFcmDataOnlyNotification(userInfo) {
             fcmMethodChannel?.invokeMethod(CoreUtils.FCM_ON_MESSAGE_METHOD_NAME, arguments: userInfo)
             completionHandler(.noData)
-            return true
+            return
         }
-        return super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+        super.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }
 
     private func isForegroundFcmDataOnlyNotification(_ userInfo: [AnyHashable: Any]) -> Bool {
@@ -128,7 +128,12 @@ import flutter_local_notifications
             
             completionHandler([])
         } else if validateDisplayPushNotification(userInfo: notification.request.content.userInfo) {
-            completionHandler([.alert, .badge, .sound])
+            if #available(iOS 14.0, *) {
+                // .banner + .list together replace the pre-iOS-14 .alert behavior
+                completionHandler([.banner, .list, .badge, .sound])
+            } else {
+                completionHandler([.alert, .badge, .sound])
+            }
         } else {
             completionHandler([])
         }
