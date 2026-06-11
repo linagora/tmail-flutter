@@ -1,3 +1,19 @@
+## [0.29.4] - 2026-06-11
+
+### Fixed
+- TF-4540 Fix left margin of email truncated on email view
+- TF-4592 Fix EXC_BAD_ACCESS crash on iOS foreground FCM push
+- TF-4491 Fix reversed semantic in label action toast messages
+- #4582 Bound Email/changes pagination to stop request storm
+- #4578 Do not double escape text in Scribe
+- Map HttpException/HandshakeException to ConnectionError
+- Keep session on PlatformException(token_failed) network failure
+
+### Changed
+- Upgrade flutter_riverpod to ^3.3.1 with @riverpod codegen
+- Migrate ComposerAutoSaveNotifier and LocalSettingsNotifier to @riverpod
+- #4565 (e2e) Web coverage: personal folder and search tests
+
 ## [0.29.3] - 2026-05-29
 
 ### Fixed
