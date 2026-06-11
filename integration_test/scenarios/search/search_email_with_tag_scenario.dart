@@ -6,7 +6,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
-import '../../robots/labels/label_list_context_menu_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 
@@ -20,7 +19,6 @@ class SearchEmailWithTagScenario extends BaseTestScenario
 
     final commonRobot = robots.commonRobot();
     final searchRobot = robots.searchRobot();
-    final labelListContextMenuRobot = LabelListContextMenuRobot($);
 
     // Labels are created directly through the dashboard controller, which only
     // becomes available after the seeded-credentials login settles. Wait for it
@@ -62,7 +60,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       await searchRobot.openLabelListModal();
       await _expectLabelListContextMenuVisible();
 
-      await labelListContextMenuRobot.selectLabelByName(labelDisplayName);
+      await commonRobot.selectContextMenuItemByName(labelDisplayName);
       await _expectEmailListDisplayedCorrectByTag(
         tagDisplayName: labelDisplayName,
         emailCount: emailCount,

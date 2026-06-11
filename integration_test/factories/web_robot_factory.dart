@@ -28,7 +28,7 @@ class WebRobotFactory implements RobotFactory {
   WebRobotFactory(this.$);
 
   @override
-  AbstractCommonRobot commonRobot() => WebCommonRobot();
+  AbstractCommonRobot commonRobot() => WebCommonRobot($);
 
   @override
   AbstractLoginRobot loginRobot() => WebLoginRobot($);

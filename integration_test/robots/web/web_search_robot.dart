@@ -91,7 +91,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> selectSortOrder(String sortOrderName) async {
-    await $(find.text(sortOrderName)).tap();
+    await $(sortOrderName).tap();
     // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
     await waitForCondition(
       () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,
@@ -101,7 +101,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> selectDateTime(String dateTimeType) async {
-    await $(find.text(dateTimeType)).tap();
+    await $(dateTimeType).tap();
     // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
     await waitForCondition(
       () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,

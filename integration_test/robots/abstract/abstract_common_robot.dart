@@ -21,11 +21,14 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dar
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+import '../../base/core_robot.dart';
 import '../../models/provisioning_email.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 
-abstract class AbstractCommonRobot {
+abstract class AbstractCommonRobot extends CoreRobot {
+  AbstractCommonRobot(super.$);
+
   /// Waits until the mailbox dashboard is fully loaded (session, account id and
   /// selected mailbox are available). The app reaches this state only after the
   /// silent (seeded-credentials) login completes, so callers that provision data
@@ -156,4 +159,6 @@ abstract class AbstractCommonRobot {
   }
 
   Future<FileInfo> prepareTxtFile(String content);
+
+  Future<void> selectContextMenuItemByName(String name);
 }
