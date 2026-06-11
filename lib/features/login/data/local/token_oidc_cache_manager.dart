@@ -23,7 +23,8 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    // Crash-safe persist: write the new token FIRST, then prune stale entries.
+    // Crash-safe persist: write the new token FIRST, then prune stale entries, so
+    // the box is never empty if the process is killed mid-write → forced re-login.
     log('TokenOidcCacheManager::persistOneTokenOidc(): keyHash: ${tokenOIDC.tokenIdHash}');
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
     await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);

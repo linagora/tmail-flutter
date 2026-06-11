@@ -226,9 +226,131 @@ void main() {
       final oldTwo = await accountCacheClient.getItem(account2.id);
       expect(oldTwo!.isSelected, false);
 
-      final newSelected = await accountCacheManager.getCurrentAccount(); 
+      final newSelected = await accountCacheManager.getCurrentAccount();
       expect(newSelected, personalAccount3);
       expect(newSelected.isSelected, true);
+    });
+  });
+
+  group('setCurrentAccount prune logic', () {
+    setUp(() {
+      accountCacheClient = MemoryAccountCacheClient();
+      accountCacheManager = AccountCacheManager(accountCacheClient);
+    });
+
+    test('WHEN a stored account has the SAME accountId but a different hash id \n'
+        '(token refresh changed the id) \n'
+        'THEN the stale version is REMOVED, leaving only the new account', () async {
+      const sharedAccountId =
+          'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246';
+      final staleVersion = AccountCache(
+        'old-hash',
+        'oidc',
+        isSelected: true,
+        accountId: sharedAccountId,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: 'username@domain.com',
+      );
+      final refreshedAccount = PersonalAccount(
+        'new-hash',
+        AuthenticationType.oidc,
+        isSelected: true,
+        accountId: AccountId(Id(sharedAccountId)),
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: UserName('username@domain.com'),
+      );
+      await accountCacheClient.insertItem(staleVersion.id, staleVersion);
+
+      // act
+      await accountCacheManager.setCurrentAccount(refreshedAccount);
+
+      // assert — old hash gone, only the new one remains and is selected
+      final allAccounts = await accountCacheClient.getAll();
+      expect(allAccounts.length, 1);
+      expect(await accountCacheClient.getItem('old-hash'), isNull);
+      final current = await accountCacheManager.getCurrentAccount();
+      expect(current.id, 'new-hash');
+      expect(current.isSelected, true);
+    });
+
+    test('WHEN the box has duplicate entries for one accountId \n'
+        'THEN setting a different account collapses the duplicates \n'
+        'AND keeps exactly one selected account', () async {
+      const duplicatedAccountId =
+          'f30ec0b94db05675894262fbc5c2e27ae08b34da40b488644f9517aaf25e8246';
+      final dup1 = AccountCache(
+        'dup-1',
+        'oidc',
+        isSelected: true,
+        accountId: duplicatedAccountId,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: 'dup@domain.com',
+      );
+      final dup2 = AccountCache(
+        'dup-2',
+        'oidc',
+        isSelected: true,
+        accountId: duplicatedAccountId,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: 'dup@domain.com',
+      );
+      final newAccount = PersonalAccount(
+        'new-hash',
+        AuthenticationType.oidc,
+        isSelected: true,
+        accountId: AccountId(Id(
+            '5675894262fbc5c2e278644f9517aaf25e8246ae08b34da40b48f30ec0b94db0')),
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: UserName('new@domain.com'),
+      );
+      await accountCacheClient.insertMultipleItem({
+        dup1.id: dup1,
+        dup2.id: dup2,
+      });
+
+      // act
+      await accountCacheManager.setCurrentAccount(newAccount);
+
+      // assert — duplicates collapsed to one (unselected) + new (selected)
+      final allAccounts = await accountCacheClient.getAll();
+      expect(allAccounts.length, 2);
+      expect(allAccounts.where((account) => account.isSelected).length, 1);
+      final current = await accountCacheManager.getCurrentAccount();
+      expect(current.id, 'new-hash');
+    });
+
+    test('WHEN re-selecting the account that is already stored \n'
+        '(same id, same accountId) \n'
+        'THEN the box still holds exactly that one selected account', () async {
+      const accountId =
+          'aaaa894262fbc5c2e278644f9517aaf25e8246ae08b34da40b48f30ec0b94db0';
+      final existing = AccountCache(
+        'same-hash',
+        'oidc',
+        isSelected: true,
+        accountId: accountId,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: 'self@domain.com',
+      );
+      final reselect = PersonalAccount(
+        'same-hash',
+        AuthenticationType.oidc,
+        isSelected: true,
+        accountId: AccountId(Id(accountId)),
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        userName: UserName('self@domain.com'),
+      );
+      await accountCacheClient.insertItem(existing.id, existing);
+
+      // act
+      await accountCacheManager.setCurrentAccount(reselect);
+
+      // assert — idempotent: one selected account, not pruned to empty
+      final allAccounts = await accountCacheClient.getAll();
+      expect(allAccounts.length, 1);
+      final current = await accountCacheManager.getCurrentAccount();
+      expect(current.id, 'same-hash');
+      expect(current.isSelected, true);
     });
   });
 }
