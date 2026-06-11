@@ -72,6 +72,10 @@ void main() {
       test('returns true for unauthorized_client', () {
         expect(classifier.isServerRejection(appAuthError('unauthorized_client')), isTrue);
       });
+
+      test('returns true for unsupported_grant_type', () {
+        expect(classifier.isServerRejection(appAuthError('unsupported_grant_type')), isTrue);
+      });
     });
 
     group('ArgumentError — non-standard / unknown codes', () {

@@ -17,11 +17,12 @@ class WebRefreshTokenErrorClassifier {
   /// Non-standard codes (e.g. "token_failed") are absent intentionally;
   /// they are logged to Sentry until their HTTP status is confirmed.
   static const _badGrantCodes = {
-    'invalid_grant',       // refresh token expired or revoked (400)
-    'invalid_client',      // client authentication failed (400 or 401)
-    'invalid_request',     // request was malformed (400)
-    'invalid_scope',       // requested scope exceeds original grant (400)
-    'unauthorized_client', // client not authorized for this grant type (400)
+    'invalid_grant',          // refresh token expired or revoked (400)
+    'invalid_client',         // client authentication failed (400 or 401)
+    'invalid_request',        // request was malformed (400)
+    'invalid_scope',          // requested scope exceeds original grant (400)
+    'unauthorized_client',    // client not authorized for this grant type (400)
+    'unsupported_grant_type', // grant type not supported by the server (400)
   };
 
   /// Returns `true` when [error] represents a confirmed server-side rejection
