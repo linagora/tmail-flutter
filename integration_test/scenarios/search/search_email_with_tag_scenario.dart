@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
-import '../../robots/labels/label_list_context_menu_robot.dart';
-import '../../robots/search_robot.dart';
-import '../../robots/thread_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 
 class SearchEmailWithTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
@@ -17,9 +17,13 @@ class SearchEmailWithTagScenario extends BaseTestScenario
   Future<void> runTestLogic() async {
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
 
-    final threadRobot = ThreadRobot($);
-    final searchRobot = SearchRobot($);
-    final labelListContextMenuRobot = LabelListContextMenuRobot($);
+    final commonRobot = robots.commonRobot();
+    final searchRobot = robots.searchRobot();
+
+    // Labels are created directly through the dashboard controller, which only
+    // becomes available after the seeded-credentials login settles. Wait for it
+    // before provisioning, otherwise the labels come back empty (no accountId).
+    await commonRobot.waitForMailboxReady();
 
     final labels = await provisionLabelsByDisplayNames(
       ['Search Tag 1', 'Search Tag 2', 'Search Tag 3'],
@@ -28,7 +32,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
 
     int emailCount = 3;
     for (final label in labels) {
-      await provisionEmail(
+      await commonRobot.provisionEmail(
         buildEmailsForLabel(
           label: label,
           toEmail: emailUser,
@@ -37,10 +41,18 @@ class SearchEmailWithTagScenario extends BaseTestScenario
         requestReadReceipt: false,
       );
     }
-    await $(EmailTileBuilder).waitUntilVisible();
 
-    await threadRobot.openSearchView();
-    await _expectSearchViewVisible();
+    // Wait for provisioned emails to appear in the inbox.
+    // waitForCondition uses Future.delayed between retries, which yields to the
+    // browser event loop on web so JMAP XHR callbacks can fire.
+    if (labels.isNotEmpty) {
+      await waitForCondition(
+        () async => $(labels.first.safeDisplayName).evaluate().isNotEmpty,
+        timeout: TestTimeouts.medium,
+      );
+    }
+
+    await searchRobot.tapOnSearchField();
 
     for (final label in labels) {
       final labelDisplayName = label.safeDisplayName;
@@ -48,7 +60,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       await searchRobot.openLabelListModal();
       await _expectLabelListContextMenuVisible();
 
-      await labelListContextMenuRobot.selectLabelByName(labelDisplayName);
+      await commonRobot.selectContextMenuItemByName(labelDisplayName);
       await _expectEmailListDisplayedCorrectByTag(
         tagDisplayName: labelDisplayName,
         emailCount: emailCount,
@@ -58,29 +70,32 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     }
   }
 
-  Future<void> _expectSearchViewVisible() async {
-    await expectViewVisible($(SearchEmailView));
-  }
-
   Future<void> _expectLabelListContextMenuVisible() async {
-    await expectViewVisible($(#label_list_bottom_sheet_context_menu));
+    // Mobile: bottom sheet identified by #label_list_bottom_sheet_context_menu.
+    // Web: showMenu popup has no container key — identified by PopupMenuItemActionWidget.
+    await waitForCondition(
+      () async =>
+        $(#label_list_bottom_sheet_context_menu).evaluate().isNotEmpty ||
+        $(PopupMenuItemActionWidget).evaluate().isNotEmpty,
+      timeout: TestTimeouts.short,
+    );
   }
 
   Future<void> _expectEmailListDisplayedCorrectByTag({
     required String tagDisplayName,
     required int emailCount,
   }) async {
-    await $(EmailTileBuilder).waitUntilVisible();
-    for (int i = 0; i < 3; i++) {
-      final count = $.tester.widgetList<EmailTileBuilder>(
-        $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
-            widget.subjectContains(tagDisplayName)),
-      ).length;
-      if (count >= emailCount) break;
-      await $.pump(const Duration(seconds: 1));
-    }
+    // waitForCondition yields to the browser event loop between retries (via
+    // Future.delayed), allowing JMAP XHR callbacks to fire on web.
+    await waitForCondition(
+      () async {
+        final count = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
+            widget.subjectContains(tagDisplayName)).evaluate().length;
+        return count >= emailCount;
+      },
+      timeout: TestTimeouts.medium,
+    );
 
-    // Emails provisioned by buildEmailsForLabel include the tag name in the subject
     final listEmailTileWithTag = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
         widget.subjectContains(tagDisplayName)).allCandidates;
 

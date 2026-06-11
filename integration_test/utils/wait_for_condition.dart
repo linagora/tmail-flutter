@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'test_timeouts.dart';
+
 Future<void> waitForCondition(
   FutureOr<bool> Function() condition, {
-  Duration timeout = const Duration(seconds: 30),
+  Duration timeout = TestTimeouts.medium,
   Duration interval = const Duration(seconds: 1),
 }) async {
   await Future.doWhile(() async {

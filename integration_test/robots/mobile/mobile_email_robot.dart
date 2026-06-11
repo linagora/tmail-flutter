@@ -3,6 +3,7 @@ import 'package:patrol/patrol.dart';
 
 import '../abstract/abstract_email_robot.dart';
 import '../email_robot.dart';
+import '../../utils/test_timeouts.dart';
 
 class MobileEmailRobot extends EmailRobot implements AbstractEmailRobot {
   MobileEmailRobot(super.$);
@@ -13,12 +14,12 @@ class MobileEmailRobot extends EmailRobot implements AbstractEmailRobot {
       MobileSelector(
         android: AndroidSelector(text: 'SAVE'),
       ),
-      timeout: const Duration(seconds: 30),
+      timeout: TestTimeouts.medium,
     );
     await expectLater(
       $.platformAutomator.tap(
         Selector(text: 'SAVE'),
-        timeout: const Duration(seconds: 30),
+        timeout: TestTimeouts.medium,
       ),
       completes,
     );

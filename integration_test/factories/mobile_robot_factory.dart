@@ -28,7 +28,7 @@ class MobileRobotFactory implements RobotFactory {
   MobileRobotFactory(this.$);
 
   @override
-  AbstractCommonRobot commonRobot() => MobileCommonRobot();
+  AbstractCommonRobot commonRobot() => MobileCommonRobot($);
 
   @override
   AbstractLoginRobot loginRobot() => MobileLoginRobot($);
