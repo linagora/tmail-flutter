@@ -126,6 +126,27 @@ void main() {
     });
   });
 
+  group('persistOneTokenOidc — corrupted box recovery', () {
+    test('WHEN getMapItems throws during _removeStaleTokens\n'
+        'THEN clears box and re-inserts token without throwing', () async {
+      final client = _CorruptedGetMapItemsCacheClient();
+      final manager = TokenOidcCacheManager(client);
+
+      await expectLater(
+        manager.persistOneTokenOidc(validToken),
+        completes,
+        reason: 'corrupted getMapItems must not propagate from persistOneTokenOidc',
+      );
+
+      expect(client.clearCalled, isTrue,
+          reason: 'corrupted box must be cleared during recovery');
+
+      final result = await manager.getTokenOidc(validToken.tokenIdHash);
+      expect(result.token, validToken.token,
+          reason: 'token must be readable after recovery re-insert');
+    });
+  });
+
   group('persistOneTokenOidc → getTokenOidc round-trip', () {
     late MemoryTokenOidcCacheClient cacheClient;
     late TokenOidcCacheManager manager;
@@ -171,6 +192,25 @@ void main() {
       expect(result.token, newToken.token);
     });
   });
+}
+
+/// Simulates a Hive box where toMap() fails because a corrupted entry is
+/// encountered during iteration — the exact scenario seen in production when
+/// cross-isolate writes leave non-block-aligned AES data. insertItem and
+/// clearAllData still work so the recovery path can clear and re-insert.
+class _CorruptedGetMapItemsCacheClient extends MemoryTokenOidcCacheClient {
+  bool clearCalled = false;
+
+  @override
+  Future<Map<String, TokenOidcCache>> getMapItems({bool isolated = true}) async {
+    throw ArgumentError.value(1901, 'length', 'Not in inclusive range 0..1900');
+  }
+
+  @override
+  Future<void> clearAllData({bool isolated = true}) async {
+    clearCalled = true;
+    await super.clearAllData(isolated: isolated);
+  }
 }
 
 class _ArbitraryErrorCacheClient extends MemoryTokenOidcCacheClient {
