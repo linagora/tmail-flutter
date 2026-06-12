@@ -56,6 +56,11 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
+  Future<void> persistTokenOIDCAt(String key, TokenOIDC tokenOidc) {
+    return _oidcDataSource.persistTokenOIDCAt(key, tokenOidc);
+  }
+
+  @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
     return _oidcDataSource.getStoredOidcConfiguration();
   }

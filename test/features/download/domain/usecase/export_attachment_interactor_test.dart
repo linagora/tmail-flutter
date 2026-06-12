@@ -126,7 +126,7 @@ void main() {
             ]),
           );
 
-          verify(authenticationOIDCRepository.persistTokenOIDC(OIDCFixtures.newTokenOidc)).called(1);
+          verify(authenticationOIDCRepository.persistTokenOIDCAt('oidc-account-id', OIDCFixtures.newTokenOidc)).called(1);
 
           final captured = verify(
             downloadRepository.exportAttachment(any, any, any, captureAny, any),
@@ -143,7 +143,7 @@ void main() {
         () async {
           when(authenticationOIDCRepository.getStoredTokenOIDC(any))
               .thenThrow(Exception('storage error'));
-          when(authenticationOIDCRepository.persistTokenOIDC(any))
+          when(authenticationOIDCRepository.persistTokenOIDCAt(any, any))
               .thenAnswer((_) => Future.error(Exception('persist error')));
 
           await expectLater(

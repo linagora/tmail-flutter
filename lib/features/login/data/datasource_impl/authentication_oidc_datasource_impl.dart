@@ -90,6 +90,13 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
+  Future<void> persistTokenOIDCAt(String key, TokenOIDC tokenOidc) {
+    return Future.sync(() async {
+      return await _tokenOidcCacheManager.persistOneTokenOidcAt(key, tokenOidc);
+    }).catchError(_cacheExceptionThrower.throwException);
+  }
+
+  @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.getOidcConfiguration();

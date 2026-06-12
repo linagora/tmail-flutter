@@ -18,6 +18,8 @@ abstract class AuthenticationOIDCRepository {
 
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc);
 
+  Future<void> persistTokenOIDCAt(String key, TokenOIDC tokenOidc);
+
   Future<void> deleteTokenOIDC();
 
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash);
