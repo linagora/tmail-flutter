@@ -59,7 +59,7 @@ void main() {
   group('getTokenOidc — corrupted box recovery', () {
     test('WHEN getItem throws ArgumentError (AES block-size mismatch)\n'
         'THEN clears the box and throws NotFoundStoredTokenException', () async {
-      final client = CorruptedGetItemCacheClient();
+      final client = StubTokenOidcCacheClient.withCorruptedGetItem();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -72,7 +72,7 @@ void main() {
 
     test('WHEN getItem throws a generic Error\n'
         'THEN clears the box and throws NotFoundStoredTokenException', () async {
-      final client = ArbitraryErrorGetItemCacheClient();
+      final client = StubTokenOidcCacheClient.withArbitraryGetItemError();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -84,7 +84,7 @@ void main() {
 
     test('WHEN clearAllData itself throws\n'
         'THEN the secondary error is suppressed and NotFoundStoredTokenException is still thrown', () async {
-      final client = ClearFailingCacheClient();
+      final client = StubTokenOidcCacheClient.withClearFailing();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -98,7 +98,7 @@ void main() {
   group('persistOneTokenOidc — corrupted box recovery', () {
     test('WHEN getMapItems throws during _removeStaleTokens\n'
         'THEN clears box and re-inserts token without throwing', () async {
-      final client = CorruptedGetMapItemsCacheClient();
+      final client = StubTokenOidcCacheClient.withCorruptedGetMapItems();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -117,7 +117,7 @@ void main() {
 
     test('WHEN insertItem itself throws\n'
         'THEN exception propagates immediately without touching recovery path', () async {
-      final client = InsertFailingCacheClient();
+      final client = StubTokenOidcCacheClient.withInsertFailing();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
