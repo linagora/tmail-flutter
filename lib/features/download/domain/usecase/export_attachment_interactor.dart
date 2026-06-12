@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/download/domain/mixin/oidc_token_resolve_mixin.dart';
 import 'package:tmail_ui_user/features/download/domain/model/export_attachment_request.dart';
 import 'package:tmail_ui_user/features/download/domain/repository/download_repository.dart';
 import 'package:tmail_ui_user/features/download/domain/state/export_attachment_state.dart';
@@ -11,11 +12,14 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
-class ExportAttachmentInteractor {
+class ExportAttachmentInteractor with OidcTokenResolveMixin {
   final DownloadRepository _downloadRepository;
   final CredentialRepository _credentialRepository;
   final AccountRepository _accountRepository;
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
+
+  @override
+  AuthenticationOIDCRepository get authOIDCRepository => _authenticationOIDCRepository;
 
   ExportAttachmentInteractor(
     this._downloadRepository,
@@ -31,7 +35,7 @@ class ExportAttachmentInteractor {
       AccountRequest? accountRequest;
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
-        final tokenOidc = await _getTokenOidc(currentAccount.id, fallbackToken: request.fallbackToken);
+        final tokenOidc = await resolveOidcToken(currentAccount.id, fallbackToken: request.fallbackToken);
         accountRequest = AccountRequest.withOidc(token: tokenOidc);
       } else {
         final authenticationInfoCache = await _credentialRepository.getAuthenticationInfoStored();
@@ -53,29 +57,6 @@ class ExportAttachmentInteractor {
     } catch (exception) {
       logWarning('ExportAttachmentInteractor::execute(): exception: $exception');
       yield Left<Failure, Success>(ExportAttachmentFailure(exception));
-    }
-  }
-
-  Future<TokenOIDC> _getTokenOidc(
-    String accountCacheKey, {
-    TokenOIDC? fallbackToken,
-  }) async {
-    try {
-      return await _authenticationOIDCRepository.getStoredTokenOIDC(accountCacheKey);
-    } catch (e) {
-      if (fallbackToken != null) {
-        logTrace('ExportAttachmentInteractor::_getTokenOidc(): '
-            'storage failed, using in-memory token as fallback | error=${e.runtimeType}');
-        _authenticationOIDCRepository.persistTokenOIDCAt(accountCacheKey, fallbackToken).catchError(
-          (Object repairError) => logError(
-            'ExportAttachmentInteractor::_getTokenOidc(): '
-            'failed to repair token storage | error=${repairError.runtimeType}',
-            exception: repairError,
-          ),
-        );
-        return fallbackToken;
-      }
-      rethrow;
     }
   }
 }
