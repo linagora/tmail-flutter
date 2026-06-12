@@ -52,6 +52,29 @@ Future<void> _openDropDown(WidgetTester tester, {Label? labelSelected}) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _assertIcCheckedInSameRowAs(
+  WidgetTester tester,
+  String text,
+) async {
+  final checkedIconFinder = find.byWidgetPredicate(
+    (widget) =>
+        widget is SvgPicture &&
+        widget.bytesLoader is SvgAssetLoader &&
+        (widget.bytesLoader as SvgAssetLoader).assetName == _imagePaths.icChecked,
+  );
+  final rowsOfText = tester
+      .widgetList(find.ancestor(of: find.text(text), matching: find.byType(Row)))
+      .toSet();
+  final rowsOfIcon = tester
+      .widgetList(find.ancestor(of: checkedIconFinder, matching: find.byType(Row)))
+      .toSet();
+  expect(
+    rowsOfText.intersection(rowsOfIcon).isNotEmpty,
+    isTrue,
+    reason: 'icChecked must appear in the same row as the "$text" menu item',
+  );
+}
+
 void main() {
   group('LabelDropDownButton - with a label selected', () {
     testWidgets('selected item shows icChecked icon', (tester) async {
@@ -103,40 +126,7 @@ void main() {
   group('LabelDropDownButton - with no label selected', () {
     testWidgets('All Labels item shows icChecked', (tester) async {
       await _openDropDown(tester, labelSelected: null);
-
-      final checkedIconFinder = find.byWidgetPredicate(
-        (widget) =>
-            widget is SvgPicture &&
-            widget.bytesLoader is SvgAssetLoader &&
-            (widget.bytesLoader as SvgAssetLoader).assetName ==
-                _imagePaths.icChecked,
-      );
-
-      // Collect Row ancestors of the "All labels" text and the checked icon.
-      // The intersection is non-empty iff the icon lives in the same row.
-      final rowsOfText = tester
-          .widgetList(
-            find.ancestor(
-              of: find.text('All labels'),
-              matching: find.byType(Row),
-            ),
-          )
-          .toSet();
-
-      final rowsOfIcon = tester
-          .widgetList(
-            find.ancestor(
-              of: checkedIconFinder,
-              matching: find.byType(Row),
-            ),
-          )
-          .toSet();
-
-      expect(
-        rowsOfText.intersection(rowsOfIcon).isNotEmpty,
-        isTrue,
-        reason: 'icChecked must appear in the same row as the "All labels" menu item',
-      );
+      await _assertIcCheckedInSameRowAs(tester, 'All labels');
     });
   });
 }
