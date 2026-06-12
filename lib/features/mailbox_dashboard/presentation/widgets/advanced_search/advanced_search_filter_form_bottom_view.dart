@@ -4,6 +4,7 @@ import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -76,6 +77,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
               }
             },
             child: Container(
+              key: const ValueKey(UiKeys.advancedSearchSearchButton),
               constraints: const BoxConstraints(minWidth: 112),
               height: 48,
               child: ConfirmDialogButton(

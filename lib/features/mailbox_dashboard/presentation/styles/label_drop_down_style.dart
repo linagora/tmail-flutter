@@ -11,10 +11,6 @@ class LabelDropDownStyle {
   static const double scrollbarThickness = 6;
   static const double checkedIconSize = 20;
 
-  static final Color unCheckedIconColor =
-      AppColor.gray424244.withValues(alpha: 0.72);
-  static const Color checkedIconColor = AppColor.primaryMain;
-
   static const Offset dropdownOffset = Offset(0.0, -3.0);
 
   static BoxDecoration dropdownDecoration = BoxDecoration(

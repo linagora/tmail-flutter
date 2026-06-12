@@ -1,6 +1,8 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
@@ -75,5 +77,5 @@ class EmptyTrashScenario extends BaseTestScenario {
   ) => expectViewVisible($(appLocalizations.empty_trash_dialog_message));
 
   Future<void> _expectEmptyViewVisible() =>
-      expectViewVisible($(#empty_thread_view));
+      expectViewVisible($(const Key(UiKeys.emptyThreadView)));
 }

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -78,10 +80,10 @@ class MoveFolderContentScenario extends BaseTestScenario {
   }
 
   Future<void> _expectEmptyViewVisibleInInboxFolder() async {
-    await expectViewVisible($(#empty_thread_view));
+    await expectViewVisible($(const Key(UiKeys.emptyThreadView)));
   }
 
   Future<void> _expectEmptyViewInVisibleInInboxFolder() async {
-    await expectViewInvisible($(#empty_thread_view));
+    await expectViewInvisible($(const Key(UiKeys.emptyThreadView)));
   }
 }

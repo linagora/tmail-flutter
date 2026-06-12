@@ -18,6 +18,7 @@ import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
@@ -482,7 +483,7 @@ void main() {
         final threadViewFinder = find.byType(ThreadView);
         expect(threadViewFinder, findsOneWidget);
 
-        final emptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final emptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(emptyEmailWidgetFinder, findsNothing);
 
         final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
@@ -507,7 +508,7 @@ void main() {
 
         await tester.pump();
 
-        final folder1EmptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final folder1EmptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(folder1EmptyEmailWidgetFinder, findsNothing);
 
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
@@ -560,7 +561,7 @@ void main() {
 
         await tester.pump();
 
-        final emptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final emptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(emptyEmailWidgetFinder, findsOneWidget);
 
         final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
@@ -576,7 +577,7 @@ void main() {
 
         await tester.pump();
 
-        final folder1EmptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final folder1EmptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(folder1EmptyEmailWidgetFinder, findsNothing);
 
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
@@ -628,7 +629,7 @@ void main() {
 
         await tester.pump();
 
-        final emptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final emptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(emptyEmailWidgetFinder, findsNothing);
 
         // Switch to mailbox Folder 1
@@ -645,7 +646,7 @@ void main() {
 
         await tester.pump();
 
-        final folder1EmptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
+        final folder1EmptyEmailWidgetFinder = find.byKey(const Key(UiKeys.emptyThreadView));
         expect(folder1EmptyEmailWidgetFinder, findsOneWidget);
 
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
