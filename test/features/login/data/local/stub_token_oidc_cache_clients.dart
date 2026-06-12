@@ -13,16 +13,19 @@ class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
   final Object? _getMapItemsError;
   final Object? _insertItemError;
   final Exception? _clearError;
+  final bool _insertItemFailAfterClear;
 
   StubTokenOidcCacheClient._({
     Object? getItemError,
     Object? getMapItemsError,
     Object? insertItemError,
     Exception? clearError,
+    bool insertItemFailAfterClear = false,
   })  : _getItemError = getItemError,
         _getMapItemsError = getMapItemsError,
         _insertItemError = insertItemError,
-        _clearError = clearError;
+        _clearError = clearError,
+        _insertItemFailAfterClear = insertItemFailAfterClear;
 
   factory StubTokenOidcCacheClient.withCorruptedGetItem() =>
       StubTokenOidcCacheClient._(
@@ -50,6 +53,12 @@ class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
         insertItemError: StateError('disk full'),
       );
 
+  factory StubTokenOidcCacheClient.withCorruptedGetMapItemsAndReInsertFailing() =>
+      StubTokenOidcCacheClient._(
+        getMapItemsError: ArgumentError.value(1901, 'length', 'Not in inclusive range 0..1900'),
+        insertItemFailAfterClear: true,
+      );
+
   @override
   Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
     if (_getItemError != null) throw _getItemError;
@@ -69,6 +78,7 @@ class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
     bool isolated = true,
   }) async {
     if (_insertItemError != null) throw _insertItemError;
+    if (_insertItemFailAfterClear && clearCalled) throw StateError('disk full after clear');
     await super.insertItem(key, newObject, isolated: isolated);
   }
 

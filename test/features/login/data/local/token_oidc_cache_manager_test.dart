@@ -115,6 +115,21 @@ void main() {
           reason: 'token must be readable after recovery re-insert');
     });
 
+    test('WHEN getMapItems throws during _removeStaleTokens AND re-insert after clear also throws\n'
+        'THEN error is suppressed and persistOneTokenOidc completes without throwing', () async {
+      final client = StubTokenOidcCacheClient.withCorruptedGetMapItemsAndReInsertFailing();
+      final manager = TokenOidcCacheManager(client);
+
+      await expectLater(
+        manager.persistOneTokenOidc(validToken),
+        completes,
+        reason: 're-insert failure after clear must not propagate from persistOneTokenOidc',
+      );
+
+      expect(client.clearCalled, isTrue,
+          reason: 'box must still be cleared even when re-insert fails');
+    });
+
     test('WHEN insertItem itself throws\n'
         'THEN exception propagates immediately without touching recovery path', () async {
       final client = StubTokenOidcCacheClient.withInsertFailing();

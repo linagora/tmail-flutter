@@ -68,7 +68,16 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
         stackTrace: stackTrace,
       );
       await _safelyClearBox();
-      await _tokenOidcCacheClient.insertItem(key, tokenOIDC.toTokenOidcCache());
+      try {
+        await _tokenOidcCacheClient.insertItem(key, tokenOIDC.toTokenOidcCache());
+      } catch (insertError, insertStackTrace) {
+        logError(
+          'TokenOidcCacheManager::_persistAtKey(): '
+          're-insert after clear also failed | error_type=${insertError.runtimeType}',
+          exception: insertError,
+          stackTrace: insertStackTrace,
+        );
+      }
     }
   }
 
