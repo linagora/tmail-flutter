@@ -67,7 +67,7 @@ class ExportAttachmentInteractor {
         logTrace('ExportAttachmentInteractor::_getTokenOidc(): '
             'storage failed, using in-memory token as fallback | error=${e.runtimeType}');
         _authenticationOIDCRepository.persistTokenOIDC(fallbackToken).catchError(
-          (dynamic repairError) => logError(
+          (Object repairError) => logError(
             'ExportAttachmentInteractor::_getTokenOidc(): '
             'failed to repair token storage | error=${repairError.runtimeType}',
             exception: repairError,
