@@ -40,10 +40,10 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
     log('TokenOidcCacheManager::persistOneTokenOidc(): keyHash: ${tokenOIDC.tokenIdHash}');
+    // Crash-safe persist: write the new token FIRST, then prune stale entries,
+    // so the box is never empty if the process is killed mid-write.
+    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
     try {
-      // Crash-safe persist: write the new token FIRST, then prune stale entries,
-      // so the box is never empty if the process is killed mid-write.
-      await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
       await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);
       log('TokenOidcCacheManager::persistOneTokenOidc(): done');
     } on AppBaseException {
@@ -65,11 +65,7 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
 
   Future<void> _recoverBoxWithToken(TokenOIDC tokenOIDC) async {
     await _safelyClearBox();
-    try {
-      await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
-    } catch (e) {
-      logWarning('TokenOidcCacheManager::_recoverBoxWithToken(): re-insert failed | $e');
-    }
+    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
   }
 
   /// Removes every token except [keepKey] so the box keeps exactly one entry

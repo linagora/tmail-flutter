@@ -145,6 +145,21 @@ void main() {
       expect(result.token, validToken.token,
           reason: 'token must be readable after recovery re-insert');
     });
+
+    test('WHEN insertItem itself throws\n'
+        'THEN exception propagates immediately without touching recovery path', () async {
+      final client = _InsertFailingCacheClient();
+      final manager = TokenOidcCacheManager(client);
+
+      await expectLater(
+        manager.persistOneTokenOidc(validToken),
+        throwsA(isA<StateError>()),
+        reason: 'insertItem failure must propagate; box must not be cleared',
+      );
+
+      expect(client.clearCalled, isFalse,
+          reason: 'recovery path must not be triggered by an insertItem failure');
+    });
   });
 
   group('persistOneTokenOidc → getTokenOidc round-trip', () {
@@ -219,6 +234,27 @@ class _ArbitraryErrorCacheClient extends MemoryTokenOidcCacheClient {
   @override
   Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
     throw StateError('unexpected internal Hive failure');
+  }
+
+  @override
+  Future<void> clearAllData({bool isolated = true}) async {
+    clearCalled = true;
+    await super.clearAllData(isolated: isolated);
+  }
+}
+
+/// Simulates a Hive box where insertItem itself fails (e.g. disk full, box
+/// closed). clearAllData is tracked to verify the recovery path is NOT entered.
+class _InsertFailingCacheClient extends MemoryTokenOidcCacheClient {
+  bool clearCalled = false;
+
+  @override
+  Future<void> insertItem(
+    String key,
+    TokenOidcCache newObject, {
+    bool isolated = true,
+  }) async {
+    throw StateError('disk full');
   }
 
   @override
