@@ -64,8 +64,15 @@ class ExportAttachmentInteractor {
       return await _authenticationOIDCRepository.getStoredTokenOIDC(accountId);
     } catch (e) {
       if (fallbackToken != null) {
-        logWarning('ExportAttachmentInteractor::_getTokenOidc(): '
+        logTrace('ExportAttachmentInteractor::_getTokenOidc(): '
             'storage failed, using in-memory token as fallback | error=${e.runtimeType}');
+        _authenticationOIDCRepository.persistTokenOIDC(fallbackToken).catchError(
+          (dynamic repairError) => logError(
+            'ExportAttachmentInteractor::_getTokenOidc(): '
+            'failed to repair token storage | error=${repairError.runtimeType}',
+            exception: repairError,
+          ),
+        );
         return fallbackToken;
       }
       rethrow;

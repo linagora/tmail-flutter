@@ -105,13 +105,34 @@ void main() {
       );
 
       test(
-        'should use fallback token and yield loading then success '
+        'should use fallback token, repair token storage, and yield loading then success '
         'when token storage fails and fallbackToken is provided',
-        () {
+        () async {
           when(authenticationOIDCRepository.getStoredTokenOIDC(any))
               .thenThrow(Exception('storage error'));
 
-          expect(
+          await expectLater(
+            interactor.execute(buildRequest(withFallback: true)),
+            emitsInOrder([
+              Right(ExportingAllAttachments()),
+              Right(ExportAllAttachmentsSuccess(downloadedResponse)),
+            ]),
+          );
+
+          verify(authenticationOIDCRepository.persistTokenOIDC(OIDCFixtures.newTokenOidc)).called(1);
+        },
+      );
+
+      test(
+        'should still yield loading then success '
+        'when token storage repair fails',
+        () async {
+          when(authenticationOIDCRepository.getStoredTokenOIDC(any))
+              .thenThrow(Exception('storage error'));
+          when(authenticationOIDCRepository.persistTokenOIDC(any))
+              .thenAnswer((_) => Future.error(Exception('persist error')));
+
+          await expectLater(
             interactor.execute(buildRequest(withFallback: true)),
             emitsInOrder([
               Right(ExportingAllAttachments()),
