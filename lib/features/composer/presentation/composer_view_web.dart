@@ -136,6 +136,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       onOpenAiAssistantModal: controller.isAIScribeAvailable
                         ? controller.openAIAssistantModal
                         : null,
+                      composerId: composerId,
                     )),
                     ConstrainedBox(
                       constraints: BoxConstraints(
@@ -544,6 +545,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               ),
                             ),
                             Obx(() => BottomBarComposerWidget(
+                              composerId: composerId ?? '',
                               imagePaths: controller.imagePaths,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
@@ -821,6 +823,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               ),
                             ),
                             Obx(() => BottomBarComposerWidget(
+                              composerId: composerId ?? '',
                               imagePaths: controller.imagePaths,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,

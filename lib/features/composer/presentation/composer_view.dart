@@ -24,7 +24,9 @@ import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/ai_scribe/composer_ai_scribe_selection_overlay.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
+import 'package:core/presentation/extensions/composer_attachment_extension_registry.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/landscape_app_bar_composer_widget.dart';
@@ -491,6 +493,12 @@ class ComposerView extends GetWidget<ComposerController> {
     return [
       _pickPhotoAndVideoAction(context),
       _browseFileAction(context),
+      ...?getBinding<ComposerAttachmentExtensionRegistry>()?.buildContextMenuTiles(
+        context,
+        composerId: controller.composerId ?? '',
+        imagePaths: controller.imagePaths,
+        label: AppLocalizations.of(context).browse,
+      ),
       const SizedBox(height: kIsWeb ? 16 : 30),
     ];
   }

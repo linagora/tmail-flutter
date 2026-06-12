@@ -4,6 +4,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
@@ -24,6 +25,7 @@ class PreferencesSettingManager {
     _storageKey(TextFormattingMenuConfig.keySuffix): TextFormattingMenuConfig.fromJson,
     _storageKey(AIScribeConfig.keySuffix): AIScribeConfig.fromJson,
     _storageKey(LabelConfig.keySuffix): LabelConfig.fromJson,
+    _storageKey(DriveAttachmentConfig.keySuffix): DriveAttachmentConfig.fromJson,
   });
 
   const PreferencesSettingManager(this._sharedPreferences);
@@ -107,6 +109,28 @@ class PreferencesSettingManager {
       log('PreferencesSettingManager::_parseConfig(): failed to parse key=$key error=$e');
       return null;
     }
+  }
+
+  static const _experimentalPreferencesRevealedKey = 'EXPERIMENT_PREFERENCES_REVEALED';
+
+  Future<bool> getExperimentalPreferencesRevealed() async {
+    await _sharedPreferences.reload();
+    final stored = _sharedPreferences.getBool(_experimentalPreferencesRevealedKey);
+    if (stored != null) return stored;
+    // One-time migration from old DriveAttachmentConfig.isRevealed JSON
+    final json = _sharedPreferences.getString(_storageKey(DriveAttachmentConfig.keySuffix));
+    if (json != null) {
+      try {
+        final was = (jsonDecode(json) as Map<String, dynamic>)['isRevealed'] as bool? ?? false;
+        if (was) await _sharedPreferences.setBool(_experimentalPreferencesRevealedKey, true);
+        return was;
+      } catch (_) {}
+    }
+    return false;
+  }
+
+  Future<void> saveExperimentalPreferencesRevealed() async {
+    await _sharedPreferences.setBool(_experimentalPreferencesRevealedKey, true);
   }
 
   Future<T> _readConfig<T extends PreferencesConfig>({

@@ -5284,6 +5284,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "driveAttachment": "Drive attachment",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "Show or hide the Twake Drive attachment button in the composer",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "Enable Drive attachment button",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "labelAs": "Label as",
   "@labelAs": {
     "type": "text",

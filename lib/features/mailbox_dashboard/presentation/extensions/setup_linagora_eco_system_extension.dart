@@ -5,13 +5,16 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:workplace/presentation/provider/drive_attachment_enabled_notifier.dart';
 
-extension SetupScribePromptUrlExtension on MailboxDashBoardController {
+extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
   void loadLinagoraEcosystem() {
     if (cachedLinagoraEcosystem != null) {
       _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
       _setUpSentry(cachedLinagoraEcosystem!);
+      _setUpDriveAttachment(cachedLinagoraEcosystem!);
       return;
     }
 
@@ -33,12 +36,14 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
     cachedLinagoraEcosystem = success.linagoraEcosystem;
     _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
     _setUpSentry(cachedLinagoraEcosystem!);
+    _setUpDriveAttachment(cachedLinagoraEcosystem!);
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
     logWarning('SetupScribePromptUrlExtension::handleGetLinagoraEcosystemFailure: GetScribePromptUrl failed - ${failure.exception}');
     cachedLinagoraEcosystem = null;
     _applyScribePromptUrl(null);
+    appProviderContainer.read(driveAttachmentEnabledProvider.notifier).setEnabled(null);
   }
 
   void _applyScribePromptUrl(String? promptUrl) {
@@ -49,6 +54,12 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
     } else {
       logWarning('SetupScribePromptUrlExtension::_applyScribePromptUrl: PromptService not found');
     }
+  }
+
+  void _setUpDriveAttachment(LinagoraEcosystem ecosystem) {
+    appProviderContainer
+        .read(driveAttachmentEnabledProvider.notifier)
+        .setEnabled(ecosystem.driveAttachmentConfig?.enabled);
   }
 
   void _setUpSentry(LinagoraEcosystem ecosystem) {

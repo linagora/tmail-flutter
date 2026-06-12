@@ -5613,6 +5613,27 @@ class AppLocalizations {
     );
   }
 
+  String get driveAttachment {
+    return Intl.message(
+      'Drive attachment',
+      name: 'driveAttachment',
+    );
+  }
+
+  String get driveAttachmentSettingExplanation {
+    return Intl.message(
+      'Show or hide the Twake Drive attachment button in the composer',
+      name: 'driveAttachmentSettingExplanation',
+    );
+  }
+
+  String get driveAttachmentToggleDescription {
+    return Intl.message(
+      'Enable Drive attachment button',
+      name: 'driveAttachmentToggleDescription',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',

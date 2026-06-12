@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
@@ -7,6 +8,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/preferences_option_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
+import 'package:tmail_ui_user/main/providers/experimental_preferences_revealed_provider.dart';
 
 class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMixin {
   const PreferencesView({super.key});
@@ -50,9 +52,10 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (controller.responsiveUtils.isWebDesktop(context))
-                    const SettingHeaderWidget(
+                    SettingHeaderWidget(
                       menuItem: AccountMenuItem.preferences,
-                      padding: EdgeInsets.only(bottom: 21),
+                      padding: const EdgeInsets.only(bottom: 21),
+                      onMultiClickAction: controller.revealExperimentalPreferences,
                     ),
                   Obx(() {
                     final preferencesContext = controller.preferencesContext;
@@ -67,9 +70,27 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                       child: ListView.separated(
                         itemCount: availableSettingOptions.length,
                         itemBuilder: (context, index) {
+                          final option = availableSettingOptions[index];
+                          if (option.isExperimental) {
+                            return Consumer(
+                              builder: (_, ref, __) {
+                                final revealed = ref
+                                    .watch(experimentalPreferencesRevealedProvider)
+                                    .asData?.value ?? false;
+                                if (!revealed) return const SizedBox.shrink();
+                                return PreferencesOptionItem(
+                                  imagePaths: controller.imagePaths,
+                                  option: option,
+                                  preferencesContext: preferencesContext,
+                                  onTapPreferencesOptionAction:
+                                      controller.updateStateSettingOption,
+                                );
+                              },
+                            );
+                          }
                           return PreferencesOptionItem(
                             imagePaths: controller.imagePaths,
-                            option: availableSettingOptions[index],
+                            option: option,
                             preferencesContext: preferencesContext,
                             onTapPreferencesOptionAction:
                                 controller.updateStateSettingOption,

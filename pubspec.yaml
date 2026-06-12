@@ -17,6 +17,7 @@ workspace:
   - scribe
   - labels
   - cozy
+  - workplace
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -72,6 +73,9 @@ dependencies:
 
   labels:
     path: labels
+
+  workplace:
+    path: workplace
 
   ### Dependencies from git ###
   rich_text_composer:

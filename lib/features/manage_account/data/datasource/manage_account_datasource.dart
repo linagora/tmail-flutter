@@ -14,4 +14,6 @@ abstract class ManageAccountDataSource {
   Future<AIScribeConfig> getAiScribeConfigLocalSettings();
 
   Future<bool> getLabelSettingState();
+
+  Future<void> saveExperimentalPreferencesRevealed();
 }

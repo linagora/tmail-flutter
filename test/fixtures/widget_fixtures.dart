@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class WidgetFixtures {
   static Widget makeTestableWidget({required Widget child}) {
-    return ProviderScope(
-      child: GetMaterialApp(
+    return UncontrolledProviderScope(
+    container: appProviderContainer,
+    child: GetMaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
@@ -20,7 +22,7 @@ class WidgetFixtures {
         supportedLocales: LocalizationService.supportedLocales,
         locale: LocalizationService.defaultLocale,
         home: Scaffold(body: child),
-      ),
+    ),
     );
   }
 

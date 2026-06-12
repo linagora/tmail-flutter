@@ -13,7 +13,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/m
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/reveal_experimental_preferences_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/providers/experimental_preferences_revealed_provider.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
@@ -21,17 +23,20 @@ import 'package:tmail_ui_user/features/server_settings/domain/state/update_serve
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:workplace/presentation/provider/drive_attachment_user_preference_notifier.dart';
 
 class PreferencesController extends BaseController {
   PreferencesController(
     this._getServerSettingInteractor,
     this._getLocalSettingInteractor,
     this._preferenceOptionRegistry,
+    this._revealExperimentalPreferencesInteractor,
   );
 
   final GetServerSettingInteractor _getServerSettingInteractor;
   final GetLocalSettingsInteractor _getLocalSettingInteractor;
   final PreferenceOptionRegistry _preferenceOptionRegistry;
+  final RevealExperimentalPreferencesInteractor _revealExperimentalPreferencesInteractor;
 
   PreferenceOptionRegistry get registry => _preferenceOptionRegistry;
 
@@ -46,6 +51,11 @@ class PreferencesController extends BaseController {
         isLabelVisibilityEnabled:
             accountDashboardController.isLabelVisibilityEnabled.value,
       );
+
+  void revealExperimentalPreferences() {
+    _revealExperimentalPreferencesInteractor.execute();
+    appProviderContainer.invalidate(experimentalPreferencesRevealedProvider);
+  }
 
   final settingOption = Rxn<TMailServerSettingOptions>();
   final localSettings = Rx<PreferencesSetting>(PreferencesSetting.initial());
@@ -91,8 +101,10 @@ class PreferencesController extends BaseController {
     } else if (success is GetLocalSettingsSuccess) {
       _localSettingLoaderStatus = LoaderStatus.completed;
       _updateLocalSettingOptionValue(success.preferencesSetting);
+      _propagateDriveAttachmentPreference(success.preferencesSetting);
     } else if (success is UpdateLocalSettingsSuccess) {
       _updateLocalSettingOptionValue(success.preferencesSetting);
+      _propagateDriveAttachmentPreference(success.preferencesSetting);
       appProviderContainer
           .read(localSettingsProvider.notifier)
           .update(success.preferencesSetting);
@@ -136,6 +148,10 @@ class PreferencesController extends BaseController {
 
   void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {
     localSettings.value = preferencesSetting;
+  }
+
+  void _propagateDriveAttachmentPreference(PreferencesSetting _) {
+    appProviderContainer.invalidate(driveAttachmentUserPreferenceProvider);
   }
 
   void _getSettingOption() {
