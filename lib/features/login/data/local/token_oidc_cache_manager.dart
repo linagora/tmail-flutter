@@ -39,13 +39,21 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): keyHash: ${tokenOIDC.tokenIdHash}');
+    await _persistAtKey(tokenOIDC.tokenIdHash, tokenOIDC);
+  }
+
+  Future<void> persistOneTokenOidcAt(String key, TokenOIDC tokenOIDC) async {
+    await _persistAtKey(key, tokenOIDC);
+  }
+
+  Future<void> _persistAtKey(String key, TokenOIDC tokenOIDC) async {
+    log('TokenOidcCacheManager::_persistAtKey(): keyHash: $key');
     // Crash-safe persist: write the new token FIRST, then prune stale entries,
     // so the box is never empty if the process is killed mid-write.
-    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    await _tokenOidcCacheClient.insertItem(key, tokenOIDC.toTokenOidcCache());
     try {
-      await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);
-      log('TokenOidcCacheManager::persistOneTokenOidc(): done');
+      await _removeStaleTokens(keepKey: key);
+      log('TokenOidcCacheManager::_persistAtKey(): done');
     } on AppBaseException {
       rethrow;
     } catch (e, stackTrace) {
@@ -54,21 +62,17 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
       // cross-isolate partial write), toMap() throws before prune completes.
       // Recover by clearing and re-inserting only the new valid token.
       logError(
-        'TokenOidcCacheManager::persistOneTokenOidc(): '
+        'TokenOidcCacheManager::_persistAtKey(): '
         'box_corrupted=true | error_type=${e.runtimeType} | clearing and re-inserting token',
         exception: e,
         stackTrace: stackTrace,
       );
-      await _recoverBoxWithToken(tokenOIDC);
+      await _safelyClearBox();
+      await _tokenOidcCacheClient.insertItem(key, tokenOIDC.toTokenOidcCache());
     }
   }
 
-  Future<void> _recoverBoxWithToken(TokenOIDC tokenOIDC) async {
-    await _safelyClearBox();
-    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
-  }
-
-  /// Removes every token except [keepKey] so the box keeps exactly one entry
+/// Removes every token except [keepKey] so the box keeps exactly one entry
   Future<void> _removeStaleTokens({required String keepKey}) async {
     final allItems = await _tokenOidcCacheClient.getMapItems();
     final staleKeys = allItems.keys.where((key) => key != keepKey).toList();

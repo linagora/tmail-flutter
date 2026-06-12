@@ -57,16 +57,16 @@ class ExportAttachmentInteractor {
   }
 
   Future<TokenOIDC> _getTokenOidc(
-    String accountId, {
+    String accountCacheKey, {
     TokenOIDC? fallbackToken,
   }) async {
     try {
-      return await _authenticationOIDCRepository.getStoredTokenOIDC(accountId);
+      return await _authenticationOIDCRepository.getStoredTokenOIDC(accountCacheKey);
     } catch (e) {
       if (fallbackToken != null) {
         logTrace('ExportAttachmentInteractor::_getTokenOidc(): '
             'storage failed, using in-memory token as fallback | error=${e.runtimeType}');
-        _authenticationOIDCRepository.persistTokenOIDC(fallbackToken).catchError(
+        _authenticationOIDCRepository.persistTokenOIDCAt(accountCacheKey, fallbackToken).catchError(
           (Object repairError) => logError(
             'ExportAttachmentInteractor::_getTokenOidc(): '
             'failed to repair token storage | error=${repairError.runtimeType}',
