@@ -1,3 +1,4 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
@@ -13,22 +14,62 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
 
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
     log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
-    final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
-    log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
-    if (tokenCache == null) {
-      throw NotFoundStoredTokenException();
-    } else {
+    try {
+      final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
+      log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
+      if (tokenCache == null) {
+        throw NotFoundStoredTokenException();
+      }
       return tokenCache.toTokenOidc();
+    } on AppBaseException {
+      rethrow;
+    } catch (e, stackTrace) {
+      // AES-CBC decryption failed (e.g. non-block-aligned bytes from a partial
+      // write or cross-isolate race). Clear the corrupted box so the next read
+      // starts clean and triggers normal re-authentication instead of looping.
+      logError(
+        'TokenOidcCacheManager::getTokenOidc(): '
+        'token_box_corrupted=true | error_type=${e.runtimeType} | clearing box',
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      await _safelyClearBox();
+      throw NotFoundStoredTokenException();
     }
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    // Crash-safe persist: write the new token FIRST, then prune stale entries, so
-    // the box is never empty if the process is killed mid-write → forced re-login.
     log('TokenOidcCacheManager::persistOneTokenOidc(): keyHash: ${tokenOIDC.tokenIdHash}');
-    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
-    await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);
-    log('TokenOidcCacheManager::persistOneTokenOidc(): done');
+    try {
+      // Crash-safe persist: write the new token FIRST, then prune stale entries,
+      // so the box is never empty if the process is killed mid-write.
+      await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+      await _removeStaleTokens(keepKey: tokenOIDC.tokenIdHash);
+      log('TokenOidcCacheManager::persistOneTokenOidc(): done');
+    } on AppBaseException {
+      rethrow;
+    } catch (e, stackTrace) {
+      // _removeStaleTokens calls getMapItems() → toMap(), which iterates ALL entries
+      // and decrypts each one. If the box contains a corrupted entry (e.g. from a
+      // cross-isolate partial write), toMap() throws before prune completes.
+      // Recover by clearing and re-inserting only the new valid token.
+      logError(
+        'TokenOidcCacheManager::persistOneTokenOidc(): '
+        'box_corrupted=true | error_type=${e.runtimeType} | clearing and re-inserting token',
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      await _recoverBoxWithToken(tokenOIDC);
+    }
+  }
+
+  Future<void> _recoverBoxWithToken(TokenOIDC tokenOIDC) async {
+    await _safelyClearBox();
+    try {
+      await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    } catch (e) {
+      logWarning('TokenOidcCacheManager::_recoverBoxWithToken(): re-insert failed | $e');
+    }
   }
 
   /// Removes every token except [keepKey] so the box keeps exactly one entry
@@ -43,6 +84,14 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
 
   Future<void> clear() async {
     await _tokenOidcCacheClient.clearAllData();
+  }
+
+  Future<void> _safelyClearBox() async {
+    try {
+      await _tokenOidcCacheClient.clearAllData();
+    } catch (e) {
+      logWarning('TokenOidcCacheManager::_safelyClearBox(): failed to clear box | $e');
+    }
   }
 
   @override
