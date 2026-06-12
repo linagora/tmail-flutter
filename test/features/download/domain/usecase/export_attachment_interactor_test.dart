@@ -5,9 +5,12 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/download/domain/model/export_attachment_request.dart';
@@ -89,16 +92,23 @@ void main() {
       test(
         'should use token from storage and yield success '
         'when token storage succeeds',
-        () {
+        () async {
           when(authenticationOIDCRepository.getStoredTokenOIDC(any))
               .thenAnswer((_) async => OIDCFixtures.newTokenOidc);
 
-          expect(
+          await expectLater(
             interactor.execute(buildRequest()),
             emitsInOrder([
               Right(ExportAttachmentSuccess(downloadedResponse)),
             ]),
           );
+
+          final captured = verify(
+            downloadRepository.exportAttachment(any, any, any, captureAny, any),
+          ).captured;
+          final accountRequest = captured.single as AccountRequest;
+          expect(accountRequest.authenticationType, AuthenticationType.oidc);
+          expect(accountRequest.token, OIDCFixtures.newTokenOidc);
         },
       );
 
@@ -117,6 +127,13 @@ void main() {
           );
 
           verify(authenticationOIDCRepository.persistTokenOIDC(OIDCFixtures.newTokenOidc)).called(1);
+
+          final captured = verify(
+            downloadRepository.exportAttachment(any, any, any, captureAny, any),
+          ).captured;
+          final accountRequest = captured.single as AccountRequest;
+          expect(accountRequest.authenticationType, AuthenticationType.oidc);
+          expect(accountRequest.token, OIDCFixtures.newTokenOidc);
         },
       );
 
@@ -168,13 +185,21 @@ void main() {
 
       test(
         'should use credentials from storage and yield success',
-        () {
-          expect(
+        () async {
+          await expectLater(
             interactor.execute(buildRequest()),
             emitsInOrder([
               Right(ExportAttachmentSuccess(downloadedResponse)),
             ]),
           );
+
+          final captured = verify(
+            downloadRepository.exportAttachment(any, any, any, captureAny, any),
+          ).captured;
+          final accountRequest = captured.single as AccountRequest;
+          expect(accountRequest.authenticationType, AuthenticationType.basic);
+          expect(accountRequest.userName, UserName('user@example.com'));
+          expect(accountRequest.password, Password('secret'));
         },
       );
     });
