@@ -96,7 +96,7 @@ void main() {
 
           expect(
             interactor.execute(buildRequest()),
-            emitsInOrder(<Either<Failure, Success>>[
+            emitsInOrder([
               Right(ExportingAllAttachments()),
               Right(ExportAllAttachmentsSuccess(downloadedResponse)),
             ]),
@@ -113,7 +113,7 @@ void main() {
 
           expect(
             interactor.execute(buildRequest(withFallback: true)),
-            emitsInOrder(<Either<Failure, Success>>[
+            emitsInOrder([
               Right(ExportingAllAttachments()),
               Right(ExportAllAttachmentsSuccess(downloadedResponse)),
             ]),
@@ -130,7 +130,7 @@ void main() {
 
           expect(
             interactor.execute(buildRequest()),
-            emitsInOrder(<Either<Failure, Success>>[
+            emitsInOrder([
               Right(ExportingAllAttachments()),
               isA<Left<Failure, Success>>()
                   .having((l) => l.value, 'failure', isA<ExportAllAttachmentsFailure>()),
@@ -155,7 +155,7 @@ void main() {
         () {
           expect(
             interactor.execute(buildRequest()),
-            emitsInOrder(<Either<Failure, Success>>[
+            emitsInOrder([
               Right(ExportingAllAttachments()),
               Right(ExportAllAttachmentsSuccess(downloadedResponse)),
             ]),
@@ -177,7 +177,7 @@ void main() {
 
         expect(
           interactor.execute(buildRequest()),
-          emitsInOrder(<Either<Failure, Success>>[
+          emitsInOrder([
             Right(ExportingAllAttachments()),
             isA<Left<Failure, Success>>()
                 .having((l) => l.value, 'failure', isA<ExportAllAttachmentsFailure>()),
