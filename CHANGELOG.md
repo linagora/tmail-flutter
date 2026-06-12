@@ -1,3 +1,10 @@
+## [0.29.6] - 2026-06-13
+### Fixed
+- fix: cannot download because of no way to get token from corrupt box
+
+### Changed
+- #4429 Change UI of label search
+
 ## [0.29.5] - 2026-06-12
 ### Fixed
 - fix: ios build failed with `didReceiveRemoteNotification` in xcode 26
