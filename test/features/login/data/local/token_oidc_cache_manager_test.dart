@@ -3,41 +3,10 @@ import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
 import 'memory_token_oidc_cache_client.dart';
-
-/// A cache client that throws [ArgumentError] from [getItem] to simulate
-/// AES-CBC decryption failure from a corrupted Hive box.
-class _CorruptedTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
-
-  @override
-  Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
-    throw ArgumentError.value(
-      1949,
-      'length',
-      'Not in inclusive range 0..1948',
-    );
-  }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-/// A cache client whose [clearAllData] also throws, to verify [_safelyClearBox]
-/// does not propagate the secondary error.
-class _ClearFailingTokenOidcCacheClient extends _CorruptedTokenOidcCacheClient {
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    throw Exception('disk full');
-  }
-}
+import 'stub_token_oidc_cache_clients.dart';
 
 void main() {
   final validToken = TokenOIDC(
@@ -90,32 +59,32 @@ void main() {
   group('getTokenOidc — corrupted box recovery', () {
     test('WHEN getItem throws ArgumentError (AES block-size mismatch)\n'
         'THEN clears the box and throws NotFoundStoredTokenException', () async {
-      final corruptedClient = _CorruptedTokenOidcCacheClient();
-      final manager = TokenOidcCacheManager(corruptedClient);
+      final client = CorruptedGetItemCacheClient();
+      final manager = TokenOidcCacheManager(client);
 
       await expectLater(
         manager.getTokenOidc(tokenIdHash),
         throwsA(isA<NotFoundStoredTokenException>()),
       );
-      expect(corruptedClient.clearCalled, isTrue,
+      expect(client.clearCalled, isTrue,
           reason: 'corrupted box must be cleared to prevent repeated failures');
     });
 
     test('WHEN getItem throws a generic Error\n'
         'THEN clears the box and throws NotFoundStoredTokenException', () async {
-      final stubbedClient = _ArbitraryErrorCacheClient();
-      final stubbedManager = TokenOidcCacheManager(stubbedClient);
+      final client = ArbitraryErrorGetItemCacheClient();
+      final manager = TokenOidcCacheManager(client);
 
       await expectLater(
-        stubbedManager.getTokenOidc(tokenIdHash),
+        manager.getTokenOidc(tokenIdHash),
         throwsA(isA<NotFoundStoredTokenException>()),
       );
-      expect(stubbedClient.clearCalled, isTrue);
+      expect(client.clearCalled, isTrue);
     });
 
     test('WHEN clearAllData itself throws\n'
         'THEN the secondary error is suppressed and NotFoundStoredTokenException is still thrown', () async {
-      final client = _ClearFailingTokenOidcCacheClient();
+      final client = ClearFailingCacheClient();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -129,7 +98,7 @@ void main() {
   group('persistOneTokenOidc — corrupted box recovery', () {
     test('WHEN getMapItems throws during _removeStaleTokens\n'
         'THEN clears box and re-inserts token without throwing', () async {
-      final client = _CorruptedGetMapItemsCacheClient();
+      final client = CorruptedGetMapItemsCacheClient();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -148,7 +117,7 @@ void main() {
 
     test('WHEN insertItem itself throws\n'
         'THEN exception propagates immediately without touching recovery path', () async {
-      final client = _InsertFailingCacheClient();
+      final client = InsertFailingCacheClient();
       final manager = TokenOidcCacheManager(client);
 
       await expectLater(
@@ -207,59 +176,4 @@ void main() {
       expect(result.token, newToken.token);
     });
   });
-}
-
-/// Simulates a Hive box where toMap() fails because a corrupted entry is
-/// encountered during iteration — the exact scenario seen in production when
-/// cross-isolate writes leave non-block-aligned AES data. insertItem and
-/// clearAllData still work so the recovery path can clear and re-insert.
-class _CorruptedGetMapItemsCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
-
-  @override
-  Future<Map<String, TokenOidcCache>> getMapItems({bool isolated = true}) async {
-    throw ArgumentError.value(1901, 'length', 'Not in inclusive range 0..1900');
-  }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-class _ArbitraryErrorCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
-
-  @override
-  Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
-    throw StateError('unexpected internal Hive failure');
-  }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-/// Simulates a Hive box where insertItem itself fails (e.g. disk full, box
-/// closed). clearAllData is tracked to verify the recovery path is NOT entered.
-class _InsertFailingCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
-
-  @override
-  Future<void> insertItem(
-    String key,
-    TokenOidcCache newObject, {
-    bool isolated = true,
-  }) async {
-    throw StateError('disk full');
-  }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
 }
