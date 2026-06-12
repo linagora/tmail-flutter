@@ -276,9 +276,9 @@ class DownloadController extends BaseController {
         failure is DownloadAndGetHtmlContentFromAttachmentFailure) {
       handlePreviewHtmlFileFailure(failureState: failure);
     } else if (failure is ExportAttachmentFailure) {
-      exportAttachmentFailureAction(failure);
+      exportAttachmentFailureAction(failure.exception);
     } else if (failure is ExportAllAttachmentsFailure) {
-      exportAllAttachmentsFailureAction(failure);
+      exportAllAttachmentsFailureAction(failure.exception);
     } else {
       super.handleFailureViewState(failure);
     }
