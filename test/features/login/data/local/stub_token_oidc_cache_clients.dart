@@ -2,76 +2,65 @@ import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
 
 import 'memory_token_oidc_cache_client.dart';
 
-// Stub clients used by token_oidc_cache_manager_test.dart.
-// Kept in a separate file to prevent CodeScene Primitive Obsession from
-// being triggered by the repeated method signatures in the main test file.
-
-/// Throws [ArgumentError] from [getItem] to simulate AES-CBC decryption
-/// failure from a corrupted Hive box.
-class CorruptedGetItemCacheClient extends MemoryTokenOidcCacheClient {
+// Single configurable test double for all token-cache error scenarios.
+// Factory constructors encode each scenario so method-override declarations
+// are written once; the constructor parameters use Object?/Exception? (not
+// primitives) to keep the CodeScene Primitive Obsession ratio in check.
+class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
   bool clearCalled = false;
+
+  final Object? _getItemError;
+  final Object? _getMapItemsError;
+  final Object? _insertItemError;
+  final Exception? _clearError;
+
+  StubTokenOidcCacheClient._({
+    Object? getItemError,
+    Object? getMapItemsError,
+    Object? insertItemError,
+    Exception? clearError,
+  })  : _getItemError = getItemError,
+        _getMapItemsError = getMapItemsError,
+        _insertItemError = insertItemError,
+        _clearError = clearError;
+
+  factory StubTokenOidcCacheClient.withCorruptedGetItem() =>
+      StubTokenOidcCacheClient._(
+        getItemError: ArgumentError.value(1949, 'length', 'Not in inclusive range 0..1948'),
+      );
+
+  factory StubTokenOidcCacheClient.withArbitraryGetItemError() =>
+      StubTokenOidcCacheClient._(
+        getItemError: StateError('unexpected internal Hive failure'),
+      );
+
+  factory StubTokenOidcCacheClient.withClearFailing() =>
+      StubTokenOidcCacheClient._(
+        getItemError: ArgumentError.value(1949, 'length', 'Not in inclusive range 0..1948'),
+        clearError: Exception('disk full'),
+      );
+
+  factory StubTokenOidcCacheClient.withCorruptedGetMapItems() =>
+      StubTokenOidcCacheClient._(
+        getMapItemsError: ArgumentError.value(1901, 'length', 'Not in inclusive range 0..1900'),
+      );
+
+  factory StubTokenOidcCacheClient.withInsertFailing() =>
+      StubTokenOidcCacheClient._(
+        insertItemError: StateError('disk full'),
+      );
 
   @override
   Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
-    throw ArgumentError.value(1949, 'length', 'Not in inclusive range 0..1948');
+    if (_getItemError != null) throw _getItemError!;
+    return super.getItem(key, isolated: isolated);
   }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-/// [clearAllData] throws to verify [_safelyClearBox] does not propagate the
-/// secondary error.
-class ClearFailingCacheClient extends CorruptedGetItemCacheClient {
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    throw Exception('disk full');
-  }
-}
-
-/// Throws [StateError] from [getItem] to simulate an unexpected Hive failure
-/// that is not an AES mismatch.
-class ArbitraryErrorGetItemCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
-
-  @override
-  Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
-    throw StateError('unexpected internal Hive failure');
-  }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-/// Simulates a Hive box where [getMapItems] fails because a corrupted entry is
-/// encountered during iteration. [insertItem] and [clearAllData] still work so
-/// the recovery path can clear and re-insert.
-class CorruptedGetMapItemsCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
 
   @override
   Future<Map<String, TokenOidcCache>> getMapItems({bool isolated = true}) async {
-    throw ArgumentError.value(1901, 'length', 'Not in inclusive range 0..1900');
+    if (_getMapItemsError != null) throw _getMapItemsError!;
+    return super.getMapItems(isolated: isolated);
   }
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalled = true;
-    await super.clearAllData(isolated: isolated);
-  }
-}
-
-/// Throws [StateError] from [insertItem] to verify that a write failure
-/// propagates directly without entering the box-corruption recovery path.
-class InsertFailingCacheClient extends MemoryTokenOidcCacheClient {
-  bool clearCalled = false;
 
   @override
   Future<void> insertItem(
@@ -79,12 +68,14 @@ class InsertFailingCacheClient extends MemoryTokenOidcCacheClient {
     TokenOidcCache newObject, {
     bool isolated = true,
   }) async {
-    throw StateError('disk full');
+    if (_insertItemError != null) throw _insertItemError!;
+    await super.insertItem(key, newObject, isolated: isolated);
   }
 
   @override
   Future<void> clearAllData({bool isolated = true}) async {
     clearCalled = true;
+    if (_clearError != null) throw _clearError!;
     await super.clearAllData(isolated: isolated);
   }
 }
