@@ -90,7 +90,12 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
     try {
       await _tokenOidcCacheClient.clearAllData();
     } catch (e) {
-      logWarning('TokenOidcCacheManager::_safelyClearBox(): failed to clear box | $e');
+      logWarning('TokenOidcCacheManager::_safelyClearBox(): clear failed, deleting box from disk | $e');
+      try {
+        await _tokenOidcCacheClient.deleteBox();
+      } catch (e2) {
+        logWarning('TokenOidcCacheManager::_safelyClearBox(): deleteBox also failed | $e2');
+      }
     }
   }
 
