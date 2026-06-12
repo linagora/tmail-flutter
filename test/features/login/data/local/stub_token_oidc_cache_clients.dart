@@ -52,13 +52,13 @@ class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
 
   @override
   Future<TokenOidcCache?> getItem(String key, {bool isolated = true}) async {
-    if (_getItemError != null) throw _getItemError!;
+    if (_getItemError != null) throw _getItemError;
     return super.getItem(key, isolated: isolated);
   }
 
   @override
   Future<Map<String, TokenOidcCache>> getMapItems({bool isolated = true}) async {
-    if (_getMapItemsError != null) throw _getMapItemsError!;
+    if (_getMapItemsError != null) throw _getMapItemsError;
     return super.getMapItems(isolated: isolated);
   }
 
@@ -68,14 +68,14 @@ class StubTokenOidcCacheClient extends MemoryTokenOidcCacheClient {
     TokenOidcCache newObject, {
     bool isolated = true,
   }) async {
-    if (_insertItemError != null) throw _insertItemError!;
+    if (_insertItemError != null) throw _insertItemError;
     await super.insertItem(key, newObject, isolated: isolated);
   }
 
   @override
   Future<void> clearAllData({bool isolated = true}) async {
     clearCalled = true;
-    if (_clearError != null) throw _clearError!;
+    if (_clearError != null) throw _clearError;
     await super.clearAllData(isolated: isolated);
   }
 }
