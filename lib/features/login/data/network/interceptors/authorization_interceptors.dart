@@ -72,6 +72,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   AuthenticationType get authenticationType => _authenticationType;
 
+  TokenOIDC? get currentToken => _token;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     switch(_authenticationType) {

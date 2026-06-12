@@ -29,6 +29,8 @@ import 'package:open_file/open_file.dart' as open_file;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/download/domain/exceptions/download_attachment_exceptions.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
+import 'package:tmail_ui_user/features/download/domain/model/export_all_attachments_request.dart';
+import 'package:tmail_ui_user/features/download/domain/model/export_attachment_request.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/export_all_attachments_state.dart';
@@ -141,10 +143,13 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
 
     consumeState(
       exportAttachmentInteractor.execute(
-        attachment,
-        accountId,
-        baseDownloadUrl,
-        cancelToken,
+        ExportAttachmentRequest(
+          attachment: attachment,
+          accountId: accountId,
+          baseDownloadUrl: baseDownloadUrl,
+          cancelToken: cancelToken,
+          fallbackToken: authorizationInterceptors.currentToken,
+        ),
       ),
     );
   }
@@ -438,11 +443,14 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
 
     consumeState(
       exportAllAttachmentsInteractor.execute(
-        accountId,
-        emailId,
-        baseDownloadAllUrl,
-        outputFileName,
-        cancelToken,
+        ExportAllAttachmentsRequest(
+          accountId: accountId,
+          emailId: emailId,
+          baseDownloadAllUrl: baseDownloadAllUrl,
+          outputFileName: outputFileName,
+          cancelToken: cancelToken,
+          fallbackToken: authorizationInterceptors.currentToken,
+        ),
       ),
     );
   }
