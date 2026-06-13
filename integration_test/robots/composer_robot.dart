@@ -28,6 +28,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import '../base/core_robot.dart';
 import '../extensions/patrol_file_extensions.dart';
 import '../extensions/patrol_finder_extension.dart';
+import '../utils/test_timeouts.dart';
+import '../utils/wait_for_condition.dart';
 
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
@@ -138,6 +140,19 @@ class ComposerRobot extends CoreRobot {
   }
 
   ComposerController? findComposerController() => getBinding<ComposerController>();
+
+  /// Waits until an in-progress save-as-draft has committed. For a freshly
+  /// composed email the composer records the saved draft's [EmailId] only after
+  /// SaveEmailAsDraftsSuccess is handled (by which point the saving dialog has
+  /// already popped). This is a deterministic alternative to waiting on the
+  /// transient "Draft saved" toast, which only renders for ~3s and is easily
+  /// missed under live frame scheduling.
+  Future<void> waitForDraftSaved() async {
+    await waitForCondition(
+      () => findComposerController()?.emailIdEditing != null,
+      timeout: TestTimeouts.long,
+    );
+  }
 
   Future<void> addAttachment(File file) async {
     final controller = findComposerController()!;
