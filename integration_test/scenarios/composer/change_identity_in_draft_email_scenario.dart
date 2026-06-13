@@ -68,7 +68,10 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
     await _expectSaveAsDraftOptionPopupMenuVisible();
 
     await composerRobot.tapSaveAsDraftPopupItemOnMenu();
-    await _expectSaveAsDraftEmailSuccessToast(appLocalizations);
+    // Wait for the save to actually commit before closing, instead of racing the
+    // transient "Draft saved" toast. The draft's existence is then asserted
+    // durably below by reopening it from the Drafts folder.
+    await composerRobot.waitForDraftSaved();
 
     await composerRobot.tapCloseComposer(imagePaths);
 
@@ -91,11 +94,6 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
 
   Future<void> _expectSaveAsDraftOptionPopupMenuVisible() =>
       expectViewVisible($(#save_as_draft_popup_item));
-
-  Future<void> _expectSaveAsDraftEmailSuccessToast(
-    AppLocalizations appLocalizations,
-  ) =>
-      expectViewVisible($(appLocalizations.drafts_saved));
 
   Future<void> _expectIdentityVisible(Identity identity) async {
     final identityFinder = $(FromComposerMobileWidget).which<FromComposerMobileWidget>(
