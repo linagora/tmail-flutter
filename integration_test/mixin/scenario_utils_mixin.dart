@@ -263,6 +263,11 @@ mixin ScenarioUtilsMixin {
       List<ProvisioningIdentity> provisioningIdentities) async {
     IdentityInteractorsBindings().dependencies();
 
+    await waitForCondition(
+      () => getBinding<MailboxDashBoardController>().isReady,
+      timeout: TestTimeouts.long,
+    );
+
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewIdentityInteractor = Get.find<CreateNewIdentityInteractor>();
     final createNewDefaultIdentityInteractor =
