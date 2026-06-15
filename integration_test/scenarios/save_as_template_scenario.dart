@@ -12,6 +12,8 @@ class SaveAsTemplateScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    await robots.commonRobot().waitForMailboxReady();
+
     final imagePaths = ImagePaths();
     final appLocalizations = AppLocalizations();
     final mailboxMenuRobot = MailboxMenuRobot($);
