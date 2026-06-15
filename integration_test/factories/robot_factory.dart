@@ -7,6 +7,7 @@ import '../robots/abstract/abstract_login_robot.dart';
 import '../robots/abstract/abstract_mailbox_menu_robot.dart';
 import '../robots/abstract/abstract_rules_filter_creator_robot.dart';
 import '../robots/abstract/abstract_search_robot.dart';
+import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/abstract/abstract_thread_robot.dart';
 
 abstract class RobotFactory {
@@ -20,4 +21,5 @@ abstract class RobotFactory {
   AbstractEmailRulesSettingRobot emailRulesSettingRobot();
   AbstractEmailRobot emailRobot();
   AbstractSearchRobot searchRobot();
+  AbstractSettingsRobot settingsRobot();
 }
