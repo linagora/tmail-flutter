@@ -1,6 +1,7 @@
 import 'package:patrol/patrol.dart';
 
 import '../robots/abstract/abstract_common_robot.dart';
+import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/mobile/mobile_common_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
@@ -19,6 +20,7 @@ import '../robots/mobile/mobile_login_robot.dart';
 import '../robots/mobile/mobile_mailbox_menu_robot.dart';
 import '../robots/mobile/mobile_rules_filter_creator_robot.dart';
 import '../robots/mobile/mobile_search_robot.dart';
+import '../robots/mobile/mobile_settings_robot.dart';
 import '../robots/mobile/mobile_thread_robot.dart';
 import 'robot_factory.dart';
 
@@ -56,4 +58,7 @@ class MobileRobotFactory implements RobotFactory {
   
   @override
   AbstractSearchRobot searchRobot() => MobileSearchRobot($);
+  
+  @override
+  AbstractSettingsRobot settingsRobot() => MobileSettingsRobot($);
 }

@@ -4,7 +4,6 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/preferences_option_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
@@ -56,38 +55,13 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                       padding: EdgeInsets.only(bottom: 21),
                     ),
                   Obx(() {
-                    final settingOption = controller.settingOption.value;
-                    final localSettingOption = controller.localSettings.value;
-                    final isLabelVisibility = controller
-                        .accountDashboardController
-                        .isLabelVisibilityEnabled;
+                    final preferencesContext = controller.preferencesContext;
+                    final availableSettingOptions =
+                        controller.registry.available(preferencesContext);
 
-                    if (settingOption == null &&
-                        localSettingOption.configs.isEmpty) {
+                    if (availableSettingOptions.isEmpty) {
                       return const SizedBox.shrink();
                     }
-
-                    final availableSettingOptions = [
-                      if (settingOption != null)
-                        ...PreferencesOptionType.values.where(
-                          (type) =>
-                              !type.isLocal &&
-                              type != PreferencesOptionType.aiLabelCategorization,
-                        ),
-                      if (localSettingOption.configs.isNotEmpty)
-                        ...PreferencesOptionType.values.where(
-                          (type) =>
-                              type.isLocal &&
-                              type != PreferencesOptionType.label &&
-                              (type != PreferencesOptionType.aiScribe ||
-                                  controller.isAIScribeCapabilityAvailable),
-                        ),
-                      if (settingOption != null &&
-                          controller.isAICapabilitySupported)
-                        PreferencesOptionType.aiLabelCategorization,
-                      if (isLabelVisibility.isTrue)
-                        PreferencesOptionType.label,
-                    ];
 
                     return Expanded(
                       child: ListView.separated(
@@ -95,10 +69,10 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                         itemBuilder: (context, index) {
                           return PreferencesOptionItem(
                             imagePaths: controller.imagePaths,
-                            settingOption: settingOption,
-                            preferencesSetting: localSettingOption,
-                            optionType: availableSettingOptions[index],
-                            onTapPreferencesOptionAction: controller.updateStateSettingOption,
+                            option: availableSettingOptions[index],
+                            preferencesContext: preferencesContext,
+                            onTapPreferencesOptionAction:
+                                controller.updateStateSettingOption,
                           );
                         },
                         separatorBuilder: (_, __) => const SizedBox(height: 49),
