@@ -14,6 +14,8 @@ class SendEmailWithMarkAsImportantScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    await robots.commonRobot().waitForMailboxReady();
+
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
     const emailContent = 'Mark email as important';
 

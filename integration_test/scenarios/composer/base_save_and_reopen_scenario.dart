@@ -48,6 +48,8 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
     final composerRobot = robots.composerRobot();
     final appLocalizations = AppLocalizations();
 
+    await robots.commonRobot().waitForMailboxReady();
+
     await onPreComposerSetup();
 
     await threadRobot.openComposer();
