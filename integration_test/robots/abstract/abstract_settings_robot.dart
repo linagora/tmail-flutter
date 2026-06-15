@@ -1,5 +1,11 @@
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+
+import 'abstract_preferences_robot.dart';
+
 abstract class AbstractSettingsRobot {
-  Future<void> openPreferencesMenuItem();
-  Future<void> togglePreference(String title);
-  Future<void> expectPreference(String title, {required bool switchedOn});
+  final AbstractPreferencesRobot preferencesRobot;
+
+  const AbstractSettingsRobot(this.preferencesRobot);
+
+  Future<void> openSettingsDetail(AccountMenuItem accountMenuItem);
 }

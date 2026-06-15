@@ -1,3 +1,4 @@
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../base/base_test_scenario.dart';
@@ -12,24 +13,34 @@ class TogglePreferencesScenario extends BaseTestScenario {
     final appLocalizations = AppLocalizations();
 
     await mailboxMenuRobot.openSetting();
-    await settingsRobot.openPreferencesMenuItem();
+    await settingsRobot.openSettingsDetail(AccountMenuItem.preferences);
     // Thread
-    await settingsRobot.togglePreference(appLocalizations.thread);
-    await settingsRobot.expectPreference(appLocalizations.thread, switchedOn: true);
-    await settingsRobot.togglePreference(appLocalizations.thread);
-    await settingsRobot.expectPreference(appLocalizations.thread, switchedOn: false);
+    await settingsRobot.preferencesRobot.togglePreferenceOption(
+      appLocalizations.thread,
+    );
+    await settingsRobot.preferencesRobot.expectPreferenceOption(
+      appLocalizations.thread,
+      switchedOn: true,
+    );
+    await settingsRobot.preferencesRobot.togglePreferenceOption(
+      appLocalizations.thread,
+    );
+    await settingsRobot.preferencesRobot.expectPreferenceOption(
+      appLocalizations.thread,
+      switchedOn: false,
+    );
     // Sender set important
-    await settingsRobot.togglePreference(
+    await settingsRobot.preferencesRobot.togglePreferenceOption(
       appLocalizations.senderSetImportantFlag,
     );
-    await settingsRobot.expectPreference(
+    await settingsRobot.preferencesRobot.expectPreferenceOption(
       appLocalizations.senderSetImportantFlag,
       switchedOn: false,
     );
-    await settingsRobot.togglePreference(
+    await settingsRobot.preferencesRobot.togglePreferenceOption(
       appLocalizations.senderSetImportantFlag,
     );
-    await settingsRobot.expectPreference(
+    await settingsRobot.preferencesRobot.expectPreferenceOption(
       appLocalizations.senderSetImportantFlag,
       switchedOn: true,
     );
