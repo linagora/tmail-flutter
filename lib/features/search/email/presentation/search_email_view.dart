@@ -214,6 +214,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           ),
           Expanded(child: TextFieldBuilder(
             key: const Key('search_email_text_field'),
+            onTap: controller.onSearchFieldTap,
             onTextChange: controller.onTextSearchChange,
             textInputAction: TextInputAction.search,
             controller: controller.textInputSearchController,

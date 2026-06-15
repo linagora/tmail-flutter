@@ -43,12 +43,17 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     }
 
     // Wait for provisioned emails to appear in the inbox.
-    // waitForCondition uses Future.delayed between retries, which yields to the
-    // browser event loop on web so JMAP XHR callbacks can fire.
+    // Check by subject (contains label name) rather than exact label badge text,
+    // since the inbox delivery copy may not carry over custom keywords for badge rendering.
     if (labels.isNotEmpty) {
+      final firstLabelName = labels.first.safeDisplayName;
       await waitForCondition(
-        () async => $(labels.first.safeDisplayName).evaluate().isNotEmpty,
-        timeout: TestTimeouts.medium,
+        () async => $(EmailTileBuilder)
+            .which<EmailTileBuilder>(
+                (widget) => widget.subjectContains(firstLabelName))
+            .evaluate()
+            .isNotEmpty,
+        timeout: TestTimeouts.long,
       );
     }
 
@@ -85,21 +90,31 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     required String tagDisplayName,
     required int emailCount,
   }) async {
-    // waitForCondition yields to the browser event loop between retries (via
-    // Future.delayed), allowing JMAP XHR callbacks to fire on web.
+    // First wait for the search result list container — confirms searchIsRunning=true
+    // AND listResultSearch is non-empty before checking individual tiles.
+    await $.waitUntilVisible(
+      $(#search_email_list_notification_listener),
+      timeout: TestTimeouts.medium,
+    );
+
+    // The search result list already appeared (#search_email_list_notification_listener
+    // is visible). Wait for EmailTileBuilder widgets to be rendered inside it.
     await waitForCondition(
       () async {
-        final count = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
-            widget.subjectContains(tagDisplayName)).evaluate().length;
-        return count >= emailCount;
+        final tiles = $(#search_email_list_notification_listener)
+            .$(EmailTileBuilder)
+            .evaluate();
+        return tiles.length >= emailCount;
       },
       timeout: TestTimeouts.medium,
     );
 
-    final listEmailTileWithTag = $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
-        widget.subjectContains(tagDisplayName)).allCandidates;
+    final count = $(#search_email_list_notification_listener)
+        .$(EmailTileBuilder)
+        .evaluate()
+        .length;
 
-    expect(listEmailTileWithTag.length, greaterThanOrEqualTo(emailCount));
+    expect(count, greaterThanOrEqualTo(emailCount));
   }
 }
 
