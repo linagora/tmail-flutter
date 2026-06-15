@@ -7,6 +7,8 @@ class OpenInsertLinkDialogViaKeyboardShortcutScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    await robots.commonRobot().waitForMailboxReady();
+
     final composerRobot = robots.composerRobot();
     final appLocalizations = AppLocalizations();
 
