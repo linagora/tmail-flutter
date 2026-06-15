@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -146,7 +147,7 @@ class EmptyFolderProviderListenerDelegate
           ref,
           subfoldersStatus: subfoldersStatus,
         );
-        _handleUrgentException(subfoldersException, dashboardController);
+        _handleUrgentException(subfoldersException);
         dashboardController.dispatchMailboxUIAction(RefreshAllMailboxAction());
         dashboardController.dispatchEmailUIAction(RefreshAllEmailAction());
 
@@ -155,7 +156,7 @@ class EmptyFolderProviderListenerDelegate
         _stateSubscription = null;
         _resetProgress(dashboardController);
         _showEmptyFolderFailureToast(context, ref);
-        _handleUrgentException(exception, dashboardController);
+        _handleUrgentException(exception);
 
       case EmptyFolderIdle():
         break;
@@ -177,13 +178,14 @@ class EmptyFolderProviderListenerDelegate
     }
   }
 
-  void _handleUrgentException(
-    Object? exception,
-    MailboxDashBoardController dashboardController,
-  ) {
+  // Resolves the urgent-exception handler by contract, not the concrete
+  // controller — keeps session/logout handling decoupled from this delegate.
+  void _handleUrgentException(Object? exception) {
     if (exception == null) return;
-    if (dashboardController.validateUrgentException(exception)) {
-      dashboardController.handleUrgentException(
+    final handler = getBinding<UrgentExceptionHandler>();
+    if (handler == null) return;
+    if (handler.validateUrgentException(exception)) {
+      handler.handleUrgentException(
         exception: exception is Exception ? exception : null,
       );
     }
