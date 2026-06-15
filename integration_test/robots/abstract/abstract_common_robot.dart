@@ -19,29 +19,19 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../base/core_robot.dart';
-import '../../extensions/mailbox_dashboard_controller_integration_test_extensions.dart';
 import '../../models/provisioning_email.dart';
 import '../../utils/test_timeouts.dart';
-import '../../utils/wait_for_condition.dart';
+import '../../utils/wait_for_mailbox_ready.dart' as wait_for_mailbox_ready;
 
 abstract class AbstractCommonRobot extends CoreRobot {
   AbstractCommonRobot(super.$);
 
-  /// Waits until the mailbox dashboard is fully loaded (session, account id and
-  /// selected mailbox are available). The app reaches this state only after the
-  /// silent (seeded-credentials) login completes, so callers that provision data
-  /// directly through controllers must await this before touching them.
   Future<void> waitForMailboxReady({
     Duration timeout = TestTimeouts.long,
-  }) async {
-    await waitForCondition(
-      () => getBinding<MailboxDashBoardController>().isReady,
-      timeout: timeout,
-    );
-  }
+  }) =>
+      wait_for_mailbox_ready.waitForMailboxReady(timeout: timeout);
 
   Future<void> provisionEmail(
     List<ProvisioningEmail> provisioningEmails, {

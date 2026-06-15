@@ -38,16 +38,13 @@ import 'package:tmail_ui_user/features/manage_account/presentation/identities/id
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../extensions/mailbox_dashboard_controller_integration_test_extensions.dart';
 import '../extensions/patrol_file_extensions.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_identity.dart';
 import '../resources/test_images.dart';
-import '../utils/test_timeouts.dart';
-import '../utils/wait_for_condition.dart';
+import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ScenarioUtilsMixin {
   @Deprecated('Provision email from CommonRobot instead.')
@@ -59,10 +56,7 @@ mixin ScenarioUtilsMixin {
   }) async {
     ComposerBindings().dependencies();
 
-    await waitForCondition(
-      () => getBinding<MailboxDashBoardController>().isReady,
-      timeout: TestTimeouts.long,
-    );
+    await waitForMailboxReady();
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
         Get.find<CreateNewAndSendEmailInteractor>();
@@ -263,10 +257,7 @@ mixin ScenarioUtilsMixin {
       List<ProvisioningIdentity> provisioningIdentities) async {
     IdentityInteractorsBindings().dependencies();
 
-    await waitForCondition(
-      () => getBinding<MailboxDashBoardController>().isReady,
-      timeout: TestTimeouts.long,
-    );
+    await waitForMailboxReady();
 
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewIdentityInteractor = Get.find<CreateNewIdentityInteractor>();
