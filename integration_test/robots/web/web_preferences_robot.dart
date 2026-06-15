@@ -1,5 +1,5 @@
-import '../mobile/mobile_preferences_robot.dart';
+import '../preferences_robot.dart';
 
-class WebPreferencesRobot extends MobilePreferencesRobot {
+class WebPreferencesRobot extends PreferencesRobot {
   WebPreferencesRobot(super.$);
 }
