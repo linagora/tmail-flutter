@@ -178,7 +178,6 @@ class SearchEmailController extends BaseController
   void onInit() {
     super.onInit();
     _initializeDebounceTimeTextSearchChange();
-    _initializeTextInputFocus();
     _initWorkerListener();
     _initWebSocketQueueHandler();
     onKeyboardShortcutInit();
@@ -275,8 +274,8 @@ class SearchEmailController extends BaseController
     });
   }
 
-  void _initializeTextInputFocus() {
-    textInputSearchFocus.addListener(_onSearchTextInputListener);
+  void onSearchFieldTap() {
+    searchIsRunning.value = false;
   }
 
   void _initWorkerListener() {
@@ -397,11 +396,6 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void _onSearchTextInputListener() {
-    if (textInputSearchFocus.hasFocus) {
-      searchIsRunning.value = false;
-    }
-  }
 
   void _handleRefreshChangesSearchEmailsSuccess(RefreshChangesSearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
@@ -1212,7 +1206,6 @@ class SearchEmailController extends BaseController
 
   @override
   void onClose() {
-    textInputSearchFocus.removeListener(_onSearchTextInputListener);
     textInputSearchController.dispose();
     textInputSearchFocus.dispose();
     resultSearchScrollController.dispose();
