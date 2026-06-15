@@ -12,6 +12,8 @@ import '../../models/provisioning_identity.dart';
 import '../../robots/composer_robot.dart';
 import '../../robots/identities_list_menu_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 
 class AttachmentReminderScenario extends BaseTestScenario {
   const AttachmentReminderScenario(super.$, super.robots);
@@ -91,12 +93,12 @@ class AttachmentReminderScenario extends BaseTestScenario {
           'in your message but did not add any attachments. Do you still want to send?')));
 
   Future<void> _expectIdentityVisible(Identity identity) async {
-    expect(
-      $(FromComposerMobileWidget)
+    await waitForCondition(
+      () => $(FromComposerMobileWidget)
           .which<FromComposerMobileWidget>(
               (widget) => widget.selectedIdentity?.name == identity.name)
           .visible,
-      isTrue,
+      timeout: TestTimeouts.medium,
     );
   }
 
