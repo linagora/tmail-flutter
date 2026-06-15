@@ -18,6 +18,8 @@ class CreateNewIdentityScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    await robots.commonRobot().waitForMailboxReady();
+
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
     final settingRobot = SettingRobot($);

@@ -14,6 +14,8 @@ class SendEmailWithReadReceiptEnabledScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    await robots.commonRobot().waitForMailboxReady();
+
     const additionalRecipient = String.fromEnvironment('ADDITIONAL_MAIL_RECIPIENT');
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
     const subject = 'Test read receipt subject';
