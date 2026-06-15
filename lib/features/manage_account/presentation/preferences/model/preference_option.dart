@@ -104,7 +104,8 @@ abstract class ServerPreferenceOption extends PreferenceOption {
     final session = context.session;
     final accountId = context.accountId;
     final current = context.serverOptions;
-    if (session == null || accountId == null || current == null) {
+    final isContextMissing = session == null || accountId == null || current == null;
+    if (isContextMissing) {
       return Stream.value(
         Left(UpdateServerSettingFailure(NotFoundAccountIdException())),
       );
