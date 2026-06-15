@@ -12,6 +12,8 @@ import '../../robots/composer_robot.dart';
 import '../../robots/identities_list_menu_robot.dart';
 import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 
 class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
   const ChangeIdentityInDraftEmailScenario(super.$, super.robots);
@@ -96,9 +98,12 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
       expectViewVisible($(#save_as_draft_popup_item));
 
   Future<void> _expectIdentityVisible(Identity identity) async {
-    final identityFinder = $(FromComposerMobileWidget).which<FromComposerMobileWidget>(
-      (widget) => widget.selectedIdentity?.name == identity.name
+    await waitForCondition(
+      () => $(FromComposerMobileWidget)
+          .which<FromComposerMobileWidget>(
+              (widget) => widget.selectedIdentity?.name == identity.name)
+          .visible,
+      timeout: TestTimeouts.medium,
     );
-    await expectViewVisible(identityFinder);
   }
 }
