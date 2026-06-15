@@ -5,6 +5,7 @@ extension MailboxDashboardControllerIntegrationTestExtensions on MailboxDashBoar
     return this != null &&
         this!.sessionCurrent != null &&
         this!.accountId.value != null &&
-        this!.selectedMailbox.value != null;
+        this!.selectedMailbox.value != null &&
+        this!.mapDefaultMailboxIdByRole.isNotEmpty;
   }
 }
