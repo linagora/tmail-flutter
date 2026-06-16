@@ -14,6 +14,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
+import '../utils/test_timeouts.dart';
+import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_search_robot.dart';
 
 class SearchRobot extends CoreRobot implements AbstractSearchRobot {
@@ -158,6 +160,32 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   @override
   Future<void> expectEmailListCount(int count) async {
     expect(find.byType(EmailTileBuilder), findsNWidgets(count));
+  }
+
+  @override
+  Future<void> expectEmailListCountAtLeast(int count) async {
+    // Wait for the search result container — confirms searchIsRunning=true
+    // and listResultSearch is non-empty before checking individual tiles.
+    await $.waitUntilVisible(
+      $(#search_email_list_notification_listener),
+      timeout: TestTimeouts.medium,
+    );
+    await waitForCondition(
+      () async {
+        final tiles = $(#search_email_list_notification_listener)
+            .$(EmailTileBuilder)
+            .evaluate();
+        return tiles.length >= count;
+      },
+      timeout: TestTimeouts.medium,
+    );
+    expect(
+      $(#search_email_list_notification_listener)
+          .$(EmailTileBuilder)
+          .evaluate()
+          .length,
+      greaterThanOrEqualTo(count),
+    );
   }
 
   @override
