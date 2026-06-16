@@ -164,6 +164,22 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   }
 
   @override
+  Future<void> expectEmailListCountAtLeast(int count) async {
+    // Web desktop: results render in ThreadView (no #search_email_list_notification_listener).
+    // $.pump() advances the widget tree each retry so GetX rebuilds from JMAP responses
+    // are processed; Future.delayed inside waitForCondition then yields to the browser
+    // event loop so XHR callbacks can fire before the next retry.
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return $(EmailTileBuilder).evaluate().length >= count;
+      },
+      timeout: TestTimeouts.medium,
+    );
+    expect($(EmailTileBuilder).evaluate().length, greaterThanOrEqualTo(count));
+  }
+
+  @override
   Future<void> expectEmptyResults() async {
     await $(const Key(UiKeys.emptyThreadView)).waitUntilVisible();
   }
