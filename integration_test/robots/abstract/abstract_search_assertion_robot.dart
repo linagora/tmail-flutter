@@ -9,6 +9,7 @@ abstract class AbstractSearchAssertionRobot {
   // On web, showMenu popup has no container key — asserts via PopupMenuItemActionWidget.
   Future<void> expectDateTimeFilterContextMenuVisible();
   Future<void> expectEmailListCount(int count);
+  Future<void> expectEmailListCountAtLeast(int count);
   Future<void> expectEmailListSortedByMostRecent();
   Future<void> expectEmailListSortedByOldest();
   Future<void> expectEmailListSortedBySenderAscending(List<String> usernames);
