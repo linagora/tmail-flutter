@@ -5905,5 +5905,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "aiLabelCategorizationSettingExplanation": "Appliquer mes libellés sur les e-mails entrants en utilisant leur description",
+  "@aiLabelCategorizationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
