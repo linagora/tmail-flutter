@@ -66,10 +66,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       await _expectLabelListContextMenuVisible();
 
       await commonRobot.selectContextMenuItemByName(labelDisplayName);
-      await _expectEmailListDisplayedCorrectByTag(
-        tagDisplayName: labelDisplayName,
-        emailCount: emailCount,
-      );
+      await searchRobot.expectEmailListCountAtLeast(emailCount);
 
       await $.pumpAndSettle(duration: const Duration(seconds: 1));
     }
@@ -86,36 +83,6 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     );
   }
 
-  Future<void> _expectEmailListDisplayedCorrectByTag({
-    required String tagDisplayName,
-    required int emailCount,
-  }) async {
-    // First wait for the search result list container — confirms searchIsRunning=true
-    // AND listResultSearch is non-empty before checking individual tiles.
-    await $.waitUntilVisible(
-      $(#search_email_list_notification_listener),
-      timeout: TestTimeouts.medium,
-    );
-
-    // The search result list already appeared (#search_email_list_notification_listener
-    // is visible). Wait for EmailTileBuilder widgets to be rendered inside it.
-    await waitForCondition(
-      () async {
-        final tiles = $(#search_email_list_notification_listener)
-            .$(EmailTileBuilder)
-            .evaluate();
-        return tiles.length >= emailCount;
-      },
-      timeout: TestTimeouts.medium,
-    );
-
-    final count = $(#search_email_list_notification_listener)
-        .$(EmailTileBuilder)
-        .evaluate()
-        .length;
-
-    expect(count, greaterThanOrEqualTo(emailCount));
-  }
 }
 
 extension on EmailTileBuilder {
