@@ -1,3 +1,7 @@
+## [0.29.6] - 2026-06-16
+### Fixed
+- flaky mobile e2e test
+
 ## [0.29.6] - 2026-06-13
 ### Fixed
 - fix: cannot download because of no way to get token from corrupt box
