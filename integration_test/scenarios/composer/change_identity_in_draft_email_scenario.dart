@@ -70,11 +70,10 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
     await _expectSaveAsDraftOptionPopupMenuVisible();
 
     await composerRobot.tapSaveAsDraftPopupItemOnMenu();
-    // Wait for the save to actually commit before closing, instead of racing the
-    // transient "Draft saved" toast. The draft's existence is then asserted
-    // durably below by reopening it from the Drafts folder.
-    await composerRobot.waitForDraftSaved();
-
+    // The "saving to drafts" modal (barrierDismissible:false / canPop:false) covers
+    // the close button until the save commits, so tapCloseComposer naturally blocks
+    // until the button is hit-testable again — no extra wait needed. The draft's
+    // existence is asserted durably below by reopening it from the Drafts folder.
     await composerRobot.tapCloseComposer(imagePaths);
 
     await threadRobot.openMailbox();
