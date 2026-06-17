@@ -285,13 +285,9 @@ abstract class BaseController extends GetxController
   }
 
   void handleRefreshTokenFailedException() {
-    logError(
+    log(
       '$runtimeType::handleRefreshTokenFailedException: '
-      'auth_error_type=refresh_token_failed | will_logout=true | '
       'hasComposer=${twakeAppManager.hasComposer}',
-      exception: RefreshTokenFailedException(),
-      stackTrace: StackTrace.current,
-      extras: {'auth_error_type': 'refresh_token_failed'},
       webConsoleEnabled: true,
     );
     if (twakeAppManager.hasComposer) {
