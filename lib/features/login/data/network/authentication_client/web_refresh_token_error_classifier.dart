@@ -29,24 +29,28 @@ class WebRefreshTokenErrorClassifier {
   /// that maps to HTTP 400 or 401, making logout the correct response.
   bool isServerRejection(Object error) {
     if (error is AccessTokenInvalidException) return true;
-    if (error is ArgumentError) {
-      final code = _parseOAuthCode(error);
-      if (code != null && _badGrantCodes.contains(code)) return true;
-      // flutter_appauth_web always wraps non-200 token responses as
-      // [error: token_failed, description: <actual-rfc-6749-code>].
-      // When the code is 'token_failed', the real rejection signal lives in
-      // the description field.
-      if (code == 'token_failed') {
-        final desc = _parseOAuthDesc(error);
-        return desc != null && _badGrantCodes.contains(desc);
-      }
-      return false;
-    }
-    if (error is DioException) {
-      final statusCode = error.response?.statusCode;
-      return statusCode == 400 || statusCode == 401;
+    if (error is ArgumentError) return _isArgumentErrorRejection(error);
+    if (error is DioException) return _isDioRejection(error);
+    return false;
+  }
+
+  bool _isArgumentErrorRejection(ArgumentError error) {
+    final code = _parseOAuthCode(error);
+    if (code != null && _badGrantCodes.contains(code)) return true;
+    // flutter_appauth_web always wraps non-200 token responses as
+    // [error: token_failed, description: <actual-rfc-6749-code>].
+    // When the code is 'token_failed', the real rejection signal lives in
+    // the description field.
+    if (code == 'token_failed') {
+      final desc = _parseOAuthDesc(error);
+      return desc != null && _badGrantCodes.contains(desc);
     }
     return false;
+  }
+
+  bool _isDioRejection(DioException error) {
+    final statusCode = error.response?.statusCode;
+    return statusCode == 400 || statusCode == 401;
   }
 
   /// Builds structured Sentry extras for [error].

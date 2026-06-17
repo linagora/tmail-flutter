@@ -3,6 +3,10 @@ import 'dart:io';
 
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
+import 'package:core/utils/logging/log_handler.dart';
+import 'package:core/utils/logging/log_level.dart';
+import 'package:core/utils/logging/log_record.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -3380,6 +3384,95 @@ void main() {
     );
   });
 
+  // ============================================================
+  // onError: WEB refresh failure emits EXACTLY ONE Sentry event
+  // Guards the dedup: the generic catch in _refreshTokenThenRetry routes the
+  // non-Dio ArgumentError straight to the web handler, so the outer catch in
+  // onError() never fires its own logError. Without that routing, one refresh
+  // failure would log twice (generic onError:Exception + the classified event).
+  // ============================================================
+  group('onError: web refresh failure emits a single Sentry event', () {
+    late _CapturingLogHandler logHandler;
+
+    setUp(() {
+      PlatformInfo.isTestingForWeb = true;
+      logHandler = _CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() {
+      AppLoggerRegistry.instance.resetForTesting();
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    test(
+      'WHEN web refresh throws ArgumentError classified as server rejection\n'
+      'THEN exactly ONE error-level event is emitted (will_logout=true)\n'
+      'AND the duplicate generic onError:Exception event is NOT logged',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: token_failed, description: invalid_request]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>(
+            (e) => e.error is RefreshTokenFailedException,
+          )),
+        );
+
+        final errorRecords = logHandler.errorRecords;
+        expect(
+          errorRecords.length,
+          1,
+          reason: 'web refresh rejection must emit exactly one error event',
+        );
+        expect(errorRecords.single.rawMessage, contains('will_logout=true'));
+        expect(
+          errorRecords.single.rawMessage,
+          contains('_handleRefreshErrorOnWeb'),
+        );
+        expect(
+          errorRecords.any((r) => r.rawMessage.contains('onError:Exception')),
+          isFalse,
+          reason: 'the outer-catch duplicate event must not fire on web',
+        );
+      },
+    );
+
+    test(
+      'WHEN web refresh throws ArgumentError with an unknown OAuth code (session kept)\n'
+      'THEN exactly ONE error-level event is emitted (will_logout=false)\n'
+      'AND the duplicate generic onError:Exception event is NOT logged',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: token_failed, description: server_error]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>(
+            (e) => e.response == null && e.error is ArgumentError,
+          )),
+        );
+
+        final errorRecords = logHandler.errorRecords;
+        expect(
+          errorRecords.length,
+          1,
+          reason: 'unknown-code web refresh must emit exactly one error event',
+        );
+        expect(errorRecords.single.rawMessage, contains('will_logout=false'));
+        expect(
+          errorRecords.any((r) => r.rawMessage.contains('onError:Exception')),
+          isFalse,
+        );
+      },
+    );
+  });
+
   tearDown(() {
     reset(authenticationClient);
     reset(tokenOidcCacheManager);
@@ -3391,4 +3484,14 @@ void main() {
     dioAdapter.close();
     dio.close();
   });
+}
+
+class _CapturingLogHandler extends LogHandler {
+  final List<LogRecord> records = [];
+
+  @override
+  void handle(LogRecord record) => records.add(record);
+
+  List<LogRecord> get errorRecords =>
+      records.where((r) => r.level == Level.error).toList();
 }
