@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/server_settings/domain/state/update_serve
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:workplace/presentation/provider/drive_attachment_user_preference_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_user_preference_notifier.dart';
 
 class PreferencesController extends BaseController {
   PreferencesController(

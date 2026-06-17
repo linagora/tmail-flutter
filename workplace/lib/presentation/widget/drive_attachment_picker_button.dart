@@ -1,12 +1,11 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:workplace/presentation/provider/drive_attachment_available_provider.dart';
 
-class DriveAttachmentPickerButton extends ConsumerWidget {
+class DriveAttachmentPickerButton extends StatelessWidget {
   final String composerId;
   final ImagePaths imagePaths;
+  final Uri? workplaceUri;
   final String? tooltipLabel;
   final Color? iconColor;
   final double iconSize;
@@ -18,6 +17,7 @@ class DriveAttachmentPickerButton extends ConsumerWidget {
     super.key,
     required this.composerId,
     required this.imagePaths,
+    required this.workplaceUri,
     this.tooltipLabel,
     this.iconColor,
     this.iconSize = 20,
@@ -27,9 +27,8 @@ class DriveAttachmentPickerButton extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isAvailable = ref.watch(isDriveAttachmentAvailableProvider);
-    if (!isAvailable) return const SizedBox.shrink();
+  Widget build(BuildContext context) {
+    if (workplaceUri == null) return const SizedBox.shrink();
     return TMailButtonWidget.fromIcon(
       icon: imagePaths.icCloudPlus,
       iconColor: iconColor,

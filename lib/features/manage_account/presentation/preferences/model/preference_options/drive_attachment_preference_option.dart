@@ -3,8 +3,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:workplace/presentation/provider/drive_attachment_enabled_notifier.dart';
-import 'package:workplace/presentation/provider/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
 class DriveAttachmentPreferenceOption extends LocalPreferenceOption {
   DriveAttachmentPreferenceOption(super.updateLocalSettingsInteractor);

@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
-import 'package:workplace/presentation/provider/drive_attachment_enabled_notifier.dart';
-import 'package:workplace/presentation/provider/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';

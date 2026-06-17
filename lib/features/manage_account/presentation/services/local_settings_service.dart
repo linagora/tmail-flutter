@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_
 import 'package:tmail_ui_user/main/providers/experimental_preferences_revealed_provider.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:workplace/presentation/provider/drive_attachment_user_preference_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_user_preference_notifier.dart';
 
 /// Responsible for loading local settings from cache on startup and pushing
 /// the result into [localSettingsProvider] so all Riverpod consumers

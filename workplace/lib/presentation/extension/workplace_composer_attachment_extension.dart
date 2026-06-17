@@ -1,12 +1,15 @@
 import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
-  const WorkplaceComposerAttachmentExtension();
+  final ValueListenable<Uri?> workplaceUri;
+
+  const WorkplaceComposerAttachmentExtension({required this.workplaceUri});
 
   @override
   Widget buildToolbarButton(
@@ -15,15 +18,19 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required ImagePaths imagePaths,
     ComposerToolbarButtonStyle style = const ComposerToolbarButtonStyle(),
   }) {
-    return DriveAttachmentPickerButton(
-      composerId: composerId,
-      imagePaths: imagePaths,
-      tooltipLabel: style.tooltipLabel,
-      iconColor: style.iconColor,
-      iconSize: style.iconSize,
-      borderRadius: style.borderRadius,
-      padding: style.padding,
-      margin: style.margin,
+    return ValueListenableBuilder<Uri?>(
+      valueListenable: workplaceUri,
+      builder: (_, uri, __) => DriveAttachmentPickerButton(
+        composerId: composerId,
+        imagePaths: imagePaths,
+        workplaceUri: uri,
+        tooltipLabel: style.tooltipLabel,
+        iconColor: style.iconColor,
+        iconSize: style.iconSize,
+        borderRadius: style.borderRadius,
+        padding: style.padding,
+        margin: style.margin,
+      ),
     );
   }
 
@@ -34,10 +41,14 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required ImagePaths imagePaths,
     required String label,
   }) {
-    return DriveAttachmentContextMenuTile(
-      composerId: composerId,
-      imagePaths: imagePaths,
-      label: label,
+    return ValueListenableBuilder<Uri?>(
+      valueListenable: workplaceUri,
+      builder: (_, uri, __) => DriveAttachmentContextMenuTile(
+        composerId: composerId,
+        imagePaths: imagePaths,
+        workplaceUri: uri,
+        label: label,
+      ),
     );
   }
 }

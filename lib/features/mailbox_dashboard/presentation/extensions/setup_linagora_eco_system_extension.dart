@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_lin
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:workplace/presentation/provider/drive_attachment_enabled_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 
 extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
   void loadLinagoraEcosystem() {
