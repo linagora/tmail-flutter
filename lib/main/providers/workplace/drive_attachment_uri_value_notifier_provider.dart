@@ -13,21 +13,18 @@ bool _canBuildUri({
 }) =>
     enabled && fqdn != null && fqdn.isNotEmpty && userPref;
 
+Uri? _computeUri(Ref ref) {
+  final fqdn = ref.read(workplaceFqdnProvider);
+  final enabled = ref.read(driveAttachmentEnabledProvider);
+  final userPref = ref.read(driveAttachmentUserPreferenceProvider).asData?.value ?? false;
+  if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) return null;
+  return Uri.tryParse(fqdn!);
+}
+
 @Riverpod(keepAlive: true)
 ValueNotifier<Uri?> driveAttachmentUriValueNotifier(Ref ref) {
-  final notifier = ValueNotifier<Uri?>(null);
-
-  Uri? compute() {
-    final fqdn = ref.read(workplaceFqdnProvider);
-    final enabled = ref.read(driveAttachmentEnabledProvider);
-    final userPref = ref.read(driveAttachmentUserPreferenceProvider).asData?.value ?? false;
-    if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) return null;
-    return Uri.tryParse(fqdn!);
-  }
-
-  void onUpdate(dynamic _, dynamic __) => notifier.value = compute();
-
-  notifier.value = compute();
+  final notifier = ValueNotifier<Uri?>(_computeUri(ref));
+  void onUpdate(dynamic _, dynamic __) => notifier.value = _computeUri(ref);
   ref.listen(workplaceFqdnProvider, onUpdate);
   ref.listen(driveAttachmentEnabledProvider, onUpdate);
   ref.listen(driveAttachmentUserPreferenceProvider, onUpdate);

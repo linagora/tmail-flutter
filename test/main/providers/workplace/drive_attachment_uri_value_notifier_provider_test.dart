@@ -32,7 +32,7 @@ Future<Uri?> _awaitedUri(ProviderContainer c) async {
 
 ProviderContainer _makeAllMetContainer() => _makeContainer(
       enabledDefault: true,
-      fqdnDefault: 'https://workplace.example.com',
+      fqdnDefault: _kWorkplaceFqdn,
       userPreferenceDefault: true,
     );
 
@@ -65,6 +65,7 @@ class _MutableUserPref {
   _MutableUserPref(this.value);
 }
 
+const _kWorkplaceFqdn = 'https://workplace.example.com';
 
 void main() {
   group('driveAttachmentUriValueProvider', () {
@@ -80,7 +81,7 @@ void main() {
     test('null when enabled=true and fqdn set but user preference off', () async {
       container = _makeContainer(
         enabledDefault: true,
-        fqdnDefault: 'https://workplace.example.com',
+        fqdnDefault: _kWorkplaceFqdn,
       );
       expect(await _awaitedUri(container), isNull);
     });
@@ -95,7 +96,7 @@ void main() {
 
     test('null when fqdn set and user preference on but enabled=false', () async {
       container = _makeContainer(
-        fqdnDefault: 'https://workplace.example.com',
+        fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
       expect(await _awaitedUri(container), isNull);
@@ -122,7 +123,7 @@ void main() {
 
     test('null when enabled=null (treated as false)', () async {
       container = _makeContainer(
-        fqdnDefault: 'https://workplace.example.com',
+        fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
       await _awaitedUri(container);
@@ -134,7 +135,7 @@ void main() {
       final pref = _MutableUserPref(false);
       container = _makeContainer(
         enabledDefault: true,
-        fqdnDefault: 'https://workplace.example.com',
+        fqdnDefault: _kWorkplaceFqdn,
         mutablePref: pref,
       );
       await _awaitedUri(container);
@@ -151,7 +152,7 @@ void main() {
       final pref = _MutableUserPref(true);
       container = _makeContainer(
         enabledDefault: true,
-        fqdnDefault: 'https://workplace.example.com',
+        fqdnDefault: _kWorkplaceFqdn,
         mutablePref: pref,
       );
       await _awaitedUri(container);

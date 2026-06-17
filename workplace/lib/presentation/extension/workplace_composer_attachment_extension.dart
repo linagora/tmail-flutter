@@ -24,12 +24,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         composerId: composerId,
         imagePaths: imagePaths,
         workplaceUri: uri,
-        tooltipLabel: style.tooltipLabel,
-        iconColor: style.iconColor,
-        iconSize: style.iconSize,
-        borderRadius: style.borderRadius,
-        padding: style.padding,
-        margin: style.margin,
+        style: style,
       ),
     );
   }
