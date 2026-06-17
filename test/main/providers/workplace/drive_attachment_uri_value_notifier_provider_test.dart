@@ -67,19 +67,23 @@ class _MutableUserPref {
 
 const _kWorkplaceFqdn = 'https://workplace.example.com';
 
+typedef _ToggleExpectation = ({
+  Matcher beforeToggle,
+  bool toggleTo,
+  Matcher afterToggle,
+});
+
 Future<void> _testUserPrefToggle(
   ProviderContainer c,
-  _MutableUserPref pref, {
-  required Matcher beforeToggle,
-  required bool toggleTo,
-  required Matcher afterToggle,
-}) async {
+  _MutableUserPref pref,
+  _ToggleExpectation expectation,
+) async {
   await _awaitedUri(c);
-  expect(c.read(driveAttachmentUriValueProvider).value, beforeToggle);
-  pref.value = toggleTo;
+  expect(c.read(driveAttachmentUriValueProvider).value, expectation.beforeToggle);
+  pref.value = expectation.toggleTo;
   c.invalidate(driveAttachmentUserPreferenceProvider);
   await c.read(driveAttachmentUserPreferenceProvider.future);
-  expect(c.read(driveAttachmentUriValueProvider).value, afterToggle);
+  expect(c.read(driveAttachmentUriValueProvider).value, expectation.afterToggle);
 }
 
 void main() {
@@ -159,9 +163,7 @@ void main() {
       await _testUserPrefToggle(
         container,
         pref,
-        beforeToggle: isNull,
-        toggleTo: true,
-        afterToggle: isNotNull,
+        (beforeToggle: isNull, toggleTo: true, afterToggle: isNotNull),
       );
     });
 
@@ -175,9 +177,7 @@ void main() {
       await _testUserPrefToggle(
         container,
         pref,
-        beforeToggle: isNotNull,
-        toggleTo: false,
-        afterToggle: isNull,
+        (beforeToggle: isNotNull, toggleTo: false, afterToggle: isNull),
       );
     });
   });
