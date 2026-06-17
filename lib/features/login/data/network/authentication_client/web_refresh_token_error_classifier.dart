@@ -31,7 +31,16 @@ class WebRefreshTokenErrorClassifier {
     if (error is AccessTokenInvalidException) return true;
     if (error is ArgumentError) {
       final code = _parseOAuthCode(error);
-      return code != null && _badGrantCodes.contains(code);
+      if (code != null && _badGrantCodes.contains(code)) return true;
+      // flutter_appauth_web always wraps non-200 token responses as
+      // [error: token_failed, description: <actual-rfc-6749-code>].
+      // When the code is 'token_failed', the real rejection signal lives in
+      // the description field.
+      if (code == 'token_failed') {
+        final desc = _parseOAuthDesc(error);
+        return desc != null && _badGrantCodes.contains(desc);
+      }
+      return false;
     }
     if (error is DioException) {
       final statusCode = error.response?.statusCode;

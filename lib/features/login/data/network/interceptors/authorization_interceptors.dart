@@ -36,7 +36,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   TokenOIDC? _token;
   String? _authorization;
 
-  final _webErrorClassifier = WebRefreshTokenErrorClassifier();
+  final WebRefreshTokenErrorClassifier _webErrorClassifier;
 
   late final void Function(
     Object error,
@@ -51,8 +51,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     this._authenticationClient,
     this._tokenOidcCacheManager,
     this._accountCacheManager,
-    this._iosSharingManager,
-  );
+    this._iosSharingManager, {
+    WebRefreshTokenErrorClassifier? webErrorClassifier,
+  }) : _webErrorClassifier = webErrorClassifier ?? WebRefreshTokenErrorClassifier();
 
   void setBasicAuthorization(UserName userName, Password password) {
     _authorization = base64Encode(utf8.encode('${userName.value}:${password.value}'));
@@ -374,6 +375,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
         handler,
       );
+    } catch (e, st) {
+      // On web, flutter_appauth_web throws ArgumentError (and similar non-Dio
+      // errors) for token-endpoint failures. Catching here routes them directly
+      // to _handleRefreshError — preventing the outer catch in onError() from
+      // firing and producing a duplicate Sentry event.
+      if (PlatformInfo.isWeb) {
+        return _handleRefreshError(e, st, err, handler);
+      }
+      rethrow;
     }
   }
 

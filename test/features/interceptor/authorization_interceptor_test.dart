@@ -2923,13 +2923,14 @@ void main() {
       },
     );
 
-    // ---- Non-standard OAuth2 code → session kept, logged for investigation ----
+    // ---- flutter_appauth_web token_failed wrapper: RFC 6749 code in description → logout ----
+    // flutter_appauth_web always emits [error: token_failed, description: <actual-rfc-code>].
 
     test(
-      'WHEN refresh throws ArgumentError with non-standard "token_failed" code '
-      'and description invalid_request (Sentry issue)\n'
-      'THEN session is KEPT — error propagated with NO HTTP response\n'
-      'AND OIDC state is NOT cleared (HTTP status unknown, cannot confirm 400/401)',
+      'WHEN refresh throws ArgumentError with token_failed code '
+      'and description invalid_request (flutter_appauth_web format)\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError(
           'Failed to get token: [error: token_failed, description: invalid_request]',
@@ -2939,25 +2940,52 @@ void main() {
         await expectLater(
           () => dio.post(baseUrl),
           throwsA(predicate<DioException>((e) {
-            return e.response == null && e.error is ArgumentError;
+            return e.error is RefreshTokenFailedException;
           })),
         );
 
         expect(
           authorizationInterceptors.authenticationType,
-          AuthenticationType.oidc,
+          AuthenticationType.none,
         );
       },
     );
 
     test(
-      'WHEN refresh throws ArgumentError with non-standard "token_failed" code '
-      'and description invalid_grant (Sentry issue)\n'
-      'THEN session is KEPT — error propagated with NO HTTP response\n'
-      'AND OIDC state is NOT cleared',
+      'WHEN refresh throws ArgumentError with token_failed code '
+      'and description invalid_grant (flutter_appauth_web format)\n'
+      'THEN rejected with RefreshTokenFailedException (→ forced logout)\n'
+      'AND OIDC state is cleared',
       () async {
         stubWebRefresh401ThenThrow(ArgumentError(
           'Failed to get token: [error: token_failed, description: invalid_grant]',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.error is RefreshTokenFailedException;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
+        );
+      },
+    );
+
+    // ---- token_failed with non-RFC description → session kept ----
+
+    test(
+      'WHEN refresh throws ArgumentError with token_failed code '
+      'and non-RFC description (server_error)\n'
+      'THEN session is KEPT — HTTP status unknown\n'
+      'AND OIDC state is NOT cleared',
+      () async {
+        stubWebRefresh401ThenThrow(ArgumentError(
+          'Failed to get token: [error: token_failed, description: server_error]',
         ));
         stubAccountCache();
 

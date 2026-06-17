@@ -78,27 +78,50 @@ void main() {
       });
     });
 
-    group('ArgumentError — non-standard / unknown codes', () {
+    group('ArgumentError — token_failed (flutter_appauth_web wrapper code)', () {
+      // flutter_appauth_web always uses [error: token_failed, description: <actual-code>].
+      // The real RFC 6749 signal is in the description field.
       ArgumentError appAuthError(String code, {String desc = 'some description'}) =>
           ArgumentError('Invalid argument(s): Failed to get token: [error: $code, description: $desc]');
 
-      test('returns false for token_failed with invalid_grant in description', () {
-        // "token_failed" is not RFC 6749; unknown HTTP status — keep session
+      test('returns true for token_failed with invalid_grant in description', () {
         expect(
           classifier.isServerRejection(appAuthError('token_failed', desc: 'invalid_grant')),
-          isFalse,
+          isTrue,
         );
       });
 
-      test('returns false for token_failed with invalid_request in description', () {
+      test('returns true for token_failed with invalid_request in description', () {
         expect(
           classifier.isServerRejection(appAuthError('token_failed', desc: 'invalid_request')),
+          isTrue,
+        );
+      });
+
+      test('returns true for token_failed with invalid_client in description', () {
+        expect(
+          classifier.isServerRejection(appAuthError('token_failed', desc: 'invalid_client')),
+          isTrue,
+        );
+      });
+
+      test('returns false for token_failed with non-RFC-6749 description (server_error)', () {
+        // Non-standard description → HTTP status unknown → keep session
+        expect(
+          classifier.isServerRejection(appAuthError('token_failed', desc: 'server_error')),
           isFalse,
         );
       });
 
       test('returns false for token_failed with empty description', () {
         expect(classifier.isServerRejection(appAuthError('token_failed', desc: '')), isFalse);
+      });
+
+      test('returns false for token_failed with non-RFC description (plain text)', () {
+        expect(
+          classifier.isServerRejection(appAuthError('token_failed', desc: 'some description')),
+          isFalse,
+        );
       });
     });
 
@@ -163,12 +186,12 @@ void main() {
         expect(extras['oauth_error_description'], equals('Token has expired'));
       });
 
-      test('parses code and description for token_failed (unknown)', () {
+      test('parses code and description for token_failed with RFC 6749 desc (server rejection)', () {
         final error = ArgumentError(
           'Invalid argument(s): Failed to get token: [error: token_failed, description: invalid_request]',
         );
         final extras = classifier.buildSentryExtras(error);
-        expect(extras['auth_error_type'], equals('web_token_unknown_error'));
+        expect(extras['auth_error_type'], equals('web_server_rejected_refresh'));
         expect(extras['oauth_error_code'], equals('token_failed'));
         expect(extras['oauth_error_description'], equals('invalid_request'));
       });
