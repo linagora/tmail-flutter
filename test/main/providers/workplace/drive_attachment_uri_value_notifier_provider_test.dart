@@ -9,6 +9,7 @@ ProviderContainer _makeContainer({
   bool enabledDefault = false,
   String? fqdnDefault,
   bool userPreferenceDefault = false,
+  _MutableUserPref? mutablePref,
 }) =>
     ProviderContainer(
       overrides: [
@@ -19,7 +20,7 @@ ProviderContainer _makeContainer({
           () => _StubFqdnNotifier(fqdnDefault),
         ),
         driveAttachmentUserPreferenceProvider.overrideWith(
-          (ref) async => userPreferenceDefault,
+          (ref) async => mutablePref?.value ?? userPreferenceDefault,
         ),
       ],
     );
@@ -64,24 +65,6 @@ class _MutableUserPref {
   _MutableUserPref(this.value);
 }
 
-ProviderContainer _makeContainerWithMutablePref({
-  bool enabledDefault = true,
-  String? fqdnDefault,
-  required _MutableUserPref pref,
-}) =>
-    ProviderContainer(
-      overrides: [
-        driveAttachmentEnabledProvider.overrideWith(
-          () => _StubEnabledNotifier(enabledDefault),
-        ),
-        workplaceFqdnProvider.overrideWith(
-          () => _StubFqdnNotifier(fqdnDefault),
-        ),
-        driveAttachmentUserPreferenceProvider.overrideWith(
-          (ref) async => pref.value,
-        ),
-      ],
-    );
 
 void main() {
   group('driveAttachmentUriValueProvider', () {
@@ -149,9 +132,10 @@ void main() {
 
     test('non-null when user preference toggled from false to true', () async {
       final pref = _MutableUserPref(false);
-      container = _makeContainerWithMutablePref(
+      container = _makeContainer(
+        enabledDefault: true,
         fqdnDefault: 'https://workplace.example.com',
-        pref: pref,
+        mutablePref: pref,
       );
       await _awaitedUri(container);
       expect(container.read(driveAttachmentUriValueProvider).value, isNull);
@@ -165,9 +149,10 @@ void main() {
 
     test('null when user preference toggled from true to false', () async {
       final pref = _MutableUserPref(true);
-      container = _makeContainerWithMutablePref(
+      container = _makeContainer(
+        enabledDefault: true,
         fqdnDefault: 'https://workplace.example.com',
-        pref: pref,
+        mutablePref: pref,
       );
       await _awaitedUri(container);
       expect(container.read(driveAttachmentUriValueProvider).value, isNotNull);

@@ -6,6 +6,13 @@ import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.d
 
 part 'drive_attachment_uri_value_notifier_provider.g.dart';
 
+bool _canBuildUri({
+  required bool enabled,
+  required String? fqdn,
+  required bool userPref,
+}) =>
+    enabled && fqdn != null && fqdn.isNotEmpty && userPref;
+
 @Riverpod(keepAlive: true)
 ValueNotifier<Uri?> driveAttachmentUriValueNotifier(Ref ref) {
   final notifier = ValueNotifier<Uri?>(null);
@@ -14,8 +21,8 @@ ValueNotifier<Uri?> driveAttachmentUriValueNotifier(Ref ref) {
     final fqdn = ref.read(workplaceFqdnProvider);
     final enabled = ref.read(driveAttachmentEnabledProvider);
     final userPref = ref.read(driveAttachmentUserPreferenceProvider).asData?.value ?? false;
-    if (!enabled || fqdn == null || fqdn.isEmpty || !userPref) return null;
-    return Uri.tryParse(fqdn);
+    if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) return null;
+    return Uri.tryParse(fqdn!);
   }
 
   void onUpdate(dynamic _, dynamic __) => notifier.value = compute();
