@@ -48,7 +48,7 @@ class _StubEnabledNotifier extends DriveAttachmentEnabledNotifier {
   @override
   bool build() => _initial;
   @override
-  void setEnabled(bool? value) => state = value ?? false;
+  void setEnabled(bool? value) => state = value ?? true;
 }
 
 class _StubFqdnNotifier extends WorkplaceFqdnNotifier {
@@ -66,6 +66,21 @@ class _MutableUserPref {
 }
 
 const _kWorkplaceFqdn = 'https://workplace.example.com';
+
+Future<void> _testUserPrefToggle(
+  ProviderContainer c,
+  _MutableUserPref pref, {
+  required Matcher beforeToggle,
+  required bool toggleTo,
+  required Matcher afterToggle,
+}) async {
+  await _awaitedUri(c);
+  expect(c.read(driveAttachmentUriValueProvider).value, beforeToggle);
+  pref.value = toggleTo;
+  c.invalidate(driveAttachmentUserPreferenceProvider);
+  await c.read(driveAttachmentUserPreferenceProvider.future);
+  expect(c.read(driveAttachmentUriValueProvider).value, afterToggle);
+}
 
 void main() {
   group('driveAttachmentUriValueProvider', () {
@@ -121,14 +136,17 @@ void main() {
       expect(container.read(driveAttachmentUriValueProvider).value, isNull);
     });
 
-    test('null when enabled=null (treated as false)', () async {
+    test('non-null when enabled=null (treated as true)', () async {
       container = _makeContainer(
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
       await _awaitedUri(container);
       _setEnabled(container, null);
-      expect(container.read(driveAttachmentUriValueProvider).value, isNull);
+      expect(
+        container.read(driveAttachmentUriValueProvider).value,
+        Uri.parse(_kWorkplaceFqdn),
+      );
     });
 
     test('non-null when user preference toggled from false to true', () async {
@@ -138,14 +156,13 @@ void main() {
         fqdnDefault: _kWorkplaceFqdn,
         mutablePref: pref,
       );
-      await _awaitedUri(container);
-      expect(container.read(driveAttachmentUriValueProvider).value, isNull);
-
-      pref.value = true;
-      container.invalidate(driveAttachmentUserPreferenceProvider);
-      await container.read(driveAttachmentUserPreferenceProvider.future);
-
-      expect(container.read(driveAttachmentUriValueProvider).value, isNotNull);
+      await _testUserPrefToggle(
+        container,
+        pref,
+        beforeToggle: isNull,
+        toggleTo: true,
+        afterToggle: isNotNull,
+      );
     });
 
     test('null when user preference toggled from true to false', () async {
@@ -155,14 +172,13 @@ void main() {
         fqdnDefault: _kWorkplaceFqdn,
         mutablePref: pref,
       );
-      await _awaitedUri(container);
-      expect(container.read(driveAttachmentUriValueProvider).value, isNotNull);
-
-      pref.value = false;
-      container.invalidate(driveAttachmentUserPreferenceProvider);
-      await container.read(driveAttachmentUserPreferenceProvider.future);
-
-      expect(container.read(driveAttachmentUriValueProvider).value, isNull);
+      await _testUserPrefToggle(
+        container,
+        pref,
+        beforeToggle: isNotNull,
+        toggleTo: false,
+        afterToggle: isNull,
+      );
     });
   });
 }

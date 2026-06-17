@@ -52,8 +52,8 @@ class PreferencesController extends BaseController {
             accountDashboardController.isLabelVisibilityEnabled.value,
       );
 
-  void revealExperimentalPreferences() {
-    _revealExperimentalPreferencesInteractor.execute();
+  Future<void> revealExperimentalPreferences() async {
+    await _revealExperimentalPreferencesInteractor.execute();
     appProviderContainer.invalidate(experimentalPreferencesRevealedProvider);
   }
 

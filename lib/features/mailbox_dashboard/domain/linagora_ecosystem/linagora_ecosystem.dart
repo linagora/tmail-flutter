@@ -55,7 +55,8 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
       (properties?[LinagoraEcosystemIdentifier.sentryConfig]
           as SentryConfigLinagoraEcosystem?);
 
-  DriveAttachmentLinagoraEcosystem? get driveAttachmentConfig =>
-      (properties?[LinagoraEcosystemIdentifier.driveAttachment]
-          as DriveAttachmentLinagoraEcosystem?);
+  DriveAttachmentLinagoraEcosystem? get driveAttachmentConfig {
+    final value = properties?[LinagoraEcosystemIdentifier.driveAttachment];
+    return value is DriveAttachmentLinagoraEcosystem ? value : null;
+  }
 }
