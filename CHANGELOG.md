@@ -1,4 +1,8 @@
-## [0.29.6] - 2026-06-16
+## [0.29.8] - 2026-06-17
+### Changed
+- Translation vi, ru, fr
+
+## [0.29.7] - 2026-06-16
 ### Fixed
 - flaky mobile e2e test
 
