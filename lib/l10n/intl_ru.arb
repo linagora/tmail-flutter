@@ -5893,5 +5893,41 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "confirm": "Подтвердить",
+  "@confirm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleConfirmRuleWithRejectAction": "Отклонить все письма, соответствующие условию?",
+  "@titleConfirmRuleWithRejectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationRuleWithRejectAction": "Это действие нельзя отменить. Хотите продолжить?",
+  "@messageConfirmationRuleWithRejectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorization": "Категоризация меток",
+  "@aiLabelCategorization": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationToggleDescription": "Включить категоризацию меток",
+  "@aiLabelCategorizationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationSettingExplanation": "Применять мои метки к входящим письмам, используя их описание",
+  "@aiLabelCategorizationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
