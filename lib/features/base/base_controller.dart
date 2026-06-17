@@ -290,7 +290,8 @@ abstract class BaseController extends GetxController
 
   void handleRefreshTokenFailedException() {
     log(
-      '$runtimeType::handleRefreshTokenFailedException: hasComposer=${twakeAppManager.hasComposer}',
+      '$runtimeType::handleRefreshTokenFailedException: '
+      'hasComposer=${twakeAppManager.hasComposer}',
       webConsoleEnabled: true,
     );
     if (twakeAppManager.hasComposer) {

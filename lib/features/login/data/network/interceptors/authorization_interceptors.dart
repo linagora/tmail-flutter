@@ -16,7 +16,7 @@ import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart' show AccessTokenInvalidException;
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/web_refresh_token_error_classifier.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -36,8 +36,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   TokenOIDC? _token;
   String? _authorization;
 
+  final WebRefreshTokenErrorClassifier _webErrorClassifier;
+
   late final void Function(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) _handleRefreshError =
@@ -48,8 +51,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     this._authenticationClient,
     this._tokenOidcCacheManager,
     this._accountCacheManager,
-    this._iosSharingManager,
-  );
+    this._iosSharingManager, {
+    WebRefreshTokenErrorClassifier? webErrorClassifier,
+  }) : _webErrorClassifier = webErrorClassifier ?? WebRefreshTokenErrorClassifier();
 
   void setBasicAuthorization(UserName userName, Password password) {
     _authorization = base64Encode(utf8.encode('${userName.value}:${password.value}'));
@@ -149,7 +153,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         stackTrace: stackTrace,
         webConsoleEnabled: true,
       );
-      return _handleRefreshError(e, err, handler);
+      return _handleRefreshError(e, stackTrace, err, handler);
     }
   }
 
@@ -186,45 +190,60 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// A failure with NO server response (network/transport drop, timeout) keeps
   /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
   /// a flaky connection does not log the web user out.
+  ///
+  /// Error routing delegates RFC 6749 classification to [WebRefreshTokenErrorClassifier]:
+  /// - Server rejection (400/401 or RFC 6749 bad-grant code) → logout.
+  /// - [ArgumentError] with unknown OAuth2 code → Sentry trace, keep session.
+  /// - Network/transport failure → keep session silently.
   void _handleRefreshErrorOnWeb(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
-    if (_isWebRefreshRejectedByServer(error)) {
-      logWarning(
+    final isRejected = _webErrorClassifier.isServerRejection(error);
+
+    if (isRejected) {
+      logError(
         'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
-        'web refresh rejected by server, ending session — error=$error',
+        'will_logout=true — error=$error',
+        exception: error,
+        stackTrace: stackTrace,
+        extras: _webErrorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
       clear();
-      return super.onError(originalError.copyWith(error: error), handler);
+      return handler.reject(DioException(
+        requestOptions: originalError.requestOptions,
+        error: RefreshTokenFailedException(),
+        type: DioExceptionType.badResponse,
+      ));
     }
+
+    if (error is ArgumentError) {
+      // Non-standard OAuth2 code — log to Sentry for investigation, keep session.
+      logError(
+        'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
+        'will_logout=false — error=$error',
+        exception: error,
+        stackTrace: stackTrace,
+        extras: _webErrorClassifier.buildSentryExtras(error),
+        webConsoleEnabled: true,
+      );
+      return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
+    }
+
     logWarning(
       'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
       'web refresh network/transient failure, keeping session — error=$error',
       webConsoleEnabled: true,
     );
-    return _handleRefreshErrorOnMobile(error, originalError, handler);
-  }
-
-  /// Whether a web REFRESH failure came WITH a server response (grant rejected
-  /// or token invalid) as opposed to a network/transport failure.
-  ///
-  /// flutter_appauth_web throws [ArgumentError] only after parsing a non-200
-  /// token response, and [AccessTokenInvalidException] after a 200 that yields
-  /// an invalid token — both mean the server responded. Everything else (no
-  /// response: timeouts, transport errors, ServerError/TemporarilyUnavailable)
-  /// is treated as a network failure → session kept.
-  bool _isWebRefreshRejectedByServer(Object error) {
-    return error is ArgumentError ||
-        error is AccessTokenInvalidException ||
-        error is UnsupportedError || 
-        (error is DioException && error.response != null);
+    return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
   }
 
   void _handleRefreshErrorOnMobile(
     Object error,
+    StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
@@ -308,7 +327,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       // failure surfaced. (In practice flutter_appauth_web throws a non-Dio
       // ArgumentError, but a Dio-based refresh must behave identically.)
       if (PlatformInfo.isWeb) {
-        return _handleRefreshError(refreshError, err, handler);
+        return _handleRefreshError(refreshError, st, err, handler);
       }
       // Mobile: 400 → session dead (RefreshTokenFailedException); other
       // statuses / no-response → network-tolerant via _handleDioRefreshError.
@@ -359,6 +378,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         ),
         handler,
       );
+    } catch (e, st) {
+      // On web, flutter_appauth_web throws ArgumentError (and similar non-Dio
+      // errors) for token-endpoint failures. Catching here routes them directly
+      // to _handleRefreshError — preventing the outer catch in onError() from
+      // firing and producing a duplicate Sentry event.
+      if (PlatformInfo.isWeb) {
+        return _handleRefreshError(e, st, err, handler);
+      }
+      rethrow;
     }
   }
 
