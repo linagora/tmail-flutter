@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart';
 
-class ExternalAttachmentComposerButton extends StatelessWidget {
+class ExternalAttachmentComposerButton extends ConsumerWidget {
   const ExternalAttachmentComposerButton({
     super.key,
     required this.composerId,
@@ -17,19 +17,17 @@ class ExternalAttachmentComposerButton extends StatelessWidget {
   final ComposerToolbarButtonStyle style;
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: ref
-            .watch(composerAttachmentExtensionRegistryProvider)
-            .buildToolbarButtons(
-              context,
-              composerId: composerId,
-              imagePaths: imagePaths,
-              style: style,
-            ),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: ref
+          .watch(composerAttachmentExtensionRegistryProvider)
+          .buildToolbarButtons(
+            context,
+            composerId: composerId,
+            imagePaths: imagePaths,
+            style: style,
+          ),
     );
   }
 }
