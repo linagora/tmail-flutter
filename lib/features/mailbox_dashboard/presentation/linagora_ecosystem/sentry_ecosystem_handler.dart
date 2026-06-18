@@ -4,11 +4,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 
+typedef SetUpSentry = Future<void> Function(SentryConfigLinagoraEcosystem);
+
 class SentryEcosystemHandler implements LinagoraEcosystemHandler {
-  final Future<void> Function(SentryConfigLinagoraEcosystem) _setUpSentry;
+  final SetUpSentry _setUpSentry;
 
   const SentryEcosystemHandler({
-    required Future<void> Function(SentryConfigLinagoraEcosystem) setUpSentry,
+    required SetUpSentry setUpSentry,
   }) : _setUpSentry = setUpSentry;
 
   @override

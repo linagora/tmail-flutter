@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
@@ -14,7 +13,7 @@ extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
     _registerEcosystemHandlers();
 
     if (cachedLinagoraEcosystem != null) {
-      Get.find<LinagoraEcosystemHandlerRegistry>().dispatchLoaded(cachedLinagoraEcosystem!);
+      getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem!);
       return;
     }
 
@@ -34,20 +33,20 @@ extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
 
   void handleGetLinagoraEcosystemSuccess(GetLinagoraEcosystemSuccess success) {
     cachedLinagoraEcosystem = success.linagoraEcosystem;
-    Get.find<LinagoraEcosystemHandlerRegistry>().dispatchLoaded(cachedLinagoraEcosystem!);
+    getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem!);
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
     logWarning('SetupLinagoraEcoSystemExtension::handleGetLinagoraEcosystemFailure: ${failure.exception}');
     cachedLinagoraEcosystem = null;
-    Get.find<LinagoraEcosystemHandlerRegistry>().dispatchCleared();
+    getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchCleared();
   }
 
   void _registerEcosystemHandlers() {
-    final registry = Get.find<LinagoraEcosystemHandlerRegistry>();
-    if (registry.hasHandlers) return;
+    final registry = getBinding<LinagoraEcosystemHandlerRegistry>();
+    if (registry?.hasHandlers == true) return;
     registry
-      ..register(DriveAttachmentEcosystemHandler())
+      ?..register(DriveAttachmentEcosystemHandler())
       ..register(ScribeEcosystemHandler())
       ..register(SentryEcosystemHandler(setUpSentry: setUpSentry));
   }

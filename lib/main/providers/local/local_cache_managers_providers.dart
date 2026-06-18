@@ -6,13 +6,13 @@ import 'package:tmail_ui_user/features/manage_account/data/local/preferences_set
 
 part 'local_cache_managers_providers.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 SharedPreferences sharedPreferences(Ref ref) => Get.find<SharedPreferences>();
 
-@Riverpod(keepAlive: true)
+@riverpod
 PreferencesSettingManager preferencesSettingManager(Ref ref) =>
     PreferencesSettingManager(ref.watch(sharedPreferencesProvider));
 
-@Riverpod(keepAlive: true)
+@riverpod
 LanguageCacheManager languageCacheManager(Ref ref) =>
     LanguageCacheManager(ref.watch(sharedPreferencesProvider));

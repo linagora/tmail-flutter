@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/main/providers/thrower/cache_exception_thrower_pro
 
 part 'manage_account_data_providers.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 ManageAccountDataSource manageAccountDataSource(Ref ref) =>
     ManageAccountDataSourceImpl(
       ref.watch(languageCacheManagerProvider),
@@ -17,11 +17,11 @@ ManageAccountDataSource manageAccountDataSource(Ref ref) =>
       ref.watch(cacheExceptionThrowerProvider),
     );
 
-@Riverpod(keepAlive: true)
+@riverpod
 ManageAccountRepository manageAccountRepository(Ref ref) =>
     ManageAccountRepositoryImpl(ref.watch(manageAccountDataSourceProvider));
 
-@Riverpod(keepAlive: true)
+@riverpod
 GetExperimentalPreferencesRevealedInteractor getExperimentalPreferencesRevealedInteractor(
   Ref ref,
 ) =>
