@@ -63,4 +63,11 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       await _preferencesSettingManager.saveExperimentalPreferencesRevealed();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<bool> getExperimentalPreferencesRevealed() {
+    return Future.sync(() async {
+      return await _preferencesSettingManager.getExperimentalPreferencesRevealed();
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

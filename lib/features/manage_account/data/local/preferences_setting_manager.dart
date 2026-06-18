@@ -116,17 +116,7 @@ class PreferencesSettingManager {
   Future<bool> getExperimentalPreferencesRevealed() async {
     await _sharedPreferences.reload();
     final stored = _sharedPreferences.getBool(_experimentalPreferencesRevealedKey);
-    if (stored != null) return stored;
-    // One-time migration from old DriveAttachmentConfig.isRevealed JSON
-    final json = _sharedPreferences.getString(_storageKey(DriveAttachmentConfig.keySuffix));
-    if (json != null) {
-      try {
-        final was = (jsonDecode(json) as Map<String, dynamic>)['isRevealed'] as bool? ?? false;
-        if (was) await _sharedPreferences.setBool(_experimentalPreferencesRevealedKey, true);
-        return was;
-      } catch (_) {}
-    }
-    return false;
+    return stored ?? false;
   }
 
   Future<void> saveExperimentalPreferencesRevealed() async {

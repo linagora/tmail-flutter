@@ -1,20 +1,20 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
-import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/drive_attachment_ecosystem_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/scribe_ecosystem_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/sentry_ecosystem_handler.dart';
 
 extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
   void loadLinagoraEcosystem() {
+    _registerEcosystemHandlers();
+
     if (cachedLinagoraEcosystem != null) {
-      _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
-      _setUpSentry(cachedLinagoraEcosystem!);
-      _setUpDriveAttachment(cachedLinagoraEcosystem!);
+      Get.find<LinagoraEcosystemHandlerRegistry>().dispatchLoaded(cachedLinagoraEcosystem!);
       return;
     }
 
@@ -25,52 +25,30 @@ extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
       if (baseUrl != null && baseUrl.isNotEmpty) {
         consumeState(interactor.execute(baseUrl));
       } else {
-        logWarning('SetupScribePromptUrlExtension::loadLinagoraEcosystem: jmapUrl is null or empty');
+        logWarning('SetupLinagoraEcoSystemExtension::loadLinagoraEcosystem: jmapUrl is null or empty');
       }
     } else {
-      logWarning('SetupScribePromptUrlExtension::loadLinagoraEcosystem: GetLinagoraEcosystemInteractor not found');
+      logWarning('SetupLinagoraEcoSystemExtension::loadLinagoraEcosystem: GetLinagoraEcosystemInteractor not found');
     }
   }
 
   void handleGetLinagoraEcosystemSuccess(GetLinagoraEcosystemSuccess success) {
     cachedLinagoraEcosystem = success.linagoraEcosystem;
-    _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
-    _setUpSentry(cachedLinagoraEcosystem!);
-    _setUpDriveAttachment(cachedLinagoraEcosystem!);
+    Get.find<LinagoraEcosystemHandlerRegistry>().dispatchLoaded(cachedLinagoraEcosystem!);
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
-    logWarning('SetupScribePromptUrlExtension::handleGetLinagoraEcosystemFailure: GetScribePromptUrl failed - ${failure.exception}');
+    logWarning('SetupLinagoraEcoSystemExtension::handleGetLinagoraEcosystemFailure: ${failure.exception}');
     cachedLinagoraEcosystem = null;
-    _applyScribePromptUrl(null);
-    appProviderContainer.read(driveAttachmentEnabledProvider.notifier).setEnabled(null);
+    Get.find<LinagoraEcosystemHandlerRegistry>().dispatchCleared();
   }
 
-  void _applyScribePromptUrl(String? promptUrl) {
-    final promptService = getBinding<PromptService>();
-
-    if (promptService != null) {
-      promptService.setPromptUrl(promptUrl);
-    } else {
-      logWarning('SetupScribePromptUrlExtension::_applyScribePromptUrl: PromptService not found');
-    }
-  }
-
-  void _setUpDriveAttachment(LinagoraEcosystem ecosystem) {
-    appProviderContainer
-        .read(driveAttachmentEnabledProvider.notifier)
-        .setEnabled(ecosystem.driveAttachmentConfig?.enabled);
-  }
-
-  void _setUpSentry(LinagoraEcosystem ecosystem) {
-    if (PlatformInfo.isWeb) return;
-    final sentryConfigEcosystem = ecosystem.sentryConfigEcosystem;
-    if (sentryConfigEcosystem != null) {
-      setUpSentry(sentryConfigEcosystem);
-    } else {
-      logWarning(
-        'LinagoraEcosystemController:_setUpSentry: Sentry config ecosystem is null',
-      );
-    }
+  void _registerEcosystemHandlers() {
+    final registry = Get.find<LinagoraEcosystemHandlerRegistry>();
+    if (registry.hasHandlers) return;
+    registry
+      ..register(DriveAttachmentEcosystemHandler())
+      ..register(ScribeEcosystemHandler())
+      ..register(SentryEcosystemHandler(setUpSentry: setUpSentry));
   }
 }

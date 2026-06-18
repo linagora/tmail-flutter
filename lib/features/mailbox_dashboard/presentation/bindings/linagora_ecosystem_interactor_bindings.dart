@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/linagora_ecosystem_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/linagora_ecosystem_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
@@ -33,6 +34,7 @@ class LinagoraEcosystemInteractorBindings extends InteractorsBindings {
         Get.find<LinagoraEcosystemRepository>(),
       ),
     );
+    Get.put(LinagoraEcosystemHandlerRegistry());
   }
 
   @override

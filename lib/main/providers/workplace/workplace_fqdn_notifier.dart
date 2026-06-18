@@ -15,6 +15,6 @@ class WorkplaceFqdnNotifier extends _$WorkplaceFqdnNotifier {
       return;
     }
     final uri = Uri.tryParse(fqdn.startsWith('http') ? fqdn : 'https://$fqdn');
-    state = uri != null && (uri.scheme == 'https' || kDebugMode) ? uri.toString() : null;
+    state = uri != null && (uri.scheme == 'https' || kDebugMode) ? fqdn : null;
   }
 }

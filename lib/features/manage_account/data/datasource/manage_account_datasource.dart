@@ -16,4 +16,6 @@ abstract class ManageAccountDataSource {
   Future<bool> getLabelSettingState();
 
   Future<void> saveExperimentalPreferencesRevealed();
+
+  Future<bool> getExperimentalPreferencesRevealed();
 }

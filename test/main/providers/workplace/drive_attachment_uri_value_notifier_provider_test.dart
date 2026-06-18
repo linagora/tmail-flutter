@@ -1,15 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
-import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_user_preference_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
 ProviderContainer _makeContainer({
   bool enabledDefault = false,
   String? fqdnDefault,
   bool userPreferenceDefault = false,
-  _MutableUserPref? mutablePref,
 }) =>
     ProviderContainer(
       overrides: [
@@ -19,16 +20,14 @@ ProviderContainer _makeContainer({
         workplaceFqdnProvider.overrideWith(
           () => _StubFqdnNotifier(fqdnDefault),
         ),
-        driveAttachmentUserPreferenceProvider.overrideWith(
-          (ref) async => mutablePref?.value ?? userPreferenceDefault,
+        localSettingsProvider.overrideWith(
+          () => _StubLocalSettingsNotifier(userPreferenceDefault),
         ),
       ],
     );
 
-Future<Uri?> _awaitedUri(ProviderContainer c) async {
-  await c.read(driveAttachmentUserPreferenceProvider.future);
-  return c.read(driveAttachmentUriValueProvider).value;
-}
+Uri? _currentUri(ProviderContainer c) =>
+    c.read(driveAttachmentUriValueProvider).value;
 
 ProviderContainer _makeAllMetContainer() => _makeContainer(
       enabledDefault: true,
@@ -41,6 +40,11 @@ void _setEnabled(ProviderContainer c, bool? value) =>
 
 void _setFqdn(ProviderContainer c, String? value) =>
     c.read(workplaceFqdnProvider.notifier).setFqdn(value);
+
+void _setUserPref(ProviderContainer c, bool value) =>
+    c.read(localSettingsProvider.notifier).update(
+      PreferencesSetting([DriveAttachmentConfig(isEnabled: value)]),
+    );
 
 class _StubEnabledNotifier extends DriveAttachmentEnabledNotifier {
   _StubEnabledNotifier(this._initial);
@@ -60,9 +64,12 @@ class _StubFqdnNotifier extends WorkplaceFqdnNotifier {
   void setFqdn(String? value) => state = value;
 }
 
-class _MutableUserPref {
-  bool value;
-  _MutableUserPref(this.value);
+class _StubLocalSettingsNotifier extends LocalSettingsNotifier {
+  _StubLocalSettingsNotifier(this._initialPref);
+  final bool _initialPref;
+  @override
+  PreferencesSetting build() =>
+      PreferencesSetting([DriveAttachmentConfig(isEnabled: _initialPref)]);
 }
 
 const _kWorkplaceFqdn = 'https://workplace.example.com';
@@ -73,17 +80,13 @@ typedef _ToggleExpectation = ({
   Matcher afterToggle,
 });
 
-Future<void> _testUserPrefToggle(
+void _testUserPrefToggle(
   ProviderContainer c,
-  _MutableUserPref pref,
   _ToggleExpectation expectation,
-) async {
-  await _awaitedUri(c);
-  expect(c.read(driveAttachmentUriValueProvider).value, expectation.beforeToggle);
-  pref.value = expectation.toggleTo;
-  c.invalidate(driveAttachmentUserPreferenceProvider);
-  await c.read(driveAttachmentUserPreferenceProvider.future);
-  expect(c.read(driveAttachmentUriValueProvider).value, expectation.afterToggle);
+) {
+  expect(_currentUri(c), expectation.beforeToggle);
+  _setUserPref(c, expectation.toggleTo);
+  expect(_currentUri(c), expectation.afterToggle);
 }
 
 void main() {
@@ -92,91 +95,80 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    test('null when all conditions unset (defaults)', () async {
+    test('null when all conditions unset (defaults)', () {
       container = _makeContainer();
-      expect(await _awaitedUri(container), isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('null when enabled=true and fqdn set but user preference off', () async {
+    test('null when enabled=true and fqdn set but user preference off', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
       );
-      expect(await _awaitedUri(container), isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('null when enabled=true and user preference on but fqdn=null', () async {
+    test('null when enabled=true and user preference on but fqdn=null', () {
       container = _makeContainer(
         enabledDefault: true,
         userPreferenceDefault: true,
       );
-      expect(await _awaitedUri(container), isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('null when fqdn set and user preference on but enabled=false', () async {
+    test('null when fqdn set and user preference on but enabled=false', () {
       container = _makeContainer(
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
-      expect(await _awaitedUri(container), isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('non-null when all three conditions met', () async {
+    test('non-null when all three conditions met', () {
       container = _makeAllMetContainer();
-      expect(await _awaitedUri(container), isNotNull);
+      expect(_currentUri(container), isNotNull);
     });
 
-    test('null when fqdn reset to null after all conditions met', () async {
+    test('null when fqdn reset to null after all conditions met', () {
       container = _makeAllMetContainer();
-      await _awaitedUri(container);
       _setFqdn(container, null);
-      expect(container.read(driveAttachmentUriValueProvider).value, isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('null when enabled reset to false after all conditions met', () async {
+    test('null when enabled reset to false after all conditions met', () {
       container = _makeAllMetContainer();
-      await _awaitedUri(container);
       _setEnabled(container, false);
-      expect(container.read(driveAttachmentUriValueProvider).value, isNull);
+      expect(_currentUri(container), isNull);
     });
 
-    test('non-null when enabled=null (treated as true)', () async {
+    test('non-null when enabled=null (treated as true)', () {
       container = _makeContainer(
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
-      await _awaitedUri(container);
       _setEnabled(container, null);
-      expect(
-        container.read(driveAttachmentUriValueProvider).value,
-        Uri.parse(_kWorkplaceFqdn),
-      );
+      expect(_currentUri(container), Uri.parse(_kWorkplaceFqdn));
     });
 
-    test('non-null when user preference toggled from false to true', () async {
-      final pref = _MutableUserPref(false);
+    test('non-null when user preference toggled from false to true', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
-        mutablePref: pref,
       );
-      await _testUserPrefToggle(
+      _testUserPrefToggle(
         container,
-        pref,
         (beforeToggle: isNull, toggleTo: true, afterToggle: isNotNull),
       );
     });
 
-    test('null when user preference toggled from true to false', () async {
-      final pref = _MutableUserPref(true);
+    test('null when user preference toggled from true to false', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
-        mutablePref: pref,
+        userPreferenceDefault: true,
       );
-      await _testUserPrefToggle(
+      _testUserPrefToggle(
         container,
-        pref,
         (beforeToggle: isNotNull, toggleTo: false, afterToggle: isNull),
       );
     });

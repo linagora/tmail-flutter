@@ -170,7 +170,6 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart'
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_bindings.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/workplace_composer_bindings.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 abstract class MailboxDashBoardBindings extends BaseBindings {
@@ -457,7 +456,6 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
 
     EmailActionInteractorBindings(Get.find<EmailRepository>()).dependencies();
     LinagoraEcosystemInteractorBindings().dependencies();
-    WorkplaceComposerBindings().dependencies();
   }
 
   @override

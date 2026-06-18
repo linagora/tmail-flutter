@@ -20,12 +20,15 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   }) {
     return ValueListenableBuilder<Uri?>(
       valueListenable: workplaceUri,
-      builder: (_, uri, __) => DriveAttachmentPickerButton(
-        composerId: composerId,
-        imagePaths: imagePaths,
-        workplaceUri: uri,
-        style: style,
-      ),
+      builder: (_, uri, __) {
+        if (uri == null) return const SizedBox.shrink();
+        return DriveAttachmentPickerButton(
+          composerId: composerId,
+          imagePaths: imagePaths,
+          workplaceUri: uri,
+          style: style,
+        );
+      },
     );
   }
 
@@ -38,12 +41,15 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   }) {
     return ValueListenableBuilder<Uri?>(
       valueListenable: workplaceUri,
-      builder: (_, uri, __) => DriveAttachmentContextMenuTile(
-        composerId: composerId,
-        imagePaths: imagePaths,
-        workplaceUri: uri,
-        label: label,
-      ),
+      builder: (_, uri, __) {
+        if (uri == null) return const SizedBox.shrink();
+        return DriveAttachmentContextMenuTile(
+          composerId: composerId,
+          imagePaths: imagePaths,
+          workplaceUri: uri,
+          label: label,
+        );
+      },
     );
   }
 }

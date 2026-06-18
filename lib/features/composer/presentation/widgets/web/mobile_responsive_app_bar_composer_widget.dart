@@ -5,15 +5,15 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
-import 'package:core/presentation/extensions/composer_attachment_extension_registry.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/providers/workplace/composer_attachment_extension_registry_provider.dart';
 
 class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
 
@@ -114,17 +114,24 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
-          ...?getBinding<ComposerAttachmentExtensionRegistry>()?.buildToolbarButtons(
-            context,
-            composerId: composerId ?? '',
-            imagePaths: imagePaths,
-            style: ComposerToolbarButtonStyle(
-              tooltipLabel: AppLocalizations.of(context).browse,
-              iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-              iconSize: MobileAppBarComposerWidgetStyle.iconSize,
-              margin: const EdgeInsetsDirectional.only(
-                start: MobileAppBarComposerWidgetStyle.space,
-              ),
+          Consumer(
+            builder: (context, ref, _) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: ref
+                  .watch(composerAttachmentExtensionRegistryProvider)
+                  .buildToolbarButtons(
+                    context,
+                    composerId: composerId ?? '',
+                    imagePaths: imagePaths,
+                    style: ComposerToolbarButtonStyle(
+                      tooltipLabel: AppLocalizations.of(context).browse,
+                      iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                      iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                      margin: const EdgeInsetsDirectional.only(
+                        start: MobileAppBarComposerWidgetStyle.space,
+                      ),
+                    ),
+                  ),
             ),
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),

@@ -41,4 +41,9 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   Future<void> saveExperimentalPreferencesRevealed() {
     return dataSource.saveExperimentalPreferencesRevealed();
   }
+
+  @override
+  Future<bool> getExperimentalPreferencesRevealed() {
+    return dataSource.getExperimentalPreferencesRevealed();
+  }
 }

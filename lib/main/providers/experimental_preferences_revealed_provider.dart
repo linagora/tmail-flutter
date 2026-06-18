@@ -1,10 +1,9 @@
-import 'package:get/get.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/main/providers/manage_account_data_providers.dart';
 
 part 'experimental_preferences_revealed_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 Future<bool> experimentalPreferencesRevealed(Ref ref) async {
-  return Get.find<PreferencesSettingManager>().getExperimentalPreferencesRevealed();
+  return ref.watch(getExperimentalPreferencesRevealedInteractorProvider).execute();
 }

@@ -23,7 +23,6 @@ import 'package:tmail_ui_user/features/server_settings/domain/state/update_serve
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_user_preference_notifier.dart';
 
 class PreferencesController extends BaseController {
   PreferencesController(
@@ -101,10 +100,8 @@ class PreferencesController extends BaseController {
     } else if (success is GetLocalSettingsSuccess) {
       _localSettingLoaderStatus = LoaderStatus.completed;
       _updateLocalSettingOptionValue(success.preferencesSetting);
-      _propagateDriveAttachmentPreference(success.preferencesSetting);
     } else if (success is UpdateLocalSettingsSuccess) {
       _updateLocalSettingOptionValue(success.preferencesSetting);
-      _propagateDriveAttachmentPreference(success.preferencesSetting);
       appProviderContainer
           .read(localSettingsProvider.notifier)
           .update(success.preferencesSetting);
@@ -148,10 +145,6 @@ class PreferencesController extends BaseController {
 
   void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {
     localSettings.value = preferencesSetting;
-  }
-
-  void _propagateDriveAttachmentPreference(PreferencesSetting _) {
-    appProviderContainer.invalidate(driveAttachmentUserPreferenceProvider);
   }
 
   void _getSettingOption() {

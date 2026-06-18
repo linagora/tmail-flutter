@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class DriveAttachmentContextMenuTile extends StatelessWidget {
   final String composerId;
   final ImagePaths imagePaths;
-  final Uri? workplaceUri;
+  final Uri workplaceUri;
   final String label;
 
   const DriveAttachmentContextMenuTile({
@@ -20,7 +20,6 @@ class DriveAttachmentContextMenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (workplaceUri == null) return const SizedBox.shrink();
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.only(left: 12),

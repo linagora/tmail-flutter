@@ -11,9 +11,9 @@ import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.d
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
-import 'package:core/presentation/extensions/composer_attachment_extension_registry.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/providers/workplace/composer_attachment_extension_registry_provider.dart';
 
 class BottomBarComposerWidget extends StatelessWidget {
 
@@ -104,19 +104,26 @@ class BottomBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
-          ...?getBinding<ComposerAttachmentExtensionRegistry>()?.buildToolbarButtons(
-            context,
-            composerId: composerId,
-            imagePaths: imagePaths,
-            style: ComposerToolbarButtonStyle(
-              tooltipLabel: AppLocalizations.of(context).browse,
-              iconColor: BottomBarComposerWidgetStyle.iconColor,
-              iconSize: BottomBarComposerWidgetStyle.iconSize,
-              borderRadius: BottomBarComposerWidgetStyle.iconRadius,
-              padding: BottomBarComposerWidgetStyle.iconPadding,
-              margin: const EdgeInsetsDirectional.only(
-                start: BottomBarComposerWidgetStyle.space,
-              ),
+          Consumer(
+            builder: (context, ref, _) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: ref
+                  .watch(composerAttachmentExtensionRegistryProvider)
+                  .buildToolbarButtons(
+                    context,
+                    composerId: composerId,
+                    imagePaths: imagePaths,
+                    style: ComposerToolbarButtonStyle(
+                      tooltipLabel: AppLocalizations.of(context).browse,
+                      iconColor: BottomBarComposerWidgetStyle.iconColor,
+                      iconSize: BottomBarComposerWidgetStyle.iconSize,
+                      borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                      padding: BottomBarComposerWidgetStyle.iconPadding,
+                      margin: const EdgeInsetsDirectional.only(
+                        start: BottomBarComposerWidgetStyle.space,
+                      ),
+                    ),
+                  ),
             ),
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),

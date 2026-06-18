@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DriveAttachmentPickerButton extends StatelessWidget {
   final String composerId;
   final ImagePaths imagePaths;
-  final Uri? workplaceUri;
+  final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
 
   const DriveAttachmentPickerButton({
@@ -19,7 +19,6 @@ class DriveAttachmentPickerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (workplaceUri == null) return const SizedBox.shrink();
     return TMailButtonWidget.fromIcon(
       icon: imagePaths.icCloudPlus,
       iconColor: style.iconColor,
