@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/reveal_experimental_preferences_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options.dart';
@@ -21,9 +20,6 @@ class PreferencesBindings extends Bindings {
       Get.find<ManageAccountRepository>(),
     ));
     Get.lazyPut(() => UpdateLocalSettingsInteractor(
-      Get.find<ManageAccountRepository>(),
-    ));
-    Get.lazyPut(() => RevealExperimentalPreferencesInteractor(
       Get.find<ManageAccountRepository>(),
     ));
 
@@ -48,7 +44,6 @@ class PreferencesBindings extends Bindings {
       Get.find<GetServerSettingInteractor>(),
       Get.find<GetLocalSettingsInteractor>(),
       Get.find<PreferenceOptionRegistry>(),
-      Get.find<RevealExperimentalPreferencesInteractor>(),
     ));
   }
 }
