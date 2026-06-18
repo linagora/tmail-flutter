@@ -189,7 +189,7 @@ class SearchEmailController extends BaseController
     textInputSearchFocus.requestFocus();
     searchMoreState = SearchMoreState.idle;
     canSearchMore = true;
-    _setUpDefaultSortOrder(mailboxDashBoardController.currentSortOrder);
+    _updateSortOrderFilter(mailboxDashBoardController.currentSortOrder);
     super.onReady();
   }
 
@@ -235,9 +235,16 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void _setUpDefaultSortOrder(EmailSortOrderType sortOrderType) {
+  void _updateSortOrderFilter(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
-    _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
+    final isCustomDateRange = emailReceiveTimeType.value == EmailReceiveTimeType.customRange;
+    _updateSimpleSearchFilter(
+      sortOrderTypeOption: Some(sortOrderType),
+      beforeOption: const None(),
+      startDateOption: isCustomDateRange ? null : const None(),
+      endDateOption: isCustomDateRange ? null : const None(),
+      positionOption: const None(),
+    );
   }
 
   void _initializeDebounceTimeTextSearchChange() {
@@ -290,7 +297,26 @@ class SearchEmailController extends BaseController
           cancelSelectionMode();
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is SynchronizeEmailSortOrderAction) {
-          _setUpDefaultSortOrder(action.emailSortOrderType);
+          _updateSortOrderFilter(action.emailSortOrderType);
+          mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is ClearDateRangeToAdvancedSearch) {
+          _setEmailReceiveTimeType(action.receiveTime);
+          _updateSimpleSearchFilter(
+            startDateOption: const None(),
+            endDateOption: const None(),
+            beforeOption: const None(),
+            positionOption: const None(),
+          );
+          mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is SelectDateRangeToAdvancedSearch) {
+          _setEmailReceiveTimeType(EmailReceiveTimeType.customRange);
+          _updateSimpleSearchFilter(
+            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
+            startDateOption: optionOf(action.startDate?.toUTCDate()),
+            endDateOption: optionOf(action.endDate?.toUTCDate()),
+            beforeOption: const None(),
+            positionOption: const None(),
+          );
           mailboxDashBoardController.clearDashBoardAction();
         }
       }
@@ -720,8 +746,7 @@ class SearchEmailController extends BaseController
   }
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrderType) {
-    emailSortOrderType.value = sortOrderType;
-    _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
+    _updateSortOrderFilter(sortOrderType);
     mailboxDashBoardController.storeEmailSortOrder(sortOrderType);
     _searchEmailAction();
   }
@@ -1139,13 +1164,8 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteSortOrderSearchFilter() {
-    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
-    _updateSimpleSearchFilter(
-      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
-    );
-    mailboxDashBoardController.storeEmailSortOrder(
-      SearchEmailFilter.defaultSortOrder,
-    );
+    _updateSortOrderFilter(SearchEmailFilter.defaultSortOrder);
+    mailboxDashBoardController.storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     _searchEmailAction();
   }
 
