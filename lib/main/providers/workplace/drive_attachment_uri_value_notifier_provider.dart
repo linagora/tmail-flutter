@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
@@ -28,9 +29,15 @@ Uri? _computeUri(Ref ref) {
 ValueNotifier<Uri?> driveAttachmentUriValueNotifier(Ref ref) {
   final notifier = ValueNotifier<Uri?>(_computeUri(ref));
   void onUpdate(dynamic _, dynamic __) => notifier.value = _computeUri(ref);
-  ref.listen(workplaceFqdnProvider, onUpdate);
-  ref.listen(driveAttachmentEnabledProvider, onUpdate);
-  ref.listen(localSettingsProvider, onUpdate);
-  ref.onDispose(notifier.dispose);
+  final subscriptions = <ProviderSubscription>[];
+  subscriptions.add(ref.listen(workplaceFqdnProvider, onUpdate));
+  subscriptions.add(ref.listen(driveAttachmentEnabledProvider, onUpdate));
+  subscriptions.add(ref.listen(localSettingsProvider, onUpdate));
+  ref.onDispose(() {
+    notifier.dispose();
+    for (var s in subscriptions) {
+      s.close();
+    }
+  });
   return notifier;
 }

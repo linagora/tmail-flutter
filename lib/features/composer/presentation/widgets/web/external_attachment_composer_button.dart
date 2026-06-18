@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/composer_toolbar_button_style.dart'
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tmail_ui_user/main/providers/workplace/composer_attachment_extension_registry_provider.dart';
+import 'package:tmail_ui_user/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart';
 
 class ExternalAttachmentComposerButton extends StatelessWidget {
   const ExternalAttachmentComposerButton({

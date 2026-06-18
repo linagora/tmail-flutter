@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/providers/experimental_preferences_revealed_provider.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
 
 typedef OnTapPreferencesOptionAction = Function(PreferenceOption option, bool currentValue);
 
