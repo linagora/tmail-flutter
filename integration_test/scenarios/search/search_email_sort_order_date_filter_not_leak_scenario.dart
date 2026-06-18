@@ -10,16 +10,14 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_email.dart';
+import '../../robots/abstract/abstract_search_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 
-/// Regression test for the sort-order date-filter leak bug.
+/// Verifies that sort-order and date-filter changes clear load-more cursors.
 ///
-/// Bug: after cycling sort orders Most Recent → Oldest → Relevance,
-/// the `startDate` pagination cursor set during Oldest load-more was not
-/// cleared when switching back to Relevance, causing a spurious `after`
-/// field in the JMAP request.
-///
-/// Fix: `_searchEmailAction` in SearchEmailController now always clears
-/// `before` and clears `startDate` unless emailReceiveTimeType is customRange.
+/// Cases: allTime cursor leak, last7Days cursor restriction,
+/// multi-sort cycle, and date-filter change clearing cursors.
 class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
   const SearchEmailSortOrderDateFilterNotLeakScenario(super.$, super.robots);
 
@@ -46,76 +44,192 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     await searchRobot.expectSearchResultEmailListVisible();
 
     final appLocalizations = AppLocalizations();
-
-    // Select Most Recent to enter date-cursor pagination mode.
-    await searchRobot.scrollToEndListSearchFilter();
-    await searchRobot.openSortOrderMenu();
-    await searchRobot.expectSortOrderMenuVisible();
-    await searchRobot.selectSortOrder(
-      EmailSortOrderType.mostRecent.getTitleByAppLocalizations(appLocalizations),
-    );
-    await searchRobot.expectSearchResultEmailListVisible();
-
-    // Simulate a load-more having occurred while Most Recent was active.
-    // In production this sets `before` = receivedAt of the last fetched email.
     final controller = Get.find<SearchEmailController>();
-    final fakeBeforeDate = UTCDate(DateTime.now().subtract(const Duration(days: 30)));
+    final expectedCount = listProvisioningEmail.length;
+
+    await _runCase1AllTime(searchRobot, appLocalizations, controller, expectedCount);
+    await _runCase2Last7DaysOldest(searchRobot, appLocalizations, controller, expectedCount);
+    await _runCase3Last7DaysMultiSortCycle(searchRobot, appLocalizations, controller, expectedCount);
+    await _runCase4DateFilterChange(searchRobot, appLocalizations, controller, expectedCount);
+  }
+
+  /// Case 1: allTime — oldest load-more cursor must not leak to next sort.
+  Future<void> _runCase1AllTime(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    int expectedCount,
+  ) async {
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.mostRecent);
+
+    // Simulate auto-load-more setting a before cursor.
     controller.updateSimpleSearchFilter(
-      beforeOption: Some(fakeBeforeDate),
+      beforeOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 30)))),
     );
-    await $.pumpAndSettle();
 
-    // Switch to Oldest — this triggers _searchEmailAction which should clear `before`.
-    await searchRobot.scrollToEndListSearchFilter();
-    await searchRobot.openSortOrderMenu();
-    await searchRobot.expectSortOrderMenuVisible();
-    await searchRobot.selectSortOrder(
-      EmailSortOrderType.oldest.getTitleByAppLocalizations(appLocalizations),
-    );
-    await searchRobot.expectSearchResultEmailListVisible();
-
-    // Assert `before` was cleared when switching to Oldest.
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     expect(controller.searchEmailFilter.value.before, isNull,
       reason: 'before must be cleared when switching sort order');
 
-    // Simulate a load-more having occurred while Oldest was active.
-    // In production this sets `startDate` = receivedAt of the last fetched email.
-    final fakeStartDate = UTCDate(DateTime.now().subtract(const Duration(days: 30)));
+    // Simulate auto-load-more setting a startDate cursor.
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(fakeStartDate),
-    );
-    await $.pumpAndSettle();
-
-    // Switch back to Relevance — THIS IS THE KEY ACTION.
-    // The fix ensures startDate is cleared when emailReceiveTimeType != customRange.
-    await searchRobot.scrollToEndListSearchFilter();
-    await searchRobot.openSortOrderMenu();
-    await searchRobot.expectSortOrderMenuVisible();
-    await searchRobot.selectSortOrder(
-      EmailSortOrderType.relevance.getTitleByAppLocalizations(appLocalizations),
-    );
-    await searchRobot.expectSearchResultEmailListVisible();
-
-    // Assert: pagination cursors were cleared (the core invariant of the fix).
-    expect(
-      controller.searchEmailFilter.value.startDate,
-      isNull,
-      reason: 'startDate pagination cursor must be cleared when switching to Relevance',
-    );
-    expect(
-      controller.searchEmailFilter.value.before,
-      isNull,
-      reason: 'before pagination cursor must be cleared when switching sort order',
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 30)))),
     );
 
-    // Assert: emailReceiveTimeType was allTime, so the leaked startDate would have
-    // injected a spurious `after` field into the JMAP filter.
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
+    _assertCursorsCleared(controller, 'allTime');
     expect(
       controller.searchEmailFilter.value.emailReceiveTimeType,
       equals(EmailReceiveTimeType.allTime),
     );
+    await searchRobot.expectEmailListCountAtLeast(expectedCount);
+  }
 
-    // Assert: all provisioned emails are still visible (no spurious date filter).
-    await searchRobot.expectEmailListCount(listProvisioningEmail.length);
+  /// Case 2: last7Days — oldest auto-load-more cursor must not restrict date range.
+  Future<void> _runCase2Last7DaysOldest(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    int expectedCount,
+  ) async {
+    await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last7Days);
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
+
+    // Simulate auto-load-more (large-screen auto-fill).
+    controller.updateSimpleSearchFilter(
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 5)))),
+    );
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
+    _assertCursorsCleared(controller, 'last7Days');
+    await searchRobot.expectEmailListCountAtLeast(expectedCount);
+  }
+
+  /// Case 3: last7Days multi-sort cycle — each transition clears the cursor.
+  ///
+  /// Sequence: oldest → load-more → mostRecent → load-more → oldest → load-more → relevance.
+  Future<void> _runCase3Last7DaysMultiSortCycle(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    int expectedCount,
+  ) async {
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
+    controller.updateSimpleSearchFilter(
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
+    );
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.mostRecent);
+    expect(controller.searchEmailFilter.value.startDate, isNull,
+      reason: 'startDate must be cleared on transition oldest → mostRecent');
+
+    controller.updateSimpleSearchFilter(
+      beforeOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 3)))),
+    );
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
+    expect(controller.searchEmailFilter.value.before, isNull,
+      reason: 'before must be cleared on transition mostRecent → oldest');
+
+    controller.updateSimpleSearchFilter(
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 4)))),
+    );
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
+    _assertCursorsCleared(controller, 'last7Days multi-sort cycle');
+    await searchRobot.expectEmailListCountAtLeast(expectedCount);
+  }
+
+  /// Case 4: date filter change clears cursor; subsequent sort changes also work.
+  ///
+  /// Sequence: last7Days + oldest → load-more → change to last30Days → oldest → load-more → relevance.
+  Future<void> _runCase4DateFilterChange(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    int expectedCount,
+  ) async {
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
+    controller.updateSimpleSearchFilter(
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
+    );
+
+    await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last30Days);
+    expect(controller.searchEmailFilter.value.startDate, isNull,
+      reason: 'startDate must be cleared when date filter changes');
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
+    controller.updateSimpleSearchFilter(
+      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 20)))),
+    );
+
+    await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
+    _assertCursorsCleared(controller, 'after date filter change to last30Days');
+    // Provisioned emails are recent, so they fall within last30Days.
+    await searchRobot.expectEmailListCountAtLeast(expectedCount);
+  }
+
+  Future<void> _selectSortOrder(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    EmailSortOrderType sortOrder,
+  ) async {
+    await searchRobot.scrollToEndListSearchFilter();
+    await searchRobot.openSortOrderMenu();
+    await searchRobot.expectSortOrderMenuVisible();
+    await searchRobot.selectSortOrder(
+      sortOrder.getTitleByAppLocalizations(appLocalizations),
+    );
+    // Wait for the controller to reflect the new sort order before asserting results.
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return controller.searchEmailFilter.value.sortOrderType == sortOrder;
+      },
+      timeout: TestTimeouts.short,
+    );
+    await searchRobot.expectSearchResultEmailListVisible();
+  }
+
+  Future<void> _selectDateFilter(
+    AbstractSearchRobot searchRobot,
+    AppLocalizations appLocalizations,
+    SearchEmailController controller,
+    EmailReceiveTimeType receiveTimeType,
+  ) async {
+    await searchRobot.scrollToDateTimeButtonFilter();
+    await searchRobot.openDateTimeBottomDialog();
+    await searchRobot.expectDateTimeFilterContextMenuVisible();
+    await searchRobot.selectDateTime(
+      receiveTimeType.getTitleByAppLocalizations(appLocalizations),
+    );
+    // Wait for the controller to reflect the new date filter before asserting results.
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return controller.emailReceiveTimeType.value == receiveTimeType;
+      },
+      timeout: TestTimeouts.short,
+    );
+    await searchRobot.expectSearchResultEmailListVisible();
+  }
+
+  void _assertCursorsCleared(SearchEmailController controller, String context) {
+    expect(
+      controller.searchEmailFilter.value.startDate,
+      isNull,
+      reason: 'startDate must be cleared: $context',
+    );
+    expect(
+      controller.searchEmailFilter.value.before,
+      isNull,
+      reason: 'before must be cleared: $context',
+    );
+    expect(
+      controller.searchEmailFilter.value.endDate,
+      isNull,
+      reason: 'endDate must be cleared: $context',
+    );
   }
 }

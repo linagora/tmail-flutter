@@ -4,7 +4,7 @@ import '../../scenarios/search/search_email_sort_order_date_filter_not_leak_scen
 
 void main() {
   TestBase().runPatrolTest(
-    description: 'Should not leak date pagination cursor into JMAP filter when cycling sort orders (Most Recent → Oldest → Relevance)',
+    description: 'Should not leak pagination cursors when changing sort order or date filter',
     scenarioBuilder: ($, robots) => SearchEmailSortOrderDateFilterNotLeakScenario($, robots),
     tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
