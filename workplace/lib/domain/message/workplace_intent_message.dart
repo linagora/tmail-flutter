@@ -53,6 +53,9 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
     return WorkplaceIntentDoneMessage(documents);
   }
 
+  static bool _isValidUrlScheme(String scheme) =>
+      scheme == 'https' || scheme == 'http';
+
   static DriveDocument? _tryParseDocument(dynamic e) {
     try {
       final doc = DriveDocument.fromJson(e as Map<String, dynamic>);
@@ -61,7 +64,7 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
         return null;
       }
       final url = doc.sharingLink ?? doc.downloadLink;
-      if (url != null && url.scheme != 'https' && url.scheme != 'http') {
+      if (url != null && !_isValidUrlScheme(url.scheme)) {
         dev.log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}', name: 'workplace');
         return null;
       }

@@ -28,38 +28,36 @@ class _TestState extends State<_TestWidget> with DriveIntentMessageHandlerMixin 
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-void _driveIntentMessageHandlerTests() {
-  const intentId = 'test-123';
-  const origin = 'https://drive.example.com';
+const _intentId = 'test-123';
+const _origin = 'https://drive.example.com';
 
-  late _TestState state;
+Future<_TestState> _buildAndInit(WidgetTester tester) async {
+  await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
+  final s = tester.state<_TestState>(find.byType(_TestWidget));
+  s.initMessageHandler(intentId: _intentId, intentOrigin: _origin);
+  return s;
+}
 
-  Future<_TestState> buildAndInit(WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-    final s = tester.state<_TestState>(find.byType(_TestWidget));
-    s.initMessageHandler(intentId: intentId, intentOrigin: origin);
-    return s;
-  }
+String _encode(Map<String, dynamic> map) => jsonEncode(map);
 
-  String encode(Map<String, dynamic> map) => jsonEncode(map);
-
+void _messageTypeTests() {
   testWidgets('ready → sendAck called, modal stays open', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:ready'}), origin: origin);
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
     expect(state.ackCalls, hasLength(1));
     expect(state.closeCalls, isEmpty);
   });
 
   testWidgets('done → closeModal with documents, no ack', (tester) async {
-    state = await buildAndInit(tester);
+    final state = await _buildAndInit(tester);
     state.onMessage(
-      raw: encode({
-        'type': 'intent-$intentId:done',
+      raw: _encode({
+        'type': 'intent-$_intentId:done',
         'document': [
           {'id': 'doc1', 'name': 'file.pdf', 'size': 512, 'mimeType': 'application/pdf', 'downloadLink': 'https://example.com/file.pdf'},
         ],
       }),
-      origin: origin,
+      origin: _origin,
     );
     expect(state.ackCalls, isEmpty);
     expect(state.closeCalls, hasLength(1));
@@ -69,58 +67,63 @@ void _driveIntentMessageHandlerTests() {
   });
 
   testWidgets('error → closeModal(null)', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:error'}), origin: origin);
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:error'}), origin: _origin);
     expect(state.closeCalls, hasLength(1));
     expect(state.closeCalls.first, isNull);
     expect(state.ackCalls, isEmpty);
   });
 
   testWidgets('cancel → closeModal(null)', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:cancel'}), origin: origin);
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:cancel'}), origin: _origin);
     expect(state.closeCalls, hasLength(1));
     expect(state.closeCalls.first, isNull);
     expect(state.ackCalls, isEmpty);
   });
 
-  testWidgets('wrong origin → nothing dispatched', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:ready'}), origin: 'https://evil.example.com');
-    expect(state.ackCalls, isEmpty);
-    expect(state.closeCalls, isEmpty);
-  });
-
-  testWidgets('null origin → nothing dispatched', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:ready'}), origin: null);
-    expect(state.ackCalls, isEmpty);
-    expect(state.closeCalls, isEmpty);
-  });
-
   testWidgets('malformed JSON → no crash, nothing dispatched', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: '{not valid json{{', origin: origin);
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: '{not valid json{{', origin: _origin);
     expect(state.ackCalls, isEmpty);
     expect(state.closeCalls, isEmpty);
   });
 
   testWidgets('unknown type → no crash, nothing dispatched', (tester) async {
-    state = await buildAndInit(tester);
-    state.onMessage(raw: encode({'type': 'intent-$intentId:unknown-op'}), origin: origin);
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:unknown-op'}), origin: _origin);
+    expect(state.ackCalls, isEmpty);
+    expect(state.closeCalls, isEmpty);
+  });
+}
+
+void _originFilterTests() {
+  testWidgets('wrong origin → nothing dispatched', (tester) async {
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: 'https://evil.example.com');
+    expect(state.ackCalls, isEmpty);
+    expect(state.closeCalls, isEmpty);
+  });
+
+  testWidgets('null origin → nothing dispatched', (tester) async {
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: null);
     expect(state.ackCalls, isEmpty);
     expect(state.closeCalls, isEmpty);
   });
 
   testWidgets('data: URI origin accepts * from mobile shim', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-    state = tester.state<_TestState>(find.byType(_TestWidget));
-    state.initMessageHandler(intentId: intentId, intentOrigin: 'null');
-    state.onMessage(raw: encode({'type': 'intent-$intentId:ready'}), origin: '*');
+    final state = tester.state<_TestState>(find.byType(_TestWidget));
+    state.initMessageHandler(intentId: _intentId, intentOrigin: 'null');
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: '*');
     expect(state.ackCalls, hasLength(1));
   });
 }
 
 void main() {
-  group('DriveIntentMessageHandlerMixin', _driveIntentMessageHandlerTests);
+  group('DriveIntentMessageHandlerMixin', () {
+    group('message types', _messageTypeTests);
+    group('origin filtering', _originFilterTests);
+  });
 }
