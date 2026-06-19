@@ -50,9 +50,10 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (controller.responsiveUtils.isWebDesktop(context))
-                    const SettingHeaderWidget(
+                    SettingHeaderWidget(
                       menuItem: AccountMenuItem.preferences,
-                      padding: EdgeInsets.only(bottom: 21),
+                      padding: const EdgeInsets.only(bottom: 21),
+                      onMultiClickAction: controller.revealExperimentalPreferences,
                     ),
                   Obx(() {
                     final preferencesContext = controller.preferencesContext;

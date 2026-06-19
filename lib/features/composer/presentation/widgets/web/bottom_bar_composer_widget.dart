@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
@@ -10,10 +11,12 @@ import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.d
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/external_attachment_composer_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class BottomBarComposerWidget extends StatelessWidget {
 
+  final String composerId;
   final ImagePaths imagePaths;
   final bool isCodeViewEnabled;
   final bool isEmailChanged;
@@ -38,6 +41,7 @@ class BottomBarComposerWidget extends StatelessWidget {
 
   const BottomBarComposerWidget({
     super.key,
+    required this.composerId,
     required this.imagePaths,
     required this.isCodeViewEnabled,
     required this.isEmailChanged,
@@ -98,6 +102,20 @@ class BottomBarComposerWidget extends StatelessWidget {
             iconSize: BottomBarComposerWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
+          ),
+          ExternalAttachmentComposerButton(
+            composerId: composerId,
+            imagePaths: imagePaths,
+            style: ComposerToolbarButtonStyle(
+              tooltipLabel: AppLocalizations.of(context).browse,
+              iconColor: BottomBarComposerWidgetStyle.iconColor,
+              iconSize: BottomBarComposerWidgetStyle.iconSize,
+              borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+              padding: BottomBarComposerWidgetStyle.iconPadding,
+              margin: const EdgeInsetsDirectional.only(
+                start: BottomBarComposerWidgetStyle.space,
+              ),
+            ),
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           AbsorbPointer(

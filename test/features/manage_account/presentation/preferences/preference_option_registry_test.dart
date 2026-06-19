@@ -21,7 +21,7 @@ class _FakeUpdateLocalSettingsInteractor implements UpdateLocalSettingsInteracto
   @override
   Stream<Either<Failure, Success>> execute(PreferencesConfig preferencesConfig) {
     captured = preferencesConfig;
-    return Stream<Either<Failure, Success>>.empty();
+    return const Stream<Either<Failure, Success>>.empty();
   }
 }
 
@@ -35,7 +35,7 @@ class _FakeUpdateServerSettingInteractor implements UpdateServerSettingInteracto
     TMailServerSettingOptions newSettingOption,
   ) {
     captured = newSettingOption;
-    return Stream<Either<Failure, Success>>.empty();
+    return const Stream<Either<Failure, Success>>.empty();
   }
 }
 

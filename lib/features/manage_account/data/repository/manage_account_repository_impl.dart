@@ -36,4 +36,14 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   Future<bool> getLabelSettingState() {
     return dataSource.getLabelSettingState();
   }
+
+  @override
+  Future<void> saveExperimentalPreferencesRevealed() {
+    return dataSource.saveExperimentalPreferencesRevealed();
+  }
+
+  @override
+  Future<bool> getExperimentalPreferencesRevealed() {
+    return dataSource.getExperimentalPreferencesRevealed();
+  }
 }

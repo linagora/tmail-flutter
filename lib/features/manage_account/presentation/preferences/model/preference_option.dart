@@ -52,6 +52,9 @@ abstract class PreferenceOption {
   // facet 3 — visibility
   bool isAvailable(PreferencesContext context);
 
+  /// Whether this option is hidden until experimental preferences are revealed (7-tap).
+  bool get isExperimental => false;
+
   // facet 4 — write behaviour
   /// [currentValue] is what the user sees now; toggling persists its negation.
   Stream<Either<Failure, Success>> toggle({

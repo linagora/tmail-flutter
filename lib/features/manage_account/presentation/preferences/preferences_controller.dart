@@ -14,6 +14,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_set
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/reveal_experimental_preferences_provider.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
@@ -46,6 +48,11 @@ class PreferencesController extends BaseController {
         isLabelVisibilityEnabled:
             accountDashboardController.isLabelVisibilityEnabled.value,
       );
+
+  Future<void> revealExperimentalPreferences() async {
+    await appProviderContainer.read(revealExperimentalPreferencesProvider.future);
+    appProviderContainer.invalidate(experimentalPreferencesRevealedProvider);
+  }
 
   final settingOption = Rxn<TMailServerSettingOptions>();
   final localSettings = Rx<PreferencesSetting>(PreferencesSetting.initial());

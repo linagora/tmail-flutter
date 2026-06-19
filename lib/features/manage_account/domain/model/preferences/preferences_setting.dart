@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -18,6 +19,7 @@ class PreferencesSetting with EquatableMixin {
       TextFormattingMenuConfig.initial(),
       AIScribeConfig.initial(),
       LabelConfig.initial(),
+      DriveAttachmentConfig.initial(),
     ]);
   }
 
@@ -38,6 +40,9 @@ class PreferencesSetting with EquatableMixin {
 
   LabelConfig get labelConfig =>
       getConfigOrDefault(LabelConfig.initial());
+
+  DriveAttachmentConfig get driveAttachmentConfig =>
+      getConfigOrDefault(DriveAttachmentConfig.initial());
 
   @override
   List<Object?> get props => [configs];

@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_loc
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/drive_attachment_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
@@ -35,6 +36,7 @@ class PreferencesBindings extends Bindings {
         AIScribePreferenceOption(updateLocal),
         AILabelCategorizationPreferenceOption(updateServer),
         LabelPreferenceOption(updateLocal),
+        DriveAttachmentPreferenceOption(updateLocal),
       ]);
     });
 
