@@ -35,15 +35,15 @@ class MailboxMoveEmailScenario extends BaseTestScenario {
     await threadRobot.longPressEmailWithSubject(templatesSubject);
     await threadRobot.moveEmailToMailboxWithName(appLocalizations.templatesMailboxDisplayName);
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.templatesMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.templatesMailboxDisplayName));
     await _expectEmailWithSubjectVisible(templatesSubject);
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.inboxMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName));
 
     await threadRobot.longPressEmailWithSubject(trashSubject);
     await threadRobot.moveEmailToTrash();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.trashMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName));
     await _expectEmailWithSubjectVisible(trashSubject);
   }
 

@@ -45,8 +45,8 @@ class UpdateDraftEmailWithMessageSuccessToastScenario extends BaseTestScenario {
     await $.pumpAndSettle();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.draftsMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.draftsMailboxDisplayName),
     );
     await threadRobot.openEmailWithSubject(subject);
     await _expectComposerViewVisible();

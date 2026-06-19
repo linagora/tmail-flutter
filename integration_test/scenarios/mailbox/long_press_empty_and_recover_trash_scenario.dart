@@ -36,28 +36,23 @@ class LongPressEmptyAndRecoverTrashScenario extends BaseTestScenario {
     _expectTrashUnreadCountVisible(
       appLocalizations.trashMailboxDisplayName,
     );
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.trashMailboxDisplayName,
-    );
+    final trashFolder = mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName);
+    await mailboxMenuRobot.navigation.longPressMailbox(trashFolder);
     await threadRobot.tapEmptyTrashAfterLongPress();
     await threadRobot.tapConfirmEmptyTrashAfterLongPress();
     _expectTrashUnreadCountInvisible(
       appLocalizations.trashMailboxDisplayName,
     );
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.trashMailboxDisplayName,
-    );
+    await mailboxMenuRobot.navigation.openFolder(trashFolder);
     await _expectTrashBannerInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.trashMailboxDisplayName,
-    );
+    await mailboxMenuRobot.navigation.longPressMailbox(trashFolder);
     await mailboxMenuRobot.tapRecoverDeletedMessages();
     await mailboxMenuRobot.tapConfirmRecoverDeletedMessages();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.recoveredMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.recoveredMailboxDisplayName),
     );
     await _expectEmailWithSubjectVisible(subject);
   }

@@ -36,26 +36,26 @@ class MoveFolderContentScenario extends BaseTestScenario {
     await threadRobot.openMailbox();
     await $.pumpAndTrySettle();
 
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.inboxMailboxDisplayName,
+    await mailboxMenuRobot.navigation.longPressMailbox(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName),
     );
-    await mailboxMenuRobot.tapMoveFolderContentAction(
-      appLocalizations.templatesMailboxDisplayName,
+    await mailboxMenuRobot.folder.tapMoveFolderContentAction(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.templatesMailboxDisplayName),
     );
     await $.pumpAndTrySettle(duration: const Duration(seconds: 3));
 
     await threadRobot.openMailbox();
     await $.pumpAndTrySettle();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.templatesMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.templatesMailboxDisplayName),
     );
     await $.pumpAndTrySettle();
     await _expectEmailWithSubjectVisible(emailSubject);
 
     await threadRobot.openMailbox();
     await $.pumpAndTrySettle();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.inboxMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName),
     );
     await $.pumpAndTrySettle();
     await _expectEmailWithSubjectInVisible(emailSubject);

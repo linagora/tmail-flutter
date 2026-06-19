@@ -18,20 +18,20 @@ class CreateAndHideSubFolderScenario extends BaseTestScenario {
     final appLocalizations = AppLocalizations();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.inboxMailboxDisplayName,
+    await mailboxMenuRobot.navigation.longPressMailbox(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName),
     );
-    await mailboxMenuRobot.tapCreateNewSubFolder();
-    await mailboxMenuRobot.enterNewFolderName(subFolderName);
-    await mailboxMenuRobot.confirmCreateNewFolder();
+    await mailboxMenuRobot.folder.tapCreateNewSubFolder();
+    await mailboxMenuRobot.folder.enterNewFolderName(subFolderName);
+    await mailboxMenuRobot.folder.confirmCreateNewFolder();
     await _expectMailboxWithNameVisible(subFolderName);
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.expandMailboxWithName(
-      appLocalizations.inboxMailboxDisplayName
+    await mailboxMenuRobot.navigation.expandMailbox(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName),
     );
-    await mailboxMenuRobot.longPressMailboxWithName(subFolderName);
-    await mailboxMenuRobot.tapHideMailbox();
+    await mailboxMenuRobot.navigation.longPressMailbox(mailboxMenuRobot.mailboxItemByName(subFolderName));
+    await mailboxMenuRobot.folder.tapHideMailbox();
     await _expectMailboxWithNameHaveNoChildren(
       appLocalizations.inboxMailboxDisplayName
     );

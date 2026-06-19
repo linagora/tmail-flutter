@@ -2,6 +2,7 @@ import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/extensions/label_extension.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
@@ -10,9 +11,21 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 import '../utils/wait_for_condition.dart';
+import 'abstract/abstract_thread_assertion_robot.dart';
+import 'abstract/abstract_thread_empty_trash_robot.dart';
+import 'thread_assertion_robot.dart';
+import 'thread_empty_trash_robot.dart';
 
 class ThreadRobot extends CoreRobot {
-  ThreadRobot(super.$);
+  final AbstractThreadAssertionRobot assertion;
+  final AbstractThreadEmptyTrashRobot emptyTrash;
+
+  ThreadRobot(
+    PatrolIntegrationTester $, {
+    AbstractThreadEmptyTrashRobot? emptyTrashRobot,
+  })  : assertion = ThreadAssertionRobot($),
+        emptyTrash = emptyTrashRobot ?? ThreadEmptyTrashRobot($),
+        super($);
 
   Future<void> openComposer() async {
     await $(const ValueKey(UiKeys.composeEmailButton)).$(InkWell).tap();
@@ -49,8 +62,6 @@ class ThreadRobot extends CoreRobot {
   Future<void> openMailbox() async {
     await $(const ValueKey(UiKeys.mobileMailboxMenuButton)).tap();
   }
-
-  Future<void> tapEmptyTrashBanner() => $(' ${AppLocalizations().empty_trash_now}').tap();
 
   Future<void> tapDeleteAllButtonOnEmptyTrashConfirmDialog(
     AppLocalizations appLocalizations,
@@ -95,10 +106,6 @@ class ThreadRobot extends CoreRobot {
   Future<void> tapOnMailboxWithName(String name) async {
     await $(name).tap();
     await $.pumpAndSettle();
-  }
-
-  Future<void> confirmEmptyTrash() async {
-    await $(AppLocalizations().delete_all).tap();
   }
 
   Future<void> tapEmptySpamBanner() async {

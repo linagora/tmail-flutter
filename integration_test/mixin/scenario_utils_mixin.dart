@@ -8,13 +8,17 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -287,6 +291,55 @@ mixin ScenarioUtilsMixin {
     }
 
     IdentityInteractorsBindings().dispose();
+  }
+
+  Future<void> provisionTrashSubfolder(String subfolderName) async {
+    await waitForCondition(
+      () => getBinding<MailboxDashBoardController>().isReady,
+    );
+    final dashboardController = Get.find<MailboxDashBoardController>();
+    final session = dashboardController.sessionCurrent
+        ?? (throw StateError('provisionTrashSubfolder: session is null'));
+    final accountId = dashboardController.accountId.value
+        ?? (throw StateError('provisionTrashSubfolder: accountId is null'));
+    final trashMailboxId =
+        dashboardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash]
+        ?? (throw StateError('provisionTrashSubfolder: trashMailboxId is null'));
+
+    await _jmapCreateSubfolder(session, accountId, trashMailboxId, subfolderName);
+  }
+
+  Future<void> _jmapCreateSubfolder(
+    Session session,
+    AccountId accountId,
+    MailboxId parentId,
+    String name,
+  ) async {
+    final requestBuilder = JmapRequestBuilder(
+      Get.find<HttpClient>(),
+      ProcessingInvocation(),
+    );
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addCreate(
+        Id(const Uuid().v1()),
+        Mailbox(
+          name: MailboxName(name),
+          parentId: parentId,
+          isSubscribed: IsSubscribed(true),
+        ),
+      );
+    final invocation = requestBuilder.invocation(setMailboxMethod);
+    final response = await (requestBuilder
+          ..usings(setMailboxMethod.requiredCapabilities
+              .toCapabilitiesSupportTeamMailboxes(session, accountId)))
+        .build()
+        .execute();
+    final created = response
+        .parse<SetMailboxResponse>(invocation.methodCallId, SetMailboxResponse.deserialize)
+        ?.created;
+    if (created == null || created.isEmpty) {
+      throw StateError('provisionTrashSubfolder: mailbox creation failed for "$name"');
+    }
   }
 
   void hideKeyboard() {

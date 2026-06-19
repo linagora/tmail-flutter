@@ -29,23 +29,20 @@ class EmptyAndRecoverTrashScenario extends BaseTestScenario {
       folderLocationRole: PresentationMailbox.roleTrash,
     );
 
+    final trashFolder = mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName);
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.trashMailboxDisplayName,
-    );
-    await threadRobot.tapEmptyTrashBanner();
-    await threadRobot.confirmEmptyTrash();
+    await mailboxMenuRobot.navigation.openFolder(trashFolder);
+    await threadRobot.emptyTrash.tapEmptyTrashBanner();
+    await threadRobot.emptyTrash.confirmEmptyTrash();
     await _expectTrashBannerInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.trashMailboxDisplayName,
-    );
+    await mailboxMenuRobot.navigation.longPressMailbox(trashFolder);
     await mailboxMenuRobot.tapRecoverDeletedMessages();
     await mailboxMenuRobot.tapConfirmRecoverDeletedMessages();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.recoveredMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.recoveredMailboxDisplayName),
     );
     await _expectEmailWithSubjectVisible(subject);
   }

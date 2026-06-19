@@ -11,9 +11,9 @@ class CreatePersonalFolderScenario extends BaseTestScenario {
     final mailboxMenuRobot = robots.mailboxMenuRobot();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.tapAddNewFolderButton();
-    await mailboxMenuRobot.enterNewFolderName(_folderName);
-    await mailboxMenuRobot.confirmCreateNewFolder();
-    await mailboxMenuRobot.expectMailboxWithNameVisible(_folderName);
+    await mailboxMenuRobot.folder.tapAddNewFolderButton();
+    await mailboxMenuRobot.folder.enterNewFolderName(_folderName);
+    await mailboxMenuRobot.folder.confirmCreateNewFolder();
+    await mailboxMenuRobot.assertion.expectMailboxVisible(mailboxMenuRobot.mailboxItemByName(_folderName));
   }
 }

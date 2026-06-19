@@ -42,13 +42,13 @@ class EmptyTrashScenario extends BaseTestScenario {
     await _expectMailboxViewVisible();
     await _expectFolderVisible(appLocalizations.trashMailboxDisplayName);
 
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.trashMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName),
     );
     await _expectEmptyTrashBannerVisible();
     await _expectEmailWithSubjectVisible(subject);
 
-    await threadRobot.tapEmptyTrashBanner();
+    await threadRobot.emptyTrash.tapEmptyTrashBanner();
     await _expectEmptyTrashConfirmDialogVisible(appLocalizations);
     await threadRobot.tapDeleteAllButtonOnEmptyTrashConfirmDialog(
       appLocalizations,

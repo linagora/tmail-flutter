@@ -54,7 +54,7 @@ class SaveDraftThenCloseComposerAndOpenDraftScenario extends BaseTestScenario {
     await _expectMailboxViewVisible();
     await _expectDraftFolderVisible(appLocalizations);
 
-    await mailboxMenuRobot.openFolderByName(appLocalizations.draftsMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.draftsMailboxDisplayName));
     await $.pump(const Duration(seconds: 2));
     await _expectDraftEmailWithSubjectVisible(subject);
 
