@@ -76,5 +76,38 @@ void main() {
 
       expect(doc.linkedFileHeader, contains('size=0'));
     });
+
+    test('double-quote in filename is stripped', () {
+      const doc = DriveDocument(
+        id: '6',
+        name: 'evil"name.pdf',
+        size: 100,
+        mimeType: 'application/pdf',
+      );
+      expect(doc.linkedFileHeader, contains('filename="evilname.pdf"'));
+    });
+
+    test('semicolon in mimeType is stripped', () {
+      const doc = DriveDocument(
+        id: '7',
+        name: 'file.pdf',
+        size: 100,
+        mimeType: 'application/pdf;injected=x',
+      );
+      expect(doc.linkedFileHeader, contains('type="application/pdfinjected=x"'));
+      expect(doc.linkedFileHeader, isNot(contains(';injected')));
+    });
+
+    test('newline in filename is stripped', () {
+      const doc = DriveDocument(
+        id: '8',
+        name: 'file\ninjected.pdf',
+        size: 100,
+        mimeType: 'application/pdf',
+      );
+      final header = doc.linkedFileHeader;
+      expect(header, isNot(contains('\n')));
+      expect(header, contains('filename="fileinjected.pdf"'));
+    });
   });
 }

@@ -66,7 +66,7 @@ class _DriveAttachmentPickerButtonState
       context: context,
       builder: (_) => DriveIntentWebViewModal(
         url: widget.workplaceUri,
-        intentId: 'demo',
+        intentId: 'debug',
         onRegisterExternalHandler: PlatformInfo.isWeb
             ? (handler) => _webModalHandler = handler
             : null,

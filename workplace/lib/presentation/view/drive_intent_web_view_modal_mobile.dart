@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import '../mixin/drive_intent_message_handler_mixin.dart';
 import '../mixin/drive_intent_shims.dart';
+import 'drive_intent_fake_page.dart';
 import 'drive_intent_web_view_modal_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -29,12 +30,16 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin {
   InAppWebViewController? _webViewController;
 
+  bool get _isDataUri => widget.url.scheme == 'data';
+
+  String get _intentOrigin => _isDataUri ? 'null' : widget.url.origin;
+
   @override
   void initState() {
     super.initState();
     initMessageHandler(
       intentId: widget.intentId,
-      intentOrigin: widget.url.origin,
+      intentOrigin: _intentOrigin,
     );
   }
 
@@ -43,7 +48,10 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
         onClose: () => closeModal(null),
         child: InAppWebView(
           key: ValueKey(widget.intentId),
-          initialUrlRequest: URLRequest(url: WebUri.uri(widget.url)),
+          initialUrlRequest: _isDataUri ? null : URLRequest(url: WebUri.uri(widget.url)),
+          initialData: _isDataUri
+              ? InAppWebViewInitialData(data: DriveIntentFakePage.buildHtml(widget.intentId))
+              : null,
           initialSettings: InAppWebViewSettings(),
           initialUserScripts: UnmodifiableListView([
             UserScript(
@@ -71,7 +79,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     _webViewController?.evaluateJavascript(source: '''
       window.dispatchEvent(new MessageEvent('message', {
         data: '$payload',
-        origin: '${widget.url.origin}',
+        origin: '$_intentOrigin',
         source: window
       }));
     ''');

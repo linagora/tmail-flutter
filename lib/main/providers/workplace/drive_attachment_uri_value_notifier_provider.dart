@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:workplace/presentation/view/drive_intent_fake_page.dart';
 
 part 'drive_attachment_uri_value_notifier_provider.g.dart';
 
@@ -21,7 +22,10 @@ Uri? _computeUri(Ref ref) {
       .read(localSettingsProvider)
       .driveAttachmentConfig
       .isEnabled;
-  if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) return null;
+  if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) {
+    // TODO(TF-4449-next): replace with null once real drive URI is wired
+    return DriveIntentFakePage.buildDataUri('debug');
+  }
   return Uri.tryParse(fqdn!.startsWith('http') ? fqdn : 'https://$fqdn');
 }
 

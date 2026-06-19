@@ -27,18 +27,30 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     _dispatchMessage(msg);
   }
 
-  bool _isValidOrigin(String? origin) => origin != null && origin == _intentOrigin;
+  bool _isValidOrigin(String? origin) {
+    if (origin == null) return false;
+    if (origin == _intentOrigin) return true;
+    // On mobile the JS shim forwards targetOrigin as the origin arg. Data URIs
+    // have opaque 'null' origin but the shim receives '*' from postMessage.
+    return _intentOrigin == 'null' && origin == '*';
+  }
 
   void _dispatchMessage(WorkplaceIntentMessage msg) {
     switch (msg) {
       case WorkplaceIntentReadyMessage():
+        log('driveIntent: ready received, sending ack');
         sendAck();
         break;
       case WorkplaceIntentDoneMessage():
+        log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}, downloadLink:${d.downloadLink}}').join(', ')}');
         closeModal(msg.documents);
         break;
       case WorkplaceIntentErrorMessage():
+        log('driveIntent: error received, closing modal');
+        closeModal(null);
+        break;
       case WorkplaceIntentCancelMessage():
+        log('driveIntent: cancel received, closing modal');
         closeModal(null);
         break;
       case WorkplaceIntentUnknownMessage():

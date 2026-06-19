@@ -227,6 +227,86 @@ void main() {
         expect(msg.documents.length, 10);
         expect(msg.documents.map((d) => d.id), List.generate(10, (i) => 'doc$i'));
       });
+
+      test('malformed document entry is skipped, valid ones kept', () {
+        final raw = encode({
+          'type': 'intent-$intentId:done',
+          'document': [
+            {'id': 'good', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+            'not-an-object',
+            {'id': 'also-good', 'name': 'ok2.pdf', 'size': 200, 'mimeType': 'image/png'},
+          ],
+        });
+        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(msg.documents.length, 2);
+        expect(msg.documents.map((d) => d.id), containsAllInOrder(['good', 'also-good']));
+      });
+
+      test('document with negative size is filtered out', () {
+        final raw = encode({
+          'type': 'intent-$intentId:done',
+          'document': [
+            {'id': 'bad', 'name': 'bad.pdf', 'size': -1, 'mimeType': 'application/pdf'},
+            {'id': 'good', 'name': 'good.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          ],
+        });
+        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(msg.documents.length, 1);
+        expect(msg.documents.first.id, 'good');
+      });
+
+      test('document with non-http(s) url scheme is filtered out', () {
+        final raw = encode({
+          'type': 'intent-$intentId:done',
+          'document': [
+            {
+              'id': 'unsafe',
+              'name': 'evil.pdf',
+              'size': 100,
+              'mimeType': 'application/pdf',
+              'downloadLink': 'javascript:alert(1)',
+            },
+            {
+              'id': 'safe',
+              'name': 'safe.pdf',
+              'size': 100,
+              'mimeType': 'application/pdf',
+              'downloadLink': 'https://drive.example.com/file',
+            },
+          ],
+        });
+        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(msg.documents.length, 1);
+        expect(msg.documents.first.id, 'safe');
+      });
+
+      test('document with http url scheme is accepted', () {
+        final raw = encode({
+          'type': 'intent-$intentId:done',
+          'document': [
+            {
+              'id': 'http-doc',
+              'name': 'file.pdf',
+              'size': 100,
+              'mimeType': 'application/pdf',
+              'downloadLink': 'http://drive.example.com/file',
+            },
+          ],
+        });
+        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(msg.documents.length, 1);
+      });
+
+      test('document with no url (null links) is accepted', () {
+        final raw = encode({
+          'type': 'intent-$intentId:done',
+          'document': [
+            {'id': 'no-url', 'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          ],
+        });
+        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(msg.documents.length, 1);
+      });
     });
   });
 }

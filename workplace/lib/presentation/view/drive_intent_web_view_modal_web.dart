@@ -30,12 +30,15 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   // Used only when no external handler is provided (fallback path).
   void Function(html.Event)? _ownWindowListener;
 
+  String get _intentOrigin =>
+      widget.url.scheme == 'data' ? 'null' : widget.url.origin;
+
   @override
   void initState() {
     super.initState();
     initMessageHandler(
       intentId: widget.intentId,
-      intentOrigin: widget.url.origin,
+      intentOrigin: _intentOrigin,
     );
     if (widget.onRegisterExternalHandler != null) {
       // ADR-93: composer registered window listener at composer-init; it
@@ -66,6 +69,14 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   }
 
   @override
+  void dispose() {
+    // Guard against routes popped without going through closeModal (system back,
+    // parent nav, etc.) — onCleanup is idempotent so double-call is safe.
+    onCleanup();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => DriveIntentWebViewModalShell(
         onClose: () => closeModal(null),
         child: HtmlElementView.fromTagName(
@@ -86,9 +97,11 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   void sendAck() {
+    // data: URIs have opaque 'null' origin — postMessage requires '*' for those.
+    final targetOrigin = _intentOrigin == 'null' ? '*' : _intentOrigin;
     _iframeElement?.contentWindow?.postMessage(
       jsonEncode({}),
-      widget.url.origin,
+      targetOrigin,
     );
   }
 }
