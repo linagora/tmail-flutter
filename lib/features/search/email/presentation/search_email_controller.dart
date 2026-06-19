@@ -302,6 +302,7 @@ class SearchEmailController extends BaseController
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _setEmailReceiveTimeType(action.receiveTime);
           _updateSimpleSearchFilter(
+            emailReceiveTimeTypeOption: Some(action.receiveTime),
             startDateOption: const None(),
             endDateOption: const None(),
             beforeOption: const None(),

@@ -208,7 +208,8 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     await waitForCondition(
       () async {
         await $.pump();
-        return controller.emailReceiveTimeType.value == receiveTimeType;
+        return controller.emailReceiveTimeType.value == receiveTimeType &&
+            controller.searchEmailFilter.value.emailReceiveTimeType == receiveTimeType;
       },
       timeout: TestTimeouts.short,
     );
