@@ -21,8 +21,8 @@ class DisplayEmptyViewForFavoriteFolderScenario extends BaseTestScenario {
     await threadRobot.openMailbox();
     await _expectFolderVisible(appLocalizations.favoriteMailboxDisplayName);
 
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.favoriteMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.favoriteMailboxDisplayName),
     );
     await $.pumpAndTrySettle();
     await _expectEmptyViewVisible();

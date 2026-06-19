@@ -1,3 +1,6 @@
+import 'package:patrol/patrol.dart';
+
 abstract class AbstractMailboxAssertionRobot {
-  Future<void> expectMailboxWithNameVisible(String name);
+  Future<void> expectMailboxVisible(PatrolFinder finder);
+  Future<void> expectSubfolderNotExist(PatrolFinder finder);
 }

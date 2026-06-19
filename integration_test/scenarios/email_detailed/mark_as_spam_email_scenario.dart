@@ -46,7 +46,7 @@ class MarkAsSpamEmailScenario extends BaseTestScenario {
     _expectEmailViewInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.spamMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.spamMailboxDisplayName));
     await _expectEmailWithSubjectInSpamFolderVisible(subject);
   }
 

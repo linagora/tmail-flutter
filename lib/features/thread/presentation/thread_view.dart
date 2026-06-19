@@ -236,7 +236,7 @@ class ThreadView extends GetWidget<ThreadController>
                         );
                       } else {
                         return const SizedBox.shrink(
-                          key: Key('clean_message_banner_not_visible'),
+                          key: Key(UiKeys.cleanMessageBannerNotVisible),
                         );
                       }
                     }),

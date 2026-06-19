@@ -44,7 +44,7 @@ class DeleteEmailScenario extends BaseTestScenario {
     _expectEmailViewInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.trashMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName));
     await _expectEmailWithSubjectInTrashFolderVisible(subject);
   }
 

@@ -9,12 +9,6 @@ class MobileThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   MobileThreadRobot(PatrolIntegrationTester $) : super($);
 
   @override
-  Future<void> expectAppGridVisible() async {
-    await openMailbox();
-    await $(const ValueKey(UiKeys.toggleAppGridButton)).waitUntilVisible();
-  }
-
-  @override
   Future<void> openAppGrid() async {
     await $(const ValueKey(UiKeys.toggleAppGridButton)).tap();
   }

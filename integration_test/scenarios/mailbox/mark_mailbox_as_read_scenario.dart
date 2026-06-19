@@ -29,8 +29,8 @@ class MarkMailboxAsReadScenario extends BaseTestScenario {
     await $.pumpAndTrySettle();
     _expectInboxUnreadCountVisible();
 
-    await mailboxMenuRobot.longPressMailboxWithName(
-      AppLocalizations().inboxMailboxDisplayName,
+    await mailboxMenuRobot.navigation.longPressMailbox(
+      mailboxMenuRobot.mailboxItemByName(AppLocalizations().inboxMailboxDisplayName),
     );
     await mailboxMenuRobot.tapMarkAsRead();
     await threadRobot.openMailbox();

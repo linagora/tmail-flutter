@@ -47,7 +47,7 @@ class ArchiveEmailScenario extends BaseTestScenario {
     await $.pumpAndSettle();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.archiveMailboxDisplayName);
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.archiveMailboxDisplayName));
     await _expectEmailWithSubjectInArchiveFolderVisible(subject);
   }
 

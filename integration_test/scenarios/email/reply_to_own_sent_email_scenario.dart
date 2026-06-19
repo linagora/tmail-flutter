@@ -27,8 +27,8 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
 
     await sendEmailScenario.runTestLogic();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.sentMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.sentMailboxDisplayName),
     );
     await threadRobot.openEmailWithSubject(subject);
     await emailRobot.onTapReplyEmail();

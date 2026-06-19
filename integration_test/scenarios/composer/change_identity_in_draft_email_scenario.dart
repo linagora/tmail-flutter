@@ -74,7 +74,7 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
 
     await threadRobot.openMailbox();
     await mailboxMenuRobot
-        .openFolderByName(appLocalizations.draftsMailboxDisplayName);
+        .navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.draftsMailboxDisplayName));
 
     await threadRobot.openEmailWithSubject(subject);
     await _expectComposerViewVisible();

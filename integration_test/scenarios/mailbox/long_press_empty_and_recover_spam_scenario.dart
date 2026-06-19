@@ -36,8 +36,8 @@ class LongPressEmptyAndRecoverSpamScenario extends BaseTestScenario {
     _expectSpamUnreadCountVisible(
       appLocalizations.spamMailboxDisplayName,
     );
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.spamMailboxDisplayName,
+    await mailboxMenuRobot.navigation.longPressMailbox(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.spamMailboxDisplayName),
     );
     await threadRobot.tapEmptySpamAfterLongPress();
     await threadRobot.confirmEmptySpam();
@@ -46,20 +46,20 @@ class LongPressEmptyAndRecoverSpamScenario extends BaseTestScenario {
       appLocalizations.spamMailboxDisplayName,
     );
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.spamMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.spamMailboxDisplayName),
     );
     await _expectSpamBannerInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.longPressMailboxWithName(
-      appLocalizations.trashMailboxDisplayName,
+    await mailboxMenuRobot.navigation.longPressMailbox(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName),
     );
     await mailboxMenuRobot.tapRecoverDeletedMessages();
     await mailboxMenuRobot.tapConfirmRecoverDeletedMessages();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.recoveredMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.recoveredMailboxDisplayName),
     );
     await _expectEmailWithSubjectVisible(subject);
   }

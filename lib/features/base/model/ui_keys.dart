@@ -28,4 +28,7 @@ class UiKeys {
   static const String openAdvancedSearchButton = 'open_advanced_search_button';
   static const String advancedSearchLabelDropDown = 'advanced_search_label_drop_down';
   static const String advancedSearchSearchButton = 'advanced_search_search_button';
+
+  static const String mailboxMoreActionButton = 'mailbox_more_action_button';
+  static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
 }

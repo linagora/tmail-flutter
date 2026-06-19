@@ -13,7 +13,8 @@ class AppGridScenario extends BaseTestScenario {
       final threadRobot = robots.threadRobot();
       final appGridRobot = robots.appGridRobot();
 
-      await threadRobot.expectAppGridVisible();
+      await threadRobot.openMailbox();
+      await threadRobot.assertion.expectAppGridButtonVisible();
       await threadRobot.openAppGrid();
 
       await appGridRobot.expectAppCountAndLabelsMatch();

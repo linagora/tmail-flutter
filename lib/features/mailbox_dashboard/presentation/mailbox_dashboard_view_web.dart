@@ -275,7 +275,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                     ),
                                   );
                                 } else {
-                                  return const SizedBox.shrink();
+                                  return const SizedBox.shrink(key: Key(UiKeys.cleanMessageBannerNotVisible));
                                 }
                               }),
                               _buildListButtonQuickSearchFilter(context),

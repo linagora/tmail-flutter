@@ -68,7 +68,7 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
     if (PlatformInfo.isMobile) {
       await threadRobot.openMailbox();
     }
-    await mailboxMenuRobot.openFolderByName(folderDisplayName(appLocalizations));
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(folderDisplayName(appLocalizations)));
     await waitForCondition(() => $(uniqueSubject).exists);
     await threadRobot.openEmailWithSubject(uniqueSubject);
     await composerRobot.expectComposerViewVisible();

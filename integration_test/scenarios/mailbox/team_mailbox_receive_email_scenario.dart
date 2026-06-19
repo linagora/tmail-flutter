@@ -43,8 +43,8 @@ class TeamMailboxReceiveEmailScenario extends BaseTestScenario {
     await $.pump(const Duration(seconds: 2));
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.expandMailboxWithName(teamMailboxName);
-    await mailboxMenuRobot.openFolderByName(appLocalizations.inboxMailboxDisplayName.toUpperCase());
+    await mailboxMenuRobot.navigation.expandMailbox(mailboxMenuRobot.mailboxItemByName(teamMailboxName));
+    await mailboxMenuRobot.navigation.openFolder(mailboxMenuRobot.mailboxItemByName(appLocalizations.inboxMailboxDisplayName.toUpperCase()));
     await _expectEmailWithSubjectVisible(subject);
   }
 

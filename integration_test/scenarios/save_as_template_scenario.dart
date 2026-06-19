@@ -19,8 +19,8 @@ class SaveAsTemplateScenario extends BaseTestScenario {
     final composerRobot = ComposerRobot($);
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      appLocalizations.templatesMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(appLocalizations.templatesMailboxDisplayName),
     );
     
     await threadRobot.openComposer();

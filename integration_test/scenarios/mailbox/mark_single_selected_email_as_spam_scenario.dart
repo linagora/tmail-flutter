@@ -25,8 +25,8 @@ class MarkSingleSelectedEmailAsSpamScenario extends BaseTestScenario {
     await threadRobot.longPressEmailWithSubject(spamSubject);
     await threadRobot.tapMarkAsSpamAction();
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(
-      AppLocalizations().spamMailboxDisplayName,
+    await mailboxMenuRobot.navigation.openFolder(
+      mailboxMenuRobot.mailboxItemByName(AppLocalizations().spamMailboxDisplayName),
     );
     await _expectEmailWithSubjectExist(spamSubject);
   }

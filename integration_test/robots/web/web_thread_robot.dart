@@ -1,22 +1,49 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../abstract/abstract_thread_robot.dart';
+import '../thread_empty_trash_robot.dart';
 import '../thread_robot.dart';
+import 'web_fire_on_tap.dart';
 
-class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
-  WebThreadRobot(super.$);
-
-  static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
+/// Web-specific empty-trash robot: tapping the banner requires firing the
+/// [TapGestureRecognizer] of a [TextSpan] directly, because [RichText] spans
+/// are not hit-testable via the standard gesture dispatch on web.
+class WebThreadEmptyTrashRobot extends ThreadEmptyTrashRobot {
+  WebThreadEmptyTrashRobot(super.$);
 
   @override
-  Future<void> expectAppGridVisible() async {
-    await $(const ValueKey(UiKeys.toggleAppGridButton)).waitUntilVisible();
+  Future<void> tapEmptyTrashBanner() async {
+    final actionText = AppLocalizations().empty_trash_now;
+    final textFinder = find.textContaining(actionText);
+    await $.waitUntilVisible($(textFinder));
+
+    // Compact layout: positive action rendered as a hit-testable Text widget inside a button.
+    // $(text) only matches Text widgets, not RichText spans, so this is empty in desktop mode.
+    final compactButton = $(actionText);
+    if (compactButton.evaluate().isNotEmpty) {
+      await compactButton.tap();
+      return;
+    }
+
+    // Desktop layout: positive action is a TextSpan inside RichText — not hit-testable via tap.
+    webFireOnTap($(textFinder), actionText);
+    await $.pumpAndTrySettle();
   }
+}
+
+class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
+  WebThreadRobot(PatrolIntegrationTester $)
+      : super($, emptyTrashRobot: WebThreadEmptyTrashRobot($));
+
+  static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
 
   @override
   Future<void> openAppGrid() async {
