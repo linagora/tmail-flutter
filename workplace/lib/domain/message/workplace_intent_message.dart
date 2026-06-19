@@ -47,22 +47,28 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
     final raw = json['document'] as List? ?? [];
     final documents = <DriveDocument>[];
     for (final e in raw) {
-      try {
-        final doc = DriveDocument.fromJson(e as Map<String, dynamic>);
-        if (doc.size < 0) {
-          dev.log('driveIntent: skipping doc ${doc.id} with negative size ${doc.size}', name: 'workplace');
-          continue;
-        }
-        final url = doc.sharingLink ?? doc.downloadLink;
-        if (url != null && url.scheme != 'https' && url.scheme != 'http') {
-          dev.log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}', name: 'workplace');
-          continue;
-        }
-        documents.add(doc);
-      } catch (err) {
-        dev.log('driveIntent: skipping malformed document entry: $err', name: 'workplace');
-      }
+      final doc = _tryParseDocument(e);
+      if (doc != null) documents.add(doc);
     }
     return WorkplaceIntentDoneMessage(documents);
+  }
+
+  static DriveDocument? _tryParseDocument(dynamic e) {
+    try {
+      final doc = DriveDocument.fromJson(e as Map<String, dynamic>);
+      if (doc.size < 0) {
+        dev.log('driveIntent: skipping doc ${doc.id} with negative size ${doc.size}', name: 'workplace');
+        return null;
+      }
+      final url = doc.sharingLink ?? doc.downloadLink;
+      if (url != null && url.scheme != 'https' && url.scheme != 'http') {
+        dev.log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}', name: 'workplace');
+        return null;
+      }
+      return doc;
+    } catch (err) {
+      dev.log('driveIntent: skipping malformed document entry: $err', name: 'workplace');
+      return null;
+    }
   }
 }

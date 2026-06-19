@@ -3,6 +3,17 @@ import 'dart:convert';
 import 'package:workplace/domain/message/workplace_intent_message.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+WorkplaceIntentDoneMessage _parseDone(
+  String intentId,
+  List<Map<String, dynamic>> docs,
+) {
+  final raw = jsonEncode({
+    'type': 'intent-$intentId:done',
+    'document': docs,
+  });
+  return WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+}
+
 void main() {
   const intentId = 'abc123';
 
@@ -35,24 +46,16 @@ void main() {
 
     group('done type', () {
       test('returns WorkplaceIntentDoneMessage with parsed documents', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {
-              'id': 'doc1',
-              'name': 'report.pdf',
-              'size': 1024,
-              'mimeType': 'application/pdf',
-              'sharingLink': 'https://sharing.example.com/file',
-              'downloadLink': 'https://download.example.com/file',
-            },
-          ],
-        });
-
-        final msg = WorkplaceIntentMessage.parse(intentId, raw);
-        expect(msg, isA<WorkplaceIntentDoneMessage>());
-
-        final done = msg as WorkplaceIntentDoneMessage;
+        final done = _parseDone(intentId, [
+          {
+            'id': 'doc1',
+            'name': 'report.pdf',
+            'size': 1024,
+            'mimeType': 'application/pdf',
+            'sharingLink': 'https://sharing.example.com/file',
+            'downloadLink': 'https://download.example.com/file',
+          },
+        ]);
         expect(done.documents.length, 1);
         expect(done.documents.first.id, 'doc1');
         expect(done.documents.first.name, 'report.pdf');
@@ -63,29 +66,22 @@ void main() {
       });
 
       test('returns empty list when document key is absent', () {
-        final raw = encode({'type': 'intent-$intentId:done'});
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        final msg = WorkplaceIntentMessage.parse(intentId, encode({'type': 'intent-$intentId:done'})) as WorkplaceIntentDoneMessage;
         expect(msg.documents, isEmpty);
       });
 
       test('returns empty list when document is null', () {
-        final raw = encode({'type': 'intent-$intentId:done', 'document': null});
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        final msg = WorkplaceIntentMessage.parse(intentId, encode({'type': 'intent-$intentId:done', 'document': null})) as WorkplaceIntentDoneMessage;
         expect(msg.documents, isEmpty);
       });
 
       test('parses multiple documents', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {'id': 'd1', 'name': 'a.pdf', 'size': 100, 'mimeType': 'application/pdf'},
-            {'id': 'd2', 'name': 'b.png', 'size': 200, 'mimeType': 'image/png'},
-          ],
-        });
-
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 2);
-        expect(msg.documents.map((d) => d.id), containsAllInOrder(['d1', 'd2']));
+        final done = _parseDone(intentId, [
+          {'id': 'd1', 'name': 'a.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          {'id': 'd2', 'name': 'b.png', 'size': 200, 'mimeType': 'image/png'},
+        ]);
+        expect(done.documents.length, 2);
+        expect(done.documents.map((d) => d.id), containsAllInOrder(['d1', 'd2']));
       });
     });
 
@@ -179,8 +175,8 @@ void main() {
       }.entries) {
         test('${entry.key} action resolves correctly for intentId=$otherId', () {
           final raw = encode({'type': 'intent-$otherId:${entry.key}'});
-          expect(WorkplaceIntentMessage.parse(otherId, raw), isA<WorkplaceIntentMessage>());
           final msg = WorkplaceIntentMessage.parse(otherId, raw);
+          expect(msg, isA<WorkplaceIntentMessage>());
           expect(msg.runtimeType, entry.value);
         });
       }
@@ -195,26 +191,18 @@ void main() {
 
     group('done — document field edge cases', () {
       test('document entry with only required fields parses without error', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {'id': 'd1', 'name': 'file.txt', 'size': 0, 'mimeType': 'text/plain'},
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.first.sharingLink, isNull);
-        expect(msg.documents.first.downloadLink, isNull);
+        final done = _parseDone(intentId, [
+          {'id': 'd1', 'name': 'file.txt', 'size': 0, 'mimeType': 'text/plain'},
+        ]);
+        expect(done.documents.first.sharingLink, isNull);
+        expect(done.documents.first.downloadLink, isNull);
       });
 
       test('document entry with size zero is valid', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {'id': 'd0', 'name': 'empty.bin', 'size': 0, 'mimeType': 'application/octet-stream'},
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.first.size, 0);
+        final done = _parseDone(intentId, [
+          {'id': 'd0', 'name': 'empty.bin', 'size': 0, 'mimeType': 'application/octet-stream'},
+        ]);
+        expect(done.documents.first.size, 0);
       });
 
       test('document list with many items preserves order', () {
@@ -222,14 +210,13 @@ void main() {
           10,
           (i) => {'id': 'doc$i', 'name': 'f$i.pdf', 'size': i * 100, 'mimeType': 'application/pdf'},
         );
-        final raw = encode({'type': 'intent-$intentId:done', 'document': docs});
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 10);
-        expect(msg.documents.map((d) => d.id), List.generate(10, (i) => 'doc$i'));
+        final done = _parseDone(intentId, docs);
+        expect(done.documents.length, 10);
+        expect(done.documents.map((d) => d.id), List.generate(10, (i) => 'doc$i'));
       });
 
       test('malformed document entry is skipped, valid ones kept', () {
-        final raw = encode({
+        final raw = jsonEncode({
           'type': 'intent-$intentId:done',
           'document': [
             {'id': 'good', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
@@ -237,75 +224,41 @@ void main() {
             {'id': 'also-good', 'name': 'ok2.pdf', 'size': 200, 'mimeType': 'image/png'},
           ],
         });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 2);
-        expect(msg.documents.map((d) => d.id), containsAllInOrder(['good', 'also-good']));
+        final done = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
+        expect(done.documents.length, 2);
+        expect(done.documents.map((d) => d.id), containsAllInOrder(['good', 'also-good']));
       });
 
       test('document with negative size is filtered out', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {'id': 'bad', 'name': 'bad.pdf', 'size': -1, 'mimeType': 'application/pdf'},
-            {'id': 'good', 'name': 'good.pdf', 'size': 100, 'mimeType': 'application/pdf'},
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 1);
-        expect(msg.documents.first.id, 'good');
+        final done = _parseDone(intentId, [
+          {'id': 'bad', 'name': 'bad.pdf', 'size': -1, 'mimeType': 'application/pdf'},
+          {'id': 'good', 'name': 'good.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'good');
       });
 
       test('document with non-http(s) url scheme is filtered out', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {
-              'id': 'unsafe',
-              'name': 'evil.pdf',
-              'size': 100,
-              'mimeType': 'application/pdf',
-              'downloadLink': 'javascript:alert(1)',
-            },
-            {
-              'id': 'safe',
-              'name': 'safe.pdf',
-              'size': 100,
-              'mimeType': 'application/pdf',
-              'downloadLink': 'https://drive.example.com/file',
-            },
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 1);
-        expect(msg.documents.first.id, 'safe');
+        final done = _parseDone(intentId, [
+          {'id': 'unsafe', 'name': 'evil.pdf', 'size': 100, 'mimeType': 'application/pdf', 'downloadLink': 'javascript:alert(1)'},
+          {'id': 'safe', 'name': 'safe.pdf', 'size': 100, 'mimeType': 'application/pdf', 'downloadLink': 'https://drive.example.com/file'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'safe');
       });
 
       test('document with http url scheme is accepted', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {
-              'id': 'http-doc',
-              'name': 'file.pdf',
-              'size': 100,
-              'mimeType': 'application/pdf',
-              'downloadLink': 'http://drive.example.com/file',
-            },
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 1);
+        final done = _parseDone(intentId, [
+          {'id': 'http-doc', 'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf', 'downloadLink': 'http://drive.example.com/file'},
+        ]);
+        expect(done.documents.length, 1);
       });
 
       test('document with no url (null links) is accepted', () {
-        final raw = encode({
-          'type': 'intent-$intentId:done',
-          'document': [
-            {'id': 'no-url', 'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf'},
-          ],
-        });
-        final msg = WorkplaceIntentMessage.parse(intentId, raw) as WorkplaceIntentDoneMessage;
-        expect(msg.documents.length, 1);
+        final done = _parseDone(intentId, [
+          {'id': 'no-url', 'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
       });
     });
   });
