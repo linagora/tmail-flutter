@@ -2,18 +2,20 @@ import 'package:core/presentation/extensions/composer_toolbar_button_style.dart'
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
-import '../view/drive_intent_web_view_modal.dart';
+typedef OnPickDriveAttachmentResult = void Function(List<DriveDocument>);
+typedef OnWebWindowListener = void Function(html.Event);
 
 class DriveAttachmentPickerButton extends StatefulWidget {
   final String composerId;
   final ImagePaths imagePaths;
   final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
-  final void Function(List<DriveDocument>)? onPickResult;
+  final OnPickDriveAttachmentResult? onPickResult;
 
   const DriveAttachmentPickerButton({
     super.key,
@@ -26,38 +28,25 @@ class DriveAttachmentPickerButton extends StatefulWidget {
 
   @override
   State<DriveAttachmentPickerButton> createState() =>
-      _DriveAttachmentPickerButtonState();
+      _DriveAttachmentPickerButtonState.create();
 }
 
-class _DriveAttachmentPickerButtonState
+abstract class _DriveAttachmentPickerButtonState
     extends State<DriveAttachmentPickerButton> {
+  _DriveAttachmentPickerButtonState();
+
+  factory _DriveAttachmentPickerButtonState.create() => PlatformInfo.isWeb
+      ? _WebDriveAttachmentPickerButtonState()
+      : _MobileDriveAttachmentPickerButtonState();
+
   bool _modalOpen = false;
 
-  // ADR-93: register window listener once at composer init (web only).
-  void Function(String raw, String? origin)? _webModalHandler;
-  void Function(html.Event)? _webWindowListener;
+  /// Returns the external handler registrar passed to [DriveIntentWebViewModal].
+  /// Mobile returns null; web subclass returns a closure that captures its field.
+  void Function(void Function(String raw, String? origin))? get _externalHandlerRegistrar => null;
 
-  @override
-  void initState() {
-    super.initState();
-    if (PlatformInfo.isWeb) {
-      _webWindowListener = (html.Event event) {
-        if (event is! html.MessageEvent) return;
-        final data = event.data;
-        if (data is! String) return;
-        _webModalHandler?.call(data, event.origin);
-      };
-      html.window.addEventListener('message', _webWindowListener!);
-    }
-  }
-
-  @override
-  void dispose() {
-    if (PlatformInfo.isWeb && _webWindowListener != null) {
-      html.window.removeEventListener('message', _webWindowListener!);
-    }
-    super.dispose();
-  }
+  /// Called after the modal closes so web subclass can clear its handler.
+  void _clearExternalHandler() {}
 
   Future<void> _onTap() async {
     if (_modalOpen) return;
@@ -67,12 +56,10 @@ class _DriveAttachmentPickerButtonState
       builder: (_) => DriveIntentWebViewModal(
         url: widget.workplaceUri,
         intentId: 'debug',
-        onRegisterExternalHandler: PlatformInfo.isWeb
-            ? (handler) => _webModalHandler = handler
-            : null,
+        onRegisterExternalHandler: _externalHandlerRegistrar,
       ),
     );
-    _webModalHandler = null;
+    _clearExternalHandler();
     _modalOpen = false;
     if (mounted && result != null) {
       widget.onPickResult?.call(result);
@@ -92,5 +79,40 @@ class _DriveAttachmentPickerButtonState
       tooltipMessage: widget.style.tooltipLabel,
       onTapActionCallback: _onTap,
     );
+  }
+}
+
+class _MobileDriveAttachmentPickerButtonState
+    extends _DriveAttachmentPickerButtonState {}
+
+class _WebDriveAttachmentPickerButtonState
+    extends _DriveAttachmentPickerButtonState {
+  // ADR-93: register window listener once at composer init (web only).
+  void Function(String raw, String? origin)? _webModalHandler;
+  OnWebWindowListener? _webWindowListener;
+
+  @override
+  void Function(void Function(String raw, String? origin))? get _externalHandlerRegistrar =>
+      (handler) => _webModalHandler = handler;
+
+  @override
+  void _clearExternalHandler() => _webModalHandler = null;
+
+  @override
+  void initState() {
+    super.initState();
+    _webWindowListener = (html.Event event) {
+      if (event is! html.MessageEvent) return;
+      final data = event.data;
+      if (data is! String) return;
+      _webModalHandler?.call(data, event.origin);
+    };
+    html.window.addEventListener('message', _webWindowListener!);
+  }
+
+  @override
+  void dispose() {
+    html.window.removeEventListener('message', _webWindowListener!);
+    super.dispose();
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
-import '../mixin/drive_intent_message_handler_mixin.dart';
-import 'drive_intent_web_view_modal_shell.dart';
+import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
+import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
+import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
   final Uri url;
@@ -28,7 +30,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin {
   html.IFrameElement? _iframeElement;
   // Used only when no external handler is provided (fallback path).
-  void Function(html.Event)? _ownWindowListener;
+  OnWebWindowListener? _ownWindowListener;
 
   String get _intentOrigin =>
       widget.url.scheme == 'data' ? 'null' : widget.url.origin;
@@ -36,10 +38,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   @override
   void initState() {
     super.initState();
-    initMessageHandler(
-      intentId: widget.intentId,
-      intentOrigin: _intentOrigin,
-    );
+    initMessageHandler(intentId: widget.intentId, intentOrigin: _intentOrigin);
     if (widget.onRegisterExternalHandler != null) {
       // ADR-93: composer registered window listener at composer-init; it
       // forwards raw messages here so we don't need our own window listener.
@@ -78,30 +77,20 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   Widget build(BuildContext context) => DriveIntentWebViewModalShell(
-        onClose: () => closeModal(null),
-        child: HtmlElementView.fromTagName(
-          key: ValueKey(widget.intentId),
-          tagName: 'iframe',
-          onElementCreated: (element) {
-            final iframe = element as html.IFrameElement;
-            _iframeElement = iframe;
-            iframe
-              ..src = widget.url.toString()
-              ..style.border = 'none'
-              ..style.width = '100%'
-              ..style.height = '100%'
-              ..allowFullscreen = true;
-          },
-        ),
-      );
+    onClose: () => closeModal(null),
+    child: HtmlIframeWidget(
+      key: ValueKey(widget.intentId),
+      onIframeCreated: (iframe) {
+        _iframeElement = iframe;
+        iframe.src = widget.url.toString();
+      },
+    ),
+  );
 
   @override
   void sendAck() {
     // data: URIs have opaque 'null' origin — postMessage requires '*' for those.
     final targetOrigin = _intentOrigin == 'null' ? '*' : _intentOrigin;
-    _iframeElement?.contentWindow?.postMessage(
-      jsonEncode({}),
-      targetOrigin,
-    );
+    _iframeElement?.contentWindow?.postMessage(jsonEncode({}), targetOrigin);
   }
 }
