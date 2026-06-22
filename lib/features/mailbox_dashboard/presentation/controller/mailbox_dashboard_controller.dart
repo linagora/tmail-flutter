@@ -2358,15 +2358,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
-    final isCustomDateRange =
-        searchController.receiveTimeFiltered == EmailReceiveTimeType.customRange;
-    searchController.updateFilterEmail(
-      sortOrderTypeOption: Some(sortOrder),
-      beforeOption: const None(),
-      startDateOption: isCustomDateRange ? null : const None(),
-      endDateOption: isCustomDateRange ? null : const None(),
-      positionOption: const None(),
-    );
+    searchController.updateSortOrderFilter(sortOrder);
     storeEmailSortOrder(sortOrder);
     dispatchAction(StartSearchEmailAction());
   }
@@ -2382,15 +2374,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _deleteSortOrderSearchFilter() {
-    final isCustomDateRange =
-        searchController.receiveTimeFiltered == EmailReceiveTimeType.customRange;
-    searchController.updateFilterEmail(
-      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
-      beforeOption: const None(),
-      startDateOption: isCustomDateRange ? null : const None(),
-      endDateOption: isCustomDateRange ? null : const None(),
-      positionOption: const None(),
-    );
+    searchController.updateSortOrderFilter(SearchEmailFilter.defaultSortOrder);
     storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     dispatchAction(StartSearchEmailAction());
   }

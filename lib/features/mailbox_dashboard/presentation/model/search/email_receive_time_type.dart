@@ -126,32 +126,18 @@ enum EmailReceiveTimeType {
     }
   }
 
-  UTCDate? getAfterDate(UTCDate? startDate) {
-    if (startDate != null) {
-      return startDate;
-    } else {
-      return toOldestUTCDate();
-    }
+  UTCDate? _pickCursorDate(
+    UTCDate? bound,
+    UTCDate? cursor,
+    bool Function(DateTime, DateTime) cursorWins,
+  ) {
+    if (bound == null) return cursor;
+    return (cursor != null && cursorWins(cursor.value, bound.value)) ? cursor : bound;
   }
 
-  UTCDate? getBeforeDate(UTCDate? endDate, UTCDate? loadMoreDate) {
-    if (endDate != null) {
-      if (loadMoreDate != null && loadMoreDate.value.isBefore(endDate.value)) {
-        return loadMoreDate;
-      } else {
-        return endDate;
-      }
-    } else {
-      final latestDate = toLatestUTCDate();
-      if (latestDate != null) {
-        if (loadMoreDate != null && loadMoreDate.value.isBefore(latestDate.value)) {
-          return loadMoreDate;
-        } else {
-          return latestDate;
-        }
-      } else {
-        return loadMoreDate;
-      }
-    }
-  }
+  UTCDate? getAfterDate(UTCDate? startDate, UTCDate? loadMoreDate) =>
+      _pickCursorDate(startDate ?? toOldestUTCDate(), loadMoreDate, (a, b) => a.isAfter(b));
+
+  UTCDate? getBeforeDate(UTCDate? endDate, UTCDate? loadMoreDate) =>
+      _pickCursorDate(endDate ?? toLatestUTCDate(), loadMoreDate, (a, b) => a.isBefore(b));
 }

@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -1208,6 +1209,64 @@ void main() {
       );
 
       expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(loadMoreDate)));
+    });
+  });
+
+  group('SearchController::updateSortOrderFilter', () {
+    setUp(() {
+      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+    });
+
+    test(
+      'SHOULD clear startDate, endDate, before, after and position '
+      'WHEN sort order changes on a non-customRange filter',
+    () {
+      // Arrange: simulate a state left over after load-more on oldest sort
+      final cursor = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+        startDateOption: Some(cursor),
+      );
+
+      // Act
+      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
+
+      // Assert
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      expect(filter.startDate, isNull);
+      expect(filter.endDate, isNull);
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
+    });
+
+    test(
+      'SHOULD preserve startDate and endDate '
+      'WHEN sort order changes on a customRange filter',
+    () {
+      // Arrange: user has a custom date range applied
+      final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+      final end = UTCDate(DateTime.parse('2026-03-31T23:59:59.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
+        startDateOption: Some(start),
+        endDateOption: Some(end),
+      );
+
+      // Act
+      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
+
+      // Assert
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      expect(filter.startDate, equals(start));
+      expect(filter.endDate, equals(end));
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
     });
   });
 }

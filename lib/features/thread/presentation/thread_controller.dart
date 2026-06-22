@@ -820,6 +820,9 @@ class ThreadController extends BaseController with EmailActionController {
       beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
+      afterOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
     );
     final searchViewState = await _searchEmailInteractor.execute(
       _session!,
@@ -1198,6 +1201,9 @@ class ThreadController extends BaseController with EmailActionController {
         beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
+        afterOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
       );
 
       searchController.activateSimpleSearch();
@@ -1280,13 +1286,13 @@ class ThreadController extends BaseController with EmailActionController {
       final lastEmail =
           currentEmailList.isNotEmpty ? currentEmailList.last : null;
 
-      if (_searchEmailFilter.sortOrderType.isScrollByPosition()) {
+      if (_searchEmailFilter.sortOrderType.isScrollByPosition() || _isCollapseThreadsEnabled) {
         final nextPosition = currentEmailList.length;
         log('ThreadController::_searchMoreEmails:nextPosition: $nextPosition');
         searchController.updateFilterEmail(positionOption: Some(nextPosition));
       } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.oldest) {
-        searchController.updateFilterEmail(startDateOption: optionOf(lastEmail?.receivedAt));
-      } else {
+        searchController.updateFilterEmail(afterOption: optionOf(lastEmail?.receivedAt));
+      } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.mostRecent) {
         searchController.updateFilterEmail(beforeOption: optionOf(lastEmail?.receivedAt));
       }
 
