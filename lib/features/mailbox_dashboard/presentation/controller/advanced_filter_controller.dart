@@ -125,6 +125,7 @@ class AdvancedFilterController extends BaseController {
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -144,6 +145,7 @@ class AdvancedFilterController extends BaseController {
       unreadOption: unreadOption,
       notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
+      afterOption: afterOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
@@ -249,7 +251,10 @@ class AdvancedFilterController extends BaseController {
       searchController.activateAdvancedSearch();
     } else {
       searchController.deactivateAdvancedSearch();
-      searchController.updateFilterEmail(beforeOption: const None());
+      searchController.updateFilterEmail(
+        beforeOption: const None(),
+        afterOption: const None(),
+      );
     }
     searchController.isAdvancedSearchViewOpen.value = false;
     _mailboxDashBoardController.handleAdvancedSearchEmail();

@@ -241,6 +241,7 @@ class SearchEmailController extends BaseController
     _updateSimpleSearchFilter(
       sortOrderTypeOption: Some(sortOrderType),
       beforeOption: const None(),
+      afterOption: const None(),
       startDateOption: isCustomDateRange ? null : const None(),
       endDateOption: isCustomDateRange ? null : const None(),
       positionOption: const None(),
@@ -258,6 +259,9 @@ class SearchEmailController extends BaseController
       _updateSimpleSearchFilter(
         textOption: option(value.isNotEmpty, SearchQuery(value)),
         beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
+        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
@@ -306,6 +310,7 @@ class SearchEmailController extends BaseController
             startDateOption: const None(),
             endDateOption: const None(),
             beforeOption: const None(),
+            afterOption: const None(),
             positionOption: const None(),
           );
           mailboxDashBoardController.clearDashBoardAction();
@@ -316,6 +321,7 @@ class SearchEmailController extends BaseController
             startDateOption: optionOf(action.startDate?.toUTCDate()),
             endDateOption: optionOf(action.endDate?.toUTCDate()),
             beforeOption: const None(),
+            afterOption: const None(),
             positionOption: const None(),
           );
           mailboxDashBoardController.clearDashBoardAction();
@@ -388,6 +394,9 @@ class SearchEmailController extends BaseController
 
       _updateSimpleSearchFilter(
         beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
+        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
@@ -531,6 +540,9 @@ class SearchEmailController extends BaseController
       beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
         ? const None()
         : null,
+      afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+        ? const None()
+        : null,
     );
 
     consumeState(_searchEmailInteractor.execute(
@@ -583,14 +595,15 @@ class SearchEmailController extends BaseController
   }
 
   void searchMoreEmailsAction() {
-    if (canSearchMore && session != null && accountId != null) {
+    final isSearchMoreIsValid = canSearchMore && session != null && accountId != null;
+    if (isSearchMoreIsValid) {
       final lastEmail = listResultSearch.last;
 
-      if (searchEmailFilter.value.sortOrderType.isScrollByPosition()) {
+      if (searchEmailFilter.value.sortOrderType.isScrollByPosition() || _isCollapseThreadsEnabled) {
         _updateSimpleSearchFilter(positionOption: Some(listResultSearch.length));
       } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.oldest) {
-        _updateSimpleSearchFilter(startDateOption: optionOf(lastEmail.receivedAt));
-      } else {
+        _updateSimpleSearchFilter(afterOption: optionOf(lastEmail.receivedAt));
+      } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.mostRecent) {
         _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
       }
 
@@ -838,6 +851,7 @@ class SearchEmailController extends BaseController
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -854,6 +868,7 @@ class SearchEmailController extends BaseController
     unreadOption: unreadOption,
     notIncludeEventsOption: notIncludeEventsOption,
     beforeOption: beforeOption,
+    afterOption: afterOption,
     startDateOption: startDateOption,
     endDateOption: endDateOption,
     positionOption: positionOption,
@@ -872,6 +887,7 @@ class SearchEmailController extends BaseController
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -889,6 +905,7 @@ class SearchEmailController extends BaseController
       unreadOption: unreadOption,
       notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
+      afterOption: afterOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
