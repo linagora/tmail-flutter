@@ -2,9 +2,17 @@ import 'package:flutter/widgets.dart';
 import 'package:universal_html/html.dart';
 
 class HtmlIframeWidget extends StatelessWidget {
-  const HtmlIframeWidget({super.key, this.onIframeCreated});
+  const HtmlIframeWidget({
+    super.key,
+    this.onIframeCreated,
+    this.width,
+    this.height,
+    this.src,
+    this.srcdoc,
+  });
 
   final void Function(IFrameElement iframe)? onIframeCreated;
+  final String? width, height, src, srcdoc;
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +23,10 @@ class HtmlIframeWidget extends StatelessWidget {
         final iframe = element as IFrameElement;
         onIframeCreated?.call(iframe);
         iframe
+          ..src = src
+          ..srcdoc = srcdoc
+          ..width = width
+          ..height = height
           ..style.border = 'none'
           ..style.width = '100%'
           ..style.height = '100%'

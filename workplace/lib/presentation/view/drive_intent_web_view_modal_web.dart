@@ -80,9 +80,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     onClose: () => closeModal(null),
     child: HtmlIframeWidget(
       key: ValueKey(widget.intentId),
+      src: widget.url.toString(),
       onIframeCreated: (iframe) {
         _iframeElement = iframe;
-        iframe.src = widget.url.toString();
       },
     ),
   );

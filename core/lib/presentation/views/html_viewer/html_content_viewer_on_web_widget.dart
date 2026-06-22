@@ -591,12 +591,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
               if (snapshot.hasData) {
                 final htmlView = HtmlIframeWidget(
                   key: ValueKey('$_htmlData-${widget.key}'),
-                  onIframeCreated: (element) {
-                    element
-                      ..width = _actualWidth.toString()
-                      ..height = _actualHeight.toString()
-                      ..srcdoc = _htmlData ?? '';
-                  },
+                  srcdoc: _htmlData,
+                  width: _actualWidth.toString(),
+                  height: _actualHeight.toString(),
                 );
 
                 if (widget.viewMaxHeight != null) {
