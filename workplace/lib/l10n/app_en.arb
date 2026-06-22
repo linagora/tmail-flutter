@@ -1,4 +1,6 @@
 {
     "addAsLink": "Add as link",
-    "addAsAttachment": "Add as attachment"
+    "@addAsLink": {},
+    "addAsAttachment": "Add as attachment",
+    "@addAsAttachment": {}
 }
