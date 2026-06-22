@@ -42,7 +42,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
         sendAck();
         break;
       case WorkplaceIntentDoneMessage():
-        log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}, downloadLink:${d.downloadLink}}').join(', ')}');
+        log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}').join(', ')}');
         closeModal(msg.documents);
         break;
       case WorkplaceIntentErrorMessage():

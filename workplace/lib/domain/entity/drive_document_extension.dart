@@ -6,11 +6,18 @@ extension DriveDocumentExtension on DriveDocument {
   static String _sanitizeHeaderParam(String value) =>
       value.replaceAll(RegExp(r'["\r\n;]'), '');
 
-  String get linkedFileHeader {
-    final url = attachmentUrl;
+  // Only allow https:// URLs to prevent javascript:, data:, and other dangerous schemes.
+  static Uri? _sanitizeUrl(Uri? uri) {
+    if (uri == null) return null;
+    return uri.scheme == 'https' ? uri : null;
+  }
+
+  String? get linkedFileHeader {
+    final url = _sanitizeUrl(attachmentUrl);
+    if (url == null) return null;
     final safeName = _sanitizeHeaderParam(name);
     final safeMimeType = _sanitizeHeaderParam(mimeType);
-    return 'url=${url?.toString()}; filename="$safeName"; '
+    return 'url=${url.toString()}; filename="$safeName"; '
         'type="$safeMimeType"; size=$size';
   }
   
