@@ -26,7 +26,8 @@ Uri? _computeUri(Ref ref) {
     // TODO(TF-4449-next): replace with null once real drive URI is wired
     return DriveIntentFakePage.buildDataUri('debug');
   }
-  return Uri.tryParse(fqdn!.startsWith('http') ? fqdn : 'https://$fqdn');
+  final hasScheme = fqdn!.startsWith('http://') || fqdn.startsWith('https://');
+  return Uri.tryParse(hasScheme ? fqdn : 'https://$fqdn');
 }
 
 @Riverpod(keepAlive: true)

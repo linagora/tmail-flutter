@@ -26,9 +26,9 @@ class HtmlIframeWidget extends StatelessWidget {
           ..width = width
           ..height = height
           ..style.border = 'none'
+          ..style.overflow = 'hidden'
           ..style.width = '100%'
-          ..style.height = '100%'
-          ..allowFullscreen = true;
+          ..style.height = '100%';
         if (src != null) {
           iframe.src = src;
         } else if (srcdoc != null) {

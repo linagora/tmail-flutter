@@ -4,8 +4,8 @@ import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
+import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
-import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
   final Uri url;
@@ -27,10 +27,8 @@ class DriveIntentWebViewModal extends StatefulWidget {
 }
 
 class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
-    with DriveIntentMessageHandlerMixin {
+    with DriveIntentMessageHandlerMixin, WebWindowMessageMixin<DriveIntentWebViewModal> {
   html.IFrameElement? _iframeElement;
-  // Used only when no external handler is provided (fallback path).
-  OnWebWindowListener? _ownWindowListener;
 
   String get _intentOrigin =>
       widget.url.scheme == 'data' ? 'null' : widget.url.origin;
@@ -46,13 +44,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     } else {
       // Fallback: modal owns its own window listener (e.g. when used outside
       // the composer context).
-      _ownWindowListener = (html.Event event) {
-        if (event is! html.MessageEvent) return;
-        final data = event.data;
-        if (data is! String) return;
-        _forwardMessage(data, event.origin);
-      };
-      html.window.addEventListener('message', _ownWindowListener!);
+      startWindowMessageListener(_forwardMessage);
     }
   }
 
@@ -61,10 +53,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   void onCleanup() {
-    if (_ownWindowListener != null) {
-      html.window.removeEventListener('message', _ownWindowListener!);
-      _ownWindowListener = null;
-    }
+    stopWindowMessageListener();
   }
 
   @override

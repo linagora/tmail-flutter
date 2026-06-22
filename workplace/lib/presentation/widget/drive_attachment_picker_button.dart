@@ -1,14 +1,14 @@
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
 typedef OnPickDriveAttachmentResult = void Function(List<DriveDocument>);
-typedef OnWebWindowListener = void Function(html.Event);
 
 class DriveAttachmentPickerButton extends StatefulWidget {
   final String composerId;
@@ -50,19 +50,24 @@ abstract class _DriveAttachmentPickerButtonState
 
   Future<void> _onTap() async {
     if (_modalOpen) return;
-    _modalOpen = true;
-    final result = await showDialog<List<DriveDocument>?>(
-      context: context,
-      builder: (_) => DriveIntentWebViewModal(
-        url: widget.workplaceUri,
-        intentId: 'debug',
-        onRegisterExternalHandler: _externalHandlerRegistrar,
-      ),
-    );
-    _clearExternalHandler();
-    _modalOpen = false;
-    if (mounted && result != null) {
-      widget.onPickResult?.call(result);
+    try {
+      _modalOpen = true;
+      final result = await showDialog<List<DriveDocument>?>(
+        context: context,
+        builder: (_) => DriveIntentWebViewModal(
+          url: widget.workplaceUri,
+          intentId: 'debug',
+          onRegisterExternalHandler: _externalHandlerRegistrar,
+        ),
+      );
+      _clearExternalHandler();
+      _modalOpen = false;
+      if (mounted && result != null) {
+        widget.onPickResult?.call(result);
+      }
+    } catch (e) {
+      logWarning('DriveAttachmentPickerButton::_onTap: $e');
+      _modalOpen = false;
     }
   }
 
@@ -86,10 +91,10 @@ class _MobileDriveAttachmentPickerButtonState
     extends _DriveAttachmentPickerButtonState {}
 
 class _WebDriveAttachmentPickerButtonState
-    extends _DriveAttachmentPickerButtonState {
+    extends _DriveAttachmentPickerButtonState
+    with WebWindowMessageMixin<DriveAttachmentPickerButton> {
   // ADR-93: register window listener once at composer init (web only).
   void Function(String raw, String? origin)? _webModalHandler;
-  OnWebWindowListener? _webWindowListener;
 
   @override
   void Function(void Function(String raw, String? origin))? get _externalHandlerRegistrar =>
@@ -101,18 +106,12 @@ class _WebDriveAttachmentPickerButtonState
   @override
   void initState() {
     super.initState();
-    _webWindowListener = (html.Event event) {
-      if (event is! html.MessageEvent) return;
-      final data = event.data;
-      if (data is! String) return;
-      _webModalHandler?.call(data, event.origin);
-    };
-    html.window.addEventListener('message', _webWindowListener!);
+    startWindowMessageListener((data, origin) => _webModalHandler?.call(data, origin));
   }
 
   @override
   void dispose() {
-    html.window.removeEventListener('message', _webWindowListener!);
+    stopWindowMessageListener();
     super.dispose();
   }
 }

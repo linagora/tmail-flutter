@@ -1,113 +1,246 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/drive_document_extension.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  DriveDocument makeDoc({
+    String id = '1',
+    String name = 'file.pdf',
+    int size = 1024,
+    String mimeType = 'application/pdf',
+    Uri? sharingLink,
+    Uri? downloadLink,
+  }) =>
+      DriveDocument(
+        id: id,
+        name: name,
+        size: size,
+        mimeType: mimeType,
+        sharingLink: sharingLink,
+        downloadLink: downloadLink,
+      );
+
+  // Convenience: split folded header back into param tokens.
+  List<String> splitParams(String header) =>
+      header.split(';\r\n\t').map((s) => s.trim()).toList();
+
   group('DriveDocumentExtension.linkedFileHeader', () {
-    test('uses sharingLink when both links present', () {
-      final doc = DriveDocument(
-        id: '1',
-        name: 'report.pdf',
-        size: 1024,
-        mimeType: 'application/pdf',
-        sharingLink: Uri.parse('https://sharing.example.com/file'),
-        downloadLink: Uri.parse('https://download.example.com/file'),
-      );
+    group('URL selection', () {
+      test('uses sharingLink when both present', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('https://sharing.example.com/file'),
+          downloadLink: Uri.parse('https://download.example.com/file'),
+        );
+        expect(splitParams(doc.linkedFileHeader!).first,
+            'url=https://sharing.example.com/file');
+      });
 
-      expect(
-        doc.linkedFileHeader,
-        'url=https://sharing.example.com/file; filename="report.pdf"; '
-            'type="application/pdf"; size=1024',
-      );
+      test('falls back to downloadLink when sharingLink null', () {
+        final doc = makeDoc(
+          downloadLink: Uri.parse('https://download.example.com/image'),
+        );
+        expect(splitParams(doc.linkedFileHeader!).first,
+            'url=https://download.example.com/image');
+      });
+
+      test('returns null when both links null', () {
+        final doc = makeDoc();
+        expect(doc.linkedFileHeader, isNull);
+      });
+
+      test('returns null for non-https URL (http blocked)', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('http://insecure.example.com/file'),
+        );
+        expect(doc.linkedFileHeader, isNull);
+      });
+
+      test('returns null for javascript: scheme', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('javascript:alert(1)'),
+        );
+        expect(doc.linkedFileHeader, isNull);
+      });
     });
 
-    test('falls back to downloadLink when sharingLink is null', () {
-      final doc = DriveDocument(
-        id: '2',
-        name: 'image.png',
-        size: 2048,
-        mimeType: 'image/png',
-        downloadLink: Uri.parse('https://download.example.com/image'),
-      );
+    group('RFC 2822 line folding', () {
+      test('params separated by CRLF+tab', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final header = doc.linkedFileHeader!;
+        expect(header, contains(';\r\n\t'));
+      });
 
-      expect(
-        doc.linkedFileHeader,
-        'url=https://download.example.com/image; filename="image.png"; '
-            'type="image/png"; size=2048',
-      );
+      test('produces exactly 4 params', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!), hasLength(4));
+      });
+
+      test('param order: url, filename, type, size', () {
+        final doc = makeDoc(
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final params = splitParams(doc.linkedFileHeader!);
+        expect(params[0], startsWith('url='));
+        expect(params[1], startsWith('filename'));
+        expect(params[2], startsWith('type'));
+        expect(params[3], startsWith('size='));
+      });
     });
 
-    test('url is null when both links are null', () {
-      const doc = DriveDocument(
-        id: '3',
-        name: 'doc.txt',
-        size: 512,
-        mimeType: 'text/plain',
-      );
+    group('ASCII filename — quoted-string', () {
+      test('plain ASCII name quoted correctly', () {
+        final doc = makeDoc(
+          name: 'report.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[1], 'filename="report.pdf"');
+      });
 
-      expect(
-        doc.linkedFileHeader,
-        'url=null; filename="doc.txt"; type="text/plain"; size=512',
-      );
+      test('spaces preserved inside quotes', () {
+        final doc = makeDoc(
+          name: 'my file name.docx',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[1], 'filename="my file name.docx"');
+      });
+
+      test('double-quote in name is stripped', () {
+        final doc = makeDoc(
+          name: 'evil"name.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[1], 'filename="evilname.pdf"');
+      });
+
+      test('semicolon in name is stripped', () {
+        final doc = makeDoc(
+          name: 'file;injected=x.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, 'filename="fileinjected=x.pdf"');
+        expect(param, isNot(contains(';')));
+      });
+
+      test('backslash in name is escaped to double-backslash', () {
+        final doc = makeDoc(
+          name: r'path\file.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[1], r'filename="path\\file.pdf"');
+      });
     });
 
-    test('filename with spaces is quoted correctly', () {
-      final doc = DriveDocument(
-        id: '4',
-        name: 'my file name.docx',
-        size: 4096,
-        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        sharingLink: Uri.parse('https://sharing.example.com/doc'),
-      );
+    group('Control character stripping', () {
+      test('newline in name is stripped', () {
+        final doc = makeDoc(
+          name: 'file\ninjected.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, 'filename="fileinjected.pdf"');
+        expect(param, isNot(contains('\n')));
+      });
 
-      expect(
-        doc.linkedFileHeader,
-        contains('filename="my file name.docx"'),
-      );
+      test('carriage-return in name is stripped', () {
+        final doc = makeDoc(
+          name: 'file\r.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, 'filename="file.pdf"');
+        expect(param, isNot(contains('\r')));
+      });
+
+      test('C0 control char in name is stripped', () {
+        final doc = makeDoc(
+          name: 'file\x01name.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[1], 'filename="filename.pdf"');
+      });
     });
 
-    test('size zero is represented correctly', () {
-      const doc = DriveDocument(
-        id: '5',
-        name: 'empty.bin',
-        size: 0,
-        mimeType: 'application/octet-stream',
-      );
+    group('RFC 2231 — non-ASCII filename', () {
+      test('Vietnamese filename encoded with RFC 2231', () {
+        final doc = makeDoc(
+          name: 'Báo cáo.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, startsWith("filename*=UTF-8''"));
+        expect(param, isNot(contains('"')));
+        // Spot-check: 'á' → %C3%A1
+        expect(param, contains('%C3%A1'));
+      });
 
-      expect(doc.linkedFileHeader, contains('size=0'));
+      test('CJK filename encoded with RFC 2231', () {
+        final doc = makeDoc(
+          name: '文件.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, startsWith("filename*=UTF-8''"));
+      });
+
+      test('emoji filename encoded with RFC 2231', () {
+        final doc = makeDoc(
+          name: 'report🎉.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, startsWith("filename*=UTF-8''"));
+      });
+
+      test('pure ASCII name still uses quoted-string, not RFC 2231', () {
+        final doc = makeDoc(
+          name: 'report.pdf',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[1];
+        expect(param, startsWith('filename="'));
+        expect(param, isNot(contains("UTF-8''")));
+      });
     });
 
-    test('double-quote in filename is stripped', () {
-      const doc = DriveDocument(
-        id: '6',
-        name: 'evil"name.pdf',
-        size: 100,
-        mimeType: 'application/pdf',
-      );
-      expect(doc.linkedFileHeader, contains('filename="evilname.pdf"'));
-    });
+    group('size and mimeType', () {
+      test('size=0 included', () {
+        final doc = makeDoc(
+          size: 0,
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[3], 'size=0');
+      });
 
-    test('semicolon in mimeType is stripped', () {
-      const doc = DriveDocument(
-        id: '7',
-        name: 'file.pdf',
-        size: 100,
-        mimeType: 'application/pdf;injected=x',
-      );
-      expect(doc.linkedFileHeader, contains('type="application/pdfinjected=x"'));
-      expect(doc.linkedFileHeader, isNot(contains(';injected')));
-    });
+      test('large size included', () {
+        final doc = makeDoc(
+          size: 1073741824,
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        expect(splitParams(doc.linkedFileHeader!)[3], 'size=1073741824');
+      });
 
-    test('newline in filename is stripped', () {
-      const doc = DriveDocument(
-        id: '8',
-        name: 'file\ninjected.pdf',
-        size: 100,
-        mimeType: 'application/pdf',
-      );
-      final header = doc.linkedFileHeader;
-      expect(header, isNot(contains('\n')));
-      expect(header, contains('filename="fileinjected.pdf"'));
+      test('semicolon in mimeType is stripped', () {
+        final doc = makeDoc(
+          mimeType: 'application/pdf;injected=x',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[2];
+        expect(param, isNot(contains(';injected')));
+      });
+
+      test('non-ASCII mimeType uses RFC 2231', () {
+        final doc = makeDoc(
+          mimeType: 'application/pdfé',
+          sharingLink: Uri.parse('https://example.com/f'),
+        );
+        final param = splitParams(doc.linkedFileHeader!)[2];
+        expect(param, startsWith("type*=UTF-8''"));
+      });
     });
   });
 }

@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/main/runner/app_runner_mobile.dart'
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:workplace/l10n/drive_attachment_localizations.dart' as workplace_localizations;
+import 'package:workplace/l10n/workplace_localizations.dart' as workplace_localizations;
 
 Future<void> main() async {
   await runAppWithMonitoring(runTmail);
