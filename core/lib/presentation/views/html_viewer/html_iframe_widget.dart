@@ -23,14 +23,17 @@ class HtmlIframeWidget extends StatelessWidget {
         final iframe = element as IFrameElement;
         onIframeCreated?.call(iframe);
         iframe
-          ..src = src
-          ..srcdoc = srcdoc
           ..width = width
           ..height = height
           ..style.border = 'none'
           ..style.width = '100%'
           ..style.height = '100%'
           ..allowFullscreen = true;
+        if (src != null) {
+          iframe.src = src;
+        } else if (srcdoc != null) {
+          iframe.srcdoc = srcdoc;
+        }
       },
     );
   }

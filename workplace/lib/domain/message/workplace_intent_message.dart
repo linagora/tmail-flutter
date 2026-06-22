@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:developer' as dev;
+
+import 'package:core/utils/app_logger.dart';
 
 import '../entity/drive_document.dart';
 
@@ -60,17 +61,17 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
     try {
       final doc = DriveDocument.fromJson(e as Map<String, dynamic>);
       if (doc.size < 0) {
-        dev.log('driveIntent: skipping doc ${doc.id} with negative size ${doc.size}', name: 'workplace');
+        log('driveIntent: skipping doc ${doc.id} with negative size ${doc.size}');
         return null;
       }
       final url = doc.sharingLink ?? doc.downloadLink;
       if (url != null && !_isValidUrlScheme(url.scheme)) {
-        dev.log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}', name: 'workplace');
+        log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}');
         return null;
       }
       return doc;
     } catch (err) {
-      dev.log('driveIntent: skipping malformed document entry: $err', name: 'workplace');
+      log('driveIntent: skipping malformed document entry: $err');
       return null;
     }
   }
