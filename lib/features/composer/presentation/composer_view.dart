@@ -59,7 +59,7 @@ class ComposerView extends GetWidget<ComposerController> {
             child: Column(
               children: [
                 if (controller.responsiveUtils.isLandscapeMobile(context))
-                  Obx(() => Consumer(builder: (_, ref, __) => LandscapeAppBarComposerWidget(
+                  Consumer(builder: (_, ref, __) => Obx(() => LandscapeAppBarComposerWidget(
                     imagePaths: controller.imagePaths,
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
@@ -83,7 +83,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       ),
                   )))
                 else
-                  Obx(() => Consumer(builder: (_, ref, __) => AppBarComposerWidget(
+                  Consumer(builder: (_, ref, __) => Obx(() => AppBarComposerWidget(
                     imagePaths: controller.imagePaths,
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
@@ -293,7 +293,7 @@ class ComposerView extends GetWidget<ComposerController> {
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
             children: [
-              Obx(() => Consumer(builder: (_, ref, __) => TabletAppBarComposerWidget(
+              Consumer(builder: (_, ref, __) => Obx(() => TabletAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
