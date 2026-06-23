@@ -46,53 +46,82 @@ void main() {
       });
     });
 
-    group('WHEN startDate is null AND receiveTimeType is last7Days', () {
+    group('WHEN startDate is null (no snapshotted bound)', () {
       test(
-        'SHOULD return loadMoreDate WHEN loadMoreDate is after the 7-day boundary (cursor within range)',
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided (no bound to compare against)',
       () {
-        // Yesterday is more recent than "7 days ago" → cursor wins
         final yesterday = UTCDate(DateTime.now().subtract(const Duration(days: 1)));
         final result = EmailReceiveTimeType.last7Days.getAfterDate(null, yesterday);
         expect(result, equals(yesterday));
       });
 
       test(
-        'SHOULD return the 7-day boundary WHEN loadMoreDate is before it (cursor outside range)',
+        'SHOULD return loadMoreDate even when it is very old (null bound never rejects cursor)',
       () {
-        // 30 days ago is older than the 7-day boundary → boundary is returned
         final thirtyDaysAgo = UTCDate(DateTime.now().subtract(const Duration(days: 30)));
         final result = EmailReceiveTimeType.last7Days.getAfterDate(null, thirtyDaysAgo);
-        expect(result, isNotNull);
-        expect(result, isNot(equals(thirtyDaysAgo)));
-        expect(result!.value.isAfter(thirtyDaysAgo.value), isTrue);
+        expect(result, equals(thirtyDaysAgo));
       });
 
       test(
-        'SHOULD return the 7-day boundary WHEN loadMoreDate is null',
+        'SHOULD return null WHEN loadMoreDate is also null',
       () {
         final result = EmailReceiveTimeType.last7Days.getAfterDate(null, null);
-        expect(result, isNotNull);
-        final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
-        expect(result!.value.difference(sevenDaysAgo).abs(), lessThan(const Duration(seconds: 2)));
+        expect(result, isNull);
       });
-    });
 
-    group('WHEN startDate is null AND receiveTimeType is last30Days', () {
       test(
-        'SHOULD return the 30-day boundary WHEN loadMoreDate is null',
+        'SHOULD return null WHEN both startDate and loadMoreDate are null for last30Days',
       () {
         final result = EmailReceiveTimeType.last30Days.getAfterDate(null, null);
-        expect(result, isNotNull);
-        final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
-        expect(result!.value.difference(thirtyDaysAgo).abs(), lessThan(const Duration(seconds: 2)));
+        expect(result, isNull);
       });
 
       test(
-        'SHOULD return loadMoreDate WHEN loadMoreDate is after the 30-day boundary',
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided for last30Days',
       () {
         final tenDaysAgo = UTCDate(DateTime.now().subtract(const Duration(days: 10)));
         final result = EmailReceiveTimeType.last30Days.getAfterDate(null, tenDaysAgo);
         expect(result, equals(tenDaysAgo));
+      });
+    });
+
+    group('WHEN startDate is explicitly provided for last7Days (snapshotted bound + cursor)', () {
+      test(
+        'SHOULD return loadMoreDate WHEN loadMoreDate is after startDate',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getAfterDate(older, newer);
+        expect(result, equals(newer));
+      });
+
+      test(
+        'SHOULD return startDate WHEN loadMoreDate is before startDate',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getAfterDate(newer, older);
+        expect(result, equals(newer));
+      });
+
+      test(
+        'SHOULD return startDate WHEN loadMoreDate is null',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getAfterDate(older, null);
+        expect(result, equals(older));
+      });
+    });
+
+    group('WHEN customRange AND startDate is null', () {
+      test(
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided',
+      () {
+        final result = EmailReceiveTimeType.customRange.getAfterDate(null, newer);
+        expect(result, equals(newer));
+      });
+
+      test(
+        'SHOULD return null WHEN loadMoreDate is also null',
+      () {
+        final result = EmailReceiveTimeType.customRange.getAfterDate(null, null);
+        expect(result, isNull);
       });
     });
   });
@@ -137,9 +166,9 @@ void main() {
       });
     });
 
-    group('WHEN endDate is null AND receiveTimeType is last7Days', () {
+    group('WHEN endDate is null (no snapshotted bound)', () {
       test(
-        'SHOULD return loadMoreDate WHEN loadMoreDate is before today (cursor within range)',
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided (no bound to compare against)',
       () {
         final yesterday = UTCDate(DateTime.now().subtract(const Duration(days: 1)));
         final result = EmailReceiveTimeType.last7Days.getBeforeDate(null, yesterday);
@@ -147,31 +176,64 @@ void main() {
       });
 
       test(
-        'SHOULD return today (latest bound) WHEN loadMoreDate is null',
+        'SHOULD return null WHEN loadMoreDate is also null',
       () {
         final result = EmailReceiveTimeType.last7Days.getBeforeDate(null, null);
-        expect(result, isNotNull);
-        final now = DateTime.now();
-        expect(result!.value.difference(now).abs(), lessThan(const Duration(seconds: 2)));
+        expect(result, isNull);
       });
-    });
 
-    group('WHEN endDate is null AND receiveTimeType is last30Days', () {
       test(
-        'SHOULD return today (latest bound) WHEN loadMoreDate is null',
+        'SHOULD return null WHEN both endDate and loadMoreDate are null for last30Days',
       () {
         final result = EmailReceiveTimeType.last30Days.getBeforeDate(null, null);
-        expect(result, isNotNull);
-        final now = DateTime.now();
-        expect(result!.value.difference(now).abs(), lessThan(const Duration(seconds: 2)));
+        expect(result, isNull);
       });
 
       test(
-        'SHOULD return loadMoreDate WHEN loadMoreDate is before today',
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided for last30Days',
       () {
         final fiveDaysAgo = UTCDate(DateTime.now().subtract(const Duration(days: 5)));
         final result = EmailReceiveTimeType.last30Days.getBeforeDate(null, fiveDaysAgo);
         expect(result, equals(fiveDaysAgo));
+      });
+    });
+
+    group('WHEN endDate is explicitly provided for last7Days (snapshotted bound + cursor)', () {
+      test(
+        'SHOULD return loadMoreDate WHEN loadMoreDate is before endDate',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getBeforeDate(newer, older);
+        expect(result, equals(older));
+      });
+
+      test(
+        'SHOULD return endDate WHEN loadMoreDate is after endDate',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getBeforeDate(older, newer);
+        expect(result, equals(older));
+      });
+
+      test(
+        'SHOULD return endDate WHEN loadMoreDate is null',
+      () {
+        final result = EmailReceiveTimeType.last7Days.getBeforeDate(newer, null);
+        expect(result, equals(newer));
+      });
+    });
+
+    group('WHEN customRange AND endDate is null', () {
+      test(
+        'SHOULD return loadMoreDate WHEN loadMoreDate is provided',
+      () {
+        final result = EmailReceiveTimeType.customRange.getBeforeDate(null, older);
+        expect(result, equals(older));
+      });
+
+      test(
+        'SHOULD return null WHEN loadMoreDate is also null',
+      () {
+        final result = EmailReceiveTimeType.customRange.getBeforeDate(null, null);
+        expect(result, isNull);
       });
     });
   });
