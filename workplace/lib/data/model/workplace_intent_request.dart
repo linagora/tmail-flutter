@@ -5,16 +5,20 @@ part 'workplace_intent_request.g.dart';
 
 @JsonSerializable(createFactory: false)
 class WorkplaceIntentActionsRequest {
-  final String sharingLink;
-  final String downloadLink;
+  @JsonKey(name: 'sharingLink')
+  final String addAsLink;
+  @JsonKey(name: 'downloadLink')
+  final String addAsAttachment;
 
   const WorkplaceIntentActionsRequest({
-    required this.sharingLink,
-    required this.downloadLink,
+    required this.addAsLink,
+    required this.addAsAttachment,
   });
+
+  Map<String, dynamic> toJson() => _$WorkplaceIntentActionsRequestToJson(this);
 }
 
-@JsonSerializable(createFactory: false)
+@JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceIntentAttributesRequest {
   final WorkplaceAction action;
   final WorkplaceAttributesRequestType type;

@@ -22,8 +22,8 @@ class DriveAttachmentNotifier extends _$DriveAttachmentNotifier {
   Future<void> openDrivePicker({
     required Uri platformUrl,
     required String accessToken,
-    required String sharingLink,
-    required String downloadLink,
+    required String addAsLink,
+    required String addAsAttachment,
   }) async {
     final current = state.attachments;
     state = DriveAttachmentFetchingIntent(attachments: current);
@@ -31,8 +31,8 @@ class DriveAttachmentNotifier extends _$DriveAttachmentNotifier {
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
       accessToken,
-      sharingLink: sharingLink,
-      downloadLink: downloadLink,
+      addAsLink: addAsLink,
+      addAsAttachment: addAsAttachment,
     )) {
       either.fold(
         (failure) {

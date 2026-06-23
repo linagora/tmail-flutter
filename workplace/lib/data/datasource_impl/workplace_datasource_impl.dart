@@ -17,8 +17,8 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   Future<WorkplaceIntent> createIntent(
     Uri platformUrl,
     String accessToken, {
-    required String sharingLink,
-    required String downloadLink,
+    required String addAsLink,
+    required String addAsAttachment,
   }) async {
     final response = await _dio.post(
       '$platformUrl/intents',
@@ -32,8 +32,8 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
             permissions: [WorkplacePermission.get],
             actions: [
               WorkplaceIntentActionsRequest(
-                sharingLink: sharingLink,
-                downloadLink: downloadLink,
+                addAsLink: addAsLink,
+                addAsAttachment: addAsAttachment,
               ),
             ],
           ),

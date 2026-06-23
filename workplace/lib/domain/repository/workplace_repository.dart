@@ -4,8 +4,8 @@ abstract class WorkplaceRepository {
   Future<WorkplaceIntent> createIntent(
     Uri platformUrl,
     String accessToken, {
-    required String sharingLink,
-    required String downloadLink,
+    required String addAsLink,
+    required String addAsAttachment,
   });
   Future<String> exchangeToken(Uri platformUrl, String oidcIdToken);
 }

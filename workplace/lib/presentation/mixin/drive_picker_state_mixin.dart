@@ -1,16 +1,22 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 /// Shared state logic for widgets that open [DriveIntentWebViewModal].
 ///
-/// Consumers must provide [pickerWorkplaceUri] and [pickerOnPickResult], then
+/// Consumers must provide [pickerFetchIntent] and [pickerOnPickResult], then
 /// call [onPickerTap] from their tap handler.
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
-  Uri get pickerWorkplaceUri;
+  Future<WorkplaceIntent?> Function({
+    required String addAsLink,
+    required String addAsAttachment,
+  })? get pickerFetchIntent;
+
   OnPickDriveAttachmentResult? get pickerOnPickResult;
 
   void Function(void Function(String raw, String? origin))? get externalHandlerRegistrar => null;
@@ -20,13 +26,25 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> onPickerTap() async {
     if (_modalOpen) return;
+    final fetch = pickerFetchIntent;
+    if (fetch == null) return;
     try {
       _modalOpen = true;
+      final l10n = AppLocalizations.of(context)!;
+      final intent = await fetch(
+        addAsLink: l10n.addAsLink,
+        addAsAttachment: l10n.addAsAttachment,
+      );
+      if (intent == null) {
+        _modalOpen = false;
+        return;
+      }
+      if (!mounted) return;
       final result = await showDialog<List<DriveDocument>?>(
         context: context,
         builder: (_) => DriveIntentWebViewModal(
-          url: pickerWorkplaceUri,
-          intentId: 'debug',
+          url: intent.intentUrl,
+          intentId: intent.intentId,
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );

@@ -4,6 +4,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 
@@ -15,6 +16,10 @@ class DriveAttachmentPickerButton extends StatefulWidget {
   final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
   final OnPickDriveAttachmentResult? onPickResult;
+  final Future<WorkplaceIntent?> Function({
+    required String addAsLink,
+    required String addAsAttachment,
+  })? onFetchIntent;
 
   const DriveAttachmentPickerButton({
     super.key,
@@ -23,6 +28,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
     required this.workplaceUri,
     this.style = const ComposerToolbarButtonStyle(),
     this.onPickResult,
+    this.onFetchIntent,
   });
 
   @override
@@ -40,7 +46,10 @@ abstract class _DriveAttachmentPickerButtonState
       : _MobileDriveAttachmentPickerButtonState();
 
   @override
-  Uri get pickerWorkplaceUri => widget.workplaceUri;
+  Future<WorkplaceIntent?> Function({
+    required String addAsLink,
+    required String addAsAttachment,
+  })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override
   OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;

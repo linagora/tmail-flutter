@@ -12,16 +12,16 @@ class CreateDriveIntentInteractor {
   Stream<Either<Failure, Success>> execute(
     Uri platformUrl,
     String accessToken, {
-    required String sharingLink,
-    required String downloadLink,
+    required String addAsLink,
+    required String addAsAttachment,
   }) async* {
     try {
       yield Right(CreatingWorkplaceIntent());
       final intent = await _repository.createIntent(
         platformUrl,
         accessToken,
-        sharingLink: sharingLink,
-        downloadLink: downloadLink,
+        addAsLink: addAsLink,
+        addAsAttachment: addAsAttachment,
       );
       yield Right(CreateWorkplaceIntentSuccess(intent));
     } catch (e) {

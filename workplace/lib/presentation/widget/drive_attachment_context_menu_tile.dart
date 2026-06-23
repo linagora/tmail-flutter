@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
@@ -14,6 +15,10 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final Uri workplaceUri;
   final String label;
   final OnPickDriveAttachmentResult? onPickResult;
+  final Future<WorkplaceIntent?> Function({
+    required String addAsLink,
+    required String addAsAttachment,
+  })? onFetchIntent;
 
   const DriveAttachmentContextMenuTile({
     super.key,
@@ -22,6 +27,7 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
     required this.workplaceUri,
     required this.label,
     this.onPickResult,
+    this.onFetchIntent,
   });
 
   @override
@@ -39,7 +45,10 @@ abstract class _DriveAttachmentContextMenuTileState
       : _MobileDriveAttachmentContextMenuTileState();
 
   @override
-  Uri get pickerWorkplaceUri => widget.workplaceUri;
+  Future<WorkplaceIntent?> Function({
+    required String addAsLink,
+    required String addAsAttachment,
+  })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override
   OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;

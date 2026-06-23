@@ -4,16 +4,23 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
   final void Function(String composerId, List<DriveDocument> result)? onPickResult;
+  final Future<WorkplaceIntent?> Function(
+    String composerId, {
+    required String addAsLink,
+    required String addAsAttachment,
+  })? onFetchIntent;
 
   const WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
     this.onPickResult,
+    this.onFetchIntent,
   });
 
   @override
@@ -35,6 +42,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickResult: onPickResult == null
               ? null
               : (result) => onPickResult!(composerId, result),
+          onFetchIntent: onFetchIntent == null
+              ? null
+              : ({required addAsLink, required addAsAttachment}) =>
+                  onFetchIntent!(composerId, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
         );
       },
     );
@@ -59,6 +70,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickResult: onPickResult == null
               ? null
               : (result) => onPickResult!(composerId, result),
+          onFetchIntent: onFetchIntent == null
+              ? null
+              : ({required addAsLink, required addAsAttachment}) =>
+                  onFetchIntent!(composerId, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
         );
       },
     );
