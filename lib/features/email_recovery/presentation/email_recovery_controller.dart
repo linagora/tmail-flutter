@@ -346,13 +346,17 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     if (deletionDateFieldSelected.value == EmailReceiveTimeType.customRange) {
       deletedBefore = endDeletionDate.value?.toUTCDate();
       deletedAfter = startDeletionDate.value?.toUTCDate();
+    } else {
+      final deletionDateRange = deletionDateFieldSelected.value.toDateRange();
+      deletedBefore = deletionDateRange.end;
+      deletedAfter = deletionDateRange.start;
+    }
+
+    if (receptionDateFieldSelected.value == EmailReceiveTimeType.customRange) {
       receivedBefore = endReceptionDate.value?.toUTCDate();
       receivedAfter = startReceptionDate.value?.toUTCDate();
     } else {
-      final deletionDateRange = deletionDateFieldSelected.value.toDateRange();
       final receptionDateRange = receptionDateFieldSelected.value.toDateRange();
-      deletedBefore = deletionDateRange.end;
-      deletedAfter = deletionDateRange.start;
       receivedBefore = receptionDateRange.end;
       receivedAfter = receptionDateRange.start;
     }
