@@ -14,19 +14,28 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   WorkplaceDataSourceImpl(this._dio);
 
   @override
-  Future<WorkplaceIntent> createIntent(Uri platformUrl, String accessToken) async {
+  Future<WorkplaceIntent> createIntent(
+    Uri platformUrl,
+    String accessToken, {
+    required String sharingLink,
+    required String downloadLink,
+  }) async {
     final response = await _dio.post(
       '$platformUrl/intents',
-      options: Options(
-        headers: {'Authorization': 'Bearer $accessToken'},
-      ),
-      data: const WorkplaceIntentRequest(
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      data: WorkplaceIntentRequest(
         data: WorkplaceIntentDataRequest(
           type: WorkplaceDataRequestType.intents,
           attributes: WorkplaceIntentAttributesRequest(
             action: WorkplaceAction.pick,
             type: WorkplaceAttributesRequestType.files,
             permissions: [WorkplacePermission.get],
+            actions: [
+              WorkplaceIntentActionsRequest(
+                sharingLink: sharingLink,
+                downloadLink: downloadLink,
+              ),
+            ],
           ),
         ),
       ).toJson(),

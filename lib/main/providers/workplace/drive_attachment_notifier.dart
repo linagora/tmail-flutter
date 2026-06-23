@@ -22,16 +22,24 @@ class DriveAttachmentNotifier extends _$DriveAttachmentNotifier {
   Future<void> openDrivePicker({
     required Uri platformUrl,
     required String accessToken,
+    required String sharingLink,
+    required String downloadLink,
   }) async {
     final current = state.attachments;
     state = DriveAttachmentFetchingIntent(attachments: current);
 
-    await for (final either
-        in _createIntentInteractor.execute(platformUrl, accessToken)) {
+    await for (final either in _createIntentInteractor.execute(
+      platformUrl,
+      accessToken,
+      sharingLink: sharingLink,
+      downloadLink: downloadLink,
+    )) {
       either.fold(
         (failure) {
           if (failure is CreateWorkplaceIntentFailure) {
-            log('DriveAttachmentNotifier: create intent failed: ${failure.exception}');
+            log(
+              'DriveAttachmentNotifier: create intent failed: ${failure.exception}',
+            );
           }
           state = DriveAttachmentError(error: failure, attachments: current);
         },

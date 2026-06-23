@@ -8,8 +8,17 @@ class WorkplaceRepositoryImpl implements WorkplaceRepository {
   WorkplaceRepositoryImpl(this._dataSource);
 
   @override
-  Future<WorkplaceIntent> createIntent(Uri platformUrl, String accessToken) =>
-      _dataSource.createIntent(platformUrl, accessToken);
+  Future<WorkplaceIntent> createIntent(
+    Uri platformUrl,
+    String accessToken, {
+    required String sharingLink,
+    required String downloadLink,
+  }) => _dataSource.createIntent(
+    platformUrl,
+    accessToken,
+    sharingLink: sharingLink,
+    downloadLink: downloadLink,
+  );
 
   @override
   Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) =>
