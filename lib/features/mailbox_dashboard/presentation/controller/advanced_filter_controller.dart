@@ -183,9 +183,16 @@ class AdvancedFilterController extends BaseController {
 
     final hasAttachmentOption = Some(hasAttachment.value);
 
-    final startDateOption = optionOf(startDate.value?.toUTCDate());
-
-    final endDateOption = optionOf(endDate.value?.toUTCDate());
+    final Option<UTCDate> startDateOption;
+    final Option<UTCDate> endDateOption;
+    if (receiveTimeType.value == EmailReceiveTimeType.customRange) {
+      startDateOption = optionOf(startDate.value?.toUTCDate());
+      endDateOption = optionOf(endDate.value?.toUTCDate());
+    } else {
+      final dateRange = receiveTimeType.value.toDateRange();
+      startDateOption = optionOf(dateRange.start);
+      endDateOption = optionOf(dateRange.end);
+    }
 
     final unreadOption = Some(isUnread.value);
 
@@ -342,11 +349,20 @@ class AdvancedFilterController extends BaseController {
     endDate.value = newEndDate;
     receiveTimeType.value = receiveTime;
 
-    _updateMemorySearchFilter(
-      emailReceiveTimeTypeOption: Some(receiveTimeType.value),
-      startDateOption: optionOf(startDate.value?.toUTCDate()),
-      endDateOption: optionOf(endDate.value?.toUTCDate())
-    );
+    if (receiveTime == EmailReceiveTimeType.customRange) {
+      _updateMemorySearchFilter(
+        emailReceiveTimeTypeOption: Some(receiveTime),
+        startDateOption: optionOf(startDate.value?.toUTCDate()),
+        endDateOption: optionOf(endDate.value?.toUTCDate()),
+      );
+    } else {
+      final dateRange = receiveTime.toDateRange();
+      _updateMemorySearchFilter(
+        emailReceiveTimeTypeOption: Some(receiveTime),
+        startDateOption: optionOf(dateRange.start),
+        endDateOption: optionOf(dateRange.end),
+      );
+    }
   }
 
   void updateReceiveDateSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
@@ -509,12 +525,10 @@ class AdvancedFilterController extends BaseController {
           _handleClearAllFieldOfAdvancedSearch();
         } else if (action is SelectDateRangeToAdvancedSearch) {
           _updateDateRangeTime(
-            EmailReceiveTimeType.customRange,
+            action.receiveTime,
             newStartDate: action.startDate,
             newEndDate: action.endDate
           );
-        } else if (action is ClearDateRangeToAdvancedSearch) {
-          _updateDateRangeTime(action.receiveTime);
         } else if (action is StartSearchEmailAction) {
           _handleStartSearchEmailAction();
         } else if (action is QuickSearchEmailByFromAction) {

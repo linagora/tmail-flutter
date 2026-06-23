@@ -353,7 +353,7 @@ class ThreadController extends BaseController with EmailActionController {
         );
       } else if (action is SearchEmailFromLocationBar) {
         _handleSearchEmailFromLocationBar(action.searchQuery);
-      } else if (action is SelectDateRangeToAdvancedSearch || action is ClearDateRangeToAdvancedSearch) {
+      } else if (action is SelectDateRangeToAdvancedSearch) {
         if (listEmailController.hasClients) {
           listEmailController.jumpTo(0);
         }

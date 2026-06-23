@@ -2335,25 +2335,35 @@ class MailboxDashBoardController extends ReloadableController
         context,
         searchController.startDateFiltered,
         searchController.endDateFiltered,
-        onCallbackAction: (startDate, endDate) {
-          dispatchAction(SelectDateRangeToAdvancedSearch(startDate, endDate));
-          searchController.updateFilterEmail(
-            emailReceiveTimeTypeOption: Some(receiveTime),
-            startDateOption: optionOf(startDate?.toUTCDate()),
-            endDateOption: optionOf(endDate?.toUTCDate())
-          );
-          dispatchAction(StartSearchEmailAction());
-        }
+        onCallbackAction: (startDate, endDate) =>
+          _applyReceiveTimeFilter(receiveTime, startDate: startDate, endDate: endDate),
       );
     } else {
-      dispatchAction(ClearDateRangeToAdvancedSearch(receiveTime));
-      searchController.updateFilterEmail(
-        emailReceiveTimeTypeOption: Some(receiveTime),
-        startDateOption: const None(),
-        endDateOption: const None()
+      final dateRange = receiveTime.toDateRange();
+      _applyReceiveTimeFilter(
+        receiveTime,
+        startDate: dateRange.start?.value,
+        endDate: dateRange.end?.value,
       );
-      dispatchAction(StartSearchEmailAction());
     }
+  }
+
+  void _applyReceiveTimeFilter(
+    EmailReceiveTimeType receiveTime, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    dispatchAction(SelectDateRangeToAdvancedSearch(
+      receiveTime: receiveTime,
+      startDate: startDate,
+      endDate: endDate,
+    ));
+    searchController.updateFilterEmail(
+      emailReceiveTimeTypeOption: Some(receiveTime),
+      startDateOption: optionOf(startDate?.toUTCDate()),
+      endDateOption: optionOf(endDate?.toUTCDate()),
+    );
+    dispatchAction(StartSearchEmailAction());
   }
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
@@ -2364,13 +2374,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _deleteDateTimeSearchFilter() {
-    dispatchAction(ClearDateRangeToAdvancedSearch(EmailReceiveTimeType.allTime));
-    searchController.updateFilterEmail(
-      emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-      startDateOption: const None(),
-      endDateOption: const None()
-    );
-    dispatchAction(StartSearchEmailAction());
+    _applyReceiveTimeFilter(EmailReceiveTimeType.allTime);
   }
 
   void _deleteSortOrderSearchFilter() {

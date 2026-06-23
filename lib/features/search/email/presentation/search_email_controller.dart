@@ -237,13 +237,10 @@ class SearchEmailController extends BaseController
 
   void _updateSortOrderFilter(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
-    final isCustomDateRange = emailReceiveTimeType.value == EmailReceiveTimeType.customRange;
     _updateSimpleSearchFilter(
       sortOrderTypeOption: Some(sortOrderType),
       beforeOption: const None(),
       afterOption: const None(),
-      startDateOption: isCustomDateRange ? null : const None(),
-      endDateOption: isCustomDateRange ? null : const None(),
       positionOption: const None(),
     );
   }
@@ -303,21 +300,10 @@ class SearchEmailController extends BaseController
         } else if (action is SynchronizeEmailSortOrderAction) {
           _updateSortOrderFilter(action.emailSortOrderType);
           mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is ClearDateRangeToAdvancedSearch) {
+        } else if (action is SelectDateRangeToAdvancedSearch) {
           _setEmailReceiveTimeType(action.receiveTime);
           _updateSimpleSearchFilter(
             emailReceiveTimeTypeOption: Some(action.receiveTime),
-            startDateOption: const None(),
-            endDateOption: const None(),
-            beforeOption: const None(),
-            afterOption: const None(),
-            positionOption: const None(),
-          );
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is SelectDateRangeToAdvancedSearch) {
-          _setEmailReceiveTimeType(EmailReceiveTimeType.customRange);
-          _updateSimpleSearchFilter(
-            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
             startDateOption: optionOf(action.startDate?.toUTCDate()),
             endDateOption: optionOf(action.endDate?.toUTCDate()),
             beforeOption: const None(),
@@ -748,10 +734,11 @@ class SearchEmailController extends BaseController
         }
       );
     } else {
+      final dateRange = emailReceiveTimeType.toDateRange();
       _updateSimpleSearchFilter(
         emailReceiveTimeTypeOption: Some(emailReceiveTimeType),
-        startDateOption: const None(),
-        endDateOption: const None(),
+        startDateOption: optionOf(dateRange.start),
+        endDateOption: optionOf(dateRange.end),
       );
 
       _setEmailReceiveTimeType(emailReceiveTimeType);

@@ -116,8 +116,11 @@ class SearchController extends BaseController with DateRangePickerMixin {
       ? {KeyWordIdentifier.emailFlagged.value}
       : null;
 
+    final dateRange = receiveTime?.toDateRange();
     updateFilterEmail(
       emailReceiveTimeTypeOption: receiveTime != null ? Some(receiveTime) : null,
+      startDateOption: receiveTime != null ? optionOf(dateRange!.start) : null,
+      endDateOption: receiveTime != null ? optionOf(dateRange!.end) : null,
       hasAttachmentOption: hasAttachment != null ? Some(hasAttachment) : null,
       fromOption: Some(listFromAddress),
       hasKeywordOption: listHasKeyword != null ? Some(listHasKeyword) : null,
@@ -176,13 +179,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
   EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
 
   void updateSortOrderFilter(EmailSortOrderType sortOrder) {
-    final isCustomDateRange = receiveTimeFiltered == EmailReceiveTimeType.customRange;
     updateFilterEmail(
       sortOrderTypeOption: Some(sortOrder),
       beforeOption: const None(),
       afterOption: const None(),
-      startDateOption: isCustomDateRange ? null : const None(),
-      endDateOption: isCustomDateRange ? null : const None(),
       positionOption: const None(),
     );
   }
