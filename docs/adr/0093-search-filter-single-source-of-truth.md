@@ -57,9 +57,21 @@ Additionally, `MailboxDashBoardController.filterMessageOption` (inbox-only filte
 | #4590 | `ThreadController._searchEmail()` ANDs `filterMessageOption` as `moreFilterCondition`; chip bar reads `SearchEmailFilter.unread` (always `false`) → chip deselected, results still filtered |
 | #4490 | `filterMessageOption` reset to `all` by unrelated code paths (e.g. `handleClearAdvancedSearchFilterEmail()`); cached email list still shows filtered results while chip shows deselected |
 
+### Secondary structural problems (after SSOT is established)
+
+After fixing the SSOT write paths, a second class of problems remains: search execution methods write **pagination cursors** (`position`, `before`, `startDate`) to the SSOT immediately before every interactor call.
+
+- `ThreadController._searchEmail()` and `SearchEmailController._searchEmailAction()` both reset the cursor to 0 before every fresh search.
+- `ThreadController._searchMoreEmails()` and `SearchEmailController.searchMoreEmailsAction()` advance the cursor for each load-more page — duplicating the same `isScrollByPosition()` branching logic across two controllers.
+- `SearchEmailController._initializeDebounceTimeTextSearchChange()` resets the cursor on every debounced text change (suggestion-only path — before the user even submits).
+
+Pagination cursors are **execution-time state**, not user intent. Writing them to the SSOT mixes two unrelated concerns and makes OCP impossible: every new search execution variant must touch controller code to reset/advance cursors manually.
+
+A secondary coupling issue: `MailboxDashBoardController._applyFilterMessageOptionToSearchFilter()` was called from inside `AdvancedFilterController.initSearchFilterField()` — a child controller calling a parent-side write. This violated unidirectional data flow and created an implicit ordering dependency between two controllers.
+
 ## Decision
 
-### Chosen approach: Riverpod `SearchFilterNotifier` as single source of truth (mobile path now, web bridge)
+### Chosen approach: Riverpod `SearchFilterNotifier` as single source of truth (Phase 1)
 
 Introducing `SearchFilterNotifier` — a Riverpod `@keepAlive` notifier — as the single canonical owner of `SearchEmailFilter`. The mobile search view (`SearchEmailView`) is migrated to `ConsumerStatefulWidget` to consume it reactively. The web path (`SearchController`) keeps its existing `searchEmailFilter.obs` as a mirror bridged from the notifier via one documented `appProviderContainer.listen()` call, allowing progressive migration without breaking web widgets.
 
@@ -229,8 +241,8 @@ User action (chip tap / text / open filter panel / enter search)
                           │
                           ▼
            ┌──────────────────────────────────────────┐
-           │         SearchFilterNotifier              │  Riverpod keepAlive — single source of truth
-           │         update() ← only copyWith          │
+           │         SearchFilterNotifier (SSOT)       │  Riverpod keepAlive
+           │         update() / set() / clear()        │  ← single write path
            └──────────────────────────────────────────┘
               ▲                        │
               │                        │ appProviderContainer.listen()
@@ -241,14 +253,22 @@ User action (chip tap / text / open filter panel / enter search)
                                        └──────────────────────────────┘
                                                   │
                                     read by Obx web widgets
-                                    read by ThreadController._searchEmail()
+                                    read by ThreadController / SearchEmailController
+                                                  │
+                                                  ▼ (on execute search — see Phase 2)
+                                       SearchFilterPipeline([...])
+                                       resolvedFilter (ephemeral)
+                                                  │
+                                                  ▼
+                                       SearchEmailInteractor.execute(...)
 
 SearchEmailView (ConsumerStatefulWidget)
   ref.watch(searchFilterNotifierProvider) ← direct Riverpod reactivity (mobile)
 
 MailboxDashBoardController.filterMessageOption  ← INBOX ONLY
-  saved on search entry → cleared → restored on search exit
-  NEVER passed to JMAP search queries
+  saved on search entry → mapped via FilterMessageOptionTransformer → written to SSOT
+  restored on search exit via restoreFilterMessageOption()
+  NEVER passed directly to JMAP search queries
 ```
 
 ### Documented `appProviderContainer` exceptions (ADR-0092 delta)
@@ -261,19 +281,169 @@ MailboxDashBoardController.filterMessageOption  ← INBOX ONLY
 
 All three are in the search feature boundary only and are documented here per ADR-0092 policy.
 
+---
+
+## Decision (Phase 2) — Search Filter Pipeline/Transformer
+
+### Problem
+
+After the SSOT was established, the `SearchFilterNotifier.update()` is still called with pagination cursors immediately before every interactor call — these are execution-time state, not user intent:
+
+- `ThreadController._searchEmail()` and `SearchEmailController._searchEmailAction()` reset cursor to 0 before fresh search.
+- `ThreadController._searchMoreEmails()` and `SearchEmailController.searchMoreEmailsAction()` advance the cursor — duplicating the same `isScrollByPosition()` branching logic across two controllers.
+- `SearchEmailController._initializeDebounceTimeTextSearchChange()` resets cursor on every debounced text change.
+
+Additionally, `FilterMessageOption`-to-search-filter mapping lives as an inline `switch` in `MailboxDashBoardController._applyFilterMessageOptionToSearchFilter()` — called via a reverse dependency from `AdvancedFilterController.initSearchFilterField()` (child calling parent's write method).
+
+Neither is testable in isolation and both violate OCP: every new search execution variant requires modifying existing controller code.
+
+### Decision
+
+Introduce `SearchFilterTransformer` + `SearchFilterPipeline` in `lib/features/search/email/domain/transformer/`.
+
+```dart
+abstract class SearchFilterTransformer {
+  SearchEmailFilter transform(SearchEmailFilter filter);
+}
+
+class SearchFilterPipeline {
+  const SearchFilterPipeline(this._transformers);
+  final List<SearchFilterTransformer> _transformers;
+  SearchEmailFilter apply(SearchEmailFilter base) =>
+      _transformers.fold(base, (acc, t) => t.transform(acc));
+}
+```
+
+Two categories of transformer:
+
+**Transient** — applied at execution time; result is passed directly to the interactor and never written back to the SSOT:
+
+| Transformer | Constructor params | Replaces |
+|---|---|---|
+| `ResetPaginationTransformer` | none | `updateFilterEmail(positionOption: ..., beforeOption: ...)` before fresh search (6 sites across 2 controllers) |
+| `SearchMoreTransformer` | `currentEmailCount`, `lastEmailDate` | Duplicated `if/else if/else isScrollByPosition()` cursor logic in `_searchMoreEmails()` and `searchMoreEmailsAction()` |
+
+**Intent** — applied once on search entry; result is written to the SSOT via `notifier.set()` so the advanced filter form and UI chips reflect the correct state:
+
+| Transformer | Constructor params | Replaces |
+|---|---|---|
+| `FilterMessageOptionTransformer` | `filterMessageOption` | Inline `switch` in `_applyFilterMessageOptionToSearchFilter()` |
+
+Usage at execution time (transient path):
+```dart
+final resolvedFilter = const SearchFilterPipeline([
+  ResetPaginationTransformer(),
+]).apply(searchController.searchEmailFilter.value);
+
+consumeState(_searchEmailInteractor.execute(
+  position: resolvedFilter.position,
+  filter: resolvedFilter.mappingToEmailFilterCondition(...),
+  ...
+));
+```
+
+Usage on search entry (intent path):
+```dart
+// In applyCurrentFilterMessageOptionToSearch():
+if (_filterMessageOptionBeforeSearch == null) {
+  final resolved = SearchFilterPipeline([
+    FilterMessageOptionTransformer(filterMessageOption.value),
+  ]).apply(searchController.searchEmailFilter.value);
+  appProviderContainer.read(searchFilterProvider.notifier).set(resolved);
+}
+```
+
+### Fix for reverse coupling
+
+`MailboxDashBoardController.openAdvancedSearchView()` calls `applyCurrentFilterMessageOptionToSearch()` **before** dispatching `OpenAdvancedSearchViewAction`:
+
+```dart
+void openAdvancedSearchView() {
+  applyCurrentFilterMessageOptionToSearch(); // ← moved here
+  dispatchAction(OpenAdvancedSearchViewAction());
+  searchController.openAdvanceSearch();
+}
+```
+
+`AdvancedFilterController.initSearchFilterField()` no longer calls back into the dashboard controller. It only reads from the SSOT via `searchController.searchEmailFilter.value`. `_applyFilterMessageOptionToSearchFilter()` is deleted.
+
+### New invariant
+
+> Pagination cursors (`position`, `before`, `startDate` as cursor) are never written to the SSOT. They are computed transiently by pipeline transformers at search execution time.
+
+### Pipeline diagram
+
+```
+  User action (chip tap, text input, form submit, folder select)
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │   SearchFilterNotifier (SSOT)  │  ← keepAlive Riverpod
+              │   user intent only:            │
+              │   from, to, text, mailbox,     │
+              │   unread, hasAttachment,        │
+              │   hasKeyword, sortOrder, ...   │
+              └───────────────┬───────────────┘
+                              │
+           ┌──────────────────┴──────────────────────┐
+           │                                          │
+           ▼ on search entry (intent path)            ▼ on execute search (transient path)
+           │                                          │
+  FilterMessageOptionTransformer           ┌──────────┴──────────┐
+  (unread/attachments/starred chip         │                     │
+   → filter fields)                     Fresh search          Load-more
+           │                            │                        │
+           ▼                   ResetPaginationTransformer   SearchMoreTransformer
+  notifier.set(resolved)       (position: 0 / before: None)  (position: N /
+  → SSOT updated               │                              before/startDate: lastDate)
+  → form/chips reflect it      │                              │
+                               └──────────────┬───────────────┘
+                                              │
+                                        resolvedFilter
+                                        (ephemeral — never stored)
+                                              │
+                                              ▼
+                               SearchEmailInteractor.execute(
+                                 position:  resolvedFilter.position,
+                                 sort:      resolvedFilter.sortOrderType...,
+                                 filter:    resolvedFilter
+                                              .mappingToEmailFilterCondition(...)
+                               )
+                                              │
+                                              ▼
+                                          JMAP result
+```
+
+**Why two paths:**
+
+| Path | When | Written to SSOT? | Why |
+|---|---|---|---|
+| Intent (`FilterMessageOptionTransformer`) | On search entry (focus / panel open) | **Yes** — via `notifier.set()` | UI (advanced filter form, chips) must read the mapped state |
+| Transient (`ResetPaginationTransformer`, `SearchMoreTransformer`) | At interactor call time | **No** — `resolvedFilter` is ephemeral | Cursors are execution-time state, not user intent |
+
+### Extension pattern (OCP)
+
+New search execution variants = new `SearchFilterTransformer` subclass. No existing transformer, controller method, or filter model is modified.
+
+---
+
 ## Modified files
 
 | File | Change |
 |---|---|
 | `lib/features/search/email/domain/notifier/search_filter_notifier.dart` | New — `SearchFilterNotifier` (`@Riverpod(keepAlive: true)`) |
 | `lib/features/search/email/domain/notifier/search_filter_notifier.g.dart` | Generated by build_runner |
-| `SearchController` | `updateFilterEmail()` / clear methods → delegate to notifier; add `appProviderContainer.listen()` bridge on init; remove `synchronizeSearchFilter()` and `clearSearchFilter()` (bypass notifier) |
-| `SearchEmailController` | Drop `searchEmailFilter.obs`, `emailReceiveTimeType.obs`, `emailSortOrderType.obs`, `_updateSimpleSearchFilter()`, `updateSimpleSearchFilter()`; 20+ call sites → `appProviderContainer.read(notifier).update()` |
-| `MailboxDashBoardController` | Add `appProviderContainer.invalidate(searchFilterNotifierProvider)` in `onClose()` for session-end reset |
-| `SearchEmailView` | `GetView<SearchEmailController>` → `ConsumerStatefulWidget`; filter state reads use `ref.watch(searchFilterNotifierProvider)` |
-| `ThreadController` | Remove `moreFilterCondition`; `goToSearchView()`: no mailbox pre-fill (moved to `MailboxDashBoardController`) |
-| `MailboxDashBoardController` | `_filterMessageOptionBeforeSearch`; `_saveFilterMessageOptionForSearch()`; `restoreFilterMessageOption()`; `_preFillMailboxForSearch()`; remove `clearFilterMessageOption()` from `handleClearAdvancedSearchFilterEmail()` |
-| `AdvancedFilterController` | `OpenAdvancedSearchViewAction`: re-sync `_memorySearchFilter` from `searchController.searchEmailFilter.value` before `initSearchFilterField()` |
+| `lib/features/search/email/domain/transformer/search_filter_transformer.dart` | New — abstract transformer contract |
+| `lib/features/search/email/domain/transformer/search_filter_pipeline.dart` | New — fold-based pipeline |
+| `lib/features/search/email/domain/transformer/reset_pagination_transformer.dart` | New — clears cursors for fresh search |
+| `lib/features/search/email/domain/transformer/search_more_transformer.dart` | New — advances cursor for load-more |
+| `lib/features/search/email/domain/transformer/filter_message_option_transformer.dart` | New — maps chip state to filter fields |
+| `SearchController` | `updateFilterEmail()` / clear methods → delegate to notifier; bridge on init; remove `synchronizeSearchFilter()` and `clearSearchFilter()` |
+| `SearchEmailController` | Drop `searchEmailFilter.obs`, `emailReceiveTimeType.obs`, `emailSortOrderType.obs`, `_updateSimpleSearchFilter()`; remove pagination writes before interactor calls; use `SearchFilterPipeline` |
+| `ThreadController` | Remove `moreFilterCondition`; remove pagination writes before interactor calls; use `SearchFilterPipeline` |
+| `MailboxDashBoardController` | Add `invalidate()` in `onClose()`; `_applyFilterMessageOptionToSearchFilter()` → `FilterMessageOptionTransformer`; move `applyCurrentFilterMessageOptionToSearch()` call to `openAdvancedSearchView()` |
+| `AdvancedFilterController` | Remove `_mailboxDashBoardController.applyCurrentFilterMessageOptionToSearch()` call from `initSearchFilterField()` |
+| `SearchEmailView` | `GetView<SearchEmailController>` → `ConsumerStatefulWidget` |
 
 ## Deleted symbols
 
@@ -287,21 +457,25 @@ All three are in the search feature boundary only and are documented here per AD
 | `SearchController.synchronizeSearchFilter()` | Bypasses notifier — violates the single-write-path invariant |
 | `SearchController.clearSearchFilter()` | Bypasses notifier — replaced by `notifier.clear()` |
 | `SearchEmailController.searchEmailFilter.obs` | Duplicate eliminated |
-| `SearchEmailController.emailReceiveTimeType.obs` | Duplicate of `SearchEmailFilter.emailReceiveTimeType` — eliminated |
-| `SearchEmailController.emailSortOrderType.obs` | Duplicate of `SearchEmailFilter.sortOrderType` — eliminated |
+| `SearchEmailController.emailReceiveTimeType.obs` | Duplicate of `SearchEmailFilter.emailReceiveTimeType` |
+| `SearchEmailController.emailSortOrderType.obs` | Duplicate of `SearchEmailFilter.sortOrderType` |
 | `SearchEmailController._updateSimpleSearchFilter()` | Duplicate `copyWith()` logic eliminated |
 | `SearchEmailController.updateSimpleSearchFilter()` | Same |
 | `moreFilterCondition: getFilterCondition()` in `ThreadController` | `FilterMessageOption` no longer bleeds into search |
+| `MailboxDashBoardController._applyFilterMessageOptionToSearchFilter()` | Replaced by `FilterMessageOptionTransformer` |
 
 ## Unit tests
 
 | Test | Coverage |
 |---|---|
-| `search_filter_notifier_test.dart` (new) | `update()` for every field; `clear()` preserves `sortOrderType` and resets all other fields; partial update preserves unspecified fields; `invalidate()` returns `SearchEmailFilter.initial()` on next read |
-| `search_controller_test.dart` (extend) | `updateFilterEmail()` delegates to notifier; `clearAllFilterSearch()` / `disableAllSearchEmail()` call `notifier.clear()`; `searchEmailFilter.obs` mirrors notifier state; `synchronizeSearchFilter()` and `clearSearchFilter()` are absent |
-| `search_email_controller_test.dart` (extend) | Filter writes go to notifier via `appProviderContainer`; `emailReceiveTimeType` and `emailSortOrderType` obs fields absent; `searchController.searchEmailFilter` is the state read at query time; `FilterMessageOption` saved and restored around search lifecycle |
-| `thread_controller_test.dart` (new) | `_searchEmail()` never passes `moreFilterCondition`; search exit restores `filterMessageOption` |
-| `search_email_filter_test.dart` (extend) | `mappingToEmailFilterCondition()` without `moreFilterCondition` never emits `notKeyword: $seen` unless `unread = true` |
+| `search_filter_notifier_test.dart` (new) | `update()` for every field; `clear()` preserves `sortOrderType`; partial update preserves unspecified fields |
+| `reset_pagination_transformer_test.dart` (new) | position-sort → `position: 0`, clears `before`; date-sort → clears all cursors; customRange → `startDate` preserved |
+| `search_more_transformer_test.dart` (new) | position-sort + count=25 → `position: 25`; mostRecent + date → `before`; oldest + date → `startDate` |
+| `filter_message_option_transformer_test.dart` (new) | unread → `unread: true`; attachments → `hasAttachment: true`; starred → `$Flagged` in `hasKeyword`; all → filter unchanged |
+| `search_filter_pipeline_test.dart` (new) | empty pipeline → unchanged; single transformer → delegates; two transformers → left-to-right fold |
+| `search_controller_test.dart` (extend) | `updateFilterEmail()` delegates to notifier; clear methods call `notifier.clear()`; `searchEmailFilter.obs` mirrors notifier |
+| `search_email_controller_test.dart` (extend) | Filter writes go to notifier; `emailReceiveTimeType` / `emailSortOrderType` obs fields absent; no pagination writes to SSOT |
+| `thread_controller_test.dart` (extend) | `_searchEmail()` never passes `moreFilterCondition`; no pagination writes to SSOT before interactor call |
 
 ## Integration tests (patrol)
 
@@ -320,12 +494,16 @@ All three are in the search feature boundary only and are documented here per AD
 - No duplicate filter state between web and mobile paths
 - Suggestion chips and advanced panel always read the same notifier state — no staging step
 - `FilterMessageOption` is inbox-only; no hidden JMAP filter bleed
+- Pagination cursors never pollute the SSOT — the SSOT represents user intent only
+- Load-more cursor logic consolidated in `SearchMoreTransformer` — no duplication between `ThreadController` and `SearchEmailController`
+- New search execution variants = new `SearchFilterTransformer` subclass, no existing code changes (OCP)
+- Reverse coupling between `AdvancedFilterController` and `MailboxDashBoardController` eliminated
 - Clean foundation for progressive migration of remaining web `Obx` widgets to `Consumer` in a follow-up PR
 
 **Negative**
-- Three `appProviderContainer` call sites added (all in search feature boundary, documented above) — ADR-0092 exception
-- `SearchEmailView` widget lifecycle changes from `GetView` to `ConsumerStatefulWidget` — requires careful testing for regressions
-- `SearchEmailController` writes routed through `appProviderContainer` rather than a named dependency — coupling is implicit but scoped
+- Three `appProviderContainer` call sites added (all in search feature boundary, documented above) — ADR-0092 exception; will be removed when controllers are migrated to `ConsumerWidget`
+- `SearchEmailView` widget lifecycle changes from `GetView` to `ConsumerStatefulWidget` — requires careful regression testing
+- `_memorySearchFilter` in `AdvancedFilterController` remains as a staging layer for in-progress form edits; it is still a divergence window while the form is open, but it is bounded to the form interaction lifetime and always resolved atomically on submit
 
 ## Future: ADR-0094 (web Obx → Consumer migration + draft/committed split)
 
