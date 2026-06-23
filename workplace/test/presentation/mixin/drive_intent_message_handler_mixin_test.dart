@@ -89,6 +89,13 @@ void _messageTypeTests() {
     expect(state.closeCalls, isEmpty);
   });
 
+  testWidgets('valid JSON array (not object) → no crash, nothing dispatched', (tester) async {
+    final state = await _buildAndInit(tester);
+    state.onMessage(raw: '[]', origin: _origin);
+    expect(state.ackCalls, isEmpty);
+    expect(state.closeCalls, isEmpty);
+  });
+
   testWidgets('unknown type → no crash, nothing dispatched', (tester) async {
     final state = await _buildAndInit(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:unknown-op'}), origin: _origin);
@@ -125,5 +132,60 @@ void main() {
   group('DriveIntentMessageHandlerMixin', () {
     group('message types', _messageTypeTests);
     group('origin filtering', _originFilterTests);
+
+    group('multi-state isolation', () {
+      testWidgets('two states with different intentIds — only matching state handles done', (tester) async {
+        const intentA = 'intent-a';
+        const intentB = 'intent-b';
+
+        await tester.pumpWidget(const MaterialApp(
+          home: Column(children: [_TestWidget(), _TestWidget()]),
+        ));
+        final states = tester.stateList<_TestState>(find.byType(_TestWidget)).toList();
+        final stateA = states[0];
+        final stateB = states[1];
+
+        stateA.initMessageHandler(intentId: intentA, intentOrigin: _origin);
+        stateB.initMessageHandler(intentId: intentB, intentOrigin: _origin);
+
+        final doneForA = _encode({
+          'type': 'intent-$intentA:done',
+          'document': [
+            {'id': 'doc1', 'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          ],
+        });
+
+        stateA.onMessage(raw: doneForA, origin: _origin);
+        stateB.onMessage(raw: doneForA, origin: _origin);
+
+        expect(stateA.closeCalls, hasLength(1));
+        expect(stateB.closeCalls, isEmpty);
+      });
+
+      testWidgets('two ready messages → sendAck called twice, no dedup', (tester) async {
+        final state = await _buildAndInit(tester);
+        state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+        state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+        expect(state.ackCalls, hasLength(2));
+        expect(state.closeCalls, isEmpty);
+      });
+
+      testWidgets('message after closeModal → no second close, no crash', (tester) async {
+        final state = await _buildAndInit(tester);
+        state.onMessage(raw: _encode({'type': 'intent-$_intentId:error'}), origin: _origin);
+        expect(state.closeCalls, hasLength(1));
+
+        state.onMessage(
+          raw: _encode({
+            'type': 'intent-$_intentId:done',
+            'document': [
+              {'id': 'd1', 'name': 'f.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+            ],
+          }),
+          origin: _origin,
+        );
+        expect(state.closeCalls, hasLength(1));
+      });
+    });
   });
 }

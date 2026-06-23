@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   late String _intentId;
   late String _intentOrigin;
+  bool _modalClosed = false;
 
   void initMessageHandler({required String intentId, required String intentOrigin}) {
     _intentId = intentId;
     _intentOrigin = intentOrigin;
+    _modalClosed = false;
   }
 
   void onMessage({required String raw, required String? origin}) {
@@ -24,7 +26,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
       log('driveIntent: failed to parse message: $raw');
       return;
     }
-    _dispatchMessage(msg);
+    _handleWorkplaceMessage(msg);
   }
 
   bool _isValidOrigin(String? origin) {
@@ -35,21 +37,27 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     return _intentOrigin == 'null' && origin == '*';
   }
 
-  void _dispatchMessage(WorkplaceIntentMessage msg) {
+  void _handleWorkplaceMessage(WorkplaceIntentMessage msg) {
     switch (msg) {
       case WorkplaceIntentReadyMessage():
         log('driveIntent: ready received, sending ack');
         sendAck();
         break;
       case WorkplaceIntentDoneMessage():
+        if (_modalClosed) break;
+        _modalClosed = true;
         log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}').join(', ')}');
         closeModal(msg.documents);
         break;
       case WorkplaceIntentErrorMessage():
+        if (_modalClosed) break;
+        _modalClosed = true;
         log('driveIntent: error received, closing modal');
         closeModal(null);
         break;
       case WorkplaceIntentCancelMessage():
+        if (_modalClosed) break;
+        _modalClosed = true;
         log('driveIntent: cancel received, closing modal');
         closeModal(null);
         break;

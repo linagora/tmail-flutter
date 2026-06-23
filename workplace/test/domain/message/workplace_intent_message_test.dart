@@ -261,5 +261,51 @@ void main() {
         expect(done.documents.length, 1);
       });
     });
+
+    group('done — missing required fields', () {
+      test('document missing id is skipped', () {
+        final done = _parseDone(intentId, [
+          {'name': 'file.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          {'id': 'ok', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'ok');
+      });
+
+      test('document missing name is skipped', () {
+        final done = _parseDone(intentId, [
+          {'id': 'bad', 'size': 100, 'mimeType': 'application/pdf'},
+          {'id': 'ok', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'ok');
+      });
+
+      test('document missing size is skipped', () {
+        final done = _parseDone(intentId, [
+          {'id': 'bad', 'name': 'bad.pdf', 'mimeType': 'application/pdf'},
+          {'id': 'ok', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'ok');
+      });
+
+      test('document missing mimeType is skipped', () {
+        final done = _parseDone(intentId, [
+          {'id': 'bad', 'name': 'bad.pdf', 'size': 100},
+          {'id': 'ok', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents.length, 1);
+        expect(done.documents.first.id, 'ok');
+      });
+
+      test('all documents missing required field → empty list', () {
+        final done = _parseDone(intentId, [
+          {'name': 'a.pdf', 'size': 100, 'mimeType': 'application/pdf'},
+          {'id': 'b', 'size': 100, 'mimeType': 'application/pdf'},
+        ]);
+        expect(done.documents, isEmpty);
+      });
+    });
   });
 }

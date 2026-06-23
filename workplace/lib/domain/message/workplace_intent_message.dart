@@ -54,9 +54,6 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
     return WorkplaceIntentDoneMessage(documents);
   }
 
-  static bool _isValidUrlScheme(String scheme) =>
-      scheme == 'https' || scheme == 'http';
-
   static DriveDocument? _tryParseDocument(dynamic e) {
     try {
       final doc = DriveDocument.fromJson(e as Map<String, dynamic>);
@@ -64,9 +61,8 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
         log('driveIntent: skipping doc ${doc.id} with negative size ${doc.size}');
         return null;
       }
-      final url = doc.sharingLink ?? doc.downloadLink;
-      if (url != null && !_isValidUrlScheme(url.scheme)) {
-        log('driveIntent: skipping doc ${doc.id} with invalid url scheme ${url.scheme}');
+      if (_hasUnsafeUrl(doc)) {
+        log('driveIntent: skipping doc ${doc.id} with non-http(s) URL scheme');
         return null;
       }
       return doc;
@@ -74,5 +70,13 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
       log('driveIntent: skipping malformed document entry: $err');
       return null;
     }
+  }
+
+  static bool _hasUnsafeUrl(DriveDocument doc) {
+    for (final uri in [doc.sharingLink, doc.downloadLink]) {
+      if (uri == null) continue;
+      if (uri.scheme != 'http' && uri.scheme != 'https') return true;
+    }
+    return false;
   }
 }
