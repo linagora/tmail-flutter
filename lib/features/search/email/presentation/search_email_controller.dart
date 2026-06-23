@@ -581,7 +581,10 @@ class SearchEmailController extends BaseController
   }
 
   void searchMoreEmailsAction() {
-    final isSearchMoreIsValid = canSearchMore && session != null && accountId != null;
+    final isSearchMoreIsValid = canSearchMore &&
+        session != null &&
+        accountId != null &&
+        listResultSearch.isNotEmpty;
     if (isSearchMoreIsValid) {
       final lastEmail = listResultSearch.last;
 
