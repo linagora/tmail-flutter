@@ -9,6 +9,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/email_attachment_classifier_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -145,7 +147,15 @@ class GetEmailContentInteractor {
         inlineImages: detailedEmail.inlineImages ?? [],
         emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
-          sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
+          individualHeaders: () {
+            final map = <IndividualHeaderIdentifier, EmailHeaderValue>{
+              ...emailCache.individualHeaders,
+            };
+            if (detailedEmail.sMimeStatusHeader != null) {
+              map[IndividualHeaderIdentifier.sMimeStatusHeader] = detailedEmail.sMimeStatusHeader!;
+            }
+            return map.isEmpty ? null : map;
+          }(),
           references: detailedEmail.references,
           messageId: detailedEmail.messageId,
         )
@@ -185,8 +195,18 @@ class GetEmailContentInteractor {
         inlineImages: detailedEmail.inlineImages ?? [],
         emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
-          sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
-          identityHeader: detailedEmail.identityHeader,
+          individualHeaders: () {
+            final map = <IndividualHeaderIdentifier, EmailHeaderValue>{
+              ...emailCache.individualHeaders,
+            };
+            if (detailedEmail.sMimeStatusHeader != null) {
+              map[IndividualHeaderIdentifier.sMimeStatusHeader] = detailedEmail.sMimeStatusHeader!;
+            }
+            if (detailedEmail.identityHeader != null) {
+              map[IndividualHeaderIdentifier.identityHeader] = detailedEmail.identityHeader!;
+            }
+            return map.isEmpty ? null : map;
+          }(),
           references: detailedEmail.references,
           messageId: detailedEmail.messageId,
         )

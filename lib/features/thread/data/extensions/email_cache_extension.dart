@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -33,30 +34,21 @@ extension EmailCacheExtension on EmailCache {
         ? Map.fromIterables(mailboxIds!.keys.map((value) => MailboxId(Id(value))), mailboxIds!.values)
         : null,
       threadId: threadId == null ? null : ThreadId(Id(threadId!)),
-      headerCalendarEvent: headerCalendarEvent != null
-        ? Map.fromIterables(headerCalendarEvent!.keys.map((value) => IndividualHeaderIdentifier(value)), headerCalendarEvent!.values)
-        : null,
       blobId: blobId != null ? Id(blobId!) : null,
-      xPriorityHeader: xPriorityHeader != null
-        ? Map.fromIterables(
-            xPriorityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
-            xPriorityHeader!.values)
-        : null,
-      importanceHeader: importanceHeader != null
-        ? Map.fromIterables(
-            importanceHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
-            importanceHeader!.values)
-        : null,
-      priorityHeader: priorityHeader != null
-        ? Map.fromIterables(
-            priorityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
-            priorityHeader!.values)
-        : null,
-      listUnsubscribeHeader: unsubscribeHeader != null
-        ? Map.fromIterables(
-            unsubscribeHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
-            unsubscribeHeader!.values)
-        : null,
+      individualHeaders: () {
+        final map = <IndividualHeaderIdentifier, EmailHeaderValue>{};
+        headerCalendarEvent?.forEach((k, v) =>
+          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        xPriorityHeader?.forEach((k, v) =>
+          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        importanceHeader?.forEach((k, v) =>
+          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        priorityHeader?.forEach((k, v) =>
+          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        unsubscribeHeader?.forEach((k, v) =>
+          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        return map;
+      }(),
       messageId: messageId != null ? MessageIdsHeaderValue(messageId!.toSet()) : null,
       references: references != null ? MessageIdsHeaderValue(references!.toSet()) : null,
     );

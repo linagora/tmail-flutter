@@ -9,6 +9,8 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/eml_attachment.dart';
@@ -109,12 +111,16 @@ extension PresentationEmailExtension on PresentationEmail {
       bodyValues: bodyValues,
       mailboxIds: mailboxIds,
       headers: emailHeader?.toSet(),
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-      listPostHeader: listPostHeader,
-      listUnsubscribeHeader: listUnsubscribeHeader,
+      individualHeaders: () {
+        final map = <IndividualHeaderIdentifier, EmailHeaderValue>{};
+        if (headerCalendarEvent != null) map[IndividualHeaderIdentifier.headerCalendarEvent] = headerCalendarEvent!;
+        if (xPriorityHeader != null) map[IndividualHeaderIdentifier.xPriorityHeader] = xPriorityHeader!;
+        if (importanceHeader != null) map[IndividualHeaderIdentifier.importanceHeader] = importanceHeader!;
+        if (priorityHeader != null) map[IndividualHeaderIdentifier.priorityHeader] = priorityHeader!;
+        if (listPostHeader != null) map[IndividualHeaderIdentifier.listPostHeader] = listPostHeader!;
+        if (listUnsubscribeHeader != null) map[IndividualHeaderIdentifier.listUnsubscribeHeader] = listUnsubscribeHeader!;
+        return map;
+      }(),
       threadId: threadId,
       messageId: messageId,
       references: references,

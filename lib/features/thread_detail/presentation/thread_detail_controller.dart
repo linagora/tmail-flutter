@@ -187,12 +187,9 @@ class ThreadDetailController extends BaseController {
           ?.keywords
           ?[action.updatedKeyword] = action.value;
         if (action.updatedKeyword == KeyWordIdentifierExtension.unsubscribeMail) {
-          emailIdsPresentation
-            [action.emailId]
-            ?..emailHeader?.removeWhere((element) {
-              return element.name == EmailProperty.headerUnsubscribeKey;
-            })
-            ..listUnsubscribeHeader?.clear();
+          emailIdsPresentation[action.emailId]?.emailHeader?.removeWhere((element) {
+            return element.name == EmailProperty.headerUnsubscribeKey;
+          });
         }
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -27,14 +28,16 @@ void main() {
     String? subject,
     Map<MailboxId, bool>? mailboxIds,
     Map<KeyWordIdentifier, bool>? keywords,
-    Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
+    TextHeaderValue? xPriorityHeader,
   }) {
     return Email(
       id: id != null ? EmailId(Id(id)) : null,
       subject: subject,
       mailboxIds: mailboxIds ?? {MailboxId(Id('inbox')): true},
       keywords: keywords ?? {KeyWordIdentifier.emailSeen: true},
-      xPriorityHeader: xPriorityHeader,
+      individualHeaders: xPriorityHeader != null
+        ? {IndividualHeaderIdentifier.xPriorityHeader: xPriorityHeader}
+        : {},
     );
   }
 
@@ -169,9 +172,7 @@ void main() {
         () async {
       final cached = createEmail(
         id: '1',
-        xPriorityHeader: {
-          IndividualHeaderIdentifier.xPriorityHeader: 'high',
-        },
+        xPriorityHeader: const TextHeaderValue('high'),
       );
       final updated = createEmail(id: '1', subject: 'Updated');
 
@@ -185,9 +186,7 @@ void main() {
     });
 
     test('should update xPriorityHeader when in updated properties', () async {
-      final newXPriorityHeader = {
-        IndividualHeaderIdentifier.xPriorityHeader: 'low',
-      };
+      const newXPriorityHeader = TextHeaderValue('low');
       final updated = createEmail(
         id: '1',
         xPriorityHeader: newXPriorityHeader,

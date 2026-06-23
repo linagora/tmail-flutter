@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/email/email_property.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
@@ -13,8 +14,8 @@ void main() {
       'WHEN email has sMimeStatusHeader is `Good signature`\n'
       'AND headers is null', () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: 'Good signature'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue('Good signature')
         }
       );
 
@@ -41,8 +42,8 @@ void main() {
       'WHEN sMimeStatusHeader is `Bad signature`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: 'Bad signature'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue('Bad signature')
         }
       );
 
@@ -69,8 +70,8 @@ void main() {
       'WHEN sMimeStatusHeader is not `Good signature` or `Bad signature`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: 'SomeOtherValue'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue('SomeOtherValue')
         }
       );
 
@@ -146,7 +147,7 @@ void main() {
       'SHOULD returns `SMimeSignatureStatus.notSigned`\n'
       'WHEN headers is null AND sMimeStatusHeader is NULL',
     () {
-      final email = Email(headers: null, sMimeStatusHeader: null);
+      final email = Email(headers: null);
 
       expect(email.sMimeStatus, SMimeSignatureStatus.notSigned);
     });
@@ -155,7 +156,7 @@ void main() {
       'SHOULD returns `SMimeSignatureStatus.notSigned`\n'
       'WHEN headers is empty AND sMimeStatusHeader is null',
     () {
-      final email = Email(headers: {}, sMimeStatusHeader: null);
+      final email = Email(headers: {});
 
       expect(email.sMimeStatus, SMimeSignatureStatus.notSigned);
     });
@@ -165,8 +166,8 @@ void main() {
       'WHEN sMimeStatusHeader is ` Good signature`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: ' Good signature'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue(' Good signature')
         }
       );
 
@@ -178,8 +179,8 @@ void main() {
       'WHEN sMimeStatusHeader is ` Bad signature`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: '  Bad signature'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue('  Bad signature')
         }
       );
 
@@ -223,8 +224,8 @@ void main() {
       'WHEN sMimeStatusHeader is ` Good signatures`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: ' Good signatures'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue(' Good signatures')
         }
       );
 
@@ -236,8 +237,8 @@ void main() {
       'WHEN sMimeStatusHeader is ` Bad signatures`',
     () {
       final email = Email(
-        sMimeStatusHeader: {
-          IndividualHeaderIdentifier.sMimeStatusHeader: '  Bad signatures'
+        individualHeaders: {
+          IndividualHeaderIdentifier.sMimeStatusHeader: const TextHeaderValue('  Bad signatures')
         }
       );
 

@@ -1,11 +1,11 @@
 
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
-import 'package:tmail_ui_user/features/thread/data/extensions/map_header_identifier_id_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension DetailedEmailExtension on DetailedEmail {
@@ -20,8 +20,12 @@ extension DetailedEmailExtension on DetailedEmail {
       messageId: messageId?.ids.toList(),
       references: references?.ids.toList(),
       inlineImages: inlineImages?.toHiveCache(),
-      sMimeStatusHeader: sMimeStatusHeader?.toMapString(),
-      identityHeader: identityHeader?.toMapString(),
+      sMimeStatusHeader: sMimeStatusHeader?.value != null
+        ? {IndividualHeaderIdentifier.sMimeStatusHeader.value: sMimeStatusHeader!.value}
+        : null,
+      identityHeader: identityHeader?.value != null
+        ? {IndividualHeaderIdentifier.identityHeader.value: identityHeader!.value}
+        : null,
     );
   }
 
