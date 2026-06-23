@@ -70,10 +70,12 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     expect(controller.searchEmailFilter.value.before, isNull,
       reason: 'before must be cleared when switching sort order');
+    expect(controller.searchEmailFilter.value.after, isNull,
+      reason: 'after must be cleared when switching sort order');
 
-    // Simulate auto-load-more setting a startDate cursor.
+    // Simulate auto-load-more setting an after cursor (oldest sort).
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 30)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 30)))),
     );
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
@@ -95,9 +97,9 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last7Days);
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
 
-    // Simulate auto-load-more (large-screen auto-fill).
+    // Simulate auto-load-more setting an after cursor (oldest sort).
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 5)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 5)))),
     );
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
@@ -116,12 +118,10 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
   ) async {
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
     );
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.mostRecent);
-    expect(controller.searchEmailFilter.value.startDate, isNull,
-      reason: 'startDate must be cleared on transition oldest → mostRecent');
 
     controller.updateSimpleSearchFilter(
       beforeOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 3)))),
@@ -130,9 +130,11 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     expect(controller.searchEmailFilter.value.before, isNull,
       reason: 'before must be cleared on transition mostRecent → oldest');
+    expect(controller.searchEmailFilter.value.after, isNull,
+      reason: 'after must be cleared on transition mostRecent → oldest');
 
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 4)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 4)))),
     );
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
@@ -151,16 +153,16 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
   ) async {
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
     );
 
     await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last30Days);
-    expect(controller.searchEmailFilter.value.startDate, isNull,
-      reason: 'startDate must be cleared when date filter changes');
+    expect(controller.searchEmailFilter.value.after, isNull,
+      reason: 'after cursor must be cleared when date filter changes');
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     controller.updateSimpleSearchFilter(
-      startDateOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 20)))),
+      afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 20)))),
     );
 
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.relevance);
@@ -218,19 +220,14 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
 
   void _assertCursorsCleared(SearchEmailController controller, String context) {
     expect(
-      controller.searchEmailFilter.value.startDate,
-      isNull,
-      reason: 'startDate must be cleared: $context',
-    );
-    expect(
       controller.searchEmailFilter.value.before,
       isNull,
       reason: 'before must be cleared: $context',
     );
     expect(
-      controller.searchEmailFilter.value.endDate,
+      controller.searchEmailFilter.value.after,
       isNull,
-      reason: 'endDate must be cleared: $context',
+      reason: 'after must be cleared: $context',
     );
   }
 }
