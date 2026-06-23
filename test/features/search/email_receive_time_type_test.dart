@@ -131,21 +131,25 @@ void main() {
       test(
         'SHOULD place start in the correct month 6 months ago',
       () {
-        final result = EmailReceiveTimeType.last6Months.toDateRange();
         final now = DateTime.now();
+        final result = EmailReceiveTimeType.last6Months.toDateRange();
+        final startLocal = result.start?.value.toLocal();
         final expected = DateTime(now.year, now.month - 6, 1);
-        expect(result.start?.value.month, equals(expected.month));
-        expect(result.start?.value.year, equals(expected.year));
+        expect(startLocal?.month, equals(expected.month));
+        expect(startLocal?.year, equals(expected.year));
       });
 
       test(
         'SHOULD clamp day to last day of target month so it never overflows',
       () {
+        final now = DateTime.now();
         final result = EmailReceiveTimeType.last6Months.toDateRange();
         final start = result.start?.value;
         if (start != null) {
-          final lastDay = DateTime(start.year, start.month + 1, 0).day;
-          expect(start.day, lessThanOrEqualTo(lastDay));
+          final startLocal = start.toLocal();
+          final lastDay = DateTime(startLocal.year, startLocal.month + 1, 0).day;
+          final expectedDay = now.day > lastDay ? lastDay : now.day;
+          expect(startLocal.day, equals(expectedDay));
         }
       });
     });
@@ -154,21 +158,25 @@ void main() {
       test(
         'SHOULD place start in the correct month 12 months ago',
       () {
-        final result = EmailReceiveTimeType.lastYear.toDateRange();
         final now = DateTime.now();
+        final result = EmailReceiveTimeType.lastYear.toDateRange();
+        final startLocal = result.start?.value.toLocal();
         final expected = DateTime(now.year, now.month - 12, 1);
-        expect(result.start?.value.month, equals(expected.month));
-        expect(result.start?.value.year, equals(expected.year));
+        expect(startLocal?.month, equals(expected.month));
+        expect(startLocal?.year, equals(expected.year));
       });
 
       test(
         'SHOULD clamp day to last day of target month so it never overflows',
       () {
+        final now = DateTime.now();
         final result = EmailReceiveTimeType.lastYear.toDateRange();
         final start = result.start?.value;
         if (start != null) {
-          final lastDay = DateTime(start.year, start.month + 1, 0).day;
-          expect(start.day, lessThanOrEqualTo(lastDay));
+          final startLocal = start.toLocal();
+          final lastDay = DateTime(startLocal.year, startLocal.month + 1, 0).day;
+          final expectedDay = now.day > lastDay ? lastDay : now.day;
+          expect(startLocal.day, equals(expectedDay));
         }
       });
     });
