@@ -2362,6 +2362,9 @@ class MailboxDashBoardController extends ReloadableController
       emailReceiveTimeTypeOption: Some(receiveTime),
       startDateOption: optionOf(startDate?.toUTCDate()),
       endDateOption: optionOf(endDate?.toUTCDate()),
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: const None(),
     );
     dispatchAction(StartSearchEmailAction());
   }

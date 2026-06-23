@@ -261,6 +261,7 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(
         beforeOption: const None(),
         afterOption: const None(),
+        positionOption: const None(),
       );
     }
     searchController.isAdvancedSearchViewOpen.value = false;
