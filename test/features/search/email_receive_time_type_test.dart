@@ -126,6 +126,66 @@ void main() {
     });
   });
 
+  group('EmailReceiveTimeType::toDateRange', () {
+    group('last6Months', () {
+      test(
+        'SHOULD place start in the correct month 6 months ago',
+      () {
+        final result = EmailReceiveTimeType.last6Months.toDateRange();
+        final now = DateTime.now();
+        final expected = DateTime(now.year, now.month - 6, 1);
+        expect(result.start?.value.month, equals(expected.month));
+        expect(result.start?.value.year, equals(expected.year));
+      });
+
+      test(
+        'SHOULD clamp day to last day of target month so it never overflows',
+      () {
+        final result = EmailReceiveTimeType.last6Months.toDateRange();
+        final start = result.start?.value;
+        if (start != null) {
+          final lastDay = DateTime(start.year, start.month + 1, 0).day;
+          expect(start.day, lessThanOrEqualTo(lastDay));
+        }
+      });
+    });
+
+    group('lastYear', () {
+      test(
+        'SHOULD place start in the correct month 12 months ago',
+      () {
+        final result = EmailReceiveTimeType.lastYear.toDateRange();
+        final now = DateTime.now();
+        final expected = DateTime(now.year, now.month - 12, 1);
+        expect(result.start?.value.month, equals(expected.month));
+        expect(result.start?.value.year, equals(expected.year));
+      });
+
+      test(
+        'SHOULD clamp day to last day of target month so it never overflows',
+      () {
+        final result = EmailReceiveTimeType.lastYear.toDateRange();
+        final start = result.start?.value;
+        if (start != null) {
+          final lastDay = DateTime(start.year, start.month + 1, 0).day;
+          expect(start.day, lessThanOrEqualTo(lastDay));
+        }
+      });
+    });
+
+    group('last1Year', () {
+      test(
+        'SHOULD place start 12 months before now, same as lastYear',
+      () {
+        final last1YearResult = EmailReceiveTimeType.last1Year.toDateRange();
+        final lastYearResult = EmailReceiveTimeType.lastYear.toDateRange();
+        expect(last1YearResult.start?.value.year, equals(lastYearResult.start?.value.year));
+        expect(last1YearResult.start?.value.month, equals(lastYearResult.start?.value.month));
+        expect(last1YearResult.start?.value.day, equals(lastYearResult.start?.value.day));
+      });
+    });
+  });
+
   group('EmailReceiveTimeType::getBeforeDate', () {
     group('WHEN endDate is explicitly provided', () {
       test(

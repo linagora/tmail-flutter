@@ -105,17 +105,31 @@ enum EmailReceiveTimeType {
             .toUTCDate(), end: end);
 
       case EmailReceiveTimeType.last6Months:
-        return (start: DateTime(now.year, now.month - 6, now.day)
-            .toUTCDate(), end: end);
+        return (start: _subtractMonthsClamped(now, 6).toUTCDate(), end: end);
 
       case EmailReceiveTimeType.last1Year:
       case EmailReceiveTimeType.lastYear:
-        return (start: DateTime(now.year - 1, now.month, now.day)
-            .toUTCDate(), end: end);
+        return (start: _subtractMonthsClamped(now, 12).toUTCDate(), end: end);
 
       default:
         return (start: null, end: null);
     }
+  }
+
+  DateTime _subtractMonthsClamped(DateTime value, int months) {
+    final targetMonth = DateTime(value.year, value.month - months, 1);
+    final lastDay = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+    final day = value.day > lastDay ? lastDay : value.day;
+    return DateTime(
+      targetMonth.year,
+      targetMonth.month,
+      day,
+      value.hour,
+      value.minute,
+      value.second,
+      value.millisecond,
+      value.microsecond,
+    );
   }
 
   UTCDate? _pickCursorDate(
