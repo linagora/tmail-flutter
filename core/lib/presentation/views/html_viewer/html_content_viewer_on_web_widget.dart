@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
@@ -588,19 +589,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
             future: _webInit,
             builder: (_, snapshot) {
               if (snapshot.hasData) {
-                final htmlView = HtmlElementView.fromTagName(
+                final htmlView = HtmlIframeWidget(
                   key: ValueKey('$_htmlData-${widget.key}'),
-                  tagName: 'iframe',
-                  onElementCreated: (element) {
-                    (element as html.IFrameElement)
-                      ..width = _actualWidth.toString()
-                      ..height = _actualHeight.toString()
-                      ..srcdoc = _htmlData ?? ''
-                      ..style.border = 'none'
-                      ..style.overflow = 'hidden'
-                      ..style.width = '100%'
-                      ..style.height = '100%';
-                  },
+                  srcdoc: _htmlData,
+                  width: _actualWidth.toString(),
+                  height: _actualHeight.toString(),
                 );
 
                 if (widget.viewMaxHeight != null) {

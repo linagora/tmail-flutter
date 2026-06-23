@@ -29,6 +29,9 @@ ProviderContainer _makeContainer({
 Uri? _currentUri(ProviderContainer c) =>
     c.read(driveAttachmentUriValueProvider).value;
 
+bool _isFakeUri(Uri? uri) => uri?.scheme == 'data';
+bool _isRealUri(Uri? uri) => uri != null && !_isFakeUri(uri);
+
 ProviderContainer _makeAllMetContainer() => _makeContainer(
       enabledDefault: true,
       fqdnDefault: _kWorkplaceFqdn,
@@ -74,74 +77,59 @@ class _StubLocalSettingsNotifier extends LocalSettingsNotifier {
 
 const _kWorkplaceFqdn = 'https://workplace.example.com';
 
-typedef _ToggleExpectation = ({
-  Matcher beforeToggle,
-  bool toggleTo,
-  Matcher afterToggle,
-});
-
-void _testUserPrefToggle(
-  ProviderContainer c,
-  _ToggleExpectation expectation,
-) {
-  expect(_currentUri(c), expectation.beforeToggle);
-  _setUserPref(c, expectation.toggleTo);
-  expect(_currentUri(c), expectation.afterToggle);
-}
-
 void main() {
   group('driveAttachmentUriValueProvider', () {
     late ProviderContainer container;
 
     tearDown(() => container.dispose());
 
-    test('null when all conditions unset (defaults)', () {
+    test('fake data URI when all conditions unset (defaults)', () {
       container = _makeContainer();
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('null when enabled=true and fqdn set but user preference off', () {
+    test('fake data URI when enabled=true and fqdn set but user preference off', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
       );
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('null when enabled=true and user preference on but fqdn=null', () {
+    test('fake data URI when enabled=true and user preference on but fqdn=null', () {
       container = _makeContainer(
         enabledDefault: true,
         userPreferenceDefault: true,
       );
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('null when fqdn set and user preference on but enabled=false', () {
+    test('fake data URI when fqdn set and user preference on but enabled=false', () {
       container = _makeContainer(
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('non-null when all three conditions met', () {
+    test('real URI when all three conditions met', () {
       container = _makeAllMetContainer();
-      expect(_currentUri(container), isNotNull);
+      expect(_isRealUri(_currentUri(container)), isTrue);
     });
 
-    test('null when fqdn reset to null after all conditions met', () {
+    test('fake data URI when fqdn reset to null after all conditions met', () {
       container = _makeAllMetContainer();
       _setFqdn(container, null);
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('null when enabled reset to false after all conditions met', () {
+    test('fake data URI when enabled reset to false after all conditions met', () {
       container = _makeAllMetContainer();
       _setEnabled(container, false);
-      expect(_currentUri(container), isNull);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
 
-    test('non-null when enabled=null (treated as true)', () {
+    test('real URI when enabled=null (treated as true)', () {
       container = _makeContainer(
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
@@ -150,27 +138,25 @@ void main() {
       expect(_currentUri(container), Uri.parse(_kWorkplaceFqdn));
     });
 
-    test('non-null when user preference toggled from false to true', () {
+    test('transitions from fake to real URI when user preference toggled from false to true', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
       );
-      _testUserPrefToggle(
-        container,
-        (beforeToggle: isNull, toggleTo: true, afterToggle: isNotNull),
-      );
+      expect(_isFakeUri(_currentUri(container)), isTrue);
+      _setUserPref(container, true);
+      expect(_isRealUri(_currentUri(container)), isTrue);
     });
 
-    test('null when user preference toggled from true to false', () {
+    test('transitions from real to fake URI when user preference toggled from true to false', () {
       container = _makeContainer(
         enabledDefault: true,
         fqdnDefault: _kWorkplaceFqdn,
         userPreferenceDefault: true,
       );
-      _testUserPrefToggle(
-        container,
-        (beforeToggle: isNotNull, toggleTo: false, afterToggle: isNull),
-      );
+      expect(_isRealUri(_currentUri(container)), isTrue);
+      _setUserPref(container, false);
+      expect(_isFakeUri(_currentUri(container)), isTrue);
     });
   });
 }
