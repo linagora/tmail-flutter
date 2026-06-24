@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -358,6 +360,159 @@ void main() {
 
         expect(cache.displayMode, ScreenDisplayMode.normal);
       });
+    });
+  });
+
+  group('createReplyToRecipients:', () {
+    const ownEmail = 'alice@domain.tld';
+
+    CreateEmailRequest buildRequest({
+      Identity? identity,
+      Set<EmailAddress>? replyToRecipients,
+      String ownEmailAddress = ownEmail,
+    }) {
+      return CreateEmailRequest(
+        session: SessionFixtures.aliceSession,
+        accountId: AccountFixtures.aliceAccountId,
+        emailActionType: EmailActionType.compose,
+        ownEmailAddress: ownEmailAddress,
+        subject: 'subject',
+        emailContent: 'content',
+        identity: identity,
+        replyToRecipients: replyToRecipients,
+      );
+    }
+
+    test(
+      'should return own email address without display name '
+      'when no identity is set',
+    () {
+      final request = buildRequest();
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, {EmailAddress(null, ownEmail)});
+    });
+
+    test(
+      'should return null '
+      'when no identity is set and ownEmailAddress is empty',
+    () {
+      final request = buildRequest(ownEmailAddress: '');
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, isNull);
+    });
+
+    test(
+      'should return identity email with display name '
+      'when identity has no replyTo configured',
+    () {
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {},
+      );
+      final request = buildRequest(identity: identity);
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, {EmailAddress('Alice Smith', ownEmail)});
+    });
+
+    test(
+      'should supplement identity name on replyTo address '
+      'when identity replyTo items have no display name',
+    () {
+      const replyToEmail = 'reply@domain.tld';
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {EmailAddress(null, replyToEmail)},
+      );
+      final request = buildRequest(identity: identity);
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, {EmailAddress('Alice Smith', replyToEmail)});
+    });
+
+    test(
+      'should preserve existing display name on replyTo address '
+      'when replyTo items already have a display name',
+    () {
+      const replyToEmail = 'reply@domain.tld';
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {EmailAddress('Custom Name', replyToEmail)},
+      );
+      final request = buildRequest(identity: identity);
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, {EmailAddress('Custom Name', replyToEmail)});
+    });
+
+    test(
+      'should supplement identity name only on items missing display name '
+      'when identity replyTo contains mixed items',
+    () {
+      const namedEmail = 'named@domain.tld';
+      const unnamedEmail = 'unnamed@domain.tld';
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {
+          EmailAddress('Custom Name', namedEmail),
+          EmailAddress(null, unnamedEmail),
+        },
+      );
+      final request = buildRequest(identity: identity);
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, {
+        EmailAddress('Custom Name', namedEmail),
+        EmailAddress('Alice Smith', unnamedEmail),
+      });
+    });
+
+    test(
+      'should return null '
+      'when isDraft is true regardless of identity',
+    () {
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {EmailAddress(null, 'reply@domain.tld')},
+      );
+      final request = buildRequest(identity: identity);
+
+      final result = request.createReplyToRecipients(isNotReplyTo: true);
+
+      expect(result, isNull);
+    });
+
+    test(
+      'should return manually set replyToRecipients as-is '
+      'when replyToRecipients is provided',
+    () {
+      final manualReplyTo = {EmailAddress('Bob', 'bob@domain.tld')};
+      final identity = Identity(
+        name: 'Alice Smith',
+        email: ownEmail,
+        replyTo: {EmailAddress(null, 'reply@domain.tld')},
+      );
+      final request = buildRequest(
+        identity: identity,
+        replyToRecipients: manualReplyTo,
+      );
+
+      final result = request.createReplyToRecipients();
+
+      expect(result, manualReplyTo);
     });
   });
 }

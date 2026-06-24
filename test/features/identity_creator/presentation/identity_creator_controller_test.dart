@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
@@ -37,6 +38,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
@@ -376,6 +378,115 @@ void main() {
       )).called(1);
 
       PlatformInfo.isTestingForWeb = false;
+    });
+
+    test(
+      'should save replyTo with identity display name '
+      'when screen is reloaded and replyTo is selected',
+    () async {
+      // arrange
+      PlatformInfo.isTestingForWeb = true;
+      const htmlContent = '<p>test</p>';
+      const identityName = 'Alice Smith';
+      const replyToEmail = 'alice@example.com';
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
+      when(mockVerifyNameInteractor.execute(any, any)).thenAnswer((_) => Right(VerifyNameViewState()));
+
+      // act
+      identityCreatorController.onReady();
+      final context = MockBuildContext();
+      identityCreatorController.updateNameIdentity(context, identityName);
+      identityCreatorController.updateContentHtmlEditor(htmlContent);
+      identityCreatorController.replyToOfIdentity.value = EmailAddress(null, replyToEmail);
+
+      identityCreatorController.onUnloadBrowserListener(Event(''));
+      await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
+        any,
+        any,
+        identityCache: anyNamed('identityCache'),
+      ));
+
+      // assert
+      verify(mockSaveIdentityCacheOnWebInteractor.execute(
+        accountId,
+        session.username,
+        identityCache: IdentityCache(
+          identity: Identity(
+            name: identityName,
+            bcc: {},
+            replyTo: {EmailAddress(identityName, replyToEmail)},
+            htmlSignature: Signature(htmlContent)
+          ),
+          identityActionType: IdentityActionType.create,
+          isDefault: false,
+          publicAssetsInIdentityArguments: PublicAssetsInIdentityArguments(
+            htmlSignature: htmlContent,
+            preExistingPublicAssetIds: [],
+            newlyPickedPublicAssetIds: []
+          )
+        ),
+      )).called(1);
+
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    test(
+      'should pre-select replyTo by email '
+      'when stored replyTo has a display name that differs from the dropdown item name',
+    () async {
+      // arrange
+      const replyToEmail = 'bob@example.com';
+      const displayName = 'Bob Smith';
+      final identityId = IdentityId(Id('identity-1'));
+      final identityWithNamedReplyTo = Identity(
+        id: identityId,
+        name: 'Test Identity',
+        email: replyToEmail,
+        replyTo: {EmailAddress(displayName, replyToEmail)},
+        mayDelete: true,
+      );
+
+      identityCreatorController.listEmailAddressDefault.clear();
+      identityCreatorController.listEmailAddressOfReplyTo.clear();
+      identityCreatorController.replyToOfIdentity.value = null;
+
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+        identity: identityWithNamedReplyTo,
+        actionType: IdentityActionType.edit,
+      );
+
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+        [
+          Identity(
+            id: identityId,
+            name: 'Test Identity',
+            email: replyToEmail,
+            mayDelete: true,
+          ),
+        ],
+        null,
+      ))));
+
+      // act
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      // assert - replyTo is pre-selected by email, ignoring display name mismatch
+      expect(
+        identityCreatorController.replyToOfIdentity.value?.email,
+        equals(replyToEmail),
+      );
     });
   });
 }
