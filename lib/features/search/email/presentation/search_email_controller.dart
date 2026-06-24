@@ -189,7 +189,7 @@ class SearchEmailController extends BaseController
     textInputSearchFocus.requestFocus();
     searchMoreState = SearchMoreState.idle;
     canSearchMore = true;
-    _setUpDefaultSortOrder(mailboxDashBoardController.currentSortOrder);
+    _updateSortOrderFilter(mailboxDashBoardController.currentSortOrder);
     super.onReady();
   }
 
@@ -235,9 +235,14 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void _setUpDefaultSortOrder(EmailSortOrderType sortOrderType) {
+  void _updateSortOrderFilter(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
-    _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
+    _updateSimpleSearchFilter(
+      sortOrderTypeOption: Some(sortOrderType),
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: const None(),
+    );
   }
 
   void _initializeDebounceTimeTextSearchChange() {
@@ -251,6 +256,9 @@ class SearchEmailController extends BaseController
       _updateSimpleSearchFilter(
         textOption: option(value.isNotEmpty, SearchQuery(value)),
         beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
+        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
@@ -290,7 +298,18 @@ class SearchEmailController extends BaseController
           cancelSelectionMode();
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is SynchronizeEmailSortOrderAction) {
-          _setUpDefaultSortOrder(action.emailSortOrderType);
+          _updateSortOrderFilter(action.emailSortOrderType);
+          mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is SelectDateRangeToAdvancedSearch) {
+          _setEmailReceiveTimeType(action.receiveTime);
+          _updateSimpleSearchFilter(
+            emailReceiveTimeTypeOption: Some(action.receiveTime),
+            startDateOption: optionOf(action.startDate?.toUTCDate()),
+            endDateOption: optionOf(action.endDate?.toUTCDate()),
+            beforeOption: const None(),
+            afterOption: const None(),
+            positionOption: const None(),
+          );
           mailboxDashBoardController.clearDashBoardAction();
         }
       }
@@ -361,6 +380,9 @@ class SearchEmailController extends BaseController
 
       _updateSimpleSearchFilter(
         beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
+        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
           ? const None()
           : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
@@ -504,6 +526,9 @@ class SearchEmailController extends BaseController
       beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
         ? const None()
         : null,
+      afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+        ? const None()
+        : null,
     );
 
     consumeState(_searchEmailInteractor.execute(
@@ -556,14 +581,18 @@ class SearchEmailController extends BaseController
   }
 
   void searchMoreEmailsAction() {
-    if (canSearchMore && session != null && accountId != null) {
+    final isSearchMoreIsValid = canSearchMore &&
+        session != null &&
+        accountId != null &&
+        listResultSearch.isNotEmpty;
+    if (isSearchMoreIsValid) {
       final lastEmail = listResultSearch.last;
 
-      if (searchEmailFilter.value.sortOrderType.isScrollByPosition()) {
+      if (searchEmailFilter.value.sortOrderType.isScrollByPosition() || _isCollapseThreadsEnabled) {
         _updateSimpleSearchFilter(positionOption: Some(listResultSearch.length));
       } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.oldest) {
-        _updateSimpleSearchFilter(startDateOption: optionOf(lastEmail.receivedAt));
-      } else {
+        _updateSimpleSearchFilter(afterOption: optionOf(lastEmail.receivedAt));
+      } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.mostRecent) {
         _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
       }
 
@@ -708,10 +737,11 @@ class SearchEmailController extends BaseController
         }
       );
     } else {
+      final dateRange = emailReceiveTimeType.toDateRange();
       _updateSimpleSearchFilter(
         emailReceiveTimeTypeOption: Some(emailReceiveTimeType),
-        startDateOption: const None(),
-        endDateOption: const None(),
+        startDateOption: optionOf(dateRange.start),
+        endDateOption: optionOf(dateRange.end),
       );
 
       _setEmailReceiveTimeType(emailReceiveTimeType);
@@ -720,8 +750,7 @@ class SearchEmailController extends BaseController
   }
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrderType) {
-    emailSortOrderType.value = sortOrderType;
-    _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
+    _updateSortOrderFilter(sortOrderType);
     mailboxDashBoardController.storeEmailSortOrder(sortOrderType);
     _searchEmailAction();
   }
@@ -812,6 +841,7 @@ class SearchEmailController extends BaseController
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -828,6 +858,7 @@ class SearchEmailController extends BaseController
     unreadOption: unreadOption,
     notIncludeEventsOption: notIncludeEventsOption,
     beforeOption: beforeOption,
+    afterOption: afterOption,
     startDateOption: startDateOption,
     endDateOption: endDateOption,
     positionOption: positionOption,
@@ -846,6 +877,7 @@ class SearchEmailController extends BaseController
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -863,6 +895,7 @@ class SearchEmailController extends BaseController
       unreadOption: unreadOption,
       notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
+      afterOption: afterOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
@@ -1139,13 +1172,8 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteSortOrderSearchFilter() {
-    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
-    _updateSimpleSearchFilter(
-      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
-    );
-    mailboxDashBoardController.storeEmailSortOrder(
-      SearchEmailFilter.defaultSortOrder,
-    );
+    _updateSortOrderFilter(SearchEmailFilter.defaultSortOrder);
+    mailboxDashBoardController.storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     _searchEmailAction();
   }
 

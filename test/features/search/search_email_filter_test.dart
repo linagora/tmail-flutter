@@ -761,6 +761,25 @@ void main() {
       });
     });
 
+    group('copyWith afterOption::test', () {
+      test(
+        'SHOULD set after field WHEN afterOption is Some(cursor)',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-15T10:00:00.000Z'));
+        final updated = SearchEmailFilter.initial().copyWith(afterOption: Some(cursor));
+        expect(updated.after, equals(cursor));
+      });
+
+      test(
+        'SHOULD clear after field WHEN afterOption is None()',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-15T10:00:00.000Z'));
+        final withCursor = SearchEmailFilter(after: cursor);
+        final cleared = withCursor.copyWith(afterOption: const None());
+        expect(cleared.after, isNull);
+      });
+    });
+
     group('isOnlyStarredApplied::test', () {
       test('SHOULD return true WHEN only flagged hasKeyword is set and notIncludeEvents is false', () {
         // Arrange
@@ -789,6 +808,433 @@ void main() {
 
         // Assert
         expect(filter.isOnlyStarredApplied, isFalse);
+      });
+    });
+
+    group('sort-order change clears load-more cursors::test', () {
+      UTCDate? extractAfterFromFilter(Object? filter) {
+        if (filter is EmailFilterCondition) return filter.after;
+        if (filter is LogicFilterOperator) {
+          for (final c in filter.conditions) {
+            final after = extractAfterFromFilter(c);
+            if (after != null) return after;
+          }
+        }
+        return null;
+      }
+
+      test(
+        'SHOULD map startDate as after date in JMAP filter WHEN allTime filter has startDate set',
+      () {
+        final leaked = UTCDate(DateTime.parse('2026-03-27T01:52:58.000Z'));
+        final filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.relevance,
+          startDate: leaked,
+        );
+
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, equals(leaked));
+      });
+
+      test(
+        'SHOULD clear startDate and before WHEN allTime AND sort order changes after oldest load-more',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-03-27T01:52:58.000Z'));
+        final afterLoadMore = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: cursor,
+        );
+
+        final afterSortChange = afterLoadMore.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const Some(0),
+        );
+
+        expect(afterSortChange.startDate, isNull);
+        expect(afterSortChange.endDate, isNull);
+        expect(afterSortChange.before, isNull);
+        expect(extractAfterFromFilter(afterSortChange.mappingToEmailFilterCondition()), isNull);
+      });
+
+      test(
+        'SHOULD clear startDate WHEN sort order changes on last7Days filter after oldest load-more',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-15T10:00:00.000Z'));
+        final afterLoadMore = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.last7Days,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: cursor,
+        );
+
+        final afterSortChange = afterLoadMore.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const Some(0),
+        );
+
+        // startDate cleared → no after bound in the JMAP filter
+        expect(afterSortChange.startDate, isNull);
+        final after = extractAfterFromFilter(afterSortChange.mappingToEmailFilterCondition());
+        expect(after, isNull);
+      });
+
+      test(
+        'SHOULD clear before WHEN last7Days AND sort order changes after mostRecent load-more',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
+        final afterLoadMore = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.last7Days,
+          sortOrderType: EmailSortOrderType.mostRecent,
+          before: cursor,
+        );
+
+        final afterSortChange = afterLoadMore.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const Some(0),
+        );
+
+        expect(afterSortChange.before, isNull);
+      });
+
+      test(
+        'SHOULD preserve startDate and endDate WHEN customRange AND sort order changes',
+      () {
+        final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+        final end = UTCDate(DateTime.parse('2026-03-31T23:59:59.000Z'));
+        final filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.customRange,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: start,
+          endDate: end,
+        );
+
+        final afterSortChange = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          positionOption: const Some(0),
+        );
+
+        expect(afterSortChange.startDate, equals(start));
+        expect(afterSortChange.endDate, equals(end));
+        expect(
+          extractAfterFromFilter(afterSortChange.mappingToEmailFilterCondition()),
+          equals(start),
+        );
+      });
+
+      test(
+        'SHOULD clear cursor at every transition '
+        'WHEN allTime sort order cycles oldest, mostRecent and relevance with load-more between each',
+      () {
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.relevance,
+        ).copyWith(positionOption: const Some(20));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.startDate, isNull);
+
+        final cursor1 = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
+        filter = filter.copyWith(startDateOption: Some(cursor1));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.startDate, isNull);
+
+        final cursor2 = UTCDate(DateTime.parse('2026-01-20T00:00:00.000Z'));
+        filter = filter.copyWith(beforeOption: Some(cursor2));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.before, isNull);
+
+        final cursor3 = UTCDate(DateTime.parse('2026-01-05T00:00:00.000Z'));
+        filter = filter.copyWith(startDateOption: Some(cursor3));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const Some(0),
+        );
+        expect(filter.startDate, isNull);
+        expect(filter.before, isNull);
+        expect(extractAfterFromFilter(filter.mappingToEmailFilterCondition()), isNull);
+      });
+
+      test(
+        'SHOULD clear cursor at every transition '
+        'WHEN last7Days sort order cycles oldest, mostRecent and relevance with load-more between each',
+      () {
+        final cursor1 = UTCDate(DateTime.parse('2026-06-12T00:00:00.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.last7Days,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: cursor1,
+        );
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.startDate, isNull);
+
+        final cursor2 = UTCDate(DateTime.parse('2026-06-15T12:00:00.000Z'));
+        filter = filter.copyWith(beforeOption: Some(cursor2));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.before, isNull);
+
+        final cursor3 = UTCDate(DateTime.parse('2026-06-13T06:00:00.000Z'));
+        filter = filter.copyWith(startDateOption: Some(cursor3));
+
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
+          beforeOption: const None(),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          positionOption: const Some(0),
+        );
+        // startDate cleared → no after bound in JMAP filter (cursors fully reset)
+        expect(filter.startDate, isNull);
+        expect(filter.before, isNull);
+
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, isNull);
+      });
+
+      test(
+        'SHOULD clear before cursor and startDate WHEN date filter changes to non-customRange while load-more cursor is active',
+      () {
+        // This tests explicit model clearing (startDateOption: None()).
+        // Production controllers instead snapshot the date; but the model must also
+        // support explicit clearing for compatibility.
+        final cursor = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.mostRecent,
+          before: cursor,
+        );
+
+        filter = filter.copyWith(
+          emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          beforeOption: const None(),
+          positionOption: const None(),
+        );
+
+        expect(filter.before, isNull);
+        expect(filter.startDate, isNull);
+        expect(filter.emailReceiveTimeType, equals(EmailReceiveTimeType.last7Days));
+        // No snapshotted startDate → no after bound in JMAP (relies on controller to snapshot)
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, isNull);
+      });
+
+      test(
+        'SHOULD clear before cursor and set startDate and endDate WHEN customRange date filter is applied',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-14T10:00:00.000Z'));
+        final userStart = UTCDate(DateTime.parse('2026-06-01T00:00:00.000Z'));
+        final userEnd = UTCDate(DateTime.parse('2026-06-30T23:59:59.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.last7Days,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: cursor,
+        );
+
+        filter = filter.copyWith(
+          emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
+          startDateOption: Some(userStart),
+          endDateOption: Some(userEnd),
+          beforeOption: const None(),
+          positionOption: const None(),
+        );
+
+        expect(filter.before, isNull);
+        expect(filter.startDate, equals(userStart));
+        expect(filter.endDate, equals(userEnd));
+        expect(filter.emailReceiveTimeType, equals(EmailReceiveTimeType.customRange));
+        expect(
+          extractAfterFromFilter(filter.mappingToEmailFilterCondition()),
+          equals(userStart),
+        );
+      });
+
+      test(
+        'SHOULD preserve snapshotted startDate and endDate WHEN sort order changes on a non-customRange type',
+      () {
+        final snapshotStart = UTCDate(DateTime.parse('2026-06-16T00:00:00.000Z'));
+        final snapshotEnd = UTCDate(DateTime.parse('2026-06-23T00:00:00.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.last7Days,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: snapshotStart,
+          endDate: snapshotEnd,
+        );
+
+        // Sort order change must only clear load-more cursors, not date bounds
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
+          beforeOption: const None(),
+          afterOption: const None(),
+          positionOption: const None(),
+        );
+
+        expect(filter.startDate, equals(snapshotStart));
+        expect(filter.endDate, equals(snapshotEnd));
+        expect(filter.before, isNull);
+        expect(filter.after, isNull);
+        expect(filter.position, isNull);
+        expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      });
+
+      test(
+        'SHOULD set snapshotted startDate and endDate WHEN date filter changes to last7Days',
+      () {
+        final before = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.mostRecent,
+          before: before,
+        );
+
+        // Simulate controller: snapshot date range at filter-selection time
+        final dateRange = EmailReceiveTimeType.last7Days.toDateRange();
+        filter = filter.copyWith(
+          emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+          startDateOption: optionOf(dateRange.start),
+          endDateOption: optionOf(dateRange.end),
+          beforeOption: const None(),
+          positionOption: const None(),
+        );
+
+        expect(filter.before, isNull);
+        expect(filter.startDate, isNotNull);
+        expect(filter.endDate, isNotNull);
+        expect(filter.emailReceiveTimeType, equals(EmailReceiveTimeType.last7Days));
+        // Snapshotted end is within seconds of now
+        final now = DateTime.now();
+        expect(filter.endDate!.value.difference(now).abs(), lessThan(const Duration(seconds: 5)));
+      });
+
+      test(
+        'SHOULD clear cursor at each date filter change WHEN cycling through date filters with load-more between sort orders',
+      () {
+        final cursor1 = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
+        var filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.mostRecent,
+          before: cursor1,
+        );
+
+        filter = filter.copyWith(
+          emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          beforeOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.before, isNull);
+
+        final cursor2 = UTCDate(DateTime.parse('2026-06-14T10:00:00.000Z'));
+        filter = filter.copyWith(
+          sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+          startDateOption: Some(cursor2),
+        );
+
+        filter = filter.copyWith(
+          emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last30Days),
+          startDateOption: const None(),
+          endDateOption: const None(),
+          beforeOption: const None(),
+          positionOption: const None(),
+        );
+        expect(filter.startDate, isNull);
+
+        // startDate cleared → no after bound in JMAP filter
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, isNull);
+      });
+
+      test(
+        'SHOULD produce EmailFilterCondition.after = cursor WHEN after cursor is set and startDate is null',
+      () {
+        final cursor = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
+        final filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.oldest,
+          after: cursor,
+        );
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, equals(cursor));
+      });
+
+      test(
+        'SHOULD use after cursor in JMAP filter WHEN after is newer than startDate (cursor wins)',
+      () {
+        final startDate = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+        final cursor = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
+        final filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: startDate,
+          after: cursor,
+        );
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, equals(cursor));
+      });
+
+      test(
+        'SHOULD use startDate in JMAP filter WHEN after cursor is older than startDate (bound wins)',
+      () {
+        final startDate = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
+        final cursor = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+        final filter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.allTime,
+          sortOrderType: EmailSortOrderType.oldest,
+          startDate: startDate,
+          after: cursor,
+        );
+        final after = extractAfterFromFilter(filter.mappingToEmailFilterCondition());
+        expect(after, equals(startDate));
       });
     });
   });

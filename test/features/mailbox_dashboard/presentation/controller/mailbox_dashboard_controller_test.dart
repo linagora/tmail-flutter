@@ -527,15 +527,19 @@ void main() {
       advancedFilterController.updateReceiveDateSearchFilter(context, EmailReceiveTimeType.last30Days);
       advancedFilterController.updateSortOrder(EmailSortOrderType.relevance);
       advancedFilterController.applyAdvancedSearchFilter();
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter(
-        from: {fromEmailAddress.email!},
-        to: {toEmailAddress.email!},
-        subject: emailSubject,
-        sortOrderType: EmailSortOrderType.relevance,
-        text: SearchQuery(emailContainsWord),
-        notKeyword: {emailNotContainsWord},
-        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        position: 0));
+      final filterAfterAdvancedSearch = searchController.searchEmailFilter.value;
+      expect(filterAfterAdvancedSearch.from, equals({fromEmailAddress.email!}));
+      expect(filterAfterAdvancedSearch.to, equals({toEmailAddress.email!}));
+      expect(filterAfterAdvancedSearch.subject, equals(emailSubject));
+      expect(filterAfterAdvancedSearch.sortOrderType, equals(EmailSortOrderType.relevance));
+      expect(filterAfterAdvancedSearch.text, equals(SearchQuery(emailContainsWord)));
+      expect(filterAfterAdvancedSearch.notKeyword, equals({emailNotContainsWord}));
+      expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
+      expect(filterAfterAdvancedSearch.position, equals(0));
+      expect(filterAfterAdvancedSearch.startDate, isNotNull);
+      expect(filterAfterAdvancedSearch.endDate, isNotNull);
+      expect(filterAfterAdvancedSearch.before, isNull);
+      expect(filterAfterAdvancedSearch.after, isNull);
 
       // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
       // when [selectedMailbox] is changed and triggered obx listener in thread controller
@@ -592,15 +596,15 @@ void main() {
       properties: anyNamed('properties')));
 
     // assert
-    expect(
-      searchController.searchEmailFilter.value,
-      SearchEmailFilter(
-        text: SearchQuery(queryString),
-        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        hasAttachment: true,
-        position: 0,
-      )
-    );
+    final filterAfterQuickSearch = searchController.searchEmailFilter.value;
+    expect(filterAfterQuickSearch.text, equals(SearchQuery(queryString)));
+    expect(filterAfterQuickSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
+    expect(filterAfterQuickSearch.hasAttachment, isTrue);
+    expect(filterAfterQuickSearch.position, equals(0));
+    expect(filterAfterQuickSearch.startDate, isNotNull);
+    expect(filterAfterQuickSearch.endDate, isNotNull);
+    expect(filterAfterQuickSearch.before, isNull);
+    expect(filterAfterQuickSearch.after, isNull);
   });
 
     tearDown(Get.deleteAll);

@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -1208,6 +1209,110 @@ void main() {
       );
 
       expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(loadMoreDate)));
+    });
+  });
+
+  group('SearchController::updateSortOrderFilter', () {
+    setUp(() {
+      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+    });
+
+    test(
+      'SHOULD preserve startDate and endDate AND clear before, after and position '
+      'WHEN sort order changes on any filter',
+    () {
+      // Arrange: snapshotted date bounds set when last7Days was selected
+      final snapshotStart = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+        startDateOption: Some(snapshotStart),
+      );
+
+      // Act
+      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
+
+      // Assert: date bounds are preserved; only load-more cursors are cleared
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      expect(filter.startDate, equals(snapshotStart));
+      expect(filter.endDate, isNull);
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
+    });
+
+    test(
+      'SHOULD preserve startDate and endDate '
+      'WHEN sort order changes on a customRange filter',
+    () {
+      // Arrange: user has a custom date range applied
+      final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+      final end = UTCDate(DateTime.parse('2026-03-31T23:59:59.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
+        startDateOption: Some(start),
+        endDateOption: Some(end),
+      );
+
+      // Act
+      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
+
+      // Assert
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      expect(filter.startDate, equals(start));
+      expect(filter.endDate, equals(end));
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
+    });
+
+    test(
+      'SHOULD clear after cursor WHEN sort order changes while after cursor is active',
+    () {
+      // Arrange: simulate oldest sort load-more → after cursor set by ThreadController
+      final cursor = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
+        afterOption: Some(cursor),
+      );
+      expect(searchController.searchEmailFilter.value.after, equals(cursor));
+
+      // Act: user changes sort order
+      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
+
+      // Assert: after cursor cleared
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
+      expect(filter.after, isNull);
+      expect(filter.before, isNull);
+      expect(filter.position, isNull);
+    });
+
+    test(
+      'SHOULD clear before cursor WHEN sort order changes while before cursor is active',
+    () {
+      // Arrange: simulate mostRecent sort load-more → before cursor set by ThreadController
+      final cursor = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
+        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
+        beforeOption: Some(cursor),
+      );
+      expect(searchController.searchEmailFilter.value.before, equals(cursor));
+
+      // Act: user changes sort order
+      searchController.updateSortOrderFilter(EmailSortOrderType.oldest);
+
+      // Assert: before cursor cleared
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.sortOrderType, equals(EmailSortOrderType.oldest));
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
     });
   });
 }

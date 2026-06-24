@@ -36,6 +36,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final bool unread;
   final bool notIncludeEvents;
   final UTCDate? before;
+  final UTCDate? after;
   final UTCDate? startDate;
   final UTCDate? endDate;
   final int? position;
@@ -52,6 +53,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     this.subject,
     this.mailbox,
     this.before,
+    this.after,
     this.startDate,
     this.endDate,
     this.position,
@@ -89,6 +91,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -108,6 +111,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       unread: getOptionParam(unreadOption, unread),
       notIncludeEvents: getOptionParam(notIncludeEventsOption, notIncludeEvents),
       before: getOptionParam(beforeOption, before),
+      after: getOptionParam(afterOption, after),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
       position: getOptionParam(positionOption, position),
@@ -126,7 +130,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         : null,
       inMailbox: _getInMailboxField(),
       inMailboxOtherThan: _getInMailboxOtherThanField(trashSpamMailboxIds),
-      after: emailReceiveTimeType.getAfterDate(startDate),
+      after: emailReceiveTimeType.getAfterDate(startDate, after),
       hasAttachment: !hasAttachment ? null : hasAttachment,
       subject: subject?.trim().isNotEmpty == true
         ? subject?.trim()
@@ -278,6 +282,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     unread,
     notIncludeEvents,
     before,
+    after,
     startDate,
     endDate,
     position,

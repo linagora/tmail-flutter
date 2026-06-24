@@ -84,74 +84,66 @@ enum EmailReceiveTimeType {
     }
   }
 
-  UTCDate? toOldestUTCDate() {
-    switch(this) {
+  ({UTCDate? start, UTCDate? end}) toDateRange() {
+    final now = DateTime.now();
+    final end = now.toUTCDate();
+
+    switch (this) {
       case EmailReceiveTimeType.last7Days:
-        final today = DateTime.now();
-        final last7Days = today.subtract(const Duration(days: 7));
-        return last7Days.toUTCDate();
+        return (start: now
+            .subtract(const Duration(days: 7))
+            .toUTCDate(), end: end);
+
       case EmailReceiveTimeType.last15Days:
-        final today = DateTime.now();
-        final last15Days = today.subtract(const Duration(days: 15));
-        return last15Days.toUTCDate();
+        return (start: now
+            .subtract(const Duration(days: 15))
+            .toUTCDate(), end: end);
+
       case EmailReceiveTimeType.last30Days:
-        final today = DateTime.now();
-        final last30Days = today.subtract(const Duration(days: 30));
-        return last30Days.toUTCDate();
+        return (start: now
+            .subtract(const Duration(days: 30))
+            .toUTCDate(), end: end);
+
       case EmailReceiveTimeType.last6Months:
-        final today = DateTime.now();
-        final last6months = DateTime(today.year, today.month - 6, today.day);
-        return last6months.toUTCDate();
+        return (start: _subtractMonthsClamped(now, 6).toUTCDate(), end: end);
+
       case EmailReceiveTimeType.last1Year:
       case EmailReceiveTimeType.lastYear:
-        final today = DateTime.now();
-        final lastYear = DateTime(today.year - 1, today.month, today.day);
-        return lastYear.toUTCDate();
+        return (start: _subtractMonthsClamped(now, 12).toUTCDate(), end: end);
+
       default:
-        return null;
+        return (start: null, end: null);
     }
   }
 
-  UTCDate? toLatestUTCDate() {
-    switch(this) {
-      case EmailReceiveTimeType.last7Days:
-      case EmailReceiveTimeType.last15Days:
-      case EmailReceiveTimeType.last30Days:
-      case EmailReceiveTimeType.last6Months:
-      case EmailReceiveTimeType.last1Year:
-      case EmailReceiveTimeType.lastYear:
-        return DateTime.now().toUTCDate();
-      default:
-        return null;
-    }
+  DateTime _subtractMonthsClamped(DateTime value, int months) {
+    final targetMonth = DateTime(value.year, value.month - months, 1);
+    final lastDay = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+    final day = value.day > lastDay ? lastDay : value.day;
+    return DateTime(
+      targetMonth.year,
+      targetMonth.month,
+      day,
+      value.hour,
+      value.minute,
+      value.second,
+      value.millisecond,
+      value.microsecond,
+    );
   }
 
-  UTCDate? getAfterDate(UTCDate? startDate) {
-    if (startDate != null) {
-      return startDate;
-    } else {
-      return toOldestUTCDate();
-    }
+  UTCDate? _pickCursorDate(
+    UTCDate? bound,
+    UTCDate? cursor,
+    bool Function(DateTime, DateTime) cursorWins,
+  ) {
+    if (bound == null) return cursor;
+    return (cursor != null && cursorWins(cursor.value, bound.value)) ? cursor : bound;
   }
 
-  UTCDate? getBeforeDate(UTCDate? endDate, UTCDate? loadMoreDate) {
-    if (endDate != null) {
-      if (loadMoreDate != null && loadMoreDate.value.isBefore(endDate.value)) {
-        return loadMoreDate;
-      } else {
-        return endDate;
-      }
-    } else {
-      final latestDate = toLatestUTCDate();
-      if (latestDate != null) {
-        if (loadMoreDate != null && loadMoreDate.value.isBefore(latestDate.value)) {
-          return loadMoreDate;
-        } else {
-          return latestDate;
-        }
-      } else {
-        return loadMoreDate;
-      }
-    }
-  }
+  UTCDate? getAfterDate(UTCDate? startDate, UTCDate? loadMoreDate) =>
+      _pickCursorDate(startDate, loadMoreDate, (a, b) => a.isAfter(b));
+
+  UTCDate? getBeforeDate(UTCDate? endDate, UTCDate? loadMoreDate) =>
+      _pickCursorDate(endDate, loadMoreDate, (a, b) => a.isBefore(b));
 }
