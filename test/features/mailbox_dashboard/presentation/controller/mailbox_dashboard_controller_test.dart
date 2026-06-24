@@ -103,6 +103,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -606,6 +607,56 @@ void main() {
     expect(filterAfterQuickSearch.before, isNull);
     expect(filterAfterQuickSearch.after, isNull);
   });
+
+    test(
+      'WHEN stored sort order is loaded on app restart\n'
+      'SHOULD sync sort order to SearchController so inline search bar uses it',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
+      expect(searchController.searchEmailFilter.value.sortOrderType, EmailSortOrderType.oldest);
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called\n'
+      'SHOULD keep currentSortOrder and searchController.sortOrderFiltered in sync',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.senderAscending);
+
+      expect(
+        mailboxDashboardController.currentSortOrder,
+        EmailSortOrderType.senderAscending,
+      );
+      expect(
+        searchController.sortOrderFiltered,
+        mailboxDashboardController.currentSortOrder,
+      );
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called multiple times\n'
+      'SHOULD reflect the last sort order in both currentSortOrder and searchController',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.senderDescending);
+
+      expect(mailboxDashboardController.currentSortOrder, EmailSortOrderType.senderDescending);
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.senderDescending);
+    });
+
+    test(
+      'WHEN user changes sort order via storeEmailSortOrder\n'
+      'SHOULD update currentSortOrder and sync searchController immediately',
+    () {
+      mailboxDashboardController.storeEmailSortOrder(EmailSortOrderType.subjectAscending);
+
+      expect(
+        mailboxDashboardController.currentSortOrder,
+        EmailSortOrderType.subjectAscending,
+      );
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
+    });
 
     tearDown(Get.deleteAll);
   });
