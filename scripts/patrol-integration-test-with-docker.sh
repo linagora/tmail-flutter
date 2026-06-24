@@ -136,6 +136,10 @@ gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS
 gcloud config set project "$FIREBASE_PROJECT_ID"
 
 echo "start firebase tests"
+FTL_OUTPUT=$(mktemp)
+RESULTS_DIR="jenkins/${BUILD_NUMBER:-local-$(date +%s)}"
+
+set +e
 gcloud firebase test android run \
     --type instrumentation \
     --app build/app/outputs/apk/debug/app-debug.apk \
@@ -143,4 +147,54 @@ gcloud firebase test android run \
     --device model=MediumPhone.arm,version=34 \
     --timeout 60m \
     --use-orchestrator \
-    --environment-variables clearPackageData=true
+    --environment-variables clearPackageData=true \
+    --no-record-video \
+    --results-dir="$RESULTS_DIR" \
+    2>&1 | tee "$FTL_OUTPUT"
+TEST_EXIT_CODE=${PIPESTATUS[0]}
+set -e
+
+echo "Downloading test results from Firebase Test Lab..."
+
+# Strategy 1: parse gs:// URL directly from gcloud output
+GCS_PATH=$(grep -oP "gs://[^\s\"'\[\]]+" "$FTL_OUTPUT" | head -1)
+
+# Strategy 2: parse GCS browser URL and convert to gs://
+if [ -z "$GCS_PATH" ]; then
+    GCS_BROWSER=$(grep -oP "console\.(cloud|developers)\.google\.com/storage/browser/\K[^\s\"'\[\]]+" "$FTL_OUTPUT" | head -1)
+    if [ -n "$GCS_BROWSER" ]; then
+        GCS_PATH="gs://${GCS_BROWSER}"
+        echo "Extracted GCS path from console URL: $GCS_PATH"
+    fi
+fi
+
+# Strategy 3: fallback to listing project buckets
+if [ -z "$GCS_PATH" ]; then
+    echo "GCS path not in gcloud output, trying project bucket lookup..."
+    FTL_BUCKET=$(gsutil ls -p "$FIREBASE_PROJECT_ID" 2>/dev/null \
+        | grep 'test-lab' | head -1 || true)
+    if [ -n "$FTL_BUCKET" ]; then
+        GCS_PATH="${FTL_BUCKET}${RESULTS_DIR}"
+    fi
+fi
+
+if [ -n "$GCS_PATH" ]; then
+    mkdir -p ftl-results
+    echo "Results GCS path: $GCS_PATH"
+    gsutil ls -r "${GCS_PATH}" 2>/dev/null \
+        | grep 'test_result_.*\.xml$' \
+        | while read -r xml_file; do
+            echo "  $xml_file"
+            gsutil cp "$xml_file" ftl-results/ 2>/dev/null || true
+          done || true
+
+    if ls ftl-results/test_result_*.xml >/dev/null 2>&1; then
+        echo "Downloaded $(ls ftl-results/test_result_*.xml | wc -l) result file(s)"
+    else
+        echo "Warning: no test_result XML files found at $GCS_PATH"
+    fi
+else
+    echo "Warning: could not determine GCS results path"
+fi
+
+exit $TEST_EXIT_CODE
