@@ -401,7 +401,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
     if (identity?.replyTo?.isNotEmpty == true) {
       replyToOfIdentity.value = listEmailAddressOfReplyTo
-        .firstWhereOrNull((emailAddress) => emailAddress ==  identity!.replyTo!.first);
+        .firstWhereOrNull((emailAddress) => emailAddress.email == identity!.replyTo!.first.email);
 
       if (replyToOfIdentity.value == null && identity!.replyTo!.first == noneEmailAddress) {
         replyToOfIdentity.value = noneEmailAddress;
@@ -530,7 +530,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
         : <EmailAddress>{};
     Set<EmailAddress> replyToAddress;
     if (replyToOfIdentity.value != null && (replyToOfIdentity.value != noneEmailAddress || forCache)) {
-      replyToAddress = {replyToOfIdentity.value!};
+      replyToAddress = {EmailAddress(_nameIdentity, replyToOfIdentity.value!.email)};
     } else {
       replyToAddress = {};
     }

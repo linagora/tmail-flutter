@@ -51,11 +51,22 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
     if (isNotReplyTo) return null;
 
-    return identity?.replyTo?.isNotEmpty == true
-      ? identity!.replyTo!
-      : ownEmailAddress.isNotEmpty
-        ? {EmailAddress(null, ownEmailAddress)}
+    if (identity?.replyTo?.isNotEmpty == true) {
+      return identity!.replyTo!.map((address) {
+        if (address.name?.isNotEmpty == true) return address;
+        return EmailAddress(identity!.name, address.email);
+      }).toSet();
+    }
+
+    if (identity != null) {
+      return identity!.email?.isNotEmpty == true
+        ? {EmailAddress(identity!.name, identity!.email)}
         : null;
+    }
+
+    return ownEmailAddress.isNotEmpty
+      ? {EmailAddress(null, ownEmailAddress)}
+      : null;
   }
 
 
