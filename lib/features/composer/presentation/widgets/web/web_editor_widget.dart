@@ -114,7 +114,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     _editorListener = (event) {
       try {
         if (event is MessageEvent) {
-          final data = jsonDecode(event.data);
+          final data = event.data is Map ? event.data : jsonDecode(event.data);
 
           if (data['name'] == HtmlUtils.registerDropListener.name) {
             _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);

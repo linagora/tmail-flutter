@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -13,7 +15,10 @@ mixin WebWindowMessageMixin<T extends StatefulWidget> on State<T> {
   ) {
     _windowListener = (html.Event event) {
       if (event is! html.MessageEvent) return;
-      final data = event.data;
+      dynamic data = event.data;
+      if (data is Map) {
+        data = jsonEncode(data);
+      }
       if (data is! String) return;
       onMessage(data, event.origin);
     };
