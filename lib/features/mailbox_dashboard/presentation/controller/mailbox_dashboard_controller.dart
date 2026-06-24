@@ -2310,58 +2310,53 @@ class MailboxDashBoardController extends ReloadableController
         context,
         searchController.startDateFiltered,
         searchController.endDateFiltered,
-        onCallbackAction: (startDate, endDate) {
-          dispatchAction(SelectDateRangeToAdvancedSearch(startDate, endDate));
-          searchController.updateFilterEmail(
-            emailReceiveTimeTypeOption: Some(receiveTime),
-            startDateOption: optionOf(startDate?.toUTCDate()),
-            endDateOption: optionOf(endDate?.toUTCDate())
-          );
-          dispatchAction(StartSearchEmailAction());
-        }
+        onCallbackAction: (startDate, endDate) =>
+          _applyReceiveTimeFilter(receiveTime, startDate: startDate, endDate: endDate),
       );
     } else {
-      dispatchAction(ClearDateRangeToAdvancedSearch(receiveTime));
-      searchController.updateFilterEmail(
-        emailReceiveTimeTypeOption: Some(receiveTime),
-        startDateOption: const None(),
-        endDateOption: const None()
+      final dateRange = receiveTime.toDateRange();
+      _applyReceiveTimeFilter(
+        receiveTime,
+        startDate: dateRange.start?.value,
+        endDate: dateRange.end?.value,
       );
-      dispatchAction(StartSearchEmailAction());
     }
+  }
+
+  void _applyReceiveTimeFilter(
+    EmailReceiveTimeType receiveTime, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    dispatchAction(SelectDateRangeToAdvancedSearch(
+      receiveTime: receiveTime,
+      startDate: startDate,
+      endDate: endDate,
+    ));
+    searchController.updateFilterEmail(
+      emailReceiveTimeTypeOption: Some(receiveTime),
+      startDateOption: optionOf(startDate?.toUTCDate()),
+      endDateOption: optionOf(endDate?.toUTCDate()),
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: const None(),
+    );
+    dispatchAction(StartSearchEmailAction());
   }
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
-    final isDateFilterActive =
-        searchController.receiveTimeFiltered != EmailReceiveTimeType.allTime;
-    searchController.updateFilterEmail(
-      sortOrderTypeOption: Some(sortOrder),
-      beforeOption: const None(),
-      startDateOption: isDateFilterActive ? null : const None(),
-      endDateOption: isDateFilterActive ? null : const None(),
-      positionOption: const None(),
-    );
+    searchController.updateSortOrderFilter(sortOrder);
     storeEmailSortOrder(sortOrder);
     dispatchAction(StartSearchEmailAction());
   }
 
   void _deleteDateTimeSearchFilter() {
-    dispatchAction(ClearDateRangeToAdvancedSearch(EmailReceiveTimeType.allTime));
-    searchController.updateFilterEmail(
-      emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-      startDateOption: const None(),
-      endDateOption: const None()
-    );
-    dispatchAction(StartSearchEmailAction());
+    _applyReceiveTimeFilter(EmailReceiveTimeType.allTime);
   }
 
   void _deleteSortOrderSearchFilter() {
-    searchController.updateFilterEmail(
-      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
-      beforeOption: const None(),
-      positionOption: const None(),
-    );
+    searchController.updateSortOrderFilter(SearchEmailFilter.defaultSortOrder);
     storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     dispatchAction(StartSearchEmailAction());
   }

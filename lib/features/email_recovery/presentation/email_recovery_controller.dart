@@ -230,11 +230,12 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     if (type == EmailReceiveTimeType.customRange) {
       onSelectDeletionDateRange(context);
     } else {
+      final dateRange = type.toDateRange();
       _updateDateRangeTime(
         FilterField.deletionDate,
         type,
-        startDate: type.toLatestUTCDate()?.value,
-        endDate: DateTime.now(),
+        startDate: dateRange.start?.value,
+        endDate: dateRange.end?.value,
       );
     }
   }
@@ -345,13 +346,19 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     if (deletionDateFieldSelected.value == EmailReceiveTimeType.customRange) {
       deletedBefore = endDeletionDate.value?.toUTCDate();
       deletedAfter = startDeletionDate.value?.toUTCDate();
+    } else {
+      final deletionDateRange = deletionDateFieldSelected.value.toDateRange();
+      deletedBefore = deletionDateRange.end;
+      deletedAfter = deletionDateRange.start;
+    }
+
+    if (receptionDateFieldSelected.value == EmailReceiveTimeType.customRange) {
       receivedBefore = endReceptionDate.value?.toUTCDate();
       receivedAfter = startReceptionDate.value?.toUTCDate();
     } else {
-      deletedBefore = DateTime.now().toUTCDate();
-      deletedAfter = deletionDateFieldSelected.value.toOldestUTCDate();
-      receivedBefore = DateTime.now().toUTCDate();
-      receivedAfter = receptionDateFieldSelected.value.toOldestUTCDate();
+      final receptionDateRange = receptionDateFieldSelected.value.toDateRange();
+      receivedBefore = receptionDateRange.end;
+      receivedAfter = receptionDateRange.start;
     }
     
     final emailRecoveryAction = EmailRecoveryAction(
