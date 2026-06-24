@@ -76,8 +76,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   AuthenticationType get authenticationType => _authenticationType;
 
-  String? get currentOidcIdToken => _token?.tokenId.uuid;
-
   TokenOIDC? get currentToken =>
       _authenticationType == AuthenticationType.oidc ? _token : null;
 

@@ -16,37 +16,46 @@ abstract final class DriveIntentFakePage {
   // handled by the special case in DriveIntentMessageHandlerMixin._isValidOrigin.
   static const String _kTemplate = '''<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Drive Intent Test</title></head>
+<head><meta charset="utf-8"><title>Drive Fake Picker</title>
+<style>
+  body { font-family: sans-serif; padding: 32px; }
+  button {
+    display: block; width: 200px; padding: 12px 0; margin: 12px 0;
+    font-size: 15px; border-radius: 6px; border: none; cursor: pointer;
+  }
+  #btn-attachment { background: #1976d2; color: #fff; }
+  #btn-link { background: #388e3c; color: #fff; }
+</style>
+</head>
 <body>
-<p style="font-family:sans-serif;padding:20px;color:#888">Drive intent test page — intent: {INTENT_ID}</p>
+<h3 style="color:#555">Drive Fake Picker</h3>
+<button id="btn-attachment" onclick="sendAttachment()">Attachment</button>
+<button id="btn-link" onclick="sendLink()">Link</button>
 <script>
-  var ackReceived = false;
-  window.addEventListener('load', function() {
-    console.log('[drive-fake] sending ready for intent-{INTENT_ID}');
+  function post(doc) {
     window.parent.postMessage(
-      JSON.stringify({ type: 'intent-{INTENT_ID}:ready' }),
+      JSON.stringify({ type: 'intent-{INTENT_ID}:done', document: [doc] }),
       '*'
     );
-  });
-  window.addEventListener('message', function(e) {
-    if (ackReceived) return;
-    ackReceived = true;
-    console.log('[drive-fake] ack received, sending done for intent-{INTENT_ID} in 3s');
-    setTimeout(function() {
-      var doc = [{
-        id: 'fake-doc-1',
-        name: 'test-document.pdf',
-        size: 1024,
-        mimeType: 'application/pdf',
-        downloadLink: 'https://example.com/fake/test-document.pdf'
-      }];
-      console.log('[drive-fake] sending done for intent-{INTENT_ID}, document:', JSON.stringify(doc, null, 2));
-      window.parent.postMessage(
-        JSON.stringify({ type: 'intent-{INTENT_ID}:done', document: doc }),
-        '*'
-      );
-    }, 3000);
-  });
+  }
+  function sendAttachment() {
+    post({
+      id: 'fake-attach-1',
+      name: 'sample.pdf',
+      size: 12345,
+      mimeType: 'application/pdf',
+      downloadLink: 'https://cdn.jsdelivr.net/gh/mozilla/pdf.js@master/examples/learning/helloworld.pdf'
+    });
+  }
+  function sendLink() {
+    post({
+      id: 'fake-link-1',
+      name: 'random-image.jpg',
+      size: 0,
+      mimeType: 'image/jpeg',
+      sharingLink: 'https://picsum.photos/800/600'
+    });
+  }
 </script>
 </body>
 </html>''';

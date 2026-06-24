@@ -130,8 +130,6 @@ import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_notifier.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -1011,7 +1009,6 @@ class ComposerController extends BaseController
     for (final doc in result) {
       if (doc.sharingLink != null) {
         _insertDriveLinkHtml(doc);
-        _storeDriveLinkAttachment(doc);
       } else if (doc.downloadLink != null) {
         _downloadAndUploadDriveFile(doc);
       }
@@ -1027,16 +1024,11 @@ class ComposerController extends BaseController
     }
   }
 
-  void _storeDriveLinkAttachment(DriveDocument doc) {
-    if (composerId == null) return;
-    appProviderContainer
-        .read(driveAttachmentProvider(composerId!).notifier)
-        .addSharingLinkDoc(doc);
-  }
-
   Future<void> _downloadAndUploadDriveFile(DriveDocument doc) async {
     try {
-      final response = await Get.find<Dio>().get<List<int>>(
+      // Use a plain Dio instance — no app interceptors that add auth headers,
+      // which would cause CORS preflight failures on external download URLs.
+      final response = await Dio().get<List<int>>(
         doc.downloadLink.toString(),
         options: Options(responseType: ResponseType.bytes),
       );
