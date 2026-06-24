@@ -9,7 +9,7 @@ import 'drive_attachment_providers.dart';
 
 part 'drive_attachment_notifier.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class DriveAttachmentNotifier extends _$DriveAttachmentNotifier {
   late CreateDriveIntentInteractor _createIntentInteractor;
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../model/workplace_exchange_token_request.dart';
 import '../datasource/workplace_datasource.dart';
 import '../model/workplace_enums.dart';
@@ -20,9 +21,12 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     required String addAsLink,
     required String addAsAttachment,
   }) async {
-    final response = await _dio.post(
+    final response = await Dio().post(
       '$platformUrl/intents',
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      options: Options(
+        headers: {'Authorization': 'Bearer $accessToken'},
+        extra: {'withCredentials': true},
+      ),
       data: WorkplaceIntentRequest(
         data: WorkplaceIntentDataRequest(
           type: WorkplaceDataRequestType.intents,
@@ -52,7 +56,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     }
     final href = parsed.data.attributes.services.first.href;
     final intentUrl = Uri.parse(href);
-    if (intentUrl.scheme != 'https') {
+    if (intentUrl.scheme != 'https' && kReleaseMode) {
       throw ArgumentError('Intent URL must use HTTPS, got: $href');
     }
     return WorkplaceIntent(intentId: intentId, intentUrl: intentUrl);
