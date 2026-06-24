@@ -2,6 +2,8 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 
 class TextFormFieldBuilder extends StatefulWidget {
 
@@ -61,6 +63,10 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
   late TextEditingController _controller;
   late TextDirection _textDirection;
 
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+
   @override
   void initState() {
     if (widget.fromValue != null) {
@@ -76,40 +82,43 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      key: widget.key,
-      controller: _controller,
-      cursorColor: widget.cursorColor,
-      autocorrect: widget.autocorrect,
-      textInputAction: widget.textInputAction,
-      decoration: widget.decoration,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      keyboardAppearance: widget.keyboardAppearance,
-      style: widget.textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-        color: AppColor.textFieldTextColor,
-      ),
-      obscureText: widget.obscureText,
-      keyboardType: widget.keyboardType,
-      autofocus: widget.autoFocus,
-      focusNode: widget.focusNode,
-      textDirection: _textDirection,
-      readOnly: widget.readOnly,
-      mouseCursor: widget.mouseCursor,
-      autofillHints: widget.autofillHints,
-      onChanged: (value) {
-        widget.onTextChange?.call(value);
-        if (value.isNotEmpty) {
-          final directionByText = DirectionUtils.getDirectionByEndsText(value);
-          if (directionByText != _textDirection) {
-            setState(() {
-              _textDirection = directionByText;
-            });
+    return RightClickFocus(
+      focusNode: _effectiveFocusNode,
+      child: TextField(
+        key: widget.key,
+        controller: _controller,
+        cursorColor: widget.cursorColor,
+        autocorrect: widget.autocorrect,
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        keyboardAppearance: widget.keyboardAppearance,
+        style: widget.textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
+          color: AppColor.textFieldTextColor,
+        ),
+        obscureText: widget.obscureText,
+        keyboardType: widget.keyboardType,
+        autofocus: widget.autoFocus,
+        focusNode: _effectiveFocusNode,
+        textDirection: _textDirection,
+        readOnly: widget.readOnly,
+        mouseCursor: widget.mouseCursor,
+        autofillHints: widget.autofillHints,
+        onChanged: (value) {
+          widget.onTextChange?.call(value);
+          if (value.isNotEmpty) {
+            final directionByText = DirectionUtils.getDirectionByEndsText(value);
+            if (directionByText != _textDirection) {
+              setState(() {
+                _textDirection = directionByText;
+              });
+            }
           }
-        }
-      },
-      onSubmitted: widget.onTextSubmitted,
-      onTap: widget.onTap,
+        },
+        onSubmitted: widget.onTextSubmitted,
+        onTap: widget.onTap,
+      ),
     );
   }
 
@@ -118,6 +127,7 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
     if (widget.fromValue == null && widget.controller == null) {
       _controller.dispose();
     }
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 }
