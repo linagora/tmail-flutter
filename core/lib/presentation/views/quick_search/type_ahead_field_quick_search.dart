@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 import 'package:core/presentation/views/quick_search/quick_search_action_define.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_box.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_box_controller.dart';
@@ -669,43 +671,46 @@ class _TypeAheadFieldQuickSearchState<T, P, R>
             if (widget.textFieldConfiguration.leftButton != null)
               widget.textFieldConfiguration.leftButton!,
             Expanded(
-              child: TextField(
+              child: RightClickFocus(
                 focusNode: _effectiveFocusNode,
-                controller: _effectiveController,
-                decoration: widget.textFieldConfiguration.decoration,
-                style: widget.textFieldConfiguration.style,
-                textAlign: widget.textFieldConfiguration.textAlign,
-                enabled: widget.textFieldConfiguration.enabled,
-                keyboardType: widget.textFieldConfiguration.keyboardType,
-                autofocus: widget.textFieldConfiguration.autofocus,
-                inputFormatters: widget.textFieldConfiguration.inputFormatters,
-                autocorrect: widget.textFieldConfiguration.autocorrect,
-                maxLines: widget.textFieldConfiguration.maxLines,
-                textAlignVertical:
-                    widget.textFieldConfiguration.textAlignVertical,
-                minLines: widget.textFieldConfiguration.minLines,
-                maxLength: widget.textFieldConfiguration.maxLength,
-                maxLengthEnforcement:
-                    widget.textFieldConfiguration.maxLengthEnforcement,
-                obscureText: widget.textFieldConfiguration.obscureText,
-                onChanged: _onTextChange,
-                onSubmitted: widget.textFieldConfiguration.onSubmitted,
-                onEditingComplete:
-                    widget.textFieldConfiguration.onEditingComplete,
-                onTap: widget.textFieldConfiguration.onTap,
-                scrollPadding: widget.textFieldConfiguration.scrollPadding,
-                textInputAction: widget.textFieldConfiguration.textInputAction,
-                textCapitalization:
-                    widget.textFieldConfiguration.textCapitalization,
-                keyboardAppearance:
-                    widget.textFieldConfiguration.keyboardAppearance,
-                cursorWidth: widget.textFieldConfiguration.cursorWidth,
-                cursorRadius: widget.textFieldConfiguration.cursorRadius,
-                cursorColor: widget.textFieldConfiguration.cursorColor,
-                textDirection: _textDirection,
-                enableInteractiveSelection:
-                    widget.textFieldConfiguration.enableInteractiveSelection,
-                readOnly: widget.hideKeyboard,
+                child: TextField(
+                  focusNode: _effectiveFocusNode,
+                  controller: _effectiveController,
+                  decoration: widget.textFieldConfiguration.decoration,
+                  style: widget.textFieldConfiguration.style,
+                  textAlign: widget.textFieldConfiguration.textAlign,
+                  enabled: widget.textFieldConfiguration.enabled,
+                  keyboardType: widget.textFieldConfiguration.keyboardType,
+                  autofocus: widget.textFieldConfiguration.autofocus,
+                  inputFormatters: widget.textFieldConfiguration.inputFormatters,
+                  autocorrect: widget.textFieldConfiguration.autocorrect,
+                  maxLines: widget.textFieldConfiguration.maxLines,
+                  textAlignVertical:
+                      widget.textFieldConfiguration.textAlignVertical,
+                  minLines: widget.textFieldConfiguration.minLines,
+                  maxLength: widget.textFieldConfiguration.maxLength,
+                  maxLengthEnforcement:
+                      widget.textFieldConfiguration.maxLengthEnforcement,
+                  obscureText: widget.textFieldConfiguration.obscureText,
+                  onChanged: _onTextChange,
+                  onSubmitted: widget.textFieldConfiguration.onSubmitted,
+                  onEditingComplete:
+                      widget.textFieldConfiguration.onEditingComplete,
+                  onTap: widget.textFieldConfiguration.onTap,
+                  scrollPadding: widget.textFieldConfiguration.scrollPadding,
+                  textInputAction: widget.textFieldConfiguration.textInputAction,
+                  textCapitalization:
+                      widget.textFieldConfiguration.textCapitalization,
+                  keyboardAppearance:
+                      widget.textFieldConfiguration.keyboardAppearance,
+                  cursorWidth: widget.textFieldConfiguration.cursorWidth,
+                  cursorRadius: widget.textFieldConfiguration.cursorRadius,
+                  cursorColor: widget.textFieldConfiguration.cursorColor,
+                  textDirection: _textDirection,
+                  enableInteractiveSelection:
+                      widget.textFieldConfiguration.enableInteractiveSelection,
+                  readOnly: widget.hideKeyboard,
+                ),
               ),
             ),
             if (widget.textFieldConfiguration.clearTextButton != null &&

@@ -38,6 +38,8 @@ dependencies:
       ref: support_mail
       path: sanitize_html
 
+  linagora_design_flutter:
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 

@@ -3,6 +3,8 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/semantics/text_field_semantics.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 
 class TextFieldBuilder extends StatefulWidget {
 
@@ -69,6 +71,10 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
   late TextDirection _textDirection;
 
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+
   @override
   void initState() {
     super.initState();
@@ -102,7 +108,7 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       obscureText: widget.obscureText,
       keyboardType: widget.keyboardType,
       autofocus: widget.autoFocus,
-      focusNode: widget.focusNode,
+      focusNode: _effectiveFocusNode,
       textDirection: _textDirection,
       readOnly: widget.readOnly,
       mouseCursor: widget.mouseCursor,
@@ -112,15 +118,17 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       onTapOutside: widget.onTapOutside,
     );
 
+    final Widget content;
     if (widget.semanticLabel != null) {
-      return TextFieldSemantics(
+      content = TextFieldSemantics(
         label: widget.semanticLabel!,
         value: _controller?.text ?? '',
         child: textField,
       );
     } else {
-      return textField;
+      content = textField;
     }
+    return RightClickFocus(focusNode: _effectiveFocusNode, child: content);
   }
 
   void _onTextChanged(String value) {
@@ -140,6 +148,7 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
     if (widget.controller == null) {
       _controller?.dispose();
     }
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 }

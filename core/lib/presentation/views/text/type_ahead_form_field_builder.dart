@@ -3,6 +3,8 @@ import 'package:core/presentation/views/quick_search/quick_search_action_define.
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 
 typedef SuggestionBoxDecorationBuilder = Widget Function(Widget child);
 
@@ -64,6 +66,10 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
   late TextEditingController _controller;
   late TextDirection _textDirection;
 
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+
   @override
   void initState() {
     super.initState();
@@ -76,31 +82,34 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
     return TypeAheadField<T>(
       key: widget.key,
       controller: widget.controller,
-      focusNode: widget.focusNode,
+      focusNode: _effectiveFocusNode,
       builder: (_, controller, focusNode) {
-        return TextField(
-          controller: controller,
+        return RightClickFocus(
           focusNode: focusNode,
-          textInputAction: widget.textInputAction,
-          autocorrect: widget.autocorrect,
-          autofillHints: widget.autofillHints,
-          style: widget.textStyle,
-          keyboardType: widget.keyboardType,
-          decoration: widget.decoration,
-          textDirection: _textDirection,
-          cursorColor: widget.cursorColor,
-          onChanged: (value) {
-            widget.onTextChange?.call(value);
-            if (value.isNotEmpty) {
-              final directionByText = DirectionUtils.getDirectionByEndsText(value);
-              if (directionByText != _textDirection) {
-                setState(() {
-                  _textDirection = directionByText;
-                });
+          child: TextField(
+            controller: controller,
+            focusNode: focusNode,
+            textInputAction: widget.textInputAction,
+            autocorrect: widget.autocorrect,
+            autofillHints: widget.autofillHints,
+            style: widget.textStyle,
+            keyboardType: widget.keyboardType,
+            decoration: widget.decoration,
+            textDirection: _textDirection,
+            cursorColor: widget.cursorColor,
+            onChanged: (value) {
+              widget.onTextChange?.call(value);
+              if (value.isNotEmpty) {
+                final directionByText = DirectionUtils.getDirectionByEndsText(value);
+                if (directionByText != _textDirection) {
+                  setState(() {
+                    _textDirection = directionByText;
+                  });
+                }
               }
-            }
-          },
-          onSubmitted: widget.onTextSubmitted
+            },
+            onSubmitted: widget.onTextSubmitted
+          ),
         );
       },
       debounceDuration: widget.debounceDuration,
@@ -132,6 +141,7 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
     if (widget.controller == null) {
       _controller.dispose();
     }
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 }

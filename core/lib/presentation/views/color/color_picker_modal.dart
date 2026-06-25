@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -200,51 +202,54 @@ class _ColorPickerModalState extends State<ColorPickerModal> {
                                   start: 12,
                                   top: 6,
                                 ),
-                                child: TextField(
-                                  controller: _hexColorInputController,
+                                child: RightClickFocus(
                                   focusNode: _hexColorFocusNode,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.black,
+                                  child: TextField(
+                                    controller: _hexColorInputController,
+                                    focusNode: _hexColorFocusNode,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.black,
+                                    ),
+                                    cursorColor: AppColor.primaryColor,
+                                    decoration: InputDecoration(
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.only(
+                                        bottom: 2,
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.text,
+                                    textInputAction: TextInputAction.done,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9A-Fa-f#]'),
+                                      ),
+                                    ],
+                                    onChanged: _onHexColorChanged,
                                   ),
-                                  cursorColor: AppColor.primaryColor,
-                                  decoration: InputDecoration(
-                                    border: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.only(
-                                      bottom: 2,
-                                    ),
-                                  ),
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.done,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9A-Fa-f#]'),
-                                    ),
-                                  ],
-                                  onChanged: _onHexColorChanged,
                                 ),
                               )
                             ],

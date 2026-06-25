@@ -2,6 +2,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart'
+    show RightClickFocus;
 import 'package:scribe/scribe.dart';
 
 typedef OnCustomPromptCallback = void Function(String customPrompt);
@@ -90,20 +92,23 @@ class _AIScribeBarState extends State<AIScribeBar> {
               child: KeyboardListener(
                 focusNode: _keyboardListenerFocusNode,
                 onKeyEvent: _handleKeyboardEvent,
-                child: TextField(
-                  controller: _controller,
+                child: RightClickFocus(
                   focusNode: _textFieldFocusNode,
-                  decoration: InputDecoration(
-                    hintText: ScribeLocalizations.of(context).customPromptAction,
-                    hintStyle: AIScribeTextStyles.searchBarHint,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    isDense: true,
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _textFieldFocusNode,
+                    decoration: InputDecoration(
+                      hintText: ScribeLocalizations.of(context).customPromptAction,
+                      hintStyle: AIScribeTextStyles.searchBarHint,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                      isDense: true,
+                    ),
+                    style: AIScribeTextStyles.searchBar,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    cursorHeight: 16,
                   ),
-                  style: AIScribeTextStyles.searchBar,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  cursorHeight: 16,
                 ),
               ),
             ),

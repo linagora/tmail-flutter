@@ -22,6 +22,8 @@ dependencies:
   ### Dependencies from git ###
   jmap_dart_client:
 
+  linagora_design_flutter:
+
   ### Dependencies from pub.dev ###
   dartz: 0.10.1
 
