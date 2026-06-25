@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:dartz/dartz.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -190,6 +191,9 @@ class ThreadDetailController extends BaseController {
           emailIdsPresentation[action.emailId]?.emailHeader?.removeWhere((element) {
             return element.name == EmailProperty.headerUnsubscribeKey;
           });
+          emailIdsPresentation[action.emailId] = emailIdsPresentation[action.emailId]?.nullableCopyWith(
+            listUnsubscribeHeader: const Some(null),
+          );
         }
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);

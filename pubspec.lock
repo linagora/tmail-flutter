@@ -1375,8 +1375,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "refactor/dynamic-email-headers"
-      resolved-ref: "23e8f07104c36a5028395ad563aa8b7fa0754f2e"
+      ref: main
+      resolved-ref: fd1be98c3e7cf7d13c0d7b59274d264f1b14596f
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.7"

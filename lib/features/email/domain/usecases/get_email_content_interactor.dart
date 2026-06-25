@@ -148,12 +148,10 @@ class GetEmailContentInteractor {
         emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
           individualHeaders: () {
-            final map = <IndividualHeaderIdentifier, EmailHeaderValue>{
-              ...emailCache.individualHeaders,
-            };
-            if (detailedEmail.sMimeStatusHeader != null) {
-              map[IndividualHeaderIdentifier.sMimeStatusHeader] = detailedEmail.sMimeStatusHeader!;
-            }
+            final map = emailCache.individualHeaders.merge({
+              if (detailedEmail.sMimeStatusHeader != null)
+                IndividualHeaderIdentifier.sMimeStatusHeader: detailedEmail.sMimeStatusHeader!,
+            });
             return map.isEmpty ? null : map;
           }(),
           references: detailedEmail.references,
@@ -196,15 +194,12 @@ class GetEmailContentInteractor {
         emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
           individualHeaders: () {
-            final map = <IndividualHeaderIdentifier, EmailHeaderValue>{
-              ...emailCache.individualHeaders,
-            };
-            if (detailedEmail.sMimeStatusHeader != null) {
-              map[IndividualHeaderIdentifier.sMimeStatusHeader] = detailedEmail.sMimeStatusHeader!;
-            }
-            if (detailedEmail.identityHeader != null) {
-              map[IndividualHeaderIdentifier.identityHeader] = detailedEmail.identityHeader!;
-            }
+            final map = emailCache.individualHeaders.merge({
+              if (detailedEmail.sMimeStatusHeader != null)
+                IndividualHeaderIdentifier.sMimeStatusHeader: detailedEmail.sMimeStatusHeader!,
+              if (detailedEmail.identityHeader != null)
+                IndividualHeaderIdentifier.identityHeader: detailedEmail.identityHeader!,
+            });
             return map.isEmpty ? null : map;
           }(),
           references: detailedEmail.references,
@@ -222,5 +217,13 @@ class GetEmailContentInteractor {
         additionalProperties: additionalProperties
       );
     }
+  }
+}
+
+extension on Map<IndividualHeaderIdentifier, EmailHeaderValue> {
+  Map<IndividualHeaderIdentifier, EmailHeaderValue> merge(
+    Map<IndividualHeaderIdentifier, EmailHeaderValue> other,
+  ) {
+    return Map.from(this)..addAll(other);
   }
 }

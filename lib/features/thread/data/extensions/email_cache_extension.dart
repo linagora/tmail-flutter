@@ -37,16 +37,19 @@ extension EmailCacheExtension on EmailCache {
       blobId: blobId != null ? Id(blobId!) : null,
       individualHeaders: () {
         final map = <IndividualHeaderIdentifier, EmailHeaderValue>{};
-        headerCalendarEvent?.forEach((k, v) =>
-          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
-        xPriorityHeader?.forEach((k, v) =>
-          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
-        importanceHeader?.forEach((k, v) =>
-          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
-        priorityHeader?.forEach((k, v) =>
-          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
-        unsubscribeHeader?.forEach((k, v) =>
-          map[IndividualHeaderIdentifier(k)] = TextHeaderValue(v));
+        for (final headers in [
+          headerCalendarEvent,
+          xPriorityHeader,
+          importanceHeader,
+          priorityHeader,
+          unsubscribeHeader,
+        ]) {
+          if (headers == null) continue;
+          for (final entry in headers.entries) {
+            if (entry.value == null) continue;
+            map[IndividualHeaderIdentifier(entry.key)] = TextHeaderValue(entry.value!);
+          }
+        }
         return map;
       }(),
       messageId: messageId != null ? MessageIdsHeaderValue(messageId!.toSet()) : null,

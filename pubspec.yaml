@@ -320,7 +320,7 @@ dependency_overrides:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: refactor/dynamic-email-headers
+      ref: main
 
   linagora_design_flutter:
     git:

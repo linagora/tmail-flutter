@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:core/presentation/extensions/string_extension.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -285,6 +287,74 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
       messageId: messageId ?? this.messageId,
       references: references ?? this.references,
+    );
+  }
+
+  PresentationEmail nullableCopyWith({
+    Option<EmailId?>? id,
+    Option<Id?>? blobId,
+    Option<Map<KeyWordIdentifier, bool>?>? keywords,
+    Option<UnsignedInt?>? size,
+    Option<UTCDate?>? receivedAt,
+    Option<bool?>? hasAttachment,
+    Option<String?>? preview,
+    Option<String?>? subject,
+    Option<UTCDate?>? sentAt,
+    Option<Set<EmailAddress>?>? from,
+    Option<Set<EmailAddress>?>? to,
+    Option<Set<EmailAddress>?>? cc,
+    Option<Set<EmailAddress>?>? bcc,
+    Option<Set<EmailAddress>?>? replyTo,
+    Option<Map<MailboxId, bool>?>? mailboxIds,
+    Option<ThreadId?>? threadId,
+    Option<SelectMode?>? selectMode,
+    Option<Uri?>? routeWeb,
+    Option<PresentationMailbox?>? mailboxContain,
+    Option<List<EmailHeader>?>? emailHeader,
+    Option<Set<EmailBodyPart>?>? htmlBody,
+    Option<Map<PartId, EmailBodyValue>?>? bodyValues,
+    Option<TextHeaderValue?>? headerCalendarEvent,
+    Option<TextHeaderValue?>? xPriorityHeader,
+    Option<TextHeaderValue?>? importanceHeader,
+    Option<TextHeaderValue?>? priorityHeader,
+    Option<TextHeaderValue?>? listPostHeader,
+    Option<TextHeaderValue?>? listUnsubscribeHeader,
+    Option<EmailInThreadStatus?>? emailInThreadStatus,
+    Option<MessageIdsHeaderValue?>? messageId,
+    Option<MessageIdsHeaderValue?>? references,
+  }) {
+    return PresentationEmail(
+      id: id?.fold(() => this.id, (value) => value) ?? this.id,
+      blobId: blobId?.fold(() => this.blobId, (value) => value) ?? this.blobId,
+      keywords: keywords?.fold(() => this.keywords, (value) => value) ?? this.keywords,
+      size: size?.fold(() => this.size, (value) => value) ?? this.size,
+      receivedAt: receivedAt?.fold(() => this.receivedAt, (value) => value) ?? this.receivedAt,
+      hasAttachment: hasAttachment?.fold(() => this.hasAttachment, (value) => value) ?? this.hasAttachment,
+      preview: preview?.fold(() => this.preview, (value) => value) ?? this.preview,
+      subject: subject?.fold(() => this.subject, (value) => value) ?? this.subject,
+      sentAt: sentAt?.fold(() => this.sentAt, (value) => value) ?? this.sentAt,
+      from: from?.fold(() => this.from, (value) => value) ?? this.from,
+      to: to?.fold(() => this.to, (value) => value) ?? this.to,
+      cc: cc?.fold(() => this.cc, (value) => value) ?? this.cc,
+      bcc: bcc?.fold(() => this.bcc, (value) => value) ?? this.bcc,
+      replyTo: replyTo?.fold(() => this.replyTo, (value) => value) ?? this.replyTo,
+      mailboxIds: mailboxIds?.fold(() => this.mailboxIds, (value) => value) ?? this.mailboxIds,
+      threadId: threadId?.fold(() => this.threadId, (value) => value) ?? this.threadId,
+      selectMode: selectMode?.fold(() => this.selectMode, (value) => value) ?? this.selectMode,
+      routeWeb: routeWeb?.fold(() => this.routeWeb, (value) => value) ?? this.routeWeb,
+      mailboxContain: mailboxContain?.fold(() => this.mailboxContain, (value) => value) ?? this.mailboxContain,
+      emailHeader: emailHeader?.fold(() => this.emailHeader, (value) => value) ?? this.emailHeader,
+      htmlBody: htmlBody?.fold(() => this.htmlBody, (value) => value) ?? this.htmlBody,
+      bodyValues: bodyValues?.fold(() => this.bodyValues, (value) => value) ?? this.bodyValues,
+      headerCalendarEvent: headerCalendarEvent?.fold(() => this.headerCalendarEvent, (value) => value) ?? this.headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader?.fold(() => this.xPriorityHeader, (value) => value) ?? this.xPriorityHeader,
+      importanceHeader: importanceHeader?.fold(() => this.importanceHeader, (value) => value) ?? this.importanceHeader,
+      priorityHeader: priorityHeader?.fold(() => this.priorityHeader, (value) => value) ?? this.priorityHeader,
+      listPostHeader: listPostHeader?.fold(() => this.listPostHeader, (value) => value) ?? this.listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader?.fold(() => this.listUnsubscribeHeader, (value) => value) ?? this.listUnsubscribeHeader,
+      emailInThreadStatus: emailInThreadStatus?.fold(() => this.emailInThreadStatus, (value) => value) ?? this.emailInThreadStatus,
+      messageId: messageId?.fold(() => this.messageId, (value) => value) ?? this.messageId,
+      references: references?.fold(() => this.references, (value) => value) ?? this.references,
     );
   }
 }
