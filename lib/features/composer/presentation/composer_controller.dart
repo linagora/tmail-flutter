@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:core/core.dart';
@@ -1016,7 +1017,13 @@ class ComposerController extends BaseController
   }
 
   void _insertDriveLinkHtml(DriveDocument doc) {
-    final linkHtml = '<a href="${doc.sharingLink}">${doc.name}</a>';
+    final sharingLink = Uri.tryParse(doc.sharingLink.toString());
+    if (sharingLink == null) return;
+    if (!sharingLink.isScheme('https') && kReleaseMode) return;
+    final href = const HtmlEscape(HtmlEscapeMode.attribute)
+        .convert(sharingLink.toString());
+    final label = const HtmlEscape().convert(doc.name);
+    final linkHtml = '<a href="$href">$label</a>';
     if (PlatformInfo.isWeb) {
       richTextWebController?.editorController.insertHtml(linkHtml);
     } else {
@@ -1026,23 +1033,25 @@ class ComposerController extends BaseController
 
   Future<void> _downloadAndUploadDriveFile(DriveDocument doc) async {
     try {
-      // Use a plain Dio instance — no app interceptors that add auth headers,
-      // which would cause CORS preflight failures on external download URLs.
-      final response = await Dio().get<List<int>>(
-        doc.downloadLink.toString(),
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final data = response.data;
-      if (data == null) return;
-      final fileInfo = FileInfo(
-        fileName: doc.name,
-        fileSize: doc.size,
-        bytes: Uint8List.fromList(data),
-        type: doc.mimeType,
-      );
       uploadController.validateTotalSizeAttachmentsBeforeUpload(
         totalSizePreparedFiles: doc.size,
-        onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: [fileInfo]),
+        onValidationSuccess: () async {
+          // Use a plain Dio instance — no app interceptors that add auth headers,
+          // which would cause CORS preflight failures on external download URLs.
+          final response = await Dio().get<List<int>>(
+            doc.downloadLink.toString(),
+            options: Options(responseType: ResponseType.bytes),
+          );
+          final data = response.data;
+          if (data == null) return;
+          final fileInfo = FileInfo(
+            fileName: doc.name,
+            fileSize: doc.size,
+            bytes: Uint8List.fromList(data),
+            type: doc.mimeType,
+          );
+          uploadAttachmentsAction(pickedFiles: [fileInfo]);
+        },
       );
     } catch (e) {
       logWarning('ComposerController::_downloadAndUploadDriveFile: $e');

@@ -46,19 +46,6 @@ void main() {
       expect(_state(container), 'https://workplace.example.com');
     });
 
-    test('http:// URL in release mode → state null (non-https rejected)', () {
-      // kDebugMode is false in test/release contexts when flutter_test runs
-      // without --enable-asserts. This test documents expected production
-      // behavior; it may pass differently in debug-assertion-enabled runs.
-      _notifier(container).setFqdn('http://workplace.example.com');
-      // In debug mode (test runner) kDebugMode may be true → state non-null.
-      // We just assert the notifier ran without throwing.
-      expect(
-        _state(container),
-        anyOf(isNull, equals('http://workplace.example.com')),
-      );
-    });
-
     test('leading/trailing whitespace stripped before parse', () {
       _notifier(container).setFqdn('  workplace.example.com  ');
       expect(_state(container), 'workplace.example.com');

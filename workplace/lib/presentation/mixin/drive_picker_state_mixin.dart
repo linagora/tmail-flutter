@@ -28,8 +28,8 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     if (_modalOpen) return;
     final fetch = pickerFetchIntent;
     if (fetch == null) return;
+    _modalOpen = true;
     try {
-      _modalOpen = true;
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLink: l10n.addAsLink,
@@ -48,11 +48,11 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );
-      clearExternalHandler();
-      _modalOpen = false;
       if (mounted && result != null) pickerOnPickResult?.call(result);
     } catch (e) {
       logWarning('DrivePickerStateMixin::onPickerTap: $e');
+    } finally {
+      clearExternalHandler();
       _modalOpen = false;
     }
   }
