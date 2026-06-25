@@ -13,6 +13,18 @@ import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_address_hive_cache_extension.dart';
 
 extension EmailCacheExtension on EmailCache {
+  Map<IndividualHeaderIdentifier, EmailHeaderValue> _buildIndividualHeaders() {
+    final map = <IndividualHeaderIdentifier, EmailHeaderValue>{};
+    final sources = [headerCalendarEvent, xPriorityHeader, importanceHeader, priorityHeader, unsubscribeHeader];
+    for (final headers in sources) {
+      if (headers == null) continue;
+      headers.forEach((key, value) {
+        if (value != null) map[IndividualHeaderIdentifier(key)] = TextHeaderValue(value);
+      });
+    }
+    return map;
+  }
+
   Email toEmail() {
     return Email(
       id: EmailId(Id(id)),
@@ -35,23 +47,7 @@ extension EmailCacheExtension on EmailCache {
         : null,
       threadId: threadId == null ? null : ThreadId(Id(threadId!)),
       blobId: blobId != null ? Id(blobId!) : null,
-      individualHeaders: () {
-        final map = <IndividualHeaderIdentifier, EmailHeaderValue>{};
-        for (final headers in [
-          headerCalendarEvent,
-          xPriorityHeader,
-          importanceHeader,
-          priorityHeader,
-          unsubscribeHeader,
-        ]) {
-          if (headers == null) continue;
-          for (final entry in headers.entries) {
-            if (entry.value == null) continue;
-            map[IndividualHeaderIdentifier(entry.key)] = TextHeaderValue(entry.value!);
-          }
-        }
-        return map;
-      }(),
+      individualHeaders: _buildIndividualHeaders(),
       messageId: messageId != null ? MessageIdsHeaderValue(messageId!.toSet()) : null,
       references: references != null ? MessageIdsHeaderValue(references!.toSet()) : null,
     );
