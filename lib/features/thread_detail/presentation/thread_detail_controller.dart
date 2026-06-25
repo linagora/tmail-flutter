@@ -192,7 +192,7 @@ class ThreadDetailController extends BaseController {
             return element.name == EmailProperty.headerUnsubscribeKey;
           });
           emailIdsPresentation[action.emailId] = emailIdsPresentation[action.emailId]?.nullableCopyWith(
-            listUnsubscribeHeader: const Some(null),
+            listUnsubscribeHeader: const None(),
           );
         }
       } else if (action is EmailMovedAction) {

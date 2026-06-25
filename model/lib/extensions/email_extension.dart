@@ -138,7 +138,10 @@ extension EmailExtension on Email {
       ..searchSnippetPreview = searchSnippetPreview;
   }
 
-  Email combineEmail(Email newEmail, Properties updatedProperties) {
+  Map<IndividualHeaderIdentifier, EmailHeaderValue> mergeTrackedIndividualHeaders(
+    Email newEmail,
+    Properties updatedProperties,
+  ) {
     final trackedHeaderIds = [
       IndividualHeaderIdentifier.headerCalendarEvent,
       IndividualHeaderIdentifier.xPriorityHeader,
@@ -158,6 +161,11 @@ extension EmailExtension on Email {
         }
       }
     }
+    return merged;
+  }
+
+  Email combineEmail(Email newEmail, Properties updatedProperties) {
+    final merged = mergeTrackedIndividualHeaders(newEmail, updatedProperties);
 
     return Email(
       id: newEmail.id,
