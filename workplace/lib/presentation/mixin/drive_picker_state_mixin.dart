@@ -18,6 +18,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   })? get pickerFetchIntent;
 
   OnPickDriveAttachmentResult? get pickerOnPickResult;
+  void Function(Object error)? get pickerOnError => null;
 
   void Function(void Function(String raw, String? origin))? get externalHandlerRegistrar => null;
   void clearExternalHandler() {}
@@ -51,6 +52,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       if (mounted && result != null) pickerOnPickResult?.call(result);
     } catch (e) {
       logWarning('DrivePickerStateMixin::onPickerTap: $e');
+      pickerOnError?.call(e);
     } finally {
       clearExternalHandler();
       _modalOpen = false;

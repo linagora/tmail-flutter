@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:workplace/domain/usecases/download_drive_file_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -206,6 +207,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
+  MockSpec<DownloadDriveFileInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -250,6 +252,7 @@ void main() {
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockComposerRepository mockComposerRepository;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
+  late MockDownloadDriveFileInteractor mockDownloadDriveFileInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -319,6 +322,7 @@ void main() {
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockComposerRepository = MockComposerRepository();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
+    mockDownloadDriveFileInteractor = MockDownloadDriveFileInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -336,6 +340,7 @@ void main() {
       mockPrintEmailInteractor,
       mockComposerRepository,
       mockSaveTemplateEmailInteractor,
+      mockDownloadDriveFileInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
@@ -790,6 +795,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'mark-cc-android-test',
         );
 
@@ -832,6 +838,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'mark-cc-noop-test',
         );
 
@@ -897,6 +904,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'timer-init-test',
         );
         addTearDown(() => ctrl.tearDownMobileAutoSave());
@@ -925,6 +933,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'timer-teardown-test',
         );
 
@@ -953,6 +962,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'listener-teardown-test',
         );
 
@@ -981,6 +991,7 @@ void main() {
           mockPrintEmailInteractor,
           mockComposerRepository,
           mockSaveTemplateEmailInteractor,
+          mockDownloadDriveFileInteractor,
           autoSaveComposerId: 'idempotent-teardown-test',
         );
 

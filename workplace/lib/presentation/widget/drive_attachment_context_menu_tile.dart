@@ -15,6 +15,7 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final Uri workplaceUri;
   final String label;
   final OnPickDriveAttachmentResult? onPickResult;
+  final void Function(Object error)? onError;
   final Future<WorkplaceIntent?> Function({
     required String addAsLink,
     required String addAsAttachment,
@@ -27,6 +28,7 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
     required this.workplaceUri,
     required this.label,
     this.onPickResult,
+    this.onError,
     this.onFetchIntent,
   });
 
@@ -52,6 +54,9 @@ abstract class _DriveAttachmentContextMenuTileState
 
   @override
   OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;
+
+  @override
+  void Function(Object error)? get pickerOnError => widget.onError;
 
   @override
   Widget build(BuildContext context) {

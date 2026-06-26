@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-06-02T10:52:48.670230",
+  "@@last_modified": "2026-06-26T15:10:19.043002",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5298,6 +5298,12 @@
   },
   "driveAttachmentToggleDescription": "Enable Drive attachment button",
   "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentFailed": "Failed to attach file from Drive.",
+  "@driveAttachmentFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

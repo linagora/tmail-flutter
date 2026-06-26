@@ -12,10 +12,12 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
   final void Function(String composerId, List<DriveDocument> result)? onPickResult;
+  final void Function(String composerId, Object error)? onError;
 
   const WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
     this.onPickResult,
+    this.onError,
   });
 
   Future<WorkplaceIntent?> _fetchIntent(
@@ -47,6 +49,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickResult: onPickResult == null
               ? null
               : (result) => onPickResult!(composerId, result),
+          onError: onError == null
+              ? null
+              : (error) => onError!(composerId, error),
           onFetchIntent: ({required addAsLink, required addAsAttachment}) =>
               _fetchIntent(uri, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
         );
@@ -73,6 +78,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickResult: onPickResult == null
               ? null
               : (result) => onPickResult!(composerId, result),
+          onError: onError == null
+              ? null
+              : (error) => onError!(composerId, error),
           onFetchIntent: ({required addAsLink, required addAsAttachment}) =>
               _fetchIntent(uri, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
         );

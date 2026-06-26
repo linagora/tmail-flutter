@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:core/core.dart';
@@ -132,6 +131,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/usecases/download_drive_file_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
@@ -184,6 +185,7 @@ class ComposerController extends BaseController
   final String? autoSaveComposerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
+  final DownloadDriveFileInteractor _downloadDriveFileInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -304,6 +306,7 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
+    this._downloadDriveFileInteractor,
     {
       this.composerId,
       this.autoSaveComposerId,
@@ -1007,54 +1010,28 @@ class ComposerController extends BaseController
   }
 
   void handleDrivePickResult(List<DriveDocument> result) {
-    for (final doc in result) {
-      if (doc.sharingLink != null) {
-        _insertDriveLinkHtml(doc);
-      } else if (doc.downloadLink != null) {
-        _downloadAndUploadDriveFile(doc);
-      }
-    }
+    DriveAttachmentHandler(
+      uploadController: uploadController,
+      downloadDriveFileInteractor: _downloadDriveFileInteractor,
+      insertHtml: (html) {
+        if (PlatformInfo.isWeb) {
+          richTextWebController?.editorController.insertHtml(html);
+        } else {
+          htmlEditorApi?.insertHtml(html);
+        }
+      },
+      uploadFiles: uploadAttachmentsAction,
+      onError: handleDriveAttachmentError,
+    ).handleDrivePickResult(result);
   }
 
-  void _insertDriveLinkHtml(DriveDocument doc) {
-    final sharingLink = Uri.tryParse(doc.sharingLink.toString());
-    if (sharingLink == null) return;
-    if (!sharingLink.isScheme('https') && kReleaseMode) return;
-    final href = const HtmlEscape(HtmlEscapeMode.attribute)
-        .convert(sharingLink.toString());
-    final label = const HtmlEscape().convert(doc.name);
-    final linkHtml = '<a href="$href">$label</a>';
-    if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.insertHtml(linkHtml);
-    } else {
-      htmlEditorApi?.insertHtml(linkHtml);
-    }
-  }
-
-  Future<void> _downloadAndUploadDriveFile(DriveDocument doc) async {
-    try {
-      uploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: doc.size,
-        onValidationSuccess: () async {
-          // Use a plain Dio instance — no app interceptors that add auth headers,
-          // which would cause CORS preflight failures on external download URLs.
-          final response = await Dio().get<List<int>>(
-            doc.downloadLink.toString(),
-            options: Options(responseType: ResponseType.bytes),
-          );
-          final data = response.data;
-          if (data == null) return;
-          final fileInfo = FileInfo(
-            fileName: doc.name,
-            fileSize: doc.size,
-            bytes: Uint8List.fromList(data),
-            type: doc.mimeType,
-          );
-          uploadAttachmentsAction(pickedFiles: [fileInfo]);
-        },
+  void handleDriveAttachmentError(Object error) {
+    logWarning('ComposerController::handleDriveAttachmentError: $error');
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).driveAttachmentFailed,
       );
-    } catch (e) {
-      logWarning('ComposerController::_downloadAndUploadDriveFile: $e');
     }
   }
 

@@ -99,7 +99,6 @@ class ComposerView extends GetWidget<ComposerController> {
                       context,
                       _pickAttachmentsActionTiles(context, ref)
                     ),
-                    composerId: controller.composerId ?? '',
                     insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                     openRichToolbarAction: () =>
                       controller.richTextMobileTabletController?.showFormatStyleBottomSheet(

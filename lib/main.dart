@@ -54,7 +54,6 @@ class _TMailAppState extends State<TMailApp> {
         workplace_localizations.AppLocalizations.delegate,
         AppLocalizationsDelegate(),
         ScribeLocalizations.delegate,
-        workplace_localizations.AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

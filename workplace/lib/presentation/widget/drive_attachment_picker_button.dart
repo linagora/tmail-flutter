@@ -16,6 +16,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
   final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
   final OnPickDriveAttachmentResult? onPickResult;
+  final void Function(Object error)? onError;
   final Future<WorkplaceIntent?> Function({
     required String addAsLink,
     required String addAsAttachment,
@@ -28,6 +29,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
     required this.workplaceUri,
     this.style = const ComposerToolbarButtonStyle(),
     this.onPickResult,
+    this.onError,
     this.onFetchIntent,
   });
 
@@ -53,6 +55,9 @@ abstract class _DriveAttachmentPickerButtonState
 
   @override
   OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;
+
+  @override
+  void Function(Object error)? get pickerOnError => widget.onError;
 
   @override
   Widget build(BuildContext context) {
