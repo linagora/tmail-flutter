@@ -19,7 +19,6 @@ class DriveAttachmentPickerButton extends StatefulWidget {
   final void Function(Object error)? onError;
   final Future<WorkplaceIntent?> Function({
     required String addAsLink,
-    required String addAsAttachment,
   })? onFetchIntent;
 
   const DriveAttachmentPickerButton({
@@ -50,7 +49,6 @@ abstract class _DriveAttachmentPickerButtonState
   @override
   Future<WorkplaceIntent?> Function({
     required String addAsLink,
-    required String addAsAttachment,
   })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override

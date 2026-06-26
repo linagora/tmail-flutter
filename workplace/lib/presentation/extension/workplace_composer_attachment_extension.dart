@@ -23,7 +23,6 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Future<WorkplaceIntent?> _fetchIntent(
     Uri workplaceUrl, {
     required String addAsLink,
-    required String addAsAttachment,
   }) async =>
       WorkplaceIntent(
         intentId: 'debug',
@@ -52,8 +51,8 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onError: onError == null
               ? null
               : (error) => onError!(composerId, error),
-          onFetchIntent: ({required addAsLink, required addAsAttachment}) =>
-              _fetchIntent(uri, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
+          onFetchIntent: ({required addAsLink}) =>
+              _fetchIntent(uri, addAsLink: addAsLink),
         );
       },
     );
@@ -81,8 +80,8 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onError: onError == null
               ? null
               : (error) => onError!(composerId, error),
-          onFetchIntent: ({required addAsLink, required addAsAttachment}) =>
-              _fetchIntent(uri, addAsLink: addAsLink, addAsAttachment: addAsAttachment),
+          onFetchIntent: ({required addAsLink}) =>
+              _fetchIntent(uri, addAsLink: addAsLink),
         );
       },
     );

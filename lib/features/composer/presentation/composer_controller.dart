@@ -131,7 +131,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
-import 'package:workplace/domain/usecases/download_drive_file_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -185,7 +184,6 @@ class ComposerController extends BaseController
   final String? autoSaveComposerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
-  final DownloadDriveFileInteractor _downloadDriveFileInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -306,7 +304,6 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
-    this._downloadDriveFileInteractor,
     {
       this.composerId,
       this.autoSaveComposerId,
@@ -1011,8 +1008,6 @@ class ComposerController extends BaseController
 
   void handleDrivePickResult(List<DriveDocument> result) {
     DriveAttachmentHandler(
-      uploadController: uploadController,
-      downloadDriveFileInteractor: _downloadDriveFileInteractor,
       insertHtml: (html) {
         if (PlatformInfo.isWeb) {
           richTextWebController?.editorController.insertHtml(html);
@@ -1020,19 +1015,7 @@ class ComposerController extends BaseController
           htmlEditorApi?.insertHtml(html);
         }
       },
-      uploadFiles: uploadAttachmentsAction,
-      onError: handleDriveAttachmentError,
     ).handleDrivePickResult(result);
-  }
-
-  void handleDriveAttachmentError(Object error) {
-    logWarning('ComposerController::handleDriveAttachmentError: $error');
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).driveAttachmentFailed,
-      );
-    }
   }
 
   Future<dynamic> _showSendingMessageDialog({

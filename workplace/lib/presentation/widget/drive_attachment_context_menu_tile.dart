@@ -18,7 +18,6 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final void Function(Object error)? onError;
   final Future<WorkplaceIntent?> Function({
     required String addAsLink,
-    required String addAsAttachment,
   })? onFetchIntent;
 
   const DriveAttachmentContextMenuTile({
@@ -49,7 +48,6 @@ abstract class _DriveAttachmentContextMenuTileState
   @override
   Future<WorkplaceIntent?> Function({
     required String addAsLink,
-    required String addAsAttachment,
   })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override

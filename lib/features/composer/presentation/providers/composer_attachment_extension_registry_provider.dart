@@ -21,9 +21,6 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
           logWarning('ComposerAttachmentExtensionRegistry::onPickResult: $e');
         }
       },
-      onError: (composerId, error) {
-        getBinding<ComposerController>(tag: composerId)?.handleDriveAttachmentError(error);
-      },
     ),
   ]);
 }

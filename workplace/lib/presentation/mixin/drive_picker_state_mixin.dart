@@ -14,7 +14,6 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   Future<WorkplaceIntent?> Function({
     required String addAsLink,
-    required String addAsAttachment,
   })? get pickerFetchIntent;
 
   OnPickDriveAttachmentResult? get pickerOnPickResult;
@@ -34,7 +33,6 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLink: l10n.addAsLink,
-        addAsAttachment: l10n.addAsAttachment,
       );
       if (intent == null) {
         _modalOpen = false;
