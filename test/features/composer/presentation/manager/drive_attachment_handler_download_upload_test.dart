@@ -11,6 +11,16 @@ import 'package:workplace/domain/state/download_drive_file_state.dart';
 import 'drive_attachment_handler_test.mocks.dart';
 import 'drive_attachment_handler_test_helper.dart';
 
+void _stubValidationSuccess(MockUploadController mock) {
+  when(mock.validateTotalSizeAttachmentsBeforeUpload(
+    totalSizePreparedFiles: anyNamed('totalSizePreparedFiles'),
+    onValidationSuccess: anyNamed('onValidationSuccess'),
+  )).thenAnswer((invocation) {
+    final callback = invocation.namedArguments[#onValidationSuccess] as VoidCallback?;
+    callback?.call();
+  });
+}
+
 void main() {
   late MockUploadController mockUploadController;
   late MockDownloadDriveFileInteractor mockDownloadInteractor;
@@ -81,13 +91,7 @@ void main() {
         (_) => Stream.value(Right(DownloadDriveFileSuccess(fileInfo2))),
       );
 
-      when(mockUploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: anyNamed('totalSizePreparedFiles'),
-        onValidationSuccess: anyNamed('onValidationSuccess'),
-      )).thenAnswer((invocation) {
-        final callback = invocation.namedArguments[#onValidationSuccess] as VoidCallback?;
-        callback?.call();
-      });
+      _stubValidationSuccess(mockUploadController);
 
       await handler.downloadAndUploadDriveFile([attachmentDoc, doc2]);
       await Future.delayed(Duration.zero);
@@ -103,13 +107,7 @@ void main() {
         (_) => Stream.value(Right(DownloadDriveFileSuccess(fileInfo))),
       );
 
-      when(mockUploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: anyNamed('totalSizePreparedFiles'),
-        onValidationSuccess: anyNamed('onValidationSuccess'),
-      )).thenAnswer((invocation) {
-        final callback = invocation.namedArguments[#onValidationSuccess] as VoidCallback?;
-        callback?.call();
-      });
+      _stubValidationSuccess(mockUploadController);
 
       await handler.downloadAndUploadDriveFile([attachmentDoc]);
       await Future.delayed(Duration.zero);
@@ -123,13 +121,7 @@ void main() {
         (_) => Stream.value(Left(DownloadDriveFileFailure(Exception('Network error')))),
       );
 
-      when(mockUploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: anyNamed('totalSizePreparedFiles'),
-        onValidationSuccess: anyNamed('onValidationSuccess'),
-      )).thenAnswer((invocation) {
-        final callback = invocation.namedArguments[#onValidationSuccess] as VoidCallback?;
-        callback?.call();
-      });
+      _stubValidationSuccess(mockUploadController);
 
       await handler.downloadAndUploadDriveFile([attachmentDoc]);
       await Future.delayed(Duration.zero);
@@ -147,13 +139,7 @@ void main() {
         ]),
       );
 
-      when(mockUploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: anyNamed('totalSizePreparedFiles'),
-        onValidationSuccess: anyNamed('onValidationSuccess'),
-      )).thenAnswer((invocation) {
-        final callback = invocation.namedArguments[#onValidationSuccess] as VoidCallback?;
-        callback?.call();
-      });
+      _stubValidationSuccess(mockUploadController);
 
       await handler.downloadAndUploadDriveFile([attachmentDoc]);
       await Future.delayed(Duration.zero);
