@@ -4306,6 +4306,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Монгольский",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "descriptionWelcomeTo": "Новый стандарт электронной почты \n с открытым исходным кодом",
   "@descriptionWelcomeTo": {
     "type": "text",

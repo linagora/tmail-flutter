@@ -4264,6 +4264,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Tiếng Mông Cổ",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "descriptionWelcomeTo": "Tiêu chuẩn nguồn mở mới cho\ne-mail an toàn và chuyên nghiệp",
   "@descriptionWelcomeTo": {
     "type": "text",

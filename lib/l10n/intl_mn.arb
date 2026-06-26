@@ -1,5 +1,5 @@
 {
-  "initializing_data": "Initializing data...",
+  "initializing_data": "Өгөгдлийг ачааллаж байна...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -11,25 +11,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "To login and access your message please connect to your JMAP server",
+  "loginInputUrlMessage": "Нэвтэрч мессежээ үзэхийн тулд JMAP сервертээ холбогдоно уу",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "Enter your credentials to sign in",
+  "loginInputCredentialMessage": "Нэвтрэхийн тулд нэвтрэх мэдээллээ оруулна уу",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "Bad credentials": "Bad credentials",
+  "Bad credentials": "Нэвтрэх мэдээлэл буруу байна",
   "@Bad credentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "next": "Next",
+  "next": "Дараах",
   "@next": {
     "type": "text",
     "placeholders_order": [],
@@ -41,139 +41,139 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "email",
+  "email": "имэйл",
   "@email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "password": "password",
+  "password": "нууц үг",
   "@password": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login": "Login",
+  "login": "Нэвтрэх",
   "@login": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signIn": "Sign In",
+  "signIn": "Нэвтрэх",
   "@signIn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "Email is required",
+  "requiredEmail": "Имэйл оруулах шаардлагатай",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredPassword": "Password is required",
+  "requiredPassword": "Нууц үг оруулах шаардлагатай",
   "@requiredPassword": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredUrl": "Server address is required",
+  "requiredUrl": "Серверийн хаяг оруулах шаардлагатай",
   "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapBasedMailSolution": "JMAP-based\ncollaborative team mail solution",
+  "jmapBasedMailSolution": "JMAP-д суурилсан\nхамтын ажиллагааны багийн имэйл шийдэл",
   "@jmapBasedMailSolution": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapStandard": "JMAP standard",
+  "jmapStandard": "JMAP стандарт",
   "@jmapStandard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "encryptedMailbox": "Encrypted mailbox",
+  "encryptedMailbox": "Шифрлэгдсэн шуудангийн хайрцаг",
   "@encryptedMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "Manage email as a team",
+  "manageEmailAsATeam": "Имэйлийг багаар удирдах",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "multipleIntegrations": "Multiple integrations",
+  "multipleIntegrations": "Олон төрлийн интеграц",
   "@multipleIntegrations": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknownError": "Unknown error occurred, please try again",
+  "unknownError": "Тодорхойгүй алдаа гарлаа, дахин оролдоно уу",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_folder": "Search folder",
+  "search_folder": "Хавтас хайх",
   "@search_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalFolders": "Personal folders",
+  "personalFolders": "Хувийн хавтаснууд",
   "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder": "New folder",
+  "new_folder": "Шинэ хавтас",
   "@new_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_all": "Reply all",
+  "reply_all": "Бүгдэд хариулах",
   "@reply_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply": "Reply",
+  "reply": "Хариулах",
   "@reply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forward": "Forward",
+  "forward": "Дамжуулах",
   "@forward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "No email selected",
+  "no_mail_selected": "Имэйл сонгоогүй байна",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "from_email_address_prefix": "From",
+  "from_email_address_prefix": "Хэнээс",
   "@from_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "To",
+  "to_email_address_prefix": "Хэнд",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread_email_notification": "new",
+  "unread_email_notification": "шинэ",
   "@unread_email_notification": {
     "type": "text",
     "placeholders_order": [],
@@ -191,25 +191,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "Name or email address",
+  "hint_text_email_address": "Нэр эсвэл имэйл хаяг",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject_email": "Subject",
+  "subject_email": "Гарчиг",
   "@subject_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "Start writing your email here",
+  "hint_content_email_composer": "Имэйлээ энд бичиж эхлээрэй",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "On {sentDate}, from {emailAddress}",
+  "header_email_quoted": "{sentDate}-нд, {emailAddress}-ээс",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -233,19 +233,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Your email being sent...",
+  "your_email_being_sent": "Таны имэйлийг илгээж байна...",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "Your email should have at least one recipient",
+  "message_dialog_send_email_without_recipient": "Таны имэйл дор хаяж нэг хүлээн авагчтай байх ёстой",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_email_selected": "{count} selected",
+  "count_email_selected": "{count} сонгогдсон",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -255,37 +255,37 @@
       "count": {}
     }
   },
-  "mark_as_unread": "Mark as unread",
+  "mark_as_unread": "Уншаагүй гэж тэмдэглэх",
   "@mark_as_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_read": "Mark as read",
+  "mark_as_read": "Уншсан гэж тэмдэглэх",
   "@mark_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "Move to trash",
+  "move_to_trash": "Хогийн сав руу зөөх",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_starred": "Mark as starred",
+  "mark_as_starred": "Одтой гэж тэмдэглэх",
   "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "Move to spam",
+  "move_to_spam": "Спам руу зөөх",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "Marked {count} item as read",
+  "marked_multiple_item_as_read": "{count} зүйлийг уншсан гэж тэмдэглэв",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -295,7 +295,7 @@
       "count": {}
     }
   },
-  "marked_multiple_item_as_unread": "Marked {count} item as unread",
+  "marked_multiple_item_as_unread": "{count} зүйлийг уншаагүй гэж тэмдэглэв",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -305,19 +305,19 @@
       "count": {}
     }
   },
-  "an_error_occurred": "Error! An error occurred. Please try again later.",
+  "an_error_occurred": "Алдаа! Алдаа гарлаа. Дараа дахин оролдоно уу.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment_download_failed": "Attachment download failed",
+  "attachment_download_failed": "Хавсралт татаж чадсангүй",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "Downloading {fileName}",
+  "downloading_file": "{fileName}-г татаж байна",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -327,31 +327,31 @@
       "fileName": {}
     }
   },
-  "preparing_to_export": "Preparing to export",
+  "preparing_to_export": "Экспортод бэлтгэж байна",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "Cancel",
+  "cancel": "Цуцлах",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "User cancel download file",
+  "user_cancel_download_file": "Хэрэглэгч файл татахаа цуцаллаа",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "you_need_to_grant_files_permission_to_download_attachments": "Хавсралтыг татахын тулд файлын зөвшөөрөл олгох шаардлагатай",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Attachments ({totalSize})",
+  "titleHeaderAttachment": "{count} хавсралт ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -363,7 +363,7 @@
       "totalSize": {}
     }
   },
-  "singularAttachmentTitleHeader": "{count} Attachment ({totalSize})",
+  "singularAttachmentTitleHeader": "{count} хавсралт ({totalSize})",
   "@singularAttachmentTitleHeader": {
     "type": "text",
     "placeholders_order": [
@@ -375,43 +375,43 @@
       "totalSize": {}
     }
   },
-  "attach_file_prepare_text": "Preparing to attach file...",
+  "attach_file_prepare_text": "Файл хавсаргахад бэлтгэж байна...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "Can not upload this file as attachments",
+  "can_not_upload_this_file_as_attachments": "Энэ файлыг хавсралт болгон байршуулж чадсангүй",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "Attachments uploaded successfully",
+  "attachments_uploaded_successfully": "Хавсралтуудыг амжилттай байршууллаа",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pick_attachments": "Pick attachments",
+  "pick_attachments": "Хавсралт сонгох",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "Photos and Videos",
+  "photos_and_videos": "Зураг ба видео",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "Browse",
+  "browse": "Үзэх",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "movedToFolder": "Moved to {destinationMailboxPath}",
+  "movedToFolder": "{destinationMailboxPath} руу зөөв",
   "@movedToFolder": {
     "type": "text",
     "placeholders_order": [
@@ -421,13 +421,13 @@
       "destinationMailboxPath": {}
     }
   },
-  "undo": "Undo",
+  "undo": "Буцаах",
   "@undo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "Marked star {count} item",
+  "marked_star_multiple_item": "{count} зүйлийг одтой гэж тэмдэглэв",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -437,7 +437,7 @@
       "count": {}
     }
   },
-  "marked_unstar_multiple_item": "Marked unstar {count} item",
+  "marked_unstar_multiple_item": "{count} зүйлийн одыг арилгав",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -447,91 +447,91 @@
       "count": {}
     }
   },
-  "search_mail": "Search mail",
+  "search_mail": "Имэйл хайх",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "Search for",
+  "prefix_suggestion_search": "Хайх",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "No emails are matching your search",
+  "no_emails_matching_your_search": "Таны хайлтад тохирох имэйл алга",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "results": "Results",
+  "results": "Үр дүн",
   "@results": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit": "Edit",
+  "edit": "Засах",
   "@edit": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_emails": "Search for emails and files",
+  "hint_search_emails": "Имэйл болон файл хайх",
   "@hint_search_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "Compose",
+  "compose": "Бичих",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete": "Delete",
+  "delete": "Устгах",
   "@delete": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move": "Move",
+  "move": "Зөөх",
   "@move": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spam": "Spam",
+  "spam": "Спам",
   "@spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "flag": "Flag",
+  "flag": "Туг",
   "@flag": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "read": "Read",
+  "read": "Уншсан",
   "@read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread": "Unread",
+  "unread": "Уншаагүй",
   "@unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "the_feature_is_under_development": "This feature is under development.",
+  "the_feature_is_under_development": "Энэ боломж хөгжүүлэлтийн шатанд байна.",
   "@the_feature_is_under_development": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_message_toast": "You’ve marked messages as \"{action}\"",
+  "marked_message_toast": "Та мессежүүдийг \"{action}\" гэж тэмдэглэлээ",
   "@marked_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -541,37 +541,37 @@
       "action": {}
     }
   },
-  "folders": "Folders",
+  "folders": "Хавтаснууд",
   "@folders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sign_out": "Sign out",
+  "sign_out": "Гарах",
   "@sign_out": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchFolders": "Search folders",
+  "hintSearchFolders": "Хавтас хайх",
   "@hintSearchFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_attachments": "With attachments",
+  "with_attachments": "Хавсралттай",
   "@with_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starred": "Starred",
+  "starred": "Одтой",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_message_toast": "You’ve filtered messages by \"{filterOption}\"",
+  "filter_message_toast": "Та мессежүүдийг \"{filterOption}\"-аар шүүлээ",
   "@filter_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -581,61 +581,61 @@
       "filterOption": {}
     }
   },
-  "disable_filter_message_toast": "You’ve disabled filtered messages",
+  "disable_filter_message_toast": "Та мессежийн шүүлтийг идэвхгүй болголоо",
   "@disable_filter_message_toast": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_unread": "With Unread",
+  "with_unread": "Уншаагүй мессежтэй",
   "@with_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_starred": "With Starred",
+  "with_starred": "Одтой мессежтэй",
   "@with_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_has_been_sent_successfully": "Message has been sent successfully",
+  "message_has_been_sent_successfully": "Мессеж амжилттай илгээгдлээ",
   "@message_has_been_sent_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "done": "Done",
+  "done": "Дууссан",
   "@done": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFolder": "New folder",
+  "newFolder": "Шинэ хавтас",
   "@newFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfFolderIsRequired": "Name of folder is required",
+  "nameOfFolderIsRequired": "Хавтасны нэр оруулах шаардлагатай",
   "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderNameCannotContainSpecialCharacters": "Folder name cannot contain special characters",
+  "folderNameCannotContainSpecialCharacters": "Хавтасны нэр тусгай тэмдэгт агуулж болохгүй",
   "@folderNameCannotContainSpecialCharacters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_folder_name_is_already_taken": "This folder name is already taken",
+  "this_folder_name_is_already_taken": "Энэ хавтасны нэр аль хэдийн ашиглагдсан байна",
   "@this_folder_name_is_already_taken": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder_is_created": "{nameMailbox} is created",
+  "new_folder_is_created": "{nameMailbox} үүсгэгдлээ",
   "@new_folder_is_created": {
     "type": "text",
     "placeholders_order": [
@@ -645,61 +645,61 @@
       "nameMailbox": {}
     }
   },
-  "createNewFolderFailure": "Create new folder failure",
+  "createNewFolderFailure": "Шинэ хавтас үүсгэхэд алдаа гарлаа",
   "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "drafts_saved": "Draft saved",
+  "drafts_saved": "Ноорог хадгалагдлаа",
   "@drafts_saved": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discard": "Discard",
+  "discard": "Хаях",
   "@discard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "skip": "Skip",
+  "skip": "Алгасах",
   "@skip": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputCreateNewFolder": "Enter name of folder",
+  "hintInputCreateNewFolder": "Хавтасны нэрийг оруулна уу",
   "@hintInputCreateNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "rename": "Rename",
+  "rename": "Нэр өөрчлөх",
   "@rename": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersSuccessfully": "Delete folders successfully",
+  "deleteFoldersSuccessfully": "Хавтаснуудыг амжилттай устгалаа",
   "@deleteFoldersSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersFailure": "Delete folders failure",
+  "deleteFoldersFailure": "Хавтас устгахад алдаа гарлаа",
   "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFolders": "Delete folders",
+  "deleteFolders": "Хавтаснуудыг устгах",
   "@deleteFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_folder": "\"{nameMailbox}\" folder and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
+  "message_confirmation_dialog_delete_folder": "\"{nameMailbox}\" хавтас болон түүний доторх бүх дэд хавтас, мессежүүд устгагдах бөгөөд сэргээх боломжгүй. Устгасаар үргэлжлүүлэх үү?",
   "@message_confirmation_dialog_delete_folder": {
     "type": "text",
     "placeholders_order": [
@@ -709,109 +709,109 @@
       "nameMailbox": {}
     }
   },
-  "renameFolder": "Rename folder",
+  "renameFolder": "Хавтасны нэр өөрчлөх",
   "@renameFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_field_cannot_be_blank": "This field cannot be blank",
+  "this_field_cannot_be_blank": "Энэ талбар хоосон байж болохгүй",
   "@this_field_cannot_be_blank": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "there_is_already_folder_with_the_same_name": "There is already folder with the same name",
+  "there_is_already_folder_with_the_same_name": "Ижил нэртэй хавтас аль хэдийн байна",
   "@there_is_already_folder_with_the_same_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "Email address is not in the correct format",
+  "email_address_is_not_in_the_correct_format": "Имэйл хаяг буруу форматтай байна",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preparing_to_save": "Preparing to save",
+  "preparing_to_save": "Хадгалахад бэлтгэж байна",
   "@preparing_to_save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_message": "New message",
+  "new_message": "Шинэ мессеж",
   "@new_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hide": "Hide",
+  "hide": "Нуух",
   "@hide": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "Copy email address",
+  "copy_email_address": "Имэйл хаягийг хуулах",
   "@copy_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose_email": "Compose email",
+  "compose_email": "Имэйл бичих",
   "@compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "Email address copied to clipboard",
+  "email_address_copied_to_clipboard": "Имэйл хаягийг түр санах ойд хууллаа",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "minimize": "Minimize",
+  "minimize": "Багасгах",
   "@minimize": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fullscreen": "Fullscreen",
+  "fullscreen": "Бүтэн дэлгэц",
   "@fullscreen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "close": "Close",
+  "close": "Хаах",
   "@close": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send": "Send",
+  "send": "Илгээх",
   "@send": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments": "Attachments",
+  "attachments": "Хавсралтууд",
   "@attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment": "Attachment",
+  "attachment": "Хавсралт",
   "@attachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showAll": "Show all",
+  "showAll": "Бүгдийг харуулах",
   "@showAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_a_subject": "Are you sure to send messages without a subject?",
+  "message_dialog_send_email_without_a_subject": "Гарчиггүйгээр мессеж илгээхдээ итгэлтэй байна уу?",
   "@message_dialog_send_email_without_a_subject": {
     "type": "text",
     "placeholders_order": [],
@@ -823,139 +823,139 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "Search emails",
+  "search_emails": "Имэйл хайх",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select_all": "Select all",
+  "select_all": "Бүгдийг сонгох",
   "@select_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_all_as_read": "Mark all as read",
+  "mark_all_as_read": "Бүгдийг уншсан гэж тэмдэглэх",
   "@mark_all_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_messages": "Filter messages",
+  "filter_messages": "Мессеж шүүх",
   "@filter_messages": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "Not starred",
+  "not_starred": "Одгүй",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select": "Select",
+  "select": "Сонгох",
   "@select": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "more": "More",
+  "more": "Илүү",
   "@more": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "back": "Back",
+  "back": "Буцах",
   "@back": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "expand": "Expand",
+  "expand": "Дэлгэх",
   "@expand": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "collapse": "Collapse",
+  "collapse": "Хураах",
   "@collapse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save_to_drafts": "Save to drafts",
+  "save_to_drafts": "Ноорогт хадгалах",
   "@save_to_drafts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_compose_email": "Start composing a letter...",
+  "hint_compose_email": "Захидал бичиж эхлээрэй...",
   "@hint_compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attach_file": "Attach file",
+  "attach_file": "Файл хавсаргах",
   "@attach_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "show": "Show",
+  "show": "Харуулах",
   "@show": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "add_recipients": "Add recipients",
+  "add_recipients": "Хүлээн авагч нэмэх",
   "@add_recipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sending_failed": "Sending failed",
+  "sending_failed": "Илгээхэд алдаа гарлаа",
   "@sending_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send_anyway": "Send anyway",
+  "send_anyway": "Ямар ч байсан илгээх",
   "@send_anyway": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_subject": "Empty subject",
+  "empty_subject": "Хоосон гарчиг",
   "@empty_subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "Check the correctness of email addresses and try again",
+  "message_dialog_send_email_with_email_address_invalid": "Имэйл хаягуудын зөв эсэхийг шалгаад дахин оролдоно уу",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "Fix email addresses",
+  "fix_email_addresses": "Имэйл хаягуудыг засах",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_download_has_started": "Your download has started",
+  "your_download_has_started": "Таны татах ажиллагаа эхэллээ",
   "@your_download_has_started": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_trash": "Moved to Trash",
+  "moved_to_trash": "Хогийн сав руу зөөв",
   "@moved_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_internet_connection": "No internet connection",
+  "no_internet_connection": "Интернэт холболт алга",
   "@no_internet_connection": {
     "type": "text",
     "placeholders_order": [],
@@ -967,37 +967,37 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_delete_all_email_in_trash_button": "All messages in Trash will be deleted if you reach limited storage.",
+  "message_delete_all_email_in_trash_button": "Хадгалах багтаамж дүүрсэн тохиолдолд Хогийн сав дахь бүх мессеж устгагдана.",
   "@message_delete_all_email_in_trash_button": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_now": "Empty trash now",
+  "empty_trash_now": "Хогийн савыг одоо хоослох",
   "@empty_trash_now": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_folder": "Empty trash folder",
+  "empty_trash_folder": "Хогийн савны хавтсыг хоослох",
   "@empty_trash_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "You are about to permanently delete all items in Trash. Do you want to continue?",
+  "empty_trash_dialog_message": "Та Хогийн сав дахь бүх зүйлийг бүрмөсөн устгах гэж байна. Үргэлжлүүлэх үү?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_all": "Delete all",
+  "delete_all": "Бүгдийг устгах",
   "@delete_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_delete_multiple_email_permanently_success": "{count} Messages has been deleted forever",
+  "toast_message_delete_multiple_email_permanently_success": "{count} мессежийг бүрмөсөн устгалаа",
   "@toast_message_delete_multiple_email_permanently_success": {
     "type": "text",
     "placeholders_order": [
@@ -1007,31 +1007,31 @@
       "count": {}
     }
   },
-  "toast_message_delete_a_email_permanently_success": "Message has been deleted forever",
+  "toast_message_delete_a_email_permanently_success": "Мессежийг бүрмөсөн устгалаа",
   "@toast_message_delete_a_email_permanently_success": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_permanently": "Delete permanently",
+  "delete_permanently": "Бүрмөсөн устгах",
   "@delete_permanently": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_messages_forever": "Delete messages forever",
+  "delete_messages_forever": "Мессежүүдийг бүрмөсөн устгах",
   "@delete_messages_forever": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_message_forever": "Delete message forever",
+  "delete_message_forever": "Мессежийг бүрмөсөн устгах",
   "@delete_message_forever": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName}. Do you want to continue?",
+  "delete_multiple_messages_dialog": "Та {mailboxName} доторх {count} зүйлийг бүрмөсөн устгах гэж байна. Үргэлжлүүлэх үү?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -1043,25 +1043,25 @@
       "mailboxName": {}
     }
   },
-  "delete_single_message_dialog": "You are about to permanently delete this message. Do you want to continue?",
+  "delete_single_message_dialog": "Та энэ мессежийг бүрмөсөн устгах гэж байна. Үргэлжлүүлэх үү?",
   "@delete_single_message_dialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_empty_trash_folder_success": "All messages has been deleted forever",
+  "toast_message_empty_trash_folder_success": "Бүх мессежийг бүрмөсөн устгалаа",
   "@toast_message_empty_trash_folder_success": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "version": "Version",
+  "version": "Хувилбар",
   "@version": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_exceeds_maximum_size": "Your message could not be sent because it exceeds the maximum size of {maxSize}",
+  "message_dialog_send_email_exceeds_maximum_size": "Таны мессеж {maxSize} дээд хэмжээнээс хэтэрсэн тул илгээгдсэнгүй",
   "@message_dialog_send_email_exceeds_maximum_size": {
     "type": "text",
     "placeholders_order": [
@@ -1071,7 +1071,7 @@
       "maxSize": {}
     }
   },
-  "message_dialog_upload_attachments_exceeds_maximum_size": "You have reached the maximum file size. Please upload files that total size is less than {maxSize}",
+  "message_dialog_upload_attachments_exceeds_maximum_size": "Та файлын дээд хэмжээнд хүрсэн байна. Нийт хэмжээ нь {maxSize}-аас бага файл байршуулна уу",
   "@message_dialog_upload_attachments_exceeds_maximum_size": {
     "type": "text",
     "placeholders_order": [
@@ -1081,163 +1081,163 @@
       "maxSize": {}
     }
   },
-  "got_it": "Got it",
+  "got_it": "Ойлголоо",
   "@got_it": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "maximum_files_size": "Maximum files size",
+  "maximum_files_size": "Файлын дээд хэмжээ",
   "@maximum_files_size": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exchange": "Exchange",
+  "exchange": "Солих",
   "@exchange": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_message": "Move message",
+  "move_message": "Мессеж зөөх",
   "@move_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwarded_message": "Forwarded message",
+  "forwarded_message": "Дамжуулсан мессеж",
   "@forwarded_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "date": "Date",
+  "date": "Огноо",
   "@date": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_spam": "Mark as spam",
+  "mark_as_spam": "Спам гэж тэмдэглэх",
   "@mark_as_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "remove_from_spam": "Remove from spam",
+  "remove_from_spam": "Спамаас хасах",
   "@remove_from_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_spam": "Marked as spam",
+  "marked_as_spam": "Спам гэж тэмдэглэв",
   "@marked_as_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_not_spam": "Marked as not spam",
+  "marked_as_not_spam": "Спам биш гэж тэмдэглэв",
   "@marked_as_not_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "star": "Star",
+  "star": "Од",
   "@star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_star": "Unstar",
+  "un_star": "Одыг арилгах",
   "@un_star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_spam": "Unspam",
+  "un_spam": "Спамаас хасах",
   "@un_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "settings": "Settings",
+  "settings": "Тохиргоо",
   "@settings": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manage_account": "Manage account",
+  "manage_account": "Бүртгэл удирдах",
   "@manage_account": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profiles": "Profiles",
+  "profiles": "Профайлууд",
   "@profiles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Info about you, and options to manage it.",
+  "profilesSettingExplanation": "Таны тухай мэдээлэл ба түүнийг удирдах сонголтууд.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identities": "Identities",
+  "identities": "Таних мэдээллүүд",
   "@identities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setDefaultIdentity": "Set as default identity",
+  "setDefaultIdentity": "Үндсэн таних мэдээлэл болгох",
   "@setDefaultIdentity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "Select the identity or email address you want to use to send an emails",
+  "identitiesSettingExplanation": "Имэйл илгээхэд ашиглах таних мэдээлэл эсвэл имэйл хаягаа сонгоно уу",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewIdentity": "Create new identity",
+  "createNewIdentity": "Шинэ таних мэдээлэл үүсгэх",
   "@createNewIdentity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_identity": "New Identity",
+  "new_identity": "Шинэ таних мэдээлэл",
   "@new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "name": "Name",
+  "name": "Нэр",
   "@name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_to": "Reply to",
+  "reply_to": "Хариу хүлээн авах хаяг",
   "@reply_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_to": "Bcc to",
+  "bcc_to": "Bcc хаяг",
   "@bcc_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signature": "Signature",
+  "signature": "Гарын үсэг",
   "@signature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "html_template": "Html template",
+  "html_template": "Html загвар",
   "@html_template": {
     "type": "text",
     "placeholders_order": [],
@@ -1249,163 +1249,163 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "create": "Create",
+  "create": "Үүсгэх",
   "@create": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_have_created_a_new_identity": "You have created a new identity",
+  "you_have_created_a_new_identity": "Та шинэ таних мэдээлэл үүсгэлээ",
   "@you_have_created_a_new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_have_created_a_new_default_identity": "You have created a new default identity",
+  "you_have_created_a_new_default_identity": "Та шинэ үндсэн таних мэдээлэл үүсгэлээ",
   "@you_have_created_a_new_default_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "all_identities": "All identities",
+  "all_identities": "Бүх таних мэдээлэл",
   "@all_identities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "default_value": "Default",
+  "default_value": "Үндсэн",
   "@default_value": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_identity": "Delete identity",
+  "delete_identity": "Таних мэдээлэл устгах",
   "@delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_identity": "Are you sure you want to delete this identity?",
+  "message_confirmation_dialog_delete_identity": "Та энэ таних мэдээллийг устгахдаа итгэлтэй байна уу?",
   "@message_confirmation_dialog_delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identity_has_been_deleted": "Identity has been deleted",
+  "identity_has_been_deleted": "Таних мэдээлэл устгагдлаа",
   "@identity_has_been_deleted": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_failed": "Delete Failed",
+  "delete_failed": "Устгаж чадсангүй",
   "@delete_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit_identity": "Edit identity",
+  "edit_identity": "Таних мэдээлэл засах",
   "@edit_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_are_changed_your_identity_successfully": "You’ve changed your identity successfully",
+  "you_are_changed_your_identity_successfully": "Та таних мэдээллээ амжилттай өөрчиллөө",
   "@you_are_changed_your_identity_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save": "Save",
+  "save": "Хадгалах",
   "@save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hasAttachment": "Has attachment",
+  "hasAttachment": "Хавсралттай",
   "@hasAttachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last7Days": "Last 7 days",
+  "last7Days": "Сүүлийн 7 хоног",
   "@last7Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fromMe": "From me",
+  "fromMe": "Надаас",
   "@fromMe": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recent": "Recent",
+  "recent": "Саяхны",
   "@recent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showingResultsFor": "Showing results for:",
+  "showingResultsFor": "Дараахын үр дүн:",
   "@showingResultsFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last30Days": "Last 30 days",
+  "last30Days": "Сүүлийн 30 хоног",
   "@last30Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last6Months": "Last 6 months",
+  "last6Months": "Сүүлийн 6 сар",
   "@last6Months": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "lastYears": "Last years",
+  "lastYears": "Сүүлийн жилүүд",
   "@lastYears": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisEmailAddressInvalid": "This email address invalid",
+  "thisEmailAddressInvalid": "Энэ имэйл хаяг буруу байна",
   "@thisEmailAddressInvalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputSSOMessage": "Sign-in with my SSO account",
+  "loginInputSSOMessage": "SSO бүртгэлээрээ нэвтрэх",
   "@loginInputSSOMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotVerifySSOConfiguration": "Can not verify SSO configuration, please check with your system administrator",
+  "canNotVerifySSOConfiguration": "SSO тохиргоог баталгаажуулж чадсангүй, системийн администратортайгаа шалгана уу",
   "@canNotVerifySSOConfiguration": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotGetToken": "Can not get token, please check with your system administrator",
+  "canNotGetToken": "Токен авч чадсангүй, системийн администратортайгаа шалгана уу",
   "@canNotGetToken": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveFolder": "Move folder",
+  "moveFolder": "Хавтас зөөх",
   "@moveFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFolder": "Delete folder",
+  "deleteFolder": "Хавтас устгах",
   "@deleteFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsMailboxReadSuccess": "You’ve marked all messages in \"{mailboxName}\" as read",
+  "toastMessageMarkAsMailboxReadSuccess": "Та \"{mailboxName}\" доторх бүх мессежийг уншсан гэж тэмдэглэлээ",
   "@toastMessageMarkAsMailboxReadSuccess": {
     "type": "text",
     "placeholders_order": [
@@ -1415,7 +1415,7 @@
       "mailboxName": {}
     }
   },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "You’ve marked {count} messages in \"{mailboxName}\" as read",
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Та \"{mailboxName}\" доторх {count} мессежийг уншсан гэж тэмдэглэлээ",
   "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
     "type": "text",
     "placeholders_order": [
@@ -1427,199 +1427,199 @@
       "count": {}
     }
   },
-  "allFolders": "All folders",
+  "allFolders": "Бүх хавтас",
   "@allFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "singleSignOn": "Single Sign-On",
+  "singleSignOn": "Нэг удаагийн нэвтрэлт (SSO)",
   "@singleSignOn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ssoNotAvailable": "Single sign-on (SSO) is not available",
+  "ssoNotAvailable": "Нэг удаагийн нэвтрэлт (SSO) боломжгүй байна",
   "@ssoNotAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noPreviewAvailable": "No preview available",
+  "noPreviewAvailable": "Урьдчилан үзэх боломжгүй",
   "@noPreviewAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "wrongUrlMessage": "Server URL is not valid, please try again",
+  "wrongUrlMessage": "Серверийн URL хүчингүй байна, дахин оролдоно уу",
   "@wrongUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject": "Subject",
+  "subject": "Гарчиг",
   "@subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hasTheWords": "Has the words",
+  "hasTheWords": "Дараах үгтэй",
   "@hasTheWords": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doesNotHave": "Doesn’t have",
+  "doesNotHave": "Дараах үггүй",
   "@doesNotHave": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folder": "Folder",
+  "folder": "Хавтас",
   "@folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOrEmailAddress": "Name or email address",
+  "nameOrEmailAddress": "Нэр эсвэл имэйл хаяг",
   "@nameOrEmailAddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterSearchTerm": "Enter search term",
+  "enterSearchTerm": "Хайх үгээ оруулна уу",
   "@enterSearchTerm": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allTime": "All time",
+  "allTime": "Бүх хугацаа",
   "@allTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search": "Search",
+  "search": "Хайх",
   "@search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFilter": "Clear filter",
+  "clearFilter": "Шүүлтийг арилгах",
   "@clearFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "advancedSearch": "Advanced search",
+  "advancedSearch": "Нарийвчилсан хайлт",
   "@advancedSearch": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectFolder": "Select Folder",
+  "selectFolder": "Хавтас сонгох",
   "@selectFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDuplicateTagFilterMail": "you already entered that",
+  "messageDuplicateTagFilterMail": "та үүнийг аль хэдийн оруулсан байна",
   "@messageDuplicateTagFilterMail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegion": "Language & Region",
+  "languageAndRegion": "Хэл ба бүс нутаг",
   "@languageAndRegion": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageSubtitle": "Set the language you use on Twake Mail.",
+  "languageSubtitle": "Twake Mail дээр ашиглах хэлээ тохируулна уу.",
   "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "language": "Language",
+  "language": "Хэл",
   "@language": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageEnglish": "English",
+  "languageEnglish": "Англи",
   "@languageEnglish": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageVietnamese": "Vietnamese",
+  "languageVietnamese": "Вьетнам",
   "@languageVietnamese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageFrench": "French",
+  "languageFrench": "Франц",
   "@languageFrench": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageRussian": "Russian",
+  "languageRussian": "Орос",
   "@languageRussian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageArabic": "Arabic",
+  "languageArabic": "Араб",
   "@languageArabic": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageItalian": "Italian",
+  "languageItalian": "Итали",
   "@languageItalian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageGerman": "German",
+  "languageGerman": "Герман",
   "@languageGerman": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageMongolian": "Mongolian",
+  "languageMongolian": "Монгол",
   "@languageMongolian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogSendEmailUploadingAttachment": "Your message could not be sent because it uploading attachment",
+  "messageDialogSendEmailUploadingAttachment": "Хавсралт байршуулж байгаа тул таны мессеж илгээгдсэнгүй",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAndClose": "Save & close",
+  "saveAndClose": "Хадгалаад хаах",
   "@saveAndClose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImage": "Insert image",
+  "insertImage": "Зураг оруулах",
   "@insertImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectFromFile": "Select from file",
+  "selectFromFile": "Файлаас сонгох",
   "@selectFromFile": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "chooseImage": "Choose image",
+  "chooseImage": "Зураг сонгох",
   "@chooseImage": {
     "type": "text",
     "placeholders_order": [],
@@ -1631,265 +1631,265 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insert": "Insert",
+  "insert": "Оруулах",
   "@insert": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImageErrorFileEmpty": "Please either choose an image or enter an image URL",
+  "insertImageErrorFileEmpty": "Зураг сонгох эсвэл зургийн URL оруулна уу",
   "@insertImageErrorFileEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImageErrorDuplicate": "Please input either an image or an image URL, not both",
+  "insertImageErrorDuplicate": "Зураг эсвэл зургийн URL-ийн аль нэгийг оруулна уу, хоёуланг нь биш",
   "@insertImageErrorDuplicate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "chooseAColor": "Choose a color",
+  "chooseAColor": "Өнгө сонгох",
   "@chooseAColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "resetToDefault": "Reset to default",
+  "resetToDefault": "Анхны төлөвт буцаах",
   "@resetToDefault": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setColor": "Set color",
+  "setColor": "Өнгө тохируулах",
   "@setColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatBold": "Bold",
+  "formatBold": "Тод",
   "@formatBold": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatItalic": "Italic",
+  "formatItalic": "Налуу",
   "@formatItalic": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatUnderline": "Underline",
+  "formatUnderline": "Доогуур зураас",
   "@formatUnderline": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatStrikethrough": "Strikethrough",
+  "formatStrikethrough": "Дундуур зураас",
   "@formatStrikethrough": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatTextColor": "Text Color",
+  "formatTextColor": "Текстийн өнгө",
   "@formatTextColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatTextBackgroundColor": "Text Background Color",
+  "formatTextBackgroundColor": "Текстийн дэвсгэр өнгө",
   "@formatTextBackgroundColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerStyle": "Style",
+  "headerStyle": "Хэв маяг",
   "@headerStyle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fontFamily": "Font Family",
+  "fontFamily": "Фонт",
   "@fontFamily": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "paragraph": "Paragraph",
+  "paragraph": "Догол мөр",
   "@paragraph": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignLeft": "Align left",
+  "alignLeft": "Зүүн тийш",
   "@alignLeft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignRight": "Align right",
+  "alignRight": "Баруун тийш",
   "@alignRight": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignCenter": "Align center",
+  "alignCenter": "Голлуулах",
   "@alignCenter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "justifyFull": "Justify full",
+  "justifyFull": "Тэгшлэх",
   "@justifyFull": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "outdent": "Outdent",
+  "outdent": "Догол мөр багасгах",
   "@outdent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "indent": "Indent",
+  "indent": "Догол мөр нэмэх",
   "@indent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "orderList": "Order list",
+  "orderList": "Дугаарласан жагсаалт",
   "@orderList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "numberedList": "Numbered list",
+  "numberedList": "Дугаарласан жагсаалт",
   "@numberedList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bulletedList": "Bulleted list",
+  "bulletedList": "Цэгтэй жагсаалт",
   "@bulletedList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveTo": "Move To",
+  "moveTo": "Зөөх газар",
   "@moveTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRules": "Email Rules",
+  "emailRules": "Имэйлийн дүрмүүд",
   "@emailRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addNewRule": "Add rule",
+  "addNewRule": "Дүрэм нэмэх",
   "@addNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerNameOfRules": "Name of Rules",
+  "headerNameOfRules": "Дүрмийн нэр",
   "@headerNameOfRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editRule": "Edit rule",
+  "editRule": "Дүрэм засах",
   "@editRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRule": "Delete rule",
+  "deleteRule": "Дүрэм устгах",
   "@deleteRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewRule": "Create new rule",
+  "createNewRule": "Шинэ дүрэм үүсгэх",
   "@createNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "rulesNameHintTextInput": "Enter the rule name",
+  "rulesNameHintTextInput": "Дүрмийн нэрийг оруулна уу",
   "@rulesNameHintTextInput": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionValueHintTextInput": "Value",
+  "conditionValueHintTextInput": "Утга",
   "@conditionValueHintTextInput": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionTitleRulesFilter": "If all of the following conditions are met:",
+  "conditionTitleRulesFilter": "Хэрэв дараах бүх нөхцөл хангагдвал:",
   "@conditionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recipient": "Recipient",
+  "recipient": "Хүлээн авагч",
   "@recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contains": "Contains",
+  "contains": "Агуулна",
   "@contains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notContains": "Not contains",
+  "notContains": "Агуулахгүй",
   "@notContains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exactlyEquals": "Exactly equals",
+  "exactlyEquals": "Яг тэнцүү",
   "@exactlyEquals": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notExactlyEquals": "Not exactly equals",
+  "notExactlyEquals": "Яг тэнцүү биш",
   "@notExactlyEquals": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "Perform the following action:",
+  "actionTitleRulesFilter": "Дараах үйлдлийг гүйцэтгэх:",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toFolder": "To folder:",
+  "toFolder": "Хавтас руу:",
   "@toFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMessage": "Move message",
+  "moveMessage": "Мессеж зөөх",
   "@moveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressFromField": "From",
+  "ruleFilterAddressFromField": "Хэнээс",
   "@ruleFilterAddressFromField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressToField": "To",
+  "ruleFilterAddressToField": "Хэнд",
   "@ruleFilterAddressToField": {
     "type": "text",
     "placeholders_order": [],
@@ -1901,133 +1901,133 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFilterWasCreated": "New filter was created",
+  "newFilterWasCreated": "Шинэ шүүлтүүр үүсгэгдлээ",
   "@newFilterWasCreated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourFilterHasBeenUpdated": "Your filter has been updated",
+  "yourFilterHasBeenUpdated": "Таны шүүлтүүр шинэчлэгдлээ",
   "@yourFilterHasBeenUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerRecipients": "Recipients",
+  "headerRecipients": "Хүлээн авагчид",
   "@headerRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwarding": "Forwarding",
+  "forwarding": "Дамжуулалт",
   "@forwarding": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacation": "Vacation",
+  "vacation": "Амралт",
   "@vacation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "activated": "Activated",
+  "activated": "Идэвхжсэн",
   "@activated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deactivated": "Deactivated",
+  "deactivated": "Идэвхгүй болсон",
   "@deactivated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startDate": "Start date",
+  "startDate": "Эхлэх огноо",
   "@startDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endDate": "End date",
+  "endDate": "Дуусах огноо",
   "@endDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationStopsAt": "Vacation stops at",
+  "vacationStopsAt": "Амралт дуусах",
   "@vacationStopsAt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message": "Message",
+  "message": "Мессеж",
   "@message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintMessageBodyVacation": "Vacation messages",
+  "hintMessageBodyVacation": "Амралтын мессеж",
   "@hintMessageBodyVacation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noStartTime": "No start time",
+  "noStartTime": "Эхлэх цаггүй",
   "@noStartTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEndTime": "No end time",
+  "noEndTime": "Дуусах цаггүй",
   "@noEndTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEndDate": "No end date",
+  "noEndDate": "Дуусах огноогүй",
   "@noEndDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenStartDateVacationIsEmpty": "Please enter a valid start date",
+  "errorMessageWhenStartDateVacationIsEmpty": "Зөв эхлэх огноо оруулна уу",
   "@errorMessageWhenStartDateVacationIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenEndDateVacationIsInValid": "End date must be greater than start date",
+  "errorMessageWhenEndDateVacationIsInValid": "Дуусах огноо нь эхлэх огнооноос хойш байх ёстой",
   "@errorMessageWhenEndDateVacationIsInValid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenMessageVacationIsEmpty": "Message body cannot be blank",
+  "errorMessageWhenMessageVacationIsEmpty": "Мессежийн агуулга хоосон байж болохгүй",
   "@errorMessageWhenMessageVacationIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingSaved": "Vacation settings saved",
+  "vacationSettingSaved": "Амралтын тохиргоо хадгалагдлаа",
   "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsEnabled": "Your vacation responder is enabled.",
+  "yourVacationResponderIsEnabled": "Таны амралтын автомат хариу идэвхжлээ.",
   "@yourVacationResponderIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsDisabledSuccessfully": "Your vacation responder is disabled successfully",
+  "yourVacationResponderIsDisabledSuccessfully": "Таны амралтын автомат хариу амжилттай идэвхгүй боллоо",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEnableVacationResponderAutomatically": "Your vacation responder will be activated on {startDate}",
+  "messageEnableVacationResponderAutomatically": "Таны амралтын автомат хариу {startDate}-нд идэвхжинэ",
   "@messageEnableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -2037,7 +2037,7 @@
       "startDate": {}
     }
   },
-  "messageDisableVacationResponderAutomatically": "Your vacation responder stopped on {endDate}",
+  "messageDisableVacationResponderAutomatically": "Таны амралтын автомат хариу {endDate}-нд зогссон",
   "@messageDisableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -2047,7 +2047,7 @@
       "endDate": {}
     }
   },
-  "messageConfirmationDialogDeleteRecipientForward": "Do you want to delete email {emailAddress}?",
+  "messageConfirmationDialogDeleteRecipientForward": "{emailAddress} имэйлийг устгах уу?",
   "@messageConfirmationDialogDeleteRecipientForward": {
     "type": "text",
     "placeholders_order": [
@@ -2057,67 +2057,67 @@
       "emailAddress": {}
     }
   },
-  "deleteRecipient": "Remove recipients",
+  "deleteRecipient": "Хүлээн авагчдыг хасах",
   "@deleteRecipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteRecipientSuccessfully": "The email has been removed from the recipient list.",
+  "toastMessageDeleteRecipientSuccessfully": "Имэйлийг хүлээн авагчдын жагсаалтаас хаслаа.",
   "@toastMessageDeleteRecipientSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Are you sure you want to remove those recipients? Doing this will remove them from the email chain.",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Та эдгээр хүлээн авагчдыг хасахдаа итгэлтэй байна уу? Үүнийг хийснээр тэдгээрийг имэйл гинжээс хасна.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipients": "Add Recipients",
+  "addRecipients": "Хүлээн авагч нэмэх",
   "@addRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputAutocompleteContact": "Enter name or email address",
+  "hintInputAutocompleteContact": "Нэр эсвэл имэйл хаяг оруулна уу",
   "@hintInputAutocompleteContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "The emails has been added from the recipient list.",
+  "toastMessageAddRecipientsSuccessfully": "Имэйлүүдийг хүлээн авагчдын жагсаалтад нэмлээ.",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyEnable": "Keep local copy enable.",
+  "toastMessageLocalCopyEnable": "Дотоод хуулбар хадгалах идэвхтэй.",
   "@toastMessageLocalCopyEnable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyDisable": "Keep local copy disable.",
+  "toastMessageLocalCopyDisable": "Дотоод хуулбар хадгалах идэвхгүй.",
   "@toastMessageLocalCopyDisable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
+  "keepLocalCopyForwardLabel": "Имэйлийн хуулбарыг Ирсэн хайрцагт хадгалах",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
+  "emailRuleSettingExplanation": "Ирж буй мессежийг боловсруулах дүрэм үүсгэх. Та дүрмийг идэвхжүүлэх нөхцөл болон дүрмийн гүйцэтгэх үйлдлийг хоёуланг нь сонгоно.",
   "@emailRuleSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteEmailRule": "Do you want to delete rule \"{ruleName}\"?",
+  "messageConfirmationDialogDeleteEmailRule": "\"{ruleName}\" дүрмийг устгах уу?",
   "@messageConfirmationDialogDeleteEmailRule": {
     "type": "text",
     "placeholders_order": [
@@ -2127,181 +2127,181 @@
       "ruleName": {}
     }
   },
-  "deleteEmailRule": "Delete rule",
+  "deleteEmailRule": "Дүрэм устгах",
   "@deleteEmailRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteEmailRuleSuccessfully": "The rule has been removed.",
+  "toastMessageDeleteEmailRuleSuccessfully": "Дүрмийг хаслаа.",
   "@toastMessageDeleteEmailRuleSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastErrorMessageWhenCreateNewRule": "You have not filled in the information completely.",
+  "toastErrorMessageWhenCreateNewRule": "Та мэдээллийг бүрэн бөглөөгүй байна.",
   "@toastErrorMessageWhenCreateNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingExplanation": "Sends an automated reply to incoming messages.",
+  "vacationSettingExplanation": "Ирж буй мессежид автомат хариу илгээнэ.",
   "@vacationSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingToggleButtonAutoReply": "Automatically reply to messages when they are received.",
+  "vacationSettingToggleButtonAutoReply": "Мессеж хүлээн авах үед автоматаар хариулах.",
   "@vacationSettingToggleButtonAutoReply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startTime": "Start time",
+  "startTime": "Эхлэх цаг",
   "@startTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endTime": "End time",
+  "endTime": "Дуусах цаг",
   "@endTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSubjectInputVacationSetting": "Enter subject",
+  "hintSubjectInputVacationSetting": "Гарчиг оруулна уу",
   "@hintSubjectInputVacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveChanges": "Save changes",
+  "saveChanges": "Өөрчлөлтийг хадгалах",
   "@saveChanges": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageIsRequired": "Message is required",
+  "messageIsRequired": "Мессеж оруулах шаардлагатай",
   "@messageIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endNow": "End now",
+  "endNow": "Одоо дуусгах",
   "@endNow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "Vacation setting",
+  "vacationSetting": "Амралтын тохиргоо",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "backToSearchResults": "Back to Search Results",
+  "backToSearchResults": "Хайлтын үр дүн рүү буцах",
   "@backToSearchResults": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearAll": "Clear all",
+  "clearAll": "Бүгдийг арилгах",
   "@clearAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contact": "Contact",
+  "contact": "Холбоо барих",
   "@contact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchInputContact": "Enter name or email",
+  "hintSearchInputContact": "Нэр эсвэл имэйл оруулна уу",
   "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickStyles": "Quick styles",
+  "quickStyles": "Хурдан хэв маяг",
   "@quickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "format": "Format",
+  "format": "Формат",
   "@format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "background": "Background",
+  "background": "Дэвсгэр",
   "@background": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "foreground": "Foreground",
+  "foreground": "Нүүр өнгө",
   "@foreground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleFormat": "Format",
+  "titleFormat": "Формат",
   "@titleFormat": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleQuickStyles": "Quick styles",
+  "titleQuickStyles": "Хурдан хэв маяг",
   "@titleQuickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleBackground": "Background",
+  "titleBackground": "Дэвсгэр",
   "@titleBackground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleForeground": "Foreground",
+  "titleForeground": "Нүүр өнгө",
   "@titleForeground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectDate": "Select date",
+  "selectDate": "Огноо сонгох",
   "@selectDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setDate": "Set date",
+  "setDate": "Огноо тохируулах",
   "@setDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectStartDateIsEmpty": "The start date cannot be null.",
+  "toastMessageErrorWhenSelectStartDateIsEmpty": "Эхлэх огноо хоосон байж болохгүй.",
   "@toastMessageErrorWhenSelectStartDateIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectEndDateIsEmpty": "The end date cannot be null.",
+  "toastMessageErrorWhenSelectEndDateIsEmpty": "Дуусах огноо хоосон байж болохгүй.",
   "@toastMessageErrorWhenSelectEndDateIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectDateIsInValid": "The end time cannot be less than the start time.",
+  "toastMessageErrorWhenSelectDateIsInValid": "Дуусах цаг нь эхлэх цагаас бага байж болохгүй.",
   "@toastMessageErrorWhenSelectDateIsInValid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dateRangeAdvancedSearchFilter": "From {startDate} to {endDate}",
+  "dateRangeAdvancedSearchFilter": "{startDate}-наас {endDate} хүртэл",
   "@dateRangeAdvancedSearchFilter": {
     "type": "text",
     "placeholders_order": [
@@ -2313,73 +2313,73 @@
       "endDate": {}
     }
   },
-  "customRange": "Custom range",
+  "customRange": "Тусгай хязгаар",
   "@customRange": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectParentFolder": "Select parent folder",
+  "selectParentFolder": "Эх хавтас сонгох",
   "@selectParentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceipt": "Request read receipt",
+  "requestReadReceipt": "Уншсан баримт хүсэх",
   "@requestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "appGridTittle": "Go to applications",
+  "appGridTittle": "Аппликейшнүүд рүү очих",
   "@appGridTittle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleReadReceiptRequestNotificationMessage": "Read receipt request",
+  "titleReadReceiptRequestNotificationMessage": "Уншсан баримтын хүсэлт",
   "@titleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitleReadReceiptRequestNotificationMessage": "The sender has requested a Read receipt for this email. Send Read receipt?",
+  "subTitleReadReceiptRequestNotificationMessage": "Илгээгч энэ имэйлд уншсан баримт хүссэн байна. Уншсан баримт илгээх үү?",
   "@subTitleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yes": "Yes",
+  "yes": "Тийм",
   "@yes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no": "No",
+  "no": "Үгүй",
   "@no": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageNotSupportMdnWhenSendReceipt": "Your account does not support the MDN capability",
+  "toastMessageNotSupportMdnWhenSendReceipt": "Таны бүртгэл MDN боломжийг дэмждэггүй",
   "@toastMessageNotSupportMdnWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundIdentityWhenSendReceipt": "Identity id given cannot be found",
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "Өгөгдсөн таних мэдээллийн ID олдсонгүй",
   "@toastMessageCannotFoundIdentityWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Email id given cannot be found",
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Өгөгдсөн имэйлийн ID олдсонгүй",
   "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subjectSendReceiptToSender": "Read: {subject}",
+  "subjectSendReceiptToSender": "Уншсан: {subject}",
   "@subjectSendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2389,7 +2389,7 @@
       "subject": {}
     }
   },
-  "textBodySendReceiptToSender": "Message was read by {receiver} on {time} \n\nSubject: {subject} \n\nNote: This Return Read Receipt only acknowledges that the message was displayed on the recipient's computer. There is no guarantee that the recipient has read or understood the message contents.",
+  "textBodySendReceiptToSender": "Мессежийг {receiver} {time}-нд уншсан \n\nГарчиг: {subject} \n\nТэмдэглэл: Энэхүү уншсан баримт нь мессеж хүлээн авагчийн компьютер дээр харагдсаныг л баталгаажуулна. Хүлээн авагч мессежийн агуулгыг уншсан эсвэл ойлгосон гэсэн баталгаа байхгүй.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2403,13 +2403,13 @@
       "time": {}
     }
   },
-  "toastMessageSendReceiptSuccess": "A read receipt has been sent.",
+  "toastMessageSendReceiptSuccess": "Уншсан баримт илгээгдлээ.",
   "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveConversation": "Move {numberOfConversation} conversation",
+  "moveConversation": "{numberOfConversation} харилцааг зөөх",
   "@moveConversation": {
     "type": "text",
     "placeholders_order": [
@@ -2419,7 +2419,7 @@
       "numberOfConversation": {}
     }
   },
-  "messageConfirmationDialogDeleteMultipleFolder": "{numberOfMailbox} folder and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
+  "messageConfirmationDialogDeleteMultipleFolder": "{numberOfMailbox} хавтас болон түүний доторх бүх дэд хавтас, мессежүүд устгагдах бөгөөд сэргээх боломжгүй. Устгасаар үргэлжлүүлэх үү?",
   "@messageConfirmationDialogDeleteMultipleFolder": {
     "type": "text",
     "placeholders_order": [
@@ -2429,55 +2429,55 @@
       "numberOfMailbox": {}
     }
   },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "You have not selected a save folder to save",
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Та хадгалах хавтсыг сонгоогүй байна",
   "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolder": "Create new folder",
+  "createNewFolder": "Шинэ хавтас үүсгэх",
   "@createNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newer": "Newer",
+  "newer": "Шинэ",
   "@newer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "older": "Older",
+  "older": "Хуучин",
   "@older": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Emails addresses listed below will receive your emails.",
+  "forwardingSettingExplanation": "Доор жагсаасан имэйл хаягууд таны имэйлийг хүлээн авна.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipientButton": "Add recipient",
+  "addRecipientButton": "Хүлээн авагч нэмэх",
   "@addRecipientButton": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "incorrectEmailFormat": "Incorrect email format",
+  "incorrectEmailFormat": "Имэйлийн формат буруу байна",
   "@incorrectEmailFormat": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "remove": "Remove",
+  "remove": "Хасах",
   "@remove": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalEmailSelected": "Deselect all ({count})",
+  "totalEmailSelected": "Бүх сонголтыг цуцлах ({count})",
   "@totalEmailSelected": {
     "type": "text",
     "placeholders_order": [
@@ -2487,55 +2487,55 @@
       "count": {}
     }
   },
-  "storageQuotas": "Storage",
+  "storageQuotas": "Хадгалах сан",
   "@storageQuotas": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textQuotasOutOfStorage": "Out of storage",
+  "textQuotasOutOfStorage": "Хадгалах сан дүүрсэн",
   "@textQuotasOutOfStorage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickCreatingRule": "Create a rule with this email",
+  "quickCreatingRule": "Энэ имэйлээр дүрэм үүсгэх",
   "@quickCreatingRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titlePageNotFound": "Oops, we can’t find that page",
+  "titlePageNotFound": "Өө, бид тэр хуудсыг олж чадсангүй",
   "@titlePageNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitlePageNotFound": "It is possible that your destination page has disappeared or belongs to another account.",
+  "subTitlePageNotFound": "Таны зорьсон хуудас алга болсон эсвэл өөр бүртгэлд хамаарч байж магадгүй.",
   "@subTitlePageNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page404": "Page 404",
+  "page404": "404 хуудас",
   "@page404": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openInNewTab": "Open in new tab",
+  "openInNewTab": "Шинэ табд нээх",
   "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "regards": "Regards",
+  "regards": "Хүндэтгэсэн",
   "@regards": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNewMessages": "You have new messages",
+  "youHaveNewMessages": "Танд шинэ мессеж байна",
   "@youHaveNewMessages": {
     "type": "text",
     "placeholders_order": [],
@@ -2547,7 +2547,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalNewMessagePushNotification": "{count} new emails",
+  "totalNewMessagePushNotification": "{count} шинэ имэйл",
   "@totalNewMessagePushNotification": {
     "type": "text",
     "placeholders_order": [
@@ -2557,13 +2557,13 @@
       "count": {}
     }
   },
-  "privacyPolicy": "Privacy policy",
+  "privacyPolicy": "Нууцлалын бодлого",
   "@privacyPolicy": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countNewSpamEmails": "You have {count} new spam emails!",
+  "countNewSpamEmails": "Танд {count} шинэ спам имэйл байна!",
   "@countNewSpamEmails": {
     "type": "text",
     "placeholders_order": [
@@ -2573,235 +2573,235 @@
       "count": {}
     }
   },
-  "showDetails": "Show Details",
+  "showDetails": "Дэлгэрэнгүй харах",
   "@showDetails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dismiss": "Dismiss",
+  "dismiss": "Үл хэрэгсэх",
   "@dismiss": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disableSpamReport": "Disable Spam report",
+  "disableSpamReport": "Спам тайланг идэвхгүй болгох",
   "@disableSpamReport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enableSpamReport": "Enable Spam report",
+  "enableSpamReport": "Спам тайланг идэвхжүүлэх",
   "@enableSpamReport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "required": "required",
+  "required": "шаардлагатай",
   "@required": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "There are no emails in your current folder",
+  "noEmailInYourCurrentFolder": "Таны одоогийн хавтсанд имэйл алга",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "There are no emails that match your current filter.",
+  "noEmailMatchYourCurrentFilter": "Таны одоогийн шүүлтэд тохирох имэйл алга.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reduceSomeFiltersAndTryAgain": "Let's reduce some filters and try again",
+  "reduceSomeFiltersAndTryAgain": "Зарим шүүлтийг багасгаад дахин оролдоё",
   "@reduceSomeFiltersAndTryAgain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailure": "Failure to send your message.",
+  "sendMessageFailure": "Таны мессежийг илгээж чадсангүй.",
   "@sendMessageFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailureWithSetErrorTypeTooLarge": "Failure to send your message, because it is too large.",
+  "sendMessageFailureWithSetErrorTypeTooLarge": "Хэт том тул таны мессежийг илгээж чадсангүй.",
   "@sendMessageFailureWithSetErrorTypeTooLarge": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailureWithSetErrorTypeOverQuota": "Failure to send your message, because it is over quota.",
+  "sendMessageFailureWithSetErrorTypeOverQuota": "Квотоос хэтэрсэн тул таны мессежийг илгээж чадсангүй.",
   "@sendMessageFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailure": "Failure to save your message as drafts.",
+  "saveEmailAsDraftFailure": "Таны мессежийг ноорог болгон хадгалж чадсангүй.",
   "@saveEmailAsDraftFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Failure to save your message as drafts, because it is too large.",
+  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Хэт том тул таны мессежийг ноорог болгон хадгалж чадсангүй.",
   "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Failure to save your message as drafts, because it is over quota.",
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Квотоос хэтэрсэн тул таны мессежийг ноорог болгон хадгалж чадсангүй.",
   "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "teamMailBoxes": "Team-mailboxes",
+  "teamMailBoxes": "Багийн шуудангийн хайрцаг",
   "@teamMailBoxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideFolder": "Hide folder",
+  "hideFolder": "Хавтас нуух",
   "@hideFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisImageCannotBeAdded": "This image cannot be added.",
+  "thisImageCannotBeAdded": "Энэ зургийг нэмэх боломжгүй.",
   "@thisImageCannotBeAdded": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMsgHideFolderSuccess": "This folder has been hidden from your primary folder",
+  "toastMsgHideFolderSuccess": "Энэ хавтас таны үндсэн хавтаснаас нуугдлаа",
   "@toastMsgHideFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "searchForFolders": "Search for folders",
+  "searchForFolders": "Хавтас хайх",
   "@searchForFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showFolder": "Show folder",
+  "showFolder": "Хавтас харуулах",
   "@showFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageShowFolderSuccess": "This folder is already displayed in your primary folder",
+  "toastMessageShowFolderSuccess": "Энэ хавтас таны үндсэн хавтсанд аль хэдийн харагдаж байна",
   "@toastMessageShowFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderVisibility": "Folder visibility",
+  "folderVisibility": "Хавтасны харагдац",
   "@folderVisibility": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderVisibilitySubtitle": "Show/ hide your folders, including your personal folders and team mailboxes.",
+  "folderVisibilitySubtitle": "Хувийн хавтас болон багийн шуудангийн хайрцаг зэрэг хавтаснуудаа харуулах/нуух.",
   "@folderVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyListEmailForward": "Please input at least one recipient",
+  "emptyListEmailForward": "Дор хаяж нэг хүлээн авагч оруулна уу",
   "@emptyListEmailForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardedMessage": "Forwarded message",
+  "forwardedMessage": "Дамжуулсан мессеж",
   "@forwardedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "repliedMessage": "Replied message",
+  "repliedMessage": "Хариулсан мессеж",
   "@repliedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "repliedAndForwardedMessage": "Replied and Forwarded message",
+  "repliedAndForwardedMessage": "Хариулж дамжуулсан мессеж",
   "@repliedAndForwardedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrash": "Empty Trash",
+  "emptyTrash": "Хогийн савыг хоослох",
   "@emptyTrash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotSelectThisImage": "Cannot select this image.",
+  "cannotSelectThisImage": "Энэ зургийг сонгох боломжгүй.",
   "@cannotSelectThisImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Temporary network issue. Messages queued for retry when connected.",
+  "messageHasBeenSavedToTheSendingQueue": "Сүлжээний түр зуурын алдаа. Холбогдох үед дахин илгээхээр мессежийг дараалалд оруулав.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendingQueue": "Sending queue",
+  "sendingQueue": "Илгээх дараалал",
   "@sendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueView": "Messages in Sending queue folder will be sent or scheduled when online.",
+  "bannerMessageSendingQueueView": "Илгээх дараалал хавтас дахь мессежүүд онлайн болоход илгээгдэх эсвэл товлогдоно.",
   "@bannerMessageSendingQueueView": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "proceed": "Proceed",
+  "proceed": "Үргэлжлүүлэх",
   "@proceed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreInOfflineMode": "You're in offline mode",
+  "youAreInOfflineMode": "Та офлайн горимд байна",
   "@youAreInOfflineMode": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailFirst": "Fortunately, you can still",
+  "messageDialogWhenStoreSendingEmailFirst": "Аз болоход, та одоо ч",
   "@messageDialogWhenStoreSendingEmailFirst": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailSecond": " send, reply, or forward ",
+  "messageDialogWhenStoreSendingEmailSecond": " имэйл илгээх, хариулах эсвэл дамжуулах ",
   "@messageDialogWhenStoreSendingEmailSecond": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailThird": "emails. They will be delivered when you connect to the internet. To edit these emails before sending, go to the ",
+  "messageDialogWhenStoreSendingEmailThird": "боломжтой. Тэдгээр нь интернэтэд холбогдох үед хүргэгдэнэ. Эдгээр имэйлийг илгээхээс өмнө засахын тулд ",
   "@messageDialogWhenStoreSendingEmailThird": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailTail": " folder.",
+  "messageDialogWhenStoreSendingEmailTail": " хавтас руу очно уу.",
   "@messageDialogWhenStoreSendingEmailTail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "To: {recipients}",
+  "titleRecipientSendingEmail": "Хэнд: {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
@@ -2811,121 +2811,121 @@
       "recipients": {}
     }
   },
-  "openFolderMenu": "Open Folder menu",
+  "openFolderMenu": "Хавтасны цэс нээх",
   "@openFolderMenu": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSentSuccessfully": "Message has been sent successfully.",
+  "messageHasBeenSentSuccessfully": "Мессеж амжилттай илгээгдлээ.",
   "@messageHasBeenSentSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteOfflineEmail": "Delete offline email",
+  "deleteOfflineEmail": "Офлайн имэйл устгах",
   "@deleteOfflineEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogDeleteSendingEmail": "Deleting an offline email will erase its content permanently. You won't be able to undo this action or recover the email from the Trash folder.",
+  "messageDialogDeleteSendingEmail": "Офлайн имэйлийг устгаснаар түүний агуулга бүрмөсөн арилна. Та энэ үйлдлийг буцаах эсвэл имэйлийг Хогийн савны хавтаснаас сэргээх боломжгүй.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHaveBeenDeletedSuccessfully": "Messages have been deleted successfully",
+  "messageHaveBeenDeletedSuccessfully": "Мессежүүдийг амжилттай устгалаа",
   "@messageHaveBeenDeletedSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delivering": "Delivering",
+  "delivering": "Хүргэж байна",
   "@delivering": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "error": "Error",
+  "error": "Алдаа",
   "@error": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "connectedToTheInternet": "Connected to the internet",
+  "connectedToTheInternet": "Интернэтэд холбогдлоо",
   "@connectedToTheInternet": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "resend": "Resend",
+  "resend": "Дахин илгээх",
   "@resend": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messagesHaveBeenResent": "Messages have been resent",
+  "messagesHaveBeenResent": "Мессежүүдийг дахин илгээлээ",
   "@messagesHaveBeenResent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "connectionError": "Connection error",
+  "connectionError": "Холболтын алдаа",
   "@connectionError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inboxMailboxDisplayName": "Inbox",
+  "inboxMailboxDisplayName": "Ирсэн",
   "@inboxMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sentMailboxDisplayName": "Sent",
+  "sentMailboxDisplayName": "Илгээсэн",
   "@sentMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "outboxMailboxDisplayName": "Outbox",
+  "outboxMailboxDisplayName": "Гарах",
   "@outboxMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamMailboxDisplayName": "Spam",
+  "spamMailboxDisplayName": "Спам",
   "@spamMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "draftsMailboxDisplayName": "Drafts",
+  "draftsMailboxDisplayName": "Ноорог",
   "@draftsMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "trashMailboxDisplayName": "Trash",
+  "trashMailboxDisplayName": "Хогийн сав",
   "@trashMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "templatesMailboxDisplayName": "Templates",
+  "templatesMailboxDisplayName": "Загварууд",
   "@templatesMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMailboxDisplayName": "Archive",
+  "archiveMailboxDisplayName": "Архив",
   "@archiveMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "Please choose an image size <= {maxSize}KB",
+  "pleaseChooseAnImageSizeCorrectly": "{maxSize}KB-аас бага хэмжээтэй зураг сонгоно уу",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -2935,157 +2935,157 @@
       "maxSize": {}
     }
   },
-  "messageEventActionBannerOrganizerInvited": " has invited you in to a meeting",
+  "messageEventActionBannerOrganizerInvited": " таныг уулзалтад урьсан байна",
   "@messageEventActionBannerOrganizerInvited": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerOrganizerUpdated": " has updated a meeting",
+  "messageEventActionBannerOrganizerUpdated": " уулзалтыг шинэчилсэн байна",
   "@messageEventActionBannerOrganizerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerOrganizerCanceled": " has canceled a meeting",
+  "messageEventActionBannerOrganizerCanceled": " уулзалтыг цуцалсан байна",
   "@messageEventActionBannerOrganizerCanceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "anAttendee": "An attendee",
+  "anAttendee": "Оролцогч",
   "@anAttendee": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you": "You",
+  "you": "Та",
   "@you": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeAccepted": " has accepted this invitation",
+  "messageEventActionBannerAttendeeAccepted": " энэ урилгыг хүлээн авсан байна",
   "@messageEventActionBannerAttendeeAccepted": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeTentative": " has replied \"Maybe\" to this invitation",
+  "messageEventActionBannerAttendeeTentative": " энэ урилгад \"Магадгүй\" гэж хариулсан байна",
   "@messageEventActionBannerAttendeeTentative": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeDeclined": " has declined this invitation",
+  "messageEventActionBannerAttendeeDeclined": " энэ урилгаас татгалзсан байна",
   "@messageEventActionBannerAttendeeDeclined": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeCounter": " has proposed changes to the event",
+  "messageEventActionBannerAttendeeCounter": " арга хэмжээнд өөрчлөлт оруулахыг санал болгосон байна",
   "@messageEventActionBannerAttendeeCounter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeCounterDeclined": "Your counter proposal was declined",
+  "messageEventActionBannerAttendeeCounterDeclined": "Таны эсрэг саналаас татгалзсан байна",
   "@messageEventActionBannerAttendeeCounterDeclined": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "invitationMessageCalendarInformation": " has invited you in to a meeting:",
+  "invitationMessageCalendarInformation": " таныг уулзалтад урьсан байна:",
   "@invitationMessageCalendarInformation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "when": "When",
+  "when": "Хэзээ",
   "@when": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "where": "Where",
+  "where": "Хаана",
   "@where": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "who": "Who",
+  "who": "Хэн",
   "@who": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "organizer": "Organizer",
+  "organizer": "Зохион байгуулагч",
   "@organizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "time": "Time",
+  "time": "Цаг",
   "@time": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "location": "Location",
+  "location": "Байршил",
   "@location": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attendees": "Attendees",
+  "attendees": "Оролцогчид",
   "@attendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "seeAllAttendees": "See all attendees",
+  "seeAllAttendees": "Бүх оролцогчдыг харах",
   "@seeAllAttendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "link": "Link",
+  "link": "Холбоос",
   "@link": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmails": "Delete all spam emails",
+  "deleteAllSpamEmails": "Бүх спам имэйлийг устгах",
   "@deleteAllSpamEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamFolder": "Empty Spam folder",
+  "emptySpamFolder": "Спам хавтсыг хоослох",
   "@emptySpamFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam. Do you want to continue?",
+  "emptySpamMessageDialog": "Та Спам дахь бүх зүйлийг бүрмөсөн устгах гэж байна. Үргэлжлүүлэх үү?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerDeleteAllSpamEmailsMessage": "All messages in Spam will be deleted if you reach limited storage.",
+  "bannerDeleteAllSpamEmailsMessage": "Хадгалах багтаамж дүүрсэн тохиолдолд Спам дахь бүх мессеж устгагдана.",
   "@bannerDeleteAllSpamEmailsMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmailsNow": "Delete all spam emails now",
+  "deleteAllSpamEmailsNow": "Бүх спам имэйлийг одоо устгах",
   "@deleteAllSpamEmailsNow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaStateLabel": "{used} of {limit} Used",
+  "quotaStateLabel": "{limit}-ийн {used} ашигласан",
   "@quotaStateLabel": {
     "type": "text",
     "placeholders_order": [
@@ -3097,31 +3097,31 @@
       "limit": {}
     }
   },
-  "quotaErrorBannerTitle": "You have run out of storage space",
+  "quotaErrorBannerTitle": "Таны хадгалах багтаамж дүүрсэн байна",
   "@quotaErrorBannerTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaWarningBannerTitle": "You are running out of storage (90%).",
+  "quotaWarningBannerTitle": "Таны хадгалах багтаамж дүүрэх дөхөж байна (90%).",
   "@quotaWarningBannerTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaWarningBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
+  "quotaWarningBannerMessage": "Удахгүй та Tmail дээр имэйл илгээх боломжгүй болно. Tmail-ийн бүх боломжийг ашиглахын тулд хадгалах сангаа цэвэрлэх эсвэл өргөтгөнө үү.",
   "@quotaWarningBannerMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaErrorBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
+  "quotaErrorBannerMessage": "Удахгүй та Tmail дээр имэйл илгээх боломжгүй болно. Tmail-ийн бүх боломжийг ашиглахын тулд хадгалах сангаа цэвэрлэх эсвэл өргөтгөнө үү.",
   "@quotaErrorBannerMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFolderSuccessfullyMessage": "You successfully created {folderName} folder",
+  "createFolderSuccessfullyMessage": "Та {folderName} хавтсыг амжилттай үүсгэлээ",
   "@createFolderSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -3131,43 +3131,43 @@
       "folderName": {}
     }
   },
-  "folderCreatedTitle": "Your folder is just created",
+  "folderCreatedTitle": "Таны хавтас сая үүсгэгдлээ",
   "@folderCreatedTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderCreatedMessage": "To begin using this folder, you should add some rules to organize all of your mail in your own way.",
+  "folderCreatedMessage": "Энэ хавтсыг ашиглаж эхлэхийн тулд бүх имэйлээ өөрийнхөөрөө зохион байгуулах хэдэн дүрэм нэмэх хэрэгтэй.",
   "@folderCreatedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilters": "Create filters",
+  "createFilters": "Шүүлтүүр үүсгэх",
   "@createFilters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "maybe": "Maybe",
+  "maybe": "Магадгүй",
   "@maybe": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterASubject": "Enter a subject",
+  "enterASubject": "Гарчиг оруулна уу",
   "@enterASubject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterSomeSuggestions": "Enter some suggestions",
+  "enterSomeSuggestions": "Зарим санал оруулна уу",
   "@enterSomeSuggestions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markedSingleMessageToast": "Message has been marked as {action}",
+  "markedSingleMessageToast": "Мессежийг {action} гэж тэмдэглэв",
   "@markedSingleMessageToast": {
     "type": "text",
     "placeholders_order": [
@@ -3177,19 +3177,19 @@
       "action": {}
     }
   },
-  "clean": "Clean",
+  "clean": "Цэвэрлэх",
   "@clean": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFolder": "Clear folder",
+  "clearFolder": "Хавтсыг цэвэрлэх",
   "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEmptyFolderDialog": "The messages in {folder} folder will be permanently deleted and you will not be able to restore them",
+  "messageEmptyFolderDialog": "{folder} хавтас дахь мессежүүд бүрмөсөн устгагдах бөгөөд та тэдгээрийг сэргээх боломжгүй",
   "@messageEmptyFolderDialog": {
     "type": "text",
     "placeholders_order": [
@@ -3199,25 +3199,25 @@
       "folder": {}
     }
   },
-  "addCondition": "Add condition",
+  "addCondition": "Нөхцөл нэмэх",
   "@addCondition": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formattingOptions": "Formatting options",
+  "formattingOptions": "Форматын сонголтууд",
   "@formattingOptions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "embedCode": "Embed code",
+  "embedCode": "Код оруулах",
   "@embedCode": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showMoreAttachment": "Show more (+{count})",
+  "showMoreAttachment": "Илүүг харах (+{count})",
   "@showMoreAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -3227,55 +3227,55 @@
       "count": {}
     }
   },
-  "saveAsDraft": "Save as draft",
+  "saveAsDraft": "Ноорог болгон хадгалах",
   "@saveAsDraft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dropFileHereToAttachThem": "Drop file here to attach them",
+  "dropFileHereToAttachThem": "Хавсаргахын тулд файлыг энд чирж оруулна уу",
   "@dropFileHereToAttachThem": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canceled": "Canceled",
+  "canceled": "Цуцлагдсан",
   "@canceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newSubfolder": "New subfolder",
+  "newSubfolder": "Шинэ дэд хавтас",
   "@newSubfolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogForForwardsToOtherDomains": "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
+  "messageWarningDialogForForwardsToOtherDomains": "Та имэйлийг өөр домэйн руу чиглүүлж байна. Энэ нь аюулгүй байдлын аюул учруулах эсвэл хууль бус өгөгдөл задлах гэж тооцогдож болзошгүй.",
   "@messageWarningDialogForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "externalDomain": "External domain",
+  "externalDomain": "Гадаад домэйн",
   "@externalDomain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectAllMessagesOfThisPage": "Select all messages of this page",
+  "selectAllMessagesOfThisPage": "Энэ хуудасны бүх мессежийг сонгох",
   "@selectAllMessagesOfThisPage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenExceedGenerallySizeInComposer": "Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.",
+  "warningMessageWhenExceedGenerallySizeInComposer": "Таны мессеж нь гуравдагч талын имэйл системүүдийн ерөнхийдөө хүлээн зөвшөөрдөг хэмжээнээс том байна. Хэрэв та энэ имэйлийг илгээхээр баталгаажуулбал хүлээн авагчийн систем татгалзах эрсдэлтэй.",
   "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "continueAction": "Continue",
+  "continueAction": "Үргэлжлүүлэх",
   "@continueAction": {
     "type": "text",
     "placeholders_order": [],
@@ -3287,13 +3287,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiScribeSettingExplanation": "Use AI to help write and improve your emails",
+  "aiScribeSettingExplanation": "Имэйлээ бичих, сайжруулахад AI-г ашиглах",
   "@aiScribeSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiScribeToggleDescription": "Enable AI Scribe",
+  "aiScribeToggleDescription": "AI Scribe-г идэвхжүүлэх",
   "@aiScribeToggleDescription": {
     "type": "text",
     "placeholders_order": [],

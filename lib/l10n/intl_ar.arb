@@ -391,6 +391,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "المنغولية",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "languageItalian": "اللغة الايطالية",
   "@languageItalian": {
     "type": "text",
