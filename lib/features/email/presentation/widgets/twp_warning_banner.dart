@@ -65,7 +65,10 @@ class TwpWarningBanner extends StatelessWidget {
                 customBorder: const CircleBorder(),
                 child: Tooltip(
                   message: AppLocalizations.of(context).dismiss,
-                  child: Icon(Icons.close, color: style.iconColor, size: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Icon(Icons.close, color: style.iconColor, size: 20),
+                  ),
                 ),
               ),
             ),

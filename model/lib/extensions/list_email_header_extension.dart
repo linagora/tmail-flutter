@@ -35,6 +35,12 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
   ///
   /// Each warning's [TwpWarning.index] is its 0-based position among the
   /// `X-TWP-Message` headers, used to persist a per-warning dismissal keyword.
+  ///
+  /// Ordering is stable: `headers` is a `LinkedHashSet` that preserves the JMAP
+  /// response order, which matches the order the backend positions the warnings,
+  /// so this positional index aligns with the backend dismissal contract.
+  /// Note: [EmailHeader] uses value equality, so byte-identical warnings are
+  /// already deduplicated by the Set upstream and therefore share no index here.
   List<TwpWarning> get twpWarnings {
     final headers = this;
     if (headers == null) return const [];

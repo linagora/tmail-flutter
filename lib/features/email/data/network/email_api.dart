@@ -866,7 +866,6 @@ class EmailAPI
       ..addUpdates(emailId.generateMapUpdateObjectDismissTwpWarning(index));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    requestBuilder.invocation(setEmailMethod);
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);

@@ -89,6 +89,22 @@ void main() {
       expect(warnings[1].code, 'virus-removed');
     });
 
+    test('collapses byte-identical `X-TWP-Message` headers into a single warning', () {
+      // `EmailHeader` (jmap_dart_client) is `EquatableMixin` on (name, value),
+      // so two byte-identical headers are deduplicated by the backing Set before
+      // they reach this extension. This documents that current behavior: such
+      // warnings cannot be distinguished by index here.
+      final emailHeaders = {
+        EmailHeader(EmailProperty.headerTwpMessageKey, 'level:warn code:virus Virus found'),
+        EmailHeader(EmailProperty.headerTwpMessageKey, 'level:warn code:virus Virus found'),
+      };
+
+      final warnings = emailHeaders.twpWarnings;
+      expect(warnings.length, 1);
+      expect(warnings.single.index, 0);
+      expect(warnings.single.code, 'virus');
+    });
+
     test('defaults to info level and null code when tokens are missing', () {
       final emailHeaders = {
         EmailHeader(EmailProperty.headerTwpMessageKey, 'A plain warning message')
