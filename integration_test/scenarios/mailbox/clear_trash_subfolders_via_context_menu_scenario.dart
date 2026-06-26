@@ -33,7 +33,6 @@ class ClearTrashSubfoldersViaContextMenuScenario extends BaseTestScenario {
     await mailboxMenuRobot.emptyTrash.tapEmptyTrash();
     await mailboxMenuRobot.emptyTrash.confirmEmptyTrash();
 
-    await threadRobot.openMailbox();
     await mailboxMenuRobot.assertion.expectSubfolderNotExist(mailboxMenuRobot.mailboxItemByName(_subfolderName));
 
     await mailboxMenuRobot.navigation.openFolder(trashFolder);
