@@ -16,65 +16,41 @@ void main() {
 
   String? textValue(EmailHeaderValue? v) => (v as TextHeaderValue?)?.value;
 
-  group('EmailExtension::mergeTrackedIndividualHeaders:', () {
-    test('retains existing header when property is not in updatedProperties', () {
-      final base = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('1'),
-      });
-      final newEmail = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('5'),
-      });
-
-      final result = base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({'subject'}),
+  Map<IndividualHeaderIdentifier, EmailHeaderValue> runMerge(
+    Map<IndividualHeaderIdentifier, EmailHeaderValue> baseHeaders,
+    Map<IndividualHeaderIdentifier, EmailHeaderValue> newHeaders,
+    Set<String> updatedProps,
+  ) =>
+      makeEmail(baseHeaders).mergeTrackedIndividualHeaders(
+        makeEmail(newHeaders),
+        Properties(updatedProps),
       );
 
-      expect(textValue(result[IndividualHeaderIdentifier.xPriorityHeader]), '1');
+  final xPriority = IndividualHeaderIdentifier.xPriorityHeader;
+  final xBase = {xPriority: const TextHeaderValue('1')};
+  final xUpdated = {xPriority: const TextHeaderValue('5')};
+
+  group('EmailExtension::mergeTrackedIndividualHeaders:', () {
+    test('retains existing header when property is not in updatedProperties', () {
+      expect(textValue(runMerge(xBase, xUpdated, {'subject'})[xPriority]), '1');
     });
 
     test('updates header when property is in updatedProperties and newEmail has it', () {
-      final base = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('1'),
-      });
-      final newEmail = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('5'),
-      });
-
-      final result = base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({IndividualHeaderIdentifier.xPriorityHeader.value}),
-      );
-
-      expect(textValue(result[IndividualHeaderIdentifier.xPriorityHeader]), '5');
+      expect(textValue(runMerge(xBase, xUpdated, {xPriority.value})[xPriority]), '5');
     });
 
     test('removes header when property is updated but newEmail does not have it', () {
-      final base = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('1'),
-      });
-      final newEmail = makeEmail({});
-
-      final result = base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({IndividualHeaderIdentifier.xPriorityHeader.value}),
-      );
-
-      expect(result.containsKey(IndividualHeaderIdentifier.xPriorityHeader), isFalse);
+      expect(runMerge(xBase, {}, {xPriority.value}).containsKey(xPriority), isFalse);
     });
 
     test('adds header when base lacks it but newEmail has it and property is updated', () {
-      final base = makeEmail({});
-      final newEmail = makeEmail({
-        IndividualHeaderIdentifier.importanceHeader: const TextHeaderValue('high'),
-      });
-
-      final result = base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({IndividualHeaderIdentifier.importanceHeader.value}),
+      final importance = IndividualHeaderIdentifier.importanceHeader;
+      final result = runMerge(
+        {},
+        {importance: const TextHeaderValue('high')},
+        {importance.value},
       );
-
-      expect(textValue(result[IndividualHeaderIdentifier.importanceHeader]), 'high');
+      expect(textValue(result[importance]), 'high');
     });
 
     test('handles all six tracked headers independently', () {
@@ -134,32 +110,13 @@ void main() {
     });
 
     test('returns empty map when both emails have no headers', () {
-      final base = makeEmail({});
-      final newEmail = makeEmail({});
-
-      final result = base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({IndividualHeaderIdentifier.xPriorityHeader.value}),
-      );
-
-      expect(result, isEmpty);
+      expect(runMerge({}, {}, {xPriority.value}), isEmpty);
     });
 
     test('does not mutate base individualHeaders', () {
-      final base = makeEmail({
-        IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue('1'),
-      });
-      final newEmail = makeEmail({});
-
-      base.mergeTrackedIndividualHeaders(
-        newEmail,
-        Properties({IndividualHeaderIdentifier.xPriorityHeader.value}),
-      );
-
-      expect(
-        base.individualHeaders.containsKey(IndividualHeaderIdentifier.xPriorityHeader),
-        isTrue,
-      );
+      final base = makeEmail(xBase);
+      base.mergeTrackedIndividualHeaders(makeEmail({}), Properties({xPriority.value}));
+      expect(base.individualHeaders.containsKey(xPriority), isTrue);
     });
   });
 }
