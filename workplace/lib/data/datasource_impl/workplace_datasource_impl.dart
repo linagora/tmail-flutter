@@ -67,7 +67,10 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       '$platformUrl/auth/token_exchange',
       data: WorkplaceExchangeTokenRequest(idToken: oidcIdToken).toJson(),
     );
-    final accessToken = response.data['access_token'];
+    final data = response.data is Map<String, dynamic>
+        ? response.data as Map<String, dynamic>
+        : jsonDecode(response.data) as Map<String, dynamic>;
+    final accessToken = data['access_token'];
     if (accessToken is! String) {
       throw StateError('Invalid token response: access_token is ${accessToken.runtimeType}');
     }

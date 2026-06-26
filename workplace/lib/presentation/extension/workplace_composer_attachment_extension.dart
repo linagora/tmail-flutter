@@ -37,25 +37,44 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   }) async {
     final oidcToken = oidcTokenGetter();
     if (oidcToken == null) return null;
+    final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
+    if (accessToken == null) return null;
+    return _createIntent(
+      platformUrl,
+      accessToken,
+      addAsLink: addAsLink,
+      addAsAttachment: addAsAttachment,
+    );
+  }
+
+  Future<String?> _exchangeAccessToken(Uri platformUrl, String oidcToken) async {
     String? accessToken;
     await for (final either in _exchangeTokenInteractor.execute(platformUrl, oidcToken)) {
       either.fold(
-        (failure) => logWarning('WorkplaceComposerAttachmentExtension::_fetchIntent exchange failed: $failure'),
+        (failure) => logWarning('WorkplaceComposerAttachmentExtension::_exchangeAccessToken failed: $failure'),
         (success) {
           if (success is ExchangeWorkplaceTokenSuccess) accessToken = success.accessToken;
         },
       );
     }
-    if (accessToken == null) return null;
+    return accessToken;
+  }
+
+  Future<WorkplaceIntent?> _createIntent(
+    Uri platformUrl,
+    String accessToken, {
+    required String addAsLink,
+    required String addAsAttachment,
+  }) async {
     WorkplaceIntent? intent;
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
-      accessToken!,
+      accessToken,
       addAsLink: addAsLink,
       addAsAttachment: addAsAttachment,
     )) {
       either.fold(
-        (failure) => logWarning('WorkplaceComposerAttachmentExtension::_fetchIntent create failed: $failure'),
+        (failure) => logWarning('WorkplaceComposerAttachmentExtension::_createIntent failed: $failure'),
         (success) {
           if (success is CreateWorkplaceIntentSuccess) intent = success.intent;
         },
