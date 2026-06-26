@@ -1,5 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:core/presentation/extensions/string_extension.dart';
+import 'package:core/utils/option_param_mixin.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -9,7 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
@@ -23,7 +26,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:model/mixin/search_snippet_mixin.dart';
 
-class PresentationEmail with EquatableMixin, SearchSnippetMixin {
+class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixin {
 
   final EmailId? id;
   final Id? blobId;
@@ -47,12 +50,12 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final List<EmailHeader>? emailHeader;
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
-  final Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent;
-  final Map<IndividualHeaderIdentifier, String?>? xPriorityHeader;
-  final Map<IndividualHeaderIdentifier, String?>? importanceHeader;
-  final Map<IndividualHeaderIdentifier, String?>? priorityHeader;
-  final Map<IndividualHeaderIdentifier, String?>? listPostHeader;
-  final Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader;
+  final TextHeaderValue? headerCalendarEvent;
+  final TextHeaderValue? xPriorityHeader;
+  final TextHeaderValue? importanceHeader;
+  final TextHeaderValue? priorityHeader;
+  final TextHeaderValue? listPostHeader;
+  final TextHeaderValue? listUnsubscribeHeader;
   final EmailInThreadStatus? emailInThreadStatus;
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
@@ -151,24 +154,18 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   bool get pushNotificationActivated => !isDraft && !hasRead;
 
-  bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
+  bool get hasCalendarEvent => headerCalendarEvent?.value?.isNotEmpty == true;
 
   String? get listPost => emailHeader?.toSet().listPost?.trim()
-    ?? listPostHeader?[IndividualHeaderIdentifier.listPostHeader]?.trim();
+    ?? listPostHeader?.value?.trim();
 
   String? get listUnsubscribe => emailHeader?.toSet().listUnsubscribe?.trim()
-    ?? listUnsubscribeHeader?[IndividualHeaderIdentifier.listUnsubscribeHeader]?.trim();
+    ?? listUnsubscribeHeader?.value?.trim();
 
   bool get isMarkAsImportant {
-    final xPriority = xPriorityHeader?[IndividualHeaderIdentifier.xPriorityHeader]
-      ?.trim()
-      .toLowerCase();
-    final importance = importanceHeader?[IndividualHeaderIdentifier.importanceHeader]
-      ?.trim()
-      .toLowerCase();
-    final priority = priorityHeader?[IndividualHeaderIdentifier.priorityHeader]
-      ?.trim()
-      .toLowerCase();
+    final xPriority = xPriorityHeader?.value?.trim().toLowerCase();
+    final importance = importanceHeader?.value?.trim().toLowerCase();
+    final priority = priorityHeader?.value?.trim().toLowerCase();
 
     return xPriority?.startsWith(MailPriorityHeader.firstXPriority) == true ||
       importance == MailPriorityHeader.highImportance ||
@@ -249,12 +246,12 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     List<EmailHeader>? emailHeader,
     Set<EmailBodyPart>? htmlBody,
     Map<PartId, EmailBodyValue>? bodyValues,
-    Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent,
-    Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
-    Map<IndividualHeaderIdentifier, String?>? importanceHeader,
-    Map<IndividualHeaderIdentifier, String?>? priorityHeader,
-    Map<IndividualHeaderIdentifier, String?>? listPostHeader,
-    Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
+    TextHeaderValue? headerCalendarEvent,
+    TextHeaderValue? xPriorityHeader,
+    TextHeaderValue? importanceHeader,
+    TextHeaderValue? priorityHeader,
+    TextHeaderValue? listPostHeader,
+    TextHeaderValue? listUnsubscribeHeader,
     EmailInThreadStatus? emailInThreadStatus,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -291,6 +288,74 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
       messageId: messageId ?? this.messageId,
       references: references ?? this.references,
+    );
+  }
+
+  PresentationEmail nullableCopyWith({
+    Option<EmailId>? id,
+    Option<Id>? blobId,
+    Option<Map<KeyWordIdentifier, bool>>? keywords,
+    Option<UnsignedInt>? size,
+    Option<UTCDate>? receivedAt,
+    Option<bool>? hasAttachment,
+    Option<String>? preview,
+    Option<String>? subject,
+    Option<UTCDate>? sentAt,
+    Option<Set<EmailAddress>>? from,
+    Option<Set<EmailAddress>>? to,
+    Option<Set<EmailAddress>>? cc,
+    Option<Set<EmailAddress>>? bcc,
+    Option<Set<EmailAddress>>? replyTo,
+    Option<Map<MailboxId, bool>>? mailboxIds,
+    Option<ThreadId>? threadId,
+    Option<SelectMode>? selectMode,
+    Option<Uri>? routeWeb,
+    Option<PresentationMailbox>? mailboxContain,
+    Option<List<EmailHeader>>? emailHeader,
+    Option<Set<EmailBodyPart>>? htmlBody,
+    Option<Map<PartId, EmailBodyValue>>? bodyValues,
+    Option<TextHeaderValue>? headerCalendarEvent,
+    Option<TextHeaderValue>? xPriorityHeader,
+    Option<TextHeaderValue>? importanceHeader,
+    Option<TextHeaderValue>? priorityHeader,
+    Option<TextHeaderValue>? listPostHeader,
+    Option<TextHeaderValue>? listUnsubscribeHeader,
+    Option<EmailInThreadStatus>? emailInThreadStatus,
+    Option<MessageIdsHeaderValue>? messageId,
+    Option<MessageIdsHeaderValue>? references,
+  }) {
+    return PresentationEmail(
+      id: getOptionParam(id, this.id),
+      blobId: getOptionParam(blobId, this.blobId),
+      keywords: getOptionParam(keywords, this.keywords),
+      size: getOptionParam(size, this.size),
+      receivedAt: getOptionParam(receivedAt, this.receivedAt),
+      hasAttachment: getOptionParam(hasAttachment, this.hasAttachment),
+      preview: getOptionParam(preview, this.preview),
+      subject: getOptionParam(subject, this.subject),
+      sentAt: getOptionParam(sentAt, this.sentAt),
+      from: getOptionParam(from, this.from),
+      to: getOptionParam(to, this.to),
+      cc: getOptionParam(cc, this.cc),
+      bcc: getOptionParam(bcc, this.bcc),
+      replyTo: getOptionParam(replyTo, this.replyTo),
+      mailboxIds: getOptionParam(mailboxIds, this.mailboxIds),
+      threadId: getOptionParam(threadId, this.threadId),
+      selectMode: getOptionParam(selectMode, this.selectMode) ?? SelectMode.INACTIVE,
+      routeWeb: getOptionParam(routeWeb, this.routeWeb),
+      mailboxContain: getOptionParam(mailboxContain, this.mailboxContain),
+      emailHeader: getOptionParam(emailHeader, this.emailHeader),
+      htmlBody: getOptionParam(htmlBody, this.htmlBody),
+      bodyValues: getOptionParam(bodyValues, this.bodyValues),
+      headerCalendarEvent: getOptionParam(headerCalendarEvent, this.headerCalendarEvent),
+      xPriorityHeader: getOptionParam(xPriorityHeader, this.xPriorityHeader),
+      importanceHeader: getOptionParam(importanceHeader, this.importanceHeader),
+      priorityHeader: getOptionParam(priorityHeader, this.priorityHeader),
+      listPostHeader: getOptionParam(listPostHeader, this.listPostHeader),
+      listUnsubscribeHeader: getOptionParam(listUnsubscribeHeader, this.listUnsubscribeHeader),
+      emailInThreadStatus: getOptionParam(emailInThreadStatus, this.emailInThreadStatus),
+      messageId: getOptionParam(messageId, this.messageId),
+      references: getOptionParam(references, this.references),
     );
   }
 }

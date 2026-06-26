@@ -1,6 +1,6 @@
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_acttachments_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_hive_cache_extension.dart';
@@ -26,15 +26,12 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
         ? MessageIdsHeaderValue(references!.toSet())
         : null,
       inlineImages: inlineImages?.toAttachment(),
-      sMimeStatusHeader: sMimeStatusHeader != null
-        ? Map.fromIterables(sMimeStatusHeader!.keys.map((value) => IndividualHeaderIdentifier(value)), sMimeStatusHeader!.values)
+      sMimeStatusHeader: sMimeStatusHeader?.isNotEmpty == true
+        ? TextHeaderValue(sMimeStatusHeader!.values.first)
         : null,
-      identityHeader: identityHeader != null
-          ? Map.fromIterables(
-              identityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
-              identityHeader!.values,
-            )
-          : null,
+      identityHeader: identityHeader?.isNotEmpty == true
+        ? TextHeaderValue(identityHeader!.values.first)
+        : null,
     );
- }
+  }
 }

@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -178,38 +179,33 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
           value: newEmailContent,
           isEncodingProblem: false,
           isTruncated: false,
-          acceptLanguageHeader: {
-            IndividualHeaderIdentifier.acceptLanguageHeader: LocalizationService.supportedLocalesToLanguageTags()
-          },
-          contentLanguageHeader: {
-            IndividualHeaderIdentifier.contentLanguageHeader: LocalizationService.getInitialLocale().toLanguageTag()
+          individualHeaders: {
+            IndividualHeaderIdentifier.acceptLanguageHeader: TextHeaderValue(
+              LocalizationService.supportedLocalesToLanguageTags(),
+            ),
+            IndividualHeaderIdentifier.contentLanguageHeader: TextHeaderValue(
+              LocalizationService.getInitialLocale().toLanguageTag(),
+            ),
           },
         )
-      },
-      headerUserAgent: {
-        IndividualHeaderIdentifier.headerUserAgent : userAgent
       },
       attachments: newEmailAttachments.isNotEmpty
         ? newEmailAttachments
         : null,
-      headerMdn: hasRequestReadReceipt
-        ? { IndividualHeaderIdentifier.headerMdn: createMdnEmailAddress() }
-        : null,
-      headerReturnPath: hasRequestReadReceipt
-        ? { IndividualHeaderIdentifier.headerReturnPath: createMdnEmailAddress() }
-        : null,
-      identityHeader: withIdentityHeader
-        ? {IndividualHeaderIdentifier.identityHeader: identity?.id?.id.value}
-        : null,
-      xPriorityHeader: isMarkAsImportant
-        ? {IndividualHeaderIdentifier.xPriorityHeader: MailPriorityHeader.firstXPriority}
-        : null,
-      importanceHeader: isMarkAsImportant
-        ? {IndividualHeaderIdentifier.importanceHeader: MailPriorityHeader.highImportance}
-        : null,
-      priorityHeader: isMarkAsImportant
-        ? {IndividualHeaderIdentifier.priorityHeader: MailPriorityHeader.urgentPriority}
-        : null,
+      individualHeaders: {
+        IndividualHeaderIdentifier.headerUserAgent: TextHeaderValue(userAgent),
+        if (hasRequestReadReceipt) ...{
+          IndividualHeaderIdentifier.headerMdn: TextHeaderValue(createMdnEmailAddress()),
+          IndividualHeaderIdentifier.headerReturnPath: TextHeaderValue(createMdnEmailAddress()),
+        },
+        if (withIdentityHeader)
+          IndividualHeaderIdentifier.identityHeader: TextHeaderValue(identity?.id?.id.value),
+        if (isMarkAsImportant) ...{
+          IndividualHeaderIdentifier.xPriorityHeader: const TextHeaderValue(MailPriorityHeader.firstXPriority),
+          IndividualHeaderIdentifier.importanceHeader: const TextHeaderValue(MailPriorityHeader.highImportance),
+          IndividualHeaderIdentifier.priorityHeader: const TextHeaderValue(MailPriorityHeader.urgentPriority),
+        },
+      },
     );
   }
 

@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -34,24 +35,23 @@ extension EmailExtension on Email {
   bool get withAttachments => hasAttachment == true;
 
   String get listUnsubscribe => headers.listUnsubscribe
-    ?? listUnsubscribeHeader?[IndividualHeaderIdentifier.listUnsubscribeHeader]
+    ?? listUnsubscribeHeader?.value
     ?? '';
 
   bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested ||
-      headerMdn?.containsKey(IndividualHeaderIdentifier.headerMdn) == true;
+      headerMdn != null;
 
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
-  String get sMimeStatusHeaderParsed => sMimeStatusHeader?[IndividualHeaderIdentifier.sMimeStatusHeader]?.trim() ?? '';
+  String get sMimeStatusHeaderParsed => sMimeStatusHeader?.value?.trim() ?? '';
 
   String get listPost => headers.listPost?.trim()
-    ?? listPostHeader?[IndividualHeaderIdentifier.listPostHeader]?.trim()
+    ?? listPostHeader?.value?.trim()
     ?? '';
 
   IdentityId? get identityIdFromHeader {
-    final rawIdentityId = identityHeader?[IndividualHeaderIdentifier.identityHeader];
+    final rawIdentityId = identityHeader?.value;
     if (rawIdentityId == null) return null;
-
     return IdentityId(Id(rawIdentityId));
   }
 
@@ -138,7 +138,35 @@ extension EmailExtension on Email {
       ..searchSnippetPreview = searchSnippetPreview;
   }
 
+  Map<IndividualHeaderIdentifier, EmailHeaderValue> mergeTrackedIndividualHeaders(
+    Email newEmail,
+    Properties updatedProperties,
+  ) {
+    final trackedHeaderIds = [
+      IndividualHeaderIdentifier.headerCalendarEvent,
+      IndividualHeaderIdentifier.xPriorityHeader,
+      IndividualHeaderIdentifier.importanceHeader,
+      IndividualHeaderIdentifier.priorityHeader,
+      IndividualHeaderIdentifier.listPostHeader,
+      IndividualHeaderIdentifier.listUnsubscribeHeader,
+    ];
+
+    final merged = Map<IndividualHeaderIdentifier, EmailHeaderValue>.from(individualHeaders);
+    for (final id in trackedHeaderIds) {
+      if (updatedProperties.contain(id.value)) {
+        if (newEmail.individualHeaders.containsKey(id)) {
+          merged[id] = newEmail.individualHeaders[id]!;
+        } else {
+          merged.remove(id);
+        }
+      }
+    }
+    return merged;
+  }
+
   Email combineEmail(Email newEmail, Properties updatedProperties) {
+    final merged = mergeTrackedIndividualHeaders(newEmail, updatedProperties);
+
     return Email(
       id: newEmail.id,
       blobId: updatedProperties.contain(EmailProperty.blobId) ? newEmail.blobId : blobId,
@@ -156,24 +184,9 @@ extension EmailExtension on Email {
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
       threadId: updatedProperties.contain(EmailProperty.threadId) ? newEmail.threadId : threadId,
-      headerCalendarEvent: updatedProperties.contain(IndividualHeaderIdentifier.headerCalendarEvent.value) ? newEmail.headerCalendarEvent : headerCalendarEvent,
-      xPriorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.xPriorityHeader.value)
-        ? newEmail.xPriorityHeader
-        : xPriorityHeader,
-      importanceHeader: updatedProperties.contain(IndividualHeaderIdentifier.importanceHeader.value)
-        ? newEmail.importanceHeader
-        : importanceHeader,
-      priorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.priorityHeader.value)
-        ? newEmail.priorityHeader
-        : priorityHeader,
-      listPostHeader: updatedProperties.contain(IndividualHeaderIdentifier.listPostHeader.value)
-        ? newEmail.listPostHeader
-        : listPostHeader,
-      listUnsubscribeHeader: updatedProperties.contain(IndividualHeaderIdentifier.listUnsubscribeHeader.value)
-        ? newEmail.listUnsubscribeHeader
-        : listUnsubscribeHeader,
       messageId: updatedProperties.contain(EmailProperty.messageId) ? newEmail.messageId : messageId,
       references: updatedProperties.contain(EmailProperty.references) ? newEmail.references : references,
+      individualHeaders: merged,
     );
   }
 
@@ -220,10 +233,16 @@ extension EmailExtension on Email {
     );
   }
 
-  Email updateEmailHeaderMdn(
-    Map<IndividualHeaderIdentifier, String?> value,
-  ) {
-    return copyWith(headerMdn: value);
+  Email updateEmailHeaderMdn(String? mdnAddress) {
+    final updated = Map<IndividualHeaderIdentifier, EmailHeaderValue>.from(
+      individualHeaders,
+    );
+    if (mdnAddress != null) {
+      updated[IndividualHeaderIdentifier.headerMdn] = TextHeaderValue(mdnAddress);
+    } else {
+      updated.remove(IndividualHeaderIdentifier.headerMdn);
+    }
+    return copyWith(individualHeaders: updated);
   }
 
   Email copyWith({
@@ -253,17 +272,7 @@ extension EmailExtension on Email {
     Set<EmailBodyPart>? attachments,
     EmailBodyPart? bodyStructure,
     Map<PartId, EmailBodyValue>? bodyValues,
-    Map<IndividualHeaderIdentifier, String?>? headerUserAgent,
-    Map<IndividualHeaderIdentifier, String?>? headerMdn,
-    Map<IndividualHeaderIdentifier, String?>? headerReturnPath,
-    Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent,
-    Map<IndividualHeaderIdentifier, String?>? sMimeStatusHeader,
-    Map<IndividualHeaderIdentifier, String?>? identityHeader,
-    Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
-    Map<IndividualHeaderIdentifier, String?>? importanceHeader,
-    Map<IndividualHeaderIdentifier, String?>? priorityHeader,
-    Map<IndividualHeaderIdentifier, String?>? listPostHeader,
-    Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
+    Map<IndividualHeaderIdentifier, EmailHeaderValue>? individualHeaders,
   }) {
     return Email(
       id: id ?? this.id,
@@ -292,17 +301,7 @@ extension EmailExtension on Email {
       attachments: attachments ?? this.attachments,
       bodyStructure: bodyStructure ?? this.bodyStructure,
       bodyValues: bodyValues ?? this.bodyValues,
-      headerUserAgent: headerUserAgent ?? this.headerUserAgent,
-      headerMdn: headerMdn ?? this.headerMdn,
-      headerReturnPath: headerReturnPath ?? this.headerReturnPath,
-      headerCalendarEvent: headerCalendarEvent ?? this.headerCalendarEvent,
-      sMimeStatusHeader: sMimeStatusHeader ?? this.sMimeStatusHeader,
-      identityHeader: identityHeader ?? this.identityHeader,
-      xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
-      importanceHeader: importanceHeader ?? this.importanceHeader,
-      priorityHeader: priorityHeader ?? this.priorityHeader,
-      listPostHeader: listPostHeader ?? this.listPostHeader,
-      listUnsubscribeHeader: listUnsubscribeHeader ?? this.listUnsubscribeHeader,
+      individualHeaders: individualHeaders ?? this.individualHeaders,
     );
   }
 }

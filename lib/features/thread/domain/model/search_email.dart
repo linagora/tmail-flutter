@@ -31,17 +31,9 @@ class SearchEmail extends Email {
     super.attachments,
     super.bodyStructure,
     super.bodyValues,
-    super.headerUserAgent,
-    super.headerMdn,
-    super.headerReturnPath,
-    super.headerCalendarEvent,
-    super.xPriorityHeader,
-    super.importanceHeader,
-    super.priorityHeader,
-    super.sMimeStatusHeader,
-    super.identityHeader,
+    super.individualHeaders,
     required this.searchSnippetSubject,
-    required this.searchSnippetPreview
+    required this.searchSnippetPreview,
   });
 
   @override
@@ -50,7 +42,7 @@ class SearchEmail extends Email {
     searchSnippetSubject,
     searchSnippetPreview,
   ];
-  
+
   factory SearchEmail.fromEmail(
     Email email, {
     String? searchSnippetSubject,
@@ -83,15 +75,7 @@ class SearchEmail extends Email {
       attachments: email.attachments,
       bodyStructure: email.bodyStructure,
       bodyValues: email.bodyValues,
-      headerUserAgent: email.headerUserAgent,
-      headerMdn: email.headerMdn,
-      headerReturnPath: email.headerReturnPath,
-      headerCalendarEvent: email.headerCalendarEvent,
-      xPriorityHeader: email.xPriorityHeader,
-      importanceHeader: email.importanceHeader,
-      priorityHeader: email.priorityHeader,
-      sMimeStatusHeader: email.sMimeStatusHeader,
-      identityHeader: email.identityHeader,
+      individualHeaders: email.individualHeaders,
       searchSnippetSubject: searchSnippetSubject,
       searchSnippetPreview: searchSnippetPreview,
     );

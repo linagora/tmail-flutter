@@ -6,7 +6,6 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -47,10 +46,7 @@ void main() {
       );
       
       // assert
-      expect(
-        result.identityHeader?.containsKey(
-          IndividualHeaderIdentifier.identityHeader),
-        isTrue);
+      expect(result.identityHeader, isNotNull);
     });
 
     test(
@@ -100,11 +96,11 @@ void main() {
       
       // assert
       expect(
-        result.headerMdn?[IndividualHeaderIdentifier.headerMdn],
+        result.headerMdn?.value,
         createEmailRequest.createMdnEmailAddress(),
       );
       expect(
-        result.headerReturnPath?[IndividualHeaderIdentifier.headerReturnPath],
+        result.headerReturnPath?.value,
         createEmailRequest.createMdnEmailAddress(),
       );
     });

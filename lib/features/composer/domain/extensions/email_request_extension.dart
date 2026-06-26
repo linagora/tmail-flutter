@@ -1,5 +1,4 @@
 
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -29,11 +28,9 @@ extension EmailRequestExtension on EmailRequest {
     );
   }
 
-  EmailRequest withUpdatedEmailHeaderMdn(
-    Map<IndividualHeaderIdentifier, String?> value,
-  ) {
+  EmailRequest withUpdatedEmailHeaderMdn(String? mdnAddress) {
     return EmailRequest(
-      email: email.updateEmailHeaderMdn(value),
+      email: email.updateEmailHeaderMdn(mdnAddress),
       sentMailboxId: sentMailboxId,
       emailIdDestroyed: emailIdDestroyed,
       emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
