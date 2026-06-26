@@ -6,10 +6,8 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_i
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-import '../extensions/mailbox_dashboard_controller_integration_test_extensions.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
-import '../utils/wait_for_condition.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
