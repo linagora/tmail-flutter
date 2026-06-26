@@ -20,6 +20,8 @@ extension LocaleExtension on Locale {
         return appLocalizations.languageItalian;
       case 'de':
         return appLocalizations.languageGerman;
+      case 'mn':
+        return appLocalizations.languageMongolian;
       default:
         return '';
     }
@@ -41,6 +43,8 @@ extension LocaleExtension on Locale {
         return 'عربي';
       case 'it':
         return 'Italiano';
+      case 'mn':
+        return 'Монгол';
       default:
         return '';
     }
