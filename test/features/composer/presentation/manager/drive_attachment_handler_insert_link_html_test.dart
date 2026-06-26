@@ -1,18 +1,31 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
+import 'drive_attachment_handler_test.mocks.dart';
 import 'drive_attachment_handler_test_helper.dart';
 
 void main() {
+  late MockUploadController mockUploadController;
+  late MockDownloadDriveFileInteractor mockDownloadInteractor;
   late List<String> insertedHtml;
   late DriveAttachmentHandler handler;
 
   setUp(() {
+    Get.testMode = true;
+    mockUploadController = MockUploadController();
+    mockDownloadInteractor = MockDownloadDriveFileInteractor();
     insertedHtml = [];
-    handler = const DriveAttachmentHandler();
+
+    handler = DriveAttachmentHandler(
+      uploadController: mockUploadController,
+      downloadDriveFileInteractor: mockDownloadInteractor,
+    );
   });
+
+  tearDown(() => Get.reset());
 
   group('DriveAttachmentHandler::insertDriveLinkHtml::', () {
     test('Should generate anchor tag with escaped href and label', () {

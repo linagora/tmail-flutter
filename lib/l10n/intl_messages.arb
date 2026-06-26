@@ -5308,6 +5308,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "driveAttachmentFailed": "Failed to attach file from Drive.",
+  "@driveAttachmentFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "labelAs": "Label as",
   "@labelAs": {
     "type": "text",

@@ -5646,6 +5646,13 @@ class AppLocalizations {
     );
   }
 
+  String get driveAttachmentFailed {
+    return Intl.message(
+      'Failed to attach file from Drive.',
+      name: 'driveAttachmentFailed',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',
