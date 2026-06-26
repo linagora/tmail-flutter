@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_emp
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/twp_warning_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
@@ -355,6 +356,21 @@ class EmailView extends GetWidget<SingleEmailController> {
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
         )),
+        Obx(() {
+          final warnings = controller.visibleTwpWarnings;
+          if (warnings.isEmpty) return const SizedBox.shrink();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: warnings
+                .map((warning) => TwpWarningBanner(
+                      warning: warning,
+                      isDismissable: controller.isNetworkConnectionAvailable,
+                      onDismissAction: controller.dismissTwpWarning,
+                    ))
+                .toList(),
+          );
+        }),
         Obx(() => EmailViewLoadingBarWidget(
           viewState: controller.emailLoadedViewState.value
         )),

@@ -861,6 +861,37 @@ class EmailAPI
     }
   }
 
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emailId.generateMapUpdateObjectDismissTwpWarning(index));
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    requestBuilder.invocation(setEmailMethod);
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+      final response = await (requestBuilder
+          ..usings(capabilities))
+        .build()
+        .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
+
+    final emailIdUpdated = setEmailResponse?.updated
+        ?.keys
+        .map((id) => EmailId(id))
+        .toList() ?? [];
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (emailIdUpdated.isEmpty) {
+      throw SetMethodException(mapErrors);
+    }
+  }
+
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) async {
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);

@@ -11,4 +11,11 @@ extension EmailIdExtension on EmailId {
       id: KeyWordIdentifierExtension.unsubscribeMail.generateUnsubscribeActionPath()
     };
   }
+
+  Map<Id, PatchObject> generateMapUpdateObjectDismissTwpWarning(int index) {
+    return {
+      id: KeyWordIdentifierExtension.twpWarningDismissed(index)
+          .generateDismissTwpWarningActionPath()
+    };
+  }
 }

@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/email/domain/state/calendar_event_counter
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/dismiss_twp_warning_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_entire_message_as_document_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -49,6 +50,7 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_counter_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/dismiss_twp_warning_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -119,6 +121,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
+  final DismissTwpWarningInteractor _dismissTwpWarningInteractor;
   final EmailId? _currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
@@ -140,6 +143,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attachmentsViewState = RxMap<Id, Either<Failure, Success>>();
   final isEmailContentHidden = RxBool(false);
   final currentEmailLoaded = Rxn<EmailLoaded>();
+  final dismissedTwpWarningIndexes = <int>{}.obs;
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
@@ -188,7 +192,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._markAsStarEmailInteractor,
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
-    this._printEmailInteractor, {
+    this._printEmailInteractor,
+    this._dismissTwpWarningInteractor, {
     EmailId? currentEmailId,
   }) : _currentEmailId = currentEmailId;
 
@@ -244,6 +249,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
       calendarEventSuccess(success);
+    } else if (success is DismissTwpWarningSuccess) {
+      _dismissTwpWarningSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -261,6 +268,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _showMessageWhenEmailPrintingFailed(failure);
     } else if (failure is CalendarEventReplyFailure) {
       _calendarEventFailure(failure);
+    } else if (failure is DismissTwpWarningFailure) {
+      _dismissTwpWarningFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -664,6 +673,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _resetToOriginalValue({bool isEmailClosing = false}) {
     emailContents.value = null;
     currentEmailLoaded.value = null;
+    dismissedTwpWarningIndexes.clear();
     attachments.clear();
     attachmentsViewState.value = {};
     blobCalendarEvent.value = null;
@@ -867,6 +877,70 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
 
     toastManager.showMessageSuccess(success);
+  }
+
+  bool get isNetworkConnectionAvailable =>
+      mailboxDashBoardController.networkConnectionController.isNetworkConnectionAvailable();
+
+  /// Warnings positioned by the backend (`X-TWP-Message`) that are still
+  /// visible: not persisted as dismissed (keyword) nor dismissed locally.
+  List<TwpWarning> get visibleTwpWarnings {
+    final warnings =
+        currentEmailLoaded.value?.emailCurrent?.headers.twpWarnings ?? const [];
+    if (warnings.isEmpty) return const [];
+
+    final email = currentEmail;
+    return warnings
+        .where((warning) =>
+            !dismissedTwpWarningIndexes.contains(warning.index) &&
+            email?.isTwpWarningDismissed(warning.index) != true)
+        .toList();
+  }
+
+  void dismissTwpWarning(int index) {
+    final emailId = currentEmail?.id;
+    if (emailId == null || session == null || accountId == null) return;
+
+    // Dismissing persists a keyword through the backend, so it is disabled when
+    // offline (the banner stays visible until a connection is available).
+    if (!isNetworkConnectionAvailable) return;
+
+    dismissedTwpWarningIndexes.add(index);
+    consumeState(_dismissTwpWarningInteractor.execute(
+      session!,
+      accountId!,
+      emailId,
+      index,
+    ));
+  }
+
+  void _dismissTwpWarningSuccess(DismissTwpWarningSuccess success) {
+    final newKeywords = {
+      KeyWordIdentifierExtension.twpWarningDismissed(success.index): true,
+    };
+
+    final newEmail = currentEmail?.updateKeywords(newKeywords);
+    final emailId = newEmail?.id;
+    if (emailId == null) return;
+
+    if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
+      mailboxDashBoardController.selectedEmail.value?.resyncKeywords(newKeywords);
+    } else {
+      _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
+    }
+  }
+
+  void _dismissTwpWarningFailure(DismissTwpWarningFailure failure) {
+    final index = failure.index;
+    if (index != null) {
+      dismissedTwpWarningIndexes.remove(index);
+    }
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).an_error_occurred,
+      );
+    }
   }
 
   void handleEmailAction(

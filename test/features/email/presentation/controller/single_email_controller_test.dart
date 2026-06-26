@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/state/get_email_content_stat
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/dismiss_twp_warning_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -88,6 +89,7 @@ const fallbackGenerators = {
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<PrintEmailInteractor>(),
+  MockSpec<DismissTwpWarningInteractor>(),
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
@@ -121,6 +123,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
+  final dismissTwpWarningInteractor = MockDismissTwpWarningInteractor();
   final printUtils = MockPrintUtils();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
@@ -172,6 +175,7 @@ void main() {
       getAllIdentitiesInteractor,
       storeOpenedEmailInteractor,
       printEmailInteractor,
+      dismissTwpWarningInteractor,
     );
   });
 
