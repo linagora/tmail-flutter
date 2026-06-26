@@ -10,6 +10,7 @@ import '../extensions/mailbox_dashboard_controller_integration_test_extensions.d
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
 import '../utils/wait_for_condition.dart';
+import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
   Future<List<Label>> provisionLabels(
@@ -19,9 +20,7 @@ mixin ProvisioningLabelScenarioMixin {
       return [];
     }
 
-    await waitForCondition(
-      () => getBinding<MailboxDashBoardController>().isReady,
-    );
+    await waitForMailboxReady();
 
     final dashboardController = getBinding<MailboxDashBoardController>();
     final createLabelInteractor = getBinding<CreateNewLabelInteractor>();

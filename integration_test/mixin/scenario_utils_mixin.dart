@@ -293,9 +293,7 @@ mixin ScenarioUtilsMixin {
   }
 
   Future<void> provisionTrashSubfolder(String subfolderName) async {
-    await waitForCondition(
-      () => getBinding<MailboxDashBoardController>().isReady,
-    );
+    await waitForMailboxReady();
     final dashboardController = Get.find<MailboxDashBoardController>();
     final session = dashboardController.sessionCurrent
         ?? (throw StateError('provisionTrashSubfolder: session is null'));
