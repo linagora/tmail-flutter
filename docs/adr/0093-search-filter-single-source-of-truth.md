@@ -14,14 +14,13 @@ Proposed
 
 ## Context
 
-### Problem 1 — Dual write funnels, no shared state (bugs #4421, #4612, #4590, #4490)
+### Problem 1 — Dual write funnels, no shared state (bugs #4421, #4590, #4490)
 
 `SearchEmailFilter` state lives in two independent, unconnected objects: `SearchController.searchEmailFilter.obs` (written by 10+ web call sites) and `SearchEmailController.searchEmailFilter.obs` (written by 20+ mobile call sites via `_updateSimpleSearchFilter()`). Neither is aware of the other. A staging layer (`listFilterOnSuggestionForm`) defers chip selections until submit, so the advanced filter panel never sees pending chip state. `FilterMessageOption` (unread/starred/attachments) is silently ANDed into JMAP queries via `moreFilterCondition: getFilterCondition()` — the result differs from what the chip UI shows.
 
 | Bug | Root cause |
 |---|---|
 | #4421 | `listFilterOnSuggestionForm` not merged into filter until submit; mobile `SearchEmailController` starts fresh on every entry |
-| #4612 | `SearchEmailFilter.mailbox` always initializes to `null`; current folder context never seeded on search entry |
 | #4590 | `ThreadController._searchEmail()` ANDs `filterMessageOption` as `moreFilterCondition`; chip bar reads `SearchEmailFilter.unread` (always `false`) → chip deselected, results still filtered |
 | #4490 | `filterMessageOption` reset to `all` by unrelated code paths; cached results still filtered while chip shows deselected |
 
@@ -76,7 +75,7 @@ The draft is the live edit buffer (committed values + not-yet-applied edits); th
 
 | Event | Action |
 |---|---|
-| Enter search | `search = initial(mailbox: current, sortOrder: current)` — fixes #4612 |
+| Enter search | `search = initial(sortOrder: current)` |
 | Open input surface | `draft.seedFrom(search)` — draft starts at committed, keeps `search ⊆ draft` |
 | Edit field in surface | `draft.update(...)` |
 | Apply / submit | `search.set(draft)` → execute |

@@ -652,7 +652,6 @@ void onClose() {
   super.onClose();
 }
 ```
-Seed the current folder on search entry (fixes #4612): when entering search, `searchFilterNotifierProvider.notifier.set(SearchEmailFilter(mailbox: selectedMailbox.value, sortOrderType: currentSortOrder))`.
 
 **Tests:** `mailbox_dashboard_controller_test.dart` — `applyCurrentFilterMessageOptionToSearch` maps `unread`/`attachments`/`starred` into the SSOT; logout invalidates all three providers.
 
@@ -687,7 +686,7 @@ Reviewers reference the corresponding step for the expected change and regressio
 - Steps 1–5 build the layer and lock the invariants with explicit tests before any controller is touched
 - `position` removed last, when no caller depends on it — no transitional position-shims in controllers
 - Future pagination rules (e.g. `collapseThreads`) = a new `SearchPaginationStrategy` + one ordered entry; first-match means it only affects contexts its guard matches, so existing strategies and their tests are untouched (OCP)
-- Bug fixes (#4421, #4612, #4590, #4490) fall out of the structural cleanup, not as patches
+- Bug fixes (#4421, #4590, #4490) fall out of the structural cleanup, not as patches
 
 **Negative**
 - Steps 7 and 8 migrate two views to `ConsumerStatefulWidget` — requires regression testing on web and mobile
