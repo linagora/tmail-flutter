@@ -90,14 +90,6 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
                       const Spacer(),
                       buildButton(
                         onTap: onClose,
-                        label: localizations.addAsAttachment,
-                        textTheme: textTheme,
-                        textColor: AppColor.primaryMain,
-                        backgroundColor: Colors.transparent,
-                      ),
-                      const SizedBox(width: 16),
-                      buildButton(
-                        onTap: onClose,
                         label: localizations.addAsLink,
                         textTheme: textTheme,
                         textColor: Colors.white,

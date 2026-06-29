@@ -130,6 +130,8 @@ import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
@@ -1001,6 +1003,23 @@ class ComposerController extends BaseController
       }
     } else {
       _sendButtonState = ButtonState.enabled;
+    }
+  }
+
+  void handleDrivePickResult(List<DriveDocument> result) {
+    try {
+      getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+        result,
+        insertHtml: (html) {
+          if (PlatformInfo.isWeb) {
+            richTextWebController?.editorController.insertHtml(html);
+          } else {
+            htmlEditorApi?.insertHtml(html);
+          }
+        },
+      );
+    } catch (e) {
+      logWarning('ComposerController::handleDrivePickResult:Exception = $e');
     }
   }
 

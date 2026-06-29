@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_in
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mobile_composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/web_composer_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
@@ -343,6 +344,7 @@ abstract class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    Get.lazyPut(() => const DriveAttachmentHandler(), tag: composerId);
     bindPlatformRichTextController();
     Get.lazyPut(
       () => UploadController(Get.find<UploadAttachmentInteractor>(tag: composerId)),
@@ -429,5 +431,7 @@ abstract class ComposerBindings extends BaseBindings {
 
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();
+
+    Get.delete<DriveAttachmentHandler>(tag: composerId);
   }
 }
