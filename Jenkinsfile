@@ -14,8 +14,6 @@ pipeline {
 
     environment {
         FLUTTER_VERSION = '3.38.9'
-        DOCKER_HUB_CREDENTIAL = credentials('dockerHub')
-        GITHUB_CREDENTIAL = credentials('github')
     }
 
     stages {
@@ -35,6 +33,10 @@ pipeline {
           when {
             changeRequest()
           }
+          environment {
+            DOCKER_HUB_CREDENTIAL = credentials('dockerHub')
+            GITHUB_CREDENTIAL = credentials('github')
+          }
           steps {
             script {
               if (env.CHANGE_FORK) {
@@ -51,12 +53,16 @@ pipeline {
                 } else if (memberStatus == '404') {
                   echo "Fork owner '${forkOwner}' is not a member of the linagora organization."
                   def approvedByMember = false
-                  def commentsJson = sh(
-                    script: """curl -s \
+                  def commentsStatus = sh(
+                    script: """curl -s -o /tmp/pr_comments_${CHANGE_ID}.json -w "%{http_code}" \
                       -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
                       "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments" """,
                     returnStdout: true
                   ).trim()
+                  if (commentsStatus != '200') {
+                    error("GitHub API error ${commentsStatus} while fetching PR comments for approval check")
+                  }
+                  def commentsJson = readFile("/tmp/pr_comments_${CHANGE_ID}.json")
                   def comments = new groovy.json.JsonSlurper().parseText(commentsJson)
                   for (comment in comments) {
                     if (comment.body.trim().toLowerCase() == 'build this please') {
@@ -87,10 +93,16 @@ pipeline {
 
               // Build and push the web Docker image tagged with the PR number to ease testing.
               sh '''
+                set -eu
+                export DOCKER_CONFIG="$(mktemp -d)"
+                cleanup() {
+                  docker logout || true
+                  rm -rf "$DOCKER_CONFIG"
+                }
+                trap cleanup EXIT
                 docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID .
                 echo "$DOCKER_HUB_CREDENTIAL_PSW" | docker login -u "$DOCKER_HUB_CREDENTIAL_USR" --password-stdin
                 docker push linagora/tmail-web-pr:$CHANGE_ID
-                docker logout
               '''
               sh """
                 HTTP_STATUS=\$(curl -s -o /tmp/gh_comment_response.json -w "%{http_code}" -X POST \\
