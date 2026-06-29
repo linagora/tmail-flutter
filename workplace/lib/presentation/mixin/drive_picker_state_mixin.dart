@@ -4,20 +4,21 @@ import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
-import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
+
+typedef OnPickDriveCallback = void Function(DrivePickState state);
 
 /// Shared state logic for widgets that open [DriveIntentWebViewModal].
 ///
-/// Consumers must provide [pickerFetchIntent] and [pickerOnPickResult], then
+/// Consumers must provide [pickerFetchIntent] and [pickerOnCallback], then
 /// call [onPickerTap] from their tap handler.
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   Future<WorkplaceIntent?> Function({
-    required String addAsLink,
+    required String addAsLinkTitle,
   })? get pickerFetchIntent;
 
-  OnPickDriveAttachmentResult? get pickerOnPickResult;
-  void Function(Object error)? get pickerOnError => null;
+  OnPickDriveCallback? get pickerOnCallback => null;
 
   void Function(void Function(String raw, String? origin))? get externalHandlerRegistrar => null;
   void clearExternalHandler() {}
@@ -32,7 +33,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     try {
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
-        addAsLink: l10n.addAsLink,
+        addAsLinkTitle: l10n.addAsLink,
       );
       if (intent == null) {
         _modalOpen = false;
@@ -47,10 +48,10 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );
-      if (mounted && result != null) pickerOnPickResult?.call(result);
+      if (mounted && result != null) pickerOnCallback?.call(DrivePickResult(result));
     } catch (e) {
       logWarning('DrivePickerStateMixin::onPickerTap: $e');
-      pickerOnError?.call(e);
+      pickerOnCallback?.call(DrivePickFailure(e));
     } finally {
       clearExternalHandler();
       _modalOpen = false;

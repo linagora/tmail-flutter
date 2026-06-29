@@ -3,22 +3,18 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
-
-typedef OnPickDriveAttachmentResult = void Function(List<DriveDocument>);
 
 class DriveAttachmentPickerButton extends StatefulWidget {
   final String composerId;
   final ImagePaths imagePaths;
   final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
-  final OnPickDriveAttachmentResult? onPickResult;
-  final void Function(Object error)? onError;
+  final OnPickDriveCallback? onPickCallback;
   final Future<WorkplaceIntent?> Function({
-    required String addAsLink,
+    required String addAsLinkTitle,
   })? onFetchIntent;
 
   const DriveAttachmentPickerButton({
@@ -27,8 +23,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
     required this.imagePaths,
     required this.workplaceUri,
     this.style = const ComposerToolbarButtonStyle(),
-    this.onPickResult,
-    this.onError,
+    this.onPickCallback,
     this.onFetchIntent,
   });
 
@@ -48,14 +43,11 @@ abstract class _DriveAttachmentPickerButtonState
 
   @override
   Future<WorkplaceIntent?> Function({
-    required String addAsLink,
+    required String addAsLinkTitle,
   })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override
-  OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;
-
-  @override
-  void Function(Object error)? get pickerOnError => widget.onError;
+  OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
 
   @override
   Widget build(BuildContext context) {

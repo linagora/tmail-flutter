@@ -7,17 +7,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
-import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 class DriveAttachmentContextMenuTile extends StatefulWidget {
   final String composerId;
   final ImagePaths imagePaths;
   final Uri workplaceUri;
   final String label;
-  final OnPickDriveAttachmentResult? onPickResult;
-  final void Function(Object error)? onError;
+  final OnPickDriveCallback? onPickCallback;
   final Future<WorkplaceIntent?> Function({
-    required String addAsLink,
+    required String addAsLinkTitle,
   })? onFetchIntent;
 
   const DriveAttachmentContextMenuTile({
@@ -26,8 +24,7 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
     required this.imagePaths,
     required this.workplaceUri,
     required this.label,
-    this.onPickResult,
-    this.onError,
+    this.onPickCallback,
     this.onFetchIntent,
   });
 
@@ -47,14 +44,11 @@ abstract class _DriveAttachmentContextMenuTileState
 
   @override
   Future<WorkplaceIntent?> Function({
-    required String addAsLink,
+    required String addAsLinkTitle,
   })? get pickerFetchIntent => widget.onFetchIntent;
 
   @override
-  OnPickDriveAttachmentResult? get pickerOnPickResult => widget.onPickResult;
-
-  @override
-  void Function(Object error)? get pickerOnError => widget.onError;
+  OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
 
   @override
   Widget build(BuildContext context) {

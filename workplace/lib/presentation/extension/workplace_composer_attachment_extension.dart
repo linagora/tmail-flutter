@@ -3,26 +3,26 @@ import 'package:core/presentation/extensions/composer_toolbar_button_style.dart'
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_fake_page.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
+typedef OnDrivePickStateChanged = void Function(String composerId, DrivePickState state);
+
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
-  final void Function(String composerId, List<DriveDocument> result)? onPickResult;
-  final void Function(String composerId, Object error)? onError;
+  final OnDrivePickStateChanged? onPickState;
 
   const WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
-    this.onPickResult,
-    this.onError,
+    this.onPickState,
   });
 
   Future<WorkplaceIntent?> _fetchIntent(
     Uri workplaceUrl, {
-    required String addAsLink,
+    required String addAsLinkTitle,
   }) async =>
       WorkplaceIntent(
         intentId: 'debug',
@@ -45,14 +45,11 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           imagePaths: imagePaths,
           workplaceUri: uri,
           style: style,
-          onPickResult: onPickResult == null
+          onPickCallback: onPickState == null
               ? null
-              : (result) => onPickResult!(composerId, result),
-          onError: onError == null
-              ? null
-              : (error) => onError!(composerId, error),
-          onFetchIntent: ({required addAsLink}) =>
-              _fetchIntent(uri, addAsLink: addAsLink),
+              : (state) => onPickState!(composerId, state),
+          onFetchIntent: ({required addAsLinkTitle}) =>
+              _fetchIntent(uri, addAsLinkTitle: addAsLinkTitle),
         );
       },
     );
@@ -74,14 +71,11 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           imagePaths: imagePaths,
           workplaceUri: uri,
           label: label,
-          onPickResult: onPickResult == null
+          onPickCallback: onPickState == null
               ? null
-              : (result) => onPickResult!(composerId, result),
-          onError: onError == null
-              ? null
-              : (error) => onError!(composerId, error),
-          onFetchIntent: ({required addAsLink}) =>
-              _fetchIntent(uri, addAsLink: addAsLink),
+              : (state) => onPickState!(composerId, state),
+          onFetchIntent: ({required addAsLinkTitle}) =>
+              _fetchIntent(uri, addAsLinkTitle: addAsLinkTitle),
         );
       },
     );
