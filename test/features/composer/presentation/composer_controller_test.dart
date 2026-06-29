@@ -299,6 +299,8 @@ void main() {
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     // Mock Getx controllers
+    // Reset the shared drag state so it does not leak between tests.
+    mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
