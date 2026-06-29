@@ -41,9 +41,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required String addAsAttachmentTitle,
   }) async {
     final oidcToken = oidcTokenGetter();
-    if (oidcToken == null) return null;
+    if (oidcToken == null) throw StateError('OIDC token is unavailable');
     final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
-    if (accessToken == null) return null;
+    if (accessToken == null) throw StateError('Drive access token exchange failed');
     return _createIntent(
       platformUrl,
       accessToken,
@@ -119,10 +119,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(composerId, state),
-          onFetchIntent: ({required addAsLinkTitle}) => _fetchIntent(
+          onFetchIntent: ({required addAsLinkTitle, required addAsAttachmentTitle}) => _fetchIntent(
             uri,
             addAsLinkTitle: addAsLinkTitle,
-            addAsAttachmentTitle: addAsLinkTitle,
+            addAsAttachmentTitle: addAsAttachmentTitle,
           ),
         );
       },
@@ -148,10 +148,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(composerId, state),
-          onFetchIntent: ({required addAsLinkTitle}) => _fetchIntent(
+          onFetchIntent: ({required addAsLinkTitle, required addAsAttachmentTitle}) => _fetchIntent(
             uri,
             addAsLinkTitle: addAsLinkTitle,
-            addAsAttachmentTitle: addAsLinkTitle,
+            addAsAttachmentTitle: addAsAttachmentTitle,
           ),
         );
       },

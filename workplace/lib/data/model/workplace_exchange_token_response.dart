@@ -5,8 +5,8 @@ part 'workplace_exchange_token_response.g.dart';
 
 @JsonSerializable(createToJson: false, fieldRename: FieldRename.snake)
 class WorkplaceExchangeTokenResponse extends Equatable {
-  final String? accessToken,
-      clientId,
+  final String accessToken;
+  final String? clientId,
       clientSecret,
       refreshToken,
       registrationAccessToken,
@@ -14,7 +14,7 @@ class WorkplaceExchangeTokenResponse extends Equatable {
       tokenType;
 
   const WorkplaceExchangeTokenResponse({
-    this.accessToken,
+    required this.accessToken,
     this.clientId,
     this.clientSecret,
     this.refreshToken,

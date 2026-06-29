@@ -30,7 +30,12 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     required String addAsAttachment,
   }) async {
     final response = await WorkplaceDio.instance.post(
-      '$platformUrl/intents',
+      platformUrl.replace(
+        pathSegments: [
+          ...platformUrl.pathSegments.where((segment) => segment.isNotEmpty),
+          'intents',
+        ],
+      ).toString(),
       options: Options(
         headers: {'Authorization': 'Bearer $accessToken'},
       ),
@@ -84,7 +89,13 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   @override
   Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async {
     final response = await WorkplaceDio.instance.post(
-      '$platformUrl/auth/token_exchange',
+      platformUrl.replace(
+        pathSegments: [
+          ...platformUrl.pathSegments.where((segment) => segment.isNotEmpty),
+          'auth',
+          'token_exchange',
+        ],
+      ).toString(),
       data: WorkplaceExchangeTokenRequest(
         idToken: oidcIdToken,
         exchangeType: WorkplaceExchangeType.app,
@@ -92,9 +103,6 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     );
     final data = WorkplaceExchangeTokenResponse.fromJson(_asJsonMap(response.data));
     final accessToken = data.accessToken;
-    if (accessToken == null) {
-      throw StateError('Invalid token response: access_token is ${accessToken.runtimeType}');
-    }
     return accessToken;
   }
 }

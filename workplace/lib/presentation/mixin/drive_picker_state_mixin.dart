@@ -9,14 +9,17 @@ import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
 typedef OnPickDriveCallback = void Function(DrivePickState state);
 
+typedef FetchDriveIntentCallback = Future<WorkplaceIntent?> Function({
+  required String addAsLinkTitle,
+  required String addAsAttachmentTitle,
+});
+
 /// Shared state logic for widgets that open [DriveIntentWebViewModal].
 ///
 /// Consumers must provide [pickerFetchIntent] and [pickerOnCallback], then
 /// call [onPickerTap] from their tap handler.
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
-  Future<WorkplaceIntent?> Function({
-    required String addAsLinkTitle,
-  })? get pickerFetchIntent;
+  FetchDriveIntentCallback? get pickerFetchIntent;
 
   OnPickDriveCallback? get pickerOnCallback => null;
 
@@ -34,6 +37,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLinkTitle: l10n.addAsLink,
+        addAsAttachmentTitle: l10n.addAsAttachment,
       );
       if (intent == null) {
         _modalOpen = false;
