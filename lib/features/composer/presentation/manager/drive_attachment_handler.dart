@@ -4,16 +4,20 @@ import 'package:core/utils/build_utils.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
 class DriveAttachmentHandler {
-  final void Function(String html) insertHtml;
+  const DriveAttachmentHandler();
 
-  const DriveAttachmentHandler({required this.insertHtml});
-
-  void handleDrivePickResult(List<DriveDocument> result) {
+  void handleDrivePickResult(
+    List<DriveDocument> result, {
+    required void Function(String html) insertHtml,
+  }) {
     final linkDocs = result.where((doc) => doc.sharingLink != null).toList();
-    insertDriveLinkHtml(linkDocs);
+    insertDriveLinkHtml(linkDocs, insertHtml: insertHtml);
   }
 
-  void insertDriveLinkHtml(List<DriveDocument> docs) {
+  void insertDriveLinkHtml(
+    List<DriveDocument> docs, {
+    required void Function(String html) insertHtml,
+  }) {
     insertHtml(buildDriveLinksHtml(docs));
   }
 
@@ -35,7 +39,9 @@ class DriveAttachmentHandler {
     if (link == null) return null;
     if (requireHttps && !link.isScheme('https')) return null;
 
-    final href = const HtmlEscape(HtmlEscapeMode.attribute).convert(link.toString());
+    final href = const HtmlEscape(
+      HtmlEscapeMode.attribute,
+    ).convert(link.toString());
     final label = const HtmlEscape().convert(doc.name);
     return '<a href="$href">$label</a>';
   }

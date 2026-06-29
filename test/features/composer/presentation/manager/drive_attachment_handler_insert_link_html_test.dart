@@ -11,9 +11,7 @@ void main() {
 
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler(
-      insertHtml: (html) => insertedHtml.add(html),
-    );
+    handler = const DriveAttachmentHandler();
   });
 
   group('DriveAttachmentHandler::insertDriveLinkHtml::', () {
@@ -26,7 +24,9 @@ void main() {
         sharingLink: Uri.parse('https://example.com/file?a=1&b=2'),
       );
 
-      handler.insertDriveLinkHtml([doc]);
+      handler.insertDriveLinkHtml([
+        doc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml.first, contains('&amp;'));
       expect(insertedHtml.first, contains('My &lt;Report&gt;'));
@@ -42,13 +42,18 @@ void main() {
         sharingLink: Uri.parse('https://example.com/second'),
       );
 
-      handler.insertDriveLinkHtml([linkDoc, doc2]);
+      handler.insertDriveLinkHtml([
+        linkDoc,
+        doc2,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml.first, contains('<br>'));
     });
 
     test('Should produce empty string for docs with null sharingLink', () {
-      handler.insertDriveLinkHtml([noLinkDoc]);
+      handler.insertDriveLinkHtml([
+        noLinkDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml.first, isEmpty);
     });
@@ -62,7 +67,9 @@ void main() {
         sharingLink: Uri.parse('http://example.com/file'),
       );
 
-      handler.insertDriveLinkHtml([httpDoc]);
+      handler.insertDriveLinkHtml([
+        httpDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       if (kReleaseMode) {
         expect(insertedHtml.first, isEmpty);

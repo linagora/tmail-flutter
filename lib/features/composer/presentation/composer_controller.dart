@@ -1008,7 +1008,8 @@ class ComposerController extends BaseController
 
   void handleDrivePickResult(List<DriveDocument> result) {
     try {
-      DriveAttachmentHandler(
+      getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+        result,
         insertHtml: (html) {
           if (PlatformInfo.isWeb) {
             richTextWebController?.editorController.insertHtml(html);
@@ -1016,7 +1017,7 @@ class ComposerController extends BaseController
             htmlEditorApi?.insertHtml(html);
           }
         },
-      ).handleDrivePickResult(result);
+      );
     } catch (e) {
       logWarning('ComposerController::handleDrivePickResult:Exception = $e');
     }

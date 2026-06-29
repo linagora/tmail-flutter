@@ -10,14 +10,14 @@ void main() {
 
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler(
-      insertHtml: (html) => insertedHtml.add(html),
-    );
+    handler = const DriveAttachmentHandler();
   });
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {
     test('Should insert link html for docs with sharingLink', () {
-      handler.handleDrivePickResult([linkDoc]);
+      handler.handleDrivePickResult([
+        linkDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/report'));
@@ -34,21 +34,29 @@ void main() {
         downloadLink: Uri.parse('https://drive.example.com/both-dl'),
       );
 
-      handler.handleDrivePickResult([bothLinksDoc]);
+      handler.handleDrivePickResult([
+        bothLinksDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/both'));
     });
 
     test('Should skip docs with neither sharingLink nor downloadLink', () {
-      handler.handleDrivePickResult([noLinkDoc]);
+      handler.handleDrivePickResult([
+        noLinkDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, isEmpty);
     });
 
     test('Should handle mixed docs correctly — only link docs inserted', () {
-      handler.handleDrivePickResult([linkDoc, attachmentDoc, noLinkDoc]);
+      handler.handleDrivePickResult([
+        linkDoc,
+        attachmentDoc,
+        noLinkDoc,
+      ], insertHtml: (html) => insertedHtml.add(html));
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('Report'));
