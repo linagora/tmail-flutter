@@ -6,7 +6,11 @@ import '../email_robot.dart';
 import '../../utils/test_timeouts.dart';
 
 class MobileEmailRobot extends EmailRobot implements AbstractEmailRobot {
-  MobileEmailRobot(super.$);
+  MobileEmailRobot(
+    super.$, {
+    super.assertionRobot,
+    super.twpWarningRobot,
+  });
 
   @override
   Future<void> expectDownloadSaveDialogVisible() async {
