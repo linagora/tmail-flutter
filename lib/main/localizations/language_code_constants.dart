@@ -7,4 +7,5 @@ class LanguageCodeConstants {
   static const String italian = 'it';
   static const String russian = 'ru';
   static const String arabic = 'ar';
+  static const String mongolian = 'mn';
 }

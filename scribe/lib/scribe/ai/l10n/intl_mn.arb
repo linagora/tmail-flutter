@@ -1,0 +1,152 @@
+{
+  "categoryCorrectGrammar": "Засах",
+  "@categoryCorrectGrammar": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryImprove": "Сайжруулах",
+  "@categoryImprove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryChangeTone": "Өнгө аясыг өөрчлөх",
+  "@categoryChangeTone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryTranslate": "Орчуулах",
+  "@categoryTranslate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMakeShorter": "Богиносгох",
+  "@actionMakeShorter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionExpandContext": "Дэлгэрүүлэх",
+  "@actionExpandContext": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionEmojify": "Эможи нэмэх",
+  "@actionEmojify": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTransformToBullets": "Цэгэн жагсаалт болгох",
+  "@actionTransformToBullets": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreProfessional": "Илүү мэргэжлийн",
+  "@actionMoreProfessional": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreCasual": "Илүү энгийн",
+  "@actionMoreCasual": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMorePolite": "Илүү эелдэг",
+  "@actionMorePolite": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "Франц",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "Англи",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "Орос",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "Вьетнам",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "customPromptAction": "Бичихэд туслаач",
+  "@customPromptAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "failedToGenerate": "AI хариу үүсгэж чадсангүй",
+  "@failedToGenerate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "improve": "Сайжруулах",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generatingResponse": "Хариу үүсгэж байна",
+  "@generatingResponse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "Оруулах",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Солих",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "AI туслах",
+  "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Хуулах",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Дахин оролдох",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Үр дүнг түр санах ойд хууллаа",
+  "@copiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}

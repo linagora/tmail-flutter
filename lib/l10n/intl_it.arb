@@ -1,4 +1,10 @@
 {
+  "languageMongolian": "Mongolo",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "initializing_data": "Inizializzazione dei dati...",
   "@initializing_data": {
     "type": "text",

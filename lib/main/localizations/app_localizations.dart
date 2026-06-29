@@ -1654,6 +1654,12 @@ class AppLocalizations {
         name: 'languageGerman');
   }
 
+  String get languageMongolian {
+    return Intl.message(
+        'Mongolian',
+        name: 'languageMongolian');
+  }
+
   String get languageVietnamese {
     return Intl.message(
         'Vietnamese',
