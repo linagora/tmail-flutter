@@ -69,7 +69,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       type: WorkplaceDataRequestType.intents,
       attributes: WorkplaceIntentAttributesRequest(
         action: WorkplaceAction.pick,
-        type: WorkplaceAttributesRequestType.files,
+        type: WorkplaceDocType.files,
         permissions: [WorkplacePermission.get],
         actions: [
           WorkplaceIntentActionsRequest(

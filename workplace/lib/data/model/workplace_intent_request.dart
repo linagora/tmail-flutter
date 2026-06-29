@@ -21,7 +21,7 @@ class WorkplaceIntentActionsRequest {
 @JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceIntentAttributesRequest {
   final WorkplaceAction action;
-  final WorkplaceAttributesRequestType type;
+  final WorkplaceDocType type;
   final List<WorkplacePermission> permissions;
   final List<WorkplaceIntentActionsRequest> actions;
 

@@ -15,7 +15,7 @@ enum WorkplaceDataRequestType {
   intents;
 }
 
-enum WorkplaceAttributesRequestType {
+enum WorkplaceDocType {
   @JsonValue('io.cozy.files')
   files;
 }
