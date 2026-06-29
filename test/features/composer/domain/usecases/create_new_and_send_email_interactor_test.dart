@@ -103,7 +103,6 @@ void main() {
         any,
         any,
         mailboxRequest: anyNamed('mailboxRequest'),
-        cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async {});
 
       // act
@@ -124,7 +123,6 @@ void main() {
         any,
         any,
         mailboxRequest: anyNamed('mailboxRequest'),
-        cancelToken: anyNamed('cancelToken'),
       )).called(1);
     });
 
@@ -140,7 +138,6 @@ void main() {
         any,
         any,
         mailboxRequest: anyNamed('mailboxRequest'),
-        cancelToken: anyNamed('cancelToken'),
       )).thenThrow(exception);
 
       // act
@@ -172,13 +169,11 @@ void main() {
         any,
         any,
         mailboxRequest: anyNamed('mailboxRequest'),
-        cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async {});
       when(emailRepository.deleteEmailPermanently(
         any,
         any,
         any,
-        cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async => true);
 
       // act
@@ -191,7 +186,6 @@ void main() {
         any,
         any,
         draftsEmailId,
-        cancelToken: anyNamed('cancelToken'),
       )).called(1);
     });
   });
