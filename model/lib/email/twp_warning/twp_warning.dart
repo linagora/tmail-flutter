@@ -1,21 +1,19 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:model/email/twp_warning/twp_warning_level.dart';
 
-/// A warning the backend positions on a message through an `X-TWP-Message`
-/// header, displayed as a colored banner between the header section and the
-/// body of the read view.
+/// A warning the backend positions on a message via an `X-TWP-Message` header.
 ///
-/// The header value follows the format:
+/// Format — `level:` and `code:` are optional leading tokens; the rest is
+/// server-provided fallback text, used when [code] cannot be localized:
 /// ```
-/// X-TWP-Message: level:info code:suspicious-sender This email is from an external sender immitating known users, double check the mail address.
+/// X-TWP-Message: level:info code:suspicious-sender This email is from an external sender.
 /// ```
-/// where `level:` and `code:` are optional leading tokens and the remaining
-/// text is a server provided fallback message used when the frontend cannot
-/// localize the [code].
 class TwpWarning with EquatableMixin {
   static const String _levelToken = 'level:';
   static const String _codeToken = 'code:';
+
+  /// Hoisted so the pattern is compiled once, not on every [parse] call.
+  static final RegExp _whitespace = RegExp(r'\s+');
 
   final TwpWarningLevel level;
   final String? code;
@@ -42,7 +40,7 @@ class TwpWarning with EquatableMixin {
     final remainingTokens = <String>[];
 
     var parsingTokens = true;
-    for (final token in rawValue.trim().split(RegExp(r'\s+'))) {
+    for (final token in rawValue.trim().split(_whitespace)) {
       if (parsingTokens && token.toLowerCase().startsWith(_levelToken)) {
         level = token.substring(_levelToken.length);
       } else if (parsingTokens && token.toLowerCase().startsWith(_codeToken)) {

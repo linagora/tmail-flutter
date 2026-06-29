@@ -19,7 +19,12 @@ class DismissTwpWarningInteractor {
     int index,
   ) async* {
     try {
-      await emailRepository.dismissTwpWarning(session, accountId, emailId, index);
+      await emailRepository.dismissTwpWarning(
+        session,
+        accountId,
+        emailId,
+        index,
+      );
       yield Right(DismissTwpWarningSuccess(emailId, index));
     } catch (e) {
       yield Left(DismissTwpWarningFailure(index: index, exception: e));

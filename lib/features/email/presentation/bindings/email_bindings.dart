@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/dismiss_twp_warning_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -25,7 +24,6 @@ class EmailBindings extends Bindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<PrintEmailInteractor>(),
-      Get.find<DismissTwpWarningInteractor>(),
       currentEmailId: currentEmailId,
     ), tag: tag);
   }

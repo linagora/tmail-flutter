@@ -1,4 +1,3 @@
-
 /// Severity level carried by an `X-TWP-Message` header.
 ///
 /// Maps to the banner color displayed in the read view:

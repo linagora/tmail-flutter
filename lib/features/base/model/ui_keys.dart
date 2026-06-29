@@ -31,4 +31,8 @@ class UiKeys {
 
   static const String mailboxMoreActionButton = 'mailbox_more_action_button';
   static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
+
+  // TWP warning banner (X-TWP-Message). Keys are suffixed with the warning index.
+  static const String twpWarningBannerPrefix = 'twp_warning_banner_';
+  static const String twpWarningDismissButtonPrefix = 'twp_warning_dismiss_button_';
 }

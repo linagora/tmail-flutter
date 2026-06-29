@@ -2694,19 +2694,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "twpWarningSuspiciousSender": "This email is from an external sender imitating known users, double-check the mail address.",
+  "twpWarningSuspiciousSender": "This email is from an external sender immitating known users, double check the mail address.",
   "@twpWarningSuspiciousSender": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "twpWarningVirus": "This email contains a virus in its attachments!",
+  "twpWarningVirus": "This email is having virus in its attachments!",
   "@twpWarningVirus": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "twpWarningVirusRemoved": "This email contained a virus in its attachment, which we removed for your security.",
+  "twpWarningVirusRemoved": "This email was having virus in its attachment, that we removed for your security.",
   "@twpWarningVirusRemoved": {
     "type": "text",
     "placeholders_order": [],

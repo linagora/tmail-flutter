@@ -13,8 +13,8 @@ class DismissTwpWarningSuccess extends UIState {
 }
 
 class DismissTwpWarningFailure extends FeatureFailure {
-
   final int? index;
 
-  DismissTwpWarningFailure({this.index, dynamic exception}) : super(exception: exception);
+  DismissTwpWarningFailure({this.index, dynamic exception})
+    : super(exception: exception);
 }

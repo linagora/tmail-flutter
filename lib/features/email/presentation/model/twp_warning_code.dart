@@ -1,14 +1,10 @@
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-/// Resolves the message displayed for a [TwpWarning].
+/// Resolves the displayed message for a [TwpWarning]: the localized string for a
+/// known [TwpWarning.code], else the server-provided `fallbackText`.
 ///
-/// The backend ships a fallback text inside the `X-TWP-Message` header together
-/// with a [TwpWarning.code]. When the code is known to the frontend we favour
-/// the localized message; otherwise (unknown code or no localization) we fall
-/// back to the server provided text.
-///
-/// New codes only require a new entry in [_registry] and its localized getter.
+/// New codes only need an entry in [_registry] plus a localized getter.
 class TwpWarningCodeResolver {
   TwpWarningCodeResolver._();
 
@@ -18,9 +14,14 @@ class TwpWarningCodeResolver {
     'virus-removed': (l10n) => l10n.twpWarningVirusRemoved,
   };
 
-  static String resolveMessage(TwpWarning warning, AppLocalizations appLocalizations) {
+  static String resolveMessage(
+    TwpWarning warning,
+    AppLocalizations appLocalizations,
+  ) {
     final code = warning.code;
-    final localizedMessage = code != null ? _registry[code]?.call(appLocalizations) : null;
+    final localizedMessage = code != null
+        ? _registry[code]?.call(appLocalizations)
+        : null;
     if (localizedMessage != null && localizedMessage.isNotEmpty) {
       return localizedMessage;
     }

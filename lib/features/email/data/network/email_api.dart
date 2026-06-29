@@ -870,8 +870,7 @@ class EmailAPI
 
     final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-      final response = await (requestBuilder
-          ..usings(capabilities))
+    final response = await (requestBuilder..usings(capabilities))
         .build()
         .execute();
 
