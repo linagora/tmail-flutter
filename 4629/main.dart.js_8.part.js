@@ -1,7 +1,7 @@
 ((a,b)=>{a[b]=a[b]||{}})(self,"$__dart_deferred_initializers__")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,B,C={
 cdt(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){return new C.RH(f,a2,l,h,g,x,k,r,t,v,u,d,w,j,i,p,m,n,s,a1,e,a0,o,q)},
-eu0(d,e,f,g){if(g===e)return!1
+eu1(d,e,f,g){if(g===e)return!1
 return d?g>=f:g>f},
 RH:function RH(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){var _=this
 _.c=d
@@ -66,8 +66,8 @@ _.d=g
 _.e=h
 _.f=i},
 cgh:function cgh(d){this.a=d},
-eu8(d){var x,w,v,u,t,s,r,q,p="text/html"
-if(!(B.d.q(d,$.edG())&&B.d.q(d,$.edF())))return d
+eu9(d){var x,w,v,u,t,s,r,q,p="text/html"
+if(!(B.d.q(d,$.edH())&&B.d.q(d,$.edG())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
@@ -81,7 +81,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.el1(v)
+v=v==null?null:J.el2(v)
 return v==null?d:v}},D
 J=c[1]
 A=c[0]
@@ -121,7 +121,7 @@ t=(t==null?m:B.d.q(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.ab(x,"velocity")
-r=J.dT0(s==null?0:s,800)
+r=J.dT1(s==null?0:s,800)
 q=t.f
 p=B.c.gbz(q).at
 p.toString
@@ -183,12 +183,12 @@ x=t.e
 x===$&&A.d()
 u=t.y
 u===$&&A.d()
-if(C.eu0(t.a.fr,x,u,v))t.X(new C.dlC(t,v))}if(t.c!=null&&t.x)t.X(new C.dlD(t))},
+if(C.eu1(t.a.fr,x,u,v))t.X(new C.dlC(t,v))}if(t.c!=null&&t.x)t.X(new C.dlD(t))},
 bqq(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dT_(w,v.a.db)&&v.a.at)v.X(new C.dlE(v,w))},
+if(v.c!=null&&J.dT0(w,v.a.db)&&v.a.at)v.X(new C.dlE(v,w))},
 btA(d){var x,w,v,u,t=null
 try{v=J.ak(d)
 x=new C.a3E(A.aC(v.j(d,"key")),A.aC(v.j(d,"code")),J.v(v.j(d,"shift"),!0))
@@ -240,11 +240,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-aGM(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dY_(10),r=u.a,q=r.c,p=!r.fr,o=p?"            clearTimeout(_resizeDebounceTimer);\n            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();\n          ":"",n=p?'          var _lastResizeHeight = 0;\n          var _resizeDebounceTimer;\n          const resizeObserver = new ResizeObserver((entries) => {\n            clearTimeout(_resizeDebounceTimer);\n            _resizeDebounceTimer = setTimeout(function() {\n              var height = document.body.scrollHeight;\n              if (height === _lastResizeHeight) return;\n              _lastResizeHeight = height;\n              window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n            }, 50);\n          });\n        ':"",m=r.y!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=r.z!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+aGM(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dY0(10),r=u.a,q=r.c,p=!r.fr,o=p?"            clearTimeout(_resizeDebounceTimer);\n            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();\n          ":"",n=p?'          var _lastResizeHeight = 0;\n          var _resizeDebounceTimer;\n          const resizeObserver = new ResizeObserver((entries) => {\n            clearTimeout(_resizeDebounceTimer);\n            _resizeDebounceTimer = setTimeout(function() {\n              var height = document.body.scrollHeight;\n              if (height === _lastResizeHeight) return;\n              _lastResizeHeight = height;\n              window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n            }, 50);\n          });\n        ':"",m=r.y!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=r.z!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 k=k?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 m=m?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.eu8(q)
+if(r.ch)q=C.eu9(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -399,6 +399,6 @@ return{V:x("N<c7>"),s:x("N<h>"),p:x("N<k>"),w:x("oZ"),_:x("yu"),P:x("b1"),t:x("b
 D.aR8=new A.a_(B.cq,D.aZH,null)
 D.a7J=new A.e4(B.d6,null,null,D.aR8,null)
 D.b3p=new A.an(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"foQ","edG",()=>A.aY("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"foP","edF",()=>A.aY("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
-(a=>{a["YIAPctD3XZEA55Jwg0O37so+CwE="]=a.current})($__dart_deferred_initializers__);
+x($,"foR","edH",()=>A.aY("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"foQ","edG",()=>A.aY("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+(a=>{a["mQPpKfoTTghUruylfzBggvbemCk="]=a.current})($__dart_deferred_initializers__);
