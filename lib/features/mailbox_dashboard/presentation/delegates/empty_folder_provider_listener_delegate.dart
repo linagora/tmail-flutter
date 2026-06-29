@@ -8,7 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
+import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -178,17 +178,10 @@ class EmptyFolderProviderListenerDelegate
     }
   }
 
-  // Resolves the urgent-exception handler by contract, not the concrete
-  // controller — keeps session/logout handling decoupled from this delegate.
+  // Routes urgent exceptions through the shared helper (ADR-0093).
   void _handleUrgentException(Object? exception) {
     if (exception == null) return;
-    final handler = getBinding<UrgentExceptionHandler>();
-    if (handler == null) return;
-    if (handler.validateUrgentException(exception)) {
-      handler.handleUrgentException(
-        exception: exception is Exception ? exception : null,
-      );
-    }
+    handleUrgentExceptionIfNeeded(exception: exception);
   }
 
   void _resetProgress(MailboxDashBoardController dashboardController) {
