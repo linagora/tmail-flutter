@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:workplace/data/model/workplace_exchange_token_response.dart';
 import '../model/workplace_exchange_token_request.dart';
 import '../datasource/workplace_datasource.dart';
 import '../model/workplace_enums.dart';
@@ -32,7 +33,6 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       '$platformUrl/intents',
       options: Options(
         headers: {'Authorization': 'Bearer $accessToken'},
-        extra: {'withCredentials': true},
       ),
       data: _buildIntentRequest(
         addAsLink: addAsLink,
@@ -90,9 +90,9 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
         exchangeType: WorkplaceExchangeType.app,
       ).toJson(),
     );
-    final data = _asJsonMap(response.data);
-    final accessToken = data['access_token'];
-    if (accessToken is! String) {
+    final data = WorkplaceExchangeTokenResponse.fromJson(_asJsonMap(response.data));
+    final accessToken = data.accessToken;
+    if (accessToken == null) {
       throw StateError('Invalid token response: access_token is ${accessToken.runtimeType}');
     }
     return accessToken;
