@@ -148,7 +148,25 @@ abstract class SearchPaginationStrategy {
 }
 ```
 
-The three built-in strategies:
+**Cursor model (post-#4651).** Date pagination uses two distinct load-more cursors, not one: `before` (cursor for `mostRecent` sort) and `after` (cursor for `oldest` sort). `startDate`/`endDate` are **user-intent date-range bounds** (set by the receive-time filter), preserved across load-more — they are *not* cursors. `mappingToEmailFilterCondition` reads `getAfterDate(startDate, after)` / `getBeforeDate(endDate, before)`. Strategies therefore write `before`/`after` only, and never touch `startDate`/`endDate`.
+
+The four built-in strategies (`collapseThreads` forcing position-based pagination is now production behaviour, so `CollapsedThreadLoadMoreStrategy` is a baseline strategy, not a future example):
+
+`collapsed_thread_load_more_strategy.dart` — load-more, collapsed threads (most specific, first):
+```dart
+class CollapsedThreadLoadMoreStrategy extends SearchPaginationStrategy {
+  const CollapsedThreadLoadMoreStrategy();
+  @override
+  bool appliesTo(SearchExecutionContext ctx) =>
+      ctx.intent is LoadMoreIntent && ctx.collapseThreads;
+  @override
+  SearchRequestSpec apply(SearchRequestSpec spec, SearchExecutionContext ctx) =>
+      spec.copyWith(
+        positionOption: Some((ctx.intent as LoadMoreIntent).currentCount),
+        filter: spec.filter.copyWith(beforeOption: const None(), afterOption: const None()),
+      );
+}
+```
 
 `position_load_more_strategy.dart` — load-more, position-based sort:
 ```dart
@@ -159,11 +177,14 @@ class PositionLoadMoreStrategy extends SearchPaginationStrategy {
       ctx.intent is LoadMoreIntent && ctx.committed.sortOrderType.isScrollByPosition();
   @override
   SearchRequestSpec apply(SearchRequestSpec spec, SearchExecutionContext ctx) =>
-      spec.copyWith(positionOption: Some((ctx.intent as LoadMoreIntent).currentCount));
+      spec.copyWith(
+        positionOption: Some((ctx.intent as LoadMoreIntent).currentCount),
+        filter: spec.filter.copyWith(beforeOption: const None(), afterOption: const None()),
+      );
 }
 ```
 
-`date_load_more_strategy.dart` — load-more, date-based sort:
+`date_load_more_strategy.dart` — load-more, date-based sort (`oldest` → `after`, `mostRecent` → `before`):
 ```dart
 class DateLoadMoreStrategy extends SearchPaginationStrategy {
   const DateLoadMoreStrategy();
@@ -174,15 +195,18 @@ class DateLoadMoreStrategy extends SearchPaginationStrategy {
   SearchRequestSpec apply(SearchRequestSpec spec, SearchExecutionContext ctx) {
     final lastDate = (ctx.intent as LoadMoreIntent).lastEmailDate;
     final isOldest = ctx.committed.sortOrderType == EmailSortOrderType.oldest;
-    return spec.copyWith(filter: spec.filter.copyWith(
-      startDateOption: isOldest ? optionOf(lastDate) : const None(),
-      beforeOption: isOldest ? const None() : optionOf(lastDate),
-    ));
+    return spec.copyWith(
+      positionOption: const None(),
+      filter: spec.filter.copyWith(
+        afterOption: isOldest ? optionOf(lastDate) : const None(),
+        beforeOption: isOldest ? const None() : optionOf(lastDate),
+      ),
+    );
   }
 }
 ```
 
-`fresh_search_strategy.dart` — new search / refresh (catch-all, last):
+`fresh_search_strategy.dart` — new search / refresh (catch-all, last). Clears both load-more cursors, **preserves** the `startDate`/`endDate` bounds; position restarts at 0 when paginating by position (`isScrollByPosition()` **or** `collapseThreads`):
 ```dart
 class FreshSearchStrategy extends SearchPaginationStrategy {
   const FreshSearchStrategy();
@@ -190,23 +214,24 @@ class FreshSearchStrategy extends SearchPaginationStrategy {
   bool appliesTo(SearchExecutionContext ctx) => true;   // fallback
   @override
   SearchRequestSpec apply(SearchRequestSpec spec, SearchExecutionContext ctx) {
-    final byPosition = ctx.committed.sortOrderType.isScrollByPosition();
+    final byPosition = ctx.committed.sortOrderType.isScrollByPosition() || ctx.collapseThreads;
     return spec.copyWith(
-      filter: spec.filter.copyWith(beforeOption: const None(), startDateOption: const None()),
+      filter: spec.filter.copyWith(beforeOption: const None(), afterOption: const None()),
       positionOption: byPosition ? const Some(0) : const None(),
     );
   }
 }
 ```
 
-> These re-implement the exact cursor branching today duplicated in `ThreadController._searchMoreEmails()` (lines ~1283–1290) and `SearchEmailController.searchMoreEmailsAction()` (lines ~568–574), now in one place.
+> These re-implement the cursor branching today duplicated in `ThreadController._updateLoadMoreCursor()` / `resetCursorsForFreshSearch()` and `SearchEmailController.searchMoreEmailsAction()` / `_resetCursorForFreshSearch()` (both post-#4651), now in one place.
 
 **Ordering contract (this is the whole point of first-match).** The executor (Step 5) holds an ordered list and applies the **first** strategy whose `appliesTo` is true:
 ```dart
 static const _strategies = <SearchPaginationStrategy>[
-  PositionLoadMoreStrategy(),   // most specific guards first
+  CollapsedThreadLoadMoreStrategy(),  // most specific guards first
+  PositionLoadMoreStrategy(),
   DateLoadMoreStrategy(),
-  FreshSearchStrategy(),         // catch-all, always last
+  FreshSearchStrategy(),               // catch-all, always last
 ];
 ```
 Adding a strategy:
@@ -214,13 +239,13 @@ Adding a strategy:
 - it only affects contexts where its `appliesTo` is true; for every other context `firstWhere` skips it and the previously-matching strategy still wins → **existing strategy tests stay green**;
 - the catch-all `FreshSearchStrategy` (`appliesTo => true`) must remain last.
 
-Example — `collapseThreads` forces position-based load-more even on a date sort. Add `CollapsedThreadLoadMoreStrategy` (`appliesTo: LoadMore && ctx.collapseThreads`) at the **top**: when `collapseThreads` is off, its guard fails and the old Position/Date strategies still resolve exactly as before.
+`CollapsedThreadLoadMoreStrategy` sitting at the top is the canonical first-match proof: when `collapseThreads` is off its guard fails and the Position/Date strategies resolve exactly as if it were absent.
 
 **Tests** `test/features/search/email/domain/execution/*_test.dart`:
-- a resolver test: `_strategies.firstWhere(...).apply(...)` returns the expected mode for each `(intent, sortOrder)` pair
-- `PositionLoadMoreStrategy` sets `position == currentCount`, leaves date cursors null
-- `DateLoadMoreStrategy` sets exactly one of `before`/`startDate` (oldest → `startDate`, else → `before`), `position == null`
-- `FreshSearchStrategy` clears both date cursors and sets `position` per sort mode
+- a resolver test: `_strategies.firstWhere(...).apply(...)` returns the expected mode for each `(intent, sortOrder, collapseThreads)` triple
+- `CollapsedThreadLoadMoreStrategy` / `PositionLoadMoreStrategy` set `position == currentCount`, leave both date cursors null
+- `DateLoadMoreStrategy` sets exactly one of `before`/`after` (oldest → `after`, mostRecent → `before`), `position == null`, never touches `startDate`/`endDate`
+- `FreshSearchStrategy` clears both load-more cursors, preserves `startDate`/`endDate`, sets `position` per pagination mode (incl. `collapseThreads`)
 - no strategy mutates `ctx.committed`
 - **insertion safety:** adding a guarded strategy at the top does not change the resolved result for any context outside its guard
 
@@ -228,44 +253,22 @@ Example — `collapseThreads` forces position-based load-more even on a date sor
 
 ### Step 3 — `SearchFilterNotifier` (committed SSOT)
 
-**Create** `lib/features/search/email/domain/notifier/search_filter_notifier.dart`:
+**Create** `lib/features/search/email/domain/notifier/search_filter_notifier.dart`. The
+`update`/`set`/`clear` bodies live in the shared `SearchFilterMutation` mixin (Step 4),
+so this file is just the provider shell:
 
 ```dart
 part 'search_filter_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
-class SearchFilterNotifier extends _$SearchFilterNotifier {
+class SearchFilterNotifier extends _$SearchFilterNotifier
+    with SearchFilterMutation {
   @override
   SearchEmailFilter build() => SearchEmailFilter.initial();
-
-  void update({
-    Option<Set<String>>? fromOption,
-    Option<Set<String>>? toOption,
-    Option<SearchQuery>? textOption,
-    Option<String>? subjectOption,
-    Option<Set<String>>? hasKeywordOption,
-    Option<Set<String>>? notKeywordOption,
-    Option<PresentationMailbox>? mailboxOption,
-    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
-    Option<bool>? hasAttachmentOption,
-    Option<bool>? unreadOption,
-    Option<bool>? notIncludeEventsOption,
-    Option<UTCDate>? beforeOption,
-    Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption,
-    Option<EmailSortOrderType>? sortOrderTypeOption,
-    Option<Label>? labelOption,
-  }) {
-    state = state.copyWith(/* forward every *Option above */);
-  }
-
-  void set(SearchEmailFilter filter) => state = filter;
-
-  void clear() => state = SearchEmailFilter.withSortOrder(state.sortOrderType);
 }
 ```
 
-Run `scripts/prebuild.sh` (build_runner) → generates `search_filter_notifier.g.dart` (provider `searchFilterNotifierProvider`). The `update(...)` signature intentionally drops `positionOption` (position is not user intent).
+Run `scripts/prebuild.sh` (build_runner) → generates `search_filter_notifier.g.dart` (provider `searchFilterProvider`). The mixin's `update(...)` exposes user intent only — it drops `positionOption` and the `before`/`after` cursors (see Step 4).
 
 **Tests** `test/features/search/email/domain/notifier/search_filter_notifier_test.dart` (via `ProviderContainer`):
 - `update(unreadOption: Some(true))` sets `unread`, leaves `before`/`startDate` untouched
@@ -274,29 +277,59 @@ Run `scripts/prebuild.sh` (build_runner) → generates `search_filter_notifier.g
 
 ---
 
-### Step 4 — `SearchFilterDraftNotifier` (staging)
+### Step 4 — `SearchFilterDraftNotifier` (staging) + shared mutation mixin
 
-**Create** `lib/features/search/email/domain/notifier/search_filter_draft_notifier.dart` — same `update`/`set` body as Step 3 plus `seedFrom`, `@Riverpod(keepAlive: true)`:
+`update`/`set`/`clear` are identical between the two notifiers. Rather than copy the
+body (and the option signature) twice, extract a **`SearchFilterMutation` mixin**
+`on $Notifier<SearchEmailFilter>` (the generated notifier base) holding `update` /
+`set` / `clear`. Both notifiers `with SearchFilterMutation`; the draft adds only
+`seedFrom`.
+
+**Cursors are excluded from the notifier API (enforces the ADR-0093 invariant).**
+`update` exposes only user-intent options — it omits `positionOption` **and** the
+`before`/`after` cursors (it keeps the `startDate`/`endDate` range bounds). `set` and
+`seedFrom` route the incoming filter through `SearchEmailFilter.clearPaginationCursors()`
+so a full replacement can never seed committed/draft state with a stale cursor. Cursors
+exist only on the transient `SearchRequestSpec`.
+
+**Add** to `SearchEmailFilter`: `clearPaginationCursors()` → `copyWith(positionOption:
+None, beforeOption: None, afterOption: None)` (keeps every other field).
+
+**Create** `search_filter_mutation.dart`:
 
 ```dart
-@Riverpod(keepAlive: true)
-class SearchFilterDraftNotifier extends _$SearchFilterDraftNotifier {
-  @override
-  SearchEmailFilter build() => SearchEmailFilter.initial();
-
-  void update({/* identical signature to SearchFilterNotifier.update */}) {
-    state = state.copyWith(/* ... */);
+mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
+  void update({/* user-intent options only: no positionOption / beforeOption / afterOption */}) {
+    state = state.copyWith(/* forward those options */);
   }
-
-  void set(SearchEmailFilter filter) => state = filter;
-  void seedFrom(SearchEmailFilter committed) => state = committed;
+  void set(SearchEmailFilter filter) => state = filter.clearPaginationCursors();
   void clear() => state = SearchEmailFilter.withSortOrder(state.sortOrderType);
 }
 ```
 
-Run build_runner → `searchFilterDraftNotifierProvider`.
+**Create** `search_filter_draft_notifier.dart`:
 
-> `update`/`set` are duplicated between the two notifiers by signature. Extract the shared body into a `SearchEmailFilter copyWithOptions({...})` method on the model (or a mixin) so the two notifiers stay in sync — implement that extraction in this step and reuse it in Step 3's `update` too.
+```dart
+@Riverpod(keepAlive: true)
+class SearchFilterDraftNotifier extends _$SearchFilterDraftNotifier
+    with SearchFilterMutation {
+  @override
+  SearchEmailFilter build() => SearchEmailFilter.initial();
+
+  void seedFrom(SearchEmailFilter committed) =>
+      state = committed.clearPaginationCursors();
+}
+```
+
+`SearchFilterNotifier` (Step 3) collapses the same way: `extends _$SearchFilterNotifier
+with SearchFilterMutation` plus `build()`. Run build_runner → `searchFilterDraftProvider`.
+
+> The 17-option list still appears twice — once on `SearchEmailFilter.copyWith` (the
+> canonical builder, also used by the strategies' transient copy) and once on the
+> mixin's `update`. That second copy is irreducible: Dart has no way to reuse a
+> named-parameter list, and a parameter-object would force every one of the 30+ call
+> sites in Steps 6–10 to wrap its arguments. The mixin removes the *only* avoidable
+> duplication — the identical method bodies across the two notifiers.
 
 **Test** `search_filter_draft_notifier_test.dart` (containment): `seedFrom(committed)` then `update(...)` → draft contains every committed value plus the edit (`committed` ⊆ `draft`).
 
@@ -385,7 +418,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     required Set<MailboxId>? trashSpamMailboxIds,
     required PresentationEmail? lastEmail,           // load-more only
   }) async {
-    final committed = ref.read(searchFilterNotifierProvider);
+    final committed = ref.read(searchFilterProvider);
     final ctx = SearchExecutionContext(
       intent: intent, committed: committed, collapseThreads: collapseThreads);
 
@@ -451,11 +484,11 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
 
 **Register** the notifier is provider-based (no GetX `put` needed). Keep the existing interactor `lazyPut`s in `mailbox_dashboard_bindings.dart`.
 
-**Tests** `search_email_notifier_test.dart` — the core anti-regression suite, with `ProviderContainer` overriding `searchFilterNotifierProvider` and mock interactors:
+**Tests** `search_email_notifier_test.dart` — the core anti-regression suite, with `ProviderContainer` overriding `searchFilterProvider` and mock interactors:
 - `execute(NewSearchIntent())` → interactor receives `position == 0` (scroll-by-position sort) or `null`, and `filter` built with `before`/`startDate == null`, regardless of prior SSOT cursor values
 - `execute(LoadMoreIntent(currentCount: 20, ...))` → `position == 20` (position sort) **or** exactly one date cursor in `filter` (date sort), never both
 - `execute(RefreshChangesIntent(currentCount: 30, ...))` → `limit == 30`, `position == 0`
-- **Draft isolation:** set `searchFilterNotifierProvider` = `filterA`, `searchFilterDraftNotifierProvider` = `filterB`, `execute(NewSearchIntent())` → interactor receives `filterA`'s condition
+- **Draft isolation:** set `searchFilterProvider` = `filterA`, `searchFilterDraftProvider` = `filterB`, `execute(NewSearchIntent())` → interactor receives `filterA`'s condition
 - committed SSOT unchanged after any `execute(...)`
 - `LoadMoreIntent` result appends to the existing `emails`; `NewSearchIntent` replaces
 
@@ -473,7 +506,7 @@ void onInit() {
   searchFocus.addListener(_onSearchFocusChanged);
   onKeyboardShortcutInit();
   appProviderContainer.listen<SearchEmailFilter>(
-    searchFilterNotifierProvider,
+    searchFilterProvider,
     (_, next) => searchEmailFilter.value = next,
     fireImmediately: true,
   );
@@ -483,13 +516,13 @@ void onInit() {
 Rewire `updateFilterEmail(...)` to delegate (drop the local `copyWith`):
 ```dart
 void updateFilterEmail({/* same Option params, minus positionOption */}) {
-  appProviderContainer.read(searchFilterNotifierProvider.notifier).update(/* forward */);
+  appProviderContainer.read(searchFilterProvider.notifier).update(/* forward */);
 }
 ```
 
-**Remove:** `synchronizeSearchFilter()`, `clearSearchFilter()` (replace call sites with `searchFilterNotifierProvider.notifier.set/clear`), `listFilterOnSuggestionForm` + `addQuickSearchFilterToSuggestionSearchView()` + `deleteQuickSearchFilterFromSuggestionSearchView()` + `applyFilterSuggestionToSearchFilter()` + `clearFilterSuggestion()`. The suggestion-bar chips now call `updateFilterEmail(...)` directly (which routes to the notifier), eliminating the deferred-staging that caused #4421.
+**Remove:** `synchronizeSearchFilter()`, `clearSearchFilter()` (replace call sites with `searchFilterProvider.notifier.set/clear`), `listFilterOnSuggestionForm` + `addQuickSearchFilterToSuggestionSearchView()` + `deleteQuickSearchFilterFromSuggestionSearchView()` + `applyFilterSuggestionToSearchFilter()` + `clearFilterSuggestion()`. The suggestion-bar chips now call `updateFilterEmail(...)` directly (which routes to the notifier), eliminating the deferred-staging that caused #4421.
 
-**Tests:** update `search_controller` tests — assert `updateFilterEmail` mutates `searchFilterNotifierProvider`; assert the mirror keeps `searchEmailFilter.value` in sync.
+**Tests:** update `search_controller` tests — assert `updateFilterEmail` mutates `searchFilterProvider`; assert the mirror keeps `searchEmailFilter.value` in sync.
 
 ---
 
@@ -506,14 +539,14 @@ class _AdvancedSearchInputFormState extends ConsumerState<AdvancedSearchInputFor
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(searchFilterDraftNotifierProvider.notifier)
-         .seedFrom(ref.read(searchFilterNotifierProvider));
+      ref.read(searchFilterDraftProvider.notifier)
+         .seedFrom(ref.read(searchFilterProvider));
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final draft = ref.watch(searchFilterDraftNotifierProvider); // drives field values
+    final draft = ref.watch(searchFilterDraftProvider); // drives field values
     ...
   }
 }
@@ -521,13 +554,13 @@ class _AdvancedSearchInputFormState extends ConsumerState<AdvancedSearchInputFor
 
 **Edit** `advanced_filter_controller.dart` — replace every `_updateMemorySearchFilter(...)` (≈20 call sites: `onHasAttachmentCheckboxChanged`, `onStarredCheckboxChanged`, `onUnreadCheckboxChanged`, `onEventsCheckboxChanged`, `onTextChanged`, `updateListEmailAddress`, `_updateDateRangeTime`, `updateSortOrder`, `selectedMailBox`, `removeDraggableEmailAddress`, …) with:
 ```dart
-appProviderContainer.read(searchFilterDraftNotifierProvider.notifier).update(/* same Option */);
+appProviderContainer.read(searchFilterDraftProvider.notifier).update(/* same Option */);
 ```
 `applyAdvancedSearchFilter()` commits draft → SSOT:
 ```dart
 void applyAdvancedSearchFilter() {
-  final draft = appProviderContainer.read(searchFilterDraftNotifierProvider);
-  appProviderContainer.read(searchFilterNotifierProvider.notifier).set(draft);
+  final draft = appProviderContainer.read(searchFilterDraftProvider);
+  appProviderContainer.read(searchFilterProvider.notifier).set(draft);
   if (draft.isApplied) {
     searchController.activateAdvancedSearch();
   } else {
@@ -540,7 +573,7 @@ void applyAdvancedSearchFilter() {
 
 **Remove:** `_memorySearchFilter`, `_updateMemorySearchFilter()`, `_synchronizeSearchFilter()`, `_setUpDefaultSortOrder`'s `_memorySearchFilter` assignment, and the `_memorySearchFilter` reset in `onClose()`/`_handleClearAllFieldOfAdvancedSearch()`/`_handleStartSearchEmailAction()`. `initSearchFilterField()` reads from the draft (seeded above) instead of `_memorySearchFilter`. Cancel needs **no** cleanup — chips read the committed SSOT, not the draft.
 
-**Tests:** update `advanced_filter_controller_test.dart` — `@visibleForTesting memorySearchFilter`/`setMemorySearchFilter` removed; assert field changes mutate `searchFilterDraftNotifierProvider`; `applyAdvancedSearchFilter` copies draft → committed.
+**Tests:** update `advanced_filter_controller_test.dart` — `@visibleForTesting memorySearchFilter`/`setMemorySearchFilter` removed; assert field changes mutate `searchFilterDraftProvider`; `applyAdvancedSearchFilter` copies draft → committed.
 
 ---
 
@@ -561,7 +594,7 @@ void _searchEmailAction() {
   searchIsRunning.value = true;
   cancelSelectionMode();
   if (PlatformInfo.isWeb) { /* replaceBrowserHistory unchanged */ }
-  appProviderContainer.read(searchEmailNotifierProvider.notifier).execute(
+  appProviderContainer.read(searchEmailProvider.notifier).execute(
     const NewSearchIntent(),
     session: session!, accountId: accountId!,
     properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
@@ -573,7 +606,7 @@ void _searchEmailAction() {
 
 void searchMoreEmailsAction() {
   if (!canSearchMore || session == null || accountId == null || listResultSearch.isEmpty) return;
-  appProviderContainer.read(searchEmailNotifierProvider.notifier).execute(
+  appProviderContainer.read(searchEmailProvider.notifier).execute(
     LoadMoreIntent(currentCount: listResultSearch.length, lastEmailDate: listResultSearch.last.receivedAt),
     session: session!, accountId: accountId!,
     properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
@@ -584,17 +617,17 @@ void searchMoreEmailsAction() {
 }
 ```
 
-**Remove:** `searchEmailFilter.obs` (replaced by the mirror), `emailReceiveTimeType.obs`, `emailSortOrderType.obs`, `_updateSimpleSearchFilter()` + the public `updateSimpleSearchFilter()` wrapper, and the inline `consumeState(_searchEmailInteractor/_searchMoreEmailInteractor.execute(...))` blocks. The chip-delete helpers (`_deleteFromSearchFilter()` etc.) become `searchFilterNotifierProvider.notifier.update(... None())` + `_searchEmailAction()`.
+**Remove:** `searchEmailFilter.obs` (replaced by the mirror), `emailReceiveTimeType.obs`, `emailSortOrderType.obs`, `_updateSimpleSearchFilter()` + the public `updateSimpleSearchFilter()` wrapper, and the inline `consumeState(_searchEmailInteractor/_searchMoreEmailInteractor.execute(...))` blocks. The chip-delete helpers (`_deleteFromSearchFilter()` etc.) become `searchFilterProvider.notifier.update(... None())` + `_searchEmailAction()`.
 
 **Edit** `search_email_view.dart` — `GetWidget<SearchEmailController>` → `ConsumerStatefulWidget`; read results reactively:
 ```dart
-final results = ref.watch(searchEmailNotifierProvider);
-final filter  = ref.watch(searchFilterNotifierProvider);
+final results = ref.watch(searchEmailProvider);
+final filter  = ref.watch(searchFilterProvider);
 // results.when(data: ..., loading: ..., error: ...)
 ```
 Action methods still via `Get.find<SearchEmailController>()`. The result list applies `mapMailboxById`/selection sync here (moved from `_searchEmailsSuccess`).
 
-**Tests:** `search_email_controller` tests assert `_searchEmailAction` triggers `searchEmailNotifierProvider.execute(NewSearchIntent())`; widget test for the `ConsumerStatefulWidget` rendering `AsyncData`/`AsyncLoading`.
+**Tests:** `search_email_controller` tests assert `_searchEmailAction` triggers `searchEmailProvider.execute(NewSearchIntent())`; widget test for the `ConsumerStatefulWidget` rendering `AsyncData`/`AsyncLoading`.
 
 ---
 
@@ -605,7 +638,7 @@ Action methods still via `Get.find<SearchEmailController>()`. The result list ap
 Replace `_searchEmail()` body (lines ~1184–1222) and `_searchMoreEmails()` (lines ~1273–1313) with executor calls (`NewSearchIntent` / `LoadMoreIntent`), passing `collapseThreads: _shouldCollapseThreads`. Bridge results back into GetX in `onInit()`:
 ```dart
 appProviderContainer.listen<AsyncValue<SearchEmailState>>(
-  searchEmailNotifierProvider,
+  searchEmailProvider,
   (_, next) => next.whenData((s) {
     final synced = s.emails
       .map((e) => e.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
@@ -636,8 +669,8 @@ Map `FilterMessageOption` into the SSOT before searching (so chips/form reflect 
 ```dart
 void applyCurrentFilterMessageOptionToSearch() {
   final resolved = filterMessageOption.value.applyTo(
-    appProviderContainer.read(searchFilterNotifierProvider));
-  appProviderContainer.read(searchFilterNotifierProvider.notifier).set(resolved);
+    appProviderContainer.read(searchFilterProvider));
+  appProviderContainer.read(searchFilterProvider.notifier).set(resolved);
 }
 ```
 On search exit, restore: `filterMessageOption.value = _filterMessageOptionBeforeSearch ?? FilterMessageOption.all`.
@@ -646,9 +679,9 @@ Session reset in `onClose()` (order matters — invalidate before any post-logou
 ```dart
 @override
 void onClose() {
-  appProviderContainer.invalidate(searchFilterNotifierProvider);
-  appProviderContainer.invalidate(searchFilterDraftNotifierProvider);
-  appProviderContainer.invalidate(searchEmailNotifierProvider);
+  appProviderContainer.invalidate(searchFilterProvider);
+  appProviderContainer.invalidate(searchFilterDraftProvider);
+  appProviderContainer.invalidate(searchEmailProvider);
   super.onClose();
 }
 ```
@@ -693,4 +726,4 @@ Reviewers reference the corresponding step for the expected change and regressio
 - The executor resolves interactors and `mapMailboxById` via `Get.find`/bridge consumers during migration — a temporary GetX coupling removed when those controllers migrate
 - Strategy order is a contract (most-specific guard first, catch-all last) — documented where `_strategies` is declared; first-match makes insertion safe (a new strategy never alters contexts outside its guard)
 - Step 10 order matters: `invalidate` must precede post-logout rebuilds
-- `update`/`set` are duplicated across the two notifiers unless the shared `copyWithOptions` extraction (Step 4) is done — required to avoid divergence
+- the 17-option list is declared twice — on `SearchEmailFilter.copyWith` and the `SearchFilterMutation` mixin's `update`; irreducible without forcing a parameter-object on every call site. The mixin removes the avoidable duplication (identical bodies across the two notifiers)
