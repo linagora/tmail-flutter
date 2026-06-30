@@ -812,17 +812,8 @@ class ThreadController extends BaseController with EmailActionController {
     log('ThreadController::_refreshChangeSearchEmail:');
     canSearchMore = true;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
-    searchController.updateFilterEmail(
-      positionOption: option(
-        _searchEmailFilter.sortOrderType.isScrollByPosition(),
-        0,
-      ),
-      beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-      afterOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
+    searchController.resetCursorsForFreshSearch(
+      isCollapseThreadsEnabled: _isCollapseThreadsEnabled,
     );
     final searchViewState = await _searchEmailInteractor.execute(
       _session!,
@@ -1196,14 +1187,8 @@ class ThreadController extends BaseController with EmailActionController {
       canSearchMore = true;
       loadingMoreStatus.value = LoadingMoreStatus.idle;
 
-      searchController.updateFilterEmail(
-        positionOption: option(_searchEmailFilter.sortOrderType.isScrollByPosition(), 0),
-        beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-        afterOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
+      searchController.resetCursorsForFreshSearch(
+        isCollapseThreadsEnabled: _isCollapseThreadsEnabled,
       );
 
       searchController.activateSimpleSearch();

@@ -1096,8 +1096,8 @@ void main() {
     test(
       'WHEN ThreadController searches & load more for emails in the time range from `2025/01/10` to `2025/01/20`\n'
       'AND SortBy is `Subject: A-Z`, the result returns 40 elements.\n'
-      'THEN perform REFRESH EMAIL CHANGE, now the value of `before` in search filter is `loadMoreDate` AND `before` in JMAP request\n'
-      'SHOULD be `endDate`',
+      'THEN perform REFRESH EMAIL CHANGE, the stale `before` cursor is cleared AND `before` in JMAP request\n'
+      'SHOULD fall back to `endDate`',
     () async {
       // Arrange
       final startDate = DateTime(2025, 1, 10);
@@ -1198,12 +1198,16 @@ void main() {
         searchController.searchEmailFilter.value.position,
         equals(0),
       );
+      // The stale load-more `before` cursor must be cleared on a fresh refresh,
+      // even for position-based sorts, so it cannot truncate the next query.
       expect(
         searchController.searchEmailFilter.value.before,
-        UTCDate(loadMoreDate),
+        isNull,
       );
 
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(loadMoreDate)));
+      // With `before` cleared, the JMAP request falls back to the date-range
+      // bound `endDate` instead of the leaked `loadMoreDate`.
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
     });
   });
 
@@ -1308,6 +1312,77 @@ void main() {
       expect(filter.before, isNull);
       expect(filter.after, isNull);
       expect(filter.position, isNull);
+    });
+  });
+
+  group('SearchController::resetCursorsForFreshSearch', () {
+    setUp(() {
+      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+    });
+
+    test(
+      'SHOULD clear before/after and the position '
+      'WHEN the sort order is time-based (oldest)',
+    () {
+      // Arrange: oldest sort load-more left an after cursor and a position
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        startDateOption: Some(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
+        positionOption: const Some(20),
+      );
+
+      // Act
+      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
+
+      // Assert: cursors cleared, date bound preserved
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, isNull);
+      expect(filter.startDate, equals(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))));
+    });
+
+    test(
+      'SHOULD clear the stale before/after cursors AND restart position at 0 '
+      'WHEN the sort order is position-based (subjectAscending)',
+    () {
+      // Arrange: a stale time cursor lingers from a previous time-based sort
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.subjectAscending),
+        beforeOption: Some(UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z'))),
+        positionOption: const Some(20),
+      );
+
+      // Act
+      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
+
+      // Assert: stale cursor cleared so it cannot truncate the fresh query
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, equals(0));
+    });
+
+    test(
+      'SHOULD clear the stale before/after cursors AND restart position at 0 '
+      'WHEN collapsed threads are enabled on a time-based sort',
+    () {
+      // Arrange: oldest sort with a leftover after cursor, then collapse enabled
+      searchController.updateFilterEmail(
+        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
+        positionOption: const Some(20),
+      );
+
+      // Act: collapsed threads switch pagination to position mode
+      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: true);
+
+      // Assert: no stale cursor leaks into the collapsed-thread query
+      final filter = searchController.searchEmailFilter.value;
+      expect(filter.before, isNull);
+      expect(filter.after, isNull);
+      expect(filter.position, equals(0));
     });
   });
 }

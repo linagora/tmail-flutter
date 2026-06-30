@@ -245,6 +245,24 @@ class SearchEmailController extends BaseController
     );
   }
 
+  /// Resets load-more cursors before a fresh search so stale pagination state
+  /// never leaks into the next query.
+  ///
+  /// The `before`/`after` time cursors are always cleared (the date-range bounds
+  /// in `startDate`/`endDate` are preserved). Position-based pagination
+  /// (relevance sort or collapsed threads) restarts from offset 0; otherwise the
+  /// position is cleared too.
+  void _resetCursorForFreshSearch() {
+    final usesPositionPagination =
+        searchEmailFilter.value.sortOrderType.isScrollByPosition() ||
+            _isCollapseThreadsEnabled;
+    _updateSimpleSearchFilter(
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: option(usesPositionPagination, 0),
+    );
+  }
+
   void _initializeDebounceTimeTextSearchChange() {
     _deBouncerTime = Debouncer<String>(
         const Duration(milliseconds: 500),
@@ -255,14 +273,8 @@ class SearchEmailController extends BaseController
       currentSearchText.value = value;
       _updateSimpleSearchFilter(
         textOption: option(value.isNotEmpty, SearchQuery(value)),
-        beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-        positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
       );
+      _resetCursorForFreshSearch();
       if (value.isNotEmpty && session != null && accountId != null) {
         final tupleListSuggestion = await Future.wait([
           quickSearchEmails(session: session!, accountId: accountId!),
@@ -378,15 +390,7 @@ class SearchEmailController extends BaseController
         ? UnsignedInt(listResultSearch.length)
         : ThreadConstants.defaultLimit;
 
-      _updateSimpleSearchFilter(
-        beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-        afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
-        positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
-      );
+      _resetCursorForFreshSearch();
 
       final searchViewState = await _refreshChangesSearchEmailInteractor.execute(
         session!,
@@ -521,15 +525,7 @@ class SearchEmailController extends BaseController
       );
     }
 
-    _updateSimpleSearchFilter(
-      positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
-      beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-        ? const None()
-        : null,
-      afterOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
-        ? const None()
-        : null,
-    );
+    _resetCursorForFreshSearch();
 
     consumeState(_searchEmailInteractor.execute(
       session!,
@@ -742,6 +738,9 @@ class SearchEmailController extends BaseController
         emailReceiveTimeTypeOption: Some(emailReceiveTimeType),
         startDateOption: optionOf(dateRange.start),
         endDateOption: optionOf(dateRange.end),
+        beforeOption: const None(),
+        afterOption: const None(),
+        positionOption: const None(),
       );
 
       _setEmailReceiveTimeType(emailReceiveTimeType);

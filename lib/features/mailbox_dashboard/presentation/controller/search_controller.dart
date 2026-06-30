@@ -190,6 +190,24 @@ class SearchController extends BaseController with DateRangePickerMixin {
     );
   }
 
+  /// Resets load-more cursors before a fresh search so stale pagination state
+  /// never leaks into the next query.
+  ///
+  /// The `before`/`after` time cursors are always cleared (the date-range bounds
+  /// in `startDate`/`endDate` are preserved). Position-based pagination
+  /// (relevance sort or collapsed threads) restarts from offset 0; otherwise the
+  /// position is cleared too.
+  void resetCursorsForFreshSearch({required bool isCollapseThreadsEnabled}) {
+    final usesPositionPagination =
+        searchEmailFilter.value.sortOrderType.isScrollByPosition() ||
+            isCollapseThreadsEnabled;
+    updateFilterEmail(
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: option(usesPositionPagination, 0),
+    );
+  }
+
   DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
 
   DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
