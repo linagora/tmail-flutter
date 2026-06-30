@@ -64,9 +64,12 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       oidcToken,
     )) {
       either.fold(
-        (failure) => logWarning(
-          'WorkplaceComposerAttachmentExtension::_exchangeAccessToken failed: $failure',
-        ),
+        (failure) {
+          logWarning(
+            'WorkplaceComposerAttachmentExtension::_exchangeAccessToken failed: $failure',
+          );
+          throw failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException();
+        },
         (success) {
           if (success is ExchangeWorkplaceTokenSuccess) {
             accessToken = success.accessToken;
