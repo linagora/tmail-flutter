@@ -127,9 +127,12 @@ void main() {
   });
 
   group('EmailReceiveTimeType::toDateRange', () {
+    // Anchor expectations to `result.end`, which captures the same `now` that
+    // `toDateRange()` used internally. Reading `DateTime.now()` independently
+    // would make these tests flaky around day/month boundaries.
     void expectStartMonth(EmailReceiveTimeType type, int monthsAgo) {
-      final now = DateTime.now();
       final result = type.toDateRange();
+      final now = result.end!.value.toLocal();
       final startLocal = result.start!.value.toLocal();
       final expected = DateTime(now.year, now.month - monthsAgo, 1);
       expect(startLocal.month, equals(expected.month));
@@ -137,8 +140,8 @@ void main() {
     }
 
     void expectClampedDay(EmailReceiveTimeType type) {
-      final now = DateTime.now();
       final result = type.toDateRange();
+      final now = result.end!.value.toLocal();
       final startLocal = result.start!.value.toLocal();
       final lastDay = DateTime(startLocal.year, startLocal.month + 1, 0).day;
       final expectedDay = now.day > lastDay ? lastDay : now.day;
@@ -171,14 +174,14 @@ void main() {
 
     group('last1Year', () {
       test(
-        'SHOULD place start 12 months before now, same as lastYear',
-      () {
-        final last1YearResult = EmailReceiveTimeType.last1Year.toDateRange();
-        final lastYearResult = EmailReceiveTimeType.lastYear.toDateRange();
-        expect(last1YearResult.start?.value.year, equals(lastYearResult.start?.value.year));
-        expect(last1YearResult.start?.value.month, equals(lastYearResult.start?.value.month));
-        expect(last1YearResult.start?.value.day, equals(lastYearResult.start?.value.day));
-      });
+        'SHOULD place start in the correct month 12 months ago, same as lastYear',
+        () => expectStartMonth(EmailReceiveTimeType.last1Year, 12),
+      );
+
+      test(
+        'SHOULD clamp day to last day of target month so it never overflows',
+        () => expectClampedDay(EmailReceiveTimeType.last1Year),
+      );
     });
   });
 
