@@ -5,6 +5,9 @@ abstract class AbstractEmailRobot {
   Future<void> tapDownloadAllButton();
   Future<void> expectDownloadSaveDialogVisible();
 
+  /// Navigates back from the email detail view to the thread list.
+  Future<void> onTapBackButton();
+
   /// Pure assertions for the email detail view.
   AbstractEmailAssertionRobot get assertion;
 

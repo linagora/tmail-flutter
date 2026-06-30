@@ -33,6 +33,13 @@ class DismissTwpWarningBannerScenario extends BaseTestScenario {
     await emailRobot.assertion.expectTwpWarningBannerVisible();
 
     await emailRobot.twpWarning.tapDismissWarning();
+
+    // Reopen the mail to prove the dismissal was persisted to the backend
+    // (SetEmail keyword), not just optimistically hidden in the current view.
+    await emailRobot.onTapBackButton();
+    await threadRobot.openEmailWithSubject(subject);
+    await $.pumpAndSettle();
+
     await emailRobot.assertion.expectTwpWarningBannerNotVisible();
   }
 }
