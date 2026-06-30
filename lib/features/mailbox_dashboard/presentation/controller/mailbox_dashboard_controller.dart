@@ -2317,8 +2317,8 @@ class MailboxDashBoardController extends ReloadableController
       final dateRange = receiveTime.toDateRange();
       _applyReceiveTimeFilter(
         receiveTime,
-        startDate: dateRange.start?.value,
-        endDate: dateRange.end?.value,
+        startDate: dateRange.start?.value.toLocal(),
+        endDate: dateRange.end?.value.toLocal(),
       );
     }
   }
