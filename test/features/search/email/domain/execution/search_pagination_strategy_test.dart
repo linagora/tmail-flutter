@@ -51,6 +51,7 @@ void main() {
     required Object? after,
   }) {
     expect(spec.position, position);
+    expect(spec.filter.position, isNull);
     expect(spec.filter.before, before);
     expect(spec.filter.after, after);
   }
@@ -59,6 +60,15 @@ void main() {
     expect(spec.filter.startDate, rangeStart);
     expect(spec.filter.endDate, rangeEnd);
   }
+
+  group('LoadMoreIntent', () {
+    test('rejects an empty result in every build mode', () {
+      expect(
+        () => LoadMoreIntent(currentCount: 0, lastEmailDate: lastDate),
+        throwsArgumentError,
+      );
+    });
+  });
 
   group('ordered strategy list', () {
     test('is in most-specific-first, catch-all-last order', () {
@@ -73,7 +83,7 @@ void main() {
       expect(const FreshSearchStrategy().appliesTo(
         contextOf(intent: const NewSearchIntent())), isTrue);
       expect(const FreshSearchStrategy().appliesTo(contextOf(
-        intent: const LoadMoreIntent(currentCount: 5, lastEmailDate: null))), isTrue);
+        intent: LoadMoreIntent(currentCount: 5, lastEmailDate: null))), isTrue);
     });
   });
 
@@ -108,7 +118,7 @@ void main() {
           position: isNull, before: lastDate, after: isNull),
       _CursorCase('LoadMore date sort with null lastEmailDate → no cursor (degenerate, safe)',
           contextOf(
-            intent: const LoadMoreIntent(currentCount: 20, lastEmailDate: null),
+            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: null),
             sortOrder: EmailSortOrderType.oldest,
           ),
           position: isNull, before: isNull, after: isNull),
@@ -190,6 +200,7 @@ void main() {
         intent: intent,
         committed: SearchEmailFilter(
           sortOrderType: sortOrder,
+          position: 99,
           before: lastDate,
           after: lastDate,
         ),
@@ -203,27 +214,53 @@ void main() {
       EmailSortOrderType sort,
       bool collapse,
       Object? position,
+      Object? before,
+      Object? after,
     })>[
       (
-        name: 'fresh search clears stale before/after cursors',
+        name: 'fresh search clears stale cursors',
         intent: const NewSearchIntent(),
         sort: EmailSortOrderType.mostRecent,
         collapse: false,
         position: isNull,
+        before: isNull,
+        after: isNull,
       ),
       (
-        name: 'position load-more clears stale date cursors',
+        name: 'position load-more clears stale filter cursors',
         intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
         sort: EmailSortOrderType.relevance,
         collapse: false,
         position: 15,
+        before: isNull,
+        after: isNull,
       ),
       (
-        name: 'collapsed-thread load-more clears stale date cursors',
+        name: 'collapsed-thread load-more clears stale filter cursors',
         intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
         sort: EmailSortOrderType.oldest,
         collapse: true,
         position: 15,
+        before: isNull,
+        after: isNull,
+      ),
+      (
+        name: 'date load-more oldest replaces stale cursors with `after` only',
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        sort: EmailSortOrderType.oldest,
+        collapse: false,
+        position: isNull,
+        before: isNull,
+        after: lastDate,
+      ),
+      (
+        name: 'date load-more mostRecent replaces stale cursors with `before` only',
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        sort: EmailSortOrderType.mostRecent,
+        collapse: false,
+        position: isNull,
+        before: lastDate,
+        after: isNull,
       ),
     ];
 
@@ -232,8 +269,8 @@ void main() {
         expectCursors(
           resolve(withStaleCursors(c.intent, c.sort, collapseThreads: c.collapse)),
           position: c.position,
-          before: isNull,
-          after: isNull,
+          before: c.before,
+          after: c.after,
         );
       });
     }

@@ -33,19 +33,45 @@ void main() {
   });
 
   test('seedFrom strips any pagination cursor from the seed', () {
-    final date = UTCDate(DateTime.parse('2026-03-15T10:00:00.000Z'));
+    final cursor = UTCDate(DateTime.parse('2026-03-15T10:00:00.000Z'));
+    final startDate = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+    final endDate = UTCDate(DateTime.parse('2026-06-01T00:00:00.000Z'));
 
     notifierOf().seedFrom(SearchEmailFilter(
       subject: 'invoice',
-      before: date,
-      after: date,
+      before: cursor,
+      after: cursor,
+      startDate: startDate,
+      endDate: endDate,
       position: 5,
     ));
 
     expect(stateOf().subject, 'invoice'); // intent preserved
+    expect(stateOf().startDate, startDate);
+    expect(stateOf().endDate, endDate);
     expect(stateOf().before, isNull);
     expect(stateOf().after, isNull);
     expect(stateOf().position, isNull);
+  });
+
+  test('seedFrom snapshots filter sets instead of aliasing committed state', () {
+    final seed = SearchEmailFilter(
+      from: {'alice@example.com'},
+      to: {'bob@example.com'},
+      notKeyword: {'draft'},
+      hasKeyword: {'flagged'},
+    );
+
+    notifierOf().seedFrom(seed);
+    seed.from.add('mallory@example.com');
+    seed.to.add('mallory@example.com');
+    seed.notKeyword.add('leak');
+    seed.hasKeyword.add('leak');
+
+    expect(stateOf().from, {'alice@example.com'});
+    expect(stateOf().to, {'bob@example.com'});
+    expect(stateOf().notKeyword, {'draft'});
+    expect(stateOf().hasKeyword, {'flagged'});
   });
 
   test('seedFrom then update keeps committed ⊆ draft (containment invariant)', () {

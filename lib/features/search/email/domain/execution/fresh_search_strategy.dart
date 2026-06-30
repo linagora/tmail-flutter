@@ -19,10 +19,7 @@ class FreshSearchStrategy extends SearchPaginationStrategy {
         ctx.committed.sortOrderType.isScrollByPosition() || ctx.collapseThreads;
     return spec.copyWith(
       positionOption: usesPositionPagination ? const Some(0) : const None(),
-      filter: spec.filter.copyWith(
-        beforeOption: const None(),
-        afterOption: const None(),
-      ),
+      filter: spec.filter.clearPaginationCursors(),
     );
   }
 }
