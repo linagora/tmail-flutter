@@ -298,7 +298,7 @@ class EmailChangeListener extends ChangeListener {
   }) async {
     log('EmailChangeListener::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
     if (emailList.isEmpty) {
-      _emailsAvailablePushNotification.clear();
+      _emailsAvailablePushNotification = [];
       return;
     }
 
@@ -322,7 +322,7 @@ class EmailChangeListener extends ChangeListener {
         countNotifications: countNotifications);
     }
 
-    _emailsAvailablePushNotification.clear();
+    _emailsAvailablePushNotification = [];
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {

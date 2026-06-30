@@ -1230,8 +1230,8 @@ void main() {
           // after the (unawaited) call.
           composerController?.onLocalFileDropZoneListener(
             context: capturedContext,
-            details: DropDoneDetails(
-              files: const [],
+            details: const DropDoneDetails(
+              files: [],
               localPosition: Offset.zero,
               globalPosition: Offset.zero,
             ),

@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/email_changes_properties.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
 
@@ -36,8 +37,11 @@ class GetEmailChangesToRemoveNotificationInteractor {
           session,
           accountId,
           currentState,
-          propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated);
+          properties: EmailChangesProperties(
+            created: propertiesCreated,
+            updated: propertiesUpdated,
+          ),
+        );
         yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationSuccess(session.username, emailIds));
       } else {
         yield Left<Failure, Success>(GetEmailChangesToRemoveNotificationFailure(const NotFoundEmailStateException()));

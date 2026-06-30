@@ -21,6 +21,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/email_changes_properties.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -44,18 +45,15 @@ class FCMRepositoryImpl extends FCMRepository {
   Future<EmailsResponse> getEmailChangesToPushNotification(
     Session session,
     AccountId accountId,
-    jmap.State currentState,
-    {
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated
-    }
-  ) async {
+    jmap.State currentState, {
+    EmailChangesProperties? properties,
+  }) async {
     final emailChangeResponse = await _threadDataSource.getAllEmailChanges(
       session,
       accountId,
       currentState,
-      propertiesCreated: propertiesCreated,
-      propertiesUpdated: propertiesUpdated
+      propertiesCreated: properties?.created,
+      propertiesUpdated: properties?.updated,
     );
 
     final listEmails = emailChangeResponse?.created ?? [];
@@ -141,18 +139,15 @@ class FCMRepositoryImpl extends FCMRepository {
   Future<List<EmailId>> getEmailChangesToRemoveNotification(
     Session session,
     AccountId accountId,
-    jmap.State currentState,
-    {
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated
-    }
-  ) async {
+    jmap.State currentState, {
+    EmailChangesProperties? properties,
+  }) async {
     final emailChangeResponse = await _threadDataSource.getAllEmailChanges(
       session,
       accountId,
       currentState,
-      propertiesCreated: propertiesCreated,
-      propertiesUpdated: propertiesUpdated
+      propertiesCreated: properties?.created,
+      propertiesUpdated: properties?.updated,
     );
 
     if (emailChangeResponse != null) {
