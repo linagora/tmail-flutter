@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 class ToastManager {
   final AppToast appToast;
@@ -233,6 +234,8 @@ class ToastManager {
     } else if (failure is AddListLabelsToListEmailsFailure) {
       message =
           message ?? appLocalizations.addListLabelToListEmailFailureMessage;
+    } else if (failure is DrivePickFailure) {
+      message = failure.message ?? appLocalizations.unknownError;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {

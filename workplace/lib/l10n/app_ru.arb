@@ -1,3 +1,5 @@
 {
-    "addAsLink": "Добавить как ссылку"
+    "addAsLink": "Добавить как ссылку",
+    "addAsAttachment": "Добавить как вложение",
+    "attachFromDriveFailingMessage": "Не удалось прикрепить файл(ы) с диска"
 }
