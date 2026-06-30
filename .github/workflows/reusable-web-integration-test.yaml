@@ -1,0 +1,36 @@
+name: Web integration tests (reusable)
+
+# Reusable definition of the web E2E run. Called by:
+#   - patrol-web-integration-test.yaml (on pull_request)
+#   - image-sentry.yaml (on tag push, as a blocking gate before the release image)
+# Keeping the steps here means the E2E setup is defined once and both callers stay in sync.
+on:
+  workflow_call:
+
+env:
+  FLUTTER_VERSION: 3.38.9
+
+jobs:
+  web_integration_test:
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    name: Run integration tests for web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Test
+        run: ./scripts/patrol-web-integration-test-with-docker.sh
