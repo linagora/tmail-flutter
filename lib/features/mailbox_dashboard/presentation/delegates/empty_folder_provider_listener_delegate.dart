@@ -155,8 +155,11 @@ class EmptyFolderProviderListenerDelegate
         _stateSubscription?.close();
         _stateSubscription = null;
         _resetProgress(dashboardController);
-        _showEmptyFolderFailureToast(context, ref);
-        _handleUrgentException(exception);
+        // Skip the generic failure toast when the urgent handler already owns
+        // the UX (re-login, reconnect), to avoid a duplicate error surface.
+        if (!_handleUrgentException(exception)) {
+          _showEmptyFolderFailureToast(context, ref);
+        }
 
       case EmptyFolderIdle():
         break;
@@ -178,10 +181,12 @@ class EmptyFolderProviderListenerDelegate
     }
   }
 
-  // Routes urgent exceptions through the shared helper (ADR-0093).
-  void _handleUrgentException(Object? exception) {
-    if (exception == null) return;
-    handleUrgentExceptionIfNeeded(exception: exception);
+  // Routes urgent exceptions through the shared helper (ADR-0093). Returns true
+  // when the failure was urgent and handled centrally, so the caller can skip
+  // its own error UI.
+  bool _handleUrgentException(Object? exception) {
+    if (exception == null) return false;
+    return handleUrgentExceptionIfNeeded(exception: exception);
   }
 
   void _resetProgress(MailboxDashBoardController dashboardController) {
