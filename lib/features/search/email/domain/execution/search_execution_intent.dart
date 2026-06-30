@@ -13,11 +13,19 @@ class NewSearchIntent extends SearchExecutionIntent {
 }
 
 /// Fetch the next page and append it. Only valid on a non-empty result — the
-/// caller guards the empty case (like the existing `isEmpty` checks), which the
-/// `assert` encodes, so an empty load-more never becomes a page-1 refetch.
+/// caller guards the empty case (like the existing `isEmpty` checks), and the
+/// constructor enforces it in every build mode so an empty load-more never
+/// becomes a page-1 refetch.
 class LoadMoreIntent extends SearchExecutionIntent {
-  const LoadMoreIntent({required this.currentCount, required this.lastEmailDate})
-      : assert(currentCount > 0, 'LoadMoreIntent requires a non-empty result');
+  LoadMoreIntent({required this.currentCount, required this.lastEmailDate}) {
+    if (currentCount <= 0) {
+      throw ArgumentError.value(
+        currentCount,
+        'currentCount',
+        'LoadMoreIntent requires a non-empty result',
+      );
+    }
+  }
 
   /// Rows already loaded — the offset for position-based pagination.
   final int currentCount;

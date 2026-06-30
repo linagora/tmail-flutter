@@ -20,10 +20,7 @@ class PositionLoadMoreStrategy extends SearchPaginationStrategy {
     final currentCount = (ctx.intent as LoadMoreIntent).currentCount;
     return spec.copyWith(
       positionOption: Some(currentCount),
-      filter: spec.filter.copyWith(
-        beforeOption: const None(),
-        afterOption: const None(),
-      ),
+      filter: spec.filter.clearPaginationCursors(),
     );
   }
 }

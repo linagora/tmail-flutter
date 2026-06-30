@@ -23,7 +23,7 @@ class DateLoadMoreStrategy extends SearchPaginationStrategy {
     final isOldest = ctx.committed.sortOrderType == EmailSortOrderType.oldest;
     return spec.copyWith(
       positionOption: const None(),
-      filter: spec.filter.copyWith(
+      filter: spec.filter.clearPaginationCursors().copyWith(
         afterOption: isOldest ? optionOf(lastDate) : const None(),
         beforeOption: isOldest ? const None() : optionOf(lastDate),
       ),

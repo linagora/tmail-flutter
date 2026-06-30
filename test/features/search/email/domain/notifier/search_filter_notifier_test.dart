@@ -66,19 +66,45 @@ void main() {
     });
 
     test('strips pagination cursors riding in on a full replacement', () {
-      final date = UTCDate(DateTime.parse('2026-03-15T10:00:00.000Z'));
+      final cursor = UTCDate(DateTime.parse('2026-03-15T10:00:00.000Z'));
+      final startDate = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+      final endDate = UTCDate(DateTime.parse('2026-06-01T00:00:00.000Z'));
 
       notifierOf().set(SearchEmailFilter(
         subject: 'invoice',
-        before: date,
-        after: date,
+        before: cursor,
+        after: cursor,
+        startDate: startDate,
+        endDate: endDate,
         position: 5,
       ));
 
       expect(stateOf().subject, 'invoice'); // intent preserved
+      expect(stateOf().startDate, startDate);
+      expect(stateOf().endDate, endDate);
       expect(stateOf().before, isNull);
       expect(stateOf().after, isNull);
       expect(stateOf().position, isNull);
+    });
+
+    test('snapshots filter sets instead of aliasing replacement state', () {
+      final replacement = SearchEmailFilter(
+        from: {'alice@example.com'},
+        to: {'bob@example.com'},
+        notKeyword: {'draft'},
+        hasKeyword: {'flagged'},
+      );
+
+      notifierOf().set(replacement);
+      replacement.from.add('mallory@example.com');
+      replacement.to.add('mallory@example.com');
+      replacement.notKeyword.add('leak');
+      replacement.hasKeyword.add('leak');
+
+      expect(stateOf().from, {'alice@example.com'});
+      expect(stateOf().to, {'bob@example.com'});
+      expect(stateOf().notKeyword, {'draft'});
+      expect(stateOf().hasKeyword, {'flagged'});
     });
   });
 
