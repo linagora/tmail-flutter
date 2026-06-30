@@ -37,7 +37,7 @@ class GetEmailChangesToPushNotificationInteractor {
 
       final presentationEmailList = emailsResponse.emailList
         ?.map((email) => email.toPresentationEmail())
-        .toList() ?? List.empty();
+        .toList() ?? [];
 
       yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(accountId, userName, presentationEmailList));
     } catch (e) {

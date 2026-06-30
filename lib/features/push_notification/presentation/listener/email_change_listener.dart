@@ -298,7 +298,7 @@ class EmailChangeListener extends ChangeListener {
   }) async {
     log('EmailChangeListener::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
     if (emailList.isEmpty) {
-      _emailsAvailablePushNotification.clear();
+      _emailsAvailablePushNotification = [];
       return;
     }
 
