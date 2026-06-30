@@ -116,6 +116,7 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     SearchEmailController controller,
     int expectedCount,
   ) async {
+    await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last7Days);
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     controller.updateSimpleSearchFilter(
       afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
@@ -151,6 +152,7 @@ class SearchEmailSortOrderDateFilterNotLeakScenario extends BaseTestScenario {
     SearchEmailController controller,
     int expectedCount,
   ) async {
+    await _selectDateFilter(searchRobot, appLocalizations, controller, EmailReceiveTimeType.last7Days);
     await _selectSortOrder(searchRobot, appLocalizations, controller, EmailSortOrderType.oldest);
     controller.updateSimpleSearchFilter(
       afterOption: Some(UTCDate(DateTime.now().subtract(const Duration(days: 6)))),
