@@ -49,5 +49,3 @@ class SendEmailFailure extends FeatureFailure {
     sendingEmailActionType,
   ];
 }
-
-class CancelSendingEmail extends LoadingState {}

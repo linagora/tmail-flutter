@@ -970,14 +970,12 @@ class ComposerController extends BaseController
     required String emailContent,
   }) async {
     final uploadUri = _getUploadUriFromSession(session, accountId);
-    final cancelToken = CancelToken();
     final resultState = await _showSendingMessageDialog(
       session: session,
       accountId: accountId,
       arguments: arguments,
       emailContent: emailContent,
       uploadUri: uploadUri,
-      cancelToken: cancelToken,
     );
 
     if (resultState is SendEmailSuccess ||
@@ -985,9 +983,6 @@ class ComposerController extends BaseController
             .validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
       _sendButtonState = ButtonState.enabled;
       _closeComposerAction(result: resultState);
-    } else if (resultState is SendEmailFailure &&
-        resultState.exception is SendingEmailCanceledException) {
-      _sendButtonState = ButtonState.enabled;
     } else if (resultState is SendEmailFailure ||
         resultState is GenerateEmailFailure) {
       if (resultState.exception is BadCredentialsException) {
@@ -1029,7 +1024,6 @@ class ComposerController extends BaseController
     required ComposerArguments arguments,
     required String emailContent,
     required Uri? uploadUri,
-    CancelToken? cancelToken,
   }) {
     final childWidget = PointerInterceptor(
       child: SendingMessageDialogView(
@@ -1062,8 +1056,6 @@ class ComposerController extends BaseController
           uploadUri: uploadUri,
         ),
         createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
-        onCancelSendingEmailAction: _handleCancelSendingMessage,
-        cancelToken: cancelToken,
       ),
     );
 
@@ -1074,10 +1066,6 @@ class ComposerController extends BaseController
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
-  }
-
-  void _handleCancelSendingMessage({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SendingEmailCanceledException()]);
   }
 
   Future<void> _showConfirmDialogWhenSendMessageFailure({
