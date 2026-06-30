@@ -2,11 +2,13 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -102,6 +104,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -523,15 +526,19 @@ void main() {
       advancedFilterController.updateReceiveDateSearchFilter(context, EmailReceiveTimeType.last30Days);
       advancedFilterController.updateSortOrder(EmailSortOrderType.relevance);
       advancedFilterController.applyAdvancedSearchFilter();
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter(
-        from: {fromEmailAddress.email!},
-        to: {toEmailAddress.email!},
-        subject: emailSubject,
-        sortOrderType: EmailSortOrderType.relevance,
-        text: SearchQuery(emailContainsWord),
-        notKeyword: {emailNotContainsWord},
-        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        position: 0));
+      final filterAfterAdvancedSearch = searchController.searchEmailFilter.value;
+      expect(filterAfterAdvancedSearch.from, equals({fromEmailAddress.email!}));
+      expect(filterAfterAdvancedSearch.to, equals({toEmailAddress.email!}));
+      expect(filterAfterAdvancedSearch.subject, equals(emailSubject));
+      expect(filterAfterAdvancedSearch.sortOrderType, equals(EmailSortOrderType.relevance));
+      expect(filterAfterAdvancedSearch.text, equals(SearchQuery(emailContainsWord)));
+      expect(filterAfterAdvancedSearch.notKeyword, equals({emailNotContainsWord}));
+      expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
+      expect(filterAfterAdvancedSearch.position, equals(0));
+      expect(filterAfterAdvancedSearch.startDate, isNotNull);
+      expect(filterAfterAdvancedSearch.endDate, isNotNull);
+      expect(filterAfterAdvancedSearch.before, isNull);
+      expect(filterAfterAdvancedSearch.after, isNull);
 
       // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
       // when [selectedMailbox] is changed and triggered obx listener in thread controller
@@ -588,16 +595,83 @@ void main() {
       properties: anyNamed('properties')));
 
     // assert
-    expect(
-      searchController.searchEmailFilter.value,
-      SearchEmailFilter(
-        text: SearchQuery(queryString),
-        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        hasAttachment: true,
-        position: 0,
-      )
-    );
+    final filterAfterQuickSearch = searchController.searchEmailFilter.value;
+    expect(filterAfterQuickSearch.text, equals(SearchQuery(queryString)));
+    expect(filterAfterQuickSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
+    expect(filterAfterQuickSearch.hasAttachment, isTrue);
+    expect(filterAfterQuickSearch.position, equals(0));
+    expect(filterAfterQuickSearch.startDate, isNotNull);
+    expect(filterAfterQuickSearch.endDate, isNotNull);
+    expect(filterAfterQuickSearch.before, isNull);
+    expect(filterAfterQuickSearch.after, isNull);
   });
+
+    test(
+      'WHEN stored sort order is loaded on app restart\n'
+      'SHOULD sync sort order to SearchController so inline search bar uses it',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
+      expect(searchController.searchEmailFilter.value.sortOrderType, EmailSortOrderType.oldest);
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called while load-more cursors are set\n'
+      'SHOULD clear before/after/position so restoring the sort order never leaks a stale cursor',
+    () {
+      searchController.updateFilterEmail(
+        beforeOption: Some(UTCDate(DateTime.now())),
+        afterOption: Some(UTCDate(DateTime.now())),
+        positionOption: const Some(20),
+      );
+
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+
+      expect(searchController.searchEmailFilter.value.before, isNull);
+      expect(searchController.searchEmailFilter.value.after, isNull);
+      expect(searchController.searchEmailFilter.value.position, isNull);
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called\n'
+      'SHOULD keep currentSortOrder and searchController.sortOrderFiltered in sync',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.senderAscending);
+
+      expect(
+        mailboxDashboardController.currentSortOrder,
+        EmailSortOrderType.senderAscending,
+      );
+      expect(
+        searchController.sortOrderFiltered,
+        mailboxDashboardController.currentSortOrder,
+      );
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called multiple times\n'
+      'SHOULD reflect the last sort order in both currentSortOrder and searchController',
+    () {
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.senderDescending);
+
+      expect(mailboxDashboardController.currentSortOrder, EmailSortOrderType.senderDescending);
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.senderDescending);
+    });
+
+    test(
+      'WHEN user changes sort order via storeEmailSortOrder\n'
+      'SHOULD update currentSortOrder and sync searchController immediately',
+    () {
+      mailboxDashboardController.storeEmailSortOrder(EmailSortOrderType.subjectAscending);
+
+      expect(
+        mailboxDashboardController.currentSortOrder,
+        EmailSortOrderType.subjectAscending,
+      );
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
+    });
 
     tearDown(Get.deleteAll);
   });

@@ -353,7 +353,7 @@ class ThreadController extends BaseController with EmailActionController {
         );
       } else if (action is SearchEmailFromLocationBar) {
         _handleSearchEmailFromLocationBar(action.searchQuery);
-      } else if (action is SelectDateRangeToAdvancedSearch || action is ClearDateRangeToAdvancedSearch) {
+      } else if (action is SelectDateRangeToAdvancedSearch) {
         if (listEmailController.hasClients) {
           listEmailController.jumpTo(0);
         }
@@ -812,14 +812,8 @@ class ThreadController extends BaseController with EmailActionController {
     log('ThreadController::_refreshChangeSearchEmail:');
     canSearchMore = true;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
-    searchController.updateFilterEmail(
-      positionOption: option(
-        _searchEmailFilter.sortOrderType.isScrollByPosition(),
-        0,
-      ),
-      beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
+    searchController.resetCursorsForFreshSearch(
+      isCollapseThreadsEnabled: _isCollapseThreadsEnabled,
     );
     final searchViewState = await _searchEmailInteractor.execute(
       _session!,
@@ -1193,11 +1187,8 @@ class ThreadController extends BaseController with EmailActionController {
       canSearchMore = true;
       loadingMoreStatus.value = LoadingMoreStatus.idle;
 
-      searchController.updateFilterEmail(
-        positionOption: option(_searchEmailFilter.sortOrderType.isScrollByPosition(), 0),
-        beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
-          ? const None()
-          : null,
+      searchController.resetCursorsForFreshSearch(
+        isCollapseThreadsEnabled: _isCollapseThreadsEnabled,
       );
 
       searchController.activateSimpleSearch();
@@ -1274,40 +1265,50 @@ class ThreadController extends BaseController with EmailActionController {
     log('ThreadController::_searchMoreEmails:');
     if (!canSearchMore) return;
 
-    if (_session != null && _accountId != null) {
-      final currentEmailList =
-          mailboxDashBoardController.emailsInCurrentMailbox;
-      final lastEmail =
-          currentEmailList.isNotEmpty ? currentEmailList.last : null;
-
-      if (_searchEmailFilter.sortOrderType.isScrollByPosition()) {
-        final nextPosition = currentEmailList.length;
-        log('ThreadController::_searchMoreEmails:nextPosition: $nextPosition');
-        searchController.updateFilterEmail(positionOption: Some(nextPosition));
-      } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.oldest) {
-        searchController.updateFilterEmail(startDateOption: optionOf(lastEmail?.receivedAt));
-      } else {
-        searchController.updateFilterEmail(beforeOption: optionOf(lastEmail?.receivedAt));
-      }
-
-      consumeState(_searchMoreEmailInteractor.execute(
-        _session!,
-        _accountId!,
-        limit: ThreadConstants.defaultLimit,
-        sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
-        position: _searchEmailFilter.position,
-        filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: getFilterCondition(),
-          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
-        ),
-        properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        collapseThreads: _isCollapseThreadsEnabled,
-        lastEmailId: lastEmail?.id
-      ));
-    } else {
+    if (_session == null || _accountId == null) {
       consumeState(
         Stream.value(Left(SearchMoreEmailFailure(NotFoundSessionException()))),
       );
+      return;
+    }
+
+    final currentEmailList = mailboxDashBoardController.emailsInCurrentMailbox;
+    if (currentEmailList.isEmpty) return;
+
+    final lastEmail = currentEmailList.last;
+    _updateLoadMoreCursor(currentEmailList, lastEmail);
+
+    consumeState(_searchMoreEmailInteractor.execute(
+      _session!,
+      _accountId!,
+      limit: ThreadConstants.defaultLimit,
+      sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
+      position: _searchEmailFilter.position,
+      filter: _searchEmailFilter.mappingToEmailFilterCondition(
+        moreFilterCondition: getFilterCondition(),
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+      ),
+      properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+      collapseThreads: _isCollapseThreadsEnabled,
+      lastEmailId: lastEmail.id
+    ));
+  }
+
+  /// Advances the load-more cursor for the next page based on the active sort
+  /// order: position-based sorts (or collapsed threads) page by offset, while
+  /// time-based sorts page by the last email's `receivedAt`.
+  void _updateLoadMoreCursor(
+    List<PresentationEmail> currentEmailList,
+    PresentationEmail lastEmail,
+  ) {
+    if (_searchEmailFilter.sortOrderType.isScrollByPosition() || _isCollapseThreadsEnabled) {
+      final nextPosition = currentEmailList.length;
+      log('ThreadController::_searchMoreEmails:nextPosition: $nextPosition');
+      searchController.updateFilterEmail(positionOption: Some(nextPosition));
+    } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.oldest) {
+      searchController.updateFilterEmail(afterOption: optionOf(lastEmail.receivedAt));
+    } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.mostRecent) {
+      searchController.updateFilterEmail(beforeOption: optionOf(lastEmail.receivedAt));
     }
   }
 

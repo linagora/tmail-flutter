@@ -116,8 +116,14 @@ class SearchController extends BaseController with DateRangePickerMixin {
       ? {KeyWordIdentifier.emailFlagged.value}
       : null;
 
+    final dateRange = receiveTime?.toDateRange();
     updateFilterEmail(
       emailReceiveTimeTypeOption: receiveTime != null ? Some(receiveTime) : null,
+      startDateOption: receiveTime != null ? optionOf(dateRange!.start) : null,
+      endDateOption: receiveTime != null ? optionOf(dateRange!.end) : null,
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: const None(),
       hasAttachmentOption: hasAttachment != null ? Some(hasAttachment) : null,
       fromOption: Some(listFromAddress),
       hasKeywordOption: listHasKeyword != null ? Some(listHasKeyword) : null,
@@ -143,6 +149,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<bool>? unreadOption,
     Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
@@ -162,6 +169,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       unreadOption: unreadOption,
       notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
+      afterOption: afterOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
@@ -172,6 +180,33 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
+
+  void updateSortOrderFilter(EmailSortOrderType sortOrder) {
+    updateFilterEmail(
+      sortOrderTypeOption: Some(sortOrder),
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: const None(),
+    );
+  }
+
+  /// Resets load-more cursors before a fresh search so stale pagination state
+  /// never leaks into the next query.
+  ///
+  /// The `before`/`after` time cursors are always cleared (the date-range bounds
+  /// in `startDate`/`endDate` are preserved). Position-based pagination
+  /// (relevance sort or collapsed threads) restarts from offset 0; otherwise the
+  /// position is cleared too.
+  void resetCursorsForFreshSearch({required bool isCollapseThreadsEnabled}) {
+    final usesPositionPagination =
+        searchEmailFilter.value.sortOrderType.isScrollByPosition() ||
+            isCollapseThreadsEnabled;
+    updateFilterEmail(
+      beforeOption: const None(),
+      afterOption: const None(),
+      positionOption: option(usesPositionPagination, 0),
+    );
+  }
 
   DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
 

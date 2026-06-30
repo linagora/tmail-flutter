@@ -91,8 +91,10 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> selectSortOrder(String sortOrderName) async {
-    await $(sortOrderName).tap();
-    // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
+    // noSettle: selecting sort order triggers _searchEmailAction which shows a loading
+    // spinner (infinite animation) that would prevent pumpAndSettle from settling.
+    // waitForCondition below handles the popup-close check instead.
+    await $(sortOrderName).tap(settlePolicy: SettlePolicy.noSettle);
     await waitForCondition(
       () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,
       timeout: TestTimeouts.short,
@@ -101,8 +103,8 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> selectDateTime(String dateTimeType) async {
-    await $(dateTimeType).tap();
-    // pump() does not yield to browser XHR — waitForCondition yields via Future.delayed internally.
+    // noSettle: same reason as selectSortOrder — date filter change triggers a search.
+    await $(dateTimeType).tap(settlePolicy: SettlePolicy.noSettle);
     await waitForCondition(
       () async => $(PopupMenuItemActionWidget).evaluate().isEmpty,
       timeout: TestTimeouts.short,

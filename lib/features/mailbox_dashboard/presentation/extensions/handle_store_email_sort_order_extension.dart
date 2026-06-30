@@ -17,6 +17,7 @@ extension HandleStoreEmailSortOrderExtension on MailboxDashBoardController {
   void setUpDefaultEmailSortOrder(EmailSortOrderType storedSortOrder) {
     log('$runtimeType::setUpDefaultEmailSortOrder: $storedSortOrder');
     currentSortOrder = storedSortOrder;
+    searchController.updateSortOrderFilter(storedSortOrder);
     dispatchAction(SynchronizeEmailSortOrderAction(currentSortOrder));
   }
 }

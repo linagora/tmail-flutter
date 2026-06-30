@@ -1,3 +1,8 @@
+## [0.29.9] - 2026-06-24
+### Fixed
+- Load more in search for oldest
+- SortOrder not retrieved well
+
 ## [0.29.8] - 2026-06-17
 ### Changed
 - Translation vi, ru, fr

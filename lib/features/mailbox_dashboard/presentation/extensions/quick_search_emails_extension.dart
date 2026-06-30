@@ -43,13 +43,14 @@ extension QuickSearchEmailsExtension on SearchController {
 
   Filter? _mappingToFilterOnSuggestionForm({required String query, required String currentUserEmail}) {
     log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
+    final last7DaysDateRange =  EmailReceiveTimeType.last7Days.toDateRange();
     final filterCondition = EmailFilterCondition(
       text: query.isNotEmpty == true ? query : null,
       after: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-        ? EmailReceiveTimeType.last7Days.toOldestUTCDate()
+        ? last7DaysDateRange.start
         : null,
       before: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-        ? EmailReceiveTimeType.last7Days.toLatestUTCDate()
+        ? last7DaysDateRange.end
         : null,
       hasAttachment: listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
         ? true

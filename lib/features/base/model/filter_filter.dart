@@ -96,7 +96,7 @@ enum FilterField {
             .valuesForRecoverDeletionDateField
             .where((type) => restorationHorizon
                 .subtract(const Duration(seconds: 2)) // to allow "15 days" if restorationHorizon is exactly 15
-                .isBefore(type.toOldestUTCDate()!.value))
+                .isBefore(type.toDateRange().start!.value))
             .toList();
 
         return [...supportedTypes, EmailReceiveTimeType.customRange];
