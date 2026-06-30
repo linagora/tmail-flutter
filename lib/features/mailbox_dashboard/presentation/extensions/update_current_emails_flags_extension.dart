@@ -3,6 +3,8 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
@@ -116,5 +118,28 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     dispatchThreadDetailUIAction(ThreadDetailUIAction());
 
     updateEmailFlagByEmailIds([emailId], markAsForwarded: true);
+  }
+
+  /// Adds (or removes, when [dismissed] is `false`) the
+  /// `twp-warning-dismissed-<index>` keyword on the matching list email.
+  ///
+  /// Required because a single-email thread reuses the list email on reopen
+  /// instead of refetching (see `InitializeThreadDetailEmails`): without the
+  /// keyword on the list email, a dismissed `X-TWP-Message` warning reappears.
+  void updateEmailTwpWarningDismissed(
+    EmailId emailId,
+    int index, {
+    required bool dismissed,
+  }) {
+    final currentEmails = dashboardRoute.value == DashboardRoutes.searchEmail
+        ? listResultSearch
+        : emailsInCurrentMailbox;
+
+    final emailIndex = currentEmails.indexWhere((email) => email.id == emailId);
+    if (emailIndex == -1) return;
+
+    currentEmails[emailIndex] = currentEmails[emailIndex].updateKeywords({
+      KeyWordIdentifierExtension.twpWarningDismissed(index): dismissed,
+    });
   }
 }

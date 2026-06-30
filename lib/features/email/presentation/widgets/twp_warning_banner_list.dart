@@ -90,14 +90,20 @@ class TwpWarningBannerList extends StatelessWidget {
     // Dismissal persists a keyword to the backend, so it is disabled offline.
     if (!controller.isNetworkConnectionAvailable) return;
 
+    // Optimistically mirror the dismissal onto the in-memory email so the banner
+    // hides immediately and stays hidden across reopen, before the backend
+    // confirms. Reverted below if persistence fails.
+    controller.markTwpWarningDismissedLocally(index);
+
     final result = await ref
         .read(twpWarningDismissProvider(emailId.asString).notifier)
         .dismiss(session, accountId, emailId, index);
 
     switch (result) {
       case TwpWarningDismissResult.dismissed:
-        controller.markTwpWarningDismissedLocally(index);
+        break;
       case TwpWarningDismissResult.failed:
+        controller.clearTwpWarningDismissedLocally(index);
         if (context.mounted) {
           ref
               .read(appToastProvider)
@@ -108,7 +114,7 @@ class TwpWarningBannerList extends StatelessWidget {
         }
       case TwpWarningDismissResult.urgentHandled:
         // Central handler already owns the UX (re-login, etc.); no extra toast.
-        break;
+        controller.clearTwpWarningDismissedLocally(index);
     }
   }
 }
