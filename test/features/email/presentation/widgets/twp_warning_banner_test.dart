@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/twp_warning_banner.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../../fixtures/widget_fixtures.dart';
 
@@ -64,7 +65,11 @@ void _messageTests() {
     );
     await tester.pumpAndSettle();
 
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(TwpWarningBanner)),
+    );
     // A known code resolves to the localized string, not the raw fallback.
+    expect(find.text(l10n.twpWarningVirus), findsOneWidget);
     expect(find.text('Raw server fallback'), findsNothing);
   });
 }

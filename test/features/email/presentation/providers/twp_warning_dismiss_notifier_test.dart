@@ -35,19 +35,24 @@ void main() {
   Set<int> readState() => container.read(twpWarningDismissProvider(emailIdKey));
 
   void stubSuccess() {
-    when(mockInteractor.execute(any, any, any, any)).thenAnswer(
-      (_) => Stream.value(
-        Right<Failure, Success>(DismissTwpWarningSuccess(emailId, index)),
-      ),
-    );
+    when(mockInteractor.execute(any, any, any, any)).thenAnswer((invocation) {
+      final invokedEmailId = invocation.positionalArguments[2] as EmailId;
+      final invokedIndex = invocation.positionalArguments[3] as int;
+      return Stream.value(
+        Right<Failure, Success>(
+          DismissTwpWarningSuccess(invokedEmailId, invokedIndex),
+        ),
+      );
+    });
   }
 
   void stubFailure() {
-    when(mockInteractor.execute(any, any, any, any)).thenAnswer(
-      (_) => Stream.value(
-        Left<Failure, Success>(DismissTwpWarningFailure(index: index)),
-      ),
-    );
+    when(mockInteractor.execute(any, any, any, any)).thenAnswer((invocation) {
+      final invokedIndex = invocation.positionalArguments[3] as int;
+      return Stream.value(
+        Left<Failure, Success>(DismissTwpWarningFailure(index: invokedIndex)),
+      );
+    });
   }
 
   setUp(() {
