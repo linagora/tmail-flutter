@@ -13,8 +13,9 @@ final class DrivePickResult extends DrivePickState {
 
 final class DrivePickFailure extends DrivePickState {
   final Object error;
-  DrivePickFailure(this.error);
+  final String? message;
+  DrivePickFailure(this.error, {this.message});
   
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [error, message];
 }

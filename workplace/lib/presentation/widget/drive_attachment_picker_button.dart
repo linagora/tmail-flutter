@@ -12,16 +12,16 @@ class DriveAttachmentPickerButton extends StatefulWidget {
   final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
   final OnPickDriveCallback? onPickCallback;
-  final FetchDriveIntentCallback? onFetchIntent;
+  final FetchDriveIntentCallback onFetchIntent;
 
   const DriveAttachmentPickerButton({
     super.key,
     required this.composerId,
     required this.imagePaths,
     required this.workplaceUri,
+    required this.onFetchIntent,
     this.style = const ComposerToolbarButtonStyle(),
     this.onPickCallback,
-    this.onFetchIntent,
   });
 
   @override
@@ -39,7 +39,7 @@ abstract class _DriveAttachmentPickerButtonState
       : _MobileDriveAttachmentPickerButtonState();
 
   @override
-  FetchDriveIntentCallback? get pickerFetchIntent => widget.onFetchIntent;
+  FetchDriveIntentCallback get pickerFetchIntent => widget.onFetchIntent;
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;

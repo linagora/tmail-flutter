@@ -1,12 +1,14 @@
 import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
@@ -35,7 +37,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     this.onPickState,
   });
 
-  Future<WorkplaceIntent?> _fetchIntent(
+  Future<WorkplaceIntent> _fetchIntent(
     Uri platformUrl, {
     required String addAsLinkTitle,
     required String addAsAttachmentTitle,
@@ -75,7 +77,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return accessToken;
   }
 
-  Future<WorkplaceIntent?> _createIntent(
+  Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
     String accessToken, {
     required String addAsLinkTitle,
@@ -89,15 +91,18 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       addAsAttachment: addAsAttachmentTitle,
     )) {
       either.fold(
-        (failure) => logWarning(
-          'WorkplaceComposerAttachmentExtension::_createIntent failed: $failure',
-        ),
+        (failure) {
+          logWarning(
+            'WorkplaceComposerAttachmentExtension::_createIntent failed: $failure',
+          );
+          throw failure is FeatureFailure ? failure.exception : WorkplaceCreateIntentException();
+        },
         (success) {
           if (success is CreateWorkplaceIntentSuccess) intent = success.intent;
         },
       );
     }
-    return intent;
+    return intent!;
   }
 
   @override

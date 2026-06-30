@@ -2,5 +2,7 @@
     "addAsLink": "Add as link",
     "@addAsLink": {},
     "addAsAttachment": "Add as attachment",
-    "@addAsAttachment": {}
+    "@addAsAttachment": {},
+    "attachFromDriveFailingMessage": "Unable to attach file(s) from drive",
+    "@attachFromDriveFailingMessage": {}
 }

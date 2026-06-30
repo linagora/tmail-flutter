@@ -1,4 +1,5 @@
 {
     "addAsLink": "إضافة كرابط",
-    "addAsAttachment": "إضافة كمرفق"
+    "addAsAttachment": "إضافة كمرفق",
+    "attachFromDriveFailingMessage": "تعذر إرفاق ملف/ملفات من محرك الأقراص"
 }

@@ -13,7 +13,7 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final Uri workplaceUri;
   final String label;
   final OnPickDriveCallback? onPickCallback;
-  final FetchDriveIntentCallback? onFetchIntent;
+  final FetchDriveIntentCallback onFetchIntent;
 
   const DriveAttachmentContextMenuTile({
     super.key,
@@ -21,8 +21,8 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
     required this.imagePaths,
     required this.workplaceUri,
     required this.label,
+    required this.onFetchIntent,
     this.onPickCallback,
-    this.onFetchIntent,
   });
 
   @override
@@ -40,7 +40,7 @@ abstract class _DriveAttachmentContextMenuTileState
       : _MobileDriveAttachmentContextMenuTileState();
 
   @override
-  FetchDriveIntentCallback? get pickerFetchIntent => widget.onFetchIntent;
+  FetchDriveIntentCallback get pickerFetchIntent => widget.onFetchIntent;
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;

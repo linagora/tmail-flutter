@@ -257,6 +257,34 @@ void main() {
       );
     });
 
+    test('Should send correct POST body fields for intent creation', () async {
+      final adapter = _MockAdapter(intentResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await datasource.createIntent(
+        platformUrl: Uri.parse('https://platform.example.com'),
+        accessToken: 'test-token',
+        addAsLink: 'https://link.url',
+        addAsAttachment: 'https://attach.url',
+      );
+
+      // Normalize through jsonEncode so nested Dart objects are fully serialized
+      final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
+      final data = body['data'] as Map<String, dynamic>;
+      expect(data['type'], equals('io.cozy.intents'));
+
+      final attributes = data['attributes'] as Map<String, dynamic>;
+      expect(attributes['action'], equals('PICK'));
+      expect(attributes['type'], equals('io.cozy.files'));
+      expect(attributes['permissions'], equals(['GET']));
+
+      final actions = attributes['actions'] as List<dynamic>;
+      expect(actions, hasLength(1));
+      final action = actions.first as Map<String, dynamic>;
+      expect(action['sharingLink'], equals('https://link.url'));
+      expect(action['downloadLink'], equals('https://attach.url'));
+    });
+
     test('Should propagate DioException on network error', () async {
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
 
@@ -310,6 +338,20 @@ void main() {
       final segments = adapter.capturedOptions!.uri.pathSegments;
       expect(segments[segments.length - 2], equals('auth'));
       expect(segments.last, equals('token_exchange'));
+    });
+
+    test('Should send correct POST body fields for token exchange', () async {
+      final adapter = _MockAdapter(tokenResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await datasource.exchangeToken(
+        Uri.parse('https://platform.example.com'),
+        'oidc-id-token',
+      );
+
+      final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
+      expect(body['id_token'], equals('oidc-id-token'));
+      expect(body['exchange_type'], equals('app'));
     });
 
     test('Should propagate DioException on network error', () async {

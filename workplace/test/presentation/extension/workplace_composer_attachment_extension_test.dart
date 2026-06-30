@@ -410,7 +410,7 @@ void main() {
           .widget<DriveAttachmentPickerButton>(
             find.byType(DriveAttachmentPickerButton),
           )
-          .onFetchIntent!;
+          .onFetchIntent;
     }
 
     testWidgets('throws StateError when oidcTokenGetter returns null', (tester) async {

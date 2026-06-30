@@ -1,4 +1,5 @@
 {
     "addAsLink": "Aggiungi come collegamento",
-    "addAsAttachment": "Aggiungi come allegato"
+    "addAsAttachment": "Aggiungi come allegato",
+    "attachFromDriveFailingMessage": "Impossibile allegare file da Drive"
 }

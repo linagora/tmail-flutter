@@ -1,4 +1,5 @@
 {
     "addAsLink": "Ajouter comme lien",
-    "addAsAttachment": "Ajouter comme pièce jointe"
+    "addAsAttachment": "Ajouter comme pièce jointe",
+    "attachFromDriveFailingMessage": "Impossible de joindre le(s) fichier(s) depuis Drive"
 }
