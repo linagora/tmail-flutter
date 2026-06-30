@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/generate_email_stat
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -153,6 +154,129 @@ void main() {
         .firstOrNull;
       expect(failure, isNotNull);
       expect(failure!.exception, exception);
+    });
+
+    test(
+      'should propagate the sending context on SendEmailFailure '
+      'when sendEmail throws',
+    () async {
+      // arrange
+      final createEmailRequest = buildCreateEmailRequest();
+      when(emailRepository.sendEmail(
+        any,
+        any,
+        any,
+        mailboxRequest: anyNamed('mailboxRequest'),
+      )).thenThrow(Exception('send failed'));
+
+      // act
+      final states = await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      final failure = states
+        .whereType<Left>()
+        .map((left) => left.value)
+        .whereType<SendEmailFailure>()
+        .first;
+      expect(failure.session, SessionFixtures.aliceSession);
+      expect(failure.accountId, AccountFixtures.aliceAccountId);
+      expect(failure.emailRequest, isNotNull);
+    });
+
+    test(
+      'should emit GenerateEmailFailure and not call sendEmail '
+      'when the email object cannot be created',
+    () async {
+      // arrange
+      final createEmailRequest = buildCreateEmailRequest();
+      when(composerRepository.generateEmail(
+        any,
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      )).thenThrow(Exception('cannot generate email'));
+
+      // act
+      final states = await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      final failure = states
+        .whereType<Left>()
+        .map((left) => left.value)
+        .whereType<GenerateEmailFailure>()
+        .firstOrNull;
+      expect(failure, isNotNull);
+      expect(failure!.exception, isA<CannotCreateEmailObjectException>());
+      verifyNever(emailRepository.sendEmail(
+        any,
+        any,
+        any,
+        mailboxRequest: anyNamed('mailboxRequest'),
+      ));
+    });
+
+    test(
+      'should not delete any draft after sending '
+      'when emailIdDestroyed is not set',
+    () async {
+      // arrange
+      final createEmailRequest = buildCreateEmailRequest();
+      when(emailRepository.sendEmail(
+        any,
+        any,
+        any,
+        mailboxRequest: anyNamed('mailboxRequest'),
+      )).thenAnswer((_) async {});
+
+      // act
+      await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      verifyNever(emailRepository.deleteEmailPermanently(any, any, any));
+    });
+
+    test(
+      'should still emit SendEmailSuccess '
+      'when deleting the old draft fails',
+    () async {
+      // arrange
+      final draftsEmailId = EmailId(Id('draft-email-id'));
+      final createEmailRequest = buildCreateEmailRequest(
+        draftsEmailId: draftsEmailId,
+      );
+      when(emailRepository.sendEmail(
+        any,
+        any,
+        any,
+        mailboxRequest: anyNamed('mailboxRequest'),
+      )).thenAnswer((_) async {});
+      when(emailRepository.deleteEmailPermanently(
+        any,
+        any,
+        any,
+      )).thenThrow(Exception('delete draft failed'));
+
+      // act
+      final states = await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      final successStates = states
+        .whereType<Right>()
+        .map((right) => right.value)
+        .toList();
+      expect(successStates.last, isA<SendEmailSuccess>());
+      verify(emailRepository.deleteEmailPermanently(
+        any,
+        any,
+        draftsEmailId,
+      )).called(1);
     });
 
     test(
