@@ -116,9 +116,14 @@ void main() {
         .whereType<Right>()
         .map((right) => right.value)
         .toList();
-      expect(successStates[0], isA<GenerateEmailLoading>());
-      expect(successStates[1], isA<SendEmailLoading>());
-      expect(successStates.last, isA<SendEmailSuccess>());
+      expect(
+        successStates.map((state) => state.runtimeType).toList(),
+        equals([
+          GenerateEmailLoading,
+          SendEmailLoading,
+          SendEmailSuccess,
+        ]),
+      );
       verify(emailRepository.sendEmail(
         any,
         any,
@@ -271,6 +276,7 @@ void main() {
         .whereType<Right>()
         .map((right) => right.value)
         .toList();
+      expect(states.whereType<Left>(), isEmpty);
       expect(successStates.last, isA<SendEmailSuccess>());
       verify(emailRepository.deleteEmailPermanently(
         any,
