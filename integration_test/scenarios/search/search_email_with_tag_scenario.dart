@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
-  if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
@@ -68,10 +66,4 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     );
   }
 
-}
-
-extension on EmailTileBuilder {
-  bool subjectContains(String text) {
-    return presentationEmail.subject?.contains(text) == true;
-  }
 }
