@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -133,8 +134,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   bool get isAttachmentDraggableAppActive => attachmentDraggableAppState.value == DraggableAppState.active;
 
+  final Rxn<DraggableAppState> _localFileDraggableAppState = Rxn(DraggableAppState.inActive);
   @override
-  Rxn<DraggableAppState> get localFileDraggableAppState => Rxn(DraggableAppState.inActive);
+  Rxn<DraggableAppState> get localFileDraggableAppState => _localFileDraggableAppState;
   @override
   bool get isLocalFileDraggableAppActive => localFileDraggableAppState.value == DraggableAppState.active;
 
@@ -297,6 +299,8 @@ void main() {
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     // Mock Getx controllers
+    // Reset the shared drag state so it does not leak between tests.
+    mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
@@ -1199,6 +1203,51 @@ void main() {
           }
         });
       }
+    });
+
+    group('onLocalFileDropZoneListener test:', () {
+      testWidgets(
+        'Should reset localFileDraggableAppState to inActive\n'
+        'When files are dropped onto the composer drop zone',
+      (tester) async {
+        await tester.runAsync(() async {
+          // arrange
+          mockMailboxDashBoardController.localFileDraggableAppState.value =
+            DraggableAppState.active;
+
+          late BuildContext capturedContext;
+          await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+            child: Builder(builder: (context) {
+              capturedContext = context;
+              return const SizedBox.shrink();
+            }),
+          ));
+          await tester.pump();
+
+          // act
+          // The state is reset synchronously at the very start of the listener,
+          // before any awaited drop processing, so it is already updated right
+          // after the (unawaited) call.
+          composerController?.onLocalFileDropZoneListener(
+            context: capturedContext,
+            details: DropDoneDetails(
+              files: const [],
+              localPosition: Offset.zero,
+              globalPosition: Offset.zero,
+            ),
+            maxWidth: 600,
+          );
+
+          // assert
+          expect(
+            mockMailboxDashBoardController.localFileDraggableAppState.value,
+            DraggableAppState.inActive,
+          );
+
+          // Let the asynchronous drop processing (loading dialog/toast) settle.
+          await tester.pump(const Duration(seconds: 1));
+        });
+      });
     });
   });
 }

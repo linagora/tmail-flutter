@@ -2121,6 +2121,8 @@ class ComposerController extends BaseController
     required DropDoneDetails details,
     required double maxWidth
   }) async {
+    mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+
     _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
 
     final listFileInfo = await onDragDone(context: context, details: details);
