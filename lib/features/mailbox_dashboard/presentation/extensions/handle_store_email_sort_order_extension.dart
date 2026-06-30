@@ -1,6 +1,5 @@
 
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -18,7 +17,7 @@ extension HandleStoreEmailSortOrderExtension on MailboxDashBoardController {
   void setUpDefaultEmailSortOrder(EmailSortOrderType storedSortOrder) {
     log('$runtimeType::setUpDefaultEmailSortOrder: $storedSortOrder');
     currentSortOrder = storedSortOrder;
-    searchController.updateFilterEmail(sortOrderTypeOption: Some(storedSortOrder));
+    searchController.updateSortOrderFilter(storedSortOrder);
     dispatchAction(SynchronizeEmailSortOrderAction(currentSortOrder));
   }
 }

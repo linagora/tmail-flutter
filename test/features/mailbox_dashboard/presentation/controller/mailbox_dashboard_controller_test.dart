@@ -2,11 +2,13 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -612,6 +614,23 @@ void main() {
 
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
       expect(searchController.searchEmailFilter.value.sortOrderType, EmailSortOrderType.oldest);
+    });
+
+    test(
+      'WHEN setUpDefaultEmailSortOrder is called while load-more cursors are set\n'
+      'SHOULD clear before/after/position so restoring the sort order never leaks a stale cursor',
+    () {
+      searchController.updateFilterEmail(
+        beforeOption: Some(UTCDate(DateTime.now())),
+        afterOption: Some(UTCDate(DateTime.now())),
+        positionOption: const Some(20),
+      );
+
+      mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
+
+      expect(searchController.searchEmailFilter.value.before, isNull);
+      expect(searchController.searchEmailFilter.value.after, isNull);
+      expect(searchController.searchEmailFilter.value.position, isNull);
     });
 
     test(
