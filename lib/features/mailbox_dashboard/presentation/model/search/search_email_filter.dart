@@ -120,6 +120,15 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     );
   }
 
+  /// Strips pagination cursors (`position`, `before`, `after`), keeping all user
+  /// intent (incl. `startDate`/`endDate` bounds). Notifiers run full replacements
+  /// through this so a stale cursor can never enter the SSOT (ADR-0093).
+  SearchEmailFilter clearPaginationCursors() => copyWith(
+        positionOption: const None(),
+        beforeOption: const None(),
+        afterOption: const None(),
+      );
+
   Filter? mappingToEmailFilterCondition({
     EmailFilterCondition? moreFilterCondition,
     Set<MailboxId>? trashSpamMailboxIds,
