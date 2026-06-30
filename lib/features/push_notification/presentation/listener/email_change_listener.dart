@@ -322,7 +322,7 @@ class EmailChangeListener extends ChangeListener {
         countNotifications: countNotifications);
     }
 
-    _emailsAvailablePushNotification.clear();
+    _emailsAvailablePushNotification = [];
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {

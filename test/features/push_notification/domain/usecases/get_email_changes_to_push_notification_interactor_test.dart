@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/email_changes_properties.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
@@ -21,15 +21,12 @@ class _FakeFCMRepository implements FCMRepository {
   _FakeFCMRepository(this.emailsResponse);
 
   @override
-    Future<EmailsResponse> getEmailChangesToPushNotification(
+  Future<EmailsResponse> getEmailChangesToPushNotification(
     Session session,
     AccountId accountId,
-    jmap.State currentState,
-    {
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated
-    }
-  ) async =>
+    jmap.State currentState, {
+    EmailChangesProperties? properties,
+  }) async =>
       emailsResponse;
 
   @override
