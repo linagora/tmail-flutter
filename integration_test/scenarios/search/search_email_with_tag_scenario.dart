@@ -42,21 +42,6 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       );
     }
 
-    // Wait for provisioned emails to appear in the inbox.
-    // Check by subject (contains label name) rather than exact label badge text,
-    // since the inbox delivery copy may not carry over custom keywords for badge rendering.
-    if (labels.isNotEmpty) {
-      final firstLabelName = labels.first.safeDisplayName;
-      await waitForCondition(
-        () async => $(EmailTileBuilder)
-            .which<EmailTileBuilder>(
-                (widget) => widget.subjectContains(firstLabelName))
-            .evaluate()
-            .isNotEmpty,
-        timeout: TestTimeouts.long,
-      );
-    }
-
     await searchRobot.tapOnSearchField();
 
     for (final label in labels) {
