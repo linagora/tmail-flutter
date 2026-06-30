@@ -1221,11 +1221,14 @@ void main() {
       'WHEN sort order changes on any filter',
     () {
       // Arrange: snapshotted date bounds set when last7Days was selected
+      // (last7Days.toDateRange() snapshots both bounds, so seed endDate too)
       final snapshotStart = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
+      final snapshotEnd = UTCDate(DateTime.parse('2026-01-17T00:00:00.000Z'));
       searchController.updateFilterEmail(
         sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
         emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
         startDateOption: Some(snapshotStart),
+        endDateOption: Some(snapshotEnd),
       );
 
       // Act
@@ -1235,7 +1238,7 @@ void main() {
       final filter = searchController.searchEmailFilter.value;
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.startDate, equals(snapshotStart));
-      expect(filter.endDate, isNull);
+      expect(filter.endDate, equals(snapshotEnd));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
       expect(filter.position, isNull);
@@ -1347,10 +1350,12 @@ void main() {
       'SHOULD clear the stale before/after cursors AND restart position at 0 '
       'WHEN the sort order is position-based (subjectAscending)',
     () {
-      // Arrange: a stale time cursor lingers from a previous time-based sort
+      // Arrange: stale time cursors (both before and after) linger from a
+      // previous time-based sort
       searchController.updateFilterEmail(
         sortOrderTypeOption: const Some(EmailSortOrderType.subjectAscending),
         beforeOption: Some(UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
         positionOption: const Some(20),
       );
 
