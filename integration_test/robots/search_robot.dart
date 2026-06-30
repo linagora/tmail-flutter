@@ -85,12 +85,27 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
 
   @override
   Future<void> scrollToDateTimeButtonFilter() async {
+    // The horizontal filter list may already be scrolled to its far-right end
+    // (e.g. after reaching the sortBy button). The dateTime button sits to the
+    // left of sortBy, so reset to the start before scrolling right to it,
+    // otherwise the rightward scroll never reaches it.
+    await _resetSearchFilterListScrollToStart();
     await $.scrollUntilVisible(
       finder: $(#mobile_dateTime_search_filter_button),
       view: $(#search_filter_list_view),
       scrollDirection: AxisDirection.right,
       delta: 100,
     );
+  }
+
+  Future<void> _resetSearchFilterListScrollToStart() async {
+    final listViewFinder = find.byKey(const Key('search_filter_list_view'));
+    if (listViewFinder.evaluate().isEmpty) return;
+    final scrollController = $.tester.widget<ListView>(listViewFinder).controller;
+    if (scrollController != null && scrollController.hasClients) {
+      scrollController.jumpTo(0);
+      await $.pumpAndSettle();
+    }
   }
 
   @override
