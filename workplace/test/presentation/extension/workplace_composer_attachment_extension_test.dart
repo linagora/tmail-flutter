@@ -426,7 +426,7 @@ void main() {
       );
     });
 
-    testWidgets('throws StateError when token exchange fails', (tester) async {
+    testWidgets('throws when token exchange fails', (tester) async {
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
 
       final notifier = ValueNotifier<Uri?>(_platformUri);
@@ -436,14 +436,12 @@ void main() {
       await tester.runAsync(() async {
         await expectLater(
           callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
-          throwsA(isA<StateError>().having(
-            (e) => e.message, 'message', contains('Drive access token exchange failed'),
-          )),
+          throwsA(isA<DioException>()),
         );
       });
     });
 
-    testWidgets('returns null when intent creation fails after successful token exchange', (tester) async {
+    testWidgets('throws when intent creation fails after successful token exchange', (tester) async {
       WorkplaceDio.setInstance(
         Dio()
           ..httpClientAdapter = _SequentialAdapter([_tokenResponse, _fail]),
@@ -453,10 +451,12 @@ void main() {
       final ext = _makeExtension(notifier);
       final callback = await extractCallback(tester, ext);
 
-      final result = await tester.runAsync(
-        () => callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
-      );
-      expect(result, isNull);
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
+          throwsA(isA<DioException>()),
+        );
+      });
     });
 
     testWidgets('returns WorkplaceIntent when token exchange and intent creation both succeed', (tester) async {

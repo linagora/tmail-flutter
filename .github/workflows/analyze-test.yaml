@@ -26,6 +26,7 @@ jobs:
           - fcm
           - email_recovery
           - server_settings
+          - workplace
       fail-fast: false
 
     steps:
