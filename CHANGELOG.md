@@ -1,3 +1,12 @@
+## [0.30.0] - 2026-06-30
+### Added
+- Add Mongolian 
+- Drive integration
+
+### Fixed
+- #4538 Hide drop zone overlay after dropping files in composer
+- #4651 Search filter cursor be leak when load more in `oldest` sort
+
 ## [0.29.9] - 2026-06-24
 ### Fixed
 - Load more in search for oldest
