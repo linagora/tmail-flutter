@@ -88,7 +88,7 @@ Because chips read the committed `SearchFilter` (not the draft), editing the adv
 
 ### 2. `SearchEmailFilter` — pagination position removed
 
-`position` is removed from `SearchEmailFilter` entirely (field, constructor, `copyWith`, `props`). It is never user intent — it is always `0` (fresh search) or the current result count (load-more). Keeping it in the SSOT violated the "user intent only" invariant at the type level.
+`position` is removed from `SearchEmailFilter` entirely (field, constructor, `copyWith`, `props`). It is never user intent — it is always `0` (fresh search) or the current result count (load-more). Keeping it in the SSOT violated the "user intent only" invariant at the type level. The field deletion is **sequenced to Step 11** (once Steps 8–9 remove the last readers); from Part 1 onward the invariant is already enforced at runtime — `clearPaginationCursors()` + `set()`/`seedFrom()` keep `position` out of the committed SSOT.
 
 The load-more date cursors `before` (for `mostRecent` sort) and `after` (for `oldest` sort) remain on the model because `mappingToEmailFilterCondition()` reads them to build the JMAP query. They are **set transiently by the executor on a local filter copy** for the request, and are never written to the committed SSOT — see Invariants. (`startDate`/`endDate` are *user-intent date-range bounds* from the receive-time filter, not cursors — they belong in the committed SSOT and are preserved across load-more.) Fully extracting the `before`/`after` cursors into `SearchEmailQueryParams` (so the SSOT carries zero cursor fields) is deferred follow-up work, gated on refactoring `mappingToEmailFilterCondition()`.
 
