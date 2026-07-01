@@ -25,6 +25,12 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   static const String _refreshAttemptedKey = '_authInterceptorRefreshAttempted';
 
+  /// Upper bound for a single token-refresh round-trip. Without it, a refresh
+  /// that stalls (e.g. connectivity dropped mid-refresh) would never settle,
+  /// leaving the enclosing request — such as an attachment upload — hanging
+  /// "in progress" forever with no error surfaced to the user (see #4474).
+  static const Duration _refreshTokenTimeout = Duration(seconds: 30);
+
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
@@ -299,9 +305,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: Perform get New Token',
         webConsoleEnabled: true,
       );
-      final newTokenOidc = PlatformInfo.isIOS
-        ? await _getNewTokenForIOSPlatform()
-        : await _getNewTokenForOtherPlatform();
+      final newTokenOidc = await (PlatformInfo.isIOS
+        ? _getNewTokenForIOSPlatform()
+        : _getNewTokenForOtherPlatform())
+        .timeout(_refreshTokenTimeout);
 
       if (newTokenOidc.token == _token?.token) {
         // Refresh returned the SAME token — retrying cannot clear the 401, so it
@@ -377,6 +384,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           requestOptions: err.requestOptions,
           error: e,
           type: DioExceptionType.connectionError,
+        ),
+        handler,
+      );
+    } on TimeoutException catch (e, st) {
+      // The refresh round-trip stalled past [_refreshTokenTimeout] — typically
+      // connectivity dropped mid-refresh (the "stuck at 99%" upload symptom in
+      // #4474). Surface it as a connection timeout so the session is kept and
+      // the enclosing request (e.g. attachment upload) fails with an error the
+      // user can see, instead of hanging forever.
+      logError(
+        'AuthorizationInterceptors: auth_error_type=token_refresh_timeout | '
+        'will_logout=false — error=$e',
+        exception: e,
+        stackTrace: st,
+      );
+      return super.onError(
+        DioException(
+          requestOptions: err.requestOptions,
+          error: e,
+          type: DioExceptionType.connectionTimeout,
         ),
         handler,
       );

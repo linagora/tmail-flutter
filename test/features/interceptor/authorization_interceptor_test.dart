@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/data/constants/constant.dart';
@@ -952,6 +953,51 @@ void main() {
           throwsA(predicate<DioException>((e) {
             return e.type == DioExceptionType.connectionError &&
                 e.error is PlatformException &&
+                e.response == null;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+  });
+
+  group('onError: refresh times out (connectivity dropped mid-refresh)', () {
+    test(
+      'WHEN the token refresh stalls and times out\n'
+      'THEN propagates as DioException with type=connectionTimeout (no response)\n'
+      'AND OIDC state is NOT cleared (session kept)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(TimeoutException('Refresh timed out'));
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.type == DioExceptionType.connectionTimeout &&
+                e.error is TimeoutException &&
                 e.response == null;
           })),
         );
