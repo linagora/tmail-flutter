@@ -171,10 +171,10 @@ class LoginController extends ReloadableController {
     ) {
       _handleCommonOIDCFailure();
     } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+      _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure());
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -238,10 +238,10 @@ class LoginController extends ReloadableController {
     ) {
       _handleCommonOIDCFailure();
     } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+      _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure());
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
@@ -598,6 +598,15 @@ class LoginController extends ReloadableController {
     } else {
       _showCredentialForm();
     }
+  }
+
+  /// When a SSO setup has been detected but going through the auth web
+  /// redirects failed, we must never fall back to basic auth.
+  ///
+  /// Instead we keep the user on the SSO flow, surface the error and offer a
+  /// retry so they can attempt the redirects again.
+  void _handleSSORedirectFailure() {
+    loginFormType.value = LoginFormType.retry;
   }
 
   Option<Failure> _handleNoSuitableBrowserOIDC(GetTokenOIDCFailure failure) {

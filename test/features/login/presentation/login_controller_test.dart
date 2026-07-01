@@ -253,6 +253,24 @@ void main() {
       expect(loginController.loginFormType.value,
           equals(LoginFormType.baseUrlForm));
     });
+
+    test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
+        'BUT EXCEPTION is not NoSuitableBrowserForOIDCException \n'
+        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = GetTokenOIDCFailure(NotFoundUrlException());
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+      expect(
+        loginController.loginFormType.value,
+        isNot(anyOf(
+          LoginFormType.passwordForm,
+          LoginFormType.credentialForm,
+        )),
+      );
+    });
   });
 
   group('LoginController::handleFailureViewState::', () {
