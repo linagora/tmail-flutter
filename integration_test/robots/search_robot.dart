@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
@@ -99,7 +100,7 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   }
 
   Future<void> _resetSearchFilterListScrollToStart() async {
-    final listViewFinder = find.byKey(const Key('search_filter_list_view'));
+    final listViewFinder = find.byKey(const Key(UiKeys.searchFilterListView));
     if (listViewFinder.evaluate().isEmpty) return;
     final scrollController = $.tester.widget<ListView>(listViewFinder).controller;
     if (scrollController != null && scrollController.hasClients) {

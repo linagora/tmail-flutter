@@ -14,6 +14,7 @@ class UiKeys {
   static const String saveDraftPopupItem = 'save_as_draft_popup_item';
   static const String emptyThreadView = 'empty_thread_view';
   static const String emptySearchEmailView = 'empty_search_email_view';
+  static const String searchFilterListView = 'search_filter_list_view';
 
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
