@@ -8,7 +8,6 @@ import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -271,7 +270,6 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
       Get.find<StoreEmailSortOrderInteractor>(),
       Get.find<GetStoredEmailSortOrderInteractor>(),
     ));
-    Get.put<UrgentExceptionHandler>(Get.find<MailboxDashBoardController>());
     Get.put(AdvancedFilterController());
   }
 

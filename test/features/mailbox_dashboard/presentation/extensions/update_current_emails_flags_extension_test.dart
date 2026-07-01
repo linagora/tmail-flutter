@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -20,133 +21,139 @@ void main() {
   late List<EmailId> emailIds;
   final mailboxDashBoardController = MockMailboxDashBoardController();
 
+  /// Stubs `emailsInCurrentMailbox` with one email per id, each seeded with its
+  /// own copy of [keywords] (independent maps so in-place flag updates on one
+  /// email never leak into another).
+  void stubEmails([Map<KeyWordIdentifier, bool> keywords = const {}]) {
+    when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
+      emailIds
+          .map((emailId) => PresentationEmail(id: emailId, keywords: {...keywords}))
+          .toList()
+          .obs,
+    );
+  }
+
+  /// Asserts [flag] evaluated over the current list emails equals [expected],
+  /// position by position.
+  void expectFlagPerEmail(
+    bool Function(PresentationEmail email) flag,
+    List<bool> expected,
+  ) {
+    final actual =
+        mailboxDashBoardController.emailsInCurrentMailbox.map(flag).toList();
+    expect(actual, expected);
+  }
+
+  void dismissWarning(EmailId emailId, {int index = 0, bool dismissed = true}) {
+    mailboxDashBoardController.updateEmailTwpWarningDismissed(
+      emailId,
+      index,
+      dismissed: dismissed,
+    );
+  }
+
   setUp(() {
     emailIds = List.generate(
       numberOfEmails,
       (index) => EmailId(Id('email-id-$index')),
     );
-    when(mailboxDashBoardController.dashboardRoute).thenReturn(DashboardRoutes.thread.obs);
+    when(mailboxDashBoardController.dashboardRoute)
+        .thenReturn(DashboardRoutes.thread.obs);
   });
 
   group('updateEmailFlagByEmailIds test:', () {
-    test(
-      'should mark emails as read',
-    () {
-      // arrange
-      final readEmailIds = emailIds.sublist(1);
-      when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
-        emailIds.map((emailId) => PresentationEmail(
-          id: emailId,
-          keywords: {},
-        )).toList().obs,
-      );
-      expect(
-        mailboxDashBoardController.emailsInCurrentMailbox.every(
-          (presentationEmail) => !presentationEmail.hasRead,
-        ),
-        true,
-      );
-      
-      // act
+    test('should mark emails as read', () {
+      stubEmails();
+
       mailboxDashBoardController.updateEmailFlagByEmailIds(
-        readEmailIds,
+        emailIds.sublist(1),
         readAction: ReadActions.markAsRead,
       );
-      
-      // assert
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[0].hasRead, false);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[1].hasRead, true);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[2].hasRead, true);
+
+      expectFlagPerEmail((email) => email.hasRead, [false, true, true]);
     });
 
-    test(
-      'should mark emails as unread',
-    () {
-      // arrange
-      final unreadEmailIds = emailIds.sublist(1);
-      when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
-        emailIds.map((emailId) => PresentationEmail(
-          id: emailId,
-          keywords: {KeyWordIdentifier.emailSeen: true},
-        )).toList().obs,
-      );
-      expect(
-        mailboxDashBoardController.emailsInCurrentMailbox.every(
-          (presentationEmail) => presentationEmail.hasRead,
-        ),
-        true,
-      );
-      
-      // act
+    test('should mark emails as unread', () {
+      stubEmails({KeyWordIdentifier.emailSeen: true});
+
       mailboxDashBoardController.updateEmailFlagByEmailIds(
-        unreadEmailIds,
+        emailIds.sublist(1),
         readAction: ReadActions.markAsUnread,
       );
-      
-      // assert
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[0].hasRead, true);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[1].hasRead, false);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[2].hasRead, false);
+
+      expectFlagPerEmail((email) => email.hasRead, [true, false, false]);
     });
 
-    test(
-      'should mark emails as starred',
-    () {
-      // arrange
-      final starredEmailIds = emailIds.sublist(1);
-      when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
-        emailIds.map((emailId) => PresentationEmail(
-          id: emailId,
-          keywords: {},
-        )).toList().obs,
-      );
-      expect(
-        mailboxDashBoardController.emailsInCurrentMailbox.every(
-          (presentationEmail) => !presentationEmail.hasStarred,
-        ),
-        true,
-      );
-      
-      // act
+    test('should mark emails as starred', () {
+      stubEmails();
+
       mailboxDashBoardController.updateEmailFlagByEmailIds(
-        starredEmailIds,
+        emailIds.sublist(1),
         markStarAction: MarkStarAction.markStar,
       );
-      
-      // assert
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[0].hasStarred, false);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[1].hasStarred, true);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[2].hasStarred, true);
+
+      expectFlagPerEmail((email) => email.hasStarred, [false, true, true]);
     });
 
-    test(
-      'should mark emails as unstarred',
-    () {
-      // arrange
-      final unstarredEmailIds = emailIds.sublist(1);
-      when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
-        emailIds.map((emailId) => PresentationEmail(
-          id: emailId,
-          keywords: {KeyWordIdentifier.emailFlagged: true},
-        )).toList().obs,
-      );
-      expect(
-        mailboxDashBoardController.emailsInCurrentMailbox.every(
-          (presentationEmail) => presentationEmail.hasStarred,
-        ),
-        true,
-      );
-      
-      // act
+    test('should mark emails as unstarred', () {
+      stubEmails({KeyWordIdentifier.emailFlagged: true});
+
       mailboxDashBoardController.updateEmailFlagByEmailIds(
-        unstarredEmailIds,
+        emailIds.sublist(1),
         markStarAction: MarkStarAction.unMarkStar,
       );
-      
-      // assert
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[0].hasStarred, true);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[1].hasStarred, false);
-      expect(mailboxDashBoardController.emailsInCurrentMailbox[2].hasStarred, false);
+
+      expectFlagPerEmail((email) => email.hasStarred, [true, false, false]);
+    });
+  });
+
+  group('updateEmailTwpWarningDismissed test:', () {
+    test('should add the dismissed keyword to the matching list email', () {
+      stubEmails();
+
+      dismissWarning(emailIds[1]);
+
+      expectFlagPerEmail(
+        (email) => email.isTwpWarningDismissed(0),
+        [false, true, false],
+      );
+    });
+
+    test('should remove the dismissed keyword when dismissed is false', () {
+      stubEmails({KeyWordIdentifierExtension.twpWarningDismissed(0): true});
+
+      dismissWarning(emailIds[1], dismissed: false);
+
+      expectFlagPerEmail(
+        (email) => email.isTwpWarningDismissed(0),
+        [true, false, true],
+      );
+    });
+
+    test('should keep other warning indexes untouched', () {
+      stubEmails({KeyWordIdentifierExtension.twpWarningDismissed(1): true});
+
+      dismissWarning(emailIds[1]);
+
+      expectFlagPerEmail(
+        (email) => email.isTwpWarningDismissed(0),
+        [false, true, false],
+      );
+      expectFlagPerEmail(
+        (email) => email.isTwpWarningDismissed(1),
+        [true, true, true],
+      );
+    });
+
+    test('should do nothing when no list email matches the id', () {
+      stubEmails();
+
+      dismissWarning(EmailId(Id('not-in-list')));
+
+      expectFlagPerEmail(
+        (email) => email.isTwpWarningDismissed(0),
+        [false, false, false],
+      );
     });
   });
 }

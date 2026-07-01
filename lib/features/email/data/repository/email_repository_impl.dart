@@ -467,6 +467,11 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index) {
+    return emailDataSource[DataSourceType.network]!.dismissTwpWarning(session, accountId, emailId, index);
+  }
+
+  @override
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
     return emailDataSource[DataSourceType.network]!.restoreDeletedMessage(restoredDeletedMessageRequest);
   }

@@ -141,6 +141,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
 
   bool get isSubscribed => keywords?.containsKey(KeyWordIdentifierExtension.unsubscribeMail) == true;
 
+  bool isTwpWarningDismissed(int index) =>
+      keywords?.containsKey(KeyWordIdentifierExtension.twpWarningDismissed(index)) == true;
+
   bool get hasNeedAction =>
       keywords?.containsKey(KeyWordIdentifierExtension.needsActionMail) == true;
 

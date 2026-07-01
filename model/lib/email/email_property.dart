@@ -26,4 +26,5 @@ class EmailProperty {
   static const String headerUnsubscribeKey = 'List-Unsubscribe';
   static const String headerSMimeStatusKey = 'X-SMIME-Status';
   static const String headerListPostKey = 'List-Post';
+  static const String headerTwpMessageKey = 'X-TWP-Message';
 }

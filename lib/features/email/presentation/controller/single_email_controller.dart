@@ -845,21 +845,29 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    final newKeywords = {
-      KeyWordIdentifier.emailFlagged:
-        success.markStarAction == MarkStarAction.markStar,
-    };
-
+  /// Mirrors [newKeywords] onto the in-memory current email (no refetch): on
+  /// mobile non-thread-detail the dashboard's `selectedEmail` is resynced in
+  /// place; otherwise the thread-detail map is updated. Returns the affected
+  /// [EmailId], or `null` when there is no current email.
+  EmailId? _syncKeywordsToCurrentEmail(Map<KeyWordIdentifier, bool> newKeywords) {
     final newEmail = currentEmail?.updateKeywords(newKeywords);
     final emailId = newEmail?.id;
-    if (emailId == null) return;
+    if (emailId == null) return null;
 
     if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
       mailboxDashBoardController.selectedEmail.value?.resyncKeywords(newKeywords);
     } else {
       _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
     }
+    return emailId;
+  }
+
+  void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
+    final emailId = _syncKeywordsToCurrentEmail({
+      KeyWordIdentifier.emailFlagged:
+          success.markStarAction == MarkStarAction.markStar,
+    });
+    if (emailId == null) return;
 
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
@@ -867,6 +875,36 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
 
     toastManager.showMessageSuccess(success);
+  }
+
+  bool get isNetworkConnectionAvailable =>
+      mailboxDashBoardController.networkConnectionController.isNetworkConnectionAvailable();
+
+  /// Optimistically mirrors the `X-TWP-Message` dismissal for [index] onto the
+  /// in-memory email — both the open view and the mailbox list — so the banner
+  /// hides immediately and stays hidden on reopen. Called by
+  /// `TwpWarningBannerList`; reverted by [clearTwpWarningDismissedLocally] if the
+  /// backend persist fails. The transient dismissed set itself lives in the
+  /// Riverpod `TwpWarningDismiss` notifier.
+  void markTwpWarningDismissedLocally(int index) =>
+      _applyTwpWarningDismissedKeyword(index, dismissed: true);
+
+  /// Reverts [markTwpWarningDismissedLocally] on persist failure so the banner
+  /// reappears.
+  void clearTwpWarningDismissedLocally(int index) =>
+      _applyTwpWarningDismissedKeyword(index, dismissed: false);
+
+  void _applyTwpWarningDismissedKeyword(int index, {required bool dismissed}) {
+    final emailId = _syncKeywordsToCurrentEmail({
+      KeyWordIdentifierExtension.twpWarningDismissed(index): dismissed,
+    });
+    if (emailId == null) return;
+
+    mailboxDashBoardController.updateEmailTwpWarningDismissed(
+      emailId,
+      index,
+      dismissed: dismissed,
+    );
   }
 
   void handleEmailAction(

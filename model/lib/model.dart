@@ -19,6 +19,8 @@ export 'email/email_action_type.dart';
 export 'email/email_content.dart';
 export 'email/email_content_type.dart';
 export 'email/email_property.dart';
+export 'email/twp_warning/twp_warning.dart';
+export 'email/twp_warning/twp_warning_level.dart';
 export 'email/mark_star_action.dart';
 export 'email/prefix_email_address.dart';
 // Email

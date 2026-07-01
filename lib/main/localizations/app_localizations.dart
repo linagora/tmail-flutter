@@ -2746,6 +2746,27 @@ class AppLocalizations {
     );
   }
 
+  String get twpWarningSuspiciousSender {
+    return Intl.message(
+      'This email is from an external sender immitating known users, double check the mail address.',
+      name: 'twpWarningSuspiciousSender',
+    );
+  }
+
+  String get twpWarningVirus {
+    return Intl.message(
+      'This email is having virus in its attachments!',
+      name: 'twpWarningVirus',
+    );
+  }
+
+  String get twpWarningVirusRemoved {
+    return Intl.message(
+      'This email was having virus in its attachment, that we removed for your security.',
+      name: 'twpWarningVirusRemoved',
+    );
+  }
+
   String get disableSpamReport {
     return Intl.message(
       'Disable Spam report',
