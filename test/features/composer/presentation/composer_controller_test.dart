@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:workplace/domain/usecases/download_drive_file_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -208,6 +209,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
+  MockSpec<DownloadDriveFileInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),

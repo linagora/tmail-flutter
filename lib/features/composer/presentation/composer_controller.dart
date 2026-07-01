@@ -1012,6 +1012,7 @@ class ComposerController extends BaseController
             htmlEditorApi?.insertHtml(html);
           }
         },
+        uploadFiles: uploadAttachmentsAction,
       );
     } catch (e) {
       logWarning('ComposerController::handleDrivePickResult:Exception = $e');

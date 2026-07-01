@@ -76,6 +76,11 @@ import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.da
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workplace/data/datasource/drive_file_datasource.dart';
+import 'package:workplace/data/datasource_impl/drive_file_datasource_impl.dart';
+import 'package:workplace/data/repository_impl/drive_file_repository_impl.dart';
+import 'package:workplace/domain/repository/drive_file_repository.dart';
+import 'package:workplace/domain/usecases/download_drive_file_interactor.dart';
 
 abstract class ComposerBindings extends BaseBindings {
 
@@ -174,6 +179,7 @@ abstract class ComposerBindings extends BaseBindings {
       Get.find<SessionStorageManager>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
+    Get.lazyPut(() => DriveFileDatasourceImpl(), tag: composerId);
     bindPlatformCacheDatasourceImpl();
   }
 
@@ -211,6 +217,10 @@ abstract class ComposerBindings extends BaseBindings {
       () => Get.find<PrintFileDataSourceImpl>(tag: composerId),
       tag: composerId,
     );
+    Get.lazyPut<DriveFileDatasource>(
+      () => Get.find<DriveFileDatasourceImpl>(tag: composerId),
+      tag: composerId,
+    );
     bindPlatformComposerCacheDatasource();
   }
 
@@ -237,6 +247,10 @@ abstract class ComposerBindings extends BaseBindings {
       },
       Get.find<StateDataSource>(tag: composerId),
     ), tag: composerId);
+    Get.lazyPut(
+      () => DriveFileRepositoryImpl(Get.find<DriveFileDatasource>(tag: composerId)),
+      tag: composerId,
+    );
     Get.lazyPut(() => EmailRepositoryImpl(
       {
         DataSourceType.network: Get.find<EmailDataSource>(tag: composerId),
@@ -270,6 +284,10 @@ abstract class ComposerBindings extends BaseBindings {
     );
     Get.lazyPut<EmailRepository>(
       () => Get.find<EmailRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<DriveFileRepository>(
+      () => Get.find<DriveFileRepositoryImpl>(tag: composerId),
       tag: composerId,
     );
   }
@@ -340,16 +358,23 @@ abstract class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<EmailRepository>(tag: composerId),
     ), tag: composerId);
+    Get.lazyPut(
+      () => DownloadDriveFileInteractor(Get.find<DriveFileRepository>(tag: composerId)),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => const DriveAttachmentHandler(), tag: composerId);
     bindPlatformRichTextController();
     Get.lazyPut(
       () => UploadController(Get.find<UploadAttachmentInteractor>(tag: composerId)),
       tag: composerId,
     );
+    Get.lazyPut(() => DriveAttachmentHandler(
+      uploadController: Get.find<UploadController>(tag: composerId),
+      downloadDriveFileInteractor: Get.find<DownloadDriveFileInteractor>(tag: composerId),
+    ), tag: composerId);
     Get.lazyPut(() => ComposerController(
       Get.find<LocalFilePickerInteractor>(tag: composerId),
       Get.find<LocalImagePickerInteractor>(tag: composerId),
@@ -428,6 +453,11 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<HtmlEmailTransformerAdapter>(tag: composerId);
     Get.delete<PrintEmailInteractor>(tag: composerId);
     Get.delete<SaveTemplateEmailInteractor>(tag: composerId);
+    Get.delete<DownloadDriveFileInteractor>(tag: composerId);
+    Get.delete<DriveFileDatasourceImpl>(tag: composerId);
+    Get.delete<DriveFileDatasource>(tag: composerId);
+    Get.delete<DriveFileRepositoryImpl>(tag: composerId);
+    Get.delete<DriveFileRepository>(tag: composerId);
 
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();
