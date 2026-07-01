@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/composer_attachment_extension_registry.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -19,6 +20,11 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
       workplaceUri: uriNotifier,
       oidcTokenGetter: () => getBinding<AuthorizationInterceptors>()?.currentOidcIdToken,
       onPickState: (composerId, state) {
+        if (state is DrivePickLoading && !SmartDialog.checkExist()) {
+          SmartDialog.showLoading();
+        } else if (SmartDialog.checkExist()) {
+          SmartDialog.dismiss();
+        }
         if (state is DrivePickResult) {
           try {
             getBinding<ComposerController>(tag: composerId)?.handleDrivePickResult(state.documents);

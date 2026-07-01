@@ -36,6 +36,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     final fetch = pickerFetchIntent;
     _modalOpen = true;
     try {
+      pickerOnCallback?.call(DrivePickLoading());
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLinkTitle: l10n.addAsLink,
@@ -44,6 +45,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       if (!mounted) {
         throw WorkplaceUIDisposedException();
       }
+      pickerOnCallback?.call(DrivePickDisplaying());
       final result = await showDialog<List<DriveDocument>?>(
         context: context,
         builder: (_) => DriveIntentWebViewModal(

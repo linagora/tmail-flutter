@@ -6,6 +6,16 @@ import 'package:workplace/domain/entity/drive_document.dart';
 
 sealed class DrivePickState extends Equatable {}
 
+final class DrivePickLoading extends DrivePickState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class DrivePickDisplaying extends DrivePickState {
+  @override
+  List<Object?> get props => [];
+}
+
 final class DrivePickResult extends DrivePickState {
   final List<DriveDocument> documents;
   DrivePickResult(this.documents);
