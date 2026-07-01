@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
@@ -85,12 +86,27 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
 
   @override
   Future<void> scrollToDateTimeButtonFilter() async {
+    // The horizontal filter list may already be scrolled to its far-right end
+    // (e.g. after reaching the sortBy button). The dateTime button sits to the
+    // left of sortBy, so reset to the start before scrolling right to it,
+    // otherwise the rightward scroll never reaches it.
+    await _resetSearchFilterListScrollToStart();
     await $.scrollUntilVisible(
       finder: $(#mobile_dateTime_search_filter_button),
       view: $(#search_filter_list_view),
       scrollDirection: AxisDirection.right,
       delta: 100,
     );
+  }
+
+  Future<void> _resetSearchFilterListScrollToStart() async {
+    final listViewFinder = find.byKey(const Key(UiKeys.searchFilterListView));
+    if (listViewFinder.evaluate().isEmpty) return;
+    final scrollController = $.tester.widget<ListView>(listViewFinder).controller;
+    if (scrollController != null && scrollController.hasClients) {
+      scrollController.jumpTo(0);
+      await $.pumpAndSettle();
+    }
   }
 
   @override

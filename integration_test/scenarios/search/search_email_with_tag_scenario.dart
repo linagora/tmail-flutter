@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
-  if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
@@ -42,21 +40,6 @@ class SearchEmailWithTagScenario extends BaseTestScenario
       );
     }
 
-    // Wait for provisioned emails to appear in the inbox.
-    // Check by subject (contains label name) rather than exact label badge text,
-    // since the inbox delivery copy may not carry over custom keywords for badge rendering.
-    if (labels.isNotEmpty) {
-      final firstLabelName = labels.first.safeDisplayName;
-      await waitForCondition(
-        () async => $(EmailTileBuilder)
-            .which<EmailTileBuilder>(
-                (widget) => widget.subjectContains(firstLabelName))
-            .evaluate()
-            .isNotEmpty,
-        timeout: TestTimeouts.long,
-      );
-    }
-
     await searchRobot.tapOnSearchField();
 
     for (final label in labels) {
@@ -83,10 +66,4 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     );
   }
 
-}
-
-extension on EmailTileBuilder {
-  bool subjectContains(String text) {
-    return presentationEmail.subject?.contains(text) == true;
-  }
 }

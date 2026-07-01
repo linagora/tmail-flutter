@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
@@ -280,7 +281,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     .mailboxDashBoardController.labelController.labels;
 
                 return ListView(
-                  key: const Key('search_filter_list_view'),
+                  key: const Key(UiKeys.searchFilterListView),
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   controller: controller.listSearchFilterScrollController,
