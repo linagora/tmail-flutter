@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interact
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
@@ -261,6 +262,90 @@ void main() {
       loginController.loginFormType.value = LoginFormType.dnsLookupForm;
       final failure = GetTokenOIDCFailure(NotFoundUrlException());
       loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+      expect(
+        loginController.loginFormType.value,
+        isNot(anyOf(
+          LoginFormType.passwordForm,
+          LoginFormType.credentialForm,
+        )),
+      );
+    });
+  });
+
+  group('Test handleFailureViewState with AuthenticateOidcOnBrowserFailure', () {
+    test('WHEN handleFailureViewState is called with AuthenticateOidcOnBrowserFailure \n'
+        'AND featureFailure is null (normal web login flow) \n'
+        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = AuthenticateOidcOnBrowserFailure(Exception());
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+      expect(
+        loginController.loginFormType.value,
+        isNot(anyOf(
+          LoginFormType.passwordForm,
+          LoginFormType.credentialForm,
+        )),
+      );
+    });
+
+    test('WHEN handleFailureViewState is called with AuthenticateOidcOnBrowserFailure \n'
+        'AND featureFailure is not null (OIDC discovery fallback flow) \n'
+        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+
+      loginController.onBaseUrlChange('https://example.com');
+      loginController.handleFailureViewState(
+        CheckOIDCIsAvailableFailure(CanNotFoundOIDCLinks()),
+      );
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = AuthenticateOidcOnBrowserFailure(Exception());
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+      expect(
+        loginController.loginFormType.value,
+        isNot(anyOf(
+          LoginFormType.passwordForm,
+          LoginFormType.credentialForm,
+        )),
+      );
+    });
+  });
+
+  group('Test handleUrgentException with AuthenticateOidcOnBrowserFailure', () {
+    test('WHEN handleUrgentException is called with AuthenticateOidcOnBrowserFailure \n'
+        'AND featureFailure is null (normal web login flow) \n'
+        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = AuthenticateOidcOnBrowserFailure(Exception());
+      loginController.handleUrgentException(failure: failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+      expect(
+        loginController.loginFormType.value,
+        isNot(anyOf(
+          LoginFormType.passwordForm,
+          LoginFormType.credentialForm,
+        )),
+      );
+    });
+
+    test('WHEN handleUrgentException is called with AuthenticateOidcOnBrowserFailure \n'
+        'AND featureFailure is not null (OIDC discovery fallback flow) \n'
+        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+
+      loginController.onBaseUrlChange('https://example.com');
+      loginController.handleUrgentException(
+        failure: CheckOIDCIsAvailableFailure(CanNotFoundOIDCLinks()),
+      );
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = AuthenticateOidcOnBrowserFailure(Exception());
+      loginController.handleUrgentException(failure: failure);
 
       expect(loginController.loginFormType.value, equals(LoginFormType.retry));
       expect(

@@ -170,7 +170,7 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
       _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
@@ -237,7 +237,7 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
       _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
