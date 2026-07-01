@@ -1,4 +1,4 @@
-# 92. External Drive File Picker Integration via Intent Protocol
+# 95. External Drive File Picker Integration via Intent Protocol
 
 Date: 2026-05-29
 
@@ -131,13 +131,13 @@ Reject any intent URL where `intentUrl.scheme != 'https'`.
 
 ### Step 4 — Render Intent URL
 
-Specified in detail in **[ADR-0094](0094-render-intent-url-in-webview-modal.md)**.
+Specified in detail in **[ADR-0097](0097-render-intent-url-in-webview-modal.md)**.
 
 Summary: `DriveIntentWebViewModal` is used across all platforms via `showDialog`. Platform split via Dart conditional export: mobile variant uses `InAppWebView`, web variant uses `HtmlIframeWidget` (from `package:core`). A shared `DriveIntentWebViewModalShell` provides the close button (X). A unique `intentId` guards lifecycle.
 
 ### Step 5 — postMessage Handshake
 
-Specified in detail in **[ADR-0093](0093-postmessage-handshake-for-drive-intent-webview.md)**.
+Specified in detail in **[ADR-0096](0096-postmessage-handshake-for-drive-intent-webview.md)**.
 
 Summary:
 - Mobile/tablet: inject a `window.parent` shim via `UserScript` at `AT_DOCUMENT_START` (see `DriveIntentShims.parentPostMessageShim`) to route `postMessage` calls to Flutter via `callHandler('driveIntentMessage', ...)`. Reply by dispatching a `MessageEvent` into the window via `evaluateJavascript`.

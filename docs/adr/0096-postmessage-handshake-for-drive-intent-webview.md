@@ -1,4 +1,4 @@
-# 93. postMessage Handshake for Drive Intent WebView
+# 96. postMessage Handshake for Drive Intent WebView
 
 Date: 2026-05-29
 
@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-Step 5 of [ADR-0092](0092-external-drive-file-picker-integration.md). Bidirectional `postMessage` handshake between the drive app (in WebView) and Flutter host.
+Step 5 of [ADR-0095](0095-external-drive-file-picker-integration.md). Bidirectional `postMessage` handshake between the drive app (in WebView) and Flutter host.
 
 Platform split: on **mobile/tablet** `window.parent === window` (native WebView, no cross-frame boundary) — a shim is required. On **web** Flutter's `HtmlIframeWidget` renders an `<iframe>` — standard cross-frame `postMessage` applies, no shim.
 
@@ -245,7 +245,7 @@ final class WorkplaceIntentDoneMessage extends WorkplaceIntentMessage {
 }
 ```
 
-`DriveDocument` mirrors the `done` payload schema from ADR-0092 §8.
+`DriveDocument` mirrors the `done` payload schema from ADR-0095 §8.
 
 ### 5. Shared Message Handler — `DriveIntentMessageHandlerMixin`
 
@@ -317,7 +317,7 @@ Parse failures are caught and logged — not rethrown — because a single malfo
 | targetOrigin on send | Always `_intentOrigin`, except for data: URIs where `'*'` is required because the opaque origin cannot be specified as target. |
 | JSON boundary | Always `jsonDecode`; catch and drop on malformed input. |
 | URL scheme on parse | Non-http(s) links in `done` payload are dropped at parse time. |
-| HTTPS | Intent URLs enforced `https://` before WebView load (ADR-0092 §3). |
+| HTTPS | Intent URLs enforced `https://` before WebView load (ADR-0095 §3). |
 
 ### 7. Timeout & Cleanup
 
