@@ -90,7 +90,7 @@ Because chips read the committed `SearchFilter` (not the draft), editing the adv
 
 `position` is removed from `SearchEmailFilter` entirely (field, constructor, `copyWith`, `props`). It is never user intent — it is always `0` (fresh search) or the current result count (load-more). Keeping it in the SSOT violated the "user intent only" invariant at the type level.
 
-`before` / `startDate` remain on the model because `mappingToEmailFilterCondition()` reads them to build the JMAP query. They are **set transiently by the executor on a local filter copy** for the request, and are never written to the committed SSOT — see Invariants. Fully extracting them into `SearchEmailQueryParams` (so the SSOT carries zero cursor fields) is deferred follow-up work, gated on refactoring `mappingToEmailFilterCondition()`.
+The load-more date cursors `before` (for `mostRecent` sort) and `after` (for `oldest` sort) remain on the model because `mappingToEmailFilterCondition()` reads them to build the JMAP query. They are **set transiently by the executor on a local filter copy** for the request, and are never written to the committed SSOT — see Invariants. (`startDate`/`endDate` are *user-intent date-range bounds* from the receive-time filter, not cursors — they belong in the committed SSOT and are preserved across load-more.) Fully extracting the `before`/`after` cursors into `SearchEmailQueryParams` (so the SSOT carries zero cursor fields) is deferred follow-up work, gated on refactoring `mappingToEmailFilterCondition()`.
 
 ### 3. `SearchEmailNotifier` — centralized executor (intent + query params)
 
@@ -160,8 +160,9 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   // First-match: most-specific guard first, catch-all last.
   // Extend by adding a class + one ordered entry — no existing strategy is modified.
   static const _strategies = <SearchPaginationStrategy>[
+    CollapsedThreadLoadMoreStrategy(), // loadMore + collapseThreads → position = currentCount
     PositionLoadMoreStrategy(),   // loadMore + position-sort → position = currentCount
-    DateLoadMoreStrategy(),       // loadMore + date-sort → before XOR startDate
+    DateLoadMoreStrategy(),       // loadMore + date-sort → before XOR after
     FreshSearchStrategy(),        // new/refresh (catch-all) → clear cursors, position per sortOrder
   ];
 
@@ -170,7 +171,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
 
   Future<void> execute(SearchExecutionIntent intent) async {
     final ctx = SearchExecutionContext(intent: intent,
-        committed: ref.read(searchFilterNotifierProvider), ...); // committed only, never draft
+        committed: ref.read(searchFilterProvider), ...); // committed only, never draft
     var spec = SearchRequestSpec.base(ctx);                      // filter = copy of committed
     spec = _strategies.firstWhere((s) => s.appliesTo(ctx)).apply(spec, ctx);
     final params = SearchEmailQueryParams.from(spec, ctx);       // filter→condition mapping here
@@ -185,7 +186,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
 
 **Why first-match, not a fold.** A fold makes order mean "precedence over overlapping writes," which forces every contributor to reason about which fields other strategies touch. First-match over *total* strategies makes the contract trivial: each strategy fully owns the outcome for the contexts it matches, and only those. Adding a strategy cannot change the result for any context outside its guard, regardless of where it sits — `firstWhere` simply skips it there.
 
-**Adding a rule is closed-for-modification.** Example — `collapseThreads` forces position-based load-more even on a date sort. Add at the **top** (most specific):
+**Adding a rule is closed-for-modification.** The baseline `CollapsedThreadLoadMoreStrategy` — `collapseThreads` forces position-based load-more even on a date sort — is the canonical illustration. It sits at the **top** (most specific):
 
 ```dart
 class CollapsedThreadLoadMoreStrategy implements SearchPaginationStrategy {
@@ -197,12 +198,12 @@ class CollapsedThreadLoadMoreStrategy implements SearchPaginationStrategy {
   SearchRequestSpec apply(SearchRequestSpec spec, SearchExecutionContext ctx) =>
       spec.copyWith(
         positionOption: Some((ctx.intent as LoadMoreIntent).currentCount),
-        filter: spec.filter.copyWith(beforeOption: const None(), startDateOption: const None()),
+        filter: spec.filter.copyWith(beforeOption: const None(), afterOption: const None()),
       );
 }
 ```
 
-Shipping it: add the class + one ordered entry. When `collapseThreads` is off the guard fails and the existing `PositionLoadMoreStrategy` / `DateLoadMoreStrategy` resolve exactly as before — existing strategy tests stay green; the new strategy gets its own isolated test. The catch-all `FreshSearchStrategy` (`appliesTo => true`) must remain last.
+The same shape generalises to any future rule: add the class + one ordered entry. When `collapseThreads` is off the guard fails and the `PositionLoadMoreStrategy` / `DateLoadMoreStrategy` resolve exactly as if it were absent — existing strategy tests stay green; each strategy gets its own isolated test. The catch-all `FreshSearchStrategy` (`appliesTo => true`) must remain last.
 
 **`FilterMessageOption` mapping is a different category — SSOT-mutating, not pagination.** It must persist so chips/form reflect it, so it is applied to the committed SSOT *before* `execute` (via `notifier.set(...)` at the inbox call site), then restored on search exit via `restoreFilterMessageOption()`. It is not a `SearchPaginationStrategy`. If genuinely *additive* (independently stacking) request rules ever appear that are not pagination, a separate fold stage can be introduced then — out of scope here.
 
@@ -212,7 +213,7 @@ Location: `lib/features/search/email/domain/notifier/search_email_notifier.dart`
 
 - `SearchEmailFilter.copyWith()` on the committed/draft state is called only inside `SearchFilterNotifier` and `SearchFilterDraftNotifier`. Pagination strategies call `copyWith` only on the transient `SearchRequestSpec.filter` copy. No controller or widget calls it directly.
 - `SearchEmailFilter.position` does not exist — pagination position cannot be written to the SSOT (type-enforced). `position` lives only on the transient `SearchRequestSpec`, set by the resolved strategy.
-- Pagination cursors (`before`, `startDate`) are never written to the committed SSOT. The resolved strategy sets them on the transient `SearchRequestSpec.filter` copy only.
+- Load-more date cursors (`before`, `after`) are never written to the committed SSOT. The resolved strategy sets them on the transient `SearchRequestSpec.filter` copy only. (`startDate`/`endDate` are user-intent bounds and *do* live in the committed SSOT.)
 - The committed `SearchFilterNotifier` is the only state read by `SearchEmailNotifier`. The draft (`SearchFilterDraftNotifier`) is never read by the executor.
 - `search ⊆ draft` while an input surface is active; chip operations write committed directly and the draft re-seeds on next open; commit is one-directional `draft → search`.
 - New "which search" variant → new `SearchExecutionIntent` subclass + `switch` branch. New pagination rule → new `SearchPaginationStrategy` + one ordered entry (first-match: only its matching contexts are affected). Neither modifies an existing intent, strategy, controller, or the filter model (OCP on both axes).
