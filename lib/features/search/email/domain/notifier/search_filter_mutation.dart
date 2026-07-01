@@ -65,16 +65,21 @@ mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
   /// Adds/removes one address in `from`/`to` — encapsulates the read-set →
   /// mutate → pass-whole-set-back dance so no call site owns it.
   void addSender(String address) =>
-      update(fromOption: Some({...state.from, address}));
+      update(fromOption: Some(_withAdded(state.from, address)));
 
   void removeSender(String address) =>
-      update(fromOption: Some({...state.from}..remove(address)));
+      update(fromOption: Some(_withRemoved(state.from, address)));
 
   void addRecipient(String address) =>
-      update(toOption: Some({...state.to, address}));
+      update(toOption: Some(_withAdded(state.to, address)));
 
   void removeRecipient(String address) =>
-      update(toOption: Some({...state.to}..remove(address)));
+      update(toOption: Some(_withRemoved(state.to, address)));
+
+  Set<String> _withAdded(Set<String> set, String value) => {...set, value};
+
+  Set<String> _withRemoved(Set<String> set, String value) =>
+      {...set}..remove(value);
 
   /// Full replacement (commit a draft / apply a form); strips cursors so none can
   /// seed the SSOT.
