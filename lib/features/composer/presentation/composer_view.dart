@@ -83,7 +83,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       ),
                   )))
                 else
-                  Obx(() => Consumer(builder: (_, ref, __) => AppBarComposerWidget(
+                  Consumer(builder: (_, ref, __) => Obx(() => AppBarComposerWidget(
                     imagePaths: controller.imagePaths,
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
