@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:core/domain/exceptions/app_base_exception.dart';
+import 'package:model/extensions/set_error_extension.dart';
 
 class NotFoundCalendarEventException extends AppBaseException {
   NotFoundCalendarEventException([super.message]);
@@ -41,7 +42,7 @@ class CannotReplyCalendarEventException extends AppBaseException {
   final Map<Id, SetError>? mapErrors;
 
   CannotReplyCalendarEventException({this.mapErrors})
-      : super(mapErrors != null ? 'Errors: $mapErrors' : null);
+      : super(mapErrors != null ? 'Errors: {${mapErrors.toLogMessage()}}' : null);
 
   @override
   String get exceptionName => 'CannotReplyCalendarEventException';
