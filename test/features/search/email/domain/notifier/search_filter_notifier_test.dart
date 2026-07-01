@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
@@ -49,6 +50,47 @@ void main() {
 
       expect(stateOf().unread, isTrue);
       expect(stateOf().hasAttachment, isTrue);
+    });
+  });
+
+  group('toggleStarred', () {
+    final flagged = KeyWordIdentifier.emailFlagged.value;
+
+    test('adds the flagged keyword when starred, keeping other keywords', () {
+      notifierOf().update(hasKeywordOption: const Some({'custom'}));
+
+      notifierOf().toggleStarred(true);
+
+      expect(stateOf().hasKeyword, {'custom', flagged});
+    });
+
+    test('removes only the flagged keyword when unstarred', () {
+      notifierOf().update(hasKeywordOption: Some({'custom', flagged}));
+
+      notifierOf().toggleStarred(false);
+
+      expect(stateOf().hasKeyword, {'custom'});
+    });
+  });
+
+  group('sender / recipient membership', () {
+    test('addSender / removeSender mutate only the from set', () {
+      notifierOf().addSender('alice@example.com');
+      notifierOf().addSender('bob@example.com');
+      expect(stateOf().from, {'alice@example.com', 'bob@example.com'});
+
+      notifierOf().removeSender('alice@example.com');
+      expect(stateOf().from, {'bob@example.com'});
+      expect(stateOf().to, isEmpty);
+    });
+
+    test('addRecipient / removeRecipient mutate only the to set', () {
+      notifierOf().addRecipient('carol@example.com');
+      expect(stateOf().to, {'carol@example.com'});
+
+      notifierOf().removeRecipient('carol@example.com');
+      expect(stateOf().to, isEmpty);
+      expect(stateOf().from, isEmpty);
     });
   });
 

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -51,6 +52,29 @@ mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
       labelOption: labelOption,
     );
   }
+
+  /// 'starred' is the flagged keyword inside `hasKeyword`, not a bool field. Sets or
+  /// clears it here so no call site rebuilds the keyword set.
+  void toggleStarred(bool starred) {
+    final keyword = KeyWordIdentifier.emailFlagged.value;
+    final hasKeyword = {...state.hasKeyword}..remove(keyword);
+    if (starred) hasKeyword.add(keyword);
+    update(hasKeywordOption: Some(hasKeyword));
+  }
+
+  /// Adds/removes one address in `from`/`to` — encapsulates the read-set →
+  /// mutate → pass-whole-set-back dance so no call site owns it.
+  void addSender(String address) =>
+      update(fromOption: Some({...state.from, address}));
+
+  void removeSender(String address) =>
+      update(fromOption: Some({...state.from}..remove(address)));
+
+  void addRecipient(String address) =>
+      update(toOption: Some({...state.to, address}));
+
+  void removeRecipient(String address) =>
+      update(toOption: Some({...state.to}..remove(address)));
 
   /// Full replacement (commit a draft / apply a form); strips cursors so none can
   /// seed the SSOT.
