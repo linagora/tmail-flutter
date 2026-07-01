@@ -12,8 +12,14 @@ permissions:
   id-token: write
 
 jobs:
+  # Blocking gate: the release image is only built if the web E2E run passes on this tag.
+  web_e2e:
+    name: Run web integration tests
+    uses: ./.github/workflows/reusable-web-integration-test.yaml
+
   build-release-image-with-sentry:
     name: Build release image with Sentry
+    needs: web_e2e
     if: github.event_name == 'workflow_dispatch' || (github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     environment: prod
