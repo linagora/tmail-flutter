@@ -151,6 +151,9 @@ class GetEmailContentInteractor {
             final map = emailCache.individualHeaders.merge({
               if (detailedEmail.sMimeStatusHeader != null)
                 IndividualHeaderIdentifier.sMimeStatusHeader: detailedEmail.sMimeStatusHeader!,
+              if (detailedEmail.twpMessages != null)
+                IndividualHeaderIdentifier.asText(twpMessageHeaderName).all():
+                  AllHeaderValue.fromTexts(detailedEmail.twpMessages!),
             });
             return map.isEmpty ? null : map;
           }(),
@@ -199,6 +202,9 @@ class GetEmailContentInteractor {
                 IndividualHeaderIdentifier.sMimeStatusHeader: detailedEmail.sMimeStatusHeader!,
               if (detailedEmail.identityHeader != null)
                 IndividualHeaderIdentifier.identityHeader: detailedEmail.identityHeader!,
+              if (detailedEmail.twpMessages != null)
+                IndividualHeaderIdentifier.asText(twpMessageHeaderName).all():
+                  AllHeaderValue.fromTexts(detailedEmail.twpMessages!),
             });
             return map.isEmpty ? null : map;
           }(),

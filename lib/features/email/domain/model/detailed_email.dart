@@ -18,6 +18,7 @@ class DetailedEmail with EquatableMixin {
   final List<Attachment>? inlineImages;
   final TextHeaderValue? sMimeStatusHeader;
   final TextHeaderValue? identityHeader;
+  final List<String>? twpMessages;
 
   DetailedEmail({
     required this.emailId,
@@ -32,6 +33,7 @@ class DetailedEmail with EquatableMixin {
     this.inlineImages,
     this.sMimeStatusHeader,
     this.identityHeader,
+    this.twpMessages,
   });
 
   @override
@@ -48,5 +50,6 @@ class DetailedEmail with EquatableMixin {
     inlineImages,
     sMimeStatusHeader,
     identityHeader,
+    twpMessages,
   ];
 }

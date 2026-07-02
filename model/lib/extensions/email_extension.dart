@@ -49,6 +49,38 @@ extension EmailExtension on Email {
     ?? listPostHeader?.value?.trim()
     ?? '';
 
+  List<TwpWarning> get twpWarnings {
+    final headerValue = individualHeaders[
+      IndividualHeaderIdentifier.asText(twpMessageHeaderName).all()
+    ];
+    if (headerValue is! AllHeaderValue) return const [];
+
+    final parsed = <TwpWarning>[];
+    var index = 0;
+    for (final value in headerValue.values.whereType<TextHeaderValue>()) {
+      final rawText = value.value;
+      if (rawText == null || rawText.trim().isEmpty) continue;
+      parsed.add(TwpWarning.parse(rawText, index));
+      index++;
+    }
+    return deduplicateTwpWarnings(parsed);
+  }
+
+  List<String>? get twpMessagesRaw {
+    final headerValue = individualHeaders[
+      IndividualHeaderIdentifier.asText(twpMessageHeaderName).all()
+    ];
+    if (headerValue is! AllHeaderValue) return null;
+
+    final raws = headerValue.values
+      .whereType<TextHeaderValue>()
+      .map((value) => value.value)
+      .whereType<String>()
+      .where((text) => text.trim().isNotEmpty)
+      .toList();
+    return raws.isEmpty ? null : raws;
+  }
+
   IdentityId? get identityIdFromHeader {
     final rawIdentityId = identityHeader?.value;
     if (rawIdentityId == null) return null;
@@ -133,6 +165,7 @@ extension EmailExtension on Email {
       listUnsubscribeHeader: listUnsubscribeHeader,
       messageId: messageId,
       references: references,
+      twpWarnings: twpWarnings,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;

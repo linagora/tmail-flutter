@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:model/email/twp_warning.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
@@ -26,6 +27,9 @@ extension DetailedEmailExtension on DetailedEmail {
       identityHeader: identityHeader?.value != null
         ? {IndividualHeaderIdentifier.identityHeader.value: identityHeader!.value}
         : null,
+      individualHeaders: twpMessages != null
+        ? {twpMessageHeaderName: twpMessages!}
+        : null,
     );
   }
 
@@ -47,6 +51,7 @@ extension DetailedEmailExtension on DetailedEmail {
       inlineImages: inlineImages,
       sMimeStatusHeader: sMimeStatusHeader,
       identityHeader: identityHeader,
+      twpMessages: twpMessages,
     );
   }
 }

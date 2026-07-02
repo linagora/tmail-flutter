@@ -44,6 +44,9 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
   @HiveField(10)
   Map<String, String?>? identityHeader;
 
+  @HiveField(11)
+  Map<String, dynamic>? individualHeaders;
+
   DetailedEmailHiveCache({
     required this.emailId,
     required this.timeSaved,
@@ -56,6 +59,7 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
     this.inlineImages,
     this.sMimeStatusHeader,
     this.identityHeader,
+    this.individualHeaders,
   });
 
   @override
@@ -71,5 +75,6 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
     inlineImages,
     sMimeStatusHeader,
     identityHeader,
+    individualHeaders,
   ];
 }

@@ -607,6 +607,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           messageId: success.emailCurrent?.messageId,
           references: success.emailCurrent?.references,
           sMimeStatusHeader: success.emailCurrent?.sMimeStatusHeader,
+          twpMessages: success.emailCurrent?.twpMessagesRaw,
         );
 
         _storeOpenedEmailAction(

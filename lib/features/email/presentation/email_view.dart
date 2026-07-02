@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -39,6 +40,8 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_emp
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/twp_warning_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/twp_warning_controller_sync.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
@@ -354,6 +357,12 @@ class EmailView extends GetWidget<SingleEmailController> {
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
+        )),
+        Obx(() => TwpWarningControllerSync(
+          emailId: controller.currentEmailLoaded.value?.emailCurrent?.id,
+          warnings: controller.currentEmailLoaded.value?.emailCurrent?.twpWarnings,
+          keywords: controller.currentEmail?.keywords,
+          child: const TwpWarningBanner(),
         )),
         Obx(() => EmailViewLoadingBarWidget(
           viewState: controller.emailLoadedViewState.value

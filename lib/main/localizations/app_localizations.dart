@@ -3714,6 +3714,20 @@ class AppLocalizations {
     );
   }
 
+  String get twpWarningSuspiciousSender {
+    return Intl.message(
+      'This email is from an external sender. Be careful with links and attachments.',
+      name: 'twpWarningSuspiciousSender',
+    );
+  }
+
+  String get twpWarningVirusDetected {
+    return Intl.message(
+      'A virus was detected in this email.',
+      name: 'twpWarningVirusDetected',
+    );
+  }
+
   String get cannotCompressInlineImage {
     return Intl.message(
       'Cannot compress image',

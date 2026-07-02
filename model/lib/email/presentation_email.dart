@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/mail_priority_header.dart';
+import 'package:model/email/twp_warning.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_header_extension.dart';
@@ -59,6 +60,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
   final EmailInThreadStatus? emailInThreadStatus;
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
+  final List<TwpWarning>? twpWarnings;
 
   PresentationEmail({
     this.id,
@@ -92,6 +94,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
     this.emailInThreadStatus,
     this.messageId,
     this.references,
+    this.twpWarnings,
   });
 
   String getSenderName() {
@@ -221,6 +224,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
     emailInThreadStatus,
     messageId,
     references,
+    twpWarnings,
   ];
 
   PresentationEmail copyWith({
@@ -255,6 +259,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
     EmailInThreadStatus? emailInThreadStatus,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
+    List<TwpWarning>? twpWarnings,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -288,6 +293,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
       messageId: messageId ?? this.messageId,
       references: references ?? this.references,
+      twpWarnings: twpWarnings ?? this.twpWarnings,
     );
   }
 
@@ -323,6 +329,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
     Option<EmailInThreadStatus>? emailInThreadStatus,
     Option<MessageIdsHeaderValue>? messageId,
     Option<MessageIdsHeaderValue>? references,
+    Option<List<TwpWarning>>? twpWarnings,
   }) {
     return PresentationEmail(
       id: getOptionParam(id, this.id),
@@ -356,6 +363,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin, OptionParamMixi
       emailInThreadStatus: getOptionParam(emailInThreadStatus, this.emailInThreadStatus),
       messageId: getOptionParam(messageId, this.messageId),
       references: getOptionParam(references, this.references),
+      twpWarnings: getOptionParam(twpWarnings, this.twpWarnings),
     );
   }
 }

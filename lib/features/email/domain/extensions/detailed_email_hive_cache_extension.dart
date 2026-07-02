@@ -2,6 +2,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:model/email/twp_warning.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_acttachments_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -32,6 +33,8 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
       identityHeader: identityHeader?.isNotEmpty == true
         ? TextHeaderValue(identityHeader!.values.first)
         : null,
+      twpMessages: (individualHeaders?[twpMessageHeaderName] as List?)
+        ?.cast<String>(),
     );
   }
 }

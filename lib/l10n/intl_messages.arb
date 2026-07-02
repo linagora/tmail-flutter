@@ -3590,6 +3590,18 @@
       "senderName": {}
     }
   },
+  "twpWarningSuspiciousSender": "This email is from an external sender. Be careful with links and attachments.",
+  "@twpWarningSuspiciousSender": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "twpWarningVirusDetected": "A virus was detected in this email.",
+  "@twpWarningVirusDetected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "cannotCompressInlineImage": "Cannot compress image",
   "@cannotCompressInlineImage": {
     "type": "text",
