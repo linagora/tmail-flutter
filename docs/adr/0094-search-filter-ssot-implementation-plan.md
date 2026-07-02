@@ -6,6 +6,8 @@ Date: 2026-06-24
 
 Draft — steps and code samples may evolve during implementation. Architectural decisions remain in [ADR-0093](./0093-search-filter-single-source-of-truth.md).
 
+Updated 2026-07-02 — Steps 1–5 implemented, with refinements vs this plan: the result model is `SearchEmailResult` (was `SearchEmailState`) and carries a `LoadMoreState` sub-status; `SearchEmailQueryParams` drops the unused `needRefreshSearchState`; the executor dispatches per intent, folds load-more/refresh failures without erroring the list, and guards against stale requests and disposal (`ref.mounted`). See ADR-0093 for the decisions.
+
 ## Related ADRs
 
 - [ADR-0093](./0093-search-filter-single-source-of-truth.md) — Search Filter SSOT + Pagination Strategy (this ADR implements it)
@@ -43,37 +45,49 @@ Implement ADR-0093 in **11 ordered PRs**. Steps 1–5 build the Riverpod layer b
 
 ---
 
-### Step 1 — `SearchEmailState` result model
+### Step 1 — `SearchEmailResult` result model
 
-**Create** `lib/features/search/email/domain/model/search_email_state.dart`:
+**Create** `lib/features/search/email/domain/model/search_email_result.dart`. `LoadMoreState` carries the load-more lifecycle inside the result, so a failed or in-flight next page never blanks the list:
 
 ```dart
 import 'package:equatable/equatable.dart';
 import 'package:model/email/presentation_email.dart';
 
-class SearchEmailState with EquatableMixin {
+enum LoadMoreState { idle, inProgress, failure }
+
+class SearchEmailResult with EquatableMixin {
   final List<PresentationEmail> emails;
   final bool canLoadMore;
+  final LoadMoreState loadMore;
 
-  const SearchEmailState({required this.emails, required this.canLoadMore});
+  const SearchEmailResult({
+    required this.emails,
+    required this.canLoadMore,
+    this.loadMore = LoadMoreState.idle,
+  });
 
-  factory SearchEmailState.empty() =>
-      const SearchEmailState(emails: [], canLoadMore: false);
+  factory SearchEmailResult.empty() =>
+      const SearchEmailResult(emails: [], canLoadMore: false);
 
-  SearchEmailState copyWith({List<PresentationEmail>? emails, bool? canLoadMore}) =>
-      SearchEmailState(
+  SearchEmailResult copyWith({
+    List<PresentationEmail>? emails,
+    bool? canLoadMore,
+    LoadMoreState? loadMore,
+  }) =>
+      SearchEmailResult(
         emails: emails ?? this.emails,
         canLoadMore: canLoadMore ?? this.canLoadMore,
+        loadMore: loadMore ?? this.loadMore,
       );
 
   @override
-  List<Object?> get props => [emails, canLoadMore];
+  List<Object?> get props => [emails, canLoadMore, loadMore];
 }
 ```
 
 This replaces the scattered `emailList` + `canSearchMore`/`canLoadMore` booleans currently held separately in `SearchEmailController` and `ThreadController`.
 
-**Test** `test/features/search/email/domain/model/search_email_state_test.dart`: `empty()` is `[]`/`false`; `copyWith` replaces only provided fields.
+**Test** `test/features/search/email/domain/model/search_email_result_test.dart`: `empty()` is `[]`/`false`/`idle`; `copyWith` replaces only provided fields.
 
 ---
 
@@ -351,7 +365,6 @@ class SearchEmailQueryParams {
     this.limit,
     this.position,
     this.lastEmailId,            // load-more only
-    this.needRefreshSearchState = false,
   });
   final Session session;
   final AccountId accountId;
@@ -362,7 +375,6 @@ class SearchEmailQueryParams {
   final UnsignedInt? limit;
   final int? position;
   final EmailId? lastEmailId;
-  final bool needRefreshSearchState;
 }
 ```
 
@@ -384,101 +396,12 @@ SearchEmailFilter applyTo(SearchEmailFilter filter) {
 ```
 
 **Create** `lib/features/search/email/domain/notifier/search_email_notifier.dart`:
-```dart
-part 'search_email_notifier.g.dart';
+The implemented executor (source + ADR-0093 "Result model & error channel") is structured as:
 
-@Riverpod(keepAlive: true)
-class SearchEmailNotifier extends _$SearchEmailNotifier {
-  // First-match: most-specific guard first, catch-all last.
-  // Extend by adding a strategy class + one entry — no existing strategy is modified.
-  static const _strategies = <SearchPaginationStrategy>[
-    PositionLoadMoreStrategy(),
-    DateLoadMoreStrategy(),
-    FreshSearchStrategy(),
-  ];
-
-  // GetX bridge during migration — interactors are still registered in GetX DI.
-  late final SearchEmailInteractor _searchInteractor;
-  late final SearchMoreEmailInteractor _searchMoreInteractor;
-  late final RefreshChangesSearchEmailInteractor _refreshInteractor;
-
-  @override
-  AsyncValue<SearchEmailState> build() {
-    _searchInteractor = Get.find<SearchEmailInteractor>();
-    _searchMoreInteractor = Get.find<SearchMoreEmailInteractor>();
-    _refreshInteractor = Get.find<RefreshChangesSearchEmailInteractor>();
-    return AsyncData(SearchEmailState.empty());
-  }
-
-  Future<void> execute(
-    SearchExecutionIntent intent, {
-    required Session session,
-    required AccountId accountId,
-    required Properties properties,
-    required bool collapseThreads,
-    required Set<MailboxId>? trashSpamMailboxIds,
-  }) async {
-    final committed = ref.read(searchFilterProvider);
-    final ctx = SearchExecutionContext(
-      intent: intent, committed: committed, collapseThreads: collapseThreads);
-
-    var spec = SearchRequestSpec.base(ctx);
-    spec = _strategies.firstWhere((s) => s.appliesTo(ctx)).apply(spec, ctx);
-
-    final params = SearchEmailQueryParams(
-      session: session,
-      accountId: accountId,
-      filter: spec.filter.mappingToEmailFilterCondition(trashSpamMailboxIds: trashSpamMailboxIds),
-      sort: spec.filter.sortOrderType.getSortOrder().toNullable(),
-      properties: properties,
-      collapseThreads: collapseThreads,
-      limit: intent is RefreshChangesIntent
-          ? UnsignedInt((intent).currentCount)
-          : spec.limit,
-      position: spec.position,
-      lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
-    );
-
-    switch (intent) {
-      case NewSearchIntent():
-        state = const AsyncLoading();
-        final result = await _searchInteractor.execute(
-          params.session, params.accountId,
-          limit: params.limit, position: params.position, sort: params.sort,
-          filter: params.filter, properties: params.properties,
-          collapseThreads: params.collapseThreads).last;
-        state = _foldSearch(result, append: false);
-      case LoadMoreIntent():
-        final result = await _searchMoreInteractor.execute(
-          params.session, params.accountId,
-          limit: params.limit, sort: params.sort, position: params.position,
-          filter: params.filter, properties: params.properties,
-          collapseThreads: params.collapseThreads, lastEmailId: params.lastEmailId).last;
-        state = _foldSearch(result, append: true);
-      case RefreshChangesIntent():
-        final result = await _refreshInteractor.execute(
-          params.session, params.accountId,
-          limit: params.limit, position: params.position, sort: params.sort,
-          filter: params.filter, collapseThreads: params.collapseThreads,
-          properties: params.properties).last;
-        state = _foldSearch(result, append: false);
-    }
-  }
-
-  AsyncValue<SearchEmailState> _foldSearch(Either<Failure, Success> result, {required bool append}) {
-    return result.fold(
-      (failure) => AsyncError(failure, StackTrace.current),
-      (success) {
-        final newEmails = _emailsOf(success);
-        if (newEmails == null) return state;             // intermediate state, keep current
-        final current = state.valueOrNull?.emails ?? const [];
-        final emails = append ? [...current, ...newEmails] : newEmails;
-        return AsyncData(SearchEmailState(emails: emails, canLoadMore: newEmails.isNotEmpty));
-      },
-    );
-  }
-}
-```
+- `execute(intent, {session, accountId, properties, collapseThreads, trashSpamMailboxIds})` bundles its inputs into a `SearchExecutionRequest`, takes a monotonic request id, then dispatches per intent.
+- One `_run*` method per intent owns its behaviour: **new search** — `AsyncLoading`, then replace the list or `AsyncError`; **load-more** — mark `LoadMoreState.inProgress`, then append, keeping the page and flagging `LoadMoreState.failure` on error; **refresh** — replace on success, keep the current list on error.
+- A shared `_runGuarded` awaits the interactor and applies the result only while the notifier is mounted and the request is still the latest (disposal + stale-request guards), logging any failure once.
+- Query args come from `resolveSearchRequestSpec(SearchRequestSpec.base(context), context)` over `kSearchPaginationStrategies`; interactors are resolved lazily via `Get.find` during the GetX bridge.
 
 > `_emailsOf(Success)` maps `SearchEmailSuccess` / `SearchMoreEmailSuccess` / `RefreshChangesSearchEmailSuccess` to their `emailList`, else `null`. The interactor already returns `PresentationEmail`; mailbox-id mapping + selection sync (`toSearchPresentationEmail`, `syncPresentationEmail`) stay in the bridge consumers (Steps 8–9) because they depend on selection state and `mapMailboxById`. Resolving interactors via `Get.find` is the temporary GetX bridge; it is replaced by Riverpod providers when interactors migrate.
 
@@ -639,7 +562,7 @@ Action methods still via `Get.find<SearchEmailController>()`. The result list ap
 
 Replace `_searchEmail()` body (lines ~1184–1222) and `_searchMoreEmails()` (lines ~1273–1313) with executor calls (`NewSearchIntent` / `LoadMoreIntent`), passing `collapseThreads: _shouldCollapseThreads`. Bridge results back into GetX in `onInit()`:
 ```dart
-appProviderContainer.listen<AsyncValue<SearchEmailState>>(
+appProviderContainer.listen<AsyncValue<SearchEmailResult>>(
   searchEmailProvider,
   (_, next) => next.whenData((s) {
     final synced = s.emails
