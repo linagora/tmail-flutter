@@ -33,11 +33,11 @@ Key facts:
 Add the property string to both `ThreadConstants.propertiesGetEmailContent` and `propertiesGetDetailedEmail` (read view only — not thread list).
 
 ### Cache shape
-New field, uniform value type:
+New field, mixed value type — **not** a uniform `List<String>`:
 ```dart
-@HiveField(11) Map<String, List<String>>? individualHeaders
+@HiveField(11) Map<String, dynamic>? individualHeaders
 ```
-Every individual header stored as an ordered list of raw string values — re-parsed and re-deduplicated on read. Avoids new Hive nested-type registration.
+A header requested singularly (`asText`, no `:all`) stores its raw `String` value directly. A header requested with the `:all` suffix (currently only `X-TWP-Message`) always stores a `List<String>`, **even when the server returns exactly one value** — the value's Dart runtime type (`String` vs `List<String>`), not its length, is what distinguishes "singular header" from "`:all` header" on read. This mirrors `EmailHeaderValue.fromJson`'s own branching (the `:all` suffix always produces `AllHeaderValue`, regardless of element count) and avoids the read-side bug where a single-warning email would otherwise reconstruct as `TextHeaderValue` instead of `AllHeaderValue`, silently diverging from the network-fetched shape. Avoids new Hive nested-type registration (`dynamic` here is always `String` or `List<String>`, nothing else).
 - `DetailedEmailHiveCache`: `@HiveField(11)` (verify free at implementation time).
 - `EmailCache`: introduced in Phase 3, not here.
 - Old cached emails show no banners until next refresh — correct, not a bug.
@@ -56,11 +56,11 @@ Offline content-read path only (not a live source):
 
 ### Riverpod notifier
 `TwpWarningNotifier extends Notifier<TwpWarningState>` (`twpWarningNotifierProvider`):
-- `TwpWarningState` holds `List<TwpWarning> warnings` (deduplicated) and `Set<String> dismissedKeywords`.
-- `setWarnings(List<TwpWarning>)` replaces the warning list.
+- `TwpWarningState` holds `EmailId? emailId`, `List<TwpWarning> warnings` (deduplicated), and `Set<String> dismissedKeywords`.
+- `setWarnings(EmailId emailId, List<TwpWarning> warnings)` replaces both the owning email id and the warning list **in one call** — `emailId` is known at exactly the same point `warnings` is (content-load success), so there is no separate "which email does this state belong to" step. This is what Phase 2's dismiss action reads to know which email to patch, instead of re-deriving it from the controller (see ADR-0100).
 - `setKeywords(Map<KeyWordIdentifier, bool>?)` recomputes the dismissed set from TWP-prefixed keyword entries (Phase 2 unions this with a local optimistic set).
 - `SingleEmailController` feeds it from two independent inputs, kept separate so a keyword-only update never wipes the warnings:
-  - `setWarnings(emailCurrent.twpWarnings)` on content-load success (`GetEmailContentSuccess`/`GetEmailContentFromCacheSuccess`, fetched with `propertiesGetEmailContent`, which carries the TWP header).
+  - `setWarnings(emailCurrent.id, emailCurrent.twpWarnings)` on content-load success (`GetEmailContentSuccess`/`GetEmailContentFromCacheSuccess`, fetched with `propertiesGetEmailContent`, which carries the TWP header).
   - `setKeywords(currentEmail.keywords)` from the controller's Obx/Worker listener on the open email. `currentEmail` resolves to `emailIdsPresentation[_currentEmailId]` on web/tablet or `selectedEmail` on mobile — the WebSocket-updated object. Its `keywords` are in `propertiesDefault`, so they stay current; the TWP header is not, which is why warnings come from the content load instead.
 - The notifier is not fed from `DetailedEmail`/`DetailedEmailHiveCache` directly — those are not live and never update on WebSocket.
 - The controller accesses the notifier via a widget-layer bridge (a `ConsumerStatefulWidget` wrapper that watches the controller's Rx open-email/content state and forwards to the notifier via `ref`) — not via a global `ProviderContainer`.
@@ -70,5 +70,5 @@ Offline content-read path only (not a live source):
 
 ## Consequences
 - Banner fallback/localized text renders as plain `Text` — no HTML injection risk.
-- Phase 2 depends on `TwpWarning.index` (deduplicated position) being stable, `TwpWarningNotifier` existing, and this widget existing.
+- Phase 2 depends on `TwpWarning`'s dedup identity (`level`+`code`+`fallbackText`), `TwpWarningState.emailId`, `TwpWarningNotifier` existing, and this widget existing.
 - Phase 3 reuses `DetailedEmailHiveCache.individualHeaders` — whichever phase lands second must not redeclare the field under a different `@HiveField` index.
