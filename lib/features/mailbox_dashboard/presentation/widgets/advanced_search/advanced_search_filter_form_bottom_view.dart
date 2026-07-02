@@ -99,6 +99,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
   ) {
     return Obx(
       () => CustomIconLabeledCheckbox(
+        key: const ValueKey(UiKeys.advancedSearchHasAttachmentCheckbox),
         label: AppLocalizations.of(context).hasAttachment,
         svgIconPath: controller.imagePaths.icCheckboxUnselected,
         selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,

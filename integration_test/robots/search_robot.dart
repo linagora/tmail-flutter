@@ -13,14 +13,32 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import 'package:patrol/patrol.dart';
+
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
 import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
+import 'abstract/abstract_search_result_assertion_robot.dart';
 import 'abstract/abstract_search_robot.dart';
+import 'abstract/abstract_search_suggestion_robot.dart';
+import 'search_result_assertion_robot.dart';
+import 'search_suggestion_robot.dart';
 
 class SearchRobot extends CoreRobot implements AbstractSearchRobot {
-  SearchRobot(super.$);
+  @override
+  final AbstractSearchSuggestionRobot suggestion;
+
+  @override
+  final AbstractSearchResultAssertionRobot assertion;
+
+  SearchRobot(
+    PatrolIntegrationTester $, {
+    AbstractSearchSuggestionRobot? suggestionRobot,
+    AbstractSearchResultAssertionRobot? assertionRobot,
+  })  : suggestion = suggestionRobot ?? SearchSuggestionRobot($),
+        assertion = assertionRobot ?? SearchResultAssertionRobot($),
+        super($);
 
   @override
   Future<void> tapOnSearchField() async {
