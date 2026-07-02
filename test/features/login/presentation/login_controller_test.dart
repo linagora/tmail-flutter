@@ -294,8 +294,8 @@ void main() {
     });
 
     test('WHEN handleFailureViewState is called with AuthenticateOidcOnBrowserFailure \n'
-        'AND featureFailure is not null (OIDC discovery fallback flow) \n'
-        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+        'AND featureFailure is not null (no SSO configured, OIDC not available) \n'
+        'THEN loginFormType falls back to the basic auth credential form', () {
 
       loginController.onBaseUrlChange('https://example.com');
       loginController.handleFailureViewState(
@@ -305,14 +305,8 @@ void main() {
       final failure = AuthenticateOidcOnBrowserFailure(Exception());
       loginController.handleFailureViewState(failure);
 
-      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
-      expect(
-        loginController.loginFormType.value,
-        isNot(anyOf(
-          LoginFormType.passwordForm,
-          LoginFormType.credentialForm,
-        )),
-      );
+      expect(loginController.loginFormType.value,
+          equals(LoginFormType.credentialForm));
     });
   });
 
@@ -336,8 +330,8 @@ void main() {
     });
 
     test('WHEN handleUrgentException is called with AuthenticateOidcOnBrowserFailure \n'
-        'AND featureFailure is not null (OIDC discovery fallback flow) \n'
-        'THEN loginFormType becomes retry AND never falls back to basic auth', () {
+        'AND featureFailure is not null (no SSO configured, OIDC not available) \n'
+        'THEN loginFormType falls back to the basic auth credential form', () {
 
       loginController.onBaseUrlChange('https://example.com');
       loginController.handleUrgentException(
@@ -347,14 +341,8 @@ void main() {
       final failure = AuthenticateOidcOnBrowserFailure(Exception());
       loginController.handleUrgentException(failure: failure);
 
-      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
-      expect(
-        loginController.loginFormType.value,
-        isNot(anyOf(
-          LoginFormType.passwordForm,
-          LoginFormType.credentialForm,
-        )),
-      );
+      expect(loginController.loginFormType.value,
+          equals(LoginFormType.credentialForm));
     });
   });
 

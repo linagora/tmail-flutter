@@ -600,13 +600,22 @@ class LoginController extends ReloadableController {
     }
   }
 
-  /// When a SSO setup has been detected but going through the auth web
-  /// redirects failed, we must never fall back to basic auth.
+  /// Route a failure that happened while going through the OIDC/SSO redirects.
   ///
-  /// Instead we keep the user on the SSO flow, surface the error and offer a
+  /// When a real SSO setup has been detected (the OIDC feature check succeeded,
+  /// so [featureFailure] is `null`) we must never fall back to basic auth:
+  /// instead we keep the user on the SSO flow, surface the error and offer a
   /// retry so they can attempt the redirects again.
+  ///
+  /// When OIDC was not actually available ([featureFailure] is set) this is the
+  /// genuine "no SSO configured" path, which still falls back to the basic auth
+  /// credential form as before.
   void _handleSSORedirectFailure() {
-    loginFormType.value = LoginFormType.retry;
+    if (featureFailure != null) {
+      _handleCommonOIDCFailure();
+    } else {
+      loginFormType.value = LoginFormType.retry;
+    }
   }
 
   Option<Failure> _handleNoSuitableBrowserOIDC(GetTokenOIDCFailure failure) {

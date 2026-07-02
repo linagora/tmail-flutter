@@ -1472,6 +1472,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "ssoRedirectFailedMessage": "We could not complete the single sign-on redirection. Please try again.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "moveFolder": "Move folder",
   "@moveFolder": {
     "type": "text",
