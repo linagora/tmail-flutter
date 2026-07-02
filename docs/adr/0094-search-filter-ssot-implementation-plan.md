@@ -4,7 +4,9 @@ Date: 2026-06-24
 
 ## Status
 
-Draft — steps and code samples may evolve during implementation. Architectural decisions remain in [ADR-0093](./0093-search-filter-single-source-of-truth.md).
+Accepted — steps and code samples may evolve during implementation. Architectural decisions remain in [ADR-0093](./0093-search-filter-single-source-of-truth.md).
+
+Updated: 2026-07-01 — the design collapsed to a **single `SearchFilterNotifier`** (ADR-0093 §1). `SearchFilterDraftNotifier` is dropped: the advanced form now reads/writes the one SSOT directly (live sync). This supersedes the draft-notifier parts of **Step 4** (only the mixin + `SearchFilterNotifier` remain), **Step 7** (advanced form writes committed, no draft seed / no discard-on-close), and **Step 10** (no `searchFilterDraftProvider` invalidate).
 
 ## Related ADRs
 
@@ -277,7 +279,12 @@ Run `scripts/prebuild.sh` (build_runner) → generates `search_filter_notifier.g
 
 ---
 
-### Step 4 — `SearchFilterDraftNotifier` (staging) + shared mutation mixin
+### Step 4 — shared mutation mixin (+ `SearchFilterDraftNotifier`, since removed)
+
+> **Superseded (2026-07-01):** `SearchFilterDraftNotifier` was removed — a single
+> `SearchFilterNotifier` is the SSOT (ADR-0093 §1). The `SearchFilterMutation` mixin and
+> `clearPaginationCursors()` below still ship (the mixin now backs the one notifier); the
+> draft notifier + its test do not. The two-notifier rationale in this step is historical.
 
 `update`/`set`/`clear` are identical between the two notifiers. Rather than copy the
 body (and the option signature) twice, extract a **`SearchFilterMutation` mixin**
@@ -488,7 +495,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
 - `execute(NewSearchIntent())` → interactor receives `position == 0` (scroll-by-position sort) or `null`, and `filter` built with `before`/`startDate == null`, regardless of prior SSOT cursor values
 - `execute(LoadMoreIntent(currentCount: 20, ...))` → `position == 20` (position sort) **or** exactly one date cursor in `filter` (date sort), never both
 - `execute(RefreshChangesIntent(currentCount: 30, ...))` → `limit == 30`, `position == 0`
-- **Draft isolation:** set `searchFilterProvider` = `filterA`, `searchFilterDraftProvider` = `filterB`, `execute(NewSearchIntent())` → interactor receives `filterA`'s condition
+- **Reads committed only:** set `searchFilterProvider` = `filterA`, `execute(NewSearchIntent())` → interactor receives `filterA`'s condition
 - committed SSOT unchanged after any `execute(...)`
 - `LoadMoreIntent` result appends to the existing `emails`; `NewSearchIntent` replaces
 
@@ -526,7 +533,16 @@ void updateFilterEmail({/* same Option params, minus positionOption */}) {
 
 ---
 
-### Step 7 — `AdvancedFilterController` + `AdvancedSearchInputForm`: draft
+### Step 7 — `AdvancedFilterController` + `AdvancedSearchInputForm`
+
+> **Superseded (2026-07-01):** the advanced form reads/writes the committed
+> `searchFilterProvider` **directly** (no draft, no `seedFrom`) so field edits sync live
+> to the suggestion/result chips before Apply. `AdvancedFilterController` uses a
+> `_committedFilter` getter + `_updateCommittedFilter(...)` on `searchFilterProvider`;
+> `applyAdvancedSearchFilter()` just `set`s the current committed filter and runs the
+> search. Closing without Apply keeps the edits ("Clear filter" resets). The views stay
+> `GetWidget` (no `ConsumerStatefulWidget` migration). The draft-based recipe below is
+> historical.
 
 **Edit** `advanced_search_input_form.dart` — migrate `GetWidget<AdvancedFilterController>` → `ConsumerStatefulWidget`; seed the draft on open (after the first frame, so `ref.watch` is active — see ADR-0093):
 ```dart
@@ -680,13 +696,12 @@ Session reset in `onClose()` (order matters — invalidate before any post-logou
 @override
 void onClose() {
   appProviderContainer.invalidate(searchFilterProvider);
-  appProviderContainer.invalidate(searchFilterDraftProvider);
   appProviderContainer.invalidate(searchEmailProvider);
   super.onClose();
 }
 ```
 
-**Tests:** `mailbox_dashboard_controller_test.dart` — `applyCurrentFilterMessageOptionToSearch` maps `unread`/`attachments`/`starred` into the SSOT; logout invalidates all three providers.
+**Tests:** `mailbox_dashboard_controller_test.dart` — `applyCurrentFilterMessageOptionToSearch` maps `unread`/`attachments`/`starred` into the SSOT; logout invalidates both providers.
 
 ---
 

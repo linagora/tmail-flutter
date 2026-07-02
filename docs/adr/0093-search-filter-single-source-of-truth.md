@@ -4,7 +4,9 @@ Date: 2026-06-19
 
 ## Status
 
-Proposed
+Accepted
+
+Updated: 2026-07-01 — a single `SearchFilterNotifier` is the sole SSOT for every surface; the `SearchFilterDraftNotifier` staging model is removed (see Decision §1).
 
 ## Related ADRs
 
@@ -20,7 +22,7 @@ Proposed
 
 | Bug | Root cause |
 |---|---|
-| #4421 | `listFilterOnSuggestionForm` not merged into filter until submit; mobile `SearchEmailController` starts fresh on every entry |
+| #4421 | Suggestion chips write the committed filter while the advanced form edited a separate copy, so selections didn't cross between the two surfaces (the `listFilterOnSuggestionForm` staging layer also deferred chips until submit). Mobile `SearchEmailController` starts fresh on every entry. |
 | #4590 | `ThreadController._searchEmail()` ANDs `filterMessageOption` as `moreFilterCondition`; chip bar reads `SearchEmailFilter.unread` (always `false`) → chip deselected, results still filtered |
 | #4490 | `filterMessageOption` reset to `all` by unrelated code paths; cached results still filtered while chip shows deselected |
 
@@ -34,57 +36,40 @@ The same `SearchEmailFilter` is used both as the *in-progress edit buffer* (sugg
 
 ## Decision
 
-### 1. Two notifiers — committed SSOT + draft staging
+### 1. One notifier — the single SSOT
 
-Filter state is split by **lifetime**, not by platform:
-
-| Notifier | Owns UI | Role | Riverpod |
-|---|---|---|---|
-| `SearchFilterNotifier` | result-screen filter chips | **committed** intent — builds the JMAP query | `keepAlive` |
-| `SearchFilterDraftNotifier` | suggestion dropdown + advanced filter form | **staging** — in-progress edits before apply | `keepAlive` (session-scoped) |
+All filter state lives in a single `SearchFilterNotifier` (`keepAlive`). Every surface — suggestion-bar chips, the advanced filter form, and the result-screen chips — **writes** it directly. Mobile surfaces also **read** it directly (`ref.watch`); web `Obx` chip widgets read through the `searchEmailFilter.obs` mirror bridge (see below), which is a compatibility layer, not a second source of truth. There is no draft/staging copy: a field edit in any surface takes effect immediately and is reflected in all the others (bidirectional live sync). This is what fixes #4421.
 
 ```dart
 @Riverpod(keepAlive: true)
 class SearchFilterNotifier extends _$SearchFilterNotifier {
   @override
   SearchEmailFilter build() => SearchEmailFilter.initial();
-  void update({...})            // partial field update
-  void set(SearchEmailFilter f) // commit from draft / apply form
+  void update({...})            // partial field update — live edits
+  void set(SearchEmailFilter f) // full replace (strips pagination cursors)
   void clear()                  // reset, preserve sortOrderType
 }
 ```
 
-`SearchFilterDraftNotifier` has the same interface plus `seedFrom(SearchEmailFilter)`.
-
-**Containment invariant (temporal-staging model):**
-
-```
-search ⊆ draft                  while an input surface is active
-commit:   draft ──► search       one-directional, at Apply / submit
-chip ops: write committed directly; draft re-seeds (draft = search) on next surface open
-executor: reads SearchFilter only — never the draft
-```
-
-The draft is the live edit buffer (committed values + not-yet-applied edits); the committed `SearchFilter` is the snapshot that was last applied. `search ⊆ draft` holds *while a surface is open* (the surface seeds the draft on entry); result-screen chips are a separate path that writes committed directly, and the draft is re-seeded on the next surface open. The surfaces and the chips are never the source of truth simultaneously, so the staleness window is invisible. This is the standard "form draft vs submitted" pattern.
-
-**Why temporal-staging, not field-projection.** The JMAP query needs `subject`, `hasKeyword`, `notKeyword` — these must live in the committed `SearchFilter` that builds the query. The difference between draft and committed is therefore *commit state*, not a subset of fields.
-
-`SearchController.searchEmailFilter.obs` becomes a passive mirror of the committed `SearchFilterNotifier` via one `appProviderContainer.listen()` bridge in `SearchController.onInit()`. All existing web `Obx` chip widgets keep working unchanged.
+`SearchController.searchEmailFilter.obs` is a passive mirror of the notifier via one `appProviderContainer.listen()` bridge in `SearchController.onInit()`, so existing web `Obx` chip widgets keep working unchanged.
 
 **Lifecycle:**
 
 | Event | Action |
 |---|---|
-| Enter search | `search = initial(sortOrder: current)` |
-| Open input surface | `draft.seedFrom(search)` — draft starts at committed, keeps `search ⊆ draft` |
-| Edit field in surface | `draft.update(...)` |
-| Apply / submit | `search.set(draft)` → execute |
-| Chip remove / toggle | `search.update(...)` → execute (draft re-seeds on next surface open) |
-| Cancel surface | drop draft — no manual revert; chips untouched (they read committed) |
-| Disable search | `draft.clear()` + `search.clear()` |
-| Logout | `invalidate(draft)` + `invalidate(search)` |
+| Enter search | `set(initial(sortOrder: current))` |
+| Edit a field (chip toggle or advanced form) | `update(...)` — immediate, visible on every surface |
+| Apply / submit advanced form | `set(form state)` → execute |
+| Result chip remove / toggle | `update(...)` → execute |
+| Clear filter | `set(initial(sortOrder: current))` |
+| Disable search | `clear()` |
+| Logout | `invalidate(searchFilterProvider)` |
 
-Because chips read the committed `SearchFilter` (not the draft), editing the advanced form never makes the background chips flicker, and Cancel needs no cleanup.
+Closing the advanced form without Apply keeps its edits (they were written live); the "Clear filter" button resets them. There is no draft/cancel-revert bookkeeping.
+
+**Why one notifier, not a draft + committed pair.** The first design added a `SearchFilterDraftNotifier` to stage advanced-form edits until Apply so Cancel could discard them. But the product requires those edits to appear in the suggestion/result chips *immediately* — the draft's isolation directly conflicts with that. A single notifier written by every surface is simpler and matches the UX; discard-on-close is replaced by the explicit "Clear filter" action.
+
+**Why every field lives in one filter.** The JMAP query needs `subject`, `hasKeyword`, `notKeyword` alongside the chip fields, so they all belong in the same `SearchEmailFilter`.
 
 ### 2. `SearchEmailFilter` — pagination position removed
 
@@ -171,7 +156,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
 
   Future<void> execute(SearchExecutionIntent intent) async {
     final ctx = SearchExecutionContext(intent: intent,
-        committed: ref.read(searchFilterProvider), ...); // committed only, never draft
+        committed: ref.read(searchFilterProvider), ...); // the SSOT
     var spec = SearchRequestSpec.base(ctx);                      // filter = copy of committed
     spec = _strategies.firstWhere((s) => s.appliesTo(ctx)).apply(spec, ctx);
     final params = SearchEmailQueryParams.from(spec, ctx);       // filter→condition mapping here
@@ -211,29 +196,29 @@ Location: `lib/features/search/email/domain/notifier/search_email_notifier.dart`
 
 ## Invariants
 
-- `SearchEmailFilter.copyWith()` on the committed/draft state is called only inside `SearchFilterNotifier` and `SearchFilterDraftNotifier`. Pagination strategies call `copyWith` only on the transient `SearchRequestSpec.filter` copy. No controller or widget calls it directly.
+- `SearchEmailFilter.copyWith()` on the SSOT is called only inside `SearchFilterNotifier`. Pagination strategies call `copyWith` only on the transient `SearchRequestSpec.filter` copy. No controller or widget calls it directly.
 - `SearchEmailFilter.position` does not exist — pagination position cannot be written to the SSOT (type-enforced). `position` lives only on the transient `SearchRequestSpec`, set by the resolved strategy.
 - Load-more date cursors (`before`, `after`) are never written to the committed SSOT. The resolved strategy sets them on the transient `SearchRequestSpec.filter` copy only. (`startDate`/`endDate` are user-intent bounds and *do* live in the committed SSOT.)
-- The committed `SearchFilterNotifier` is the only state read by `SearchEmailNotifier`. The draft (`SearchFilterDraftNotifier`) is never read by the executor.
-- `search ⊆ draft` while an input surface is active; chip operations write committed directly and the draft re-seeds on next open; commit is one-directional `draft → search`.
+- `SearchFilterNotifier` is the only filter state read by `SearchEmailNotifier`.
+- Every surface (chips + advanced form) writes `SearchFilterNotifier` directly; there is no separate draft to keep in sync.
 - New "which search" variant → new `SearchExecutionIntent` subclass + `switch` branch. New pagination rule → new `SearchPaginationStrategy` + one ordered entry (first-match: only its matching contexts are affected). Neither modifies an existing intent, strategy, controller, or the filter model (OCP on both axes).
 
 ## Architecture
 
-```
-INPUT SURFACES (DRAFT)                         COMMITTED (SEARCH)              EXECUTOR
-suggestion dropdown + advanced form            result-screen chips            SearchEmailNotifier
-        │ open → draft.seedFrom(search)                                       reads SEARCH only
-        │ edit → draft.update()                                              ┌────────────────────┐
-        ▼                                                                    │ execute(intent):   │
- SearchFilterDraftNotifier ──Apply: search.set(draft)──► SearchFilterNotifier│  ctx=read(search)  │
- (keepAlive, session)                                    (keepAlive)         │  spec=base(ctx)    │
-        ▲                                                  │   ▲             │  firstWhere(_strat)│
-        │ seed                                chips read   │   │ chip op     │  switch → interactor│
-        └──────────────────────────────────────────────── │   │ search.update└────────┬───────────┘
-                                              web bridge:  │   └─────────────         ▼
-                                  SearchController.obs ◄───┘            AsyncValue<SearchEmailState>
-                                  (Obx web widgets)                      ├ Mobile: SearchEmailView (ref.watch)
+```text
+ALL SURFACES                                   SSOT                           EXECUTOR
+suggestion chips + advanced form + result chips                               SearchEmailNotifier
+        │ edit → update() / set()                                            reads the SSOT only
+        ▼                                                                    ┌────────────────────┐
+        └───────────────────────────────────► SearchFilterNotifier          │ execute(intent):   │
+                                               (keepAlive)                   │  ctx=read(search)  │
+                                                 │   ▲                       │  spec=base(ctx)    │
+                                    chips read   │   │ edit/chip op          │  firstWhere(_strat)│
+                                                 │   │ update()/set()        │  switch → interactor│
+                                    web bridge:  │   └─────────────          └────────┬───────────┘
+                        SearchController.obs ◄───┘                                    ▼
+                        (Obx web widgets)                                AsyncValue<SearchEmailState>
+                                                                         ├ Mobile: SearchEmailView (ref.watch)
                                                                          └ Web: ThreadController (listen → obs)
 ```
 
@@ -243,7 +228,7 @@ Shared vocabulary for the executor design. Patterns are named to describe the so
 
 | Element | Pattern | Why |
 |---|---|---|
-| `SearchFilterNotifier` / `SearchFilterDraftNotifier` | **Single Source of Truth** + form *draft vs submitted* | One owner per lifetime; chips read committed, surfaces edit draft |
+| `SearchFilterNotifier` | **Single Source of Truth** | One owner for all filter state; every surface reads/writes it |
 | `SearchEmailQueryParams` | **Parameter Object** | Collapses the long interactor argument list into one value |
 | `SearchExecutionIntent` (sealed) + `switch` | tagged-union dispatch | Closed set of "which search"; exhaustive `switch` picks the interactor |
 | `SearchPaginationStrategy` | **Strategy** | Interchangeable pagination algorithms behind one interface |
@@ -276,7 +261,7 @@ GetX is the legacy layer. New search logic is written as Riverpod providers. Get
 | Bridge site | Eliminated when |
 |---|---|
 | `SearchController` mirror listen | web chip widgets migrate to `Consumer` |
-| `AdvancedFilterController` draft reads/writes | controller becomes a thin shell |
+| `AdvancedFilterController` filter reads/writes | controller becomes a thin shell |
 | `SearchEmailController` executor calls | `SearchEmailView` is `ConsumerStatefulWidget` |
 | `ThreadController` executor + result bridge | thread view migrates |
 | `MailboxDashBoardController` invalidate on logout | dashboard migrates |
@@ -289,8 +274,8 @@ When all are gone, `appProviderContainer` is deleted per ADR-0092.
 
 | Alternative | Why rejected |
 |---|---|
-| **Single notifier** for both UI surfaces and the query | Re-creates the divergence the SSOT removes — chips flicker during form edits, Cancel needs manual revert. Two lifetimes (draft/committed) keep them isolated. |
-| **Field-projection** draft ⊋ committed (committed holds fewer *fields*) | The JMAP query needs `subject`/`hasKeyword`/`notKeyword`; they must live in committed. The draft/committed difference is *commit state*, not a field subset → temporal-staging. |
+| **Two notifiers** (committed + a draft staging copy) | Isolates unapplied form edits so Cancel can discard them — but the product needs advanced-form edits visible in the chips *immediately*, which the isolation prevents. Replaced by one notifier + an explicit "Clear filter" action. |
+| **Field-projection** (a second filter holding fewer *fields*) | The JMAP query needs `subject`/`hasKeyword`/`notKeyword` next to the chip fields; splitting them across two filters just moves the problem. One filter holds everything. |
 | **`SearchFilterTransformer` on the filter model** | Writes pagination cursors back into `SearchEmailFilter`, leaking pagination into "user intent" — the opposite of removing `position`. |
 | **No pipeline; inline `switch` in the executor** | Closed for the 3 intents, but the *pagination-rule* axis is open (e.g. `collapseThreads`); inlining forces editing the executor for every new rule (OCP violation). |
 | **Fold pipeline of request transformers** | Order means "precedence over overlapping writes" — adding a rule forces reasoning about which fields others touch. First-match over total strategies removes that coupling. |
@@ -298,17 +283,17 @@ When all are gone, `appProviderContainer` is deleted per ADR-0092.
 ## Consequences
 
 **Positive**
-- `copyWith()` called only in the two notifiers — no diverging filter state between web and mobile
-- Draft vs committed boundary is explicit — chips never flicker during form edits; Cancel is a no-op
+- `copyWith()` called only in the one notifier — no diverging filter state between web and mobile
+- One notifier for every surface — advanced-form edits, chips, and result filters stay consistent (live sync)
 - `position` removed from the model — "user intent only" invariant enforced at the type level
 - Pagination cursors never pollute the committed SSOT — they live on the transient `SearchRequestSpec`
 - `FilterMessageOption` is inbox-only; no hidden filter bleed into JMAP queries
 - OCP on both axes: new "which search" = new `SearchExecutionIntent`; new pagination rule (e.g. `collapseThreads`) = new `SearchPaginationStrategy` + one ordered entry — first-match means insertion never alters contexts outside its guard, so existing code and tests stay green
 - `SearchEmailQueryParams` removes the long interactor argument list and centralizes request construction
-- `_updateMemorySearchFilter`, `_memorySearchFilter`, `_synchronizeSearchFilter`, `listFilterOnSuggestionForm` eliminated
+- `_updateMemorySearchFilter`, `_memorySearchFilter`, `_synchronizeSearchFilter`, `listFilterOnSuggestionForm`, and `SearchFilterDraftNotifier` eliminated
 
 **Negative**
 - `SearchController.searchEmailFilter.obs` bridge persists until web chip widgets migrate to `Consumer`
 - `ThreadController` still bridges result state via `appProviderContainer.listen()` until the thread view migrates
-- `SearchFilterDraftNotifier` is `keepAlive` (session-scoped), so search-disable must explicitly `clear()` both notifiers — missing cleanup leaves stale draft
+- `SearchFilterNotifier` is `keepAlive`, so search-disable must explicitly `clear()` it and logout must `invalidate` it — missing cleanup leaves stale filter state
 - `Session`/`AccountId` inside `SearchEmailQueryParams` is temporary — addressed when `SessionProvider` is introduced
