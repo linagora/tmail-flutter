@@ -272,6 +272,22 @@ void main() {
         )),
       );
     });
+
+    test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
+        'AND featureFailure is not null (no SSO configured, OIDC not available) \n'
+        'THEN loginFormType falls back to the basic auth credential form', () {
+
+      loginController.onBaseUrlChange('https://example.com');
+      loginController.handleFailureViewState(
+        CheckOIDCIsAvailableFailure(CanNotFoundOIDCLinks()),
+      );
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = GetTokenOIDCFailure(NotFoundUrlException());
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value,
+          equals(LoginFormType.credentialForm));
+    });
   });
 
   group('Test handleFailureViewState with AuthenticateOidcOnBrowserFailure', () {
