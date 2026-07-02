@@ -99,9 +99,7 @@ class AdvancedFilterController extends BaseController {
   }
 
   void clearSearchFilter() {
-    appProviderContainer.read(searchFilterProvider.notifier).set(
-          SearchEmailFilter.withSortOrder(sortOrderType.value),
-        );
+    appProviderContainer.read(searchFilterProvider.notifier).clear();
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
     _mailboxDashBoardController.handleClearAdvancedSearchFilterEmail();
@@ -557,9 +555,7 @@ class AdvancedFilterController extends BaseController {
   void _handleClearAllFieldOfAdvancedSearch() {
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
-    appProviderContainer.read(searchFilterProvider.notifier).set(
-          SearchEmailFilter.withSortOrder(sortOrderType.value),
-        );
+    appProviderContainer.read(searchFilterProvider.notifier).clear();
   }
 
   void onSearchAction() {

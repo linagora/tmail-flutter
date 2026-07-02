@@ -99,11 +99,14 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void clearSearchFilter({EmailSortOrderType? sortOrderType}) {
-    appProviderContainer.read(searchFilterProvider.notifier).set(
-          SearchEmailFilter.withSortOrder(
-            sortOrderType ?? searchEmailFilter.value.sortOrderType,
-          ),
-        );
+    final restoredSortOrder =
+        sortOrderType ?? searchEmailFilter.value.sortOrderType;
+    final clearedFilter = SearchEmailFilter.withSortOrder(restoredSortOrder);
+    searchEmailFilter.value = clearedFilter;
+
+    appProviderContainer
+        .read(searchFilterProvider.notifier)
+        .set(clearedFilter);
   }
 
   void updateFilterEmail({
