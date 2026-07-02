@@ -19,6 +19,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_draft_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
@@ -407,13 +408,39 @@ void main() {
       expect(result.error, failure);
     });
 
-    test('load-more failure keeps earlier pages so a retry still appends', () async {
+    test('load-more sets loadMore inProgress while the page is in flight', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearchMore((_) => Stream.fromFuture(pending.future));
+      final inFlight = runExecute(
+        container,
+        LoadMoreIntent(
+          currentCount: 1,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e1')),
+        ),
+      );
+
+      // Mid-flight: the list stays visible and load-more is marked in progress.
+      final loading = container.read(searchEmailProvider);
+      expect(loading.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
+      expect(loading.value?.loadMore, LoadMoreState.inProgress);
+
+      pending.complete(Right(SearchMoreEmailSuccess([emailWith('e2')])));
+      await inFlight;
+      expect(container.read(searchEmailProvider).value?.loadMore, LoadMoreState.idle);
+    });
+
+    test('load-more failure keeps the loaded page and flags loadMore failure', () async {
       final container = containerForSort(EmailSortOrderType.relevance);
 
       stubSearch([emailWith('e1'), emailWith('e2')]);
       await runExecute(container, const NewSearchIntent());
 
-      // Transient load-more failure — state becomes error but must retain [e1, e2].
+      // A load-more failure must not error the whole list — it stays in AsyncData.
       answerSearchMore((_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
       await runExecute(
         container,
@@ -423,9 +450,15 @@ void main() {
           lastEmailId: EmailId(Id('e2')),
         ),
       );
-      expect(container.read(searchEmailProvider).hasError, isTrue);
+      final failed = container.read(searchEmailProvider);
+      expect(failed.hasError, isFalse);
+      expect(
+        failed.value?.emails.map((e) => e.id),
+        [EmailId(Id('e1')), EmailId(Id('e2'))],
+      );
+      expect(failed.value?.loadMore, LoadMoreState.failure);
 
-      // Retry succeeds: the new page appends to the preserved pages, not to nothing.
+      // Retry succeeds: the new page appends to the preserved pages, back to idle.
       stubSearchMore([emailWith('e3')]);
       await runExecute(
         container,
@@ -435,10 +468,45 @@ void main() {
           lastEmailId: EmailId(Id('e2')),
         ),
       );
+      final retried = container.read(searchEmailProvider);
       expect(
-        container.read(searchEmailProvider).value!.emails.map((e) => e.id),
+        retried.value?.emails.map((e) => e.id),
         [EmailId(Id('e1')), EmailId(Id('e2')), EmailId(Id('e3'))],
       );
+      expect(retried.value?.loadMore, LoadMoreState.idle);
+    });
+
+    test('refresh failure keeps the current list instead of erroring', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      when(refreshInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        position: anyNamed('position'),
+        sort: anyNamed('sort'),
+        filter: anyNamed('filter'),
+        collapseThreads: anyNamed('collapseThreads'),
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
+      await runExecute(container, const RefreshChangesIntent(currentCount: 1));
+
+      final result = container.read(searchEmailProvider);
+      expect(result.hasError, isFalse);
+      expect(result.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
+    });
+
+    test('an intermediate success keeps the current state', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      // SearchingState is a non-terminal success (no email list to apply).
+      answerSearch((_) => Stream.value(Right(SearchingState())));
+
+      await runExecute(container, const NewSearchIntent());
+
+      // No page was produced, so the first-page spinner stays on.
+      expect(container.read(searchEmailProvider).isLoading, isTrue);
     });
 
     test('interactor stream error surfaces as AsyncError', () async {
@@ -448,6 +516,64 @@ void main() {
       await runExecute(container, const NewSearchIntent());
 
       expect(container.read(searchEmailProvider).hasError, isTrue);
+    });
+
+    test('refresh replaces the current list rather than appending', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+
+      stubSearch([emailWith('e1'), emailWith('e2')]);
+      await runExecute(container, const NewSearchIntent());
+
+      stubRefresh([emailWith('r1')]);
+      await runExecute(container, const RefreshChangesIntent(currentCount: 2));
+
+      final result = container.read(searchEmailProvider);
+      expect(result.value?.emails.map((e) => e.id), [EmailId(Id('r1'))]);
+      expect(result.value?.loadMore, LoadMoreState.idle);
+    });
+
+    test('a stale load-more never appends onto a newer result', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      // A slow load-more is in flight when a new search replaces the list.
+      final slowLoadMore = Completer<Either<Failure, Success>>();
+      answerSearchMore((_) => Stream.fromFuture(slowLoadMore.future));
+      final stale = runExecute(
+        container,
+        LoadMoreIntent(
+          currentCount: 1,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e1')),
+        ),
+      );
+
+      stubSearch([emailWith('fresh')]);
+      await runExecute(container, const NewSearchIntent());
+
+      // The stale load-more resolves last; it must not append to [fresh].
+      slowLoadMore.complete(Right(SearchMoreEmailSuccess([emailWith('e2')])));
+      await stale;
+
+      expect(
+        container.read(searchEmailProvider).value?.emails.map((e) => e.id),
+        [EmailId(Id('fresh'))],
+      );
+    });
+
+    test('a response arriving after disposal is dropped without throwing', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearch((_) => Stream.fromFuture(pending.future));
+      final future = runExecute(container, const NewSearchIntent());
+
+      // Logout/session reset invalidates the provider while the search is running.
+      container.dispose();
+      pending.complete(Right(SearchEmailSuccess([emailWith('late')])));
+
+      // The late result must be dropped silently, not throw UnmountedRefException.
+      await expectLater(future, completes);
     });
 
     test('a stale response never overwrites a newer result', () async {

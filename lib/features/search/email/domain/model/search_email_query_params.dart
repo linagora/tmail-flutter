@@ -20,7 +20,6 @@ class SearchEmailQueryParams {
     this.limit,
     this.position,
     this.lastEmailId,
-    this.needRefreshSearchState = false,
   });
 
   final Session session;
@@ -34,5 +33,4 @@ class SearchEmailQueryParams {
 
   /// Load-more only — excludes the cursor row from the appended page.
   final EmailId? lastEmailId;
-  final bool needRefreshSearchState;
 }
