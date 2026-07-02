@@ -8,6 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
@@ -60,6 +61,8 @@ class LoginMessageWidget extends StatelessWidget {
                 return appLocalizations.dnsLookupLoginMessage;
               } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
                 return appLocalizations.noSuitableBrowserForOIDC;
+              } else if (failure is GetTokenOIDCFailure || failure is AuthenticateOidcOnBrowserFailure) {
+                return appLocalizations.ssoRedirectFailedMessage;
               } else if (failure is FeatureFailure) {
                 return _toastManager?.getMessageByException(
                   appLocalizations,

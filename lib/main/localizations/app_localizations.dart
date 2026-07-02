@@ -1485,6 +1485,12 @@ class AppLocalizations {
         name: 'canNotGetToken');
   }
 
+  String get ssoRedirectFailedMessage {
+    return Intl.message(
+        'We could not complete the single sign-on redirection. Please try again.',
+        name: 'ssoRedirectFailedMessage');
+  }
+
   String get moveFolder {
     return Intl.message(
       'Move folder',

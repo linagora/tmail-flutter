@@ -170,11 +170,11 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
+      _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure());
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -237,11 +237,11 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
+      _handleSSORedirectFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure());
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
@@ -597,6 +597,24 @@ class LoginController extends ReloadableController {
       _showPasswordForm();
     } else {
       _showCredentialForm();
+    }
+  }
+
+  /// Route a failure that happened while going through the OIDC/SSO redirects.
+  ///
+  /// When a real SSO setup has been detected (the OIDC feature check succeeded,
+  /// so [featureFailure] is `null`) we must never fall back to basic auth:
+  /// instead we keep the user on the SSO flow, surface the error and offer a
+  /// retry so they can attempt the redirects again.
+  ///
+  /// When OIDC was not actually available ([featureFailure] is set) this is the
+  /// genuine "no SSO configured" path, which still falls back to the basic auth
+  /// credential form as before.
+  void _handleSSORedirectFailure() {
+    if (featureFailure != null) {
+      _handleCommonOIDCFailure();
+    } else {
+      loginFormType.value = LoginFormType.retry;
     }
   }
 
