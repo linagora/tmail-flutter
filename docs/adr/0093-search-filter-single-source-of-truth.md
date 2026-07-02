@@ -100,9 +100,10 @@ All search execution is centralized in `SearchEmailNotifier`. Callers declare **
 sealed class SearchExecutionIntent {}
 class NewSearchIntent      extends SearchExecutionIntent {}
 class LoadMoreIntent       extends SearchExecutionIntent {
-  const LoadMoreIntent({required this.currentCount, required this.lastEmailDate});
+  const LoadMoreIntent({required this.currentCount, required this.lastEmailDate, required this.lastEmailId});
   final int currentCount;
   final UTCDate? lastEmailDate;
+  final EmailId? lastEmailId;   // caller-supplied from the rendered list
 }
 class RefreshChangesIntent extends SearchExecutionIntent {
   const RefreshChangesIntent({required this.currentCount});

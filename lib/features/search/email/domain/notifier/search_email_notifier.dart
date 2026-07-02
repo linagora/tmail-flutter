@@ -56,7 +56,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     required Properties properties,
     required bool collapseThreads,
     required Set<MailboxId>? trashSpamMailboxIds,
-    PresentationEmail? lastEmail,
   }) async {
     final requestId = ++_requestId;
 
@@ -69,7 +68,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
         properties: properties,
         collapseThreads: collapseThreads,
         trashSpamMailboxIds: trashSpamMailboxIds,
-        lastEmail: lastEmail,
       );
     } catch (error, stackTrace) {
       if (requestId != _requestId) return;
@@ -165,7 +163,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     required Properties properties,
     required bool collapseThreads,
     required Set<MailboxId>? trashSpamMailboxIds,
-    required PresentationEmail? lastEmail,
   }) {
     final committed = ref.read(searchFilterProvider);
     final ctx = SearchExecutionContext(
@@ -188,7 +185,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
           ? UnsignedInt(intent.currentCount)
           : spec.limit,
       position: spec.position,
-      lastEmailId: lastEmail?.id,
+      lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
     );
   }
 

@@ -167,9 +167,8 @@ void main() {
 
   Future<void> runExecute(
     ProviderContainer container,
-    SearchExecutionIntent intent, {
-    PresentationEmail? lastEmail,
-  }) {
+    SearchExecutionIntent intent,
+  ) {
     return container.read(searchEmailProvider.notifier).execute(
           intent,
           session: SessionFixtures.aliceSession,
@@ -177,15 +176,17 @@ void main() {
           properties: Properties({'id'}),
           collapseThreads: false,
           trashSpamMailboxIds: null,
-          lastEmail: lastEmail,
         );
   }
 
   /// Runs the standard load-more (20 rows loaded, cursor [cursorDate]).
   Future<void> runLoadMore(ProviderContainer container) => runExecute(
         container,
-        LoadMoreIntent(currentCount: 20, lastEmailDate: cursorDate),
-        lastEmail: emailWith('last'),
+        LoadMoreIntent(
+          currentCount: 20,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('last')),
+        ),
       );
 
   setUp(() {
@@ -270,6 +271,25 @@ void main() {
       expect((args.filter as EmailFilterCondition).after, cursorDate);
       expect((args.filter as EmailFilterCondition).before, isNull);
     });
+
+    test('threads the intent lastEmailId to searchMore as the page anchor', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+
+      await runLoadMore(container);
+
+      final captured = verify(searchMoreInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        position: anyNamed('position'),
+        filter: anyNamed('filter'),
+        properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
+        lastEmailId: captureAnyNamed('lastEmailId'),
+      )).captured;
+      expect(captured.single, EmailId(Id('last')));
+    });
   });
 
   group('RefreshChangesIntent', () {
@@ -329,8 +349,11 @@ void main() {
       stubSearchMore([emailWith('e3')]);
       await runExecute(
         container,
-        LoadMoreIntent(currentCount: 2, lastEmailDate: cursorDate),
-        lastEmail: emailWith('e2'),
+        LoadMoreIntent(
+          currentCount: 2,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e2')),
+        ),
       );
       expect(
         container.read(searchEmailProvider).value!.emails.map((e) => e.id),
@@ -361,8 +384,11 @@ void main() {
       stubSearchMore(const []);
       await runExecute(
         container,
-        LoadMoreIntent(currentCount: 1, lastEmailDate: cursorDate),
-        lastEmail: emailWith('e1'),
+        LoadMoreIntent(
+          currentCount: 1,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e1')),
+        ),
       );
 
       expect(container.read(searchEmailProvider).value!.canLoadMore, isFalse);
@@ -391,8 +417,11 @@ void main() {
       answerSearchMore((_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
       await runExecute(
         container,
-        LoadMoreIntent(currentCount: 2, lastEmailDate: cursorDate),
-        lastEmail: emailWith('e2'),
+        LoadMoreIntent(
+          currentCount: 2,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e2')),
+        ),
       );
       expect(container.read(searchEmailProvider).hasError, isTrue);
 
@@ -400,8 +429,11 @@ void main() {
       stubSearchMore([emailWith('e3')]);
       await runExecute(
         container,
-        LoadMoreIntent(currentCount: 2, lastEmailDate: cursorDate),
-        lastEmail: emailWith('e2'),
+        LoadMoreIntent(
+          currentCount: 2,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e2')),
+        ),
       );
       expect(
         container.read(searchEmailProvider).value!.emails.map((e) => e.id),
