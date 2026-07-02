@@ -12,10 +12,11 @@ import 'package:model/email/presentation_email.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_context.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
+import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_request.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_pagination_strategies.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_request_spec.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_query_params.dart';
-import 'package:tmail_ui_user/features/search/email/domain/model/search_email_state.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
@@ -26,12 +27,24 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 
 part 'search_email_notifier.g.dart';
 
-/// Single search executor: reads the committed SSOT, resolves pagination, dispatches
-/// by intent, and folds the result (append on load-more, else replace). See ADR-0093.
+/// Invokes the interactor for one execution and yields its terminal result.
+typedef SearchInteractorCall = Future<Either<Failure, Success>> Function();
+
+/// Applies a freshly loaded page of emails to [state].
+typedef SearchPageHandler = void Function(List<PresentationEmail> page);
+
+/// Applies an already-logged failure to [state].
+typedef SearchFailureHandler = void Function(
+  Object error,
+  StackTrace stackTrace,
+);
+
+/// Central search executor: resolves pagination from the committed SSOT and folds
+/// each intent's result into an [AsyncValue] of [SearchEmailResult]. See ADR-0093.
 @Riverpod(keepAlive: true)
 class SearchEmailNotifier extends _$SearchEmailNotifier {
-  // Temporary GetX bridge, resolved lazily so build() never touches DI: a missing
-  // interactor becomes an AsyncError in _applyResult, not a throw from build().
+  // Lazy GetX bridge so build() never touches DI; a missing interactor surfaces
+  // as an error at execute time, not a throw from build().
   SearchEmailInteractor get _searchInteractor =>
       Get.find<SearchEmailInteractor>();
   SearchMoreEmailInteractor get _searchMoreInteractor =>
@@ -39,16 +52,17 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   RefreshChangesSearchEmailInteractor get _refreshInteractor =>
       Get.find<RefreshChangesSearchEmailInteractor>();
 
-  /// Request token; a result applies only while it's the latest (drops stale ones).
-  int _requestId = 0;
+  /// Monotonic token; a result applies only while it is the latest.
+  int _latestRequestId = 0;
 
-  /// Base a load-more appends to; kept out of [state] so an error can't erase it.
-  List<PresentationEmail> _loadedEmails = const [];
+  /// Current result, or an empty one before the first search lands.
+  SearchEmailResult get _currentResult =>
+      state.value ?? SearchEmailResult.empty();
 
   @override
-  AsyncValue<SearchEmailState> build() => AsyncData(SearchEmailState.empty());
+  AsyncValue<SearchEmailResult> build() => AsyncData(SearchEmailResult.empty());
 
-  /// Runs [intent] and updates [state]. The committed SSOT is never mutated.
+  /// Runs [intent] and updates [state]; never mutates the committed SSOT.
   Future<void> execute(
     SearchExecutionIntent intent, {
     required Session session,
@@ -56,131 +70,169 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     required Properties properties,
     required bool collapseThreads,
     required Set<MailboxId>? trashSpamMailboxIds,
-  }) async {
-    final requestId = ++_requestId;
+  }) {
+    final request = SearchExecutionRequest(
+      intent: intent,
+      session: session,
+      accountId: accountId,
+      properties: properties,
+      collapseThreads: collapseThreads,
+      trashSpamMailboxIds: trashSpamMailboxIds,
+    );
+    final requestId = ++_latestRequestId;
+    return switch (intent) {
+      NewSearchIntent() => _runNewSearch(requestId, request),
+      LoadMoreIntent() => _runLoadMore(requestId, request),
+      RefreshChangesIntent() => _runRefresh(requestId, request),
+    };
+  }
 
-    final SearchEmailQueryParams params;
+  /// New search: show a first-page spinner, then replace the list or error (a
+  /// fresh search has no prior list to fall back on).
+  Future<void> _runNewSearch(int requestId, SearchExecutionRequest request) {
+    state = const AsyncLoading();
+    return _runGuarded(
+      requestId,
+      () {
+        final params = _resolveQueryParams(request);
+        return _searchInteractor
+            .execute(
+              params.session,
+              params.accountId,
+              limit: params.limit,
+              position: params.position,
+              sort: params.sort,
+              filter: params.filter,
+              properties: params.properties,
+              collapseThreads: params.collapseThreads,
+            )
+            .last;
+      },
+      onPageLoaded: (page) => state = AsyncData(
+        SearchEmailResult(emails: page, canLoadMore: page.isNotEmpty),
+      ),
+      onFailure: (error, stackTrace) => state = AsyncError(error, stackTrace),
+    );
+  }
+
+  /// Load-more: mark the page in progress, then append it. On failure the loaded
+  /// page stays and [LoadMoreState.failure] lets the UI offer a retry.
+  Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
+    state = AsyncData(_currentResult.copyWith(loadMore: LoadMoreState.inProgress));
+    return _runGuarded(
+      requestId,
+      () {
+        final params = _resolveQueryParams(request);
+        return _searchMoreInteractor
+            .execute(
+              params.session,
+              params.accountId,
+              limit: params.limit,
+              sort: params.sort,
+              position: params.position,
+              filter: params.filter,
+              properties: params.properties,
+              collapseThreads: params.collapseThreads,
+              lastEmailId: params.lastEmailId,
+            )
+            .last;
+      },
+      onPageLoaded: (page) => state = AsyncData(_currentResult.copyWith(
+        emails: [..._currentResult.emails, ...page],
+        canLoadMore: page.isNotEmpty,
+        loadMore: LoadMoreState.idle,
+      )),
+      onFailure: (_, __) => state = AsyncData(
+        _currentResult.copyWith(loadMore: LoadMoreState.failure),
+      ),
+    );
+  }
+
+  /// Refresh: replace the list on success; on failure keep the current list, never
+  /// erroring the whole result.
+  Future<void> _runRefresh(int requestId, SearchExecutionRequest request) {
+    return _runGuarded(
+      requestId,
+      () {
+        final params = _resolveQueryParams(request);
+        return _refreshInteractor
+            .execute(
+              params.session,
+              params.accountId,
+              limit: params.limit,
+              position: params.position,
+              sort: params.sort,
+              filter: params.filter,
+              collapseThreads: params.collapseThreads,
+              properties: params.properties,
+            )
+            .last;
+      },
+      onPageLoaded: (page) => state = AsyncData(
+        SearchEmailResult(emails: page, canLoadMore: page.isNotEmpty),
+      ),
+      onFailure: (_, __) {}, // keep the current list
+    );
+  }
+
+  /// Awaits [runInteractor] then applies the result, unless the notifier was
+  /// disposed or a newer request superseded [requestId].
+  Future<void> _runGuarded(
+    int requestId,
+    SearchInteractorCall runInteractor, {
+    required SearchPageHandler onPageLoaded,
+    required SearchFailureHandler onFailure,
+  }) async {
     try {
-      params = _resolveParams(
-        intent,
-        session: session,
-        accountId: accountId,
-        properties: properties,
-        collapseThreads: collapseThreads,
-        trashSpamMailboxIds: trashSpamMailboxIds,
+      final result = await runInteractor();
+      if (!ref.mounted || requestId != _latestRequestId) return;
+      result.fold(
+        (failure) => _logFailure(failure, StackTrace.current, onFailure),
+        (success) {
+          final page = _emailsOf(success);
+          if (page != null) onPageLoaded(page); // else intermediate — keep current
+        },
       );
     } catch (error, stackTrace) {
-      if (requestId != _requestId) return;
-      state = _errorState(error, stackTrace);
-      return;
-    }
-
-    switch (intent) {
-      case NewSearchIntent():
-        state = const AsyncLoading();
-        await _applyResult(
-          requestId,
-          append: false,
-          run: () => _searchInteractor.execute(
-            params.session,
-            params.accountId,
-            limit: params.limit,
-            position: params.position,
-            sort: params.sort,
-            filter: params.filter,
-            properties: params.properties,
-            collapseThreads: params.collapseThreads,
-          ).last,
-        );
-      case LoadMoreIntent():
-        await _applyResult(
-          requestId,
-          append: true,
-          run: () => _searchMoreInteractor.execute(
-            params.session,
-            params.accountId,
-            limit: params.limit,
-            sort: params.sort,
-            position: params.position,
-            filter: params.filter,
-            properties: params.properties,
-            collapseThreads: params.collapseThreads,
-            lastEmailId: params.lastEmailId,
-          ).last,
-        );
-      case RefreshChangesIntent():
-        await _applyResult(
-          requestId,
-          append: false,
-          run: () => _refreshInteractor.execute(
-            params.session,
-            params.accountId,
-            limit: params.limit,
-            position: params.position,
-            sort: params.sort,
-            filter: params.filter,
-            collapseThreads: params.collapseThreads,
-            properties: params.properties,
-          ).last,
-        );
+      if (!ref.mounted || requestId != _latestRequestId) return;
+      _logFailure(error, stackTrace, onFailure);
     }
   }
 
-  /// Folds [run]'s result into [state] unless a newer [execute] superseded
-  /// [requestId]. A thrown error becomes [AsyncError], never stuck on loading.
-  Future<void> _applyResult(
-    int requestId, {
-    required bool append,
-    required Future<Either<Failure, Success>> Function() run,
-  }) async {
-    try {
-      final result = await run();
-      if (requestId != _requestId) return;
-      state = _foldSearch(result, append: append);
-    } catch (error, stackTrace) {
-      if (requestId != _requestId) return;
-      state = _errorState(error, stackTrace);
-    }
-  }
-
-  /// Logs to Sentry (error via `exception`, no filter/email content) and returns the
-  /// error state. Pages survive in [_loadedEmails], so a retry still appends.
-  AsyncValue<SearchEmailState> _errorState(Object error, StackTrace stackTrace) {
+  /// Logs the failure (no filter/email content) then delegates to [onFailure].
+  void _logFailure(
+    Object error,
+    StackTrace stackTrace,
+    SearchFailureHandler onFailure,
+  ) {
     logError(
       'SearchEmailNotifier::execute: search execution failed',
       exception: error,
       stackTrace: stackTrace,
     );
-    return AsyncError<SearchEmailState>(error, stackTrace);
+    onFailure(error, stackTrace);
   }
 
-  /// Resolves the interactor args via the pagination strategies. `RefreshChangesIntent`
-  /// caps `limit` at the current row count to keep the same window.
-  SearchEmailQueryParams _resolveParams(
-    SearchExecutionIntent intent, {
-    required Session session,
-    required AccountId accountId,
-    required Properties properties,
-    required bool collapseThreads,
-    required Set<MailboxId>? trashSpamMailboxIds,
-  }) {
+  /// Resolves the interactor args via the pagination strategies for [request].
+  SearchEmailQueryParams _resolveQueryParams(SearchExecutionRequest request) {
+    final intent = request.intent;
     final committed = ref.read(searchFilterProvider);
-    final ctx = SearchExecutionContext(
+    final context = SearchExecutionContext(
       intent: intent,
       committed: committed,
-      collapseThreads: collapseThreads,
+      collapseThreads: request.collapseThreads,
     );
-    final spec = resolveSearchRequestSpec(SearchRequestSpec.base(ctx), ctx);
+    final spec = resolveSearchRequestSpec(SearchRequestSpec.base(context), context);
 
     return SearchEmailQueryParams(
-      session: session,
-      accountId: accountId,
+      session: request.session,
+      accountId: request.accountId,
       filter: spec.filter.mappingToEmailFilterCondition(
-        trashSpamMailboxIds: trashSpamMailboxIds,
+        trashSpamMailboxIds: request.trashSpamMailboxIds,
       ),
       sort: spec.filter.sortOrderType.getSortOrder().toNullable(),
-      properties: properties,
-      collapseThreads: collapseThreads,
+      properties: request.properties,
+      collapseThreads: request.collapseThreads,
       limit: intent is RefreshChangesIntent
           ? UnsignedInt(intent.currentCount)
           : spec.limit,
@@ -189,29 +241,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     );
   }
 
-  /// Folds a result: failure → error; page → append (load-more) or replace; loading →
-  /// keep current. `canLoadMore` stays true while the last page was non-empty.
-  AsyncValue<SearchEmailState> _foldSearch(
-    Either<Failure, Success> result, {
-    required bool append,
-  }) {
-    return result.fold(
-      (failure) => _errorState(failure, StackTrace.current),
-      (success) {
-        final newEmails = _emailsOf(success);
-        if (newEmails == null) return state;
-        final emails =
-            append ? [..._loadedEmails, ...newEmails] : newEmails;
-        _loadedEmails = emails;
-        return AsyncData(SearchEmailState(
-          emails: emails,
-          canLoadMore: newEmails.isNotEmpty,
-        ));
-      },
-    );
-  }
-
-  /// Emails of a terminal success, else null (keep current for loading/intermediate).
+  /// Emails of a terminal success, else null (keep current on intermediate).
   List<PresentationEmail>? _emailsOf(Success success) {
     return switch (success) {
       SearchEmailSuccess(:final emailList) => emailList,
