@@ -704,7 +704,9 @@ class MailboxDashBoardController extends ReloadableController
             openComposer(
               ComposerArguments.fromFileShared([sharedMediaFile]),
             );
-          } else if (sharedMediaFile.mimeType == Constant.textPlainMimeType) {
+          } else {
+            // Any other text share (null / charset-suffixed / non-plain text
+            // subtype) is treated as body content so the composer always opens.
             openComposer(
               ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
             );
