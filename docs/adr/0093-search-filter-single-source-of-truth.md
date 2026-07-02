@@ -4,7 +4,9 @@ Date: 2026-06-19
 
 ## Status
 
-Proposed
+Accepted
+
+Updated 2026-07-02 — result model renamed `SearchEmailState` → `SearchEmailResult`, now carrying a `LoadMoreState` sub-status; `SearchEmailQueryParams` drops the unused `needRefreshSearchState`; `AsyncError` is reserved for first-page failure (load-more and refresh preserve the list); the executor guards results against stale requests and disposal.
 
 ## Related ADRs
 
@@ -124,7 +126,6 @@ class SearchEmailQueryParams {
   final UnsignedInt? limit;
   final int? position;
   final EmailId? lastEmailId;          // load-more only
-  final bool needRefreshSearchState;   // search interactor only
 }
 ```
 
@@ -168,7 +169,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   ];
 
   @override
-  AsyncValue<SearchEmailState> build() => const AsyncData(SearchEmailState.empty());
+  AsyncValue<SearchEmailResult> build() => const AsyncData(SearchEmailResult.empty());
 
   Future<void> execute(SearchExecutionIntent intent) async {
     final ctx = SearchExecutionContext(intent: intent,
@@ -184,6 +185,8 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   }
 }
 ```
+
+**Result model & error channel.** The executor exposes `AsyncValue<SearchEmailResult>`, where `SearchEmailResult` holds `emails`, `canLoadMore`, and a `LoadMoreState` (`idle` / `inProgress` / `failure`). The outer `AsyncValue` owns the *first-page* lifecycle only: `AsyncError` means a new search produced no list. Load-more and refresh never blank the list — a failed load-more stays `AsyncData` with `LoadMoreState.failure` (so the UI can offer a retry), a failed refresh keeps the current list. Each intent owns its behaviour in one method; a result is applied only while the notifier is mounted and its request is still the latest (disposal + stale-request guards).
 
 **Why first-match, not a fold.** A fold makes order mean "precedence over overlapping writes," which forces every contributor to reason about which fields other strategies touch. First-match over *total* strategies makes the contract trivial: each strategy fully owns the outcome for the contexts it matches, and only those. Adding a strategy cannot change the result for any context outside its guard, regardless of where it sits — `firstWhere` simply skips it there.
 
@@ -233,7 +236,7 @@ suggestion dropdown + advanced form            result-screen chips            Se
         │ seed                                chips read   │   │ chip op     │  switch → interactor│
         └──────────────────────────────────────────────── │   │ search.update└────────┬───────────┘
                                               web bridge:  │   └─────────────         ▼
-                                  SearchController.obs ◄───┘            AsyncValue<SearchEmailState>
+                                  SearchController.obs ◄───┘            AsyncValue<SearchEmailResult>
                                   (Obx web widgets)                      ├ Mobile: SearchEmailView (ref.watch)
                                                                          └ Web: ThreadController (listen → obs)
 ```
