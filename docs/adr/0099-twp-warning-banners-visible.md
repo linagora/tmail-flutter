@@ -54,6 +54,8 @@ Offline content-read path only (not a live source):
        → re-parsed + re-deduplicated on read → GetEmailContentFromCacheSuccess.emailCurrent.twpWarnings
 ```
 
+`GetEmailContentFromCacheSuccess.emailCurrent` is rebuilt in `get_email_content_interactor.dart`'s `_getStoredOpenedEmail`/`_getStoredNewEmail`, which merge specific `DetailedEmail` fields back into `emailCache.individualHeaders` by name (today: `sMimeStatusHeader`, `identityHeader`). Both merge blocks must also merge `detailedEmail.twpMessages` in as an `AllHeaderValue` (unconditionally, even for a single warning — never collapsed to a bare string), or offline/cached opens silently show zero banners even though `DetailedEmailHiveCache` stores the header correctly.
+
 ### Riverpod notifier
 `TwpWarningNotifier extends Notifier<TwpWarningState>` (`twpWarningNotifierProvider`):
 - `TwpWarningState` holds `EmailId? emailId`, `List<TwpWarning> warnings` (deduplicated), and `Set<String> dismissedKeywords`.

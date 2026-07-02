@@ -44,12 +44,33 @@ This matches how the JMAP layer produces `EmailHeaderValue` via `EmailHeaderValu
 ### New header requests
 Add `IndividualHeaderIdentifier.headerMdn.value` and `.listPostHeader.value` to both `ThreadConstants.propertiesGetEmailContent` and `propertiesGetDetailedEmail`. Add only `headerMdn` to `trackedHeaderIds` (`listPostHeader` already present — do not duplicate).
 
-Existing fallback logic needs no call-site changes once these arrive:
-- `hasRequestReadReceipt`: `headers.readReceiptHasBeenRequested || headerMdn != null`.
-- `listPost`: `headers.listPost?.trim() ?? listPostHeader?.value?.trim() ?? ''`.
+`listPost` (`email_extension.dart`) needs no call-site change: `headers.listPost?.trim() ?? listPostHeader?.value?.trim() ?? ''` already falls back to the new header once it arrives.
+
+`hasRequestReadReceipt` (`email_extension.dart`) also needs no change: `headers.readReceiptHasBeenRequested || headerMdn != null`. But this getter is **not** what drives the read-receipt prompt on the read view. That prompt is triggered by `Email.hasReadReceipt(Map<MailboxId, PresentationMailbox>)`, called as `success.emailCurrent.hasReadReceipt(...)` from `SingleEmailController`. Its current implementation only checks the raw header:
+```dart
+bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
+  final mailboxCurrent = findMailboxContain(mapMailbox);
+  return !hasMdnSent &&
+      headers.readReceiptHasBeenRequested &&
+      mailboxCurrent?.isSent != true;
+}
+```
+This must be updated to also accept `headerMdn`, e.g. `(headers.readReceiptHasBeenRequested || headerMdn != null) && ...`, otherwise the read-receipt prompt keeps missing emails where the MDN signal only arrives via the new individual header.
 
 ### Scope boundary
-`EmailProperty.headers` / the raw `Set<EmailHeader>` field is never touched. Domain/presentation layers (`PresentationEmail`, `DetailedEmail`) keep their existing typed per-header fields unchanged — only the two Hive cache classes' storage shape changes.
+`EmailProperty.headers` / the raw `Set<EmailHeader>` field is never touched. `PresentationEmail` keeps its existing typed per-header fields unchanged, with the one addition above to `hasReadReceipt()`. `DetailedEmail` gains `headerMdn`/`listPostHeader` fields (`TextHeaderValue?`), mirroring its existing `sMimeStatusHeader`/`identityHeader` fields.
+
+### Offline rebuild path must carry the new fields through
+`GetEmailContentFromCacheSuccess.emailCurrent` is rebuilt in `get_email_content_interactor.dart`'s `_getStoredOpenedEmail`/`_getStoredNewEmail`, which merge specific `DetailedEmail` fields back into `emailCache.individualHeaders` by name:
+```dart
+final map = emailCache.individualHeaders.merge({
+  if (detailedEmail.sMimeStatusHeader != null)
+    IndividualHeaderIdentifier.sMimeStatusHeader: detailedEmail.sMimeStatusHeader!,
+  if (detailedEmail.identityHeader != null)
+    IndividualHeaderIdentifier.identityHeader: detailedEmail.identityHeader!,
+});
+```
+Both merge blocks must gain `headerMdn`/`listPostHeader` entries the same way, or offline/cached content reads silently drop these two headers even though `DetailedEmailHiveCache` stores them correctly — breaking the read-receipt prompt and List-Post UI specifically for offline/cached opens. While touching these blocks, also fix the pre-existing inconsistency where `_getStoredOpenedEmail`'s merge is missing the `identityHeader` entry that `_getStoredNewEmail` already has.
 
 **Read-side fallback — no user-visible regression.** `_buildIndividualHeaders()` (and its `DetailedEmailHiveCache` equivalent) reads the new `individualHeaders` field first; for any `IndividualHeaderIdentifier` **not present** in it, it falls back to reading the corresponding legacy per-header field (`headerCalendarEvent`/`xPriorityHeader`/`importanceHeader`/`priorityHeader`/`unsubscribeHeader` on `EmailCache`; `sMimeStatusHeader`/`identityHeader` on `DetailedEmailHiveCache`) using the existing pre-consolidation reconstruction logic. No cached email loses any header-derived UI at any point, upgrade or not. The legacy fields keep being read (never written) until a later, separate cleanup change confirms every entry has been refreshed at least once post-upgrade and removes the fallback — that cleanup is out of scope here and not required for this phase to ship correctly.
 
@@ -63,6 +84,8 @@ Whichever of Phase 1 / Phase 3 lands second must check the other hasn't already 
 ## Risks
 - Fallback surface spans every consolidated header (calendar-event, priority/importance, list-unsubscribe, S/MIME status, identity header), not just MDN/List-Post — regression-test all of them, including the legacy-field fallback path itself.
 - Duplicate `listPostHeader` entry in `trackedHeaderIds` would iterate twice for no effect — verify none exists before merging.
+- `Email.hasReadReceipt()` (the actual read-receipt prompt trigger, distinct from the unused-by-that-path `hasRequestReadReceipt` getter) must be updated to check `headerMdn`, or the prompt keeps missing MDN-only-signaled emails.
+- `get_email_content_interactor.dart`'s two offline-rebuild merge blocks must add `headerMdn`/`listPostHeader` entries, or offline/cached content reads silently drop these headers even though the cache stores them correctly.
 
 ## Open questions
 - Confirm `EmailCache`'s next free index (23) and `DetailedEmailHiveCache`'s (11, or next-after-Phase-1) immediately before implementation.
