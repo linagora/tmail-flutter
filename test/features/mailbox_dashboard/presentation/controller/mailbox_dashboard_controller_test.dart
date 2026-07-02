@@ -81,6 +81,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -516,7 +518,7 @@ void main() {
       when(context.mounted).thenReturn(true);
 
       // expect query in advanced filter controller update as expected
-      advancedFilterController.setMemorySearchFilter(SearchEmailFilter.initial());
+      appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter.initial());
       advancedFilterController.updateListEmailAddress(FilterField.from, [fromEmailAddress]);
       advancedFilterController.updateListEmailAddress(FilterField.to, [toEmailAddress]);
       advancedFilterController.subjectFilterInputController.text = emailSubject;

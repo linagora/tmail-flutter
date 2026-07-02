@@ -10,8 +10,6 @@ import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 
 extension QuickSearchEmailsExtension on SearchController {
   Future<List<PresentationEmail>> quickSearchEmails({
@@ -41,26 +39,22 @@ extension QuickSearchEmailsExtension on SearchController {
     ));
   } 
 
+  // Suggestion preview reads the committed SSOT (chips write it directly now), not a
+  // staging list — the deferred-staging that caused #4421 is gone.
   Filter? _mappingToFilterOnSuggestionForm({required String query, required String currentUserEmail}) {
-    log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
-    final last7DaysDateRange =  EmailReceiveTimeType.last7Days.toDateRange();
+    log('SearchController::_mappingToFilterOnSuggestionForm()');
+    final filter = searchEmailFilter.value;
     final filterCondition = EmailFilterCondition(
-      text: query.isNotEmpty == true ? query : null,
-      after: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-        ? last7DaysDateRange.start
-        : null,
-      before: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-        ? last7DaysDateRange.end
-        : null,
-      hasAttachment: listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
-        ? true
-        : null,
-      from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe) && currentUserEmail.isNotEmpty
+      text: query.isNotEmpty ? query : null,
+      after: filter.startDate,
+      before: filter.endDate,
+      hasAttachment: filter.hasAttachment ? true : null,
+      from: currentUserEmail.isNotEmpty && filter.from.contains(currentUserEmail)
         ? currentUserEmail
         : null,
-      hasKeyword: listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
+      hasKeyword: filter.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value)
         ? KeyWordIdentifier.emailFlagged.value
-        : null
+        : null,
     );
 
     return filterCondition.hasCondition

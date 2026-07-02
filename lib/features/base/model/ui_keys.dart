@@ -15,6 +15,8 @@ class UiKeys {
   static const String emptyThreadView = 'empty_thread_view';
   static const String emptySearchEmailView = 'empty_search_email_view';
   static const String searchFilterListView = 'search_filter_list_view';
+  // Suggestion-overlay chips; compose with the filter name. Distinct from the result-bar keys.
+  static const String quickSearchFilterButtonPrefix = 'quick_search_filter_button_';
 
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
@@ -29,6 +31,7 @@ class UiKeys {
   static const String openAdvancedSearchButton = 'open_advanced_search_button';
   static const String advancedSearchLabelDropDown = 'advanced_search_label_drop_down';
   static const String advancedSearchSearchButton = 'advanced_search_search_button';
+  static const String advancedSearchHasAttachmentCheckbox = 'advanced_search_has_attachment_checkbox';
 
   static const String mailboxMoreActionButton = 'mailbox_more_action_button';
   static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
