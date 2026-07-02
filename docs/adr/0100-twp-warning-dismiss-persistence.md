@@ -24,9 +24,10 @@ Key facts:
 
 ### Keyword
 ```dart
-static KeyWordIdentifier twpWarningDismissed(int index) => KeyWordIdentifier('twp-warning-dismissed-$index');
+static KeyWordIdentifier twpWarningDismissed(String code, int index) =>
+    KeyWordIdentifier('twp-warning-dismissed-$code-$index');
 ```
-Dismissal targets exactly one `TwpWarning` by its stable `index` (list position).
+Dismissal targets exactly one `TwpWarning` by `code` (backend-stable identifier) combined with `index` (tiebreaker for the unlikely case of duplicate codes on one email). Using `code` as the primary key means that if warning count or order changes across fetches, a stored keyword still maps to the same logical warning rather than the wrong index position.
 
 ### Flow
 ```
@@ -57,8 +58,8 @@ Per confirmed backend contract, offline dismiss is a local-only, non-persistent 
 
 ## Risks
 
-- **Index-based dismissal fragility**: if the set/order of `X-TWP-Message` headers changes between two fetches (a resolved warning, or a new one landing at the same index), a stored `twp-warning-dismissed-N` keyword could silently apply to a different warning next time. Not fixed speculatively (backend contract guarantees order stability within one response, not across time) — flagged for backend/product.
+- **Dismissal key stability**: combining `code` with `index` ensures a stored keyword survives reordering (a different warning at the same index won't inherit a dismissal). Residual gap: if the backend reuses a `code` on a semantically different warning in the future, the old dismissal would still fire. This is an application-layer convention risk, not fixable without a server-generated stable ID — flagged for backend/product.
 
 ## Open questions
 - Should un-dismiss be in scope? Assume out of scope unless product says otherwise.
-- Dismiss key on `code` instead of/alongside `index`, to survive warning-count changes across fetches?
+- What happens if `TwpWarning.code` is ever empty or missing? The parser must guarantee a non-empty code string (defaulting to e.g. `unknown`) so the keyword key is always well-formed — confirm this invariant in the `TwpWarning.parse` implementation.

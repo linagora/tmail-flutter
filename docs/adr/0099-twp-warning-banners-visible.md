@@ -18,7 +18,7 @@ Key facts:
 - `EmailHeaderValue.fromJson` branches on the `:all` suffix, returning `AllHeaderValue(List<EmailHeaderValue>)`; each element is a `TextHeaderValue`.
 - First use of `.all()`/`AllHeaderValue` in this codebase — every other individual header (`xPriorityHeader`, `listUnsubscribeHeader`, `sMimeStatusHeader`, `identityHeader`, `listPostHeader`, `headerCalendarEvent`) is singular. Treat parsing as untested territory.
 - `MailUnsubscribedBanner` (`lib/features/email/presentation/widgets/mail_unsubscribed_banner.dart`) is the structural template: plain `StatelessWidget`, internal `if`-branches, `const SizedBox.shrink()` when nothing to show, copy via `AppLocalizations.of(context)`.
-- This phase introduces the new consolidated `individualHeaders` cache field (not a standalone `twpMessages` field) on both `EmailCache` and `DetailedEmailHiveCache` — Phase 3 later reuses it.
+- This phase introduces the new consolidated `individualHeaders` cache field (not a standalone `twpMessages` field) on `DetailedEmailHiveCache` only — `EmailCache` gets the same field in Phase 3, which later reuses it.
 
 ## Decision
 
