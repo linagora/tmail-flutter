@@ -1,14 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/state_manager.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quick_search_emails_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -35,8 +37,6 @@ void main() {
     searchController = MockSearchController();
     when(searchController.quickSearchEmailInteractor)
         .thenReturn(quickSearchEmailInteractor);
-    when(searchController.listFilterOnSuggestionForm)
-        .thenReturn(<QuickSearchFilter>[].obs);
     when(
       quickSearchEmailInteractor.execute(
         any,
@@ -95,6 +95,38 @@ void main() {
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
         )).called(1);
+      },
+    );
+
+    test(
+      'should pass committed custom date bounds to the suggestion filter',
+      () async {
+        final start = UTCDate(DateTime.utc(2026, 1, 1));
+        final end = UTCDate(DateTime.utc(2026, 1, 31));
+        when(searchController.searchEmailFilter).thenReturn(SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.customRange,
+          startDate: start,
+          endDate: end,
+        ).obs);
+
+        await searchController.quickSearchEmails(
+          session: session,
+          accountId: accountId,
+          ownEmailAddress: ownEmailAddress,
+          query: query,
+        );
+
+        final captured = verify(quickSearchEmailInteractor.execute(
+          session,
+          accountId,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          filter: captureAnyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).captured.single as EmailFilterCondition;
+
+        expect(captured.after, equals(start));
+        expect(captured.before, equals(end));
       },
     );
   });

@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -82,7 +83,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         },
         buttonActionCallback: (filterAction) {
           if (filterAction is QuickSearchFilter) {
-            _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
+            _searchController.toggleQuickSearchFilter(
+              filterAction,
+              currentUserEmail: _dashBoardController.ownEmailAddress.value,
+            );
           }
         },
         listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
@@ -182,12 +186,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       _saveRecentSearch(trimmedQueryString);
     }
 
-    if (_searchController.listFilterOnSuggestionForm.isNotEmpty) {
-      _searchController.applyFilterSuggestionToSearchFilter(
-        _dashBoardController.ownEmailAddress.value,
-      );
-    }
-
     _dashBoardController.searchEmailByQueryString(trimmedQueryString);
   }
 
@@ -219,9 +217,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.searchInputController.text = recent.value;
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
-    _searchController.applyFilterSuggestionToSearchFilter(
-      _dashBoardController.ownEmailAddress.value,
-    );
     _dashBoardController.searchEmailByQueryString(recent.value);
   }
 
@@ -306,16 +301,25 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     QuickSearchSuggestionListState suggestionsListState
   ) {
     return Obx(() {
-      final isSelected = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);
+      final isSelected = searchFilter.isSelected(
+        context,
+        _searchController.searchEmailFilter.value,
+        _searchController.sortOrderFiltered,
+        _dashBoardController.ownEmailAddress.value,
+      );
 
       return SearchFilterButton(
+        key: Key('${UiKeys.quickSearchFilterButtonPrefix}${searchFilter.name}'),
         searchFilter: searchFilter,
         imagePaths: _imagePaths,
         responsiveUtils: _responsiveUtils,
         isSelected: isSelected,
         backgroundColor: searchFilter.getSuggestionBackgroundColor(isSelected: isSelected),
         onDeleteSearchFilterAction: (searchFilter) {
-          _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
+          _searchController.toggleQuickSearchFilter(
+            searchFilter,
+            currentUserEmail: _dashBoardController.ownEmailAddress.value,
+          );
           suggestionsListState.invalidateSuggestions();
         },
       );

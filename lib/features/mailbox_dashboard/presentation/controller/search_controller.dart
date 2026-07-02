@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -22,9 +23,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class SearchController extends BaseController with DateRangePickerMixin {
   final QuickSearchEmailInteractor quickSearchEmailInteractor;
@@ -32,10 +35,13 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
 
   final searchInputController = TextEditingController();
+
+  /// Read-only mirror of the committed SSOT ([searchFilterProvider]) for existing
+  /// `Obx` widgets. Cursors (position/before/after) are still written here locally
+  /// by [updateFilterEmail] until the executor owns them (ticket 5).
   final searchEmailFilter = SearchEmailFilter.initial().obs;
   final searchState = SearchState.initial().obs;
   final isAdvancedSearchViewOpen = false.obs;
-  final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
   final isSearchInputFocused = RxBool(false);
@@ -45,6 +51,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   FocusNode searchFocus = FocusNode();
   FocusNode? keyboardFocusNode;
   String currentSearchText = '';
+  ProviderSubscription<SearchEmailFilter>? _committedFilterSubscription;
 
   SearchController(
     this.quickSearchEmailInteractor,
@@ -57,6 +64,20 @@ class SearchController extends BaseController with DateRangePickerMixin {
     super.onInit();
     searchFocus.addListener(_onSearchFocusChanged);
     onKeyboardShortcutInit();
+    // Mirror committed SSOT → obs so existing Obx widgets keep reading it.
+    // The SSOT never tracks cursors (before/after/position), so re-layer the
+    // obs's local cursors onto every synced value; otherwise an unrelated
+    // user-intent update would silently wipe active pagination (until the
+    // executor owns cursors — ticket 5).
+    _committedFilterSubscription = appProviderContainer.listen<SearchEmailFilter>(
+      searchFilterProvider,
+      (_, next) => searchEmailFilter.value = next.copyWith(
+        beforeOption: optionOf(searchEmailFilter.value.before),
+        afterOption: optionOf(searchEmailFilter.value.after),
+        positionOption: optionOf(searchEmailFilter.value.position),
+      ),
+      fireImmediately: true,
+    );
   }
 
   void _onSearchFocusChanged() {
@@ -78,62 +99,11 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void clearSearchFilter({EmailSortOrderType? sortOrderType}) {
-    searchEmailFilter.value = SearchEmailFilter.withSortOrder(
-      sortOrderType ?? searchEmailFilter.value.sortOrderType,
-    );
-  }
-
-  void synchronizeSearchFilter(SearchEmailFilter searchFilter) {
-    searchEmailFilter.value = searchFilter;
-  }
-
-  void addQuickSearchFilterToSuggestionSearchView(QuickSearchFilter searchFilter) {
-    if (!listFilterOnSuggestionForm.contains(searchFilter)) {
-      listFilterOnSuggestionForm.add(searchFilter);
-    }
-  }
-
-  void deleteQuickSearchFilterFromSuggestionSearchView(QuickSearchFilter searchFilter) {
-    listFilterOnSuggestionForm.remove(searchFilter);
-  }
-
-  void applyFilterSuggestionToSearchFilter(String currentUserEmail) {
-    final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
-      ? EmailReceiveTimeType.last7Days
-      : null;
-
-    final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
-        ? true
-        : null;
-
-    var listFromAddress = searchEmailFilter.value.from;
-    if (currentUserEmail.isNotEmpty &&
-        listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
-      listFromAddress.add(currentUserEmail);
-    }
-
-    final listHasKeyword = listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
-      ? {KeyWordIdentifier.emailFlagged.value}
-      : null;
-
-    final dateRange = receiveTime?.toDateRange();
-    updateFilterEmail(
-      emailReceiveTimeTypeOption: receiveTime != null ? Some(receiveTime) : null,
-      startDateOption: receiveTime != null ? optionOf(dateRange!.start) : null,
-      endDateOption: receiveTime != null ? optionOf(dateRange!.end) : null,
-      beforeOption: const None(),
-      afterOption: const None(),
-      positionOption: const None(),
-      hasAttachmentOption: hasAttachment != null ? Some(hasAttachment) : null,
-      fromOption: Some(listFromAddress),
-      hasKeywordOption: listHasKeyword != null ? Some(listHasKeyword) : null,
-    );
-
-    clearFilterSuggestion();
-  }
-
-  void clearFilterSuggestion() {
-    listFilterOnSuggestionForm.clear();
+    appProviderContainer.read(searchFilterProvider.notifier).set(
+          SearchEmailFilter.withSortOrder(
+            sortOrderType ?? searchEmailFilter.value.sortOrderType,
+          ),
+        );
   }
 
   void updateFilterEmail({
@@ -156,27 +126,42 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
   }) {
-    searchEmailFilter.value = searchEmailFilter.value.copyWith(
-      fromOption: fromOption,
-      toOption: toOption,
-      textOption: textOption,
-      subjectOption: subjectOption,
-      notKeywordOption: notKeywordOption,
-      hasKeywordOption: hasKeywordOption,
-      mailboxOption: mailboxOption,
-      emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
-      hasAttachmentOption: hasAttachmentOption,
-      unreadOption: unreadOption,
-      notIncludeEventsOption: notIncludeEventsOption,
-      beforeOption: beforeOption,
-      afterOption: afterOption,
-      startDateOption: startDateOption,
-      endDateOption: endDateOption,
-      positionOption: positionOption,
-      sortOrderTypeOption: sortOrderTypeOption,
-      labelOption: labelOption,
-    );
-    searchEmailFilter.refresh();
+    // User intent → committed SSOT; the mirror syncs it back into the obs.
+    final userIntentOptions = [
+      fromOption, toOption, textOption, subjectOption, notKeywordOption,
+      hasKeywordOption, mailboxOption, emailReceiveTimeTypeOption,
+      hasAttachmentOption, unreadOption, notIncludeEventsOption,
+      startDateOption, endDateOption, sortOrderTypeOption, labelOption,
+    ];
+    if (userIntentOptions.any((option) => option != null)) {
+      appProviderContainer.read(searchFilterProvider.notifier).update(
+            fromOption: fromOption,
+            toOption: toOption,
+            textOption: textOption,
+            subjectOption: subjectOption,
+            notKeywordOption: notKeywordOption,
+            hasKeywordOption: hasKeywordOption,
+            mailboxOption: mailboxOption,
+            emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+            hasAttachmentOption: hasAttachmentOption,
+            unreadOption: unreadOption,
+            notIncludeEventsOption: notIncludeEventsOption,
+            startDateOption: startDateOption,
+            endDateOption: endDateOption,
+            sortOrderTypeOption: sortOrderTypeOption,
+            labelOption: labelOption,
+          );
+    }
+    // Cursors aren't user intent — layered onto the obs only, until the executor
+    // owns them (ticket 5).
+    if (beforeOption != null || afterOption != null || positionOption != null) {
+      searchEmailFilter.value = searchEmailFilter.value.copyWith(
+        beforeOption: beforeOption,
+        afterOption: afterOption,
+        positionOption: positionOption,
+      );
+      searchEmailFilter.refresh();
+    }
   }
 
   EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
@@ -206,6 +191,57 @@ class SearchController extends BaseController with DateRangePickerMixin {
       afterOption: const None(),
       positionOption: option(usesPositionPagination, 0),
     );
+  }
+
+  /// Toggles a suggestion-bar chip straight on the committed SSOT (no staging), so
+  /// the selection takes effect immediately — the fix for #4421.
+  void toggleQuickSearchFilter(
+    QuickSearchFilter filter, {
+    required String currentUserEmail,
+  }) {
+    final current = searchEmailFilter.value;
+    switch (filter) {
+      case QuickSearchFilter.hasAttachment:
+        updateFilterEmail(
+          hasAttachmentOption:
+              current.hasAttachment ? const None() : const Some(true),
+        );
+        break;
+      case QuickSearchFilter.last7Days:
+        if (current.emailReceiveTimeType == EmailReceiveTimeType.last7Days) {
+          updateFilterEmail(
+            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
+            startDateOption: const None(),
+            endDateOption: const None(),
+          );
+        } else {
+          final range = EmailReceiveTimeType.last7Days.toDateRange();
+          updateFilterEmail(
+            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
+            startDateOption: optionOf(range.start),
+            endDateOption: optionOf(range.end),
+          );
+        }
+        break;
+      case QuickSearchFilter.fromMe:
+        if (currentUserEmail.isEmpty) return;
+        final from = Set<String>.of(current.from);
+        from.contains(currentUserEmail)
+            ? from.remove(currentUserEmail)
+            : from.add(currentUserEmail);
+        updateFilterEmail(fromOption: Some(from));
+        break;
+      case QuickSearchFilter.starred:
+        final keywords = Set<String>.of(current.hasKeyword);
+        final flagged = KeyWordIdentifier.emailFlagged.value;
+        keywords.contains(flagged)
+            ? keywords.remove(flagged)
+            : keywords.add(flagged);
+        updateFilterEmail(hasKeywordOption: Some(keywords));
+        break;
+      default:
+        break;
+    }
   }
 
   DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
@@ -303,7 +339,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void clearAllFilterSearch() {
     _clearAllTextInputSimpleSearch();
-    clearFilterSuggestion();
     clearSearchFilter();
     deactivateAdvancedSearch();
     hideAdvancedSearchFormView();
@@ -321,6 +356,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   @override
   void onClose() {
+    _committedFilterSubscription?.close();
     searchInputController.dispose();
     searchFocus.removeListener(_onSearchFocusChanged);
     searchFocus.dispose();

@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -27,7 +29,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -156,11 +160,18 @@ void main() {
     advancedFilterController = AdvancedFilterController();
   });
 
+  setUp(() {
+    // Reset synchronously (not invalidate) so no deferred rebuild flushes mid-test.
+    appProviderContainer
+        .read(searchFilterProvider.notifier)
+        .set(SearchEmailFilter.initial());
+  });
+
   group('AdvancedFilterController::test', () {
     group('applyAdvancedSearchFilter::test', () {
       test('SHOULD make sure memory search filter and search filter should be the same after applying', () async {
         // Arrange
-        advancedFilterController.setMemorySearchFilter(SearchEmailFilter.initial());
+        appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter.initial());
         advancedFilterController.hasKeyWordFilterInputController.text = 'Hello';
         advancedFilterController.notKeyWordFilterInputController.text = 'dab';
         advancedFilterController.listFromEmailAddress = [EmailAddress(null, 'user1@example.com')];
@@ -176,7 +187,7 @@ void main() {
 
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
-        final memorySearchFilter = advancedFilterController.memorySearchFilter;
+        final memorySearchFilter = appProviderContainer.read(searchFilterProvider);
         final searchFilter = searchController.searchEmailFilter.value;
 
         // Assert
@@ -205,7 +216,7 @@ void main() {
           from: {'user1@example.com'},
           to: {'user2@example.com'},
         );
-        advancedFilterController.setMemorySearchFilter(memorySearchFilter);
+        appProviderContainer.read(searchFilterProvider.notifier).set(memorySearchFilter);
 
         // Act
         advancedFilterController.initSearchFilterField(mockBuildContext);
@@ -219,6 +230,72 @@ void main() {
         expect(advancedFilterController.hasAttachment.value, equals(true));
         expect(advancedFilterController.listFromEmailAddress, equals([EmailAddress(null, 'user1@example.com')]));
         expect(advancedFilterController.listToEmailAddress, equals([EmailAddress(null, 'user2@example.com')]));
+      });
+
+      test(
+        'SHOULD seed startDate and endDate from the committed custom range\n'
+        'WHEN initSearchFilterField is called',
+      () async {
+        // Arrange
+        final start = UTCDate(DateTime.utc(2026, 1, 1));
+        final end = UTCDate(DateTime.utc(2026, 1, 31));
+        final memorySearchFilter = SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.customRange,
+          startDate: start,
+          endDate: end,
+        );
+        appProviderContainer.read(searchFilterProvider.notifier).set(memorySearchFilter);
+
+        // Act
+        advancedFilterController.initSearchFilterField(mockBuildContext);
+
+        // Assert
+        expect(advancedFilterController.receiveTimeType.value, equals(EmailReceiveTimeType.customRange));
+        expect(advancedFilterController.startDate.value, equals(start.value.toLocal()));
+        expect(advancedFilterController.endDate.value, equals(end.value.toLocal()));
+      });
+
+      test(
+        'SHOULD preserve the committed custom range through a reopen-and-apply round trip\n'
+        'WHEN initSearchFilterField then applyAdvancedSearchFilter is called',
+      () async {
+        // Arrange
+        final start = UTCDate(DateTime.utc(2026, 1, 1));
+        final end = UTCDate(DateTime.utc(2026, 1, 31));
+        appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter(
+          emailReceiveTimeType: EmailReceiveTimeType.customRange,
+          startDate: start,
+          endDate: end,
+        ));
+
+        // Act: reopen the form, then apply without touching the date range.
+        advancedFilterController.initSearchFilterField(mockBuildContext);
+        advancedFilterController.applyAdvancedSearchFilter();
+        await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
+
+        // Assert: committed dates are not cleared.
+        final committed = appProviderContainer.read(searchFilterProvider);
+        expect(committed.emailReceiveTimeType, equals(EmailReceiveTimeType.customRange));
+        expect(committed.startDate, equals(start));
+        expect(committed.endDate, equals(end));
+      });
+    });
+
+    group('live sync to committed::test', () {
+      test(
+        'SHOULD write the committed filter immediately\n'
+        'WHEN an advanced field changes (chips reflect it without applying)',
+      () {
+        // User ticks fields in the form, no Search yet.
+        advancedFilterController.onHasAttachmentCheckboxChanged(true);
+        advancedFilterController.onStarredCheckboxChanged(true);
+
+        // Committed already carries them, so suggestion chips read them.
+        final committed = appProviderContainer.read(searchFilterProvider);
+        expect(committed.hasAttachment, isTrue);
+        expect(
+          committed.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value),
+          isTrue);
       });
     });
 
@@ -236,7 +313,7 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.subject,
+          appProviderContainer.read(searchFilterProvider).subject,
           'Subject');
       });
 
@@ -253,7 +330,7 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.text,
+          appProviderContainer.read(searchFilterProvider).text,
           SearchQuery('keyword'));
       });
 
@@ -270,7 +347,7 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.notKeyword,
+          appProviderContainer.read(searchFilterProvider).notKeyword,
           {'keyword1','keyword2'});
       });
 
@@ -287,7 +364,7 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.subject,
+          appProviderContainer.read(searchFilterProvider).subject,
           isNull);
       });
 
@@ -304,7 +381,7 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.notKeyword,
+          appProviderContainer.read(searchFilterProvider).notKeyword,
           <String>{});
       });
 
@@ -324,10 +401,10 @@ void main() {
 
         // Assert
         expect(
-          advancedFilterController.memorySearchFilter.subject,
+          appProviderContainer.read(searchFilterProvider).subject,
           'Subject');
         expect(
-          advancedFilterController.memorySearchFilter.notKeyword,
+          appProviderContainer.read(searchFilterProvider).notKeyword,
           <String>{});
       });
     });
