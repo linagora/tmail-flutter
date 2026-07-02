@@ -64,7 +64,11 @@ void main() {
   group('LoadMoreIntent', () {
     test('rejects an empty result in every build mode', () {
       expect(
-        () => LoadMoreIntent(currentCount: 0, lastEmailDate: lastDate),
+        () => LoadMoreIntent(
+          currentCount: 0,
+          lastEmailDate: lastDate,
+          lastEmailId: null,
+        ),
         throwsArgumentError,
       );
     });
@@ -83,7 +87,8 @@ void main() {
       expect(const FreshSearchStrategy().appliesTo(
         contextOf(intent: const NewSearchIntent())), isTrue);
       expect(const FreshSearchStrategy().appliesTo(contextOf(
-        intent: LoadMoreIntent(currentCount: 5, lastEmailDate: null))), isTrue);
+        intent: LoadMoreIntent(
+          currentCount: 5, lastEmailDate: null, lastEmailId: null))), isTrue);
     });
   });
 
@@ -92,13 +97,14 @@ void main() {
       // LoadMore — position-based / collapsed → position == currentCount.
       _CursorCase('LoadMore relevance → position, no date cursors',
           contextOf(
-            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate),
+            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate, lastEmailId: null),
             sortOrder: EmailSortOrderType.relevance,
           ),
           position: 20, before: isNull, after: isNull),
       _CursorCase('LoadMore oldest + collapseThreads → position (CollapsedThread wins)',
           contextOf(
-            intent: LoadMoreIntent(currentCount: 40, lastEmailDate: lastDate),
+            intent: LoadMoreIntent(
+                currentCount: 40, lastEmailDate: lastDate, lastEmailId: null),
             sortOrder: EmailSortOrderType.oldest,
             collapseThreads: true,
           ),
@@ -106,19 +112,20 @@ void main() {
       // LoadMore — date-based → exactly one date cursor, no position.
       _CursorCase('LoadMore oldest → `after` cursor only',
           contextOf(
-            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate),
+            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate, lastEmailId: null),
             sortOrder: EmailSortOrderType.oldest,
           ),
           position: isNull, before: isNull, after: lastDate),
       _CursorCase('LoadMore mostRecent → `before` cursor only',
           contextOf(
-            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate),
+            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate, lastEmailId: null),
             sortOrder: EmailSortOrderType.mostRecent,
           ),
           position: isNull, before: lastDate, after: isNull),
       _CursorCase('LoadMore date sort with null lastEmailDate → no cursor (degenerate, safe)',
           contextOf(
-            intent: LoadMoreIntent(currentCount: 20, lastEmailDate: null),
+            intent: LoadMoreIntent(
+                currentCount: 20, lastEmailDate: null, lastEmailId: null),
             sortOrder: EmailSortOrderType.oldest,
           ),
           position: isNull, before: isNull, after: isNull),
@@ -171,7 +178,8 @@ void main() {
   group('startDate/endDate user bounds are preserved (never treated as cursors)', () {
     final boundCases = <_BoundCase>[
       _BoundCase('LoadMore oldest', LoadMoreIntent(
-          currentCount: 20, lastEmailDate: lastDate), EmailSortOrderType.oldest),
+          currentCount: 20, lastEmailDate: lastDate, lastEmailId: null),
+          EmailSortOrderType.oldest),
       const _BoundCase('NewSearch mostRecent',
           NewSearchIntent(), EmailSortOrderType.mostRecent),
     ];
@@ -228,7 +236,7 @@ void main() {
       ),
       (
         name: 'position load-more clears stale filter cursors',
-        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate, lastEmailId: null),
         sort: EmailSortOrderType.relevance,
         collapse: false,
         position: 15,
@@ -237,7 +245,7 @@ void main() {
       ),
       (
         name: 'collapsed-thread load-more clears stale filter cursors',
-        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate, lastEmailId: null),
         sort: EmailSortOrderType.oldest,
         collapse: true,
         position: 15,
@@ -246,7 +254,7 @@ void main() {
       ),
       (
         name: 'date load-more oldest replaces stale cursors with `after` only',
-        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate, lastEmailId: null),
         sort: EmailSortOrderType.oldest,
         collapse: false,
         position: isNull,
@@ -255,7 +263,7 @@ void main() {
       ),
       (
         name: 'date load-more mostRecent replaces stale cursors with `before` only',
-        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(currentCount: 15, lastEmailDate: lastDate, lastEmailId: null),
         sort: EmailSortOrderType.mostRecent,
         collapse: false,
         position: isNull,
@@ -281,11 +289,11 @@ void main() {
       final contexts = [
         contextOf(intent: const NewSearchIntent(), sortOrder: EmailSortOrderType.relevance),
         contextOf(
-          intent: LoadMoreIntent(currentCount: 5, lastEmailDate: lastDate),
+          intent: LoadMoreIntent(currentCount: 5, lastEmailDate: lastDate, lastEmailId: null),
           sortOrder: EmailSortOrderType.oldest,
         ),
         contextOf(
-          intent: LoadMoreIntent(currentCount: 5, lastEmailDate: lastDate),
+          intent: LoadMoreIntent(currentCount: 5, lastEmailDate: lastDate, lastEmailId: null),
           collapseThreads: true,
         ),
       ];
@@ -303,7 +311,8 @@ void main() {
         startDate: rangeStart,
       );
       final ctx = SearchExecutionContext(
-        intent: LoadMoreIntent(currentCount: 10, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(
+            currentCount: 10, lastEmailDate: lastDate, lastEmailId: null),
         committed: committed,
         collapseThreads: false,
       );
@@ -320,7 +329,7 @@ void main() {
     test('a guarded strategy prepended at the top does not change unmatched contexts', () {
       // Context the new strategy does NOT match: date-sort load-more, no collapse.
       final ctx = contextOf(
-        intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate),
+        intent: LoadMoreIntent(currentCount: 20, lastEmailDate: lastDate, lastEmailId: null),
         sortOrder: EmailSortOrderType.mostRecent,
       );
 

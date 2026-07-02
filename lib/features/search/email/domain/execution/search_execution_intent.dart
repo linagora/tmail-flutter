@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
 /// What search to run — the "which search" axis (pagination is separate, see
 /// `SearchPaginationStrategy`). `sealed` so the executor's `switch` is exhaustive;
@@ -17,7 +18,11 @@ class NewSearchIntent extends SearchExecutionIntent {
 /// constructor enforces it in every build mode so an empty load-more never
 /// becomes a page-1 refetch.
 class LoadMoreIntent extends SearchExecutionIntent {
-  LoadMoreIntent({required this.currentCount, required this.lastEmailDate}) {
+  LoadMoreIntent({
+    required this.currentCount,
+    required this.lastEmailDate,
+    required this.lastEmailId,
+  }) {
     if (currentCount <= 0) {
       throw ArgumentError.value(
         currentCount,
@@ -33,6 +38,10 @@ class LoadMoreIntent extends SearchExecutionIntent {
   /// Last row's `receivedAt` — the cursor for date-based pagination (null if it
   /// has none, leaving no cursor set: a safe degenerate request).
   final UTCDate? lastEmailDate;
+
+  /// Last row's id — the `searchMore` page anchor. Caller-supplied from the
+  /// rendered list (deriving it locally would drift during the GetX transition).
+  final EmailId? lastEmailId;
 }
 
 /// Re-run the current search to fold in server-side changes, replacing the result.
