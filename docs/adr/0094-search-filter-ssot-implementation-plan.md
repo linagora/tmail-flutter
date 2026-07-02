@@ -94,9 +94,10 @@ class NewSearchIntent extends SearchExecutionIntent {
 }
 
 class LoadMoreIntent extends SearchExecutionIntent {
-  const LoadMoreIntent({required this.currentCount, required this.lastEmailDate});
+  const LoadMoreIntent({required this.currentCount, required this.lastEmailDate, required this.lastEmailId});
   final int currentCount;
   final UTCDate? lastEmailDate;
+  final EmailId? lastEmailId;   // page anchor; caller-supplied like the other cursors
 }
 
 class RefreshChangesIntent extends SearchExecutionIntent {
@@ -416,7 +417,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
     required Properties properties,
     required bool collapseThreads,
     required Set<MailboxId>? trashSpamMailboxIds,
-    required PresentationEmail? lastEmail,           // load-more only
   }) async {
     final committed = ref.read(searchFilterProvider);
     final ctx = SearchExecutionContext(
@@ -436,7 +436,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
           ? UnsignedInt((intent).currentCount)
           : spec.limit,
       position: spec.position,
-      lastEmailId: lastEmail?.id,
+      lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
     );
 
     switch (intent) {
@@ -600,19 +600,21 @@ void _searchEmailAction() {
     properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
     collapseThreads: _isCollapseThreadsEnabled,
     trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
-    lastEmail: null,
   );
 }
 
 void searchMoreEmailsAction() {
   if (!canSearchMore || session == null || accountId == null || listResultSearch.isEmpty) return;
   appProviderContainer.read(searchEmailProvider.notifier).execute(
-    LoadMoreIntent(currentCount: listResultSearch.length, lastEmailDate: listResultSearch.last.receivedAt),
+    LoadMoreIntent(
+      currentCount: listResultSearch.length,
+      lastEmailDate: listResultSearch.last.receivedAt,
+      lastEmailId: listResultSearch.last.id,
+    ),
     session: session!, accountId: accountId!,
     properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
     collapseThreads: _isCollapseThreadsEnabled,
     trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
-    lastEmail: listResultSearch.last,
   );
 }
 ```
