@@ -71,7 +71,7 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
 
       result = await Get.to(
         () => const ComposerView(),
-        binding: ComposerBindings(composerId: composerId),
+        binding: ComposerBindings(),
         opaque: false,
         arguments: argsWithId,
       );
