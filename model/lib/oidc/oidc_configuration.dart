@@ -10,12 +10,20 @@ class OIDCConfiguration with EquatableMixin {
   final bool isTWP;
   final String? loginHint;
 
+  /// Whether webFinger actually advertised SSO for this server.
+  ///
+  /// `true` means SSO was confirmed by discovery; `false` means the provider was
+  /// only guessed from the base URL, so the server may not be an SSO server and
+  /// basic auth remains a legitimate fallback when authentication fails.
+  final bool ssoConfirmed;
+
   OIDCConfiguration({
     required this.authority,
     required this.clientId,
     required this.scopes,
     this.isTWP = false,
     this.loginHint,
+    this.ssoConfirmed = false,
   });
 
   String get discoveryUrl {
@@ -33,6 +41,7 @@ class OIDCConfiguration with EquatableMixin {
     scopes,
     isTWP,
     loginHint,
+    ssoConfirmed,
   ];
 }
 
@@ -43,6 +52,7 @@ extension OIDCConfigurationExtension on OIDCConfiguration {
     List<String>? scopes,
     bool? isTWP,
     String? loginHint,
+    bool? ssoConfirmed,
   }) =>
       OIDCConfiguration(
         authority: authority ?? this.authority,
@@ -50,5 +60,6 @@ extension OIDCConfigurationExtension on OIDCConfiguration {
         scopes: scopes ?? this.scopes,
         isTWP: isTWP ?? this.isTWP,
         loginHint: loginHint ?? this.loginHint,
+        ssoConfirmed: ssoConfirmed ?? this.ssoConfirmed,
       );
 }

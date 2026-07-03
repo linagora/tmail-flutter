@@ -104,6 +104,7 @@ class LoginController extends ReloadableController {
   Password? _password;
   Uri? _baseUri;
   FeatureFailure? featureFailure;
+
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
 
@@ -170,11 +171,11 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
+      _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed);
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed));
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -237,11 +238,11 @@ class LoginController extends ReloadableController {
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
-    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
-      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure) {
+      _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed);
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
-        .map((stillFailed) => _handleCommonOIDCFailure());
+        .map((stillFailed) => _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed));
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
@@ -597,6 +598,25 @@ class LoginController extends ReloadableController {
       _showPasswordForm();
     } else {
       _showCredentialForm();
+    }
+  }
+
+  /// Handles a failure while going through the OIDC browser redirect / token
+  /// exchange.
+  ///
+  /// [ssoConfirmed] tells whether webFinger actually advertised SSO for the
+  /// attempted server. When it did not, the provider was only guessed from the
+  /// base URL, so the server may not be an SSO server and basic auth remains a
+  /// legitimate fallback.
+  ///
+  /// When SSO was confirmed, we must never fall back to basic auth; we keep the
+  /// user on the SSO flow, surface the error and offer a retry so they can
+  /// attempt the redirects again.
+  void _handleSSORedirectFailure({required bool ssoConfirmed}) {
+    if (ssoConfirmed) {
+      loginFormType.value = LoginFormType.retry;
+    } else {
+      _handleCommonOIDCFailure();
     }
   }
 

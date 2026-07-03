@@ -57,6 +57,6 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
     .generateEndpointPath();
 
   OidcConfigurationCache toOidcConfigurationCache() {
-    return OidcConfigurationCache(authority, isTWP);
+    return OidcConfigurationCache(authority, isTWP, ssoConfirmed: ssoConfirmed);
   }
 }

@@ -25,7 +25,9 @@ class AuthenticateOidcOnBrowserInteractor {
       yield Right<Failure, Success>(AuthenticateOidcOnBrowserSuccess());
     } catch (e) {
       logWarning('AuthenticateOidcOnBrowserInteractor::execute(): $e');
-      yield Left<Failure, Success>(AuthenticateOidcOnBrowserFailure(e));
+      yield Left<Failure, Success>(
+        AuthenticateOidcOnBrowserFailure(e, ssoConfirmed: config.ssoConfirmed),
+      );
     }
   }
 }
