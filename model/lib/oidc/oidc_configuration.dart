@@ -10,11 +10,8 @@ class OIDCConfiguration with EquatableMixin {
   final bool isTWP;
   final String? loginHint;
 
-  /// Whether webFinger actually advertised SSO for this server.
-  ///
-  /// `true` means SSO was confirmed by discovery; `false` means the provider was
-  /// only guessed from the base URL, so the server may not be an SSO server and
-  /// basic auth remains a legitimate fallback when authentication fails.
+  /// Whether webFinger advertised SSO for this server. `false` means it was only
+  /// guessed from the base URL, so basic auth stays a valid fallback on failure.
   final bool ssoConfirmed;
 
   OIDCConfiguration({

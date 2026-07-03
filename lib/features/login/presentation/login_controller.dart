@@ -601,17 +601,9 @@ class LoginController extends ReloadableController {
     }
   }
 
-  /// Handles a failure while going through the OIDC browser redirect / token
-  /// exchange.
-  ///
-  /// [ssoConfirmed] tells whether webFinger actually advertised SSO for the
-  /// attempted server. When it did not, the provider was only guessed from the
-  /// base URL, so the server may not be an SSO server and basic auth remains a
-  /// legitimate fallback.
-  ///
-  /// When SSO was confirmed, we must never fall back to basic auth; we keep the
-  /// user on the SSO flow, surface the error and offer a retry so they can
-  /// attempt the redirects again.
+  /// On a webFinger-confirmed SSO server we never fall back to basic auth: keep
+  /// the user on the SSO flow and offer a retry. A guessed provider may not be
+  /// SSO, so it keeps the basic-auth fallback.
   void _handleSSORedirectFailure({required bool ssoConfirmed}) {
     if (ssoConfirmed) {
       loginFormType.value = LoginFormType.retry;
