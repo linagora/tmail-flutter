@@ -116,7 +116,9 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   }
 
   /// Load-more: mark the page in progress, then append it. On failure the loaded
-  /// page stays and [LoadMoreState.failure] lets the UI offer a retry.
+  /// page stays and [LoadMoreState.failure] lets the UI offer a retry. Concurrency
+  /// (e.g. a socket-driven refresh arriving mid-load) is handled by [_latestRequestId]
+  /// in [_runGuarded], which drops a superseded page — not by [LoadMoreState].
   Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
     state = AsyncData(_currentResult.copyWith(loadMore: LoadMoreState.inProgress));
     return _runGuarded(

@@ -564,6 +564,41 @@ void main() {
       expect(result.value?.loadMore, LoadMoreState.idle);
     });
 
+    test('a succeeding refresh supersedes an in-flight load-more', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      // A slow load-more is in flight (spinner on) when a refresh supersedes it.
+      final slowLoadMore = Completer<Either<Failure, Success>>();
+      answerSearchMore((_) => Stream.fromFuture(slowLoadMore.future));
+      final stale = runExecute(
+        container,
+        LoadMoreIntent(
+          currentCount: 1,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e1')),
+        ),
+      );
+      expect(
+        container.read(searchEmailProvider).value?.loadMore,
+        LoadMoreState.inProgress,
+      );
+
+      // The refresh succeeds and replaces the list while load-more is still open.
+      stubRefresh([emailWith('r1')]);
+      await runExecute(container, const RefreshChangesIntent(currentCount: 1));
+
+      // The superseded load-more resolves last; its page must not append onto the
+      // refreshed list and must not resurrect the spinner.
+      slowLoadMore.complete(Right(SearchMoreEmailSuccess([emailWith('e2')])));
+      await stale;
+
+      final result = container.read(searchEmailProvider);
+      expect(result.value?.emails.map((e) => e.id), [EmailId(Id('r1'))]);
+      expect(result.value?.loadMore, LoadMoreState.idle);
+    });
+
     test(
       'a refresh failure clears a new-search spinner it superseded',
       () async {
