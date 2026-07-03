@@ -23,9 +23,7 @@ class GetTokenOIDCSuccess extends UIState {
 
 class GetTokenOIDCFailure extends FeatureFailure {
 
-  /// Whether SSO was confirmed by webFinger for the attempted config. When
-  /// `false` the provider was only guessed from the base URL, so basic auth
-  /// stays a valid fallback.
+  /// Mirrors the attempted config's `OIDCConfiguration.ssoConfirmed`.
   final bool ssoConfirmed;
 
   GetTokenOIDCFailure(
