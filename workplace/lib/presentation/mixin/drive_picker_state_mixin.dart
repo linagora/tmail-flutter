@@ -8,7 +8,7 @@ import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
-typedef OnPickDriveCallback = void Function(DrivePickState state);
+typedef OnPickDriveCallback = Future<void> Function(DrivePickState state);
 
 typedef FetchDriveIntentCallback =
     Future<WorkplaceIntent> Function({
@@ -36,6 +36,9 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     final fetch = pickerFetchIntent;
     _modalOpen = true;
     try {
+      if (!mounted) {
+        throw WorkplaceUIDisposedException();
+      }
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLinkTitle: l10n.addAsLink,
@@ -52,13 +55,13 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );
-      if (result != null) pickerOnCallback?.call(DrivePickResult(result));
+      if (result != null) await pickerOnCallback?.call(DrivePickResult(result));
     } catch (e) {
       logWarning('DrivePickerStateMixin::onPickerTap: $e');
       final message = mounted
           ? AppLocalizations.of(context)?.attachFromDriveFailingMessage
           : null;
-      pickerOnCallback?.call(DrivePickFailure(e, message: message));
+      await pickerOnCallback?.call(DrivePickFailure(e, message: message));
     } finally {
       clearExternalHandler();
       _modalOpen = false;

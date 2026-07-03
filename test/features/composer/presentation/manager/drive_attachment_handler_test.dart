@@ -1,5 +1,7 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
 import 'drive_attachment_handler_test_helper.dart';
@@ -14,17 +16,26 @@ void main() {
   });
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {
-    test('Should insert link html for docs with sharingLink', () {
-      handler.handleDrivePickResult([
+    test('Should insert link html for docs with sharingLink', () async {
+      await handler.handleDrivePickResult([
         linkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) => insertedHtml.add(html), imagePaths: ImagePaths(), appLocalizations: AppLocalizations());
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/report'));
       expect(insertedHtml.first, contains('Report'));
     });
 
-    test('Should prefer sharingLink over downloadLink when doc has both', () {
+    test('Should still work and fall back to hardcoded English label when appLocalizations is omitted', () async {
+      await handler.handleDrivePickResult([
+        linkDoc,
+      ], insertHtml: (html) => insertedHtml.add(html), imagePaths: ImagePaths());
+
+      expect(insertedHtml, hasLength(1));
+      expect(insertedHtml.first, contains('Open in drive'));
+    });
+
+    test('Should prefer sharingLink over downloadLink when doc has both', () async {
       final bothLinksDoc = DriveDocument(
         id: '4',
         name: 'Both',
@@ -34,29 +45,29 @@ void main() {
         downloadLink: Uri.parse('https://drive.example.com/both-dl'),
       );
 
-      handler.handleDrivePickResult([
+      await handler.handleDrivePickResult([
         bothLinksDoc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) => insertedHtml.add(html), imagePaths: ImagePaths(), appLocalizations: AppLocalizations());
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/both'));
     });
 
-    test('Should skip docs with neither sharingLink nor downloadLink', () {
-      handler.handleDrivePickResult([
+    test('Should skip docs with neither sharingLink nor downloadLink', () async {
+      await handler.handleDrivePickResult([
         noLinkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) => insertedHtml.add(html), imagePaths: ImagePaths(), appLocalizations: AppLocalizations());
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, isEmpty);
     });
 
-    test('Should handle mixed docs correctly — only link docs inserted', () {
-      handler.handleDrivePickResult([
+    test('Should handle mixed docs correctly — only link docs inserted', () async {
+      await handler.handleDrivePickResult([
         linkDoc,
         attachmentDoc,
         noLinkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) => insertedHtml.add(html), imagePaths: ImagePaths(), appLocalizations: AppLocalizations());
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('Report'));

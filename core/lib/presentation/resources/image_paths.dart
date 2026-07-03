@@ -284,6 +284,8 @@ class ImagePaths {
   String get icThumbsUp => _getImagePath('ic_thumbs_up.svg');
   String get icAllEmail => _getImagePath('ic_all_email.svg');
   String get icNoTag => _getImagePath('ic_no_tag.svg');
+  String get icDriveImage => _getImagePath('ic_drive_image.png');
+  String get icDriveOther => _getImagePath('ic_drive_other.png');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
