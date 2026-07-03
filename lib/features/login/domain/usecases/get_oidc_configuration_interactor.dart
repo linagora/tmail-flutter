@@ -22,6 +22,9 @@ class GetOIDCConfigurationInteractor {
       final oidcConfiguration = await _oidcRepository.getOIDCConfiguration(oidcResponse);
       final configWithLoginHint = oidcConfiguration.copyWidth(
         loginHint: loginHint,
+        // Only a base-URL guess uses [BaseUrlOidcResponse]; any other response
+        // came from webFinger, which means SSO was actually advertised.
+        ssoConfirmed: oidcResponse is! BaseUrlOidcResponse,
       );
       await _oidcRepository.persistOidcConfiguration(configWithLoginHint);
       yield Right<Failure, Success>(

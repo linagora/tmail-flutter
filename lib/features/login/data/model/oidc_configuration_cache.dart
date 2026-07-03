@@ -13,8 +13,12 @@ class OidcConfigurationCache extends HiveObject with EquatableMixin {
   @HiveField(1)
   final bool isTWP;
 
-  OidcConfigurationCache(this.authority, this.isTWP);
+  // Nullable so entries cached before this field existed read back as null.
+  @HiveField(2)
+  final bool? ssoConfirmed;
+
+  OidcConfigurationCache(this.authority, this.isTWP, {this.ssoConfirmed});
 
   @override
-  List<Object?> get props => [authority, isTWP];
+  List<Object?> get props => [authority, isTWP, ssoConfirmed];
 }

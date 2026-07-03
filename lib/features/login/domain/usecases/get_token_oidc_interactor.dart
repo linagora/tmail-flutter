@@ -55,13 +55,20 @@ class GetTokenOIDCInteractor {
     } on PlatformException catch (e) {
       logWarning('GetTokenOIDCInteractor::execute(): PlatformException ${e.message} - ${e.stacktrace}');
       if (NoSuitableBrowserForOIDCException.verifyException(e)) {
-        yield Left<Failure, Success>(GetTokenOIDCFailure(NoSuitableBrowserForOIDCException()));
+        yield Left<Failure, Success>(GetTokenOIDCFailure(
+          NoSuitableBrowserForOIDCException(),
+          ssoConfirmed: config.ssoConfirmed,
+        ));
       } else {
-        yield Left<Failure, Success>(GetTokenOIDCFailure(e));
+        yield Left<Failure, Success>(
+          GetTokenOIDCFailure(e, ssoConfirmed: config.ssoConfirmed),
+        );
       }
     } catch (e) {
       logWarning('GetTokenOIDCInteractor::execute(): $e');
-      yield Left<Failure, Success>(GetTokenOIDCFailure(e));
+      yield Left<Failure, Success>(
+        GetTokenOIDCFailure(e, ssoConfirmed: config.ssoConfirmed),
+      );
     }
   }
 }
