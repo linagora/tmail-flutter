@@ -329,6 +329,22 @@ void main() {
       expect(loginController.loginFormType.value, equals(LoginFormType.passwordForm));
       expect(loginController.loginFormType.value, isNot(LoginFormType.retry));
     });
+
+    test('WHEN AuthenticateOidcOnBrowserFailure(ssoConfirmed == false) occurs \n'
+        'AND featureFailure is null (previously guarded by featureFailure != null) \n'
+        'THEN it still falls back to basic auth instead of the generic handler', () {
+
+      // Guards the removal of the old `featureFailure != null` condition: the
+      // fallback decision must depend on ssoConfirmed only, not on whether a
+      // prior discovery failure was recorded.
+      loginController.featureFailure = null;
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      loginController.handleFailureViewState(
+        AuthenticateOidcOnBrowserFailure(Exception(), ssoConfirmed: false),
+      );
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.passwordForm));
+    });
   });
 
   group('Test handleUrgentException with AuthenticateOidcOnBrowserFailure', () {
