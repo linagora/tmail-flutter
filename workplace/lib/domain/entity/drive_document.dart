@@ -11,6 +11,7 @@ class DriveDocument with EquatableMixin {
   final String mimeType;
   final Uri? sharingLink;
   final Uri? downloadLink;
+  final DriveDocumentThumbnail? thumbnail;
 
   const DriveDocument({
     required this.id,
@@ -19,10 +20,24 @@ class DriveDocument with EquatableMixin {
     required this.mimeType,
     this.sharingLink,
     this.downloadLink,
+    this.thumbnail,
   });
 
   factory DriveDocument.fromJson(Map<String, dynamic> json) => _$DriveDocumentFromJson(json);
 
   @override
-  List<Object?> get props => [id, name, size, mimeType, sharingLink, downloadLink];
+  List<Object?> get props => [id, name, size, mimeType, sharingLink, downloadLink, thumbnail];
+}
+
+@JsonSerializable(createToJson: false)
+class DriveDocumentThumbnail with EquatableMixin {
+  final Uri? link;
+
+  const DriveDocumentThumbnail({this.link});
+
+  factory DriveDocumentThumbnail.fromJson(Map<String, dynamic> json) =>
+      _$DriveDocumentThumbnailFromJson(json);
+
+  @override
+  List<Object?> get props => [link];
 }

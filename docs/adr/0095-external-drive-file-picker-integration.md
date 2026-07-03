@@ -172,7 +172,10 @@ The `done` payload:
     "size": number,
     "mimeType": "string",
     "sharingLink": "string (optional)",
-    "downloadLink": "string (optional)"
+    "downloadLink": "string (optional)",
+    "thumbnail": {
+      "link": "string (optional, public CDN URL, unlimited lifetime)"
+    }
   }]
 }
 ```
@@ -189,8 +192,20 @@ class DriveDocument with EquatableMixin {
   final String mimeType;
   final Uri? sharingLink;
   final Uri? downloadLink;
+  final DriveDocumentThumbnail? thumbnail;
+}
+
+@JsonSerializable(createToJson: false)
+class DriveDocumentThumbnail with EquatableMixin {
+  final Uri? link;
 }
 ```
+
+`thumbnail.link` is a public CDN-hosted preview/illustration URL for the document (see
+[twake-drive#4024](https://github.com/linagora/twake-drive/pull/4024)). `DriveAttachmentHandler`
+renders it directly as the drive-link card's `<img src>` — no base64 embedding. When absent, the
+card still emits `<img src="">` so the browser shows its native broken-image icon rather than
+leaving the icon zone blank.
 
 Documents are validated during parse (`WorkplaceIntentDoneMessage.fromJson`): entries with negative `size` or non-http(s) URL schemes are silently dropped and logged.
 

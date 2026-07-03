@@ -1001,9 +1001,9 @@ class ComposerController extends BaseController
     }
   }
 
-  void handleDrivePickResult(List<DriveDocument> result) {
+  Future<void> handleDrivePickResult(List<DriveDocument> result) async {
     try {
-      getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+      await getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
         result,
         insertHtml: (html) {
           if (PlatformInfo.isWeb) {
@@ -1012,6 +1012,7 @@ class ComposerController extends BaseController
             htmlEditorApi?.insertHtml(html);
           }
         },
+        appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
       );
     } catch (e) {
       logWarning('ComposerController::handleDrivePickResult:Exception = $e');
