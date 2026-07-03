@@ -350,7 +350,6 @@ class MailboxDashBoardController extends ReloadableController
   jmap.State? _currentEmailState;
   ScrollController? listSearchFilterScrollController;
   StreamSubscription? _pendingSharedFileInfoSubscription;
-  StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
   bool _isFirstSessionLoad = false;
   DeepLinksManager? _deepLinksManager;
@@ -660,15 +659,6 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _registerReceivingFileSharingStream() {
-    _receivingFileSharingStreamSubscription = _emailReceiveManager
-      .receivingFileSharingStream
-      .listen(
-        _emailReceiveManager.setPendingFileInfo,
-        onError: (err) {
-          logWarning('MailboxDashBoardController::_registerReceivingFileSharingStream::receivingFileSharingStream:Exception = $err');
-        },
-      );
-
     _pendingSharedFileInfoSubscription = _emailReceiveManager
       .pendingSharedFileInfo
       .listen(
@@ -3448,7 +3438,6 @@ class MailboxDashBoardController extends ReloadableController
     }
     if (PlatformInfo.isMobile) {
       _pendingSharedFileInfoSubscription?.cancel();
-      _receivingFileSharingStreamSubscription?.cancel();
       _emailReceiveManager.closeEmailReceiveManagerStream();
       _deepLinkDataStreamSubscription?.cancel();
     }
