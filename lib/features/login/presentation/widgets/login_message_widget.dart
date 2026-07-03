@@ -61,7 +61,12 @@ class LoginMessageWidget extends StatelessWidget {
                 return appLocalizations.dnsLookupLoginMessage;
               } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
                 return appLocalizations.noSuitableBrowserForOIDC;
-              } else if (failure is GetTokenOIDCFailure || failure is AuthenticateOidcOnBrowserFailure) {
+              } else if (((failure is GetTokenOIDCFailure && failure.ssoConfirmed) ||
+                      (failure is AuthenticateOidcOnBrowserFailure && failure.ssoConfirmed)) &&
+                  (failure as FeatureFailure).exception is! NetworkException) {
+                // Show only for a confirmed-SSO, non-network failure. Guessed
+                // providers fall back to basic auth; network drops show the
+                // offline message below.
                 return appLocalizations.ssoRedirectFailedMessage;
               } else if (failure is FeatureFailure) {
                 return _toastManager?.getMessageByException(
