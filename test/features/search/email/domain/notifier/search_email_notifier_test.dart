@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filte
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -303,6 +304,23 @@ void main() {
       expect(args.limit?.value, 30);
       expect(args.position, 0);
     });
+
+    test('empty result refresh uses the default first-page limit', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+
+      stubSearch(const []);
+      await runExecute(container, const NewSearchIntent());
+
+      stubRefresh([emailWith('new')]);
+      await runExecute(container, const RefreshChangesIntent(currentCount: 0));
+
+      final args = capturedRefresh();
+      expect(args.limit?.value, ThreadConstants.defaultLimit.value);
+      expect(
+        container.read(searchEmailProvider).value?.emails.map((e) => e.id),
+        [EmailId(Id('new'))],
+      );
+    });
   });
 
   group('draft isolation', () {
@@ -497,6 +515,95 @@ void main() {
       expect(result.hasError, isFalse);
       expect(result.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
     });
+
+    test('a refresh failure clears a load-more spinner it superseded', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      // A slow load-more is in flight (spinner on) when a refresh supersedes it.
+      final slowLoadMore = Completer<Either<Failure, Success>>();
+      answerSearchMore((_) => Stream.fromFuture(slowLoadMore.future));
+      final stale = runExecute(
+        container,
+        LoadMoreIntent(
+          currentCount: 1,
+          lastEmailDate: cursorDate,
+          lastEmailId: EmailId(Id('e1')),
+        ),
+      );
+      expect(
+        container.read(searchEmailProvider).value?.loadMore,
+        LoadMoreState.inProgress,
+      );
+
+      // The refresh fails: it keeps the list but must not leave the dropped
+      // load-more's spinner stuck on.
+      when(
+        refreshInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
+          properties: anyNamed('properties'),
+        ),
+      ).thenAnswer(
+        (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))),
+      );
+      await runExecute(container, const RefreshChangesIntent(currentCount: 1));
+
+      // The superseded load-more resolves last; its result is dropped as stale.
+      slowLoadMore.complete(Right(SearchMoreEmailSuccess([emailWith('e2')])));
+      await stale;
+
+      final result = container.read(searchEmailProvider);
+      expect(result.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
+      expect(result.value?.loadMore, LoadMoreState.idle);
+    });
+
+    test(
+      'a refresh failure clears a new-search spinner it superseded',
+      () async {
+        final container = containerForSort(EmailSortOrderType.relevance);
+
+        // A slow first page is in flight when a refresh supersedes it.
+        final slowSearch = Completer<Either<Failure, Success>>();
+        answerSearch((_) => Stream.fromFuture(slowSearch.future));
+        final stale = runExecute(container, const NewSearchIntent());
+        expect(container.read(searchEmailProvider).isLoading, isTrue);
+
+        when(
+          refreshInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+          ),
+        ).thenAnswer(
+          (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))),
+        );
+        await runExecute(
+          container,
+          const RefreshChangesIntent(currentCount: 0),
+        );
+
+        slowSearch.complete(Right(SearchEmailSuccess([emailWith('e1')])));
+        await stale;
+
+        final result = container.read(searchEmailProvider);
+        expect(result.isLoading, isFalse);
+        expect(result.hasError, isFalse);
+        expect(result.value?.emails, isEmpty);
+        expect(result.value?.loadMore, LoadMoreState.idle);
+      },
+    );
 
     test('an intermediate success keeps the current state', () async {
       final container = containerForSort(EmailSortOrderType.relevance);

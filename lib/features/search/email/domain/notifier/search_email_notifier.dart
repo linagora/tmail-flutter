@@ -151,6 +151,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   /// Refresh: replace the list on success; on failure keep the current list, never
   /// erroring the whole result.
   Future<void> _runRefresh(int requestId, SearchExecutionRequest request) {
+    state = AsyncData(_currentResult.copyWith(loadMore: LoadMoreState.idle));
     return _runGuarded(
       requestId,
       () {
@@ -223,6 +224,9 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
       collapseThreads: request.collapseThreads,
     );
     final spec = resolveSearchRequestSpec(SearchRequestSpec.base(context), context);
+    final limit = intent is RefreshChangesIntent && intent.currentCount > 0
+        ? UnsignedInt(intent.currentCount)
+        : spec.limit;
 
     return SearchEmailQueryParams(
       session: request.session,
@@ -233,9 +237,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
       sort: spec.filter.sortOrderType.getSortOrder().toNullable(),
       properties: request.properties,
       collapseThreads: request.collapseThreads,
-      limit: intent is RefreshChangesIntent
-          ? UnsignedInt(intent.currentCount)
-          : spec.limit,
+      limit: limit,
       position: spec.position,
       lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
     );
