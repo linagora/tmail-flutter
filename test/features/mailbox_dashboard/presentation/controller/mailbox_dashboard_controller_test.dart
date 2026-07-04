@@ -17,7 +17,11 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -800,5 +804,83 @@ void main() {
 
       expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
     });
+  });
+
+  group('handleReceivingFileSharing text share routing:', () {
+    setUp(() {
+      // Force the web path so openComposer routes through the mocked
+      // ComposerManager (the mobile path navigates and can't be observed here).
+      PlatformInfo.isTestingForWeb = true;
+      when(emailReceiveManager.pendingSharedFileInfo)
+          .thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction)
+          .thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      when(mockTwakeAppManager.hasComposer).thenReturn(false);
+
+      Get.put(mailboxDashboardController);
+    });
+
+    tearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    SharedMediaFile textShare(String path, String? mimeType) => SharedMediaFile(
+          path: path,
+          type: SharedMediaType.text,
+          mimeType: mimeType,
+        );
+
+    ComposerArguments capturedComposerArguments() =>
+        verify(composerManager.addComposer(captureAny)).captured.single
+            as ComposerArguments;
+
+    test(
+      'a vCard whose mime carries a charset parameter still opens the composer '
+      'from the shared file (composeFromFileShared)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          textShare('/tmp/contact.vcf', 'text/x-vcard;charset=utf-8'),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, '/tmp/contact.vcf');
+      },
+    );
+
+    test(
+      'a text/plain share with mixed-case charset parameter opens the composer '
+      'from body content (composeFromContentShared)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          textShare('shared body text', 'Text/Plain; Charset=UTF-8'),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(
+          arguments.emailActionType,
+          EmailActionType.composeFromContentShared,
+        );
+        expect(arguments.emailContents, 'shared body text');
+      },
+    );
+
+    test(
+      'a text/html share opens the composer from body content '
+      '(composeFromContentShared)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          textShare('<p>hi</p>', 'text/html;charset=utf-8'),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(
+          arguments.emailActionType,
+          EmailActionType.composeFromContentShared,
+        );
+        expect(arguments.emailContents, '<p>hi</p>');
+      },
+    );
   });
 }

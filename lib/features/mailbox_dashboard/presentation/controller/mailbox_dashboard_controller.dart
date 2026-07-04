@@ -662,19 +662,20 @@ class MailboxDashBoardController extends ReloadableController
     _pendingSharedFileInfoSubscription = _emailReceiveManager
       .pendingSharedFileInfo
       .listen(
-        _handleReceivingFileSharing,
+        handleReceivingFileSharing,
         onError: (err) {
           logWarning('MailboxDashBoardController::_registerReceivingFileSharingStream::pendingSharedFileInfo:Exception = $err');
         },
       );
   }
 
-  void _handleReceivingFileSharing(List<SharedMediaFile> listSharedMediaFile) {
-    log('MailboxDashBoardController::_handleReceivingFileSharing: LIST_LENGTH = ${listSharedMediaFile.length}');
+  @visibleForTesting
+  void handleReceivingFileSharing(List<SharedMediaFile> listSharedMediaFile) {
+    log('MailboxDashBoardController::handleReceivingFileSharing: LIST_LENGTH = ${listSharedMediaFile.length}');
     if (listSharedMediaFile.isEmpty) return;
 
     for (var file in listSharedMediaFile) {
-      log('MailboxDashBoardController::_handleReceivingFileSharing:SharedMediaFile = ${file.toMap()}');
+      log('MailboxDashBoardController::handleReceivingFileSharing:SharedMediaFile = ${file.toMap()}');
     }
 
     if (listSharedMediaFile.length == 1) {
@@ -690,13 +691,19 @@ class MailboxDashBoardController extends ReloadableController
           );
           break;
         case SharedMediaType.text:
-          if (sharedMediaFile.mimeType == Constant.textVCardMimeType) {
+          // Strip any MIME parameters (e.g. ";charset=utf-8") and normalize
+          // case before matching, so a vCard shared as "text/x-vcard;charset=..."
+          // or with different casing still routes to the file branch instead of
+          // leaking its file path into the body.
+          final normalizedMimeType =
+              sharedMediaFile.mimeType?.split(';').first.trim().toLowerCase();
+          if (normalizedMimeType == Constant.textVCardMimeType) {
             openComposer(
               ComposerArguments.fromFileShared([sharedMediaFile]),
             );
           } else {
-            // Any other text share (null / charset-suffixed / non-plain text
-            // subtype) is treated as body content so the composer always opens.
+            // Any other text share (null / non-vCard subtype) is treated as
+            // body content so the composer always opens.
             openComposer(
               ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
             );

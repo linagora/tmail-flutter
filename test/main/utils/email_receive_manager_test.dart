@@ -19,6 +19,12 @@ void main() {
     await messenger.handlePlatformMessage(mediaEventChannel.name, envelope, (_) {});
   }
 
+  Future<void> emitSharedMediaError() async {
+    final envelope = const StandardMethodCodec()
+        .encodeErrorEnvelope(code: 'ERROR', message: 'platform stream failure');
+    await messenger.handlePlatformMessage(mediaEventChannel.name, envelope, (_) {});
+  }
+
   setUp(() {
     messenger.setMockMethodCallHandler(messagesChannel, (call) async => null);
   });
@@ -149,6 +155,34 @@ void main() {
         expect(received.last.first.path, 'mailto:second@example.com');
 
         await subscription.cancel();
+      },
+    );
+
+    test(
+      'an error on the media EventChannel is swallowed and does not stop later '
+      'shares from being delivered',
+      () async {
+        final manager = EmailReceiveManager();
+        manager.registerReceivingFileSharingStreamWhileAppClosed();
+        await Future<void>.delayed(Duration.zero);
+
+        // An error on the platform stream must not throw or tear down the
+        // subscription (cancelOnError is false).
+        await emitSharedMediaError();
+        await Future<void>.delayed(Duration.zero);
+        expect(manager.pendingSharedFileInfo.isClosed, isFalse);
+
+        // A subsequent valid share is still delivered after the error.
+        await emitSharedMediaEvent([
+          {'path': 'mailto:after-error@example.com', 'type': 'url'},
+        ]);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(manager.pendingSharedFileInfo.value, hasLength(1));
+        expect(
+          manager.pendingSharedFileInfo.value.first.path,
+          'mailto:after-error@example.com',
+        );
       },
     );
   });
