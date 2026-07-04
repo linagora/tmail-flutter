@@ -675,6 +675,13 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleReceivingFileSharing: LIST_LENGTH = ${listSharedMediaFile.length}');
     if (listSharedMediaFile.isEmpty) return;
 
+    // Consume the share as soon as it is taken for processing:
+    // pendingSharedFileInfo is a BehaviorSubject that replays its latest
+    // value, so a handled share left in place would re-open the composer
+    // for any future (re)subscriber. Clearing emits an empty list, which
+    // the guard above ignores, so this cannot recurse.
+    _emailReceiveManager.clearPendingFileInfo();
+
     for (var file in listSharedMediaFile) {
       log('MailboxDashBoardController::handleReceivingFileSharing:SharedMediaFile = ${file.toMap()}');
     }
