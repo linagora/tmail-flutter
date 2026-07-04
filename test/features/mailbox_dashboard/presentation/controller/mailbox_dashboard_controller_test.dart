@@ -824,6 +824,12 @@ void main() {
       when(mockTwakeAppManager.hasComposer).thenReturn(false);
 
       Get.put(mailboxDashboardController);
+
+      // The mocks are shared across the whole file; drop interactions
+      // recorded by earlier tests (and by onInit above) so per-test
+      // verify/verifyNever counts start from zero.
+      clearInteractions(composerManager);
+      clearInteractions(emailReceiveManager);
     });
 
     tearDown(() {
@@ -939,6 +945,29 @@ void main() {
           EmailActionType.composeFromContentShared,
         );
         expect(arguments.emailContents, 'plain sentence with no mime');
+      },
+    );
+
+    test(
+      'a handled share is consumed from the manager, so the replaying subject '
+      'cannot re-deliver it to a future subscriber',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          textShare('shared body text', 'text/plain'),
+        ]);
+
+        verify(emailReceiveManager.clearPendingFileInfo()).called(1);
+      },
+    );
+
+    test(
+      'an empty share event is ignored without touching the manager '
+      '(guards against clear-emits-empty recursion)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([]);
+
+        verifyNever(emailReceiveManager.clearPendingFileInfo());
+        verifyNever(composerManager.addComposer(any));
       },
     );
   });
