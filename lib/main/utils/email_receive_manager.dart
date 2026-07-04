@@ -43,8 +43,10 @@ class EmailReceiveManager {
     });
   }
 
-  void closeEmailReceiveManagerStream() {
-    _pendingSharedFileInfo.close();
+  void clearPendingFileInfo() {
+    if (!_pendingSharedFileInfo.isClosed) {
+      _pendingSharedFileInfo.add(List.empty(growable: true));
+    }
   }
 
   void setPendingFileInfo(List<SharedMediaFile> list) {
