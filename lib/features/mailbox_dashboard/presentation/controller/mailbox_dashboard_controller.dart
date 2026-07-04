@@ -3438,7 +3438,7 @@ class MailboxDashBoardController extends ReloadableController
     }
     if (PlatformInfo.isMobile) {
       _pendingSharedFileInfoSubscription?.cancel();
-      _emailReceiveManager.closeEmailReceiveManagerStream();
+      _emailReceiveManager.clearPendingFileInfo();
       _deepLinkDataStreamSubscription?.cancel();
     }
     progressStateController.close();

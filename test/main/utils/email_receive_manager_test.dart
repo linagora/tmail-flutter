@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 void main() {
@@ -104,6 +105,50 @@ void main() {
           manager.pendingSharedFileInfo.value.first.path,
           'mailto:warm@example.com',
         );
+      },
+    );
+
+    test(
+      'clearPendingFileInfo drops pending data but keeps the subject open, so a '
+      'dashboard that reattaches after a teardown still receives later shares',
+      () async {
+        final manager = EmailReceiveManager();
+        manager.registerReceivingFileSharingStreamWhileAppClosed();
+        await Future<void>.delayed(Duration.zero);
+
+        // A first dashboard consumes a share.
+        await emitSharedMediaEvent([
+          {'path': 'mailto:first@example.com', 'type': 'url'},
+        ]);
+        await Future<void>.delayed(Duration.zero);
+        expect(manager.pendingSharedFileInfo.value, hasLength(1));
+
+        // Dashboard tears down: clears the consumed share without closing the
+        // subject (closing would strand the next dashboard's listener).
+        final subjectBeforeClear = manager.pendingSharedFileInfo;
+        manager.clearPendingFileInfo();
+        expect(manager.pendingSharedFileInfo.isClosed, isFalse);
+        expect(manager.pendingSharedFileInfo.value, isEmpty);
+
+        // A new dashboard reattaches to the same, still-open subject.
+        final received = <List<SharedMediaFile>>[];
+        final subscription = manager.pendingSharedFileInfo.listen(received.add);
+
+        // A later live share must reach the reattached listener.
+        await emitSharedMediaEvent([
+          {'path': 'mailto:second@example.com', 'type': 'url'},
+        ]);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          identical(manager.pendingSharedFileInfo, subjectBeforeClear),
+          isTrue,
+        );
+        expect(manager.pendingSharedFileInfo.value, hasLength(1));
+        expect(received.last, hasLength(1));
+        expect(received.last.first.path, 'mailto:second@example.com');
+
+        await subscription.cancel();
       },
     );
   });
