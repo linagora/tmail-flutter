@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
@@ -691,19 +692,18 @@ class MailboxDashBoardController extends ReloadableController
           );
           break;
         case SharedMediaType.text:
-          // Strip any MIME parameters (e.g. ";charset=utf-8") and normalize
-          // case before matching, so a vCard shared as "text/x-vcard;charset=..."
-          // or with different casing still routes to the file branch instead of
-          // leaking its file path into the body.
-          final normalizedMimeType =
-              sharedMediaFile.mimeType?.split(';').first.trim().toLowerCase();
-          if (normalizedMimeType == Constant.textVCardMimeType) {
+          // Android delivers both a shared sentence (EXTRA_TEXT) and a shared
+          // text-format file such as .vcf/.ics/.csv (EXTRA_STREAM) with a
+          // text/* mime type and SharedMediaType.text, so the mime type alone
+          // cannot tell them apart. Only a file share leaves a real file on
+          // disk behind `path` — literal text arrives as the characters
+          // themselves — so route files to attachments and literal text to
+          // the email body.
+          if (sharedMediaFile.isFileShare) {
             openComposer(
               ComposerArguments.fromFileShared([sharedMediaFile]),
             );
           } else {
-            // Any other text share (null / non-vCard subtype) is treated as
-            // body content so the composer always opens.
             openComposer(
               ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
             );
