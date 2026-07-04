@@ -558,5 +558,43 @@ void main() {
       expect(recipientCcButtonFinder, findsOneWidget);
       expect(recipientBccButtonFinder, findsOneWidget);
     });
+
+    testWidgets('WHEN on a native (non-web) tablet-width screen (>= 600)\n'
+        'To field SHOULD show the expand chevron (same as mobile) and NO inline Cc/Bcc buttons', (tester) async {
+      // Simulate an iPad/tablet-width native screen: no isTestingForWeb, so
+      // PlatformInfo.isWeb == false. Regression guard for the bug where native
+      // tablet rendered neither the inline buttons nor the expand chevron.
+      tester.view.physicalSize = const Size(1024, 768);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          prefixRootState: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 900,
+          keyTagEditor: keyEmailTagEditor,
+          toState: PrefixRecipientState.enabled,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+
+      final recipientExpandButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_expand_button'));
+      final recipientCcButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_cc_button'));
+      final recipientBccButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_bcc_button'));
+
+      expect(recipientExpandButtonFinder, findsOneWidget);
+      expect(recipientCcButtonFinder, findsNothing);
+      expect(recipientBccButtonFinder, findsNothing);
+    });
   });
 }
