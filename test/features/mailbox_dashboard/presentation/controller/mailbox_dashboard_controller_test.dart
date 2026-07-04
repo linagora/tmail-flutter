@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -807,10 +809,13 @@ void main() {
   });
 
   group('handleReceivingFileSharing text share routing:', () {
+    late Directory tempShareDir;
+
     setUp(() {
       // Force the web path so openComposer routes through the mocked
       // ComposerManager (the mobile path navigates and can't be observed here).
       PlatformInfo.isTestingForWeb = true;
+      tempShareDir = Directory.systemTemp.createTempSync('shared_media_test');
       when(emailReceiveManager.pendingSharedFileInfo)
           .thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction)
@@ -823,6 +828,7 @@ void main() {
 
     tearDown(() {
       PlatformInfo.isTestingForWeb = false;
+      tempShareDir.deleteSync(recursive: true);
     });
 
     SharedMediaFile textShare(String path, String? mimeType) => SharedMediaFile(
@@ -831,21 +837,57 @@ void main() {
           mimeType: mimeType,
         );
 
+    // A text-category share whose payload is a real file on disk, the shape
+    // Android produces for text-format files (EXTRA_STREAM copied to cache).
+    SharedMediaFile textFileShare(String fileName, String? mimeType) {
+      final file = File('${tempShareDir.path}/$fileName')
+        ..writeAsStringSync('file content');
+      return textShare(file.path, mimeType);
+    }
+
     ComposerArguments capturedComposerArguments() =>
         verify(composerManager.addComposer(captureAny)).captured.single
             as ComposerArguments;
 
     test(
-      'a vCard whose mime carries a charset parameter still opens the composer '
-      'from the shared file (composeFromFileShared)',
+      'a vCard file whose mime carries a charset parameter still opens the '
+      'composer from the shared file (composeFromFileShared)',
       () {
-        mailboxDashboardController.handleReceivingFileSharing([
-          textShare('/tmp/contact.vcf', 'text/x-vcard;charset=utf-8'),
-        ]);
+        final share = textFileShare('contact.vcf', 'text/x-vcard;charset=utf-8');
+
+        mailboxDashboardController.handleReceivingFileSharing([share]);
 
         final arguments = capturedComposerArguments();
         expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
-        expect(arguments.listSharedMediaFile?.single.path, '/tmp/contact.vcf');
+        expect(arguments.listSharedMediaFile?.single.path, share.path);
+      },
+    );
+
+    test(
+      'a vCard file with the standard text/vcard mime (not the legacy x-vcard) '
+      'opens the composer from the shared file (composeFromFileShared)',
+      () {
+        final share = textFileShare('contact.vcf', 'text/vcard');
+
+        mailboxDashboardController.handleReceivingFileSharing([share]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, share.path);
+      },
+    );
+
+    test(
+      'a calendar (.ics) file share opens the composer from the shared file, '
+      'not with the file path pasted into the body',
+      () {
+        final share = textFileShare('event.ics', 'text/calendar');
+
+        mailboxDashboardController.handleReceivingFileSharing([share]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, share.path);
       },
     );
 
@@ -880,6 +922,23 @@ void main() {
           EmailActionType.composeFromContentShared,
         );
         expect(arguments.emailContents, '<p>hi</p>');
+      },
+    );
+
+    test(
+      'a literal text share without any mime type opens the composer from '
+      'body content (composeFromContentShared)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          textShare('plain sentence with no mime', null),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(
+          arguments.emailActionType,
+          EmailActionType.composeFromContentShared,
+        );
+        expect(arguments.emailContents, 'plain sentence with no mime');
       },
     );
   });
