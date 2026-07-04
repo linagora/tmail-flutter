@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -69,6 +70,40 @@ void main() {
 
         expect(received, hasLength(1));
         expect(received.first.path, 'mailto:late@example.com');
+      },
+    );
+
+    test(
+      'an empty getInitialMedia result that resolves after a live share arrives '
+      'must not clobber that share',
+      () async {
+        // Hold getInitialMedia (and reset) pending until we release the gate,
+        // so the live share below is guaranteed to arrive first — reproducing a
+        // warm-app share landing while startup is still settling.
+        final initialMediaGate = Completer<void>();
+        messenger.setMockMethodCallHandler(messagesChannel, (call) async {
+          await initialMediaGate.future;
+          return null; // getInitialMedia -> empty list
+        });
+
+        final manager = EmailReceiveManager();
+        manager.registerReceivingFileSharingStreamWhileAppClosed();
+
+        await emitSharedMediaEvent([
+          {'path': 'mailto:warm@example.com', 'type': 'url'},
+        ]);
+        await Future<void>.delayed(Duration.zero);
+
+        // Now let the empty cold-start result resolve; the guard must keep it
+        // from overwriting the already-buffered live share.
+        initialMediaGate.complete();
+        await Future<void>.delayed(Duration.zero);
+
+        expect(manager.pendingSharedFileInfo.value, hasLength(1));
+        expect(
+          manager.pendingSharedFileInfo.value.first.path,
+          'mailto:warm@example.com',
+        );
       },
     );
   });

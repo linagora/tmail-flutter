@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,15 +20,27 @@ class EmailReceiveManager {
   /// still on the login screen — isn't dropped: the live stream itself
   /// doesn't buffer events emitted before a listener attaches.
   void registerReceivingFileSharingStreamWhileAppClosed() {
-    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
-      setPendingFileInfo(value);
-
-      ReceiveSharingIntent.instance.reset();
-    });
-
     _mediaStreamSubscription ??= ReceiveSharingIntent.instance
       .getMediaStream()
-      .listen(setPendingFileInfo);
+      .listen(
+        setPendingFileInfo,
+        onError: (error) {
+          logWarning('EmailReceiveManager::registerReceivingFileSharingStreamWhileAppClosed::getMediaStream: Exception = $error');
+        },
+      );
+
+    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+      // A share can land on the live stream above before getInitialMedia
+      // resolves. getInitialMedia returns empty on a normal (non-share) launch,
+      // so applying it unconditionally would overwrite that just-arrived share
+      // with an empty list. Only apply the cold-start share when non-empty.
+      if (value.isNotEmpty) {
+        setPendingFileInfo(value);
+      }
+      ReceiveSharingIntent.instance.reset();
+    }).catchError((error) {
+      logWarning('EmailReceiveManager::registerReceivingFileSharingStreamWhileAppClosed::getInitialMedia: Exception = $error');
+    });
   }
 
   void closeEmailReceiveManagerStream() {
