@@ -157,12 +157,17 @@ abstract class ReloadableController extends BaseController {
 
   void handleGetSessionFailure(GetSessionFailure failure) {
     final exception = failure.exception;
-    if (exception is! BadCredentialsException) {
+    final willLogout = exception is BadCredentialsException ||
+        exception is RefreshTokenFailedException ||
+        exception is NotFoundSessionException;
+    // Do not surface an error toast when the session is definitively dead:
+    // the app immediately clears data and redirects to the SSO login, so the
+    // toast would only flash briefly (e.g. "Unexpected error: ...") before the
+    // redirect and confuse the user.
+    if (!willLogout) {
       toastManager.showMessageFailure(failure);
     }
-    if (exception is BadCredentialsException ||
-        exception is RefreshTokenFailedException ||
-        exception is NotFoundSessionException) {
+    if (willLogout) {
       final authErrorType = _sessionLogoutAuthErrorType(exception);
       logError(
         '$runtimeType::handleGetSessionFailure: '

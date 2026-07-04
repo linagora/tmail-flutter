@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -230,6 +231,58 @@ void main() {
         controller.handleGetSessionFailure(GetSessionFailure(const BadCredentialsException()));
 
         expect(controller.wasLoggedOut, isTrue);
+      },
+    );
+  });
+
+  group(
+    'Issue 4679 — handleGetSessionFailure does NOT show an error toast '
+    'when the session is dead and the app redirects to SSO', () {
+    late MockToastManager mockToastManager;
+
+    setUp(() {
+      mockToastManager = Get.find<ToastManager>() as MockToastManager;
+      reset(mockToastManager);
+      controller.wasLoggedOut = false;
+    });
+
+    test(
+      'WHEN GetSessionFailure carries RefreshTokenFailedException\n'
+      'THEN no error toast is shown (redirect to SSO instead)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(RefreshTokenFailedException()));
+
+        verifyNever(mockToastManager.showMessageFailure(any));
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries NotFoundSessionException\n'
+      'THEN no error toast is shown (redirect to SSO instead)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(NotFoundSessionException()));
+
+        verifyNever(mockToastManager.showMessageFailure(any));
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries BadCredentialsException\n'
+      'THEN no error toast is shown (redirect to SSO instead)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const BadCredentialsException()));
+
+        verifyNever(mockToastManager.showMessageFailure(any));
+      },
+    );
+
+    test(
+      'WHEN GetSessionFailure carries a transient error (ConnectionTimeout)\n'
+      'THEN the error toast IS shown (session may still recover)',
+      () {
+        controller.handleGetSessionFailure(GetSessionFailure(const ConnectionTimeout()));
+
+        verify(mockToastManager.showMessageFailure(any)).called(1);
       },
     );
   });
