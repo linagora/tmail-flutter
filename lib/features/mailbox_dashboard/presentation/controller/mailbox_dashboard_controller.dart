@@ -726,6 +726,16 @@ class MailboxDashBoardController extends ReloadableController
                 body: navigationRouter.body,
               ),
             );
+          } else if (PlatformInfo.isIOS) {
+            // On iOS a url-type event can only originate from the share
+            // extension (the plugin ignores every other URL), so a non-mailto
+            // link share goes into the email body. On Android, shared links
+            // arrive as text/plain and never reach here — its url-type events
+            // are deep-link VIEW intents (e.g. twakemail.mobile://openApp)
+            // owned by DeepLinksManager and must stay ignored.
+            openComposer(
+              ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
+            );
           }
           break;
         case SharedMediaType.mailto:
