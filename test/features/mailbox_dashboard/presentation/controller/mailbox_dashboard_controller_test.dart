@@ -808,7 +808,7 @@ void main() {
     });
   });
 
-  group('handleReceivingFileSharing text share routing:', () {
+  group('handleReceivingFileSharing share routing:', () {
     late Directory tempShareDir;
 
     setUp(() {
@@ -967,6 +967,38 @@ void main() {
         mailboxDashboardController.handleReceivingFileSharing([]);
 
         verifyNever(emailReceiveManager.clearPendingFileInfo());
+        verifyNever(composerManager.addComposer(any));
+      },
+    );
+
+    SharedMediaFile urlShare(String path) => SharedMediaFile(
+          path: path,
+          type: SharedMediaType.url,
+        );
+
+    test(
+      'a mailto url share opens the composer with recipient and subject '
+      'parsed from the mailto link (composeFromMailtoUri)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          urlShare('mailto:user@example.com?subject=Hello'),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromMailtoUri);
+        expect(arguments.listEmailAddress?.first.email, 'user@example.com');
+        expect(arguments.subject, 'Hello');
+      },
+    );
+
+    test(
+      'a non-mailto url share opens nothing on non-iOS platforms — Android '
+      'url-type events are deep-link VIEW intents owned by DeepLinksManager',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          urlShare('twakemail.mobile://openApp?registrationUrl=example.com'),
+        ]);
+
         verifyNever(composerManager.addComposer(any));
       },
     );

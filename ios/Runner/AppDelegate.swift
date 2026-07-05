@@ -25,14 +25,14 @@ import flutter_local_notifications
         }
         
         let sharingIntent = SwiftReceiveSharingIntentPlugin.instance
-        if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL {
-            if url.scheme == "mailto" {
-                if let url = handleEmailAndress(open: url) {
-                    let corrected = launchOptions!.map { (key, value) in key != .url ? (key, value) : (key, url) }
-                    
-                    return sharingIntent.application(application, didFinishLaunchingWithOptions: Dictionary(uniqueKeysWithValues: corrected))
-                }
-            }
+        if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL,
+           url.scheme == "mailto",
+           let shareUrl = handleMailtoUrl(open: url) {
+            // Buffer the mailto share as the plugin's initial media, then fall
+            // through to the normal Flutter launch — returning the plugin's
+            // result directly would skip FlutterAppDelegate's engine and window
+            // setup when a mailto tap cold-starts the app.
+            _ = sharingIntent.application(application, didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey.url: shareUrl])
         }
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -88,26 +88,34 @@ import flutter_local_notifications
         }
         
         if url.scheme == "mailto" {
-            if let url = handleEmailAndress(open: url) {
+            if let url = handleMailtoUrl(open: url) {
                 return sharingIntent.application(app, open: url, options: options)
             }
         }
-        
+
         return super.application(app, open: url, options:options)
     }
-    
-    private func handleEmailAndress(open url: URL) -> URL? {
+
+    // Bridges a tapped mailto: link into receive_sharing_intent's pipeline by
+    // writing the same JSON-encoded [SharedMediaFile] blob the share extension
+    // produces — the plugin's handleUrl only decodes that format — and
+    // returning the plugin's ShareMedia redirect URL. The full mailto URI is
+    // kept as the path so Dart can parse recipient, subject and body query
+    // parameters from it.
+    //
+    // Internal (not private): under the UIScene lifecycle UIKit delivers URL
+    // opens to the SceneDelegate, which reuses this bridge; the AppDelegate
+    // paths below only run under the classic lifecycle.
+    func handleMailtoUrl(open url: URL) -> URL? {
         let appDomain = Bundle.main.bundleIdentifier!
-        let appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(Bundle.main.bundleIdentifier!)"
-        let sharedKey = "ShareKey"
-        var sharedText: [String] = []
-        if let email = url.absoluteString.components(separatedBy: ":").last {
-            sharedText.append(email)
-        }
+        let appGroupId = (Bundle.main.object(forInfoDictionaryKey: kAppGroupIdKey) as? String) ?? "group.\(appDomain)"
+        let sharedFile = SharedMediaFile(path: url.absoluteString, type: .url)
+        guard let json = try? JSONEncoder().encode([sharedFile]) else { return nil }
         let userDefaults = UserDefaults(suiteName: appGroupId)
-        userDefaults?.set(sharedText, forKey: sharedKey)
+        userDefaults?.set(json, forKey: kUserDefaultsKey)
+        userDefaults?.removeObject(forKey: kUserDefaultsMessageKey)
         userDefaults?.synchronize()
-        return URL(string: "ShareMedia-\(appDomain)://dataUrl=\(sharedKey)#text")
+        return URL(string: "\(kSchemePrefix)-\(appDomain):share")
     }
     
     // Receive displayed notifications for iOS 10 or later devices.
