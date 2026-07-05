@@ -416,10 +416,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
       _ => false,
     };
 
-    // Native platforms (mobile + tablet) always use the compact expand button;
-    // the inline prefix buttons are a web-only, wide-screen affordance.
-    return shouldCheckPrefix &&
-        (isMobileResponsive || !PlatformInfo.isWeb || widget.isTestingForWeb);
+    // The compact expand button is the exact complement of the inline prefix
+    // buttons (`_isWeb && !isMobileResponsive`): it shows on native platforms
+    // (mobile + tablet) or on a narrow web window.
+    return shouldCheckPrefix && (isMobileResponsive || !_isWeb);
   }
 
   Widget _buildExpandButton() {
