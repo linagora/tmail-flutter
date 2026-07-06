@@ -14,9 +14,12 @@ import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
+import 'web_search_suggestion_robot.dart';
 
 class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
-  WebSearchRobot(PatrolIntegrationTester $) : super($);
+  // Web suggestion sub-robot; assertions reuse the base (hit-test-independent).
+  WebSearchRobot(PatrolIntegrationTester $)
+      : super($, suggestionRobot: WebSearchSuggestionRobot($));
 
   @override
   Future<void> tapOnSearchField() async {
