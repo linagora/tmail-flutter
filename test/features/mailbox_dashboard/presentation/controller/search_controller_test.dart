@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -205,6 +206,54 @@ void main() {
       searchController.clearSearchFilter();
 
       expect(searchController.searchEmailFilter.value.position, isNull);
+    });
+  });
+
+  // The search bar and the advanced "has the words" field are one full-text
+  // term (SSOT.text). Editing either surface must reflect in the other.
+  group('search bar <-> SSOT.text sync', () {
+    test('typing in the search bar commits the term to the SSOT', () {
+      searchController.searchInputController.text = 'hello';
+
+      expect(committed().text?.value, 'hello');
+    });
+
+    test('a blank search bar clears the committed term', () {
+      searchController.searchInputController.text = 'hello';
+      searchController.searchInputController.text = '   ';
+
+      expect(committed().text, isNull);
+    });
+
+    test('committing the term on the SSOT mirrors into the search bar', () {
+      searchController.updateFilterEmail(
+        textOption: Some(SearchQuery('world')),
+      );
+
+      expect(searchController.searchInputController.text, 'world');
+      expect(
+        searchController.searchInputController.selection.baseOffset,
+        'world'.length,
+      );
+    });
+
+    test('clearing the term on the SSOT clears the search bar', () {
+      searchController.updateFilterEmail(
+        textOption: Some(SearchQuery('world')),
+      );
+
+      searchController.updateFilterEmail(textOption: const None());
+
+      expect(searchController.searchInputController.text, isEmpty);
+    });
+
+    test('mirroring a committed term back does not wipe the in-progress edit', () {
+      searchController.searchInputController.text = 'abc';
+
+      // The mirror sees the bar already holds the committed term and skips the
+      // write-back, so the listener feedback loop never clobbers the edit.
+      expect(committed().text?.value, 'abc');
+      expect(searchController.searchInputController.text, 'abc');
     });
   });
 }
