@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -12,7 +13,7 @@ void main() {
 
   setUp(() {
     insertedHtml = [];
-    handler = const DriveAttachmentHandler();
+    handler = DriveAttachmentHandler(fileUtils: FileUtils());
   });
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {
