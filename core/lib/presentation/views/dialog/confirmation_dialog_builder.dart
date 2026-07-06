@@ -261,8 +261,9 @@ class _BodyContent extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    Widget? child;
     if (textContent.trim().isNotEmpty) {
-      return Padding(
+      child = Padding(
         padding: const EdgeInsetsDirectional.only(top: 32),
         child: Text(
           textContent,
@@ -270,7 +271,7 @@ class _BodyContent extends StatelessWidget {
         ),
       );
     } else if (listTextSpan != null) {
-      return Padding(
+      child = Padding(
         padding: const EdgeInsetsDirectional.only(top: 32),
         child: RichText(
           text: TextSpan(
@@ -280,7 +281,12 @@ class _BodyContent extends StatelessWidget {
         ),
       );
     }
-    return const SizedBox.shrink();
+    if (child == null) return const SizedBox.shrink();
+    return Flexible(
+      child: SingleChildScrollView(
+        child: child,
+      ),
+    );
   }
 
   Widget _buildAdditionalContent() {

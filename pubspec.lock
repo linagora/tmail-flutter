@@ -2450,10 +2450,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "9e65dce2bb6c3cd43dce962fc7f546434fce6b55"
+      resolved-ref: fdfc1813a3a263446a18becc795c45fbae4d8f3b
       url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
-    version: "0.1.0"
+    version: "0.1.1"
   typed_data:
     dependency: transitive
     description:
