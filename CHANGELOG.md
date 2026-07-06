@@ -1,3 +1,21 @@
+## [0.30.1] - 2026-07-06
+### Added
+- TF-4484 Propose ADR for TWP warning banners and header cache consolidation
+- TF-4449 Propose ADR for external drive attachments via Intent webview
+
+### Fixed
+- TF-4667 Do not fall back to Basic Auth when SSO is detected
+- Fix Calendar error minified in Sentry reports
+- Fix UnsupportedError in FixedLengthListMixin.clear
+
+### Changed
+- TF-4643 Add search executor with pagination and concurrency guards
+- TF-4642 Add search filter mutation with pagination intent and spec
+- TF-4421 Update search filter ADRs for cursor model and notifier mixin
+- Remove cancel button on send
+- (e2e) Mobile test with Firebase Test Lab
+- (CI) Run web E2E tests in release build too
+
 ## [0.30.0] - 2026-06-30
 ### Added
 - Add Mongolian 
