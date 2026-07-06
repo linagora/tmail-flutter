@@ -15,11 +15,11 @@ class KeyShortcut with EquatableMixin{
     this.meta = false,
   });
 
-  bool matches(String expectedKey, {bool shift = false}) {
+  bool matches(String expectedKey, {bool shift = false, bool ctrl = false, bool meta = false}) {
     return key.toLowerCase() == expectedKey.toLowerCase() &&
         this.shift == shift &&
-        !ctrl &&
-        !meta;
+        this.ctrl == ctrl &&
+        this.meta == meta;
   }
 
   @override
