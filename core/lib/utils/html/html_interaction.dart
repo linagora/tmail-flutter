@@ -399,7 +399,9 @@ class HtmlInteraction {
           type: 'toDart: iframeKeydown',
           key: event.key,
           code: event.code,
-          shift: event.shiftKey
+          shift: event.shiftKey,
+          ctrl: event.ctrlKey,
+          meta: event.metaKey
         };
         window.parent.postMessage(JSON.stringify(payload), "*");
       }

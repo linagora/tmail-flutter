@@ -325,6 +325,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         key: data['key'] as String,
         code: data['code'] as String,
         shift: data['shift'] == true,
+        ctrl: data['ctrl'] == true,
+        meta: data['meta'] == true,
       );
       log('$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
       widget.onIFrameKeyboardShortcutAction?.call(shortcut);
