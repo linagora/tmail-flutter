@@ -1,3 +1,8 @@
+## [0.29.10] - 2026-07-06
+### Fixed
+- Chevron button for tablet composer 
+- Gray screen composer
+
 ## [0.29.9] - 2026-06-24
 ### Fixed
 - Load more in search for oldest
