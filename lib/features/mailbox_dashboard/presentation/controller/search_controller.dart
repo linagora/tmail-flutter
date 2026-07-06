@@ -53,6 +53,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
   String currentSearchText = '';
   ProviderSubscription<SearchEmailFilter>? _committedFilterSubscription;
 
+  /// Guards the search-bar ↔ SSOT.text round-trip so mirroring the committed
+  /// term back into [searchInputController] never re-enters as a fresh edit.
+  bool _isSyncingSearchInputFromFilter = false;
+
   SearchController(
     this.quickSearchEmailInteractor,
     this._saveRecentSearchInteractor,
@@ -71,13 +75,42 @@ class SearchController extends BaseController with DateRangePickerMixin {
     // executor owns cursors — ticket 5).
     _committedFilterSubscription = appProviderContainer.listen<SearchEmailFilter>(
       searchFilterProvider,
-      (_, next) => searchEmailFilter.value = next.copyWith(
-        beforeOption: optionOf(searchEmailFilter.value.before),
-        afterOption: optionOf(searchEmailFilter.value.after),
-        positionOption: optionOf(searchEmailFilter.value.position),
-      ),
+      (_, next) {
+        searchEmailFilter.value = next.copyWith(
+          beforeOption: optionOf(searchEmailFilter.value.before),
+          afterOption: optionOf(searchEmailFilter.value.after),
+          positionOption: optionOf(searchEmailFilter.value.position),
+        );
+        // The search bar and the advanced "has the words" field are the same
+        // full-text term (SSOT.text); keep the bar in lockstep with it.
+        _syncSearchInputFromFilter(next.text);
+      },
       fireImmediately: true,
     );
+    searchInputController.addListener(_onSearchInputChanged);
+  }
+
+  /// Push search-bar edits into the committed SSOT so the advanced "has the
+  /// words" field (and result chips) always reflect the same full-text term.
+  void _onSearchInputChanged() {
+    if (_isSyncingSearchInputFromFilter) return;
+    final value = searchInputController.text.trim();
+    updateFilterEmail(
+      textOption: option(value.isNotEmpty, SearchQuery(value)),
+    );
+  }
+
+  /// Mirror the committed full-text term back onto the search bar. Compares on
+  /// trimmed text so a trailing space being typed is not wiped mid-edit.
+  void _syncSearchInputFromFilter(SearchQuery? text) {
+    final nextText = text?.value ?? '';
+    if (searchInputController.text.trim() == nextText.trim()) return;
+    _isSyncingSearchInputFromFilter = true;
+    searchInputController.value = TextEditingValue(
+      text: nextText,
+      selection: TextSelection.collapsed(offset: nextText.length),
+    );
+    _isSyncingSearchInputFromFilter = false;
   }
 
   void _onSearchFocusChanged() {
@@ -364,6 +397,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   @override
   void onClose() {
     _committedFilterSubscription?.close();
+    searchInputController.removeListener(_onSearchInputChanged);
     searchInputController.dispose();
     searchFocus.removeListener(_onSearchFocusChanged);
     searchFocus.dispose();

@@ -1118,10 +1118,12 @@ class MailboxDashBoardController extends ReloadableController
     }
     _unSelectedMailbox();
 
+    // A bare email address routes to the `from` filter; clear the live text term
+    // so the same string is not also applied as a full-text condition.
     searchController.updateFilterEmail(
-      textOption: !isMailAddress
-        ? Some(SearchQuery(queryString))
-        : null,
+      textOption: isMailAddress
+        ? const None()
+        : Some(SearchQuery(queryString)),
       fromOption: isMailAddress
         ? Some({queryString})
         : null);
