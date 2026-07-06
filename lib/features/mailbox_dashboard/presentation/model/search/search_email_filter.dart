@@ -120,6 +120,12 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     );
   }
 
+  /// True when [address] is the sole sender in `from`. Backs the "from me" chip:
+  /// selected only when `from` holds just the current user, so any extra address
+  /// clears the selection.
+  bool isOnlySender(String address) =>
+      address.isNotEmpty && from.length == 1 && from.first == address;
+
   /// Strips pagination cursors (`position`, `before`, `after`), keeping all user
   /// intent (incl. `startDate`/`endDate` bounds). Notifiers run full replacements
   /// through this so a stale cursor can never enter the SSOT (ADR-0093).

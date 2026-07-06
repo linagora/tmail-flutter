@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
-import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_draft_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
@@ -152,11 +151,9 @@ void main() {
 
   ProviderContainer containerWith({
     SearchEmailFilter? committed,
-    SearchEmailFilter? draft,
   }) {
     final container = ProviderContainer(overrides: [
       if (committed != null) searchFilterProvider.overrideWithValue(committed),
-      if (draft != null) searchFilterDraftProvider.overrideWithValue(draft),
     ]);
     addTearDown(container.dispose);
     return container;
@@ -323,11 +320,12 @@ void main() {
     });
   });
 
-  group('draft isolation', () {
-    test('execute reads the committed filter, never the draft', () async {
+  // Single-notifier SSOT: the executor sources the query from the committed
+  // filter only — there is no draft/staging provider to read from.
+  group('committed SSOT source', () {
+    test('execute reads the committed filter', () async {
       final container = containerWith(
         committed: SearchEmailFilter(subject: 'alpha'),
-        draft: SearchEmailFilter(subject: 'beta'),
       );
 
       await runExecute(container, const NewSearchIntent());

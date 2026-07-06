@@ -1093,7 +1093,6 @@ class MailboxDashBoardController extends ReloadableController
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
-    searchController.clearFilterSuggestion();
     FocusManager.instance.primaryFocus?.unfocus();
     storeEmailSortOrder(searchController.searchEmailFilter.value.sortOrderType);
     dispatchAction(StartSearchEmailAction());
@@ -1118,7 +1117,6 @@ class MailboxDashBoardController extends ReloadableController
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
-    searchController.clearFilterSuggestion();
 
     searchController.updateFilterEmail(
       textOption: !isMailAddress
@@ -3039,7 +3037,6 @@ class MailboxDashBoardController extends ReloadableController
   void quickSearchEmailByFrom(EmailAddress emailAddress) {
     FocusManager.instance.primaryFocus?.unfocus();
     clearFilterMessageOption();
-    searchController.clearFilterSuggestion();
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }

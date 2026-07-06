@@ -504,7 +504,7 @@ void main() {
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
       // Act
-      searchController.synchronizeSearchFilter(searchEmailFilter);
+      searchController.searchEmailFilter.value = searchEmailFilter;
 
       threadController.searchEmail();
 
@@ -642,7 +642,7 @@ void main() {
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
       // Act
-      searchController.synchronizeSearchFilter(searchEmailFilter);
+      searchController.searchEmailFilter.value = searchEmailFilter;
 
       threadController.searchEmail();
 
@@ -787,7 +787,7 @@ void main() {
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
       // Act
-      searchController.synchronizeSearchFilter(searchEmailFilter);
+      searchController.searchEmailFilter.value = searchEmailFilter;
 
       threadController.searchEmail();
 
@@ -954,7 +954,7 @@ void main() {
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
       // Act
-      searchController.synchronizeSearchFilter(searchEmailFilter);
+      searchController.searchEmailFilter.value = searchEmailFilter;
 
       threadController.searchEmail();
 
@@ -1120,7 +1120,7 @@ void main() {
 
       // Act
       mailboxDashboardController.updateEmailList(emailList);
-      searchController.synchronizeSearchFilter(searchEmailFilter);
+      searchController.searchEmailFilter.value = searchEmailFilter;
 
       mailboxDashboardController.setCurrentEmailState(State('current-state'));
 
