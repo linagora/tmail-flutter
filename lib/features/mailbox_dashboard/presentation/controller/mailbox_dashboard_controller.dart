@@ -2149,8 +2149,8 @@ class MailboxDashBoardController extends ReloadableController
       return searchController.quickSearchEmails(
         session: sessionCurrent!,
         accountId: accountId.value!,
-        ownEmailAddress: ownEmailAddress.value,
-        query: query
+        query: query,
+        trashSpamMailboxIds: trashSpamMailboxIds,
       );
     } else {
       return [];
