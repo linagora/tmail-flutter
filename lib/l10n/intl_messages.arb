@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-06-02T10:52:48.670230",
+  "@@last_modified": "2026-07-06T13:42:02.887001",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1472,6 +1472,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "ssoRedirectFailedMessage": "We could not complete the single sign-on redirection. Please try again.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "moveFolder": "Move folder",
   "@moveFolder": {
     "type": "text",
@@ -1526,6 +1532,12 @@
   },
   "noPreviewAvailable": "No preview available",
   "@noPreviewAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "Cannot preview PDF",
+  "@cannotPreviewPdf": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1638,6 +1650,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Mongolian",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "languageVietnamese": "Vietnamese",
   "@languageVietnamese": {
     "type": "text",
@@ -1664,12 +1682,6 @@
   },
   "languageItalian": "Italian",
   "@languageItalian": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "languageMongolian": "Mongolian",
-  "@languageMongolian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

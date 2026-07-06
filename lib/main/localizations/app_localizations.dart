@@ -1541,6 +1541,13 @@ class AppLocalizations {
     );
   }
 
+  String get cannotPreviewPdf {
+    return Intl.message(
+      'Cannot preview PDF',
+      name: 'cannotPreviewPdf',
+    );
+  }
+
   String get wrongUrlMessage {
     return Intl.message('Server URL is not valid, please try again',
         name: 'wrongUrlMessage');

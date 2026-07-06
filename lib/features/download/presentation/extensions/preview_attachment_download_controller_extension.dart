@@ -229,6 +229,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
             attachment: attachment,
             accountId: accountId,
             downloadUrl: downloadUrl,
+            imagePaths: imagePaths,
             downloadAction: (bytes, name) =>
                 downloadFileWeb(fileName: name, fileBytes: bytes),
             printAction: printUtils.printPDFFile,

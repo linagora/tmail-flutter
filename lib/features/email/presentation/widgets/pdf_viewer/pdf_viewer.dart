@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:device_info_plus/device_info_plus.dart';
@@ -31,6 +33,7 @@ class PDFViewer extends StatefulWidget {
   final Attachment attachment;
   final AccountId accountId;
   final String downloadUrl;
+  final ImagePaths imagePaths;
   final DownloadPDFFileAction? downloadAction;
   final PrintPDFFileAction? printAction;
 
@@ -39,6 +42,7 @@ class PDFViewer extends StatefulWidget {
     required this.attachment,
     required this.accountId,
     required this.downloadUrl,
+    required this.imagePaths,
     this.downloadAction,
     this.printAction,
   });
@@ -129,6 +133,7 @@ class _PDFViewerState extends State<PDFViewer> {
         return ValueListenableBuilder(
           valueListenable: _pdfViewStateNotifier,
           builder: (context, viewState, child) {
+            final appLocalizations = AppLocalizations.of(context);
             final previewerState = switch (viewState) {
               DownloadAttachmentForWebSuccess() => PreviewerState.success,
               DownloadAttachmentForWebFailure() => PreviewerState.failure,
@@ -164,8 +169,17 @@ class _PDFViewerState extends State<PDFViewer> {
                   logWarning('_PDFViewerState::build:openData:onError:: $error');
                   _pdfViewStateNotifier.value = DownloadAttachmentForWebFailure(exception: error);
                 },
-                errorMessage: AppLocalizations.of(context).noPreviewAvailable,
+                errorMessage: appLocalizations.noPreviewAvailable,
               ),
+              errorBannerBuilder: (_, error, _, _) {
+                return ConfirmationDialogBuilder(
+                  imagePath: widget.imagePaths,
+                  title: appLocalizations.cannotPreviewPdf,
+                  textContent: error.toString(),
+                  confirmText: appLocalizations.close,
+                  onConfirmButtonAction: popBack,
+                );
+              },
               loadingOptions: LoadingOptions(
                 progress: downloadProgress,
                 progressColor: AppColor.primaryColor,
