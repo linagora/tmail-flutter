@@ -811,6 +811,32 @@ void main() {
       });
     });
 
+    group('isOnlySender::test', () {
+      const me = 'me@example.com';
+
+      test('SHOULD return true WHEN from holds only the given address', () {
+        final filter = SearchEmailFilter(from: {me});
+
+        expect(filter.isOnlySender(me), isTrue);
+      });
+
+      test('SHOULD return false WHEN from holds the address plus others', () {
+        final filter = SearchEmailFilter(from: {me, 'other@example.com'});
+
+        expect(filter.isOnlySender(me), isFalse);
+      });
+
+      test('SHOULD return false WHEN from is empty', () {
+        expect(SearchEmailFilter.initial().isOnlySender(me), isFalse);
+      });
+
+      test('SHOULD return false WHEN the given address is empty', () {
+        final filter = SearchEmailFilter(from: {''});
+
+        expect(filter.isOnlySender(''), isFalse);
+      });
+    });
+
     group('sort-order change clears load-more cursors::test', () {
       UTCDate? extractAfterFromFilter(Object? filter) {
         if (filter is EmailFilterCondition) return filter.after;
