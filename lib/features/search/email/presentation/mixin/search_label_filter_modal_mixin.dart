@@ -84,7 +84,7 @@ mixin SearchLabelFilterModalMixin on PopupContextMenuActionMixin {
       context,
       position,
       [allLabelsItem, ...labelItems],
-      maxHeight: 400,
+      options: const PopupMenuActionOptions(maxHeight: 400),
     );
   }
 
