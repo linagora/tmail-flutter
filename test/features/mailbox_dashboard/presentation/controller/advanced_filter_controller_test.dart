@@ -16,6 +16,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -296,6 +297,74 @@ void main() {
         expect(
           committed.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value),
           isTrue);
+      });
+
+      test(
+        'SHOULD clear the flagged keyword from the committed filter\n'
+        'WHEN onStarredCheckboxChanged toggles off (routed via toggleStarred)',
+      () {
+        // Arrange
+        advancedFilterController.onStarredCheckboxChanged(true);
+
+        // Act
+        advancedFilterController.onStarredCheckboxChanged(false);
+
+        // Assert
+        expect(
+          appProviderContainer
+              .read(searchFilterProvider)
+              .hasKeyword
+              .contains(KeyWordIdentifier.emailFlagged.value),
+          isFalse);
+      });
+    });
+
+    group('removeDraggableEmailAddress::test', () {
+      test(
+        'SHOULD drop only the removed address from the committed from set\n'
+        'WHEN a from chip is removed while others remain',
+      () {
+        // Arrange
+        appProviderContainer.read(searchFilterProvider.notifier).set(
+          SearchEmailFilter(from: {'a@example.com', 'b@example.com'}));
+        advancedFilterController.listFromEmailAddress = [
+          EmailAddress(null, 'a@example.com'),
+          EmailAddress(null, 'b@example.com'),
+        ];
+
+        // Act
+        advancedFilterController.removeDraggableEmailAddress(
+          DraggableEmailAddress(
+            emailAddress: EmailAddress(null, 'a@example.com'),
+            filterField: FilterField.from));
+
+        // Assert
+        expect(
+          appProviderContainer.read(searchFilterProvider).from,
+          {'b@example.com'});
+      });
+
+      test(
+        'SHOULD leave the committed to set empty\n'
+        'WHEN the last to chip is removed',
+      () {
+        // Arrange
+        appProviderContainer.read(searchFilterProvider.notifier).set(
+          SearchEmailFilter(to: {'a@example.com'}));
+        advancedFilterController.listToEmailAddress = [
+          EmailAddress(null, 'a@example.com'),
+        ];
+
+        // Act
+        advancedFilterController.removeDraggableEmailAddress(
+          DraggableEmailAddress(
+            emailAddress: EmailAddress(null, 'a@example.com'),
+            filterField: FilterField.to));
+
+        // Assert
+        expect(
+          appProviderContainer.read(searchFilterProvider).to,
+          isEmpty);
       });
     });
 
