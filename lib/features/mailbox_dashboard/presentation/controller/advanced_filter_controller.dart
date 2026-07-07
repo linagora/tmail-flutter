@@ -70,6 +70,12 @@ class AdvancedFilterController extends BaseController {
   SearchEmailFilter get _committedFilter =>
       appProviderContainer.read(searchFilterProvider);
 
+  /// Committed SSOT mutations flow through [SearchFilterMutation] — `update`, the
+  /// address/keyword helpers, `set`, `clear` — so no call site owns the set-rebuild
+  /// or copyWith plumbing. See ADR-0093.
+  SearchFilterNotifier get _filterNotifier =>
+      appProviderContainer.read(searchFilterProvider.notifier);
+
   @override
   void onInit() {
     _registerWorkerListener();
@@ -90,12 +96,12 @@ class AdvancedFilterController extends BaseController {
     sortOrderType.value = emailSortOrderType;
     // Sync only the sort field so any filters already committed by other search
     // surfaces are preserved.
-    _updateCommittedFilter(sortOrderTypeOption: Some(emailSortOrderType));
+    _filterNotifier.update(sortOrderTypeOption: Some(emailSortOrderType));
   }
 
   void _updateSortOrder(EmailSortOrderType emailSortOrderType) {
     sortOrderType.value = emailSortOrderType;
-    _updateCommittedFilter(sortOrderTypeOption: Some(emailSortOrderType));
+    _filterNotifier.update(sortOrderTypeOption: Some(emailSortOrderType));
   }
 
   void clearSearchFilter() {
@@ -113,42 +119,6 @@ class AdvancedFilterController extends BaseController {
   }
 
   MailboxDashBoardController get mailboxDashBoardController => _mailboxDashBoardController;
-
-  void _updateCommittedFilter({
-    Option<Set<String>>? fromOption,
-    Option<Set<String>>? toOption,
-    Option<SearchQuery>? textOption,
-    Option<String>? subjectOption,
-    Option<Set<String>>? hasKeywordOption,
-    Option<Set<String>>? notKeywordOption,
-    Option<PresentationMailbox>? mailboxOption,
-    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
-    Option<bool>? hasAttachmentOption,
-    Option<bool>? unreadOption,
-    Option<bool>? notIncludeEventsOption,
-    Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption,
-    Option<EmailSortOrderType>? sortOrderTypeOption,
-    Option<Label>? labelOption,
-  }) {
-    appProviderContainer.read(searchFilterProvider.notifier).update(
-          fromOption: fromOption,
-          toOption: toOption,
-          textOption: textOption,
-          subjectOption: subjectOption,
-          hasKeywordOption: hasKeywordOption,
-          notKeywordOption: notKeywordOption,
-          mailboxOption: mailboxOption,
-          emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
-          hasAttachmentOption: hasAttachmentOption,
-          unreadOption: unreadOption,
-          notIncludeEventsOption: notIncludeEventsOption,
-          startDateOption: startDateOption,
-          endDateOption: endDateOption,
-          sortOrderTypeOption: sortOrderTypeOption,
-          labelOption: labelOption,
-        );
-  }
 
   void _syncFormToCommitted() {
     final textOption = option(
@@ -202,7 +172,7 @@ class AdvancedFilterController extends BaseController {
 
     final labelOption = optionOf(selectedLabel.value);
 
-    _updateCommittedFilter(
+    _filterNotifier.update(
       textOption: textOption,
       notKeywordOption: notKeywordsOption,
       fromOption: fromOption,
@@ -243,7 +213,7 @@ class AdvancedFilterController extends BaseController {
     if (destinationMailbox is! PresentationMailbox) return;
 
     destinationMailboxSelected.value = destinationMailbox;
-    _updateCommittedFilter(mailboxOption: optionOf(destinationMailbox));
+    _filterNotifier.update(mailboxOption: optionOf(destinationMailbox));
   }
 
   void applyAdvancedSearchFilter() {
@@ -346,14 +316,14 @@ class AdvancedFilterController extends BaseController {
     receiveTimeType.value = receiveTime;
 
     if (receiveTime == EmailReceiveTimeType.customRange) {
-      _updateCommittedFilter(
+      _filterNotifier.update(
         emailReceiveTimeTypeOption: Some(receiveTime),
         startDateOption: optionOf(startDate.value?.toUTCDate()),
         endDateOption: optionOf(endDate.value?.toUTCDate()),
       );
     } else {
       final dateRange = receiveTime.toDateRange();
-      _updateCommittedFilter(
+      _filterNotifier.update(
         emailReceiveTimeTypeOption: Some(receiveTime),
         startDateOption: optionOf(dateRange.start),
         endDateOption: optionOf(dateRange.end),
@@ -433,14 +403,14 @@ class AdvancedFilterController extends BaseController {
     switch(field) {
       case FilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
-        _updateCommittedFilter(
+        _filterNotifier.update(
           fromOption: option(
             listFromEmailAddress.isNotEmpty,
             listFromEmailAddress.asSetAddress()));
         break;
       case FilterField.to:
         listToEmailAddress = List.from(listEmailAddress);
-        _updateCommittedFilter(
+        _filterNotifier.update(
           toOption: option(
             listToEmailAddress.isNotEmpty,
             listToEmailAddress.asSetAddress()));
@@ -459,7 +429,7 @@ class AdvancedFilterController extends BaseController {
     if (!listFromEmailAddress.isDuplicatedEmail(inputEmail)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listFromEmailAddress.add(emailAddress);
-      _updateCommittedFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
+      _filterNotifier.addSender(inputEmail);
       keyFromEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyFromEmailTagEditor.currentState?.closeSuggestionBox();
@@ -475,7 +445,7 @@ class AdvancedFilterController extends BaseController {
 
     if (!listToEmailAddress.isDuplicatedEmail(inputEmail)) {
       listToEmailAddress.add(EmailAddress(null, inputEmail));
-      _updateCommittedFilter(toOption: Some(listToEmailAddress.asSetAddress()));
+      _filterNotifier.addRecipient(inputEmail);
       keyToEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -486,7 +456,7 @@ class AdvancedFilterController extends BaseController {
   void updateSortOrder(EmailSortOrderType? sortOrder) {
     if (sortOrder != null) {
       sortOrderType.value = sortOrder;
-      _updateCommittedFilter(sortOrderTypeOption: Some(sortOrder));
+      _filterNotifier.update(sortOrderTypeOption: Some(sortOrder));
     }
   }
 
@@ -572,39 +542,24 @@ class AdvancedFilterController extends BaseController {
 
   void onHasAttachmentCheckboxChanged(bool? isChecked) {
     hasAttachment.value = isChecked ?? false;
-    _updateCommittedFilter(hasAttachmentOption: Some(hasAttachment.value));
+    _filterNotifier.update(hasAttachmentOption: Some(hasAttachment.value));
   }
 
   void onStarredCheckboxChanged(bool? isChecked) {
     isStarred.value = isChecked ?? false;
-    _updateKeywordsSearchFilter(
-      isStarred.isTrue,
-      KeyWordIdentifier.emailFlagged,
-    );
+    _filterNotifier.toggleStarred(isStarred.isTrue);
   }
 
   void onUnreadCheckboxChanged(bool? isChecked) {
     isUnread.value = isChecked ?? false;
-    _updateCommittedFilter(
+    _filterNotifier.update(
       unreadOption: isUnread.isTrue ? const Some(true) : const None(),
-    );
-  }
-
-  void _updateKeywordsSearchFilter(bool isChecked, KeyWordIdentifier keyword) {
-    final listHasKeywordFiltered = Set<String>.of(_committedFilter.hasKeyword);
-    if (isChecked) {
-      listHasKeywordFiltered.add(keyword.value);
-    } else {
-      listHasKeywordFiltered.remove(keyword.value);
-    }
-    _updateCommittedFilter(
-      hasKeywordOption: Some(listHasKeywordFiltered),
     );
   }
 
   void onEventsCheckboxChanged(bool? isChecked) {
     notIncludeEvents.value = isChecked ?? false;
-    _updateCommittedFilter(
+    _filterNotifier.update(
       notIncludeEventsOption: notIncludeEvents.isTrue ? const Some(true) : const None(),
     );
   }
@@ -613,19 +568,19 @@ class AdvancedFilterController extends BaseController {
     switch (filterField) {
       case FilterField.subject:
         final subjectOption = option(value.trim().isNotEmpty, value.trim());
-        _updateCommittedFilter(subjectOption: subjectOption);
+        _filterNotifier.update(subjectOption: subjectOption);
         break;
       case FilterField.hasKeyword:
         final textOption = option(
           value.trim().isNotEmpty,
           SearchQuery(value.trim()));
-        _updateCommittedFilter(textOption: textOption);
+        _filterNotifier.update(textOption: textOption);
         break;
       case FilterField.notKeyword:
         final notKeywordsOption = option(
           value.trim().isNotEmpty,
           value.trim().split(',').map((value) => value.trim()).toSet());
-        _updateCommittedFilter(notKeywordOption: notKeywordsOption);
+        _filterNotifier.update(notKeywordOption: notKeywordsOption);
         break;
       default:
         break;
@@ -637,23 +592,15 @@ class AdvancedFilterController extends BaseController {
     switch(draggableEmailAddress.filterField) {
       case FilterField.to:
         listToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        _updateCommittedFilter(
-          toOption: option(
-            listToEmailAddress.isNotEmpty,
-            listToEmailAddress.asSetAddress(),
-          ),
-        );
+        _filterNotifier.removeRecipient(
+          draggableEmailAddress.emailAddress.emailAddress);
         toAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.refresh();
         break;
       case FilterField.from:
         listFromEmailAddress.remove(draggableEmailAddress.emailAddress);
-        _updateCommittedFilter(
-          fromOption: option(
-            listFromEmailAddress.isNotEmpty,
-            listFromEmailAddress.asSetAddress(),
-          ),
-        );
+        _filterNotifier.removeSender(
+          draggableEmailAddress.emailAddress.emailAddress);
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         fromAddressExpandMode.refresh();
         break;
@@ -670,7 +617,7 @@ class AdvancedFilterController extends BaseController {
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.value = false;
     listFromEmailAddress = List.from({emailAddress});
-    _updateCommittedFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
+    _filterNotifier.addSender(emailAddress.emailAddress);
     _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
   }
 
