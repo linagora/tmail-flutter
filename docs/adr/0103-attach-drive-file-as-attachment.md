@@ -15,11 +15,15 @@ Composer already inserts picked drive documents with a `sharingLink` as HTML lin
 
 ## Decision
 
-**Partitioning:** `DriveAttachmentHandler` splits picked `DriveDocument`s per-doc: `sharingLink != null` → HTML link (unchanged); `downloadLink != null` → download + attach (new).
+**Partitioning:** `DriveAttachmentHandler` splits picked `DriveDocument`s per-doc: `sharingLink != null` → HTML link (unchanged); `downloadLink != null` → download + attach (new). **Invariant:** both fields may be present on one doc (per ADR-0095's payload); when they are, `downloadLink` wins — download+attach only, enforced in the partition step, not call-site order.
 
-**Download (`workplace` package), streamed:** `DriveFileDatasourceImpl.openFileForUpload(doc)` branches on `kIsWeb`. **IO**: `Dio.get(responseType: stream)` piped directly as the upload request body (`FileInfo.byteStream`) — true zero-copy, no whole-file buffering, backpressure handled automatically by Dio. **Web**: `BrowserHttpClientAdapter` (XHR) can't stream a body, so web still buffers into `FileInfo.bytes`. `DownloadDriveFileInteractor.openFileForUpload` is a thin future delegate (no more stream-of-states). A bounded worker pool (`kMaxConcurrentDriveTransfers = 3`) runs per-file pipelines: file N+1 starts downloading as a slot frees, and each file starts uploading the instant its own stream is ready (no "download all, then upload all" batching). A failing file logs/removes its chip; others continue.
+**Download (`workplace` package), streamed:** `DriveFileDatasourceImpl.openFileForUpload(doc)` branches on `kIsWeb`. **IO**: `Dio.get(responseType: stream)` piped directly as the upload request body (`FileInfo.byteStream`) — zero-copy. **Web**: XHR can't stream a body, so web buffers into `FileInfo.bytes`. A bounded worker pool (`kMaxConcurrentDriveTransfers = 3`, new constant, not tied to any existing limit) runs per-file pipelines with no "download all, then upload all" batching. A failing file logs/removes its chip; others continue.
 
-**Visible progress:** each drive file gets a composer attachment chip immediately (`UploadFileStatus.downloading`, color-distinct from `uploading`), fed by `onDownloadProgress`/Dio's existing `onSendProgress`. On IO, download+upload are coupled in lockstep by the pipe, so the chip shows one continuous "downloading"-styled bar for ~the whole transfer (single phase, zero-copy memory kept over a two-phase visual). On web, downloading and uploading are genuinely sequential — two distinct phases shown.
+**Upload pipeline contract:** the worker-isolate upload path (`FileUploader.uploadAttachment` → `UploadFileArguments`) only carries `filePath`/`bytes` across the isolate boundary — a one-shot `Stream<List<int>>` can't cross it. So **drive stream uploads run on the main isolate** instead, bypassing the worker-isolate branch. Local-file/paste/drop uploads are unaffected.
+
+**Visible progress:** each drive file gets a composer attachment chip immediately (`UploadFileStatus.downloading`, color-distinct from `uploading`), fed by `onDownloadProgress`/Dio's existing `onSendProgress`. IO shows one continuous phase (download+upload coupled by the pipe); web shows two sequential phases (download then upload).
+
+**Progress/cancel model:** `UploadFileStatus` gains `downloading`; `AttachmentUploadState` gains a matching `DownloadingAttachmentUploadState`; the composer progress widget gains a render branch for it. A single `CancelToken` per file spans both the download and upload calls, so cancelling (including deleting the chip mid-transfer) aborts whichever stage is active.
 
 **Validation — minimal, condition-agnostic abstraction:**
 ```dart
@@ -43,16 +47,20 @@ class CompositeAttachmentUploadValidator implements AttachmentUploadValidator {
 ```
 No size (or other condition-specific data) in the interface. Each concrete validator captures what it needs via its own constructor and is fully self-contained, including showing its own dialog. Today's only concrete validator, `SizeLimitAttachmentUploadValidator`, wraps the existing size-limit/warning-dialog check. Every attachment entry point (composer's local-file/paste/drop handlers, `DriveAttachmentHandler`) constructs the validator(s) it needs and calls `.validate()` — no cross-controller dependency. A new, unrelated condition later = one new class + one line in a `CompositeAttachmentUploadValidator([...])` list.
 
-**Upload (reused as-is):** downloaded/picked `FileInfo`s all go through the composer's existing single upload trigger (session/account resolution → JMAP upload URI → chunked upload). Drive attachments are indistinguishable from local ones past this point.
+**Validator migration boundary:** `SizeLimitAttachmentUploadValidator` lives in the main app next to `UploadController`, not in `workplace` — it needs `BuildContext`, mailbox max-size config, localization, and dialogs. `UploadController.validateTotalSizeAttachmentsBeforeUpload`'s body moves into it as-is; `UploadController` keeps a thin wrapper so call sites don't change. Local-file, paste, drop, and drive entry points all migrate to it in the same change — not staged as a follow-up. `DriveAttachmentHandler` depends on the `AttachmentUploadValidator` interface, not on `UploadController` directly.
+
+**Upload (reused as-is):** downloaded/picked `FileInfo`s all go through the composer's existing single upload trigger. Drive attachments are indistinguishable from local ones past this point, except for the main-isolate routing noted above.
+
+**Retry policy for drive-stream uploads:** `AuthorizationInterceptors._retryRequest` retries upload requests by rebuilding the body from `filePath` (reopenable, safe) or the stored stream/bytes object (safe for bytes, not safe for an already-consumed one-shot stream). Drive-stream requests carry a new `nonRetryableUploadBody: true` extra flag; `_retryRequest` checks it first and skips retry when set, failing immediately instead of replaying a consumed stream. Additive — no change to existing filePath/bytes retry behavior.
 
 **Module boundary:** intent protocol, `DriveDocument`, and the download chain stay in `workplace`; only `DriveAttachmentHandler` (main app) composes download orchestration with the shared validator abstraction and the composer's existing upload trigger.
 
 ## Consequences
-- Drive attachments reuse the exact same size-limit UX and upload pipeline as every other attachment source; `FileInfo` gains an additive, transient `byteStream` field so the rest of the upload machinery (interactor/repository/`FileUploader`) is unchanged.
+- Drive attachments reuse the same size-limit UX and upload pipeline as every other attachment source; `FileInfo` gains an additive `byteStream` field. `FileUploader` gains two additive changes: drive-stream uploads route to the main-isolate path (not worker-isolate), and carry `nonRetryableUploadBody: true` so the auth interceptor skips retry. Neither affects local-file/paste/drop uploads.
 - A new attachment-eligibility condition is one new class + one line, not a change to every call site.
 - Memory stays flat on IO regardless of file size/concurrent count (zero-copy pipe); web still buffers per file (XHR limitation).
 - User sees live per-file progress immediately instead of a blocking wait.
-- A streamed IO upload isn't 401-retry-safe (one-shot tee body can't be rebuilt) — accepted, that file's chip fails and is removed, others continue.
+- A streamed IO upload isn't 401-retry-safe (one-shot body can't be rebuilt) — accepted and made explicit via `nonRetryableUploadBody`: that file's chip fails and is removed, others continue (see Retry Policy above).
 
 ## Risks
 - IO shows only a single-phase "downloading"-styled bar for the whole transfer (download/upload are coupled in lockstep) — accepted over forcing IO to buffer for a two-phase visual.
