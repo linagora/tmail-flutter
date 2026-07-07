@@ -33,6 +33,7 @@ class CompositeAttachmentUploadValidator implements AttachmentUploadValidator {
 
   @override
   Future<bool> validate() async {
+    if (validators.isEmpty) return true;
     for (final v in validators) {
       if (!await v.validate()) return false;
     }
