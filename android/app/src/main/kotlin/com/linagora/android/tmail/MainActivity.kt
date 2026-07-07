@@ -1,17 +1,11 @@
 package com.linagora.android.tmail
 
-import android.app.NotificationManager
-import android.content.Context
 import android.os.Bundle
 import android.os.PersistableBundle
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.GeneratedPluginRegistrant
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.os.Build
-import android.text.TextUtils
-import androidx.core.app.NotificationManagerCompat
-import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterFragmentActivity() {
 
@@ -28,5 +22,6 @@ class MainActivity: FlutterFragmentActivity() {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
 
         NotificationGroup().register(flutterEngine, applicationContext)
+        AndroidSelectionHandles(this).register(flutterEngine)
     }
 }
