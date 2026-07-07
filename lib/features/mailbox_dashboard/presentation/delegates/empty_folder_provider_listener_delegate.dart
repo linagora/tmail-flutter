@@ -155,8 +155,9 @@ class EmptyFolderProviderListenerDelegate
         _stateSubscription?.close();
         _stateSubscription = null;
         _resetProgress(dashboardController);
-        _showEmptyFolderFailureToast(context, ref);
-        _handleUrgentException(exception);
+        if (!_handleUrgentException(exception)) {
+          _showEmptyFolderFailureToast(context, ref);
+        }
 
       case EmptyFolderIdle():
         break;
@@ -179,9 +180,10 @@ class EmptyFolderProviderListenerDelegate
   }
 
   // Routes urgent exceptions through the shared helper (ADR-0103).
-  void _handleUrgentException(Object? exception) {
-    if (exception == null) return;
-    handleUrgentExceptionIfNeeded(exception: exception);
+  // Returns true when the exception was urgent and handled.
+  bool _handleUrgentException(Object? exception) {
+    if (exception == null) return false;
+    return handleUrgentExceptionIfNeeded(exception: exception);
   }
 
   void _resetProgress(MailboxDashBoardController dashboardController) {
