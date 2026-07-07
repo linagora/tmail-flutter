@@ -73,4 +73,18 @@ enum ComposerActionType {
         return const Key('delete_popup_item');
     }
   }
+
+  /// Whether the composer stays open after this action, so the editor
+  /// selection/focus should be restored.
+  bool get keepsComposerOpen {
+    switch (this) {
+      case ComposerActionType.markAsImportant:
+      case ComposerActionType.requestReadReceipt:
+        return true;
+      case ComposerActionType.saveAsDraft:
+      case ComposerActionType.saveAsTemplate:
+      case ComposerActionType.delete:
+        return false;
+    }
+  }
 }
