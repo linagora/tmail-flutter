@@ -9,10 +9,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
-/// Shared `update`/`set`/`clear` for the committed and draft notifiers, so the two
-/// can't diverge. The API takes **user intent only** — no `position`/`before`/`after`;
-/// cursors live on the transient `SearchRequestSpec`, and `set` strips any that ride
-/// in. On `$Notifier<SearchEmailFilter>` (the generated base) for `state` access.
+/// Mutation API for the committed [SearchFilterNotifier]: `update`, `set`, and the
+/// field helpers, so no call site owns the copyWith/set-rebuild plumbing. Takes
+/// **user intent only** — no `position`/`before`/`after`; cursors live on the
+/// transient `SearchRequestSpec`, and `set` strips any that ride in. On
+/// `$Notifier<SearchEmailFilter>` (the generated base) for `state` access.
 /// See ADR-0093.
 mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
   /// Partial update — only the given options change. `startDate`/`endDate` are
@@ -81,10 +82,6 @@ mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
   Set<String> _withRemoved(Set<String> set, String value) =>
       {...set}..remove(value);
 
-  /// Full replacement (commit a draft / apply a form); strips cursors so none can
-  /// seed the SSOT.
+  /// Full replacement (apply a form); strips cursors so none can seed the SSOT.
   void set(SearchEmailFilter filter) => state = filter.clearPaginationCursors();
-
-  /// Reset to `initial()`, keeping the current sort order.
-  void clear() => state = SearchEmailFilter.withSortOrder(state.sortOrderType);
 }

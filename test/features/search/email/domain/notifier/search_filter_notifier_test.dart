@@ -149,21 +149,4 @@ void main() {
       expect(stateOf().hasKeyword, {'flagged'});
     });
   });
-
-  test('clear() preserves sortOrderType and resets every other field', () {
-    notifierOf().set(SearchEmailFilter(
-      subject: 'invoice',
-      unread: true,
-      hasAttachment: true,
-      sortOrderType: EmailSortOrderType.oldest,
-    ));
-
-    notifierOf().clear();
-
-    expect(stateOf().sortOrderType, EmailSortOrderType.oldest);
-    expect(stateOf(), SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
-    expect(stateOf().subject, isNull);
-    expect(stateOf().unread, isFalse);
-    expect(stateOf().hasAttachment, isFalse);
-  });
 }
