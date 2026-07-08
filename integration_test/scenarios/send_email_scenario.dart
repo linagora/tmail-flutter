@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 
 import '../base/base_test_scenario.dart';
+import '../utils/test_timeouts.dart';
+import '../utils/wait_for_condition.dart';
 
 class SendEmailScenario extends BaseTestScenario {
   const SendEmailScenario(super.$, super.robots, {this.customSubject});
@@ -27,12 +29,15 @@ class SendEmailScenario extends BaseTestScenario {
     await robots.composerRobot().addContent(content);
     await robots.composerRobot().send();
 
-    await _expectSendEmailSuccessToast();
-  }
-
-  Future<void> _expectSendEmailSuccessToast() async {
-    await expectViewVisible(
-      $(find.text(AppLocalizations().message_has_been_sent_successfully)),
+    await waitForCondition(
+      () => $(ThreadView).visible || $(#confirm_dialog_action).visible,
+      timeout: TestTimeouts.long,
     );
+    expect(
+      $(#confirm_dialog_action).visible,
+      isFalse,
+      reason: 'Email failed to send: a confirm dialog is shown instead of returning to the thread list.',
+    );
+    await expectViewVisible($(ThreadView));
   }
 }
