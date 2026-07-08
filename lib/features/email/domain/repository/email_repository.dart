@@ -157,6 +157,8 @@ abstract class EmailRepository {
 
   Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index);
+
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest);
 
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);

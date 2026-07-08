@@ -475,6 +475,11 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
     throw UnimplementedError();
   }

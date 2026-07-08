@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/dismiss_twp_warning_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -109,6 +110,7 @@ class EmailInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DismissTwpWarningInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));

@@ -8,7 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
+import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -155,8 +155,11 @@ class EmptyFolderProviderListenerDelegate
         _stateSubscription?.close();
         _stateSubscription = null;
         _resetProgress(dashboardController);
-        _showEmptyFolderFailureToast(context, ref);
-        _handleUrgentException(exception);
+        // Skip the generic failure toast when the urgent handler already owns
+        // the UX (re-login, reconnect), to avoid a duplicate error surface.
+        if (!_handleUrgentException(exception)) {
+          _showEmptyFolderFailureToast(context, ref);
+        }
 
       case EmptyFolderIdle():
         break;
@@ -178,17 +181,12 @@ class EmptyFolderProviderListenerDelegate
     }
   }
 
-  // Resolves the urgent-exception handler by contract, not the concrete
-  // controller — keeps session/logout handling decoupled from this delegate.
-  void _handleUrgentException(Object? exception) {
-    if (exception == null) return;
-    final handler = getBinding<UrgentExceptionHandler>();
-    if (handler == null) return;
-    if (handler.validateUrgentException(exception)) {
-      handler.handleUrgentException(
-        exception: exception is Exception ? exception : null,
-      );
-    }
+  // Routes urgent exceptions through the shared helper (ADR-0093). Returns true
+  // when the failure was urgent and handled centrally, so the caller can skip
+  // its own error UI.
+  bool _handleUrgentException(Object? exception) {
+    if (exception == null) return false;
+    return handleUrgentExceptionIfNeeded(exception: exception);
   }
 
   void _resetProgress(MailboxDashBoardController dashboardController) {

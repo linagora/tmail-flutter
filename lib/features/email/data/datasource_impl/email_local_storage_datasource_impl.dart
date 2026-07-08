@@ -202,6 +202,11 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId, {CancelToken? cancelToken, bool isUpdateDraftToClose = false}) {
     throw UnimplementedError();
   }

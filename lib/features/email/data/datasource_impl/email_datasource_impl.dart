@@ -366,6 +366,13 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
+  Future<void> dismissTwpWarning(Session session, AccountId accountId, EmailId emailId, int index) {
+    return Future.sync(() async {
+      return await emailAPI.dismissTwpWarning(session, accountId, emailId, index);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
     return Future.sync(() async {
       return await emailAPI.restoreDeletedMessage(restoredDeletedMessageRequest);

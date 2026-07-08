@@ -8,6 +8,13 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   static final needsActionMail = KeyWordIdentifier('needs-action');
   static final eventsMail = KeyWordIdentifier('event');
 
+  static const String twpWarningDismissedPrefix = 'twp-warning-dismissed-';
+
+  /// Keyword persisting the dismissal of the `X-TWP-Message` warning at the
+  /// given 0-based position in the message header list.
+  static KeyWordIdentifier twpWarningDismissed(int index) =>
+      KeyWordIdentifier('$twpWarningDismissedPrefix$index');
+
   String generatePath() => '${PatchObject.keywordsProperty}/$value';
 
   /// General helper to generate a boolean patch.
@@ -28,6 +35,8 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   PatchObject generateForwardedActionPath() => _boolPatch(true);
 
   PatchObject generateUnsubscribeActionPath() => _boolPatch(true);
+
+  PatchObject generateDismissTwpWarningActionPath() => _boolPatch(true);
 
   PatchObject generateLabelActionPath({bool remove = false}) =>
       _boolPatch(remove ? null : true);
