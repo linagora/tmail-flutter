@@ -32,14 +32,14 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         margin: const EdgeInsets.symmetric(horizontal: 12),
         backgroundColor: Colors.transparent,
-        onTapActionCallback: () => _onClickOpenAdvancedSearchView(context),
+        onTapActionCallback: _onClickOpenAdvancedSearchView,
       );
     });
   }
 
-  void _onClickOpenAdvancedSearchView(BuildContext context) {
+  void _onClickOpenAdvancedSearchView() {
     log('IconOpenAdvancedSearchWidget::_onClickOpenAdvancedSearchView:');
-    advancedFilterController.initSearchFilterField(context);
+    advancedFilterController.initSearchFilterField();
     searchController.openAdvanceSearch();
   }
 }
