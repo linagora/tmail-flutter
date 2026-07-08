@@ -2,6 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_mutation.dart';
 
+export 'package:tmail_ui_user/features/search/email/domain/model/search_filter_input.dart';
+
 part 'search_filter_notifier.g.dart';
 
 /// Committed single source of truth for search filter state: the intent that builds

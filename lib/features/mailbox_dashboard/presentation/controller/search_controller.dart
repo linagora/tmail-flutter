@@ -171,22 +171,22 @@ class SearchController extends BaseController with DateRangePickerMixin {
     ];
     if (userIntentOptions.any((option) => option != null)) {
       appProviderContainer.read(searchFilterProvider.notifier).update(
-            fromOption: fromOption,
-            toOption: toOption,
-            textOption: textOption,
-            subjectOption: subjectOption,
-            notKeywordOption: notKeywordOption,
-            hasKeywordOption: hasKeywordOption,
-            mailboxOption: mailboxOption,
-            emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
-            hasAttachmentOption: hasAttachmentOption,
-            unreadOption: unreadOption,
-            notIncludeEventsOption: notIncludeEventsOption,
-            startDateOption: startDateOption,
-            endDateOption: endDateOption,
-            sortOrderTypeOption: sortOrderTypeOption,
-            labelOption: labelOption,
-          );
+            SearchFilterPatch()
+              ..fromOption = fromOption
+              ..toOption = toOption
+              ..textOption = textOption
+              ..subjectOption = subjectOption
+              ..notKeywordOption = notKeywordOption
+              ..hasKeywordOption = hasKeywordOption
+              ..mailboxOption = mailboxOption
+              ..emailReceiveTimeTypeOption = emailReceiveTimeTypeOption
+              ..hasAttachmentOption = hasAttachmentOption
+              ..unreadOption = unreadOption
+              ..notIncludeEventsOption = notIncludeEventsOption
+              ..startDateOption = startDateOption
+              ..endDateOption = endDateOption
+              ..sortOrderTypeOption = sortOrderTypeOption
+              ..labelOption = labelOption);
     }
     // Cursors aren't user intent — layered onto the obs only, until the executor
     // owns them (ticket 5).
