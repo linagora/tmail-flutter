@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 void main() {
   late ProviderContainer container;
@@ -23,7 +24,7 @@ void main() {
 
   group('update', () {
     test('sets only the provided field, leaving cursors/bounds untouched', () {
-      notifierOf().update(unreadOption: const Some(true));
+      notifierOf().update(SearchFilterPatch()..unreadOption = const Some(true));
 
       expect(stateOf().unread, isTrue);
       expect(stateOf().before, isNull);
@@ -35,21 +36,81 @@ void main() {
       final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
       final end = UTCDate(DateTime.parse('2026-06-01T00:00:00.000Z'));
 
-      notifierOf().update(
-        startDateOption: optionOf(start),
-        endDateOption: optionOf(end),
-      );
+      notifierOf().update(SearchFilterPatch()
+        ..startDateOption = optionOf(start)
+        ..endDateOption = optionOf(end));
 
       expect(stateOf().startDate, start);
       expect(stateOf().endDate, end);
     });
 
     test('successive updates accumulate on independent fields', () {
-      notifierOf().update(unreadOption: const Some(true));
-      notifierOf().update(hasAttachmentOption: const Some(true));
+      notifierOf().update(SearchFilterPatch()..unreadOption = const Some(true));
+      notifierOf().update(SearchFilterPatch()
+        ..hasAttachmentOption = const Some(true));
 
       expect(stateOf().unread, isTrue);
       expect(stateOf().hasAttachment, isTrue);
+    });
+  });
+
+  group('single-field helpers', () {
+    test('setSubject / setText trim input and clear blank values', () {
+      notifierOf().setSubject('  invoice  '.asSearchFilterTextInput());
+      notifierOf().setText('  hello  '.asSearchFilterTextInput());
+
+      expect(stateOf().subject, 'invoice');
+      expect(stateOf().text, SearchQuery('hello'));
+
+      notifierOf().setSubject('   '.asSearchFilterTextInput());
+      notifierOf().setText('   '.asSearchFilterTextInput());
+
+      expect(stateOf().subject, isNull);
+      expect(stateOf().text, isNull);
+    });
+
+    test('setNotKeywords splits comma input and clears blank values', () {
+      notifierOf().setNotKeywords(' draft, spam '.asSearchFilterTextInput());
+
+      expect(stateOf().notKeyword, {'draft', 'spam'});
+
+      notifierOf().setNotKeywords('   '.asSearchFilterTextInput());
+
+      expect(stateOf().notKeyword, isEmpty);
+    });
+
+    test('boolean and sort helpers mutate only their fields', () {
+      notifierOf().setHasAttachment(true.asSearchFilterToggle());
+      notifierOf().setUnread(true.asSearchFilterToggle());
+      notifierOf().setNotIncludeEvents(true.asSearchFilterToggle());
+      notifierOf().setSortOrder(EmailSortOrderType.oldest);
+
+      expect(stateOf().hasAttachment, isTrue);
+      expect(stateOf().unread, isTrue);
+      expect(stateOf().notIncludeEvents, isTrue);
+      expect(stateOf().sortOrderType, EmailSortOrderType.oldest);
+
+      notifierOf().setUnread(false.asSearchFilterToggle());
+      notifierOf().setNotIncludeEvents(false.asSearchFilterToggle());
+
+      expect(stateOf().unread, isFalse);
+      expect(stateOf().notIncludeEvents, isFalse);
+    });
+
+    test('setSenders / setRecipients replace the address sets', () {
+      notifierOf().setSenders(
+        {'alice@example.com', 'bob@example.com'}.asSearchFilterEmailSet());
+      notifierOf().setRecipients(
+        {'carol@example.com'}.asSearchFilterEmailSet());
+
+      expect(stateOf().from, {'alice@example.com', 'bob@example.com'});
+      expect(stateOf().to, {'carol@example.com'});
+
+      notifierOf().setSenders(<String>{}.asSearchFilterEmailSet());
+      notifierOf().setRecipients(<String>{}.asSearchFilterEmailSet());
+
+      expect(stateOf().from, isEmpty);
+      expect(stateOf().to, isEmpty);
     });
   });
 
@@ -57,17 +118,17 @@ void main() {
     final flagged = KeyWordIdentifier.emailFlagged.value;
 
     test('adds the flagged keyword when starred, keeping other keywords', () {
-      notifierOf().update(hasKeywordOption: const Some({'custom'}));
+      notifierOf().setHasKeywords({'custom'}.asSearchFilterKeywordSet());
 
-      notifierOf().toggleStarred(true);
+      notifierOf().toggleStarred(true.asSearchFilterToggle());
 
       expect(stateOf().hasKeyword, {'custom', flagged});
     });
 
     test('removes only the flagged keyword when unstarred', () {
-      notifierOf().update(hasKeywordOption: Some({'custom', flagged}));
+      notifierOf().setHasKeywords({'custom', flagged}.asSearchFilterKeywordSet());
 
-      notifierOf().toggleStarred(false);
+      notifierOf().toggleStarred(false.asSearchFilterToggle());
 
       expect(stateOf().hasKeyword, {'custom'});
     });
@@ -75,20 +136,20 @@ void main() {
 
   group('sender / recipient membership', () {
     test('addSender / removeSender mutate only the from set', () {
-      notifierOf().addSender('alice@example.com');
-      notifierOf().addSender('bob@example.com');
+      notifierOf().addSender('alice@example.com'.asSearchFilterEmailAddress());
+      notifierOf().addSender('bob@example.com'.asSearchFilterEmailAddress());
       expect(stateOf().from, {'alice@example.com', 'bob@example.com'});
 
-      notifierOf().removeSender('alice@example.com');
+      notifierOf().removeSender('alice@example.com'.asSearchFilterEmailAddress());
       expect(stateOf().from, {'bob@example.com'});
       expect(stateOf().to, isEmpty);
     });
 
     test('addRecipient / removeRecipient mutate only the to set', () {
-      notifierOf().addRecipient('carol@example.com');
+      notifierOf().addRecipient('carol@example.com'.asSearchFilterEmailAddress());
       expect(stateOf().to, {'carol@example.com'});
 
-      notifierOf().removeRecipient('carol@example.com');
+      notifierOf().removeRecipient('carol@example.com'.asSearchFilterEmailAddress());
       expect(stateOf().to, isEmpty);
       expect(stateOf().from, isEmpty);
     });

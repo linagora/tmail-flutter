@@ -524,16 +524,23 @@ void main() {
       when(context.mounted).thenReturn(true);
 
       // expect query in advanced filter controller update as expected
-      appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter.initial());
-      advancedFilterController.updateListEmailAddress(FilterField.from, [fromEmailAddress]);
-      advancedFilterController.updateListEmailAddress(FilterField.to, [toEmailAddress]);
-      advancedFilterController.subjectFilterInputController.text = emailSubject;
-      advancedFilterController.hasKeyWordFilterInputController.text = emailContainsWord;
-      advancedFilterController.notKeyWordFilterInputController.text = emailNotContainsWord;
+      final filterNotifier = appProviderContainer.read(searchFilterProvider.notifier);
+      filterNotifier.set(SearchEmailFilter.initial());
+      advancedFilterController.updateListEmailAddress(FilterField.from, [fromEmailAddress], filterNotifier);
+      advancedFilterController.updateListEmailAddress(FilterField.to, [toEmailAddress], filterNotifier);
+      advancedFilterController.onTextChanged(FilterField.subject, emailSubject, filterNotifier);
+      advancedFilterController.onTextChanged(FilterField.hasKeyword, emailContainsWord, filterNotifier);
+      advancedFilterController.onTextChanged(FilterField.notKeyword, emailNotContainsWord, filterNotifier);
       // mailbox: impossible? due to private field
-      advancedFilterController.updateReceiveDateSearchFilter(context, EmailReceiveTimeType.last30Days);
-      advancedFilterController.updateSortOrder(EmailSortOrderType.relevance);
-      advancedFilterController.applyAdvancedSearchFilter();
+      advancedFilterController.updateReceiveDateSearchFilter(
+        context,
+        EmailReceiveTimeType.last30Days,
+        committedFilter: appProviderContainer.read(searchFilterProvider),
+        filterNotifier: filterNotifier);
+      filterNotifier.setSortOrder(EmailSortOrderType.relevance);
+      advancedFilterController.applyAdvancedSearchFilter(
+        committedFilter: appProviderContainer.read(searchFilterProvider),
+        filterNotifier: filterNotifier);
       final filterAfterAdvancedSearch = searchController.searchEmailFilter.value;
       expect(filterAfterAdvancedSearch.from, equals({fromEmailAddress.email!}));
       expect(filterAfterAdvancedSearch.to, equals({toEmailAddress.email!}));
