@@ -2,18 +2,24 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:core/presentation/views/checkbox/custom_icon_labeled_checkbox.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart' hide SearchController;
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -21,6 +27,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
@@ -30,8 +37,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -102,6 +112,12 @@ void main() {
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
+  SearchFilterNotifier filterNotifier() =>
+      appProviderContainer.read(searchFilterProvider.notifier);
+
+  SearchEmailFilter committedFilter() =>
+      appProviderContainer.read(searchFilterProvider);
+
   setUpAll(() {
     Get.testMode = true;
     // Mock base controller
@@ -154,11 +170,19 @@ void main() {
     mockGetAutoCompleteInteractor = MockGetAutoCompleteInteractor();
     mockBuildContext = MockBuildContext();
 
+    // Stubs so Get.put below can run the controller's onInit/onReady lifecycle
+    // (needed to resolve AdvancedFilterController via GetWidget in widget tests).
+    when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn<UIAction>());
+    when(mockMailboxDashBoardController.accountId).thenReturn(Rxn<AccountId>());
+    when(mockMailboxDashBoardController.currentSortOrder)
+        .thenReturn(SearchEmailFilter.defaultSortOrder);
+
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
     Get.put<StoreEmailSortOrderInteractor>(mockStoreEmailSortOrderInteractor);
 
     advancedFilterController = AdvancedFilterController();
+    Get.put<AdvancedFilterController>(advancedFilterController);
   });
 
   setUp(() {
@@ -172,19 +196,28 @@ void main() {
     group('applyAdvancedSearchFilter::test', () {
       test('SHOULD make sure memory search filter and search filter should be the same after applying', () async {
         // Arrange
-        appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter.initial());
-        advancedFilterController.hasKeyWordFilterInputController.text = 'Hello';
-        advancedFilterController.notKeyWordFilterInputController.text = 'dab';
-        advancedFilterController.listFromEmailAddress = [EmailAddress(null, 'user1@example.com')];
-        advancedFilterController.listToEmailAddress = [EmailAddress(null, 'user2@example.com')];
-        advancedFilterController.sortOrderType.value = EmailSortOrderType.oldest;
-        advancedFilterController.setDestinationMailboxSelected(PresentationMailbox.unifiedMailbox);
-        advancedFilterController.subjectFilterInputController.text = 'Subject';
-        advancedFilterController.receiveTimeType.value = EmailReceiveTimeType.last7Days;
-        advancedFilterController.hasAttachment.value = true;
+        filterNotifier().set(SearchEmailFilter.initial());
+        advancedFilterController.onTextChanged(FilterField.hasKeyword, 'Hello', filterNotifier());
+        advancedFilterController.onTextChanged(FilterField.notKeyword, 'dab', filterNotifier());
+        advancedFilterController.updateListEmailAddress(
+          FilterField.from,
+          [EmailAddress(null, 'user1@example.com')],
+          filterNotifier());
+        advancedFilterController.updateListEmailAddress(
+          FilterField.to,
+          [EmailAddress(null, 'user2@example.com')],
+          filterNotifier());
+        advancedFilterController.onTextChanged(FilterField.subject, 'Subject', filterNotifier());
+        filterNotifier().update(SearchFilterPatch()
+          ..hasAttachmentOption = const Some(true)
+          ..sortOrderTypeOption = const Some(EmailSortOrderType.oldest)
+          ..emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.last7Days)
+          ..mailboxOption = Some(PresentationMailbox.unifiedMailbox));
 
         // Act
-        advancedFilterController.applyAdvancedSearchFilter();
+        advancedFilterController.applyAdvancedSearchFilter(
+          committedFilter: committedFilter(),
+          filterNotifier: filterNotifier());
 
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
@@ -220,40 +253,14 @@ void main() {
         appProviderContainer.read(searchFilterProvider.notifier).set(memorySearchFilter);
 
         // Act
-        advancedFilterController.initSearchFilterField(mockBuildContext);
+        advancedFilterController.initSearchFilterField();
 
         // Assert
         expect(advancedFilterController.subjectFilterInputController.text, equals('subject'));
         expect(advancedFilterController.hasKeyWordFilterInputController.text, equals('hello'));
         expect(advancedFilterController.notKeyWordFilterInputController.text, equals('hello,nice'));
-        expect(advancedFilterController.receiveTimeType.value, equals(EmailReceiveTimeType.last7Days));
-        expect(advancedFilterController.sortOrderType.value, equals(EmailSortOrderType.oldest));
-        expect(advancedFilterController.hasAttachment.value, equals(true));
         expect(advancedFilterController.listFromEmailAddress, equals([EmailAddress(null, 'user1@example.com')]));
         expect(advancedFilterController.listToEmailAddress, equals([EmailAddress(null, 'user2@example.com')]));
-      });
-
-      test(
-        'SHOULD seed startDate and endDate from the committed custom range\n'
-        'WHEN initSearchFilterField is called',
-      () async {
-        // Arrange
-        final start = UTCDate(DateTime.utc(2026, 1, 1));
-        final end = UTCDate(DateTime.utc(2026, 1, 31));
-        final memorySearchFilter = SearchEmailFilter(
-          emailReceiveTimeType: EmailReceiveTimeType.customRange,
-          startDate: start,
-          endDate: end,
-        );
-        appProviderContainer.read(searchFilterProvider.notifier).set(memorySearchFilter);
-
-        // Act
-        advancedFilterController.initSearchFilterField(mockBuildContext);
-
-        // Assert
-        expect(advancedFilterController.receiveTimeType.value, equals(EmailReceiveTimeType.customRange));
-        expect(advancedFilterController.startDate.value, equals(start.value.toLocal()));
-        expect(advancedFilterController.endDate.value, equals(end.value.toLocal()));
       });
 
       test(
@@ -270,8 +277,10 @@ void main() {
         ));
 
         // Act: reopen the form, then apply without touching the date range.
-        advancedFilterController.initSearchFilterField(mockBuildContext);
-        advancedFilterController.applyAdvancedSearchFilter();
+        advancedFilterController.initSearchFilterField();
+        advancedFilterController.applyAdvancedSearchFilter(
+          committedFilter: committedFilter(),
+          filterNotifier: filterNotifier());
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         // Assert: committed dates are not cleared.
@@ -279,43 +288,6 @@ void main() {
         expect(committed.emailReceiveTimeType, equals(EmailReceiveTimeType.customRange));
         expect(committed.startDate, equals(start));
         expect(committed.endDate, equals(end));
-      });
-    });
-
-    group('live sync to committed::test', () {
-      test(
-        'SHOULD write the committed filter immediately\n'
-        'WHEN an advanced field changes (chips reflect it without applying)',
-      () {
-        // User ticks fields in the form, no Search yet.
-        advancedFilterController.onHasAttachmentCheckboxChanged(true);
-        advancedFilterController.onStarredCheckboxChanged(true);
-
-        // Committed already carries them, so suggestion chips read them.
-        final committed = appProviderContainer.read(searchFilterProvider);
-        expect(committed.hasAttachment, isTrue);
-        expect(
-          committed.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value),
-          isTrue);
-      });
-
-      test(
-        'SHOULD clear the flagged keyword from the committed filter\n'
-        'WHEN onStarredCheckboxChanged toggles off (routed via toggleStarred)',
-      () {
-        // Arrange
-        advancedFilterController.onStarredCheckboxChanged(true);
-
-        // Act
-        advancedFilterController.onStarredCheckboxChanged(false);
-
-        // Assert
-        expect(
-          appProviderContainer
-              .read(searchFilterProvider)
-              .hasKeyword
-              .contains(KeyWordIdentifier.emailFlagged.value),
-          isFalse);
       });
     });
 
@@ -327,16 +299,13 @@ void main() {
         // Arrange
         appProviderContainer.read(searchFilterProvider.notifier).set(
           SearchEmailFilter(from: {'a@example.com', 'b@example.com'}));
-        advancedFilterController.listFromEmailAddress = [
-          EmailAddress(null, 'a@example.com'),
-          EmailAddress(null, 'b@example.com'),
-        ];
 
         // Act
         advancedFilterController.removeDraggableEmailAddress(
           DraggableEmailAddress(
             emailAddress: EmailAddress(null, 'a@example.com'),
-            filterField: FilterField.from));
+            filterField: FilterField.from),
+          filterNotifier());
 
         // Assert
         expect(
@@ -351,15 +320,13 @@ void main() {
         // Arrange
         appProviderContainer.read(searchFilterProvider.notifier).set(
           SearchEmailFilter(to: {'a@example.com'}));
-        advancedFilterController.listToEmailAddress = [
-          EmailAddress(null, 'a@example.com'),
-        ];
 
         // Act
         advancedFilterController.removeDraggableEmailAddress(
           DraggableEmailAddress(
             emailAddress: EmailAddress(null, 'a@example.com'),
-            filterField: FilterField.to));
+            filterField: FilterField.to),
+          filterNotifier());
 
         // Assert
         expect(
@@ -378,7 +345,7 @@ void main() {
         const value = 'Subject';
 
         // Act
-        advancedFilterController.onTextChanged(filterField, value);
+        advancedFilterController.onTextChanged(filterField, value, filterNotifier());
 
         // Assert
         expect(
@@ -395,7 +362,7 @@ void main() {
         const value = 'keyword';
 
         // Act
-        advancedFilterController.onTextChanged(filterField, value);
+        advancedFilterController.onTextChanged(filterField, value, filterNotifier());
 
         // Assert
         expect(
@@ -412,7 +379,7 @@ void main() {
         const value = 'keyword1,keyword2';
 
         // Act
-        advancedFilterController.onTextChanged(filterField, value);
+        advancedFilterController.onTextChanged(filterField, value, filterNotifier());
 
         // Assert
         expect(
@@ -429,7 +396,7 @@ void main() {
         const value = '   ';
 
         // Act
-        advancedFilterController.onTextChanged(filterField, value);
+        advancedFilterController.onTextChanged(filterField, value, filterNotifier());
 
         // Assert
         expect(
@@ -446,7 +413,7 @@ void main() {
         const value = '    ';
 
         // Act
-        advancedFilterController.onTextChanged(filterField, value);
+        advancedFilterController.onTextChanged(filterField, value, filterNotifier());
 
         // Assert
         expect(
@@ -465,8 +432,8 @@ void main() {
         const emptyNotKeyword = '    ';
 
         // Act
-        advancedFilterController.onTextChanged(filterFieldSubject, validSubject);
-        advancedFilterController.onTextChanged(filterFieldNotKeyword, emptyNotKeyword);
+        advancedFilterController.onTextChanged(filterFieldSubject, validSubject, filterNotifier());
+        advancedFilterController.onTextChanged(filterFieldNotKeyword, emptyNotKeyword, filterNotifier());
 
         // Assert
         expect(
@@ -476,6 +443,146 @@ void main() {
           appProviderContainer.read(searchFilterProvider).notKeyword,
           <String>{});
       });
+    });
+
+    group('updateReceiveDateSearchFilter::test', () {
+      test(
+        'SHOULD write the receive time type and its date range to the committed filter\n'
+        'WHEN a non-customRange type is selected',
+      () {
+        // Act
+        advancedFilterController.updateReceiveDateSearchFilter(
+          mockBuildContext,
+          EmailReceiveTimeType.last7Days,
+          committedFilter: committedFilter(),
+          filterNotifier: filterNotifier(),
+        );
+
+        // Assert
+        final committed = appProviderContainer.read(searchFilterProvider);
+        final expectedRange = EmailReceiveTimeType.last7Days.toDateRange();
+        expect(committed.emailReceiveTimeType, equals(EmailReceiveTimeType.last7Days));
+        // `toDateRange()` anchors on `DateTime.now()`, so allow a small clock
+        // drift between the call under test and this expectation instead of
+        // asserting exact microsecond equality.
+        expect(
+          committed.startDate!.value
+              .difference(expectedRange.start!.value)
+              .abs(),
+          lessThan(const Duration(seconds: 5)));
+        expect(
+          committed.endDate!.value
+              .difference(expectedRange.end!.value)
+              .abs(),
+          lessThan(const Duration(seconds: 5)));
+      });
+    });
+
+    group('SynchronizeEmailSortOrderAction::test', () {
+      test(
+        'SHOULD write sortOrderType to the committed filter\n'
+        'WHEN the dashBoardAction worker dispatches SynchronizeEmailSortOrderAction',
+      () {
+        // Act
+        mockMailboxDashBoardController.dashBoardAction.value =
+          SynchronizeEmailSortOrderAction(EmailSortOrderType.oldest);
+
+        // Assert
+        expect(
+          appProviderContainer.read(searchFilterProvider).sortOrderType,
+          equals(EmailSortOrderType.oldest));
+      });
+    });
+  });
+
+  group('AdvancedSearchFilterFormBottomView checkboxes::test', () {
+    Widget makeTestableWidget() {
+      return UncontrolledProviderScope(
+        container: appProviderContainer,
+        child: GetMaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: LocalizationService.supportedLocales,
+          locale: LocalizationService.defaultLocale,
+          home: Scaffold(
+            body: AdvancedSearchFilterFormBottomView(
+              focusManager: advancedFilterController.focusManager,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets(
+      'SHOULD write hasAttachment to the committed filter\n'
+      'WHEN the has-attachment checkbox is tapped',
+    (tester) async {
+      await tester.pumpWidget(makeTestableWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(
+        const ValueKey(UiKeys.advancedSearchHasAttachmentCheckbox)));
+      await tester.pumpAndSettle();
+
+      expect(
+        appProviderContainer.read(searchFilterProvider).hasAttachment,
+        isTrue);
+    });
+
+    testWidgets(
+      'SHOULD toggle the flagged keyword via toggleStarred\n'
+      'WHEN the starred checkbox is tapped twice',
+    (tester) async {
+      await tester.pumpWidget(makeTestableWidget());
+      await tester.pumpAndSettle();
+
+      final starredCheckbox = find.byType(CustomIconLabeledCheckbox).at(2);
+
+      await tester.tap(starredCheckbox);
+      await tester.pumpAndSettle();
+      expect(
+        appProviderContainer.read(searchFilterProvider).isContainFlagged,
+        isTrue);
+
+      await tester.tap(starredCheckbox);
+      await tester.pumpAndSettle();
+      expect(
+        appProviderContainer.read(searchFilterProvider).isContainFlagged,
+        isFalse);
+    });
+
+    testWidgets(
+      'SHOULD write unread to the committed filter\n'
+      'WHEN the unread checkbox is tapped',
+    (tester) async {
+      await tester.pumpWidget(makeTestableWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CustomIconLabeledCheckbox).at(1));
+      await tester.pumpAndSettle();
+
+      expect(
+        appProviderContainer.read(searchFilterProvider).unread,
+        isTrue);
+    });
+
+    testWidgets(
+      'SHOULD write notIncludeEvents to the committed filter\n'
+      'WHEN the events checkbox is tapped',
+    (tester) async {
+      await tester.pumpWidget(makeTestableWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(CustomIconLabeledCheckbox).at(3));
+      await tester.pumpAndSettle();
+
+      expect(
+        appProviderContainer.read(searchFilterProvider).notIncludeEvents,
+        isTrue);
     });
   });
 }
