@@ -77,5 +77,43 @@ void main() {
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('Report'));
     });
+
+    test('Should await an async insertHtml callback before insertDriveLinkHtml completes', () async {
+      final callOrder = <String>[];
+
+      await handler.insertDriveLinkHtml(
+        [linkDoc],
+        insertHtml: (html) async {
+          callOrder.add('insertHtml-start');
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          insertedHtml.add(html);
+          callOrder.add('insertHtml-end');
+        },
+        appLocalizations: appLocalizations,
+      );
+      callOrder.add('awaited');
+
+      expect(callOrder, ['insertHtml-start', 'insertHtml-end', 'awaited']);
+      expect(insertedHtml, hasLength(1));
+    });
+
+    test('Should propagate exceptions thrown by an async insertHtml callback', () async {
+      Object? caughtError;
+
+      try {
+        await handler.insertDriveLinkHtml(
+          [linkDoc],
+          insertHtml: (html) async {
+            await Future<void>.delayed(const Duration(milliseconds: 5));
+            throw StateError('mobile insertHtml failed');
+          },
+          appLocalizations: appLocalizations,
+        );
+      } catch (e) {
+        caughtError = e;
+      }
+
+      expect(caughtError, isA<StateError>());
+    });
   });
 }

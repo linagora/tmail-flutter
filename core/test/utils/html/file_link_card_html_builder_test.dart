@@ -16,6 +16,7 @@ void main() {
       expect(result, startsWith('<a href="https://example.com/file"'));
       expect(result, contains('target="_blank"'));
       expect(result, contains('rel="noopener noreferrer"'));
+      expect(result, contains('class="tmail-file-link-card"'));
       expect(result, contains('<div>icon</div>'));
       expect(result, contains('title="My File">My File</div>'));
       expect(result, contains('Open in drive ↗'));

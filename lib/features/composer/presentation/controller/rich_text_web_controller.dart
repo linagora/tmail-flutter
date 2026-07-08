@@ -46,6 +46,27 @@ class RichTextWebController extends GetxController {
   final menuParagraphController = CustomPopupMenuController();
   final menuOrderListController = CustomPopupMenuController();
 
+  // Only reassert focus on the editor when something OTHER than the editor
+  // itself genuinely holds Flutter focus right now (e.g. a real toolbar
+  // button's own FocusNode). `FocusScopeNode`s (root scope, Navigator scope,
+  // modal route scope, etc.) are just ambient focus-tree scaffolding, not a
+  // real focused widget. This matters here because onEditorSettingsChange/
+  // onEditorTextSizeChanged are wired to the package's native
+  // `document.onselectionchange`/`summernote.mouseup` events, which fire on
+  // any selection change or mouseup already inside the editor (including
+  // our own drive-card delete overlay's own selection manipulation) — i.e.
+  // the editor already has focus in the common case, so calling
+  // editorController.setFocus() unconditionally there created a
+  // near-continuous stream of redundant async round-trips that could
+  // resolve later, at an unrelated moment, causing an un-prevented native
+  // re-focus/scroll-jump.
+  void _reclaimFocusIfDivertedElsewhere() {
+    final primaryFocus = FocusManager.instance.primaryFocus;
+    if (primaryFocus != null && primaryFocus is! FocusScopeNode) {
+      editorController.setFocus();
+    }
+  }
+
   @override
   void onReady() {
     super.onReady();
@@ -64,12 +85,12 @@ class RichTextWebController extends GetxController {
     _updateBackgroundTextColor(settings);
     _updateOrderList(settings);
     _updateParagraph(settings);
-    editorController.setFocus();
+    _reclaimFocusIfDivertedElsewhere();
   }
 
   void onEditorTextSizeChanged(int? size) {
     _updateFontSize(size);
-    editorController.setFocus();
+    _reclaimFocusIfDivertedElsewhere();
   }
 
   void _updateTextStyle(EditorSettings settings) {

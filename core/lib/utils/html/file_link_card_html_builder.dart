@@ -28,6 +28,10 @@ class FileLinkCardContent {
 
 /// Builds the inline HTML card used to represent a linked file (e.g. a Drive
 /// attachment) inside the composer body.
+///
+/// The `tmail-file-link-card` class is the selector used by
+/// `WorkplaceScripts.registerDriveCardDeleteOverlay` to attach the
+/// hover-delete UI.
 class FileLinkCardHtmlBuilder {
   static const _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
   static const _textEscape = HtmlEscape();

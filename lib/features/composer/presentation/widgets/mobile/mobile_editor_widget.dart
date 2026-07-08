@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
@@ -8,7 +7,9 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:workplace/presentation/utils/workplace_scripts.dart';
 
 typedef OnCreatedEditorAction = Function(BuildContext context, HtmlEditorApi editorApi, String content);
 typedef OnLoadCompletedEditorAction = Function(HtmlEditorApi editorApi, WebUri? url);
@@ -139,9 +140,18 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     widget.onLoadCompletedEditorAction(editorApi, webUri);
     try {
       await _setupSelectionListener(editorApi);
+      await _registerDriveCardDeleteOverlay(editorApi);
     } catch (e) {
       logWarning('Error onWebViewCreated: $e');
     }
+  }
+
+  Future<void> _registerDriveCardDeleteOverlay(HtmlEditorApi editorApi) async {
+    if (!mounted) return;
+    final script = WorkplaceScripts.registerDriveCardDeleteOverlay(
+      AppLocalizations.of(context).remove,
+    );
+    await editorApi.webViewController.evaluateJavascript(source: script.script);
   }
 
 
