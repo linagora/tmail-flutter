@@ -12,6 +12,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/ha
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/reveal_experimental_preferences_provider.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SettingsController extends GetxController with ContactSupportMixin {
@@ -43,6 +46,11 @@ class SettingsController extends GetxController with ContactSupportMixin {
 
   void showExportTraceLogConfirmDialog(BuildContext context) {
     manageAccountDashboardController.showExportTraceLogConfirmDialog(context);
+  }
+
+  Future<void> revealExperimentalPreferences() async {
+    await appProviderContainer.read(revealExperimentalPreferencesProvider.future);
+    appProviderContainer.invalidate(experimentalPreferencesRevealedProvider);
   }
 
   void goToCommonSetting(OidcUserInfo oidcUserInfo) {
