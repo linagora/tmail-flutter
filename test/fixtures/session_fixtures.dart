@@ -12,8 +12,8 @@ import 'package:jmap_dart_client/jmap/core/sort/collation_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/ai/ai_capabilities.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_capability.dart';
-import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
 
 import 'account_fixtures.dart';
 
@@ -207,7 +207,7 @@ class SessionFixtures {
 
   static final aliceSessionWithAICapability = Session(
     {
-      AiScribeConstants.aiCapability: AICapability(),
+      AiCapabilities.aiCapability: AICapability(),
     },
     {
       AccountFixtures.aliceAccountId: Account(
@@ -215,12 +215,12 @@ class SessionFixtures {
         true,
         false,
         {
-          AiScribeConstants.aiCapability: AICapability(),
+          AiCapabilities.aiCapability: AICapability(),
         },
       )
     },
     {
-      AiScribeConstants.aiCapability: AccountFixtures.aliceAccountId,
+      AiCapabilities.aiCapability: AccountFixtures.aliceAccountId,
     },
     UserName('alice@domain.tld'),
     Uri.parse('http://domain.com/jmap'),

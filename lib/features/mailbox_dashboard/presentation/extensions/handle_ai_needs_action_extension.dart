@@ -1,4 +1,4 @@
-import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
+import 'package:model/ai/ai_capabilities.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
@@ -11,7 +11,7 @@ extension HandleAiNeedsActionExtension on MailboxDashBoardController {
       return false;
     }
 
-    return AiScribeConstants.aiCapability.isSupported(
+    return AiCapabilities.aiCapability.isSupported(
       currentSession,
       currentAccountId,
     );
