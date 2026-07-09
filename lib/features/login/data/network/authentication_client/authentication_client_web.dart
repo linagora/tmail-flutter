@@ -35,9 +35,18 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
       scopes,
       loginHint: loginHint,
     );
-    final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(
+    // Nullable at runtime: the web plugin returns null when it starts a
+    // full-page redirect, though the analysis platform interface declares it non-null.
+    // ignore: unnecessary_nullable_for_final_variable_declarations
+    final AuthorizationTokenResponse? authorizationTokenResponse =
+        await _appAuthWeb.authorizeAndExchangeCode(
       authorizationTokenRequest,
     );
+    if (authorizationTokenResponse == null) {
+      // Null means an SSO redirect was just initiated, not a failure: surface a
+      // silenced exception instead of dereferencing null and flashing an error.
+      throw AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException();
+    }
     log('$runtimeType::getTokenOIDC():Token: ${authorizationTokenResponse.accessToken}');
     final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
     if (tokenOIDC.isTokenValid()) {
