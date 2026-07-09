@@ -36,17 +36,17 @@ class AndroidSelectionHandlesManager implements SelectionHandlesController {
       editor.contains(activeElement);
 
   if (!selection || selection.rangeCount === 0) {
-    selectionRange = undefined;
+    window.selectionRange = undefined;
     return isEditorActive;
   }
 
   const range = selection.getRangeAt(0);
   if (!editor.contains(range.commonAncestorContainer)) {
-    selectionRange = undefined;
+    window.selectionRange = undefined;
     return isEditorActive;
   }
 
-  selectionRange = range.cloneRange();
+  window.selectionRange = range.cloneRange();
   return true;
 })();''';
 
@@ -64,7 +64,7 @@ class AndroidSelectionHandlesManager implements SelectionHandlesController {
       editor.focus({ preventScroll: true });
     }
 
-    if (selectionRange === undefined) {
+    if (window.selectionRange === undefined) {
       return true;
     }
 
@@ -74,7 +74,7 @@ class AndroidSelectionHandlesManager implements SelectionHandlesController {
     }
 
     selection.removeAllRanges();
-    selection.addRange(selectionRange.cloneRange());
+    selection.addRange(window.selectionRange.cloneRange());
     return true;
   };
 
@@ -129,6 +129,8 @@ class AndroidSelectionHandlesManager implements SelectionHandlesController {
 
     try {
       if (restoreSelectionOwnerFocus) {
+        // Pre-restore: set up the DOM selection so native handles appear
+        // in the correct position when re-enabled.
         await _restoreSelectionOwnerSelection(
           evaluateJavascript: evaluateJavascript,
           focusSelectionOwner: focusSelectionOwner,
@@ -138,6 +140,8 @@ class AndroidSelectionHandlesManager implements SelectionHandlesController {
       await _channel.invokeMethod<bool>(restoreMethod);
 
       if (restoreSelectionOwnerFocus) {
+        // Post-restore: re-apply the selection after native handles are
+        // back, since the native restore may reset focus/selection state.
         await _restoreSelectionOwnerSelection(
           evaluateJavascript: evaluateJavascript,
           focusSelectionOwner: focusSelectionOwner,

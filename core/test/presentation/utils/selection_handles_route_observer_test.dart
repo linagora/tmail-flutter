@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:core/presentation/utils/android_selection_handles_manager.dart';
 import 'package:core/presentation/utils/selection_handles_overlay_guard.dart';
 import 'package:core/presentation/utils/selection_handles_route_observer.dart';
 import 'package:flutter/foundation.dart';
@@ -8,9 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel(
-    'com.linagora.android.tmail/android_selection_handles',
-  );
+  const channel = MethodChannel(AndroidSelectionHandlesManager.channelName);
   final binaryMessenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
 
@@ -82,6 +83,30 @@ void main() {
       await settle();
 
       observer.didPop(route, fakePageRoute());
+      await settle();
+
+      expect(methods, ['suspend', 'restore']);
+    });
+
+    test('restores when route is popped before suspend completes', () async {
+      final route = fakeOverlayRoute();
+      final suspendCompleter = Completer<bool>();
+
+      binaryMessenger.setMockMethodCallHandler(channel, (call) async {
+        methods.add(call.method);
+        if (call.method == AndroidSelectionHandlesManager.suspendMethod) {
+          return suspendCompleter.future;
+        }
+        return true;
+      });
+
+      observer.didPush(route, fakePageRoute());
+      observer.didPop(route, fakePageRoute());
+      await settle();
+
+      expect(methods, ['suspend']);
+
+      suspendCompleter.complete(true);
       await settle();
 
       expect(methods, ['suspend', 'restore']);
