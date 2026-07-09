@@ -1,15 +1,13 @@
+import 'package:core/presentation/utils/android_selection_handles_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/android_editor_selection_handles_manager.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel(
-    AndroidEditorSelectionHandlesManager.channelName,
-  );
-  final manager = AndroidEditorSelectionHandlesManager(channel: channel);
+  const channel = MethodChannel(AndroidSelectionHandlesManager.channelName);
+  final manager = AndroidSelectionHandlesManager(channel: channel);
 
   final binaryMessenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
@@ -39,20 +37,23 @@ void main() {
     binaryMessenger.setMockMethodCallHandler(channel, null);
   });
 
-  group('AndroidEditorSelectionHandlesManager::suspendSelectionHandles', () {
-    test('returns false when editor javascript executor is missing', () async {
-      final nativeMethods = recordNativeMethods();
+  group('AndroidSelectionHandlesManager::suspendSelectionHandles', () {
+    test(
+      'suspends native handles directly when no javascript executor is given',
+      () async {
+        final nativeMethods = recordNativeMethods();
 
-      final result = await manager.suspendSelectionHandles(
-        evaluateJavascript: null,
-      );
+        final result = await manager.suspendSelectionHandles(
+          evaluateJavascript: null,
+        );
 
-      expect(result, isFalse);
-      expect(nativeMethods, isEmpty);
-    });
+        expect(result, isTrue);
+        expect(nativeMethods, [AndroidSelectionHandlesManager.suspendMethod]);
+      },
+    );
 
     test(
-      'returns false and does not call native channel when editor is inactive',
+      'returns false and does not call native channel when owner is inactive',
       () async {
         final nativeMethods = recordNativeMethods();
 
@@ -65,28 +66,36 @@ void main() {
       },
     );
 
-    test('calls native suspend when editor has selection or caret', () async {
+    test('calls native suspend when owner has selection or caret', () async {
       final nativeMethods = recordNativeMethods();
 
       final result = await manager.suspendSelectionHandles(
         evaluateJavascript: ({required source}) async {
           expect(
             source,
-            AndroidEditorSelectionHandlesManager.storeSelectionRangeScript,
+            AndroidSelectionHandlesManager.storeSelectionRangeScript,
           );
-          return AndroidEditorSelectionHandlesManager.trueValue;
+          return AndroidSelectionHandlesManager.trueValue;
         },
       );
 
       expect(result, isTrue);
-      expect(nativeMethods, [
-        AndroidEditorSelectionHandlesManager.suspendMethod,
-      ]);
+      expect(nativeMethods, [AndroidSelectionHandlesManager.suspendMethod]);
     });
 
     test('returns false instead of throwing when javascript fails', () async {
       final result = await manager.suspendSelectionHandles(
         evaluateJavascript: ({required source}) => throw StateError('failed'),
+      );
+
+      expect(result, isFalse);
+    });
+
+    test('returns false when native-only suspend is not applied', () async {
+      mockNativeResult(false);
+
+      final result = await manager.suspendSelectionHandles(
+        evaluateJavascript: null,
       );
 
       expect(result, isFalse);
@@ -99,7 +108,7 @@ void main() {
 
         final result = await manager.suspendSelectionHandles(
           evaluateJavascript: ({required source}) async =>
-              AndroidEditorSelectionHandlesManager.trueValue,
+              AndroidSelectionHandlesManager.trueValue,
         );
 
         expect(result, isFalse);
@@ -116,20 +125,23 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('returns false instead of throwing when native channel fails', () async {
-      mockNativeThrows();
+    test(
+      'returns false instead of throwing when native channel fails',
+      () async {
+        mockNativeThrows();
 
-      final result = await manager.suspendSelectionHandles(
-        evaluateJavascript: ({required source}) async => true,
-      );
+        final result = await manager.suspendSelectionHandles(
+          evaluateJavascript: ({required source}) async => true,
+        );
 
-      expect(result, isFalse);
-    });
+        expect(result, isFalse);
+      },
+    );
   });
 
-  group('AndroidEditorSelectionHandlesManager::restoreSelectionHandles', () {
+  group('AndroidSelectionHandlesManager::restoreSelectionHandles', () {
     test(
-      'restores native handles only when editor focus is not needed',
+      'restores native handles only when owner focus is not needed',
       () async {
         final calls = <String>[];
         binaryMessenger.setMockMethodCallHandler(channel, (call) async {
@@ -138,21 +150,21 @@ void main() {
         });
 
         await manager.restoreSelectionHandles(
-          restoreEditorFocus: false,
+          restoreSelectionOwnerFocus: false,
           evaluateJavascript: ({required source}) async {
             calls.add('js');
             return true;
           },
-          focusEditor: () async => calls.add('focus'),
+          focusSelectionOwner: () async => calls.add('focus'),
         );
 
         expect(calls, [
-          'native:${AndroidEditorSelectionHandlesManager.restoreMethod}',
+          'native:${AndroidSelectionHandlesManager.restoreMethod}',
         ]);
       },
     );
 
-    test('restores editor selection before and after native restore', () async {
+    test('restores owner selection before and after native restore', () async {
       final calls = <String>[];
       binaryMessenger.setMockMethodCallHandler(channel, (call) async {
         calls.add('native:${call.method}');
@@ -160,41 +172,39 @@ void main() {
       });
 
       await manager.restoreSelectionHandles(
-        restoreEditorFocus: true,
+        restoreSelectionOwnerFocus: true,
         evaluateJavascript: ({required source}) async {
           expect(
             source,
-            AndroidEditorSelectionHandlesManager.restoreSelectionRangeScript,
+            AndroidSelectionHandlesManager.restoreSelectionRangeScript,
           );
           calls.add('js');
           return true;
         },
-        focusEditor: () async => calls.add('focus'),
+        focusSelectionOwner: () async => calls.add('focus'),
       );
 
       expect(calls, [
         'js',
         'focus',
-        'native:${AndroidEditorSelectionHandlesManager.restoreMethod}',
+        'native:${AndroidSelectionHandlesManager.restoreMethod}',
         'js',
         'focus',
       ]);
     });
 
     test(
-      'still restores native handles when editor callbacks are null',
+      'still restores native handles when owner callbacks are null',
       () async {
         final nativeMethods = recordNativeMethods();
 
         await manager.restoreSelectionHandles(
-          restoreEditorFocus: true,
+          restoreSelectionOwnerFocus: true,
           evaluateJavascript: null,
-          focusEditor: null,
+          focusSelectionOwner: null,
         );
 
-        expect(nativeMethods, [
-          AndroidEditorSelectionHandlesManager.restoreMethod,
-        ]);
+        expect(nativeMethods, [AndroidSelectionHandlesManager.restoreMethod]);
       },
     );
 
@@ -203,16 +213,16 @@ void main() {
 
       await expectLater(
         manager.restoreSelectionHandles(
-          restoreEditorFocus: false,
+          restoreSelectionOwnerFocus: false,
           evaluateJavascript: null,
-          focusEditor: null,
+          focusSelectionOwner: null,
         ),
         completes,
       );
     });
   });
 
-  group('AndroidEditorSelectionHandlesManager on non-Android platforms', () {
+  group('AndroidSelectionHandlesManager on non-Android platforms', () {
     setUp(() {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     });
@@ -221,7 +231,7 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    test('suspend never touches the editor or native channel', () async {
+    test('suspend never touches the owner or native channel', () async {
       final nativeMethods = recordNativeMethods();
       var evaluatedJavascript = false;
 
@@ -237,22 +247,22 @@ void main() {
       expect(nativeMethods, isEmpty);
     });
 
-    test('restore never touches the editor or native channel', () async {
+    test('restore never touches the owner or native channel', () async {
       final nativeMethods = recordNativeMethods();
       var evaluatedJavascript = false;
-      var focusedEditor = false;
+      var focusedOwner = false;
 
       await manager.restoreSelectionHandles(
-        restoreEditorFocus: true,
+        restoreSelectionOwnerFocus: true,
         evaluateJavascript: ({required source}) async {
           evaluatedJavascript = true;
           return true;
         },
-        focusEditor: () async => focusedEditor = true,
+        focusSelectionOwner: () async => focusedOwner = true,
       );
 
       expect(evaluatedJavascript, isFalse);
-      expect(focusedEditor, isFalse);
+      expect(focusedOwner, isFalse);
       expect(nativeMethods, isEmpty);
     });
   });

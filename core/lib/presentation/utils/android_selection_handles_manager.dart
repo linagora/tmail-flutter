@@ -1,31 +1,11 @@
+import 'package:core/presentation/utils/selection_handles_controller.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-typedef EvaluateEditorJavascript =
-    Future<dynamic> Function({required String source});
-
-typedef FocusEditorCallback = Future<void> Function();
-
-/// Suspends and restores the editor text-selection handles, behind a seam the
-/// guard can substitute or fake.
-abstract interface class EditorSelectionHandlesController {
-  Future<bool> suspendSelectionHandles({
-    required EvaluateEditorJavascript? evaluateJavascript,
-  });
-
-  Future<void> restoreSelectionHandles({
-    required bool restoreEditorFocus,
-    required EvaluateEditorJavascript? evaluateJavascript,
-    required FocusEditorCallback? focusEditor,
-  });
-}
-
-class AndroidEditorSelectionHandlesManager
-    implements EditorSelectionHandlesController {
-  // Non-const so callers can build it lazily and skip it entirely off-Android.
-  AndroidEditorSelectionHandlesManager({
+class AndroidSelectionHandlesManager implements SelectionHandlesController {
+  AndroidSelectionHandlesManager({
     MethodChannel channel = const MethodChannel(channelName),
   }) : _channel = channel;
 
@@ -54,6 +34,7 @@ class AndroidEditorSelectionHandlesManager
   const activeElement = document.activeElement;
   const isEditorActive = activeElement === editor ||
       editor.contains(activeElement);
+
   if (!selection || selection.rangeCount === 0) {
     selectionRange = undefined;
     return isEditorActive;
@@ -108,19 +89,20 @@ class AndroidEditorSelectionHandlesManager
 
   @override
   Future<bool> suspendSelectionHandles({
-    required EvaluateEditorJavascript? evaluateJavascript,
+    required EvaluateSelectionJavascript? evaluateJavascript,
   }) async {
-    // Android-only issue: never touch the editor or native bridge elsewhere.
-    if (!PlatformInfo.isAndroid || evaluateJavascript == null) {
+    if (!PlatformInfo.isAndroid) {
       return false;
     }
 
     try {
-      final shouldSuspendHandles = await evaluateJavascript(
-        source: storeSelectionRangeScript,
-      );
-      if (!_isTrue(shouldSuspendHandles)) {
-        return false;
+      if (evaluateJavascript != null) {
+        final shouldSuspendHandles = await evaluateJavascript(
+          source: storeSelectionRangeScript,
+        );
+        if (!_isTrue(shouldSuspendHandles)) {
+          return false;
+        }
       }
 
       final hasSuspendedNativeHandles = await _channel.invokeMethod<bool>(
@@ -137,30 +119,28 @@ class AndroidEditorSelectionHandlesManager
 
   @override
   Future<void> restoreSelectionHandles({
-    required bool restoreEditorFocus,
-    required EvaluateEditorJavascript? evaluateJavascript,
-    required FocusEditorCallback? focusEditor,
+    required bool restoreSelectionOwnerFocus,
+    required EvaluateSelectionJavascript? evaluateJavascript,
+    required FocusSelectionOwnerCallback? focusSelectionOwner,
   }) async {
     if (!PlatformInfo.isAndroid) {
       return;
     }
 
     try {
-      // Restore around the native focus toggle: the WebView drops the caret
-      // when it regains focus, so re-apply it both before and after.
-      if (restoreEditorFocus) {
-        await _restoreEditorSelection(
+      if (restoreSelectionOwnerFocus) {
+        await _restoreSelectionOwnerSelection(
           evaluateJavascript: evaluateJavascript,
-          focusEditor: focusEditor,
+          focusSelectionOwner: focusSelectionOwner,
         );
       }
 
       await _channel.invokeMethod<bool>(restoreMethod);
 
-      if (restoreEditorFocus) {
-        await _restoreEditorSelection(
+      if (restoreSelectionOwnerFocus) {
+        await _restoreSelectionOwnerSelection(
           evaluateJavascript: evaluateJavascript,
-          focusEditor: focusEditor,
+          focusSelectionOwner: focusSelectionOwner,
         );
       }
     } catch (exception) {
@@ -170,12 +150,12 @@ class AndroidEditorSelectionHandlesManager
     }
   }
 
-  Future<void> _restoreEditorSelection({
-    required EvaluateEditorJavascript? evaluateJavascript,
-    required FocusEditorCallback? focusEditor,
+  Future<void> _restoreSelectionOwnerSelection({
+    required EvaluateSelectionJavascript? evaluateJavascript,
+    required FocusSelectionOwnerCallback? focusSelectionOwner,
   }) async {
     await evaluateJavascript?.call(source: restoreSelectionRangeScript);
-    await focusEditor?.call();
+    await focusSelectionOwner?.call();
   }
 
   bool _isTrue(dynamic value) =>

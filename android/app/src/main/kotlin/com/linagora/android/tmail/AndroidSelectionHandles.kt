@@ -8,12 +8,14 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * Hides the WebView text-selection handles while a Flutter popup menu is shown
- * by dropping the editor's window focus, then restores them afterwards.
+ * Hides the focused WebView text-selection handles while a Flutter overlay
+ * (popup menu, dialog, bottom sheet, action sheet) is shown by dropping the
+ * editor's window focus, then restores it afterwards.
  */
 class AndroidSelectionHandles(private val activity: Activity) {
 
     private var suspendedWebView: WebView? = null
+    private var suspendDepth: Int = 0
 
     fun register(flutterEngine: FlutterEngine) {
         MethodChannel(
@@ -29,24 +31,39 @@ class AndroidSelectionHandles(private val activity: Activity) {
     }
 
     private fun suspendSelectionHandles(): Boolean {
+        suspendedWebView?.takeIf { it.isAttachedToWindow }?.let {
+            suspendDepth += 1
+            return true
+        }
+
         val webView = findTargetWebView(activity.window.decorView) ?: return false
         suspendedWebView = webView
+        suspendDepth = 1
         webView.onWindowFocusChanged(false)
         return true
     }
 
     private fun restoreSelectionHandles(): Boolean {
         val webView = suspendedWebView?.takeIf { it.isAttachedToWindow }
-            ?: findTargetWebView(activity.window.decorView)
             ?: run {
-                suspendedWebView = null
+                resetSuspendedWebView()
                 return false
             }
 
+        if (suspendDepth > 1) {
+            suspendDepth -= 1
+            return true
+        }
+
         webView.requestFocus()
         webView.onWindowFocusChanged(true)
-        suspendedWebView = null
+        resetSuspendedWebView()
         return true
+    }
+
+    private fun resetSuspendedWebView() {
+        suspendedWebView = null
+        suspendDepth = 0
     }
 
     // Returns the focused WebView so we target the active editor, not any other

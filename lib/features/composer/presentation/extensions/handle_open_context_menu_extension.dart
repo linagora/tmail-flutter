@@ -1,3 +1,5 @@
+import 'package:core/presentation/utils/selection_handles_controller.dart';
+import 'package:core/presentation/utils/selection_handles_overlay_guard.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,20 +7,12 @@ import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixi
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/android_editor_selection_handles_manager.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/editor_selection_handles_guard.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/composer_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/popup_menu_item_composer_type_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleOpenContextMenuExtension on ComposerController {
-  // Lazily built, so the Android-only guard/manager never exists on other
-  // platforms (static fields initialize on first access).
-  static final _selectionHandlesGuard = EditorSelectionHandlesGuard(
-    AndroidEditorSelectionHandlesManager(),
-  );
-
   Future<void> handleOpenContextMenu(
     BuildContext context,
     RelativeRect position,
@@ -52,9 +46,11 @@ extension HandleOpenContextMenuExtension on ComposerController {
   ) async {
     ComposerActionType? selectedActionType;
 
-    await _selectionHandlesGuard.protect(
+    await SelectionHandlesOverlayGuard.protect<bool>(
+      context: context,
       evaluateJavascript: _editorEvaluateJavascript,
-      focusEditor: richTextMobileTabletController?.focus,
+      focusSelectionOwner: richTextMobileTabletController?.focus,
+      restoreSelectionOwnerFocus: (keepsComposerOpen) => keepsComposerOpen,
       action: (suspended) async {
         if (!context.mounted) {
           return false;
@@ -116,7 +112,7 @@ extension HandleOpenContextMenuExtension on ComposerController {
     return selectedActionType;
   }
 
-  EvaluateEditorJavascript? get _editorEvaluateJavascript =>
+  EvaluateSelectionJavascript? get _editorEvaluateJavascript =>
       richTextMobileTabletController
           ?.htmlEditorApi
           ?.webViewController

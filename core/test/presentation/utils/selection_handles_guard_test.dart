@@ -1,11 +1,10 @@
+import 'package:core/presentation/utils/selection_handles_controller.dart';
+import 'package:core/presentation/utils/selection_handles_guard.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/android_editor_selection_handles_manager.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/editor_selection_handles_guard.dart';
 
 /// Records the calls made by the guard and controls whether suspension happens,
 /// so the orchestration can be tested without any platform channel.
-class _FakeSelectionHandlesController
-    implements EditorSelectionHandlesController {
+class _FakeSelectionHandlesController implements SelectionHandlesController {
   _FakeSelectionHandlesController({required this.suspendResult});
 
   final bool suspendResult;
@@ -14,7 +13,7 @@ class _FakeSelectionHandlesController
 
   @override
   Future<bool> suspendSelectionHandles({
-    required EvaluateEditorJavascript? evaluateJavascript,
+    required EvaluateSelectionJavascript? evaluateJavascript,
   }) async {
     calls.add('suspend');
     return suspendResult;
@@ -22,25 +21,23 @@ class _FakeSelectionHandlesController
 
   @override
   Future<void> restoreSelectionHandles({
-    required bool restoreEditorFocus,
-    required EvaluateEditorJavascript? evaluateJavascript,
-    required FocusEditorCallback? focusEditor,
+    required bool restoreSelectionOwnerFocus,
+    required EvaluateSelectionJavascript? evaluateJavascript,
+    required FocusSelectionOwnerCallback? focusSelectionOwner,
   }) async {
     calls.add('restore');
-    restoredWithFocus = restoreEditorFocus;
+    restoredWithFocus = restoreSelectionOwnerFocus;
   }
 }
 
 void main() {
-  group('EditorSelectionHandlesGuard::protect', () {
+  group('SelectionHandlesGuard::protect', () {
     test('suspends, runs the action, then restores in order', () async {
       final controller = _FakeSelectionHandlesController(suspendResult: true);
-      final guard = EditorSelectionHandlesGuard(controller);
+      final guard = SelectionHandlesGuard(controller);
       bool? suspendedFlagSeenByAction;
 
-      await guard.protect(
-        evaluateJavascript: null,
-        focusEditor: null,
+      await guard.protect<bool>(
         action: (suspended) async {
           suspendedFlagSeenByAction = suspended;
           controller.calls.add('action');
@@ -52,13 +49,12 @@ void main() {
       expect(controller.calls, ['suspend', 'action', 'restore']);
     });
 
-    test('restores with the focus decision returned by the action', () async {
+    test('restores with the focus decision derived from the result', () async {
       final controller = _FakeSelectionHandlesController(suspendResult: true);
-      final guard = EditorSelectionHandlesGuard(controller);
+      final guard = SelectionHandlesGuard(controller);
 
-      await guard.protect(
-        evaluateJavascript: null,
-        focusEditor: null,
+      await guard.protect<bool>(
+        restoreSelectionOwnerFocus: (result) => result,
         action: (_) async => false,
       );
 
@@ -67,12 +63,10 @@ void main() {
 
     test('runs the action unguarded when suspension does not happen', () async {
       final controller = _FakeSelectionHandlesController(suspendResult: false);
-      final guard = EditorSelectionHandlesGuard(controller);
+      final guard = SelectionHandlesGuard(controller);
       bool? suspendedFlagSeenByAction;
 
-      await guard.protect(
-        evaluateJavascript: null,
-        focusEditor: null,
+      await guard.protect<bool>(
         action: (suspended) async {
           suspendedFlagSeenByAction = suspended;
           controller.calls.add('action');
@@ -86,15 +80,14 @@ void main() {
     });
 
     test(
-      'restores without editor focus and rethrows when the action throws',
+      'restores without owner focus and rethrows when the action throws',
       () async {
         final controller = _FakeSelectionHandlesController(suspendResult: true);
-        final guard = EditorSelectionHandlesGuard(controller);
+        final guard = SelectionHandlesGuard(controller);
 
         await expectLater(
-          guard.protect(
-            evaluateJavascript: null,
-            focusEditor: null,
+          guard.protect<bool>(
+            restoreSelectionOwnerFocus: (result) => result,
             action: (_) async => throw StateError('boom'),
           ),
           throwsStateError,
