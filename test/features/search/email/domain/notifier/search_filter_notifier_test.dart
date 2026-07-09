@@ -1,8 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
@@ -97,6 +101,15 @@ void main() {
       expect(stateOf().notIncludeEvents, isFalse);
     });
 
+    test('setHasAttachment writes false when the checkbox is cleared', () {
+      notifierOf().setHasAttachment(true.asSearchFilterToggle());
+      expect(stateOf().hasAttachment, isTrue);
+
+      notifierOf().setHasAttachment(false.asSearchFilterToggle());
+
+      expect(stateOf().hasAttachment, isFalse);
+    });
+
     test('setSenders / setRecipients replace the address sets', () {
       notifierOf().setSenders(
         {'alice@example.com', 'bob@example.com'}.asSearchFilterEmailSet());
@@ -111,6 +124,34 @@ void main() {
 
       expect(stateOf().from, isEmpty);
       expect(stateOf().to, isEmpty);
+    });
+
+    test('setMailbox selects a mailbox and clears it when null is passed', () {
+      final mailbox = PresentationMailbox(
+        MailboxId(Id('inbox-id')),
+        name: MailboxName('Inbox'),
+      );
+
+      notifierOf().setMailbox(mailbox);
+      expect(stateOf().mailbox, mailbox);
+
+      notifierOf().setMailbox(null);
+      expect(stateOf().mailbox, isNull);
+    });
+
+    test('toggleLabel selects, clears, and replaces labels by id', () {
+      final workLabel = Label(id: Id('work-label'), displayName: 'Work');
+      final travelLabel = Label(id: Id('travel-label'), displayName: 'Travel');
+
+      notifierOf().toggleLabel(workLabel);
+      expect(stateOf().label, workLabel);
+
+      notifierOf().toggleLabel(workLabel);
+      expect(stateOf().label, isNull);
+
+      notifierOf().toggleLabel(workLabel);
+      notifierOf().toggleLabel(travelLabel);
+      expect(stateOf().label, travelLabel);
     });
   });
 
