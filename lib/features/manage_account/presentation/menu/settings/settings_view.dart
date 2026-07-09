@@ -43,6 +43,13 @@ class SettingsView extends GetWidget<SettingsController> {
             onBackAction: () => controller.onBackSettingAction(context),
             onExportTraceLogAction: () =>
                 controller.showExportTraceLogConfirmDialog(context),
+            onMultiClickAction: controller
+                    .manageAccountDashboardController
+                    .accountMenuItemSelected
+                    .value ==
+                AccountMenuItem.preferences
+                ? controller.revealExperimentalPreferences
+                : null,
           );
         }),
         Obx(() {
