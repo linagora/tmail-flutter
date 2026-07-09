@@ -234,6 +234,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     }
   }
 
+  /// True when the filter carries at least one active search criterion that
+  /// should mark the current results as filtered/search results.
   bool get isApplied => from.isNotEmpty ||
     to.isNotEmpty ||
     text?.value.trim().isNotEmpty == true ||

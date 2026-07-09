@@ -147,8 +147,13 @@ class AdvancedFilterController extends BaseController {
     required SearchFilterNotifier filterNotifier,
   }) {
     // Strip any pagination cursor before running a fresh search.
-    filterNotifier.set(committedFilter);
-    if (committedFilter.isApplied) {
+    final filterToApply = committedFilter.clearPaginationCursors();
+    filterNotifier.set(filterToApply);
+
+    // Applied here means "has active search criteria", not "is a draft
+    // committed"; the form writes to the committed SSOT live.
+    final hasActiveSearchCriteria = filterToApply.isApplied;
+    if (hasActiveSearchCriteria) {
       searchController.activateAdvancedSearch();
     } else {
       searchController.deactivateAdvancedSearch();

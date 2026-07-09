@@ -52,6 +52,14 @@ import 'package:uuid/uuid.dart';
 
 import 'advanced_filter_controller_test.mocks.dart';
 
+typedef _CommittedFlagReader = bool Function(SearchEmailFilter filter);
+typedef _CheckboxFinder = Finder Function();
+typedef _CommittedCheckboxCase = ({
+  String label,
+  _CheckboxFinder findCheckbox,
+  _CommittedFlagReader readFlag,
+});
+
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 const fallbackGenerators = {
   #onStart: mockControllerCallback,
@@ -190,11 +198,18 @@ void main() {
     appProviderContainer
         .read(searchFilterProvider.notifier)
         .set(SearchEmailFilter.initial());
+    searchController.deactivateAdvancedSearch();
+    searchController.deactivateSimpleSearch();
+    searchController.isAdvancedSearchViewOpen.value = false;
+    clearInteractions(mockMailboxDashBoardController);
   });
 
   group('AdvancedFilterController::test', () {
     group('applyAdvancedSearchFilter::test', () {
-      test('SHOULD make sure memory search filter and search filter should be the same after applying', () async {
+      test(
+        'SHOULD keep the committed filter and search controller mirror in sync\n'
+        'WHEN the committed advanced filter is applied',
+      () async {
         // Arrange
         filterNotifier().set(SearchEmailFilter.initial());
         advancedFilterController.onTextChanged(FilterField.hasKeyword, 'Hello', filterNotifier());
@@ -221,22 +236,57 @@ void main() {
 
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
-        final memorySearchFilter = appProviderContainer.read(searchFilterProvider);
+        final committedSearchFilter = appProviderContainer.read(searchFilterProvider);
         final searchFilter = searchController.searchEmailFilter.value;
 
         // Assert
         verify(mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(memorySearchFilter, equals(searchFilter));
+        expect(committedSearchFilter, equals(searchFilter));
+      });
+
+      test(
+        'SHOULD activate advanced search\n'
+        'WHEN the applied committed filter has active criteria',
+      () async {
+        // Arrange
+        filterNotifier().set(SearchEmailFilter(subject: 'Subject'));
+
+        // Act
+        advancedFilterController.applyAdvancedSearchFilter(
+          committedFilter: committedFilter(),
+          filterNotifier: filterNotifier());
+        await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
+
+        // Assert
+        expect(searchController.advancedSearchIsActivated.value, isTrue);
+      });
+
+      test(
+        'SHOULD deactivate advanced search\n'
+        'WHEN the applied committed filter has no active criteria',
+      () async {
+        // Arrange
+        searchController.activateAdvancedSearch();
+        filterNotifier().set(SearchEmailFilter.initial());
+
+        // Act
+        advancedFilterController.applyAdvancedSearchFilter(
+          committedFilter: committedFilter(),
+          filterNotifier: filterNotifier());
+        await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
+
+        // Assert
+        expect(searchController.advancedSearchIsActivated.value, isFalse);
       });
     });
 
     group('initSearchFilterField::test', () {
       test(
-        'SHOULD make sure the values of the variables in the controller are the same as the values of the MemorySearchFilter\n'
+        'SHOULD seed controller text fields and address lists from the committed filter\n'
         'WHEN initSearchFilterField is called',
       () async {
         // Arrange
-        final memorySearchFilter = SearchEmailFilter(
+        final committedSearchFilter = SearchEmailFilter(
           text: SearchQuery('hello'),
           subject: 'subject',
           notKeyword: {'hello', 'nice'},
@@ -250,7 +300,7 @@ void main() {
           from: {'user1@example.com'},
           to: {'user2@example.com'},
         );
-        appProviderContainer.read(searchFilterProvider.notifier).set(memorySearchFilter);
+        appProviderContainer.read(searchFilterProvider.notifier).set(committedSearchFilter);
 
         // Act
         advancedFilterController.initSearchFilterField();
@@ -337,7 +387,7 @@ void main() {
 
     group('onTextChanged::test', () {
       test(
-        'SHOULD update memory search filter for subject\n'
+        'SHOULD update the committed filter subject\n'
         'WHEN onTextChanged called with FilterField is Subject',
       () {
         // Arrange
@@ -354,7 +404,7 @@ void main() {
       });
 
       test(
-        'SHOULD update memory search filter for text\n'
+        'SHOULD update the committed filter text\n'
         'WHEN onTextChanged called with FilterField is hasKeyword',
       () {
         // Arrange
@@ -371,7 +421,7 @@ void main() {
       });
 
       test(
-        'SHOULD update memory search filter for notKeyword\n'
+        'SHOULD update the committed filter notKeyword\n'
         'WHEN onTextChanged called with FilterField is notKeyword',
       () {
         // Arrange
@@ -388,7 +438,7 @@ void main() {
       });
 
       test(
-        'SHOULD update memory search filter for subject is null\n'
+        'SHOULD clear the committed filter subject\n'
         'WHEN onTextChanged called with FilterField is subject',
       () {
         // Arrange
@@ -405,7 +455,7 @@ void main() {
       });
 
       test(
-        'SHOULD update memory search filter for notKeyword is empty values\n'
+        'SHOULD clear the committed filter notKeyword\n'
         'WHEN onTextChanged called with FilterField is notKeyword',
       () {
         // Arrange
@@ -422,7 +472,7 @@ void main() {
       });
 
       test(
-        'SHOULD update memory search filter for subject and notKeyword is empty values\n'
+        'SHOULD keep subject and clear notKeyword in the committed filter\n'
         'WHEN onTextChanged called with FilterField are subject and notKeyword',
       () {
         // Arrange
@@ -517,72 +567,134 @@ void main() {
       );
     }
 
-    testWidgets(
-      'SHOULD write hasAttachment to the committed filter\n'
-      'WHEN the has-attachment checkbox is tapped',
-    (tester) async {
-      await tester.pumpWidget(makeTestableWidget());
-      await tester.pumpAndSettle();
+    final checkboxCases = <_CommittedCheckboxCase>[
+      (
+        label: 'hasAttachment',
+        findCheckbox: () => find.byKey(
+          const ValueKey(UiKeys.advancedSearchHasAttachmentCheckbox)),
+        readFlag: (filter) => filter.hasAttachment,
+      ),
+      (
+        label: 'unread',
+        findCheckbox: () => find.byType(CustomIconLabeledCheckbox).at(1),
+        readFlag: (filter) => filter.unread,
+      ),
+      (
+        label: 'starred',
+        findCheckbox: () => find.byType(CustomIconLabeledCheckbox).at(2),
+        readFlag: (filter) => filter.isContainFlagged,
+      ),
+      (
+        label: 'notIncludeEvents',
+        findCheckbox: () => find.byType(CustomIconLabeledCheckbox).at(3),
+        readFlag: (filter) => filter.notIncludeEvents,
+      ),
+    ];
 
-      await tester.tap(find.byKey(
-        const ValueKey(UiKeys.advancedSearchHasAttachmentCheckbox)));
-      await tester.pumpAndSettle();
+    Finder searchButton() => find.descendant(
+      of: find.byKey(const ValueKey(UiKeys.advancedSearchSearchButton)),
+      matching: find.byType(TextButton),
+    );
 
-      expect(
-        appProviderContainer.read(searchFilterProvider).hasAttachment,
-        isTrue);
+    group('single committed filter live updates before Search::test', () {
+      for (final checkboxCase in checkboxCases) {
+        testWidgets(
+          'SHOULD update ${checkboxCase.label} in the committed filter without executing search\n'
+          'WHEN the checkbox changes before Search is tapped',
+        (tester) async {
+          await tester.pumpWidget(makeTestableWidget());
+          await tester.pumpAndSettle();
+
+          await tester.tap(checkboxCase.findCheckbox());
+          await tester.pumpAndSettle();
+
+          expect(
+            checkboxCase.readFlag(
+              appProviderContainer.read(searchFilterProvider)),
+            isTrue);
+          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          verifyNever(
+            mockMailboxDashBoardController.handleAdvancedSearchEmail());
+        });
+      }
     });
 
-    testWidgets(
-      'SHOULD toggle the flagged keyword via toggleStarred\n'
-      'WHEN the starred checkbox is tapped twice',
-    (tester) async {
-      await tester.pumpWidget(makeTestableWidget());
-      await tester.pumpAndSettle();
+    group('single committed filter live clearing before Search::test', () {
+      for (final checkboxCase in checkboxCases) {
+        testWidgets(
+          'SHOULD clear ${checkboxCase.label} in the committed filter without executing search\n'
+          'WHEN the checkbox is toggled off before Search is tapped',
+        (tester) async {
+          await tester.pumpWidget(makeTestableWidget());
+          await tester.pumpAndSettle();
 
-      final starredCheckbox = find.byType(CustomIconLabeledCheckbox).at(2);
+          await tester.tap(checkboxCase.findCheckbox());
+          await tester.pumpAndSettle();
+          await tester.tap(checkboxCase.findCheckbox());
+          await tester.pumpAndSettle();
 
-      await tester.tap(starredCheckbox);
-      await tester.pumpAndSettle();
-      expect(
-        appProviderContainer.read(searchFilterProvider).isContainFlagged,
-        isTrue);
-
-      await tester.tap(starredCheckbox);
-      await tester.pumpAndSettle();
-      expect(
-        appProviderContainer.read(searchFilterProvider).isContainFlagged,
-        isFalse);
+          expect(
+            checkboxCase.readFlag(
+              appProviderContainer.read(searchFilterProvider)),
+            isFalse);
+          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          verifyNever(
+            mockMailboxDashBoardController.handleAdvancedSearchEmail());
+        });
+      }
     });
 
-    testWidgets(
-      'SHOULD write unread to the committed filter\n'
-      'WHEN the unread checkbox is tapped',
-    (tester) async {
-      await tester.pumpWidget(makeTestableWidget());
-      await tester.pumpAndSettle();
+    group('single committed filter execution on Search::test', () {
+      testWidgets(
+        'SHOULD activate advanced search and execute once\n'
+        'WHEN Search is tapped after a live checkbox update',
+      (tester) async {
+        await tester.pumpWidget(makeTestableWidget());
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(CustomIconLabeledCheckbox).at(1));
-      await tester.pumpAndSettle();
+        await tester.tap(checkboxCases.first.findCheckbox());
+        await tester.pumpAndSettle();
+        verifyNever(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
-      expect(
-        appProviderContainer.read(searchFilterProvider).unread,
-        isTrue);
-    });
+        await tester.tap(searchButton());
+        await tester.pumpAndSettle();
+        await untilCalled(
+          mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
-    testWidgets(
-      'SHOULD write notIncludeEvents to the committed filter\n'
-      'WHEN the events checkbox is tapped',
-    (tester) async {
-      await tester.pumpWidget(makeTestableWidget());
-      await tester.pumpAndSettle();
+        verify(
+          mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
+        expect(searchController.advancedSearchIsActivated.value, isTrue);
+        expect(
+          appProviderContainer.read(searchFilterProvider).hasAttachment,
+          isTrue);
+      });
 
-      await tester.tap(find.byType(CustomIconLabeledCheckbox).at(3));
-      await tester.pumpAndSettle();
+      testWidgets(
+        'SHOULD deactivate advanced search and execute once\n'
+        'WHEN Search is tapped after the only live checkbox is cleared',
+      (tester) async {
+        searchController.activateAdvancedSearch();
+        await tester.pumpWidget(makeTestableWidget());
+        await tester.pumpAndSettle();
 
-      expect(
-        appProviderContainer.read(searchFilterProvider).notIncludeEvents,
-        isTrue);
+        await tester.tap(checkboxCases.first.findCheckbox());
+        await tester.pumpAndSettle();
+        await tester.tap(checkboxCases.first.findCheckbox());
+        await tester.pumpAndSettle();
+        verifyNever(mockMailboxDashBoardController.handleAdvancedSearchEmail());
+
+        await tester.tap(searchButton());
+        await tester.pumpAndSettle();
+        await untilCalled(
+          mockMailboxDashBoardController.handleAdvancedSearchEmail());
+
+        verify(
+          mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
+        expect(searchController.advancedSearchIsActivated.value, isFalse);
+        expect(
+          appProviderContainer.read(searchFilterProvider).hasAttachment,
+          isFalse);
+      });
     });
   });
 }
