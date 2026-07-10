@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/selection_handles_route_observer.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,10 @@ class TMailApp extends StatefulWidget {
 class _TMailAppState extends State<TMailApp> {
   DeepLinksManager? _deepLinksManager;
 
+  // Kept as a field so route tracking survives app rebuilds; a new instance
+  // per build would drop the suspended-route state and skip the restore.
+  final _selectionHandlesRouteObserver = SelectionHandlesRouteObserver();
+
   @override
   void initState() {
     super.initState();
@@ -47,41 +52,42 @@ class _TMailAppState extends State<TMailApp> {
     return UncontrolledProviderScope(
       container: appProviderContainer,
       child: GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeUtils.buildAppTheme(context),
-      supportedLocales: LocalizationService.supportedLocales,
-      localizationsDelegates: const [
-        workplace_localizations.AppLocalizations.delegate,
-        AppLocalizationsDelegate(),
-        ScribeLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      localeResolutionCallback: (deviceLocale, supportedLocales) {
-        for (var locale in supportedLocales) {
-          if (locale.languageCode == deviceLocale?.languageCode) {
-            return deviceLocale;
+        debugShowCheckedModeBanner: false,
+        navigatorObservers: [_selectionHandlesRouteObserver],
+        theme: ThemeUtils.buildAppTheme(context),
+        supportedLocales: LocalizationService.supportedLocales,
+        localizationsDelegates: const [
+          workplace_localizations.AppLocalizations.delegate,
+          AppLocalizationsDelegate(),
+          ScribeLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback: (deviceLocale, supportedLocales) {
+          for (var locale in supportedLocales) {
+            if (locale.languageCode == deviceLocale?.languageCode) {
+              return deviceLocale;
+            }
           }
-        }
-        return supportedLocales.first;
-      },
-      locale: LocalizationService.getInitialLocale(),
-      fallbackLocale: LocalizationService.fallbackLocale,
-      translations: LocalizationService(),
-      onGenerateTitle: (context) {
-        if (Get.currentRoute == AppRoutes.unknownRoutePage) {
-          return AppLocalizations.of(context).page404;
-        } else {
-          return AppLocalizations.of(context).page_name;
-        }
-      },
-      unknownRoute: AppPages.unknownRoutePage,
-      defaultTransition: Transition.noTransition,
-      initialRoute: AppRoutes.home,
-      getPages: AppPages.pages,
-      builder: FlutterSmartDialog.init(),
-    ),
+          return supportedLocales.first;
+        },
+        locale: LocalizationService.getInitialLocale(),
+        fallbackLocale: LocalizationService.fallbackLocale,
+        translations: LocalizationService(),
+        onGenerateTitle: (context) {
+          if (Get.currentRoute == AppRoutes.unknownRoutePage) {
+            return AppLocalizations.of(context).page404;
+          } else {
+            return AppLocalizations.of(context).page_name;
+          }
+        },
+        unknownRoute: AppPages.unknownRoutePage,
+        defaultTransition: Transition.noTransition,
+        initialRoute: AppRoutes.home,
+        getPages: AppPages.pages,
+        builder: FlutterSmartDialog.init(),
+      ),
     );
   }
 
