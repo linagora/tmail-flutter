@@ -28,6 +28,14 @@ void main() {
       );
     });
 
+    test('readyToUse type returns WorkplaceIntentReadyToUseMessage', () {
+      final raw = encode({'type': 'intent-$intentId:readyToUse'});
+      expect(
+        WorkplaceIntentMessage.parse(intentId, raw),
+        isA<WorkplaceIntentReadyToUseMessage>(),
+      );
+    });
+
     test('error type returns WorkplaceIntentErrorMessage', () {
       final raw = encode({'type': 'intent-$intentId:error'});
       expect(
@@ -170,6 +178,7 @@ void main() {
 
       for (final entry in {
         'ready': WorkplaceIntentReadyMessage,
+        'readyToUse': WorkplaceIntentReadyToUseMessage,
         'error': WorkplaceIntentErrorMessage,
         'cancel': WorkplaceIntentCancelMessage,
       }.entries) {

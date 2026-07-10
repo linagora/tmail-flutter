@@ -1,10 +1,10 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
@@ -33,38 +33,44 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> onPickerTap() async {
     if (_modalOpen) return;
-    final fetch = pickerFetchIntent;
     _modalOpen = true;
     try {
       if (!mounted) {
         throw WorkplaceUIDisposedException();
       }
       final l10n = AppLocalizations.of(context)!;
-      final intent = await fetch(
+      // Captured up front: the caller may pop this context (e.g. a context
+      // menu tile) before the intent future settles, disposing this state.
+      final failingMessage = l10n.attachFromDriveFailingMessage;
+      final intentFuture = pickerFetchIntent(
         addAsLinkTitle: l10n.addAsLink,
         addAsAttachmentTitle: l10n.addAsAttachment,
       );
-      if (!mounted) {
-        throw WorkplaceUIDisposedException();
-      }
-      final result = await showDialog<List<DriveDocument>?>(
+      final outcome = await showDialog<DrivePickOutcome>(
         context: context,
+        useSafeArea: false,
         builder: (_) => DriveIntentWebViewModal(
-          url: intent.intentUrl,
-          intentId: intent.intentId,
+          intentFuture: intentFuture,
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );
-      if (result != null) pickerOnCallback?.call(DrivePickResult(result));
-    } catch (e) {
-      logWarning('DrivePickerStateMixin::onPickerTap: $e');
-      final message = mounted
-          ? AppLocalizations.of(context)?.attachFromDriveFailingMessage
-          : null;
-      pickerOnCallback?.call(DrivePickFailure(e, message: message));
+      _handleOutcome(outcome, failingMessage);
     } finally {
       clearExternalHandler();
       _modalOpen = false;
+    }
+  }
+
+  void _handleOutcome(DrivePickOutcome? outcome, String? failingMessage) {
+    switch (outcome) {
+      case DrivePickOutcomePicked(:final documents):
+        pickerOnCallback?.call(DrivePickResult(documents));
+      case DrivePickOutcomeFailed(:final error):
+        logWarning('DrivePickerStateMixin::onPickerTap: $error');
+        pickerOnCallback?.call(DrivePickFailure(error, message: failingMessage));
+      case DrivePickOutcomeCancelled():
+      case null:
+        break;
     }
   }
 }

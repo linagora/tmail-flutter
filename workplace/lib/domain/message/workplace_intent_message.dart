@@ -9,6 +9,7 @@ WorkplaceIntentMessage parseWorkplaceIntentMessage(String intentId, String raw) 
   final type = map['type'] as String? ?? '';
   return switch (type) {
     _ when type == 'intent-$intentId:ready' => const WorkplaceIntentReadyMessage(),
+    _ when type == 'intent-$intentId:readyToUse' => const WorkplaceIntentReadyToUseMessage(),
     _ when type == 'intent-$intentId:done' => WorkplaceIntentDoneMessage.fromJson(map),
     _ when type == 'intent-$intentId:error' => const WorkplaceIntentErrorMessage(),
     _ when type == 'intent-$intentId:cancel' => const WorkplaceIntentCancelMessage(),
@@ -25,6 +26,10 @@ sealed class WorkplaceIntentMessage {
 
 final class WorkplaceIntentReadyMessage extends WorkplaceIntentMessage {
   const WorkplaceIntentReadyMessage();
+}
+
+final class WorkplaceIntentReadyToUseMessage extends WorkplaceIntentMessage {
+  const WorkplaceIntentReadyToUseMessage();
 }
 
 final class WorkplaceIntentErrorMessage extends WorkplaceIntentMessage {

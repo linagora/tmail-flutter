@@ -9,51 +9,60 @@ typedef OnRegisterExternalHandler = void Function(DriveMessageHandler handler);
 class DriveIntentWebViewModalShell extends StatelessWidget {
   final Widget child;
   final VoidCallback onClose;
+  final EdgeInsets insetPadding;
+  final ShapeBorder? shape;
+  final BoxConstraints? constraints;
+  final bool haveCloseButton;
 
   const DriveIntentWebViewModalShell({
     super.key,
     required this.child,
     required this.onClose,
+    this.insetPadding = const EdgeInsets.all(0),
+    this.shape,
+    this.constraints,
+    this.haveCloseButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return PointerInterceptor(
-    child: GestureDetector(
-      onTap: onClose,
-      behavior: HitTestBehavior.opaque,
-      child: Dialog(
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(6)),
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800, maxHeight: 677),
+      child: GestureDetector(
+        onTap: onClose,
+        behavior: HitTestBehavior.opaque,
+        child: Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: insetPadding,
+          shape: shape,
+          constraints: constraints,
           child: GestureDetector(
             onTap: () {},
             behavior: HitTestBehavior.opaque,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsetsGeometry.directional(end: 17),
-                  child: TMailButtonWidget.fromIcon(
-                    icon: ImagePaths().icClose,
-                    iconColor: const Color(0xFF424244).withValues(alpha: 0.64),
-                    padding: const EdgeInsets.all(12),
-                    backgroundColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    onTapActionCallback: onClose,
+                if (haveCloseButton) ...[
+                  const SizedBox(height: 14),
+                  Padding(
+                    padding: const EdgeInsetsGeometry.directional(end: 17),
+                    child: TMailButtonWidget.fromIcon(
+                      icon: ImagePaths().icClose,
+                      iconColor: const Color(
+                        0xFF424244,
+                      ).withValues(alpha: 0.64),
+                      padding: const EdgeInsets.all(12),
+                      backgroundColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      onTapActionCallback: onClose,
+                    ),
                   ),
-                ),
+                ],
                 Expanded(child: child),
               ],
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 }

@@ -96,6 +96,9 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
           'token_exchange',
         ],
       ).toString(),
+      options: Options(
+        headers: {'Accept': 'application/json'},
+      ),
       data: WorkplaceExchangeTokenRequest(
         idToken: oidcIdToken,
         exchangeType: WorkplaceExchangeType.app,
