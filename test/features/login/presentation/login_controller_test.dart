@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/base_url_oidc_response.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
@@ -259,12 +260,12 @@ void main() {
 
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
         'AND SSO was confirmed by webFinger (ssoConfirmed == true) \n'
-        'BUT EXCEPTION is not NoSuitableBrowserForOIDCException \n'
+        'AND exception has a visible message \n'
         'THEN loginFormType becomes retry AND never falls back to basic auth', () {
 
       loginController.loginFormType.value = LoginFormType.dnsLookupForm;
       final failure = GetTokenOIDCFailure(
-        NotFoundUrlException(),
+        CanNotFoundBaseUrl(),
         ssoConfirmed: true,
       );
       loginController.handleFailureViewState(failure);
@@ -277,6 +278,18 @@ void main() {
           LoginFormType.credentialForm,
         )),
       );
+    });
+
+    test('WHEN GetTokenOIDCFailure is only the browser redirect signal \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = GetTokenOIDCFailure(
+        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
     });
 
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
@@ -298,11 +311,12 @@ void main() {
   group('Test handleFailureViewState with AuthenticateOidcOnBrowserFailure', () {
     test('WHEN handleFailureViewState is called with AuthenticateOidcOnBrowserFailure \n'
         'AND SSO was confirmed by webFinger (ssoConfirmed == true) \n'
+        'AND exception has a visible message \n'
         'THEN loginFormType becomes retry AND never falls back to basic auth', () {
 
       loginController.loginFormType.value = LoginFormType.dnsLookupForm;
       final failure = AuthenticateOidcOnBrowserFailure(
-        Exception(),
+        CanNotFoundBaseUrl(),
         ssoConfirmed: true,
       );
       loginController.handleFailureViewState(failure);
@@ -315,6 +329,18 @@ void main() {
           LoginFormType.credentialForm,
         )),
       );
+    });
+
+    test('WHEN AuthenticateOidcOnBrowserFailure is only the browser redirect signal \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = AuthenticateOidcOnBrowserFailure(
+        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
     });
 
     test('WHEN the OIDC provider was only guessed from the base URL \n'
@@ -350,11 +376,12 @@ void main() {
   group('Test handleUrgentException with AuthenticateOidcOnBrowserFailure', () {
     test('WHEN handleUrgentException is called with AuthenticateOidcOnBrowserFailure \n'
         'AND SSO was confirmed by webFinger (ssoConfirmed == true) \n'
+        'AND exception has a visible message \n'
         'THEN loginFormType becomes retry AND never falls back to basic auth', () {
 
       loginController.loginFormType.value = LoginFormType.dnsLookupForm;
       final failure = AuthenticateOidcOnBrowserFailure(
-        Exception(),
+        CanNotFoundBaseUrl(),
         ssoConfirmed: true,
       );
       loginController.handleUrgentException(failure: failure);
@@ -367,6 +394,18 @@ void main() {
           LoginFormType.credentialForm,
         )),
       );
+    });
+
+    test('WHEN handleUrgentException gets only the browser redirect signal \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = AuthenticateOidcOnBrowserFailure(
+        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleUrgentException(failure: failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
     });
 
     test('WHEN the OIDC provider was only guessed from the base URL \n'
