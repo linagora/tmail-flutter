@@ -27,6 +27,13 @@ abstract final class DriveIntentFakePage {
       JSON.stringify({ type: 'intent-{INTENT_ID}:ready' }),
       '*'
     );
+    setTimeout(function() {
+      console.log('[drive-fake] sending readyToUse for intent-{INTENT_ID}');
+      window.parent.postMessage(
+        JSON.stringify({ type: 'intent-{INTENT_ID}:readyToUse' }),
+        '*'
+      );
+    }, 500);
   });
   window.addEventListener('message', function(e) {
     if (ackReceived) return;

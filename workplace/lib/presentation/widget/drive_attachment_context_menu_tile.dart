@@ -62,7 +62,10 @@ abstract class _DriveAttachmentContextMenuTileState
           color: AppColor.nameUserColor,
         ),
       ),
-      onTap: onPickerTap,
+      onTap: () {
+        Navigator.pop(context);
+        onPickerTap();
+      },
     );
   }
 }

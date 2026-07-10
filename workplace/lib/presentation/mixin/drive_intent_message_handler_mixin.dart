@@ -1,20 +1,72 @@
-import 'package:core/utils/app_logger.dart';
-import 'package:workplace/domain/entity/drive_document.dart';
-import 'package:workplace/domain/message/workplace_intent_message.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
+import 'package:workplace/domain/message/workplace_intent_message.dart';
+import 'package:workplace/presentation/model/drive_pick_outcome.dart';
+
+/// Shared loading/messaging lifecycle for the mobile and web Drive picker modals.
 mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   late String _intentId;
-  late String _intentOrigin;
-  bool _modalClosed = false;
+  String _intentOrigin = 'null';
+  bool _closed = false;
+  bool _messageHandlerReady = false;
+  Timer? _readyTimeoutTimer;
 
-  void initMessageHandler({required String intentId, required String intentOrigin}) {
-    _intentId = intentId;
-    _intentOrigin = intentOrigin;
-    _modalClosed = false;
+  WorkplaceIntent? _resolvedIntent;
+  bool _platformViewReady = false;
+  bool _intentApplied = false;
+  bool _showSkeleton = true;
+
+  bool get showSkeleton => _showSkeleton;
+
+  String get intentOrigin => _intentOrigin;
+
+  /// Covers silent failures like SSO blocking the page with no postMessage ever sent.
+  Duration get readyTimeout => const Duration(seconds: 20);
+
+  void startLoading(Future<WorkplaceIntent> intentFuture) {
+    intentFuture
+        .then((intent) {
+          if (!mounted) return;
+          _resolvedIntent = intent;
+          _tryApplyIntent();
+        })
+        .catchError((Object e) {
+          _finish(DrivePickOutcomeFailed(e));
+        });
+  }
+
+  void notifyPlatformViewReady() {
+    _platformViewReady = true;
+    _tryApplyIntent();
+  }
+
+  void _tryApplyIntent() {
+    final intent = _resolvedIntent;
+    if (intent == null || !_platformViewReady || _intentApplied) return;
+    _intentApplied = true;
+    _intentId = intent.intentId;
+    _intentOrigin = intent.intentUrl.scheme == 'data'
+        ? 'null'
+        : intent.intentUrl.origin;
+    _messageHandlerReady = true;
+    _readyTimeoutTimer?.cancel();
+    _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
+    loadIntent(intent);
+  }
+
+  void loadIntent(WorkplaceIntent intent);
+
+  void _handleReadyTimeout() {
+    log('driveIntent: timed out waiting for ready after $readyTimeout');
+    _finish(DrivePickOutcomeFailed(DriveIntentTimeoutException()));
   }
 
   void onMessage({required String raw, required String? origin}) {
+    if (!_messageHandlerReady) return;
     if (!_isValidOrigin(origin)) {
       log('driveIntent: dropped message from unexpected origin: $origin');
       return;
@@ -40,26 +92,25 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   void _handleWorkplaceMessage(WorkplaceIntentMessage msg) {
     switch (msg) {
       case WorkplaceIntentReadyMessage():
+        _readyTimeoutTimer?.cancel();
         log('driveIntent: ready received, sending ack');
         sendAck();
         break;
+      case WorkplaceIntentReadyToUseMessage():
+        log('driveIntent: readyToUse received, hiding loading');
+        if (mounted) setState(() => _showSkeleton = false);
+        break;
       case WorkplaceIntentDoneMessage():
-        if (_modalClosed) break;
-        _modalClosed = true;
         log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}').join(', ')}');
-        closeModal(msg.documents);
+        _finish(DrivePickOutcomePicked(msg.documents));
         break;
       case WorkplaceIntentErrorMessage():
-        if (_modalClosed) break;
-        _modalClosed = true;
         log('driveIntent: error received, closing modal');
-        closeModal(null);
+        _finish(DrivePickOutcomeFailed(DriveIntentErrorException()));
         break;
       case WorkplaceIntentCancelMessage():
-        if (_modalClosed) break;
-        _modalClosed = true;
         log('driveIntent: cancel received, closing modal');
-        closeModal(null);
+        _finish(const DrivePickOutcomeCancelled());
         break;
       case WorkplaceIntentUnknownMessage():
         log('driveIntent: unknown message type ${msg.type}, discarded');
@@ -67,12 +118,30 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  void closeModal(List<DriveDocument>? result) {
+  void cancel() => _finish(const DrivePickOutcomeCancelled());
+
+  @override
+  void dispose() {
+    _readyTimeoutTimer?.cancel();
+    super.dispose();
+  }
+
+  void _finish(DrivePickOutcome outcome) {
+    if (_closed) return;
+    _closed = true;
+    _readyTimeoutTimer?.cancel();
     onCleanup();
-    if (mounted) Navigator.of(context).pop(result);
+    onFinished(outcome);
+    if (mounted) Navigator.of(context).pop(outcome);
   }
 
   void sendAck();
 
   void onCleanup() {}
+
+  @protected
+  void onFinished(DrivePickOutcome outcome) {}
+
+  @visibleForTesting
+  void cancelReadyTimeoutForTesting() => _readyTimeoutTimer?.cancel();
 }

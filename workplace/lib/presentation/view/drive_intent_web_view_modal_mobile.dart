@@ -4,20 +4,20 @@ import 'dart:convert';
 import '../mixin/drive_intent_message_handler_mixin.dart';
 import '../mixin/drive_intent_shims.dart';
 import 'drive_intent_fake_page.dart';
+import 'drive_intent_skeleton_loader.dart';
 import 'drive_intent_web_view_modal_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:workplace/domain/entity/workplace_intent.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
-  final Uri url;
-  final String intentId;
+  final Future<WorkplaceIntent> intentFuture;
   // Ignored on mobile — only used by the web variant (ADR-93).
   final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
-    required this.url,
-    required this.intentId,
+    required this.intentFuture,
     this.onRegisterExternalHandler,
   });
 
@@ -30,48 +30,61 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin {
   InAppWebViewController? _webViewController;
 
-  bool get _isDataUri => widget.url.scheme == 'data';
-
-  String get _intentOrigin => _isDataUri ? 'null' : widget.url.origin;
-
   @override
   void initState() {
     super.initState();
-    initMessageHandler(
-      intentId: widget.intentId,
-      intentOrigin: _intentOrigin,
-    );
+    startLoading(widget.intentFuture);
   }
 
   @override
-  Widget build(BuildContext context) => DriveIntentWebViewModalShell(
-        onClose: () => closeModal(null),
-        child: InAppWebView(
-          key: ValueKey(widget.intentId),
-          initialUrlRequest: _isDataUri ? null : URLRequest(url: WebUri.uri(widget.url)),
-          initialData: _isDataUri
-              ? InAppWebViewInitialData(data: DriveIntentFakePage.buildHtml(widget.intentId))
-              : null,
-          initialSettings: InAppWebViewSettings(),
-          initialUserScripts: UnmodifiableListView([
-            UserScript(
-              source: DriveIntentShims.parentPostMessageShim,
-              injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
-            ),
-          ]),
-          onWebViewCreated: (controller) {
-            _webViewController = controller;
-            controller.addJavaScriptHandler(
-              handlerName: DriveIntentShims.handlerName,
-              callback: (args) => onMessage(
-                raw: args[0] as String,
-                origin: args.length > 1 ? args[1] as String? : null,
-              ),
-            );
-          },
-          onLoadStop: null,
-        ),
+  void loadIntent(WorkplaceIntent intent) {
+    if (intent.intentUrl.scheme == 'data') {
+      _webViewController!.loadData(
+        data: DriveIntentFakePage.buildHtml(intent.intentId),
       );
+    } else {
+      _webViewController!.loadUrl(
+        urlRequest: URLRequest(url: WebUri.uri(intent.intentUrl)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: DriveIntentWebViewModalShell(
+        onClose: cancel,
+        child: Stack(
+          children: [
+            InAppWebView(
+              key: const ValueKey('drive-intent-webview'),
+              initialSettings: InAppWebViewSettings(),
+              initialUserScripts: UnmodifiableListView([
+                UserScript(
+                  source: DriveIntentShims.parentPostMessageShim,
+                  injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+                ),
+              ]),
+              onWebViewCreated: (controller) {
+                _webViewController = controller;
+                controller.addJavaScriptHandler(
+                  handlerName: DriveIntentShims.handlerName,
+                  callback: (args) => onMessage(
+                    raw: args[0] as String,
+                    origin: args.length > 1 ? args[1] as String? : null,
+                  ),
+                );
+                notifyPlatformViewReady();
+              },
+            ),
+            if (showSkeleton)
+              const Positioned.fill(child: DriveIntentSkeletonLoader.list()),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void sendAck() {
@@ -79,7 +92,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     _webViewController?.evaluateJavascript(source: '''
       window.dispatchEvent(new MessageEvent('message', {
         data: '$payload',
-        origin: '$_intentOrigin',
+        origin: '$intentOrigin',
         source: window
       }));
     ''');
