@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:core/utils/build_utils.dart';
-import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
@@ -9,9 +7,6 @@ class DriveAttachmentHandler {
   DriveAttachmentHandler();
 
   static const _fallbackOpenInDriveLabel = 'Open in drive';
-
-  static const _hrefEscape = HtmlEscape(HtmlEscapeMode.attribute);
-  static const _textEscape = HtmlEscape();
 
   Future<void> handleDrivePickResult(
     List<DriveDocument> result, {
@@ -51,7 +46,7 @@ class DriveAttachmentHandler {
         )
         .nonNulls
         .join();
-    return HtmlUtils.wrapFileCardsHtml(cards);
+    return FileLinkCardHtmlBuilder.wrapFileCardsHtml(cards);
   }
 
   String? _driveFileCard(
@@ -63,20 +58,40 @@ class DriveAttachmentHandler {
     if (link == null) return null;
     if (requireHttps && !link.isScheme('https')) return null;
 
-    final href = _hrefEscape.convert(link.toString());
-    final name = _textEscape.convert(doc.name);
-    final openInDriveLabel = _textEscape.convert(
-      appLocalizations?.openInDrive ?? _fallbackOpenInDriveLabel,
-    );
-    final thumbnailUrl = doc.thumbnail?.link;
+    final openInDriveLabel =
+        appLocalizations?.openInDrive ?? _fallbackOpenInDriveLabel;
+    final trustedThumbnailUrl = _trustedThumbnailUrl(doc, sharingLink: link);
 
-    return HtmlUtils.buildFileLinkCard(
-      href: href,
-      title: name,
+    return FileLinkCardHtmlBuilder.buildFileLinkCard(
+      href: link.toString(),
+      title: doc.name,
       actionLabel: openInDriveLabel,
-      iconZoneHtml: HtmlUtils.buildFileCardIconZone(
-        imageUrl: thumbnailUrl != null ? _hrefEscape.convert(thumbnailUrl.toString()) : '',
+      iconZoneHtml: FileLinkCardHtmlBuilder.buildFileCardIconZone(
+        imageUrl: trustedThumbnailUrl?.toString(),
       ),
     );
+  }
+
+  /// Only trust a thumbnail URL that is https and hosted on the same domain
+  /// (or a subdomain, e.g. a CDN) as the already-validated sharing link, so a
+  /// compromised/forged thumbnail URL can't be used to load an arbitrary
+  /// image from an untrusted host.
+  Uri? _trustedThumbnailUrl(DriveDocument doc, {required Uri sharingLink}) {
+    final thumbnailUrl = doc.thumbnail?.link;
+    if (thumbnailUrl == null) return null;
+    if (!thumbnailUrl.isScheme('https')) return null;
+
+    final trustedDomain = _registrableDomain(sharingLink.host);
+    final isSameOrSubdomain = thumbnailUrl.host == trustedDomain ||
+        thumbnailUrl.host.endsWith('.$trustedDomain');
+    if (!isSameOrSubdomain) return null;
+
+    return thumbnailUrl;
+  }
+
+  String _registrableDomain(String host) {
+    final labels = host.split('.');
+    if (labels.length <= 2) return host;
+    return labels.sublist(labels.length - 2).join('.');
   }
 }

@@ -115,7 +115,7 @@ void main() {
       expect(insertedHtml.first, contains('<img src="https://cdn.example.com/thumbnails/photo.png"'));
     });
 
-    test('Should render an img tag with empty src when the document has no thumbnail', () async {
+    test('Should omit the img tag entirely when the document has no thumbnail', () async {
       final xlsDoc = DriveDocument(
         id: '8',
         name: 'Sheet.xlsx',
@@ -128,7 +128,33 @@ void main() {
         xlsDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
-      expect(insertedHtml.first, contains('<img src=""'));
+      expect(insertedHtml.first, isNot(contains('<img')));
+    });
+
+    test('Should omit the img tag when the thumbnail host is untrusted (not https or not same domain)', () async {
+      final untrustedHttpDoc = DriveDocument(
+        id: '9',
+        name: 'Photo2.png',
+        size: 0,
+        mimeType: 'image/png',
+        sharingLink: Uri.parse('https://example.com/photo2.png'),
+        thumbnail: DriveDocumentThumbnail(link: Uri.parse('http://cdn.example.com/thumbnails/photo2.png')),
+      );
+      final untrustedHostDoc = DriveDocument(
+        id: '10',
+        name: 'Photo3.png',
+        size: 0,
+        mimeType: 'image/png',
+        sharingLink: Uri.parse('https://example.com/photo3.png'),
+        thumbnail: DriveDocumentThumbnail(link: Uri.parse('https://evil.com/thumbnails/photo3.png')),
+      );
+
+      await handler.insertDriveLinkHtml([
+        untrustedHttpDoc,
+        untrustedHostDoc,
+      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+
+      expect(insertedHtml.first, isNot(contains('<img')));
     });
 
     test('Should skip non-https links in release mode', () async {
