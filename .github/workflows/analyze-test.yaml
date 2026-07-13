@@ -10,6 +10,11 @@ name: Analyze and test
 
 env:
   FLUTTER_VERSION: 3.38.9
+  # Test paths to run on the Chrome platform, one per line, relative to repo
+  # root. Each path's leading segment must be its package directory (e.g.
+  # "core"). Add more lines here as needed.
+  CHROME_TEST_PATHS: |
+    core/test/data/network/download/
 
 jobs:
   analyze-test:
@@ -59,9 +64,14 @@ jobs:
         run: ./scripts/test.sh
 
       - name: Test (Chrome)
-        if: matrix.modules == 'core'
-        working-directory: core
-        run: flutter test --platform chrome
+        if: matrix.modules == 'default'
+        run: |
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            package_dir="${path%%/*}"
+            rel_path="${path#*/}"
+            (cd "$package_dir" && flutter test "$rel_path" --platform chrome)
+          done <<< "$CHROME_TEST_PATHS"
 
       - name: Upload test reports
         if: success() || failure() # Always upload report
