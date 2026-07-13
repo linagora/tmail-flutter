@@ -58,6 +58,11 @@ jobs:
           MODULES: ${{ matrix.modules }}
         run: ./scripts/test.sh
 
+      - name: Test (Chrome)
+        if: matrix.modules == 'core'
+        working-directory: core
+        run: flutter test test/data/network/download/ --platform chrome
+
       - name: Upload test reports
         if: success() || failure() # Always upload report
         uses: actions/upload-artifact@v4

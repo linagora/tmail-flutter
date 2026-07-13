@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
@@ -90,7 +91,7 @@ class DownloadManager {
       String filename
   ) {
     try {
-      final blob = html.Blob([bytes]);
+      final blob = html.Blob([bytes], Constant.octetStreamMimeType);
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
         ..href = url
