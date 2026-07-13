@@ -16,7 +16,7 @@ void main() {
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {
     test('Should insert link html for docs with sharingLink', () async {
-      await handler.handleDrivePickResult([
+      handler.handleDrivePickResult([
         linkDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -26,7 +26,7 @@ void main() {
     });
 
     test('Should still work and fall back to hardcoded English label when appLocalizations is omitted', () async {
-      await handler.handleDrivePickResult([
+      handler.handleDrivePickResult([
         linkDoc,
       ], insertHtml: (html) => insertedHtml.add(html));
 
@@ -44,7 +44,7 @@ void main() {
         downloadLink: Uri.parse('https://drive.example.com/both-dl'),
       );
 
-      await handler.handleDrivePickResult([
+      handler.handleDrivePickResult([
         bothLinksDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('Should skip docs with neither sharingLink nor downloadLink', () async {
-      await handler.handleDrivePickResult([
+      handler.handleDrivePickResult([
         noLinkDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('Should handle mixed docs correctly — only link docs inserted', () async {
-      await handler.handleDrivePickResult([
+      handler.handleDrivePickResult([
         linkDoc,
         attachmentDoc,
         noLinkDoc,

@@ -8,24 +8,24 @@ class DriveAttachmentHandler {
 
   static const _fallbackOpenInDriveLabel = 'Open in drive';
 
-  Future<void> handleDrivePickResult(
+  void handleDrivePickResult(
     List<DriveDocument> result, {
     required void Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
-  }) async {
+  }) {
     final linkDocs = result.where((doc) => doc.sharingLink != null).toList();
-    await insertDriveLinkHtml(
+    insertDriveLinkHtml(
       linkDocs,
       insertHtml: insertHtml,
       appLocalizations: appLocalizations,
     );
   }
 
-  Future<void> insertDriveLinkHtml(
+  void insertDriveLinkHtml(
     List<DriveDocument> docs, {
     required void Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
-  }) async {
+  }) {
     insertHtml(
       buildDriveLinksHtml(docs, appLocalizations: appLocalizations),
     );

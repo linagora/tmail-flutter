@@ -25,7 +25,7 @@ void main() {
         sharingLink: Uri.parse('https://example.com/file?a=1&b=2'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         doc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -43,7 +43,7 @@ void main() {
         sharingLink: Uri.parse('https://example.com/report.pdf'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         doc,
       ], insertHtml: (html) => insertedHtml.add(html));
 
@@ -59,7 +59,7 @@ void main() {
         sharingLink: Uri.parse('https://example.com/report.pdf'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         doc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -77,7 +77,7 @@ void main() {
         sharingLink: Uri.parse('https://example.com/second'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         linkDoc,
         doc2,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('Should produce empty string for docs with null sharingLink', () async {
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         noLinkDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -108,7 +108,7 @@ void main() {
         thumbnail: DriveDocumentThumbnail(link: Uri.parse('https://cdn.example.com/thumbnails/photo.png')),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         imageDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -124,7 +124,7 @@ void main() {
         sharingLink: Uri.parse('https://example.com/sheet.xlsx'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         xlsDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
@@ -149,7 +149,7 @@ void main() {
         thumbnail: DriveDocumentThumbnail(link: Uri.parse('https://evil.com/thumbnails/photo3.png')),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         untrustedHttpDoc,
         untrustedHostDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
@@ -166,7 +166,7 @@ void main() {
         sharingLink: Uri.parse('http://example.com/file'),
       );
 
-      await handler.insertDriveLinkHtml([
+      handler.insertDriveLinkHtml([
         httpDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 

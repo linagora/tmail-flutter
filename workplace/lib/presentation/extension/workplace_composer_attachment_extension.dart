@@ -17,7 +17,7 @@ import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 typedef OnDrivePickStateChanged =
-    Future<void> Function(String composerId, DrivePickState state);
+    void Function(String composerId, DrivePickState state);
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;

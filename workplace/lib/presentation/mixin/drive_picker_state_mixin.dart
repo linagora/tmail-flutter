@@ -8,7 +8,7 @@ import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
-typedef OnPickDriveCallback = Future<void> Function(DrivePickState state);
+typedef OnPickDriveCallback = void Function(DrivePickState state);
 
 typedef FetchDriveIntentCallback =
     Future<WorkplaceIntent> Function({
@@ -55,13 +55,13 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           onRegisterExternalHandler: externalHandlerRegistrar,
         ),
       );
-      if (result != null) await pickerOnCallback?.call(DrivePickResult(result));
+      if (result != null) pickerOnCallback?.call(DrivePickResult(result));
     } catch (e) {
       logWarning('DrivePickerStateMixin::onPickerTap: $e');
       final message = mounted
           ? AppLocalizations.of(context)?.attachFromDriveFailingMessage
           : null;
-      await pickerOnCallback?.call(DrivePickFailure(e, message: message));
+      pickerOnCallback?.call(DrivePickFailure(e, message: message));
     } finally {
       clearExternalHandler();
       _modalOpen = false;
