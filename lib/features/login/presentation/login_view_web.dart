@@ -64,6 +64,7 @@ class LoginView extends BaseLoginView {
                     return TryAgainButton(
                       onRetry: controller.retryCheckOidc,
                       responsiveUtils: controller.responsiveUtils,
+                      viewState: controller.viewState.value,
                     );
                   default:
                     return const SizedBox.shrink();
@@ -232,6 +233,7 @@ class LoginView extends BaseLoginView {
                           return TryAgainButton(
                             onRetry: controller.retryCheckOidc,
                             responsiveUtils: controller.responsiveUtils,
+                            viewState: controller.viewState.value,
                           );
                         default:
                           return const SizedBox.shrink();

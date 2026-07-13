@@ -7,13 +7,8 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_failure_message_resolver.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -26,13 +21,15 @@ class LoginMessageWidget extends StatelessWidget {
   final LoginFormType formType;
   final Either<Failure, Success> viewState;
 
-  final ToastManager? _toastManager = getBinding<ToastManager>();
+  final LoginFailureMessageResolver _failureMessageResolver;
 
   LoginMessageWidget({
     super.key,
     required this.formType,
     required this.viewState
-  });
+  }) : _failureMessageResolver = LoginFailureMessageResolver(
+        getBinding<ToastManager>(),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -50,34 +47,10 @@ class LoginMessageWidget extends StatelessWidget {
           : _loginTextFieldWidthLargeScreen,
         child: Text(
           viewState.fold(
-            (failure) {
-              if (failure is FeatureFailure && failure.exception is NoNetworkError) {
-                return appLocalizations.youAreOffline;
-              }
-
-              if (failure is GetOIDCConfigurationFailure) {
-                return appLocalizations.canNotVerifySSOConfiguration;
-              } else if (failure is DNSLookupToGetJmapUrlFailure) {
-                return appLocalizations.dnsLookupLoginMessage;
-              } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
-                return appLocalizations.noSuitableBrowserForOIDC;
-              } else if (((failure is GetTokenOIDCFailure && failure.ssoConfirmed) ||
-                      (failure is AuthenticateOidcOnBrowserFailure && failure.ssoConfirmed)) &&
-                  (failure as FeatureFailure).exception is! NetworkException) {
-                // Show only for a confirmed-SSO, non-network failure. Guessed
-                // providers fall back to basic auth; network drops show the
-                // offline message below.
-                return appLocalizations.ssoRedirectFailedMessage;
-              } else if (failure is FeatureFailure) {
-                return _toastManager?.getMessageByException(
-                  appLocalizations,
-                  failure.exception,
-                  useDefaultMessage: true,
-                ) ?? appLocalizations.unknownError;
-              } else {
-                return appLocalizations.unknownError;
-              }
-            },
+            (failure) => _failureMessageResolver.resolve(
+              appLocalizations,
+              failure,
+            ),
             (success) {
               if (formType == LoginFormType.credentialForm) {
                 return appLocalizations.loginInputCredentialMessage;
