@@ -61,7 +61,7 @@ jobs:
       - name: Test (Chrome)
         if: matrix.modules == 'core'
         working-directory: core
-        run: flutter test test/data/network/download/ --platform chrome
+        run: flutter test --platform chrome
 
       - name: Upload test reports
         if: success() || failure() # Always upload report
