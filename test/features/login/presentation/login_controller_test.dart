@@ -59,18 +59,6 @@ class _MinifiedLikeException implements Exception {
   String toString() => "Instance of 'minified:aHb'";
 }
 
-void _runAsWeb() {
-  PlatformInfo.isTestingForWeb = true;
-  addTearDown(() => PlatformInfo.isTestingForWeb = false);
-}
-
-void _stubVisibleCanNotFoundBaseUrlMessage(MockToastManager toastManager) {
-  when(toastManager.getMessageByException(
-    any,
-    argThat(isA<CanNotFoundBaseUrl>()),
-  )).thenReturn('Required URL');
-}
-
 @GenerateNiceMocks([
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
@@ -180,7 +168,6 @@ void main() {
     mockUuid = MockUuid();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
-    _stubVisibleCanNotFoundBaseUrlMessage(mockToastManager);
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -300,44 +287,6 @@ void main() {
       );
     });
 
-    test('WHEN GetTokenOIDCFailure is only the browser redirect signal \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      loginController.loginFormType.value = LoginFormType.retry;
-      final failure = GetTokenOIDCFailure(
-        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
-        ssoConfirmed: true,
-      );
-      loginController.handleFailureViewState(failure);
-
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
-    });
-
-    test('WHEN GetTokenOIDCFailure is silent re-auth without a visible message \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      _runAsWeb();
-      loginController.loginFormType.value = LoginFormType.retry;
-      final failure = GetTokenOIDCFailure(
-        _MinifiedLikeException(),
-        ssoConfirmed: true,
-      );
-      loginController.handleFailureViewState(failure);
-
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
-    });
-
-    test('WHEN GetTokenOIDCFailure has no visible message outside web \n'
-        'THEN loginFormType becomes retry so mobile can recover', () {
-      PlatformInfo.isTestingForWeb = false;
-      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
-      final failure = GetTokenOIDCFailure(
-        _MinifiedLikeException(),
-        ssoConfirmed: true,
-      );
-      loginController.handleFailureViewState(failure);
-
-      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
-    });
-
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
         'AND the provider was only guessed from the base URL (ssoConfirmed == false) \n'
         'THEN it falls back to basic auth and does NOT stay on the retry form', () {
@@ -377,21 +326,9 @@ void main() {
       );
     });
 
-    test('WHEN AuthenticateOidcOnBrowserFailure is only the browser redirect signal \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      loginController.loginFormType.value = LoginFormType.retry;
-      final failure = AuthenticateOidcOnBrowserFailure(
-        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
-        ssoConfirmed: true,
-      );
-      loginController.handleFailureViewState(failure);
-
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
-    });
-
-    test('WHEN AuthenticateOidcOnBrowserFailure is silent re-auth without a visible message \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      _runAsWeb();
+    test('WHEN AuthenticateOidcOnBrowserFailure has no visible message outside web \n'
+        'THEN loginFormType becomes retry so mobile can recover', () {
+      PlatformInfo.isTestingForWeb = false;
       loginController.loginFormType.value = LoginFormType.retry;
       final failure = AuthenticateOidcOnBrowserFailure(
         _MinifiedLikeException(),
@@ -399,7 +336,7 @@ void main() {
       );
       loginController.handleFailureViewState(failure);
 
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
     });
 
     test('WHEN the OIDC provider was only guessed from the base URL \n'
@@ -455,21 +392,9 @@ void main() {
       );
     });
 
-    test('WHEN handleUrgentException gets only the browser redirect signal \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      loginController.loginFormType.value = LoginFormType.retry;
-      final failure = AuthenticateOidcOnBrowserFailure(
-        AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
-        ssoConfirmed: true,
-      );
-      loginController.handleUrgentException(failure: failure);
-
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
-    });
-
-    test('WHEN handleUrgentException gets silent re-auth without a visible message \n'
-        'THEN loginFormType stays none so Try again is hidden', () {
-      _runAsWeb();
+    test('WHEN handleUrgentException gets AuthenticateOidcOnBrowserFailure with no visible message outside web \n'
+        'THEN loginFormType becomes retry so mobile can recover', () {
+      PlatformInfo.isTestingForWeb = false;
       loginController.loginFormType.value = LoginFormType.retry;
       final failure = AuthenticateOidcOnBrowserFailure(
         _MinifiedLikeException(),
@@ -477,7 +402,7 @@ void main() {
       );
       loginController.handleUrgentException(failure: failure);
 
-      expect(loginController.loginFormType.value, equals(LoginFormType.none));
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
     });
 
     test('WHEN the OIDC provider was only guessed from the base URL \n'

@@ -1,9 +1,13 @@
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 typedef LoginFailurePredicate = bool Function(Failure failure);
 
@@ -29,6 +33,39 @@ extension LoginFailureExtensions on Failure {
 
   bool get isSilentReAuthenticationFailure =>
       _silentReAuthenticationPredicates.any((predicate) => predicate(this));
+
+  bool shouldHideRetryDuringSilentReAuthentication({
+    required ToastManager? toastManager,
+    required AppLocalizations appLocalizations,
+  }) {
+    if (!isSilentReAuthenticationFailure) {
+      return false;
+    }
+
+    final exception = exceptionOrNull;
+    if (exception is AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException) {
+      return true;
+    }
+
+    return PlatformInfo.isWeb &&
+        !_hasVisibleMessage(
+          toastManager,
+          appLocalizations,
+          exception,
+        );
+  }
+}
+
+bool _hasVisibleMessage(
+  ToastManager? toastManager,
+  AppLocalizations appLocalizations,
+  Object? exception,
+) {
+  final message = toastManager?.getMessageByException(
+    appLocalizations,
+    exception,
+  );
+  return message?.isNotEmpty == true;
 }
 
 bool _matchesAuthenticationInfoRecovery(Failure failure) =>

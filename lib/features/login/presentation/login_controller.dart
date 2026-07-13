@@ -56,7 +56,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_fi
 import 'package:tmail_ui_user/features/login/presentation/extensions/generate_oidc_guessing_urls.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
-import 'package:tmail_ui_user/features/login/presentation/extensions/login_failure_extensions.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
@@ -173,9 +172,10 @@ class LoginController extends ReloadableController {
     ) {
       _handleCommonOIDCFailure();
     } else if (failure is AuthenticateOidcOnBrowserFailure) {
-      _handleSSORedirectFailure(failure);
+      _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed);
     } else if (failure is GetTokenOIDCFailure) {
-      _handleNoSuitableBrowserOIDC(failure).map(_handleSSORedirectFailure);
+      _handleNoSuitableBrowserOIDC(failure)
+        .map((stillFailed) => _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed));
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -239,9 +239,10 @@ class LoginController extends ReloadableController {
     ) {
       _handleCommonOIDCFailure();
     } else if (failure is AuthenticateOidcOnBrowserFailure) {
-      _handleSSORedirectFailure(failure);
+      _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed);
     } else if (failure is GetTokenOIDCFailure) {
-      _handleNoSuitableBrowserOIDC(failure).map(_handleSSORedirectFailure);
+      _handleNoSuitableBrowserOIDC(failure)
+        .map((stillFailed) => _handleSSORedirectFailure(ssoConfirmed: failure.ssoConfirmed));
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
@@ -600,39 +601,15 @@ class LoginController extends ReloadableController {
     }
   }
 
-  /// On a webFinger-confirmed SSO server we never fall back to basic auth. If the
-  /// browser redirect is already in progress, keep the form empty so no retry
-  /// action flashes behind the outgoing page.
-  void _handleSSORedirectFailure(Failure failure) {
-    if (_isSilentSSORedirectInProgress(failure)) {
-      loginFormType.value = LoginFormType.none;
-    } else if (failure.isConfirmedSSORedirectFailure) {
+  /// On a webFinger-confirmed SSO server we never fall back to basic auth: keep
+  /// the user on the SSO flow and offer a retry. A guessed provider may not be
+  /// SSO, so it keeps the basic-auth fallback.
+  void _handleSSORedirectFailure({required bool ssoConfirmed}) {
+    if (ssoConfirmed) {
       loginFormType.value = LoginFormType.retry;
     } else {
       _handleCommonOIDCFailure();
     }
-  }
-
-  bool _isSilentSSORedirectInProgress(Failure failure) {
-    if (!failure.isSilentReAuthenticationFailure) {
-      return false;
-    }
-
-    final exception = failure.exceptionOrNull;
-    if (exception is AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException) {
-      return true;
-    }
-
-    return PlatformInfo.isWeb && !_failureHasVisibleMessage(exception);
-  }
-
-  bool _failureHasVisibleMessage(Object? exception) {
-    final context = currentContext;
-    final message = toastManager.getMessageByException(
-      context != null ? AppLocalizations.of(context) : AppLocalizations(),
-      exception,
-    );
-    return message?.isNotEmpty == true;
   }
 
   Option<Failure> _handleNoSuitableBrowserOIDC(GetTokenOIDCFailure failure) {
