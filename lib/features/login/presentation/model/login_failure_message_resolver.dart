@@ -1,4 +1,5 @@
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
@@ -112,7 +113,8 @@ String? _noSuitableBrowserMessage(LoginFailureMessageContext context) {
 /// Silent re-authentication failures on app open render empty unless they carry
 /// a known message; the user is being redirected to SSO, so nothing must flash.
 String? _silentReAuthenticationMessage(LoginFailureMessageContext context) {
-  return context.failure.isSilentReAuthenticationFailure &&
+  return PlatformInfo.isWeb &&
+          context.failure.isSilentReAuthenticationFailure &&
           context.knownExceptionMessage == null
       ? ''
       : null;

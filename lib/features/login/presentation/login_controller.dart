@@ -623,12 +623,16 @@ class LoginController extends ReloadableController {
       return true;
     }
 
+    return PlatformInfo.isWeb && !_failureHasVisibleMessage(exception);
+  }
+
+  bool _failureHasVisibleMessage(Object? exception) {
     final context = currentContext;
     final message = toastManager.getMessageByException(
       context != null ? AppLocalizations.of(context) : AppLocalizations(),
       exception,
     );
-    return message?.isNotEmpty != true;
+    return message?.isNotEmpty == true;
   }
 
   Option<Failure> _handleNoSuitableBrowserOIDC(GetTokenOIDCFailure failure) {

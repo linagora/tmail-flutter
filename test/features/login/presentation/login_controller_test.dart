@@ -3,6 +3,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -41,7 +42,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
-import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -53,6 +53,23 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'login_controller_test.mocks.dart';
+
+class _MinifiedLikeException implements Exception {
+  @override
+  String toString() => "Instance of 'minified:aHb'";
+}
+
+void _runAsWeb() {
+  PlatformInfo.isTestingForWeb = true;
+  addTearDown(() => PlatformInfo.isTestingForWeb = false);
+}
+
+void _stubVisibleCanNotFoundBaseUrlMessage(MockToastManager toastManager) {
+  when(toastManager.getMessageByException(
+    any,
+    argThat(isA<CanNotFoundBaseUrl>()),
+  )).thenReturn('Required URL');
+}
 
 @GenerateNiceMocks([
   MockSpec<AuthorizationInterceptors>(),
@@ -89,6 +106,8 @@ import 'login_controller_test.mocks.dart';
   MockSpec<TwakeAppManager>(),
 ])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockAuthenticationInteractor mockAuthenticationInteractor;
   late MockCheckOIDCIsAvailableInteractor mockCheckOIDCIsAvailableInteractor;
   late MockGetOIDCConfigurationInteractor mockGetOIDCConfigurationInteractor;
@@ -161,6 +180,7 @@ void main() {
     mockUuid = MockUuid();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
+    _stubVisibleCanNotFoundBaseUrlMessage(mockToastManager);
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -292,6 +312,32 @@ void main() {
       expect(loginController.loginFormType.value, equals(LoginFormType.none));
     });
 
+    test('WHEN GetTokenOIDCFailure is silent re-auth without a visible message \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      _runAsWeb();
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = GetTokenOIDCFailure(
+        _MinifiedLikeException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
+    });
+
+    test('WHEN GetTokenOIDCFailure has no visible message outside web \n'
+        'THEN loginFormType becomes retry so mobile can recover', () {
+      PlatformInfo.isTestingForWeb = false;
+      loginController.loginFormType.value = LoginFormType.dnsLookupForm;
+      final failure = GetTokenOIDCFailure(
+        _MinifiedLikeException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.retry));
+    });
+
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'
         'AND the provider was only guessed from the base URL (ssoConfirmed == false) \n'
         'THEN it falls back to basic auth and does NOT stay on the retry form', () {
@@ -336,6 +382,19 @@ void main() {
       loginController.loginFormType.value = LoginFormType.retry;
       final failure = AuthenticateOidcOnBrowserFailure(
         AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleFailureViewState(failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
+    });
+
+    test('WHEN AuthenticateOidcOnBrowserFailure is silent re-auth without a visible message \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      _runAsWeb();
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = AuthenticateOidcOnBrowserFailure(
+        _MinifiedLikeException(),
         ssoConfirmed: true,
       );
       loginController.handleFailureViewState(failure);
@@ -401,6 +460,19 @@ void main() {
       loginController.loginFormType.value = LoginFormType.retry;
       final failure = AuthenticateOidcOnBrowserFailure(
         AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException(),
+        ssoConfirmed: true,
+      );
+      loginController.handleUrgentException(failure: failure);
+
+      expect(loginController.loginFormType.value, equals(LoginFormType.none));
+    });
+
+    test('WHEN handleUrgentException gets silent re-auth without a visible message \n'
+        'THEN loginFormType stays none so Try again is hidden', () {
+      _runAsWeb();
+      loginController.loginFormType.value = LoginFormType.retry;
+      final failure = AuthenticateOidcOnBrowserFailure(
+        _MinifiedLikeException(),
         ssoConfirmed: true,
       );
       loginController.handleUrgentException(failure: failure);
@@ -501,7 +573,7 @@ void main() {
   });
 
   group('LoginController::handleSuccessViewState::', () {
-    test('should not call _getOIDCConfigurationInteractor when success is CheckOIDCIsAvailableSuccess', () {
+    test('should call _getOIDCConfigurationInteractor with oidc response when success is CheckOIDCIsAvailableSuccess', () {
       // Arrange
       const baseUrl = 'https://example.com';
       final oidcResponse = OIDCResponse(
@@ -520,8 +592,12 @@ void main() {
       loginController.handleSuccessViewState(success);
 
       // Assert
-      verifyNever(loginController.tryGetOIDCConfigurationFromBaseUrl(Uri.parse(baseUrl)));
-      verify(loginController.getOIDCConfiguration(oidcResponse)).called(1);
+      final captured = verify(mockGetOIDCConfigurationInteractor.execute(
+        captureAny,
+        loginHint: anyNamed('loginHint'),
+      )).captured.single;
+      expect(captured, same(oidcResponse));
+      expect(captured, isNot(isA<BaseUrlOidcResponse>()));
     });
   });
 }

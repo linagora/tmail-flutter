@@ -2,6 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -66,6 +67,11 @@ class _MinifiedLikeException implements Exception {
   String toString() => "Instance of 'minified:aHb'";
 }
 
+void _runAsWeb() {
+  PlatformInfo.isTestingForWeb = true;
+  addTearDown(() => PlatformInfo.isTestingForWeb = false);
+}
+
 void main() {
   setUp(() {
     Get.testMode = true;
@@ -85,6 +91,7 @@ void main() {
     testWidgets(
         'GetTokenOIDCFailure(ssoConfirmed) with an unknown exception is silent',
         (tester) async {
+      _runAsWeb();
       // On app open this is the silent re-authentication redirecting to the SSO
       // page, so a bare "unexpected error" must not flash on the login screen.
       await _pump(tester, Left(GetTokenOIDCFailure(
@@ -96,8 +103,21 @@ void main() {
     });
 
     testWidgets(
+        'GetTokenOIDCFailure(ssoConfirmed) with an unknown exception outside web is NOT silent',
+        (tester) async {
+      PlatformInfo.isTestingForWeb = false;
+      await _pump(tester, Left(GetTokenOIDCFailure(
+        _MinifiedLikeException(),
+        ssoConfirmed: true,
+      )));
+
+      expect(_renderedMessage(tester), isNotEmpty);
+    });
+
+    testWidgets(
         'AuthenticateOidcOnBrowserFailure(ssoConfirmed) with an unknown exception is silent',
         (tester) async {
+      _runAsWeb();
       await _pump(tester, Left(AuthenticateOidcOnBrowserFailure(
         _MinifiedLikeException(),
         ssoConfirmed: true,
@@ -196,6 +216,7 @@ void main() {
     testWidgets(
         'GetAuthenticationInfoFailure is silent while web login continues re-auth',
         (tester) async {
+      _runAsWeb();
       await _pump(tester, Left(GetAuthenticationInfoFailure(
         _MinifiedLikeException(),
       )));
@@ -206,6 +227,7 @@ void main() {
     testWidgets(
         'GetAuthenticatedAccountFailure is silent while web login continues re-auth',
         (tester) async {
+      _runAsWeb();
       await _pump(tester, Left(GetAuthenticatedAccountFailure(
         _MinifiedLikeException(),
       )));
