@@ -1,7 +1,11 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
+import '../../utils/wait_for_view_state.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -18,9 +22,10 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     await composerRobot.tapCloseComposer();
     await $.pumpAndTrySettle();
     await expectViewVisible($(#confirm_dialog_action));
+
+    final saved = _waitForDraftSaved();
     await composerRobot.tapSaveButtonOnSaveDraftConfirmDialog(l10n);
-    await $.pumpAndTrySettle();
-    await _expectSaveDraftSuccessToast(l10n);
+    await saved;
     await $.pumpAndTrySettle();
   }
 
@@ -29,12 +34,15 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
+    final saved = _waitForDraftSaved();
     await composerRobot.tapSaveAsDraftButton();
-    await $.pumpAndTrySettle();
-    await _expectSaveDraftSuccessToast(l10n);
+    await saved;
   }
 
-  Future<void> _expectSaveDraftSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(l10n.drafts_saved));
-  }
+  Future<void> _waitForDraftSaved() => waitForViewState(
+    Get.find<MailboxDashBoardController>(),
+    matcher: (state) =>
+        state is SaveEmailAsDraftsSuccess || state is UpdateEmailDraftsSuccess,
+    description: 'SaveEmailAsDraftsSuccess/UpdateEmailDraftsSuccess',
+  );
 }
