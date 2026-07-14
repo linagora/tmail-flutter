@@ -9,23 +9,30 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 import 'update_current_emails_flags_extension_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<MailboxDashBoardController>()])
+@GenerateNiceMocks([
+  MockSpec<MailboxDashBoardController>(),
+  MockSpec<SearchController>(),
+])
 void main() {
   const numberOfEmails = 3;
   late List<EmailId> emailIds;
   final mailboxDashBoardController = MockMailboxDashBoardController();
+  final searchController = MockSearchController();
 
   setUp(() {
     emailIds = List.generate(
       numberOfEmails,
       (index) => EmailId(Id('email-id-$index')),
     );
-    when(mailboxDashBoardController.dashboardRoute).thenReturn(DashboardRoutes.thread.obs);
+    when(mailboxDashBoardController.searchController).thenReturn(searchController);
+    when(searchController.isSearchEmailRunning).thenReturn(false);
   });
 
   group('updateEmailFlagByEmailIds test:', () {
@@ -148,5 +155,41 @@ void main() {
       expect(mailboxDashBoardController.emailsInCurrentMailbox[1].hasStarred, false);
       expect(mailboxDashBoardController.emailsInCurrentMailbox[2].hasStarred, false);
     });
+  });
+
+  group('updateEmailFlagByEmailIds on the mobile search route:', () {
+    setUp(() {
+      appProviderContainer.invalidate(searchEmailPresentationProvider);
+      when(searchController.isSearchEmailRunning).thenReturn(true);
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
+          .setResultSearches(
+            emailIds
+                .map((emailId) => PresentationEmail(id: emailId, keywords: {}))
+                .toList(),
+          );
+    });
+
+    tearDown(() =>
+        appProviderContainer.invalidate(searchEmailPresentationProvider));
+
+    test(
+      'writes the flag change back into searchEmailPresentationProvider',
+      () {
+        // act
+        mailboxDashBoardController.updateEmailFlagByEmailIds(
+          emailIds.sublist(1),
+          readAction: ReadActions.markAsRead,
+        );
+
+        // assert
+        final result = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch;
+        expect(result[0].hasRead, false);
+        expect(result[1].hasRead, true);
+        expect(result[2].hasRead, true);
+      },
+    );
   });
 }
