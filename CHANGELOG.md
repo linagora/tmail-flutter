@@ -1,3 +1,15 @@
+## [0.30.2] - 2026-07-13
+### Fixed
+- TF-4679 Silence transient SSO session recovery errors
+- TF-4546 Fix Android selection handles overlapping composer menu
+- TF-4673 PDF preview error handling
+- Fix sharing text variety mime type
+- Urgent-exception handling for Riverpod flows
+- HOTFIX Enable mobile experimental toggle
+
+### Changed
+- Rename AiScribeConstants to AiCapabilities and move it to the model package
+
 ## [0.30.1] - 2026-07-06
 ### Added
 - TF-4484 Propose ADR for TWP warning banners and header cache consolidation
