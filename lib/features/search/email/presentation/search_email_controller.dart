@@ -220,41 +220,60 @@ class SearchEmailController extends BaseController
         const Duration(milliseconds: 500),
         initialValue: '');
     _deBouncerTime.values.listen((value) async {
-      log('SearchEmailController::_initializeDebounceTimeTextSearchChange(): $value');
-      _searchEmailPresentationNotifier.setSuggestionSearchViewState(
-        Right(LoadingState()),
-      );
-      _searchEmailPresentationNotifier.setCurrentSearchText(value);
-      // No WidgetRef in debounce stream; use the container bridge.
-      _searchFilterNotifier.setText(SearchFilterTextInput(value));
-      if (_canLoadSearchSuggestions(value)) {
-        final tupleListSuggestion = await Future.wait([
-          quickSearchEmails(session: session!, accountId: accountId!),
-          mailboxDashBoardController.getContactSuggestion(value)
-        ]);
-        if (currentSearchText != value) return;
-
-        _searchEmailPresentationNotifier.setSuggestionSearches(
-          tupleListSuggestion[0] as List<PresentationEmail>,
-        );
-        _searchEmailPresentationNotifier.setContactSuggestionSearches(
-          tupleListSuggestion[1] as List<EmailAddress>,
-        );
-      } else {
-        _searchEmailPresentationNotifier.clearSuggestionState();
-      }
-      if (listSuggestionSearch.isEmpty && currentSearchText.isEmpty) {
-        final recentSearches = await getAllRecentSearchAction(pattern: value);
-        if (currentSearchText != value) return;
-        _searchEmailPresentationNotifier.setRecentSearches(
-          recentSearches,
-        );
-      }
-      _searchEmailPresentationNotifier.setSuggestionSearchViewState(
-        Right(UIState.idle),
-      );
+      await _handleDebouncedSearchText(value);
     });
   }
+
+  Future<void> _handleDebouncedSearchText(String value) async {
+    log('SearchEmailController::_initializeDebounceTimeTextSearchChange(): $value');
+    _searchEmailPresentationNotifier.setSuggestionSearchViewState(
+      Right(LoadingState()),
+    );
+    _searchEmailPresentationNotifier.setCurrentSearchText(value);
+    // No WidgetRef in debounce stream; use the container bridge.
+    _searchFilterNotifier.setText(SearchFilterTextInput(value));
+    if (!await _syncSearchSuggestions(value)) return;
+    if (!await _syncRecentSearchesIfNeeded(value)) return;
+    _searchEmailPresentationNotifier.setSuggestionSearchViewState(
+      Right(UIState.idle),
+    );
+  }
+
+  Future<bool> _syncSearchSuggestions(String value) async {
+    if (!_canLoadSearchSuggestions(value)) {
+      _searchEmailPresentationNotifier.clearSuggestionState();
+      return true;
+    }
+
+    final tupleListSuggestion = await Future.wait([
+      quickSearchEmails(session: session!, accountId: accountId!),
+      mailboxDashBoardController.getContactSuggestion(value)
+    ]);
+    if (!_isCurrentSearchText(value)) return false;
+
+    _searchEmailPresentationNotifier.setSuggestionSearches(
+      tupleListSuggestion[0] as List<PresentationEmail>,
+    );
+    _searchEmailPresentationNotifier.setContactSuggestionSearches(
+      tupleListSuggestion[1] as List<EmailAddress>,
+    );
+    return true;
+  }
+
+  Future<bool> _syncRecentSearchesIfNeeded(String value) async {
+    if (!_shouldLoadRecentSearches()) return true;
+
+    final recentSearches = await getAllRecentSearchAction(pattern: value);
+    if (!_isCurrentSearchText(value)) return false;
+
+    _searchEmailPresentationNotifier.setRecentSearches(recentSearches);
+    return true;
+  }
+
+  bool _isCurrentSearchText(String value) => currentSearchText == value;
+
+  bool _shouldLoadRecentSearches() =>
+      listSuggestionSearch.isEmpty && currentSearchText.isEmpty;
 
   bool _canLoadSearchSuggestions(String value) {
     if (value.isEmpty) return false;
