@@ -1012,6 +1012,7 @@ class ComposerController extends BaseController
             htmlEditorApi?.insertHtml(html);
           }
         },
+        appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
       );
     } catch (e) {
       logWarning('ComposerController::handleDrivePickResult:Exception = $e');

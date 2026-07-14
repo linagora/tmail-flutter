@@ -36,6 +36,9 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     final fetch = pickerFetchIntent;
     _modalOpen = true;
     try {
+      if (!mounted) {
+        throw WorkplaceUIDisposedException();
+      }
       final l10n = AppLocalizations.of(context)!;
       final intent = await fetch(
         addAsLinkTitle: l10n.addAsLink,

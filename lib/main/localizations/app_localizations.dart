@@ -2696,6 +2696,13 @@ class AppLocalizations {
     );
   }
 
+  String get openInDrive {
+    return Intl.message(
+      'Open in drive',
+      name: 'openInDrive',
+    );
+  }
+
   String get copySubaddress {
     return Intl.message(
       'Copy subaddress',
