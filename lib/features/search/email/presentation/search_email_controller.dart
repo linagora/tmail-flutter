@@ -1177,9 +1177,11 @@ class SearchEmailController extends BaseController
     _searchEmailResultSubscription?.close();
     _webSocketQueueHandler?.dispose();
     onKeyboardShortcutDispose();
-    // Release keepAlive search state with the binding.
+    // Release keepAlive search state with the binding, including the committed
+    // filter, so no stale filter leaks into the next search session.
     appProviderContainer.invalidate(searchEmailPresentationProvider);
     appProviderContainer.invalidate(searchEmailProvider);
+    appProviderContainer.invalidate(searchFilterProvider);
     super.onClose();
   }
 }
