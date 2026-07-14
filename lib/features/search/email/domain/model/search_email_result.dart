@@ -13,10 +13,14 @@ class SearchEmailResult with EquatableMixin {
   final bool canLoadMore;
   final LoadMoreState loadMore;
 
+  /// Transient load-more failure for urgent routing.
+  final Object? loadMoreException;
+
   const SearchEmailResult({
     required this.emails,
     required this.canLoadMore,
     this.loadMore = LoadMoreState.idle,
+    this.loadMoreException,
   });
 
   factory SearchEmailResult.empty() =>
@@ -26,11 +30,13 @@ class SearchEmailResult with EquatableMixin {
     List<PresentationEmail>? emails,
     bool? canLoadMore,
     LoadMoreState? loadMore,
+    Object? loadMoreException,
   }) {
     return SearchEmailResult(
       emails: emails ?? this.emails,
       canLoadMore: canLoadMore ?? this.canLoadMore,
       loadMore: loadMore ?? this.loadMore,
+      loadMoreException: loadMoreException ?? this.loadMoreException,
     );
   }
 

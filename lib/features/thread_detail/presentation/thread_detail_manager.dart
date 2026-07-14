@@ -10,12 +10,14 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_detail_status_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_manager.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class ThreadDetailManager extends ReloadableController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -36,8 +38,8 @@ class ThreadDetailManager extends ReloadableController {
       mailboxDashBoardController.searchController.isSearchEmailRunning &&
       PlatformInfo.isMobile;
 
-  RxList<PresentationEmail> get currentDisplayedEmails => isSearchingOnMobile
-      ? mailboxDashBoardController.listResultSearch
+  List<PresentationEmail> get currentDisplayedEmails => isSearchingOnMobile
+      ? appProviderContainer.read(searchEmailPresentationProvider).listResultSearch
       : mailboxDashBoardController.emailsInCurrentMailbox;
 
   ThreadId? get currentThreadId =>

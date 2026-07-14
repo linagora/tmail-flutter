@@ -303,7 +303,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             tabletLarge: Obx(() {
               switch (controller.dashboardRoute.value) {
                 case DashboardRoutes.searchEmail:
-                  return SearchEmailView();
+                  return const SearchEmailView();
                 case DashboardRoutes.threadDetailed:
                   return controller.searchController.isSearchEmailRunning
                       ? const ThreadDetailView()
@@ -329,7 +329,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 case DashboardRoutes.threadDetailed:
                   return const ThreadDetailView();
                 case DashboardRoutes.searchEmail:
-                  return SearchEmailView();
+                  return const SearchEmailView();
                 default:
                   return buildScaffoldHaveDrawer(body: ThreadView());
               }

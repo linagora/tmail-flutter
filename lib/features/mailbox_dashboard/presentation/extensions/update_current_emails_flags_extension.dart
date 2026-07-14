@@ -1,11 +1,13 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
   void updateEmailFlagByEmailIds(
@@ -25,8 +27,11 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       return;
     }
 
-    final currentEmails = dashboardRoute.value == DashboardRoutes.searchEmail
-      ? listResultSearch
+    // Mobile search results may be active under Thread Detail.
+    final isSearchEmailRoute =
+        searchController.isSearchEmailRunning && PlatformInfo.isMobile;
+    final currentEmails = isSearchEmailRoute
+      ? [...appProviderContainer.read(searchEmailPresentationProvider).listResultSearch]
       : emailsInCurrentMailbox;
 
     if (currentEmails.isEmpty) return;
@@ -69,7 +74,13 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       }
     }
 
-    currentEmails.refresh();
+    if (isSearchEmailRoute) {
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
+          .setResultSearches(currentEmails);
+    } else {
+      emailsInCurrentMailbox.refresh();
+    }
   }
 
   void _updateKeyword(

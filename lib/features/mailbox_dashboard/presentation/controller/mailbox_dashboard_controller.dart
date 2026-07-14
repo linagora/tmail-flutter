@@ -194,6 +194,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
@@ -228,6 +229,7 @@ import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -345,7 +347,6 @@ class MailboxDashBoardController extends ReloadableController
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   final emailsInCurrentMailbox = <PresentationEmail>[].obs;
-  final listResultSearch = RxList<PresentationEmail>();
   PresentationMailbox? outboxMailbox;
   List<Identity>? _identities;
   jmap.State? _currentEmailState;
@@ -3072,8 +3073,11 @@ class MailboxDashBoardController extends ReloadableController
     // Reset threadDetailUIAction
     dispatchThreadDetailUIAction(ThreadDetailUIAction());
 
-    final listEmail = searchController.isSearchEmailRunning
-      ? listResultSearch
+    // Mobile search results may be active under Thread Detail.
+    final isMobileSearchRoute =
+        searchController.isSearchEmailRunning && PlatformInfo.isMobile;
+    final listEmail = isMobileSearchRoute
+      ? [...appProviderContainer.read(searchEmailPresentationProvider).listResultSearch]
       : emailsInCurrentMailbox;
     var newEmailIndex = listEmail.indexWhere((email) => email.id == emailId);
     if (newEmailIndex == -1) return;
@@ -3081,6 +3085,11 @@ class MailboxDashBoardController extends ReloadableController
     listEmail[newEmailIndex] = listEmail[newEmailIndex].updateKeywords({
       KeyWordIdentifierExtension.unsubscribeMail: true,
     });
+    if (isMobileSearchRoute) {
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
+          .setResultSearches(listEmail);
+    }
   }
 
   void _replaceBrowserHistory({Uri? uri}) {
@@ -3164,7 +3173,10 @@ class MailboxDashBoardController extends ReloadableController
         if (PlatformInfo.isMobile) {
           if (currentContext != null && canBack(currentContext!)) {
             return false;
-          } else if (listResultSearch.any((email) => email.selectMode == SelectMode.ACTIVE)) {
+          } else if (appProviderContainer
+              .read(searchEmailPresentationProvider)
+              .listResultSearch
+              .any((email) => email.selectMode == SelectMode.ACTIVE)) {
             dispatchAction(CancelSelectionSearchEmailAction());
             return true;
           } else {
