@@ -3086,6 +3086,9 @@ class MailboxDashBoardController extends ReloadableController
       KeyWordIdentifierExtension.unsubscribeMail: true,
     });
     if (isMobileSearchRoute) {
+      // `listEmail` is a defensive copy of the provider's result list (spread
+      // above), so the in-place update must be written back; `emailsInCurrentMailbox`
+      // is the live RxList and needs no write-back.
       appProviderContainer
           .read(searchEmailPresentationProvider.notifier)
           .setResultSearches(listEmail);
