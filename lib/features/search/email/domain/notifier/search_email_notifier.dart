@@ -120,7 +120,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   /// (e.g. a socket-driven refresh arriving mid-load) is handled by [_latestRequestId]
   /// in [_runGuarded], which drops a superseded page — not by [LoadMoreState].
   Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
-    state = AsyncData(_currentResult.copyWith(loadMore: LoadMoreState.inProgress));
+    state = AsyncData(_currentResult.copyWith(
+      loadMore: LoadMoreState.inProgress,
+      pendingUrgentException: null,
+    ));
     return _runGuarded(
       requestId,
       () {
@@ -140,16 +143,16 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
             .last;
       },
       onPageLoaded: (page) => state = AsyncData(_currentResult.copyWith(
-        emails: [..._currentResult.emails, ...page],
+        emails: [..._currentResult.emails, ..._dropAlreadyLoaded(page)],
         canLoadMore: page.isNotEmpty,
         loadMore: LoadMoreState.idle,
-        loadMoreException: null,
+        pendingUrgentException: null,
       )),
       // Preserve the loaded page and surface urgent load-more failures.
       onFailure: (error, _) => state = AsyncData(
         _currentResult.copyWith(
           loadMore: LoadMoreState.failure,
-          loadMoreException: error,
+          pendingUrgentException: error,
         ),
       ),
     );
@@ -158,7 +161,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   /// Refresh: replace the list on success; on failure keep the current list, never
   /// erroring the whole result.
   Future<void> _runRefresh(int requestId, SearchExecutionRequest request) {
-    state = AsyncData(_currentResult.copyWith(loadMore: LoadMoreState.idle));
+    state = AsyncData(_currentResult.copyWith(
+      loadMore: LoadMoreState.idle,
+      pendingUrgentException: null,
+    ));
     return _runGuarded(
       requestId,
       () {
@@ -179,7 +185,12 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
       onPageLoaded: (page) => state = AsyncData(
         SearchEmailResult(emails: page, canLoadMore: page.isNotEmpty),
       ),
-      onFailure: (_, __) {}, // keep the current list
+      // Keep the current list on a background-refresh failure, but surface the
+      // exception so the controller routes urgent ones (ADR-0103) — same as
+      // load-more.
+      onFailure: (error, _) => state = AsyncData(
+        _currentResult.copyWith(pendingUrgentException: error),
+      ),
     );
   }
 
@@ -248,6 +259,14 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
       position: spec.position,
       lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
     );
+  }
+
+  /// Drops emails already present in the current list so a load-more page whose
+  /// boundary overlaps the previous one (same-timestamp rows) never duplicates.
+  List<PresentationEmail> _dropAlreadyLoaded(List<PresentationEmail> page) {
+    final existingIds =
+        _currentResult.emails.map((email) => email.id).toSet();
+    return page.where((email) => !existingIds.contains(email.id)).toList();
   }
 
   /// Emails of a terminal success, else null (keep current on intermediate).
