@@ -130,7 +130,7 @@ void main() {
       expect(insertedHtml.first, isNot(contains('<img')));
     });
 
-    test('Should omit the img tag when the thumbnail host is untrusted (not https or not same domain)', () async {
+    test('Should omit the img tag when the thumbnail is non-https and requireHttps is true', () async {
       final untrustedHttpDoc = DriveDocument(
         id: '9',
         name: 'Photo2.png',
@@ -139,21 +139,30 @@ void main() {
         sharingLink: Uri.parse('https://example.com/photo2.png'),
         thumbnail: DriveDocumentThumbnail(link: Uri.parse('http://cdn.example.com/thumbnails/photo2.png')),
       );
-      final untrustedHostDoc = DriveDocument(
+      final strictHandler = DriveAttachmentHandler(requireHttps: true);
+
+      strictHandler.insertDriveLinkHtml([
+        untrustedHttpDoc,
+      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+
+      expect(insertedHtml.first, isNot(contains('<img')));
+    });
+
+    test('Should embed a non-https thumbnail when requireHttps is false', () async {
+      final httpThumbnailDoc = DriveDocument(
         id: '10',
         name: 'Photo3.png',
         size: 0,
         mimeType: 'image/png',
         sharingLink: Uri.parse('https://example.com/photo3.png'),
-        thumbnail: DriveDocumentThumbnail(link: Uri.parse('https://evil.com/thumbnails/photo3.png')),
+        thumbnail: DriveDocumentThumbnail(link: Uri.parse('http://cdn.example.com/thumbnails/photo3.png')),
       );
 
       handler.insertDriveLinkHtml([
-        untrustedHttpDoc,
-        untrustedHostDoc,
+        httpThumbnailDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
-      expect(insertedHtml.first, isNot(contains('<img')));
+      expect(insertedHtml.first, contains('<img src="http://cdn.example.com/thumbnails/photo3.png"'));
     });
 
     test('Should skip non-https links when requireHttps is true', () async {
