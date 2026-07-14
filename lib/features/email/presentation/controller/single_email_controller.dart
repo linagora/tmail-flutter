@@ -93,7 +93,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
@@ -101,6 +101,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_t
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/update_cached_list_email_loaded.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -1098,7 +1099,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _resetToOriginalValue(isEmailClosing: true);
     _replaceBrowserHistory();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning
-      || getBinding<SearchEmailController>()?.searchIsRunning.value == true
+      || appProviderContainer.read(searchEmailPresentationProvider).searchIsRunning
     ) {
       if (context != null && responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);

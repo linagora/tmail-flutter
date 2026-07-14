@@ -35,7 +35,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_ru
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -120,7 +121,6 @@ class ThreadDetailController extends BaseController {
   );
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final searchEmailController = Get.find<SearchEmailController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final threadDetailManager = Get.find<ThreadDetailManager>();
   final downloadManager = Get.find<DownloadManager>();
@@ -146,9 +146,9 @@ class ThreadDetailController extends BaseController {
     final isWebSearchRunning = mailboxDashBoardController
       .searchController
       .isSearchEmailRunning;
-    final isMobileSearchRunning = searchEmailController
-      .searchIsRunning
-      .value == true;
+    final isMobileSearchRunning = appProviderContainer
+      .read(searchEmailPresentationProvider)
+      .searchIsRunning;
     return isWebSearchRunning || isMobileSearchRunning;
   }
   bool get networkConnected =>

@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_filter_input.dart';
@@ -74,10 +75,18 @@ mixin SearchFilterMutation on $Notifier<SearchEmailFilter> {
   void setSortOrder(EmailSortOrderType sortOrder) =>
       update(SearchFilterPatch()..sortOrderTypeOption = Some(sortOrder));
 
+  void resetReceiveTime() =>
+      update(SearchFilterPatch()
+        ..emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.allTime)
+        ..startDateOption = const None()
+        ..endDateOption = const None());
+
   void toggleLabel(Label? label) =>
       update(SearchFilterPatch()
         ..labelOption = optionOf(state.label?.id == label?.id ? null : label));
 
+  void clearLabel() =>
+      update(SearchFilterPatch()..labelOption = const None());
   /// 'starred' is the flagged keyword inside `hasKeyword`, not a bool field. Sets or
   /// clears it here so no call site rebuilds the keyword set.
   void toggleStarred(SearchFilterToggle starred) {

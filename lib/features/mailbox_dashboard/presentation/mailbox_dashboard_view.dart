@@ -54,7 +54,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     );
 
             case DashboardRoutes.searchEmail:
-              return SafeArea(child: SearchEmailView());
+              return const SafeArea(child: SearchEmailView());
 
             case DashboardRoutes.sendingQueue:
               return buildScaffoldHaveDrawer(body: const SendingQueueView());
