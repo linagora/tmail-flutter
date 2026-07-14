@@ -12,15 +12,12 @@ Future<void> waitForCondition(
   Duration timeout = TestTimeouts.medium,
   Duration interval = const Duration(milliseconds: 200),
 }) async {
-  final deadline = DateTime.now().add(timeout);
+  final elapsed = Stopwatch()..start();
 
   while (true) {
     if (await condition()) return;
 
-    // Checked after the condition so the deadline stops the loop itself; a
-    // timeout wrapped around the loop would leave it polling forever in the
-    // background and bleed into later tests.
-    if (!DateTime.now().isBefore(deadline)) {
+    if (elapsed.elapsed >= timeout) {
       throw TimeoutException('waitForCondition timed out', timeout);
     }
     await Future.delayed(interval);
