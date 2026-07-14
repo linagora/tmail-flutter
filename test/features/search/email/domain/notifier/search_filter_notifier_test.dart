@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
@@ -152,6 +153,31 @@ void main() {
       notifierOf().toggleLabel(workLabel);
       notifierOf().toggleLabel(travelLabel);
       expect(stateOf().label, travelLabel);
+    });
+
+    test('resetReceiveTime clears the receive-time range as one invariant', () {
+      final start = UTCDate(DateTime.utc(2026, 1, 1));
+      final end = UTCDate(DateTime.utc(2026, 1, 7));
+      notifierOf().update(SearchFilterPatch()
+        ..emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.customRange)
+        ..startDateOption = optionOf(start)
+        ..endDateOption = optionOf(end));
+
+      notifierOf().resetReceiveTime();
+
+      expect(stateOf().emailReceiveTimeType, EmailReceiveTimeType.allTime);
+      expect(stateOf().startDate, isNull);
+      expect(stateOf().endDate, isNull);
+    });
+
+    test('clearLabel always removes the selected label', () {
+      notifierOf().toggleLabel(
+        Label(id: Id('work-label'), displayName: 'Work'),
+      );
+
+      notifierOf().clearLabel();
+
+      expect(stateOf().label, isNull);
     });
   });
 
