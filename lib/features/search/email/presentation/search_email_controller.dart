@@ -122,6 +122,11 @@ class SearchEmailController extends BaseController
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
   ProviderSubscription<AsyncValue<SearchEmailResult>>? _searchEmailResultSubscription;
 
+  /// Emails reference last pushed to the presentation list. The executor reuses
+  /// the same list instance when only the load-more lifecycle changes (e.g. the
+  /// load-more spinner toggling), so an identity check skips the full rebuild.
+  List<PresentationEmail>? _lastAppliedResultEmails;
+
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
@@ -540,26 +545,16 @@ class SearchEmailController extends BaseController
     SearchEmailResult result, {
     required bool shouldScrollToTop,
   }) {
-    final resultEmailSearchList = result.emails
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
-        .toList();
+    // Rebuild the visible list only when the emails actually changed; a pure
+    // load-more/refresh lifecycle update keeps the same list instance.
+    if (!identical(result.emails, _lastAppliedResultEmails)) {
+      _lastAppliedResultEmails = result.emails;
+      _rebuildResultSearchList(result.emails);
+    }
 
-    final emailsBeforeChanges = listResultSearch;
-    final emailsAfterChanges = resultEmailSearchList;
-    final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
-
-    _searchEmailPresentationNotifier.setResultSearches(newListEmail.syncPresentationEmail(
-      mapMailboxById: mailboxDashBoardController.mapMailboxById,
-      searchQuery: searchEmailFilter.text,
-      isSearchEmailRunning: true
-    ));
-
-    _searchEmailPresentationNotifier.setResultSearchViewState(
-      Right(SearchEmailSuccess(result.emails)),
-    );
     _searchEmailPresentationNotifier.setCanSearchMore(result.canLoadMore);
     _updateSearchMoreState(result.loadMore);
-    _handleLoadMoreFailureIfNeeded(result);
+    _routePendingUrgentException(result);
 
     if (shouldScrollToTop && resultSearchScrollController.hasClients) {
       resultSearchScrollController.animateTo(
@@ -571,6 +566,24 @@ class SearchEmailController extends BaseController
     if (shouldScrollToTop && PlatformInfo.isWeb) {
       refocusMailShortcutFocus();
     }
+  }
+
+  void _rebuildResultSearchList(List<PresentationEmail> emails) {
+    final resultEmailSearchList = emails
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
+        .toList();
+
+    final newListEmail = resultEmailSearchList.combine(listResultSearch);
+
+    _searchEmailPresentationNotifier.setResultSearches(newListEmail.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      searchQuery: searchEmailFilter.text,
+      isSearchEmailRunning: true
+    ));
+
+    _searchEmailPresentationNotifier.setResultSearchViewState(
+      Right(SearchEmailSuccess(emails)),
+    );
   }
 
   void _updateSearchMoreState(LoadMoreState loadMoreState) {
@@ -589,10 +602,10 @@ class SearchEmailController extends BaseController
     }
   }
 
-  /// Routes urgent load-more failures without clearing the list.
-  void _handleLoadMoreFailureIfNeeded(SearchEmailResult result) {
-    if (result.loadMore != LoadMoreState.failure) return;
-    _handleUrgentSearchException(result.loadMoreException);
+  /// Routes an urgent exception carried by a list-preserving failure (load-more
+  /// or refresh), the same path a full-search failure takes via [value.hasError].
+  void _routePendingUrgentException(SearchEmailResult result) {
+    _handleUrgentSearchException(result.pendingUrgentException);
   }
 
   void _searchEmailsFailure(SearchEmailFailure failure) {
