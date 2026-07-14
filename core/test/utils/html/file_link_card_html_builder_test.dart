@@ -5,10 +5,12 @@ void main() {
   group('FileLinkCardHtmlBuilder buildFileLinkCard tests', () {
     test('Should build anchor tag with href, title and action label', () {
       final result = FileLinkCardHtmlBuilder.buildFileLinkCard(
-        href: 'https://example.com/file',
-        title: 'My File',
-        actionLabel: 'Open in drive',
-        iconZoneHtml: '<div>icon</div>',
+        const FileLinkCardContent(
+          href: 'https://example.com/file',
+          title: 'My File',
+          actionLabel: 'Open in drive',
+          iconZoneHtml: '<div>icon</div>',
+        ),
       );
 
       expect(result, startsWith('<a href="https://example.com/file"'));
@@ -22,10 +24,12 @@ void main() {
 
     test('Should apply custom card width and min height', () {
       final result = FileLinkCardHtmlBuilder.buildFileLinkCard(
-        href: 'https://example.com/file',
-        title: 'My File',
-        actionLabel: 'Open in drive',
-        iconZoneHtml: '',
+        const FileLinkCardContent(
+          href: 'https://example.com/file',
+          title: 'My File',
+          actionLabel: 'Open in drive',
+          iconZoneHtml: '',
+        ),
         size: const FileLinkCardSize(cardWidthPx: 200, cardMinHeightPx: 100),
       );
 
@@ -35,10 +39,12 @@ void main() {
 
     test('Should escape href, title and action label to prevent HTML/attribute injection', () {
       final result = FileLinkCardHtmlBuilder.buildFileLinkCard(
-        href: 'https://example.com/file?a="><script>alert(1)</script>',
-        title: '<script>alert(1)</script>',
-        actionLabel: '"><b>bold</b>',
-        iconZoneHtml: '',
+        const FileLinkCardContent(
+          href: 'https://example.com/file?a="><script>alert(1)</script>',
+          title: '<script>alert(1)</script>',
+          actionLabel: '"><b>bold</b>',
+          iconZoneHtml: '',
+        ),
       );
 
       expect(result, isNot(contains('<script>')));

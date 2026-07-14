@@ -64,11 +64,13 @@ class DriveAttachmentHandler {
     final trustedThumbnailUrl = _trustedThumbnailUrl(doc);
 
     return FileLinkCardHtmlBuilder.buildFileLinkCard(
-      href: link.toString(),
-      title: doc.name,
-      actionLabel: openInDriveLabel,
-      iconZoneHtml: FileLinkCardHtmlBuilder.buildFileCardIconZone(
-        imageUrl: trustedThumbnailUrl?.toString(),
+      FileLinkCardContent(
+        href: link.toString(),
+        title: doc.name,
+        actionLabel: openInDriveLabel,
+        iconZoneHtml: FileLinkCardHtmlBuilder.buildFileCardIconZone(
+          imageUrl: trustedThumbnailUrl?.toString(),
+        ),
       ),
     );
   }
