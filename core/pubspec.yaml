@@ -77,6 +77,8 @@ dependencies:
 
   http_parser: 4.0.2
 
+  mime: 1.0.4
+
   path_provider: 2.1.5
 
   collection: 1.19.1

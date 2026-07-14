@@ -14,7 +14,7 @@ env:
   # root. Each path's leading segment must be its package directory (e.g.
   # "core"). Add more lines here as needed.
   CHROME_TEST_PATHS: |
-    core/test/data/network/download/
+    core/test/data/network/download/download_manager_test.dart
 
 jobs:
   analyze-test:

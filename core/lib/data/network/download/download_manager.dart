@@ -12,6 +12,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
@@ -91,7 +92,8 @@ class DownloadManager {
       String filename
   ) {
     try {
-      final blob = html.Blob([bytes], Constant.octetStreamMimeType);
+      final mimeType = lookupMimeType(filename, headerBytes: bytes) ?? Constant.octetStreamMimeType;
+      final blob = html.Blob([bytes], mimeType);
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
         ..href = url

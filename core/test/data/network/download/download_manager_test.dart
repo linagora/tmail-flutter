@@ -35,7 +35,7 @@ void main() {
       // the blob: URL right after click() returns, so the request for the
       // blob's content must be *started* here, while the URL is still
       // valid; an in-flight request survives the later revoke() call.
-      html.document.body?.addEventListener('click', (event) {
+      void onClick(html.Event event) {
         clickedAnchor = event.target as html.AnchorElement;
         final xhr = html.HttpRequest();
         xhr.open('GET', clickedAnchor!.href!);
@@ -43,15 +43,49 @@ void main() {
         xhr.onLoad.listen((_) => blobCompleter.complete(xhr.response as html.Blob));
         xhr.onError.listen((event) => blobCompleter.completeError(event));
         xhr.send();
-      }, true);
+      }
+      html.document.body?.addEventListener('click', onClick, true);
 
-      downloadManager.createAnchorElementDownloadFileWeb(bytes, 'twake-configuration');
+      try {
+        downloadManager.createAnchorElementDownloadFileWeb(bytes, 'twake-configuration');
 
-      expect(clickedAnchor, isNotNull);
-      expect(clickedAnchor!.download, 'twake-configuration');
+        expect(clickedAnchor, isNotNull);
+        expect(clickedAnchor!.download, 'twake-configuration');
 
-      final resolvedBlob = await blobCompleter.future;
-      expect(resolvedBlob.type, Constant.octetStreamMimeType);
+        final resolvedBlob = await blobCompleter.future;
+        expect(resolvedBlob.type, Constant.octetStreamMimeType);
+      } finally {
+        html.document.body?.removeEventListener('click', onClick, true);
+      }
+    });
+
+    test('tags the download Blob with the detected mime type when the filename has a known extension', () async {
+      final bytes = Uint8List.fromList('plain text content'.codeUnits);
+      html.AnchorElement? clickedAnchor;
+      final blobCompleter = Completer<html.Blob>();
+
+      void onClick(html.Event event) {
+        clickedAnchor = event.target as html.AnchorElement;
+        final xhr = html.HttpRequest();
+        xhr.open('GET', clickedAnchor!.href!);
+        xhr.responseType = 'blob';
+        xhr.onLoad.listen((_) => blobCompleter.complete(xhr.response as html.Blob));
+        xhr.onError.listen((event) => blobCompleter.completeError(event));
+        xhr.send();
+      }
+      html.document.body?.addEventListener('click', onClick, true);
+
+      try {
+        downloadManager.createAnchorElementDownloadFileWeb(bytes, 'twake-configuration.txt');
+
+        expect(clickedAnchor, isNotNull);
+        expect(clickedAnchor!.download, 'twake-configuration.txt');
+
+        final resolvedBlob = await blobCompleter.future;
+        expect(resolvedBlob.type, Constant.textPlainMimeType);
+      } finally {
+        html.document.body?.removeEventListener('click', onClick, true);
+      }
     });
   });
 }
