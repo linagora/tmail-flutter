@@ -232,6 +232,7 @@ class SearchEmailController extends BaseController
           quickSearchEmails(session: session!, accountId: accountId!),
           mailboxDashBoardController.getContactSuggestion(value)
         ]);
+        if (currentSearchText != value) return;
 
         _searchEmailPresentationNotifier.setSuggestionSearches(
           tupleListSuggestion[0] as List<PresentationEmail>,
@@ -243,8 +244,10 @@ class SearchEmailController extends BaseController
         _searchEmailPresentationNotifier.clearSuggestionState();
       }
       if (listSuggestionSearch.isEmpty && currentSearchText.isEmpty) {
+        final recentSearches = await getAllRecentSearchAction(pattern: value);
+        if (currentSearchText != value) return;
         _searchEmailPresentationNotifier.setRecentSearches(
-          await getAllRecentSearchAction(pattern: value),
+          recentSearches,
         );
       }
       _searchEmailPresentationNotifier.setSuggestionSearchViewState(
@@ -657,6 +660,7 @@ class SearchEmailController extends BaseController
     if (isMailAddress) {
       searchEmailByEmailAddressAction(ref, EmailAddress(null, queryString));
     } else {
+      _searchEmailPresentationNotifier.setCurrentSearchText(queryString);
       _mutateSearchFilterAndSearch(
         ref,
         (notifier) => notifier.setText(SearchFilterTextInput(queryString)),
