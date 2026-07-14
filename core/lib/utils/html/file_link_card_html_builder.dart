@@ -1,5 +1,16 @@
 import 'dart:convert';
 
+/// Card sizing for [FileLinkCardHtmlBuilder.buildFileLinkCard].
+class FileLinkCardSize {
+  const FileLinkCardSize({
+    this.cardWidthPx = 183,
+    this.cardMinHeightPx = 151,
+  });
+
+  final int cardWidthPx;
+  final int cardMinHeightPx;
+}
+
 /// Builds the inline HTML card used to represent a linked file (e.g. a Drive
 /// attachment) inside the composer body.
 class FileLinkCardHtmlBuilder {
@@ -11,15 +22,14 @@ class FileLinkCardHtmlBuilder {
     required String title,
     required String actionLabel,
     required String iconZoneHtml,
-    int cardWidthPx = 183,
-    int cardMinHeightPx = 151,
+    FileLinkCardSize size = const FileLinkCardSize(),
   }) {
     final safeHref = _attributeEscape.convert(href);
     final safeTitle = _textEscape.convert(title);
     final safeActionLabel = _textEscape.convert(actionLabel);
 
-    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" style="display:inline-block;vertical-align:top;width:${cardWidthPx}px;'
-        'min-height:${cardMinHeightPx}px;margin:0 8px 8px 0;border:1px solid #E5E7EB;'
+    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" style="display:inline-block;vertical-align:top;width:${size.cardWidthPx}px;'
+        'min-height:${size.cardMinHeightPx}px;margin:0 8px 8px 0;border:1px solid #E5E7EB;'
         'border-radius:10px;overflow:hidden;background:#FFFFFF;color:inherit;text-decoration:none;">'
         '$iconZoneHtml'
         '<div style="padding:10px 12px;">'

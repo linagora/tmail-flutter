@@ -26,8 +26,7 @@ void main() {
         title: 'My File',
         actionLabel: 'Open in drive',
         iconZoneHtml: '',
-        cardWidthPx: 200,
-        cardMinHeightPx: 100,
+        size: const FileLinkCardSize(cardWidthPx: 200, cardMinHeightPx: 100),
       );
 
       expect(result, contains('width:200px'));

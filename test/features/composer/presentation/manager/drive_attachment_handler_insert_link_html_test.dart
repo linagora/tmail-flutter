@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -12,7 +11,7 @@ void main() {
 
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler();
+    handler = DriveAttachmentHandler(requireHttps: false);
   });
 
   group('DriveAttachmentHandler::insertDriveLinkHtml::', () {
@@ -157,7 +156,24 @@ void main() {
       expect(insertedHtml.first, isNot(contains('<img')));
     });
 
-    test('Should skip non-https links in release mode', () async {
+    test('Should skip non-https links when requireHttps is true', () async {
+      final httpDoc = DriveDocument(
+        id: '5',
+        name: 'Insecure',
+        size: 0,
+        mimeType: 'text/plain',
+        sharingLink: Uri.parse('http://example.com/file'),
+      );
+      final strictHandler = DriveAttachmentHandler(requireHttps: true);
+
+      strictHandler.insertDriveLinkHtml([
+        httpDoc,
+      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+
+      expect(insertedHtml.first, isEmpty);
+    });
+
+    test('Should allow non-https links when requireHttps is false', () async {
       final httpDoc = DriveDocument(
         id: '5',
         name: 'Insecure',
@@ -170,11 +186,7 @@ void main() {
         httpDoc,
       ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
-      if (kReleaseMode) {
-        expect(insertedHtml.first, isEmpty);
-      } else {
-        expect(insertedHtml.first, contains('http://example.com/file'));
-      }
+      expect(insertedHtml.first, contains('http://example.com/file'));
     });
   });
 }

@@ -11,7 +11,7 @@ void main() {
 
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler();
+    handler = DriveAttachmentHandler(requireHttps: false);
   });
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {

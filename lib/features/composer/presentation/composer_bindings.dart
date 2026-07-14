@@ -344,7 +344,10 @@ abstract class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => DriveAttachmentHandler(), tag: composerId);
+    Get.lazyPut(
+      () => DriveAttachmentHandler(requireHttps: BuildUtils.isReleaseMode),
+      tag: composerId,
+    );
     bindPlatformRichTextController();
     Get.lazyPut(
       () => UploadController(Get.find<UploadAttachmentInteractor>(tag: composerId)),
