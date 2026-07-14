@@ -457,7 +457,8 @@ void main() {
       await runExecute(container, const NewSearchIntent());
 
       // A load-more failure must not error the whole list — it stays in AsyncData.
-      answerSearchMore((_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
+      final loadMoreFailure = SearchEmailFailure(Exception('boom'));
+      answerSearchMore((_) => Stream.value(Left(loadMoreFailure)));
       await runExecute(
         container,
         LoadMoreIntent(
@@ -473,6 +474,8 @@ void main() {
         [EmailId(Id('e1')), EmailId(Id('e2'))],
       );
       expect(failed.value?.loadMore, LoadMoreState.failure);
+      // Surface the exception for urgent routing.
+      expect(failed.value?.loadMoreException, loadMoreFailure);
 
       // Retry succeeds: the new page appends to the preserved pages, back to idle.
       stubSearchMore([emailWith('e3')]);
