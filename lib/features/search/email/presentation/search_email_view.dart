@@ -83,7 +83,11 @@ class SearchEmailView extends ConsumerWidget {
   void _dismissSearchOnWebDesktop(BuildContext context) {
     if (!controller.responsiveUtils.isWebDesktop(context)) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.closeSearchView(context: context);
+      if (!context.mounted ||
+          !Get.isRegistered<SearchEmailController>()) {
+        return;
+      }
+      Get.find<SearchEmailController>().closeSearchView(context: context);
     });
   }
 

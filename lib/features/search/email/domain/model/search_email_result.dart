@@ -9,6 +9,8 @@ enum LoadMoreState { idle, inProgress, failure }
 /// load-more lifecycle. Replaces the scattered `emailList` + `canLoadMore`
 /// booleans previously held separately in the controllers. See ADR-0093.
 class SearchEmailResult with EquatableMixin {
+  static const Object _keepLoadMoreException = Object();
+
   final List<PresentationEmail> emails;
   final bool canLoadMore;
   final LoadMoreState loadMore;
@@ -30,13 +32,15 @@ class SearchEmailResult with EquatableMixin {
     List<PresentationEmail>? emails,
     bool? canLoadMore,
     LoadMoreState? loadMore,
-    Object? loadMoreException,
+    Object? loadMoreException = _keepLoadMoreException,
   }) {
     return SearchEmailResult(
       emails: emails ?? this.emails,
       canLoadMore: canLoadMore ?? this.canLoadMore,
       loadMore: loadMore ?? this.loadMore,
-      loadMoreException: loadMoreException ?? this.loadMoreException,
+      loadMoreException: identical(loadMoreException, _keepLoadMoreException)
+          ? this.loadMoreException
+          : loadMoreException,
     );
   }
 

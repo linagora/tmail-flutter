@@ -143,6 +143,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
         emails: [..._currentResult.emails, ...page],
         canLoadMore: page.isNotEmpty,
         loadMore: LoadMoreState.idle,
+        loadMoreException: null,
       )),
       // Preserve the loaded page and surface urgent load-more failures.
       onFailure: (error, _) => state = AsyncData(
