@@ -225,6 +225,14 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
             script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
           ),
+          WebScript(
+            name: HtmlUtils.registerFileLinkRowEnterKeyHandler(
+              isWebPlatform: true,
+            ).name,
+            script: HtmlUtils.registerFileLinkRowEnterKeyHandler(
+              isWebPlatform: true,
+            ).script,
+          ),
         ])
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
@@ -242,6 +250,11 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
               HtmlUtils.registerDropListener.name);
             _editorController.evaluateJavascriptWeb(
               _selectionChangeScript.name);
+            _editorController.evaluateJavascriptWeb(
+              HtmlUtils.registerFileLinkRowEnterKeyHandler(
+                isWebPlatform: true,
+              ).name,
+            );
             _editorListenerRegistered = true;
           }
         },

@@ -64,10 +64,10 @@ void main() {
 
       final html = insertedHtml.first;
       expect('<a '.allMatches(html).length, 1);
-      expect(html, matches(RegExp(r'^<div style="display:block[^>]*><a href="https://example\.com/report\.pdf"[^>]*>.*Report\.pdf.*</a></div><br>$')));
+      expect(html, matches(RegExp(r'^<div style="display:block[^>]*>.*<a href="https://example\.com/report\.pdf"[^>]*>.*Report\.pdf.*</a>.*</div><p><br></p>$')));
     });
 
-    test('Should render multiple docs as cards in one wrapping row ending with a single <br>', () async {
+    test('Should render multiple docs as cards in one wrapping row ending with an empty paragraph', () async {
       final doc2 = DriveDocument(
         id: '2',
         name: 'Second',
@@ -84,9 +84,9 @@ void main() {
       final html = insertedHtml.first;
       expect(html, contains('Report'));
       expect(html, contains('Second'));
-      expect('<br>'.allMatches(html).length, 1);
-      expect(html, endsWith('<br>'));
-      expect(html, matches(RegExp(r'^<div style="display:block[^>]*>.*</div><br>$')));
+      expect('<p><br></p>'.allMatches(html).length, 1);
+      expect(html, endsWith('<p><br></p>'));
+      expect(html, matches(RegExp(r'^<div style="display:block[^>]*>.*</div><p><br></p>$')));
     });
 
     test('Should produce empty string for docs with null sharingLink', () async {

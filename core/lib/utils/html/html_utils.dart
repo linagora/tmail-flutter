@@ -192,6 +192,159 @@ class HtmlUtils {
         name: 'onSelectionChange',
       );
 
+  /// Intercepts Enter inside a drive-link file card row (a DIV whose direct
+  /// children include a `contenteditable="false"` card) and breaks the row
+  /// into two rows at the caret's position, with a new empty paragraph in
+  /// between - instead of letting the editor's native paragraph-split run.
+  /// Pressing Enter at the very start/end of the row just adds a blank line
+  /// before/after it instead of producing a pointless empty row.
+  ///
+  /// Neither editor's own Enter can be reused here, and the reason is worth
+  /// recording because the alternative looks tempting. The row contains only
+  /// cards, so it holds no text node. Summernote's `insertParagraph` first
+  /// calls `range.normalize()`, which for a collapsed caret walks *backward*
+  /// looking for a "visible point"; that check accepts any text node but never
+  /// consults `contenteditable`, so with nothing at row level it descends into
+  /// the previous card and lands on its title text. `ancestor(sc, isPara)`
+  /// then resolves to the card's inner DIV - Summernote's `isPara` matches
+  /// `/^DIV|^P|^LI|^H[1-7]/` - and `splitTree` splits *inside* the card, which
+  /// is what made Enter grow the card before the caret. Mobile's raw
+  /// `contenteditable` div hits the same missing-text-node problem natively.
+  ///
+  /// Padding the row with zero-width text nodes to give the caret somewhere
+  /// legal to sit was measured and rejected: it fixes only the row's two ends,
+  /// and each filler costs an extra arrow press to cross because its two
+  /// offsets render at the same pixel.
+  static ({String name, String script}) registerFileLinkRowEnterKeyHandler({
+    bool isWebPlatform = false,
+  }) =>
+      (
+        script: '''
+      (() => {
+        const isWebPlatform = $isWebPlatform;
+        const root = isWebPlatform
+          ? document.querySelector('.note-editor .note-editable')
+          : document.querySelector('#editor');
+        if (!root || root.dataset.fileLinkRowEnterHandlerAttached) return;
+        root.dataset.fileLinkRowEnterHandlerAttached = 'true';
+
+        function isFileLinkCardRow(el) {
+          if (!el || el.tagName !== 'DIV') return false;
+          let child = el.firstElementChild;
+          while (child) {
+            if (child.tagName === 'A' && child.getAttribute('contenteditable') === 'false') {
+              return true;
+            }
+            child = child.nextElementSibling;
+          }
+          return false;
+        }
+
+        function findFileLinkCardRow(node) {
+          let el = node && node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el !== root) {
+            if (isFileLinkCardRow(el)) return el;
+            el = el.parentElement;
+          }
+          return null;
+        }
+
+        function isEmptyBlock(el) {
+          return !!el
+            && (el.tagName === 'P' || el.tagName === 'DIV')
+            && !isFileLinkCardRow(el)
+            && el.textContent.trim() === '';
+        }
+
+        // The row has no text nodes between cards, so a caret resting
+        // between two cards (or at either end) has the row itself as
+        // selection.anchorNode, with anchorOffset as the card index to
+        // split at. If the caret somehow ends up inside a card's subtree
+        // (e.g. via a non-click selection API), treat it as being right
+        // after that card.
+        function getSplitIndex(row, selection) {
+          const node = selection.anchorNode;
+          if (node === row) return selection.anchorOffset;
+          let el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el.parentElement !== row) {
+            el = el.parentElement;
+          }
+          if (!el) return row.children.length;
+          const index = Array.prototype.indexOf.call(row.children, el);
+          return index < 0 ? row.children.length : index + 1;
+        }
+
+        function makeEmptyParagraph() {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          return p;
+        }
+
+        function placeCaretAtStart(selection, target) {
+          const range = document.createRange();
+          range.setStart(target, 0);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        // Reuses an already-empty block sibling of `row` (on `side`) as the
+        // caret's landing line instead of stacking a new blank line on top
+        // of one that's already there, creating one only if needed.
+        function placeCaretInAdjacentLine(row, side, selection) {
+          const sibling = side === 'before' ? row.previousElementSibling : row.nextElementSibling;
+          let target = sibling;
+          if (!isEmptyBlock(target)) {
+            target = makeEmptyParagraph();
+            row.parentNode.insertBefore(target, side === 'before' ? row : row.nextSibling);
+          }
+          placeCaretAtStart(selection, target);
+        }
+
+        // Splits `row`'s cards at `splitIndex`, inserting a fresh empty line
+        // at that point. `splitIndex` at either edge (0 or cardCount) means
+        // there's nothing to actually split off, so it just docks the caret
+        // in the adjacent line instead of producing an empty row.
+        function splitRowAt(row, splitIndex, selection) {
+          const cardCount = row.children.length;
+
+          if (splitIndex <= 0) {
+            placeCaretInAdjacentLine(row, 'before', selection);
+            return;
+          }
+          if (splitIndex >= cardCount) {
+            placeCaretInAdjacentLine(row, 'after', selection);
+            return;
+          }
+
+          const children = Array.prototype.slice.call(row.children);
+          const secondRow = row.cloneNode(false);
+          for (let i = splitIndex; i < children.length; i++) {
+            secondRow.appendChild(children[i]);
+          }
+          const newLine = makeEmptyParagraph();
+          row.parentNode.insertBefore(newLine, row.nextSibling);
+          row.parentNode.insertBefore(secondRow, newLine.nextSibling);
+          placeCaretAtStart(selection, newLine);
+        }
+
+        root.addEventListener('keydown', function (event) {
+          if (event.key !== 'Enter') return;
+
+          const selection = window.getSelection();
+          if (!selection || selection.rangeCount === 0) return;
+
+          const row = findFileLinkCardRow(selection.anchorNode);
+          if (!row) return;
+
+          event.preventDefault();
+
+          splitRowAt(row, getSplitIndex(row, selection), selection);
+        }, true);
+      })();''',
+        name: 'registerFileLinkRowEnterKeyHandler',
+      );
+
   static const collapseSelectionToEnd = (
     script: '''
       (() => {

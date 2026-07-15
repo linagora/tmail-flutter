@@ -120,4 +120,57 @@ void main() {
     });
   });
 
+  group('HtmlUtils registerFileLinkRowEnterKeyHandler tests', () {
+    test('Should return a stable script name regardless of platform', () {
+      final web = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true);
+      final mobile = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: false);
+
+      expect(web.name, 'registerFileLinkRowEnterKeyHandler');
+      expect(mobile.name, 'registerFileLinkRowEnterKeyHandler');
+    });
+
+    test('Should target the Summernote editable root when isWebPlatform is true', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true);
+
+      expect(result.script, contains('const isWebPlatform = true'));
+      expect(result.script, contains(".note-editor .note-editable'"));
+    });
+
+    test('Should target the mobile editor root when isWebPlatform is false', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: false);
+
+      expect(result.script, contains('const isWebPlatform = false'));
+      expect(result.script, contains("'#editor'"));
+    });
+
+    test('Should identify a file-link card row only via a direct contenteditable="false" anchor child', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('contenteditable') );
+      expect(result.script, contains('firstElementChild'));
+    });
+
+    test('Should split the row into two at the caret index rather than always inserting after it', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function splitRowAt'));
+      expect(result.script, contains('function getSplitIndex'));
+      expect(result.script, contains('cloneNode(false)'));
+    });
+
+    test('Should fall back to a blank line before/after the row at its edges instead of an empty split', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function placeCaretInAdjacentLine'));
+      expect(result.script, contains('splitIndex <= 0'));
+      expect(result.script, contains('splitIndex >= cardCount'));
+    });
+
+    test('Should reuse an existing empty adjacent line instead of stacking a new one', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function isEmptyBlock'));
+      expect(result.script, contains('if (!isEmptyBlock(target))'));
+    });
+  });
 }

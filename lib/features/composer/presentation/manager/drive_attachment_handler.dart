@@ -47,7 +47,7 @@ class DriveAttachmentHandler {
           ),
         )
         .nonNulls
-        .join();
+        .toList();
     return FileLinkCardHtmlBuilder.wrapFileCardsHtml(cards);
   }
 

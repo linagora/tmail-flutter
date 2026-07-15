@@ -96,18 +96,22 @@ void main() {
   });
 
   group('FileLinkCardHtmlBuilder wrapFileCardsHtml tests', () {
-    test('Should return empty string when cardsHtml is empty', () {
-      final result = FileLinkCardHtmlBuilder.wrapFileCardsHtml('');
+    test('Should return empty string when cards is empty', () {
+      final result = FileLinkCardHtmlBuilder.wrapFileCardsHtml([]);
 
       expect(result, isEmpty);
     });
 
-    test('Should wrap cardsHtml in a block-level div followed by a line break', () {
-      const cardsHtml = '<a>card1</a><a>card2</a>';
+    test('Should wrap cards in an editable block-level div followed by an empty paragraph', () {
+      final result = FileLinkCardHtmlBuilder.wrapFileCardsHtml(['<a>card1</a>', '<a>card2</a>']);
 
-      final result = FileLinkCardHtmlBuilder.wrapFileCardsHtml(cardsHtml);
+      expect(result, '<div style="display:block;max-width:100%;"><a>card1</a><a>card2</a></div><p><br></p>');
+    });
 
-      expect(result, '<div style="display:block;max-width:100%;">$cardsHtml</div><br>');
+    test('Should concatenate cards without inserting anything between them', () {
+      final result = FileLinkCardHtmlBuilder.wrapFileCardsHtml(['<a>card1</a>', '<a>card2</a>', '<a>card3</a>']);
+
+      expect(result, contains('<a>card1</a><a>card2</a><a>card3</a>'));
     });
   });
 }

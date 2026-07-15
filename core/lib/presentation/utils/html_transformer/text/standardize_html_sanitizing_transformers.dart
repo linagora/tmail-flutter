@@ -10,6 +10,9 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
   @override
   String process(String text, HtmlEscape htmlEscape) {
     if (text.isEmpty) return '';
-    return _sanitizer.process(inputHtml: text);
+    return _sanitizer.process(
+      inputHtml: text,
+      allowAttributes: const ['contenteditable'],
+    );
   }
 }

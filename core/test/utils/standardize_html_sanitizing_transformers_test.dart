@@ -170,6 +170,13 @@ void main() {
             sanitize('<img src="cid:email123">'),
             equals('<img src="cid:email123">'));
       });
+
+      test('SHOULD preserve contenteditable="false" on <a> (drive link card)', () {
+        const html = '<a href="https://example.com" contenteditable="false">card</a>';
+        expect(
+            sanitize(html),
+            equals('<a href="https://example.com" contenteditable="false">card</a>'));
+      });
     });
 
     group('Unknown tags, structural tags – unwrap or preserve safely', () {

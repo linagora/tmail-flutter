@@ -93,6 +93,11 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     await _editorController?.evaluateJavascript(
       source: registerSelectionChange!.script,
     );
+    await _editorController?.evaluateJavascript(
+      source: HtmlUtils.registerFileLinkRowEnterKeyHandler(
+        isWebPlatform: PlatformInfo.isWeb,
+      ).script,
+    );
   }
 
   Future<void> _onWebViewCreated(HtmlEditorApi editorApi) async {
