@@ -1,3 +1,8 @@
+## [0.30.3] - 2026-07-15
+### Added
+- TF-4661 Drive Link attachments as a cardview in email content
+- TF-4661 Drive button pixelate
+
 ## [0.30.2] - 2026-07-13
 ### Fixed
 - TF-4679 Silence transient SSO session recovery errors
