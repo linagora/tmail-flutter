@@ -14,8 +14,10 @@ bool handleUrgentExceptionIfNeeded({Failure? failure, Object? exception}) {
   final handler = getBinding<UrgentExceptionHandler>();
   if (handler == null) return false;
 
-  final resolvedException =
-      exception ?? (failure is FeatureFailure ? failure.exception : null);
+  final resolvedException = _resolveUrgentException(
+    failure: failure,
+    exception: exception,
+  );
   if (resolvedException == null ||
       !handler.validateUrgentException(resolvedException)) {
     return false;
@@ -27,3 +29,22 @@ bool handleUrgentExceptionIfNeeded({Failure? failure, Object? exception}) {
   );
   return true;
 }
+
+/// `true` if [error] would be routed as urgent, without routing it. Same
+/// resolution as [handleUrgentExceptionIfNeeded], so it never disagrees (ADR-0103).
+bool isUrgentException(Object? error) {
+  final handler = getBinding<UrgentExceptionHandler>();
+  if (handler == null) return false;
+
+  // Mirror the caller dispatch: a Failure carries the exception, else it is bare.
+  final resolvedException = error is Failure
+      ? _resolveUrgentException(failure: error)
+      : _resolveUrgentException(exception: error);
+  return resolvedException != null &&
+      handler.validateUrgentException(resolvedException);
+}
+
+/// Unwraps the urgent exception from either carrier: a bare [exception] or a
+/// `FeatureFailure` (via [FeatureFailure.exception]).
+Object? _resolveUrgentException({Failure? failure, Object? exception}) =>
+    exception ?? (failure is FeatureFailure ? failure.exception : null);

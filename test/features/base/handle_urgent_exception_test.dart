@@ -101,4 +101,49 @@ void main() {
       );
     });
   });
+
+  group('isUrgentException', () {
+    test('true for an urgent exception, without routing it', () {
+      final exception = _UrgentException();
+      when(handler.validateUrgentException(exception)).thenReturn(true);
+
+      expect(isUrgentException(exception), isTrue);
+      verifyNever(handler.handleUrgentException(
+        failure: anyNamed('failure'),
+        exception: anyNamed('exception'),
+      ));
+    });
+
+    test('false for a non-urgent exception', () {
+      final exception = _UrgentException();
+      when(handler.validateUrgentException(exception)).thenReturn(false);
+
+      expect(isUrgentException(exception), isFalse);
+    });
+
+    test('unwraps and validates a FeatureFailure.exception', () {
+      final exception = _UrgentException();
+      final failure = _TestFeatureFailure(exception: exception);
+      when(handler.validateUrgentException(exception)).thenReturn(true);
+
+      expect(isUrgentException(failure), isTrue);
+      verify(handler.validateUrgentException(exception)).called(1);
+    });
+
+    test('false for a FeatureFailure with no exception', () {
+      expect(isUrgentException(_TestFeatureFailure()), isFalse);
+      verifyNever(handler.validateUrgentException(any));
+    });
+
+    test('false for a non-FeatureFailure failure, mirroring routing', () {
+      // A plain Failure carries no exception → never urgent, matching routing.
+      expect(isUrgentException(_PlainFailure()), isFalse);
+      verifyNever(handler.validateUrgentException(any));
+    });
+
+    test('false without throwing when no handler is registered', () {
+      Get.reset();
+      expect(isUrgentException(_UrgentException()), isFalse);
+    });
+  });
 }
