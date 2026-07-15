@@ -113,36 +113,41 @@ class _KeyboardShortcutsViewState extends State<KeyboardShortcutsView> {
 
                         return Stack(
                           children: [
-                            CustomTabBar(
-                              tabBarController: _tabBarController,
-                              height: tabBarMaxHeight,
-                              width: isDesktop
-                                  ? _desktopTabViewMaxWidth
-                                  : maxWidth,
-                              itemCount: countCategories,
-                              builder: (_, index) {
-                                final category = _categories[index];
-                                return ShortcutTabBarWidget(
-                                  index: index,
-                                  label: category.getDisplayName(
-                                    appLocalizations,
-                                    isDesktop: isDesktop,
-                                  ),
-                                  icon: isDesktop
-                                      ? null
-                                      : category.getIcon(_imagePaths),
-                                  width: isDesktop
-                                      ? category.getTabWidth()
-                                      : maxWidth / countCategories,
-                                  height: tabBarMaxHeight,
-                                );
-                              },
-                              indicator: LinearIndicator(
-                                color: AppColor.primaryLinShare,
-                                height: 1,
-                                bottom: 0,
+                            // CustomTabBar indicator uses LTR-based pixel math
+                            // with no RTL support; pin to LTR to keep it aligned.
+                            Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: CustomTabBar(
+                                tabBarController: _tabBarController,
+                                height: tabBarMaxHeight,
+                                width: isDesktop
+                                    ? _desktopTabViewMaxWidth
+                                    : maxWidth,
+                                itemCount: countCategories,
+                                builder: (_, index) {
+                                  final category = _categories[index];
+                                  return ShortcutTabBarWidget(
+                                    index: index,
+                                    label: category.getDisplayName(
+                                      appLocalizations,
+                                      isDesktop: isDesktop,
+                                    ),
+                                    icon: isDesktop
+                                        ? null
+                                        : category.getIcon(_imagePaths),
+                                    width: isDesktop
+                                        ? category.getTabWidth()
+                                        : maxWidth / countCategories,
+                                    height: tabBarMaxHeight,
+                                  );
+                                },
+                                indicator: LinearIndicator(
+                                  color: AppColor.primaryLinShare,
+                                  height: 1,
+                                  bottom: 0,
+                                ),
+                                pageController: _pageController,
                               ),
-                              pageController: _pageController,
                             ),
                             PositionedDirectional(
                               bottom: 0,
