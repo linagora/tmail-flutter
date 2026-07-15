@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
@@ -11,6 +12,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
@@ -90,7 +92,8 @@ class DownloadManager {
       String filename
   ) {
     try {
-      final blob = html.Blob([bytes]);
+      final mimeType = _detectMimeType(filename, headerBytes: bytes);
+      final blob = html.Blob([bytes], mimeType);
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
         ..href = url
@@ -105,6 +108,15 @@ class DownloadManager {
     } catch (exception) {
       log('DownloadManager::createAnchorElementDownloadFileWeb(): ERROR: $exception');
       rethrow;
+    }
+  }
+
+  String _detectMimeType(String fileName, {Uint8List? headerBytes}) {
+    try {
+      return lookupMimeType(fileName, headerBytes: headerBytes) ?? Constant.octetStreamMimeType;
+    } catch (exception) {
+      log('DownloadManager::_detectMimeType(): ERROR: $exception');
+      return Constant.octetStreamMimeType;
     }
   }
 
