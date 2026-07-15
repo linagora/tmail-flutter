@@ -92,7 +92,7 @@ class DownloadManager {
       String filename
   ) {
     try {
-      final mimeType = lookupMimeType(filename, headerBytes: bytes) ?? Constant.octetStreamMimeType;
+      final mimeType = _detectMimeType(filename, headerBytes: bytes);
       final blob = html.Blob([bytes], mimeType);
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
@@ -108,6 +108,15 @@ class DownloadManager {
     } catch (exception) {
       log('DownloadManager::createAnchorElementDownloadFileWeb(): ERROR: $exception');
       rethrow;
+    }
+  }
+
+  String _detectMimeType(String fileName, {Uint8List? headerBytes}) {
+    try {
+      return lookupMimeType(fileName, headerBytes: headerBytes) ?? Constant.octetStreamMimeType;
+    } catch (exception) {
+      log('DownloadManager::_detectMimeType(): ERROR: $exception');
+      return Constant.octetStreamMimeType;
     }
   }
 
