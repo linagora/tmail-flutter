@@ -5,9 +5,14 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/keyboar
 class ShortcutCategoryList extends StatelessWidget {
   final List<KeyboardShortcut> shortcutsByCategory;
 
+  /// Constrains each row width so the key chips align in a fixed column.
+  /// When null, rows span the full available width (mobile).
+  final double? rowMaxWidth;
+
   const ShortcutCategoryList({
     super.key,
     required this.shortcutsByCategory,
+    this.rowMaxWidth,
   });
 
   @override
@@ -16,8 +21,16 @@ class ShortcutCategoryList extends StatelessWidget {
       padding: const EdgeInsets.only(top: 40),
       itemCount: shortcutsByCategory.length,
       itemBuilder: (_, index) {
-        final item = shortcutsByCategory[index];
-        return ShortcutRow(item: item);
+        final row = ShortcutRow(item: shortcutsByCategory[index]);
+        if (rowMaxWidth == null) return row;
+
+        return Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: rowMaxWidth!),
+            child: row,
+          ),
+        );
       },
     );
   }

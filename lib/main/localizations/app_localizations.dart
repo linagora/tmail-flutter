@@ -5358,48 +5358,6 @@ class AppLocalizations {
     );
   }
 
-  String get mailComposer {
-    return Intl.message(
-      'Mail composer',
-      name: 'mailComposer',
-    );
-  }
-
-  String get focusOnSearch {
-    return Intl.message(
-      'Focus on search',
-      name: 'focusOnSearch',
-    );
-  }
-
-  String get openedModal {
-    return Intl.message(
-      'Opened modal',
-      name: 'openedModal',
-    );
-  }
-
-  String get mailboxList {
-    return Intl.message(
-      'Mailbox list',
-      name: 'mailboxList',
-    );
-  }
-
-  String get openedMailView {
-    return Intl.message(
-      'Opened mail view',
-      name: 'openedMailView',
-    );
-  }
-
-  String get mailboxListWithSelectedMail {
-    return Intl.message(
-      'Mailbox list (selected mail)',
-      name: 'mailboxListWithSelectedMail',
-    );
-  }
-
   String get replyToAll {
     return Intl.message(
       'Reply to all',

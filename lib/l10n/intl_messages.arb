@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-07-06T13:42:02.887001",
+  "@@last_modified": "2026-07-15T18:21:15.082129",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5060,42 +5060,6 @@
   },
   "openNewMessage": "Open new message",
   "@openNewMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailComposer": "Mail composer",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "Focus on search",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "Opened modal",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "Mailbox list",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "Opened mail view",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "Mailbox list (selected mail)",
-  "@mailboxListWithSelectedMail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

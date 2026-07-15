@@ -29,6 +29,7 @@ class KeyboardShortcutsView extends StatefulWidget {
 
 class _KeyboardShortcutsViewState extends State<KeyboardShortcutsView> {
   static const double _desktopTabViewMaxWidth = 618;
+  static const double _desktopShortcutRowMaxWidth = 440;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -173,6 +174,9 @@ class _KeyboardShortcutsViewState extends State<KeyboardShortcutsView> {
                               .toList();
                             return ShortcutCategoryList(
                               shortcutsByCategory: shortcutsByCategory,
+                              rowMaxWidth: isDesktop
+                                  ? _desktopShortcutRowMaxWidth
+                                  : null,
                             );
                           },
                         ),

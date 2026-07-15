@@ -5051,42 +5051,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "Имэйл бичигч",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "Хайлтад фокус тавих",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "Нээлттэй модал",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "Шуудангийн хайрцгийн жагсаалт",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "Нээлттэй имэйлийн харагдац",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "Шуудангийн хайрцгийн жагсаалт (сонгосон имэйл)",
-  "@mailboxListWithSelectedMail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToAll": "Бүгдэд хариулах",
   "@replyToAll": {
     "type": "text",
