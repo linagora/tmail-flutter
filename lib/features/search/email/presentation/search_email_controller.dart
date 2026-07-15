@@ -479,8 +479,9 @@ class SearchEmailController extends BaseController
       return;
     }
     if (value.hasError) {
-      // Handle urgent failures before retry UI.
-      if (!_handleUrgentSearchException(value.error)) {
+      // The notifier's consume seam already routed urgent failures (ADR-0103);
+      // only suppress the retry toast for them here — do not re-route.
+      if (!isUrgentException(value.error)) {
         _searchEmailsFailure(_asSearchEmailFailure(value.error));
       }
       return;
@@ -488,14 +489,6 @@ class SearchEmailController extends BaseController
     final result = value.value;
     if (result == null) return;
     _applySearchResult(result, shouldScrollToTop: previous?.isLoading == true);
-  }
-
-  /// Routes urgent exceptions; true means handled.
-  bool _handleUrgentSearchException(Object? error) {
-    if (error == null) return false;
-    return error is Failure
-        ? handleUrgentExceptionIfNeeded(failure: error)
-        : handleUrgentExceptionIfNeeded(exception: error);
   }
 
   SearchEmailFailure _asSearchEmailFailure(Object? error) {
@@ -554,7 +547,6 @@ class SearchEmailController extends BaseController
 
     _searchEmailPresentationNotifier.setCanSearchMore(result.canLoadMore);
     _updateSearchMoreState(result.loadMore);
-    _routePendingUrgentException(result);
 
     if (shouldScrollToTop && resultSearchScrollController.hasClients) {
       resultSearchScrollController.animateTo(
@@ -600,12 +592,6 @@ class SearchEmailController extends BaseController
         );
         break;
     }
-  }
-
-  /// Routes an urgent exception carried by a list-preserving failure (load-more
-  /// or refresh), the same path a full-search failure takes via [value.hasError].
-  void _routePendingUrgentException(SearchEmailResult result) {
-    _handleUrgentSearchException(result.pendingUrgentException);
   }
 
   void _searchEmailsFailure(SearchEmailFailure failure) {

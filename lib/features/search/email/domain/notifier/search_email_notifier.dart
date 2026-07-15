@@ -1,7 +1,4 @@
-import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -17,6 +14,7 @@ import 'package:tmail_ui_user/features/search/email/domain/execution/search_pagi
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_request_spec.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_query_params.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
+import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
@@ -27,22 +25,13 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 
 part 'search_email_notifier.g.dart';
 
-/// Invokes the interactor for one execution and yields its terminal result.
-typedef SearchInteractorCall = Future<Either<Failure, Success>> Function();
-
 /// Applies a freshly loaded page of emails to [state].
 typedef SearchPageHandler = void Function(List<PresentationEmail> page);
-
-/// Applies an already-logged failure to [state].
-typedef SearchFailureHandler = void Function(
-  Object error,
-  StackTrace stackTrace,
-);
 
 /// Central search executor: resolves pagination from the committed SSOT and folds
 /// each intent's result into an [AsyncValue] of [SearchEmailResult]. See ADR-0093.
 @Riverpod(keepAlive: true)
-class SearchEmailNotifier extends _$SearchEmailNotifier {
+class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer {
   // Lazy GetX bridge so build() never touches DI; a missing interactor surfaces
   // as an error at execute time, not a throw from build().
   SearchEmailInteractor get _searchInteractor =>
@@ -122,7 +111,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.inProgress,
-      pendingUrgentException: null,
     ));
     return _runGuarded(
       requestId,
@@ -146,14 +134,11 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
         emails: [..._currentResult.emails, ..._dropAlreadyLoaded(page)],
         canLoadMore: page.isNotEmpty,
         loadMore: LoadMoreState.idle,
-        pendingUrgentException: null,
       )),
-      // Preserve the loaded page and surface urgent load-more failures.
-      onFailure: (error, _) => state = AsyncData(
-        _currentResult.copyWith(
-          loadMore: LoadMoreState.failure,
-          pendingUrgentException: error,
-        ),
+      // Preserve the loaded page and flag the failure for the retry UI. Urgent
+      // load-more failures are routed by the consume seam (ADR-0103).
+      onFailure: (_, __) => state = AsyncData(
+        _currentResult.copyWith(loadMore: LoadMoreState.failure),
       ),
     );
   }
@@ -163,7 +148,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
   Future<void> _runRefresh(int requestId, SearchExecutionRequest request) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.idle,
-      pendingUrgentException: null,
     ));
     return _runGuarded(
       requestId,
@@ -185,51 +169,29 @@ class SearchEmailNotifier extends _$SearchEmailNotifier {
       onPageLoaded: (page) => state = AsyncData(
         SearchEmailResult(emails: page, canLoadMore: page.isNotEmpty),
       ),
-      // Keep the current list on a background-refresh failure, but surface the
-      // exception so the controller routes urgent ones (ADR-0103) — same as
-      // load-more.
-      onFailure: (error, _) => state = AsyncData(
-        _currentResult.copyWith(pendingUrgentException: error),
-      ),
+      // Nothing visible changes on failure — keep the list. The consume seam
+      // routes urgent ones at the failure point (ADR-0103), so repeats all route.
+      onFailure: (_, __) {},
     );
   }
 
-  /// Awaits [runInteractor] then applies the result, unless the notifier was
-  /// disposed or a newer request superseded [requestId].
+  /// Runs [runInteractor] through the [InteractorConsumer] seam (auto urgent
+  /// routing, ADR-0093/0103), dropping stale results; intermediate successes kept.
   Future<void> _runGuarded(
     int requestId,
-    SearchInteractorCall runInteractor, {
+    InteractorCall runInteractor, {
     required SearchPageHandler onPageLoaded,
-    required SearchFailureHandler onFailure,
-  }) async {
-    try {
-      final result = await runInteractor();
-      if (!ref.mounted || requestId != _latestRequestId) return;
-      result.fold(
-        (failure) => _logFailure(failure, StackTrace.current, onFailure),
-        (success) {
-          final page = _emailsOf(success);
-          if (page != null) onPageLoaded(page); // else intermediate — keep current
-        },
-      );
-    } catch (error, stackTrace) {
-      if (!ref.mounted || requestId != _latestRequestId) return;
-      _logFailure(error, stackTrace, onFailure);
-    }
-  }
-
-  /// Logs the failure (no filter/email content) then delegates to [onFailure].
-  void _logFailure(
-    Object error,
-    StackTrace stackTrace,
-    SearchFailureHandler onFailure,
-  ) {
-    logError(
-      'SearchEmailNotifier::execute: search execution failed',
-      exception: error,
-      stackTrace: stackTrace,
+    required InteractorFailureHandler onFailure,
+  }) {
+    return consumeInteractor(
+      runInteractor,
+      isStale: () => !ref.mounted || requestId != _latestRequestId,
+      onSuccess: (success) {
+        final page = _emailsOf(success);
+        if (page != null) onPageLoaded(page); // else intermediate — keep current
+      },
+      onFailure: onFailure,
     );
-    onFailure(error, stackTrace);
   }
 
   /// Resolves the interactor args via the pagination strategies for [request].

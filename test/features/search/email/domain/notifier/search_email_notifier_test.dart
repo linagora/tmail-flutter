@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
+import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
@@ -50,11 +51,13 @@ CapturedArgs _argsFrom(List<dynamic> captured) => (
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<RefreshChangesSearchEmailInteractor>(),
+  MockSpec<UrgentExceptionHandler>(),
 ])
 void main() {
   late MockSearchEmailInteractor searchInteractor;
   late MockSearchMoreEmailInteractor searchMoreInteractor;
   late MockRefreshChangesSearchEmailInteractor refreshInteractor;
+  late MockUrgentExceptionHandler urgentHandler;
 
   final cursorDate = UTCDate(DateTime.parse('2021-08-10T04:00:59Z'));
 
@@ -101,7 +104,7 @@ void main() {
   void stubSearchMore([List<PresentationEmail> emails = const []]) =>
       answerSearchMore((_) => Stream.value(Right(SearchMoreEmailSuccess(emails))));
 
-  void stubRefresh([List<PresentationEmail> emails = const []]) {
+  void answerRefresh(Stream<Either<Failure, Success>> Function(Invocation) answer) {
     when(refreshInteractor.execute(
       any,
       any,
@@ -111,8 +114,11 @@ void main() {
       filter: anyNamed('filter'),
       collapseThreads: anyNamed('collapseThreads'),
       properties: anyNamed('properties'),
-    )).thenAnswer((_) => Stream.value(Right(RefreshChangesSearchEmailSuccess(emails))));
+    )).thenAnswer(answer);
   }
+
+  void stubRefresh([List<PresentationEmail> emails = const []]) => answerRefresh(
+      (_) => Stream.value(Right(RefreshChangesSearchEmailSuccess(emails))));
 
   /// Captured `(limit, position, filter)` of the single call to each interactor.
   CapturedArgs capturedSearch() => _argsFrom(verify(searchInteractor.execute(
@@ -179,6 +185,14 @@ void main() {
         );
   }
 
+  /// Verifies the shared urgent-exception primitive routed [times] failures.
+  void verifyUrgentRouted({required int times}) {
+    verify(urgentHandler.handleUrgentException(
+      failure: anyNamed('failure'),
+      exception: anyNamed('exception'),
+    )).called(times);
+  }
+
   /// Runs the standard load-more (20 rows loaded, cursor [cursorDate]).
   Future<void> runLoadMore(ProviderContainer container) => runExecute(
         container,
@@ -193,9 +207,13 @@ void main() {
     searchInteractor = MockSearchEmailInteractor();
     searchMoreInteractor = MockSearchMoreEmailInteractor();
     refreshInteractor = MockRefreshChangesSearchEmailInteractor();
+    urgentHandler = MockUrgentExceptionHandler();
     Get.put<SearchEmailInteractor>(searchInteractor);
     Get.put<SearchMoreEmailInteractor>(searchMoreInteractor);
     Get.put<RefreshChangesSearchEmailInteractor>(refreshInteractor);
+    // handleUrgentExceptionIfNeeded resolves the handler via getBinding (GetX).
+    Get.put<UrgentExceptionHandler>(urgentHandler);
+    when(urgentHandler.validateUrgentException(any)).thenReturn(true);
     stubSearch();
     stubSearchMore();
     stubRefresh();
@@ -499,8 +517,8 @@ void main() {
         [EmailId(Id('e1')), EmailId(Id('e2'))],
       );
       expect(failed.value?.loadMore, LoadMoreState.failure);
-      // Surface the exception for the controller to route.
-      expect(failed.value?.pendingUrgentException, loadMoreFailure);
+      // The consume seam routes the urgent exception (ADR-0103).
+      verifyUrgentRouted(times: 1);
 
       // Retry succeeds: the new page appends to the preserved pages, back to idle.
       stubSearchMore([emailWith('e3')]);
@@ -525,16 +543,8 @@ void main() {
       stubSearch([emailWith('e1')]);
       await runExecute(container, const NewSearchIntent());
 
-      when(refreshInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-      )).thenAnswer((_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
+      answerRefresh(
+          (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
       await runExecute(container, const RefreshChangesIntent(currentCount: 1));
 
       final result = container.read(searchEmailProvider);
@@ -542,55 +552,47 @@ void main() {
       expect(result.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
     });
 
-    test('refresh failure surfaces the exception for the controller to route', () async {
+    test('refresh failure routes the exception through the shared primitive', () async {
       final container = containerForSort(EmailSortOrderType.relevance);
       stubSearch([emailWith('e1')]);
       await runExecute(container, const NewSearchIntent());
 
-      // Same shape as a load-more failure: keep the list and carry the exception
-      // so the controller routes urgent ones (ADR-0103).
+      // Keep the list unchanged; the consume seam routes it for re-login (ADR-0103).
       final refreshFailure = SearchEmailFailure(const BadCredentialsException());
-      when(refreshInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-      )).thenAnswer((_) => Stream.value(Left(refreshFailure)));
+      answerRefresh((_) => Stream.value(Left(refreshFailure)));
       await runExecute(container, const RefreshChangesIntent(currentCount: 1));
 
       final result = container.read(searchEmailProvider);
       expect(result.hasError, isFalse);
       expect(result.value?.emails.map((e) => e.id), [EmailId(Id('e1'))]);
-      expect(result.value?.pendingUrgentException, refreshFailure);
+      verifyUrgentRouted(times: 1);
     });
 
-    test('the next operation clears a carried refresh exception', () async {
+    test('two identical consecutive refresh failures each route', () async {
+      // Routing at the failure point (not via equality-compared state) means two
+      // equal failures both route — a result field would collapse the second.
       final container = containerForSort(EmailSortOrderType.relevance);
       stubSearch([emailWith('e1')]);
       await runExecute(container, const NewSearchIntent());
 
-      when(refreshInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-      )).thenAnswer((_) =>
+      final refreshFailure = SearchEmailFailure(const BadCredentialsException());
+      answerRefresh((_) => Stream.value(Left(refreshFailure)));
+      await runExecute(container, const RefreshChangesIntent(currentCount: 1));
+      await runExecute(container, const RefreshChangesIntent(currentCount: 1));
+
+      verifyUrgentRouted(times: 2);
+    });
+
+    test('a successful load-more after a refresh failure does not re-route', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+
+      answerRefresh((_) =>
           Stream.value(Left(SearchEmailFailure(const BadCredentialsException()))));
       await runExecute(container, const RefreshChangesIntent(currentCount: 1));
-      expect(
-        container.read(searchEmailProvider).value?.pendingUrgentException,
-        isNotNull,
-      );
 
-      // A following load-more must not re-carry (and so re-route) the stale one.
+      // A following successful load-more must not re-route the stale exception.
       stubSearchMore([emailWith('e2')]);
       await runExecute(
         container,
@@ -600,10 +602,7 @@ void main() {
           lastEmailId: EmailId(Id('e1')),
         ),
       );
-      expect(
-        container.read(searchEmailProvider).value?.pendingUrgentException,
-        isNull,
-      );
+      verifyUrgentRouted(times: 1); // only the refresh failure routed
     });
 
     test('a refresh failure clears a load-more spinner it superseded', () async {
@@ -629,20 +628,8 @@ void main() {
 
       // The refresh fails: it keeps the list but must not leave the dropped
       // load-more's spinner stuck on.
-      when(
-        refreshInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-        ),
-      ).thenAnswer(
-        (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))),
-      );
+      answerRefresh(
+          (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
       await runExecute(container, const RefreshChangesIntent(currentCount: 1));
 
       // The superseded load-more resolves last; its result is dropped as stale.
@@ -700,20 +687,8 @@ void main() {
         final stale = runExecute(container, const NewSearchIntent());
         expect(container.read(searchEmailProvider).isLoading, isTrue);
 
-        when(
-          refreshInteractor.execute(
-            any,
-            any,
-            limit: anyNamed('limit'),
-            position: anyNamed('position'),
-            sort: anyNamed('sort'),
-            filter: anyNamed('filter'),
-            collapseThreads: anyNamed('collapseThreads'),
-            properties: anyNamed('properties'),
-          ),
-        ).thenAnswer(
-          (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))),
-        );
+        answerRefresh(
+            (_) => Stream.value(Left(SearchEmailFailure(Exception('boom')))));
         await runExecute(
           container,
           const RefreshChangesIntent(currentCount: 0),
