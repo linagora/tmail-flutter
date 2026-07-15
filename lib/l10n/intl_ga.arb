@@ -5125,42 +5125,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "Cumadóir ríomhphoist",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "Dírigh ar chuardach",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "Modúil oscailte",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "Liosta bosca poist",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "Radharc ríomhphoist oscailte",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "Liosta bosca poist (ríomhphost roghnaithe)",
-  "@mailboxListWithSelectedMail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToAll": "Freagra a thabhairt do chách",
   "@replyToAll": {
     "type": "text",

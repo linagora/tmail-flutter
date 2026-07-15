@@ -5119,42 +5119,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "邮件编辑器",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "聚焦搜索框",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "已打开的模态窗口",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "邮箱列表",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "已打开的邮件视图",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "邮箱列表（已选邮件）",
-  "@mailboxListWithSelectedMail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToAll": "全部回复",
   "@replyToAll": {
     "type": "text",

@@ -5372,42 +5372,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "Trình soạn thư",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "Tìm kiếm",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "Hộp thoại đã mở",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "Danh sách thư",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "Thư đã mở",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "Danh sách thư (đã lựa chọn)",
-  "@mailboxListWithSelectedMail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToAll": "Trả lời tất cả",
   "@replyToAll": {
     "type": "text",

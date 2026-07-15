@@ -5366,42 +5366,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "Editeur de mails",
-  "@mailComposer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "focusOnSearch": "Focus sur la recherche",
-  "@focusOnSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedModal": "Fenêtre pop-up ouverte",
-  "@openedModal": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxList": "Liste des mails",
-  "@mailboxList": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openedMailView": "Mail ouvert",
-  "@openedMailView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxListWithSelectedMail": "Liste des boîtes aux lettres (e-mail sélectionné)",
-  "@mailboxListWithSelectedMail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToAll": "Répondre à tous",
   "@replyToAll": {
     "type": "text",

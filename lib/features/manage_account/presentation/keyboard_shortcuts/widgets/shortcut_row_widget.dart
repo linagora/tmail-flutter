@@ -1,10 +1,7 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/keyboard_shortcut_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/keyboard_shortcuts/widgets/shortcut_key_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/keyboard_shortcuts/keyboard_shortcut.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ShortcutRow extends StatelessWidget {
   final KeyboardShortcut item;
@@ -18,23 +15,18 @@ class ShortcutRow extends StatelessWidget {
         top: 5,
         bottom: 21,
       ),
-      child: Wrap(
-        spacing: 27,
-        runSpacing: 8,
-        crossAxisAlignment: WrapCrossAlignment.center,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            item.label,
-            style: ThemeUtils.textStyleBodyBody3(
-              color: Colors.black,
+          Expanded(
+            child: Text(
+              item.label,
+              style: ThemeUtils.textStyleBodyBody3(
+                color: Colors.black,
+              ),
             ),
           ),
-          Text(
-            item.context.getDisplayName(AppLocalizations.of(context)),
-            style: ThemeUtils.textStyleBodyBody3(
-              color: AppColor.gray424244.withValues(alpha: 0.64),
-            ),
-          ),
+          const SizedBox(width: 16),
           Row(
             mainAxisSize: MainAxisSize.min,
             children:
