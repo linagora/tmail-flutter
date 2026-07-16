@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tab_bar/custom_tab_bar.dart';
 import 'package:flutter_custom_tab_bar/indicator/custom_indicator.dart';
@@ -34,19 +33,26 @@ class KeyboardShortcutsTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = _responsiveUtils.isDesktop(context);
+    final ambientTextDirection = Directionality.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTabBar(context),
-        Expanded(child: _buildPageView(context)),
+        _buildTabBar(context, isDesktop, ambientTextDirection),
+        Expanded(
+          child: _buildPageView(context, isDesktop, ambientTextDirection),
+        ),
       ],
     );
   }
 
-  Widget _buildTabBar(BuildContext context) {
-    final isDesktop = _responsiveUtils.isDesktop(context);
+  Widget _buildTabBar(
+    BuildContext context,
+    bool isDesktop,
+    TextDirection ambientTextDirection,
+  ) {
     final appLocalizations = AppLocalizations.of(context);
-    final ambientTextDirection = Directionality.of(context);
     final tabBarHeight = isDesktop ? 52.0 : 82.0;
 
     return LayoutBuilder(
@@ -102,9 +108,11 @@ class KeyboardShortcutsTabView extends StatelessWidget {
     );
   }
 
-  Widget _buildPageView(BuildContext context) {
-    final isDesktop = _responsiveUtils.isDesktop(context);
-    final ambientTextDirection = Directionality.of(context);
+  Widget _buildPageView(
+    BuildContext context,
+    bool isDesktop,
+    TextDirection ambientTextDirection,
+  ) {
     final allShortcuts = KeyboardShortcutsManager.generateKeyboardShortcuts(
       AppLocalizations.of(context),
     );
@@ -117,9 +125,10 @@ class KeyboardShortcutsTabView extends StatelessWidget {
         child: PageView.builder(
           controller: pageController,
           itemCount: _categories.length,
-          physics: PlatformInfo.isMobile
-              ? const PageScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
+          // Align swipe gesture with the responsive layout breakpoint.
+          physics: isDesktop
+              ? const NeverScrollableScrollPhysics()
+              : const PageScrollPhysics(),
           itemBuilder: (_, index) {
             final category = _categories[index];
             final shortcutsByCategory = allShortcuts
