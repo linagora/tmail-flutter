@@ -13,12 +13,14 @@ Future<void> waitForCondition(
   Duration interval = const Duration(milliseconds: 200),
 }) async {
   final elapsed = Stopwatch()..start();
+  Never timedOut() => throw TimeoutException('waitForCondition timed out', timeout);
 
   while (true) {
-    if (await condition()) return;
+    final remaining = timeout - elapsed.elapsed;
+    if (remaining <= Duration.zero) timedOut();
 
-    if (elapsed.elapsed >= timeout) {
-      throw TimeoutException('waitForCondition timed out', timeout);
+    if (await Future.sync(condition).timeout(remaining, onTimeout: timedOut)) {
+      return;
     }
     await Future.delayed(interval);
   }
