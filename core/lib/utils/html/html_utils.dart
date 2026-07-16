@@ -331,15 +331,19 @@ class HtmlUtils {
         root.addEventListener('keydown', function (event) {
           if (event.key !== 'Enter') return;
 
-          const selection = window.getSelection();
-          if (!selection || selection.rangeCount === 0) return;
+          try {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
 
-          const row = findFileLinkCardRow(selection.anchorNode);
-          if (!row) return;
+            const row = findFileLinkCardRow(selection.anchorNode);
+            if (!row) return;
 
-          event.preventDefault();
+            event.preventDefault();
 
-          splitRowAt(row, getSplitIndex(row, selection), selection);
+            splitRowAt(row, getSplitIndex(row, selection), selection);
+          } catch (error) {
+            console.error('File link row Enter handler error:', error);
+          }
         }, true);
       })();''',
         name: 'registerFileLinkRowEnterKeyHandler',
