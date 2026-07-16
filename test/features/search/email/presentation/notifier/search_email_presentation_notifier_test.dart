@@ -179,6 +179,7 @@ void main() {
 
   test('clearAllSearchFilterAppliedState clears filter-related lists', () {
     final stateBeforeClear = populatedState(
+      searchIsRunning: true,
       searchMoreState: SearchMoreState.waiting,
       canSearchMore: false,
     );
@@ -197,5 +198,7 @@ void main() {
         canSearchMore: true,
       ),
     );
+    // Unlike clearAllResultSearchState, this path keeps the running session flag.
+    expect(stateOf().searchIsRunning, isTrue);
   });
 }

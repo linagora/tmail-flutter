@@ -200,6 +200,38 @@ void main() {
     ).called(1);
   }
 
+  void verifyLoadMoreExecutedOnce() {
+    verify(
+      searchMoreEmailInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        position: anyNamed('position'),
+        filter: anyNamed('filter'),
+        properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
+        lastEmailId: anyNamed('lastEmailId'),
+      ),
+    ).called(1);
+  }
+
+  void verifyNoLoadMoreExecuted() {
+    verifyNever(
+      searchMoreEmailInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        position: anyNamed('position'),
+        filter: anyNamed('filter'),
+        properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
+        lastEmailId: anyNamed('lastEmailId'),
+      ),
+    );
+  }
+
   void putBaseDependencies() {
     Get.put<CachingManager>(advanced_mocks.MockCachingManager());
     Get.put<LanguageCacheManager>(advanced_mocks.MockLanguageCacheManager());
@@ -404,6 +436,55 @@ void main() {
   );
 
   test(
+    'load-more is a no-op before any result exists',
+    () async {
+      // The guard also keeps `listResultSearch.last` off an empty list.
+      expect(controller.searchMoreEmailsAction, returnsNormally);
+      await pumpEventQueue();
+
+      verifyNoLoadMoreExecuted();
+    },
+  );
+
+  test(
+    'an empty load-more page stops further load-more requests',
+    () async {
+      stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
+      stubLoadMoreResult(Right(SearchMoreEmailSuccess(const [])));
+
+      controller.searchEmailAction();
+      await pumpEventQueue();
+      controller.searchMoreEmailsAction();
+      await pumpEventQueue();
+      expect(controller.canSearchMore, isFalse);
+
+      // Scrolling again at the end of the results must not re-hit the server.
+      controller.searchMoreEmailsAction();
+      await pumpEventQueue();
+
+      verifyLoadMoreExecutedOnce();
+      expect(resultIds(), ['email-1']);
+    },
+  );
+
+  test(
+    'load-more is a no-op once the session is gone',
+    () async {
+      stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
+      controller.searchEmailAction();
+      await pumpEventQueue();
+
+      when(mailboxDashBoardController.sessionCurrent).thenReturn(null);
+
+      // The guard also keeps the `session!` assertion from throwing.
+      expect(controller.searchMoreEmailsAction, returnsNormally);
+      await pumpEventQueue();
+
+      verifyNoLoadMoreExecuted();
+    },
+  );
+
+  test(
     'new search failure clears the result list and surfaces the failure',
     () async {
       stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
@@ -465,6 +546,31 @@ void main() {
       // Urgent failures keep the current list and state.
       expect(resultIds(), ['email-1']);
       expect(controller.resultSearchViewState.isRight(), isTrue);
+    },
+  );
+
+  test(
+    'new search failure the handler rejects still surfaces the retry UI',
+    () async {
+      final handler = _RecordingUrgentExceptionHandler((_) => false);
+      Get.put<UrgentExceptionHandler>(handler);
+
+      stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
+      controller.searchEmailAction();
+      await pumpEventQueue();
+      expect(resultIds(), ['email-1']);
+
+      stubNewSearchResult(
+        Left<Failure, Success>(SearchEmailFailure(Exception('boom'))),
+      );
+      controller.searchEmailAction();
+      await pumpEventQueue();
+
+      // A registered handler that rejects the exception must not re-login, and
+      // must leave the ordinary failure path intact.
+      expect(handler.handleCallCount, 0);
+      expect(controller.listResultSearch, isEmpty);
+      expect(controller.resultSearchViewState.isLeft(), isTrue);
     },
   );
 
