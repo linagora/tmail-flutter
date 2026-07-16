@@ -33,6 +33,12 @@ import 'test_timeouts.dart';
 /// are skipped entirely when there is no overlay context, so a missing toast
 /// cannot distinguish "the action failed" from "the action worked but the toast
 /// was gone or never rendered".
+///
+/// Deliberately never completes on a [Failure]. `MailboxDashBoardController` in
+/// particular is a shared bus — vacation fetch, mark-as-read, token refresh and
+/// others all push onto the same `viewState` — so aborting on any failure would
+/// let unrelated background work fail an otherwise healthy test. Failures are
+/// instead collected and reported in the timeout message.
 Future<Success> waitForViewState(
   BaseController controller, {
   required bool Function(Success state) matcher,
@@ -40,11 +46,12 @@ Future<Success> waitForViewState(
   Duration timeout = TestTimeouts.long,
 }) {
   final completer = Completer<Success>();
+  final failuresSeen = <Failure>[];
   late final StreamSubscription<Either<Failure, Success>> subscription;
 
   subscription = controller.viewState.stream.listen((state) {
     state.fold(
-      (_) {},
+      failuresSeen.add,
       (success) {
         if (!completer.isCompleted && matcher(success)) {
           completer.complete(success);
@@ -57,8 +64,20 @@ Future<Success> waitForViewState(
     timeout,
     onTimeout: () => throw TimeoutException(
       'waitForViewState: no $description emitted by ${controller.runtimeType} '
-      'within ${timeout.inSeconds}s',
+      'within ${timeout.inSeconds}s.\n${_describeFailures(failuresSeen)}',
       timeout,
     ),
   ).whenComplete(subscription.cancel);
+}
+
+/// Failures are reported but never awaited on, so a timeout can still say what
+/// went wrong instead of only that nothing arrived.
+String _describeFailures(List<Failure> failures) {
+  if (failures.isEmpty) {
+    return 'No failure state was emitted either — the action likely never '
+        'reached the controller.';
+  }
+  return 'Failures emitted while waiting (this controller is a shared bus, so '
+      'these may be unrelated background work):\n'
+      '${failures.map((failure) => '  - $failure').join('\n')}';
 }
