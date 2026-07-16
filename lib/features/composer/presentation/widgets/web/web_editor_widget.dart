@@ -233,6 +233,14 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
               isWebPlatform: true,
             ).script,
           ),
+          WebScript(
+            name: HtmlUtils.registerFileLinkCardClickHandler(
+              isWebPlatform: true,
+            ).name,
+            script: HtmlUtils.registerFileLinkCardClickHandler(
+              isWebPlatform: true,
+            ).script,
+          ),
         ])
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
@@ -252,6 +260,11 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
               _selectionChangeScript.name);
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerFileLinkRowEnterKeyHandler(
+                isWebPlatform: true,
+              ).name,
+            );
+            _editorController.evaluateJavascriptWeb(
+              HtmlUtils.registerFileLinkCardClickHandler(
                 isWebPlatform: true,
               ).name,
             );

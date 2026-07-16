@@ -349,6 +349,62 @@ class HtmlUtils {
         name: 'registerFileLinkRowEnterKeyHandler',
       );
 
+  /// `target="_blank"` on the card anchor doesn't survive
+  /// StandardizeHtmlSanitizingTransformers (draft reload strips it), and
+  /// Summernote's image-handle module hijacks mousedown on any `<img>` before
+  /// it reaches the anchor - so this bypasses both by opening the link itself
+  /// on a capture-phase listener.
+  static ({String name, String script}) registerFileLinkCardClickHandler({
+    bool isWebPlatform = false,
+  }) =>
+      (
+        script: '''
+      (() => {
+        const isWebPlatform = $isWebPlatform;
+        const root = isWebPlatform
+          ? document.querySelector('.note-editor .note-editable')
+          : document.querySelector('#editor');
+        if (!root || root.dataset.fileLinkCardClickHandlerAttached) return;
+        root.dataset.fileLinkCardClickHandlerAttached = 'true';
+
+        function closestCardAnchor(node) {
+          let el = node && node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el !== root.parentElement) {
+            if (el.tagName === 'A' && el.getAttribute('contenteditable') === 'false') {
+              return el;
+            }
+            el = el.parentElement;
+          }
+          return null;
+        }
+
+        root.addEventListener('mousedown', function (event) {
+          if (closestCardAnchor(event.target)) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }, true);
+
+        root.addEventListener('click', function (event) {
+          const anchor = closestCardAnchor(event.target);
+          if (!anchor) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          try {
+            const href = anchor.getAttribute('href');
+            if (href) {
+              window.open(href, '_blank', 'noopener,noreferrer');
+            }
+          } catch (error) {
+            console.error('File link card click handler error:', error);
+          }
+        }, true);
+      })();''',
+        name: 'registerFileLinkCardClickHandler',
+      );
+
   static const collapseSelectionToEnd = (
     script: '''
       (() => {
