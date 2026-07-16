@@ -41,8 +41,12 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
 
   Future<void> _waitForDraftSaved() => waitForViewState(
     Get.find<MailboxDashBoardController>(),
-    matcher: (state) =>
-        state is SaveEmailAsDraftsSuccess || state is UpdateEmailDraftsSuccess,
-    description: 'SaveEmailAsDraftsSuccess/UpdateEmailDraftsSuccess',
+    ViewStateExpectation(
+      matcher: (state) =>
+          state is SaveEmailAsDraftsSuccess || state is UpdateEmailDraftsSuccess,
+      failureMatcher: (state) =>
+          state is SaveEmailAsDraftsFailure || state is UpdateEmailDraftsFailure,
+      description: 'SaveEmailAsDraftsSuccess/UpdateEmailDraftsSuccess',
+    ),
   );
 }
