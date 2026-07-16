@@ -78,25 +78,6 @@ class SearchFilterSelectionActionDelegate {
     }
   }
 
-  @visibleForTesting
-  bool handlesSearchFilter(QuickSearchFilter searchFilter) =>
-      _handledSearchFilters.contains(searchFilter);
-
-  static const Set<QuickSearchFilter> _handledSearchFilters = {
-    QuickSearchFilter.dateTime,
-    QuickSearchFilter.sortBy,
-    QuickSearchFilter.from,
-    QuickSearchFilter.hasAttachment,
-    QuickSearchFilter.to,
-    QuickSearchFilter.folder,
-    QuickSearchFilter.starred,
-    QuickSearchFilter.unread,
-    QuickSearchFilter.events,
-    QuickSearchFilter.labels,
-    QuickSearchFilter.last7Days,
-    QuickSearchFilter.fromMe,
-  };
-
   void _selectDateTimeSearchFilter(
     SearchFilterSelectionActionRequest request,
   ) {

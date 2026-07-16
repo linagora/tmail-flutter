@@ -727,4 +727,14 @@ void main() {
       },
     );
   }
+
+  // onDeleteSearchFilterAction resolves its mutation from a map keyed by
+  // QuickSearchFilter and null-asserts the lookup, so an unregistered filter
+  // throws at tap time. Covering every enum value here keeps that unreachable.
+  test('every quick search filter has a delete action', () {
+    expect(
+      deleteSearchFilterCases.map((testCase) => testCase.quickFilter).toSet(),
+      QuickSearchFilter.values.toSet(),
+    );
+  });
 }

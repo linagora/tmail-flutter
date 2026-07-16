@@ -52,16 +52,6 @@ void main() {
       return capturedRef;
     }
 
-    test('handles every quick search filter', () {
-      for (final searchFilter in QuickSearchFilter.values) {
-        expect(
-          delegate.handlesSearchFilter(searchFilter),
-          isTrue,
-          reason: '${searchFilter.name} must be registered',
-        );
-      }
-    });
-
     testWidgets('routes hasAttachment to selectHasAttachmentSearchFilter',
         (tester) async {
       final ref = await dispatch(tester, QuickSearchFilter.hasAttachment);
