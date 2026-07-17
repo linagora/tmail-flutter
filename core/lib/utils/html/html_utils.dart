@@ -256,22 +256,30 @@ class HtmlUtils {
             && el.textContent.trim() === '';
         }
 
-        // The row has no text nodes between cards, so a caret resting
-        // between two cards (or at either end) has the row itself as
-        // selection.anchorNode, with anchorOffset as the card index to
-        // split at. If the caret somehow ends up inside a card's subtree
-        // (e.g. via a non-click selection API), treat it as being right
-        // after that card.
+        // Index into row.childNodes (not just element children), splitting
+        // a text node in two if the caret sits mid-text - handles text typed
+        // between cards, which lands as a direct child text node of `row`.
         function getSplitIndex(row, selection) {
           const node = selection.anchorNode;
-          if (node === row) return selection.anchorOffset;
-          let el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-          while (el && el.parentElement !== row) {
-            el = el.parentElement;
+          const offset = selection.anchorOffset;
+
+          if (node === row) return Math.min(offset, row.childNodes.length);
+
+          if (node.nodeType === Node.TEXT_NODE && node.parentNode === row) {
+            if (offset > 0 && offset < node.length) {
+              node.splitText(offset);
+            }
+            const index = Array.prototype.indexOf.call(row.childNodes, node);
+            return offset === 0 ? index : index + 1;
           }
-          if (!el) return row.children.length;
-          const index = Array.prototype.indexOf.call(row.children, el);
-          return index < 0 ? row.children.length : index + 1;
+
+          let el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el.parentNode !== row) {
+            el = el.parentNode;
+          }
+          if (!el) return row.childNodes.length;
+          const index = Array.prototype.indexOf.call(row.childNodes, el);
+          return index < 0 ? row.childNodes.length : index + 1;
         }
 
         function makeEmptyParagraph() {
@@ -301,27 +309,32 @@ class HtmlUtils {
           placeCaretAtStart(selection, target);
         }
 
-        // Splits `row`'s cards at `splitIndex`, inserting a fresh empty line
-        // at that point. `splitIndex` at either edge (0 or cardCount) means
-        // there's nothing to actually split off, so it just docks the caret
-        // in the adjacent line instead of producing an empty row.
-        function splitRowAt(row, splitIndex, selection) {
-          const cardCount = row.children.length;
+        function hasCard(nodes) {
+          return nodes.some(function (node) {
+            return node.nodeType === Node.ELEMENT_NODE && node.tagName === 'A';
+          });
+        }
 
-          if (splitIndex <= 0) {
+        // Splits row's child nodes at splitIndex. If a side has no card
+        // left, docks the caret in the adjacent line instead.
+        function splitRowAt(row, splitIndex, selection) {
+          const childNodes = Array.prototype.slice.call(row.childNodes);
+          const before = childNodes.slice(0, splitIndex);
+          const after = childNodes.slice(splitIndex);
+
+          if (!hasCard(before)) {
             placeCaretInAdjacentLine(row, 'before', selection);
             return;
           }
-          if (splitIndex >= cardCount) {
+          if (!hasCard(after)) {
             placeCaretInAdjacentLine(row, 'after', selection);
             return;
           }
 
-          const children = Array.prototype.slice.call(row.children);
           const secondRow = row.cloneNode(false);
-          for (let i = splitIndex; i < children.length; i++) {
-            secondRow.appendChild(children[i]);
-          }
+          after.forEach(function (node) {
+            secondRow.appendChild(node);
+          });
           const newLine = makeEmptyParagraph();
           row.parentNode.insertBefore(newLine, row.nextSibling);
           row.parentNode.insertBefore(secondRow, newLine.nextSibling);
@@ -1136,6 +1149,7 @@ class HtmlUtils {
     bool removeStyle = true,
     bool removeScript = true,
     bool removeTMailSignature = true,
+    bool removeFileLinkCards = true,
   }) {
     var cleaned = html;
 
@@ -1156,6 +1170,13 @@ class HtmlUtils {
     }
     if (removeTMailSignature) {
       doc.querySelectorAll('div.tmail-signature').forEach((e) => e.remove());
+    }
+    if (removeFileLinkCards) {
+      // File-link cards (e.g. Drive attachments, see FileLinkCardHtmlBuilder)
+      // carry the "tmail-file-link-card" class. Their title/action-label
+      // text is card chrome, not user-authored content, so it must not feed
+      // the attachment-reminder keyword scan.
+      doc.querySelectorAll('a.tmail-file-link-card').forEach((e) => e.remove());
     }
 
     cleaned = doc.outerHtml;

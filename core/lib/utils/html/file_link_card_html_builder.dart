@@ -40,7 +40,7 @@ class FileLinkCardHtmlBuilder {
     final safeTitle = _textEscape.convert(content.title);
     final safeActionLabel = _textEscape.convert(content.actionLabel);
 
-    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" style="display:inline-block;vertical-align:top;width:${size.cardWidthPx}px;'
+    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" class="tmail-file-link-card" style="display:inline-block;vertical-align:top;width:${size.cardWidthPx}px;'
         'min-height:${size.cardMinHeightPx}px;margin:0 8px 8px 0;border:1px solid #E5E7EB;'
         'border-radius:10px;overflow:hidden;background:#FFFFFF;color:inherit;text-decoration:none;">'
         '${content.iconZoneHtml}'
