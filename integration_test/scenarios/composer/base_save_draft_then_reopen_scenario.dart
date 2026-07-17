@@ -40,6 +40,7 @@ abstract class BaseSaveDraftThenReopenScenario extends BaseSaveAndReopenScenario
     AppLocalizations l10n,
   ) async {
     await _saveDraftAndWaitForOutcome(composerRobot.tapSaveAsDraftButton);
+    await $.pumpAndTrySettle();
   }
 
   /// Runs [saveAction], then returns once the save has actually resolved: either the
