@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -13,6 +15,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
@@ -27,6 +30,10 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/save_recent_search_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/store_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -98,6 +105,8 @@ void main() {
       getAllRecentSearchLatestInteractor;
   late advanced_mocks.MockStoreEmailSortOrderInteractor
       storeEmailSortOrderInteractor;
+  late advanced_mocks.MockQuickSearchEmailInteractor quickSearchEmailInteractor;
+  late advanced_mocks.MockSaveRecentSearchInteractor saveRecentSearchInteractor;
 
   Future<WidgetRef> pumpWidgetRef(WidgetTester tester) async {
     late WidgetRef ref;
@@ -307,6 +316,10 @@ void main() {
         advanced_mocks.MockGetAllRecentSearchLatestInteractor();
     storeEmailSortOrderInteractor =
         advanced_mocks.MockStoreEmailSortOrderInteractor();
+    quickSearchEmailInteractor =
+        advanced_mocks.MockQuickSearchEmailInteractor();
+    saveRecentSearchInteractor =
+        advanced_mocks.MockSaveRecentSearchInteractor();
 
     Get.put<NetworkConnectionController>(
       thread_mocks.MockNetworkConnectionController(),
@@ -321,8 +334,8 @@ void main() {
     stubStoreEmailSortOrderResult(Right(StoreEmailSortOrderSuccess()));
 
     controller = SearchEmailController(
-      advanced_mocks.MockQuickSearchEmailInteractor(),
-      advanced_mocks.MockSaveRecentSearchInteractor(),
+      quickSearchEmailInteractor,
+      saveRecentSearchInteractor,
       getAllRecentSearchLatestInteractor,
     );
     controller.onInit();
@@ -841,6 +854,279 @@ void main() {
     expect(
       deleteSearchFilterCases.map((testCase) => testCase.quickFilter).toSet(),
       QuickSearchFilter.values.toSet(),
+    );
+  });
+
+  group('dashboard action worker', () {
+    test(
+      'SynchronizeEmailSortOrderAction commits the sort order and clears the action',
+      () async {
+        mailboxDashBoardController.dashBoardAction.value =
+            SynchronizeEmailSortOrderAction(EmailSortOrderType.oldest);
+        await pumpEventQueue();
+
+        expect(
+          controller.searchEmailFilter.sortOrderType,
+          EmailSortOrderType.oldest,
+        );
+        verify(mailboxDashBoardController.clearDashBoardAction()).called(1);
+      },
+    );
+
+    test(
+      'SelectDateRangeToAdvancedSearch commits the custom receive-time range',
+      () async {
+        mailboxDashBoardController.dashBoardAction.value =
+            SelectDateRangeToAdvancedSearch(
+          receiveTime: EmailReceiveTimeType.customRange,
+          startDate: DateTime.utc(2026, 1, 1),
+          endDate: DateTime.utc(2026, 1, 7),
+        );
+        await pumpEventQueue();
+
+        final committed = controller.searchEmailFilter;
+        expect(
+          committed.emailReceiveTimeType,
+          EmailReceiveTimeType.customRange,
+        );
+        expect(committed.startDate?.value, DateTime.utc(2026, 1, 1));
+        expect(committed.endDate?.value, DateTime.utc(2026, 1, 7));
+        verify(mailboxDashBoardController.clearDashBoardAction()).called(1);
+      },
+    );
+
+    test(
+      'an unhandled dashboard action never clears the dashboard action',
+      () async {
+        mailboxDashBoardController.dashBoardAction.value =
+            OpenAdvancedSearchViewAction();
+        await pumpEventQueue();
+
+        verifyNever(mailboxDashBoardController.clearDashBoardAction());
+      },
+    );
+  });
+
+  group('handleWebSocketMessage', () {
+    test('skips execution when the websocket state is unchanged', () async {
+      when(
+        mailboxDashBoardController.currentEmailState,
+      ).thenReturn(jmap.State('state-1'));
+
+      await controller.handleWebSocketMessage(
+        WebSocketMessage(newState: jmap.State('state-1')),
+      );
+      await pumpEventQueue();
+
+      verifyNever(
+        refreshInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
+          properties: anyNamed('properties'),
+        ),
+      );
+    });
+  });
+
+  group('search suggestion flow', () {
+    test(
+      'getAllRecentSearchAction returns empty when the username is missing',
+      () async {
+        when(mailboxDashBoardController.sessionCurrent).thenReturn(null);
+
+        final result = await controller.getAllRecentSearchAction();
+
+        expect(result, isEmpty);
+        verifyNever(
+          getAllRecentSearchLatestInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            pattern: anyNamed('pattern'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'getAllRecentSearchAction maps interactor success to the recent list',
+      () async {
+        final recent = [RecentSearch.now('report')];
+        stubRecentSearchResult(
+          Right(GetAllRecentSearchLatestSuccess(recent)),
+        );
+
+        final result =
+            await controller.getAllRecentSearchAction(pattern: 'rep');
+
+        expect(result, recent);
+      },
+    );
+
+    test('saveRecentSearch is a no-op when the username is missing', () {
+      when(mailboxDashBoardController.sessionCurrent).thenReturn(null);
+
+      controller.saveRecentSearch('report');
+
+      verifyNever(saveRecentSearchInteractor.execute(any, any, any));
+    });
+
+    test('saveRecentSearch persists the query through the interactor', () async {
+      when(
+        saveRecentSearchInteractor.execute(any, any, any),
+      ).thenAnswer((_) => Stream.value(Right(SaveRecentSearchSuccess())));
+
+      controller.saveRecentSearch('report');
+      await pumpEventQueue();
+
+      verify(
+        saveRecentSearchInteractor.execute(
+          AccountFixtures.aliceAccountId,
+          SessionFixtures.aliceSession.username,
+          any,
+        ),
+      ).called(1);
+    });
+
+    test(
+      'clearing the search text clears suggestions and loads recent searches',
+      () async {
+        stubRecentSearchResult(
+          Right(GetAllRecentSearchLatestSuccess([RecentSearch.now('report')])),
+        );
+
+        // The debouncer dedupes against its initial '' value, so move it off ''
+        // first; only the coalesced final '' emission is debounced through.
+        controller.onTextSearchChange('report');
+        controller.onTextSearchChange('');
+        await Future.delayed(const Duration(milliseconds: 600));
+        await pumpEventQueue();
+
+        expect(controller.currentSearchText, '');
+        expect(controller.listSuggestionSearch, isEmpty);
+        expect(
+          controller.searchEmailPresentationState.listRecentSearch,
+          hasLength(1),
+        );
+      },
+    );
+
+    test(
+      'non-empty search text loads quick-search and contact suggestions',
+      () async {
+        when(
+          quickSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            properties: anyNamed('properties'),
+            collapseThreads: anyNamed('collapseThreads'),
+          ),
+        ).thenAnswer(
+          (_) async => Right(QuickSearchEmailSuccess([email('suggestion-1')])),
+        );
+        when(
+          mailboxDashBoardController.getContactSuggestion('rep'),
+        ).thenAnswer((_) async => [EmailAddress(null, 'alice@example.com')]);
+
+        controller.onTextSearchChange('rep');
+        await Future.delayed(const Duration(milliseconds: 600));
+        await pumpEventQueue();
+
+        expect(
+          controller.listSuggestionSearch.map((e) => e.id?.id.value),
+          ['suggestion-1'],
+        );
+        expect(
+          controller.searchEmailPresentationState.listContactSuggestionSearch,
+          hasLength(1),
+        );
+      },
+    );
+
+    test(
+      'suggestions are discarded when the search text changes mid-load',
+      () async {
+        final completer = Completer<Either<Failure, Success>>();
+        when(
+          quickSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            properties: anyNamed('properties'),
+            collapseThreads: anyNamed('collapseThreads'),
+          ),
+        ).thenAnswer((_) => completer.future);
+        when(
+          mailboxDashBoardController.getContactSuggestion(any),
+        ).thenAnswer((_) async => <EmailAddress>[]);
+
+        controller.onTextSearchChange('rep');
+        await Future.delayed(const Duration(milliseconds: 600));
+        // The user keeps typing while the first quick-search is still in flight.
+        appProviderContainer
+            .read(searchEmailPresentationProvider.notifier)
+            .setCurrentSearchText('report');
+        completer.complete(
+          Right(QuickSearchEmailSuccess([email('stale-suggestion')])),
+        );
+        await pumpEventQueue();
+
+        // The stale page must not overwrite suggestions for the newer text.
+        expect(controller.listSuggestionSearch, isEmpty);
+      },
+    );
+  });
+
+  group('onTextSearchSubmitted', () {
+    testWidgets(
+      'an email-address query applies the from filter and searches once',
+      (tester) async {
+        final ref = await pumpWidgetRef(tester);
+        stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
+        when(
+          saveRecentSearchInteractor.execute(any, any, any),
+        ).thenAnswer((_) => Stream.value(Right(SaveRecentSearchSuccess())));
+
+        controller.onTextSearchSubmitted(
+          ref,
+          ref.context,
+          'alice@example.com',
+        );
+        await tester.pump();
+
+        final committed = appProviderContainer.read(searchFilterProvider);
+        expect(committed.from, contains('alice@example.com'));
+        expect(committed.text, isNull);
+        verifyNewSearchExecutedOnce();
+      },
+    );
+
+    testWidgets(
+      'a plain query applies the text filter and searches once',
+      (tester) async {
+        final ref = await pumpWidgetRef(tester);
+        stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
+        when(
+          saveRecentSearchInteractor.execute(any, any, any),
+        ).thenAnswer((_) => Stream.value(Right(SaveRecentSearchSuccess())));
+
+        controller.onTextSearchSubmitted(ref, ref.context, 'report');
+        await tester.pump();
+
+        final committed = appProviderContainer.read(searchFilterProvider);
+        expect(committed.text?.value, 'report');
+        verifyNewSearchExecutedOnce();
+      },
     );
   });
 }
