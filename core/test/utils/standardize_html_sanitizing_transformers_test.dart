@@ -171,10 +171,19 @@ void main() {
             equals('<img src="cid:email123">'));
       });
 
-      test('SHOULD preserve contenteditable="false" on <a> (drive link card)', () {
+      test('SHOULD strip contenteditable on <a> BY DEFAULT (email preview)', () {
         const html = '<a href="https://example.com" contenteditable="false">card</a>';
         expect(
             sanitize(html),
+            equals('<a href="https://example.com">card</a>'));
+      });
+
+      test('SHOULD preserve contenteditable="false" on <a> WHEN allowAttributes opts in (drive link card)', () {
+        const driveCardTransformer =
+            StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']);
+        const html = '<a href="https://example.com" contenteditable="false">card</a>';
+        expect(
+            driveCardTransformer.process(html, htmlEscape).trim(),
             equals('<a href="https://example.com" contenteditable="false">card</a>'));
       });
     });
