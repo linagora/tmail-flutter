@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import '../entity/workplace_action_config.dart';
 import '../repository/workplace_repository.dart';
 import '../state/workplace_intent_state.dart';
 
@@ -12,8 +13,8 @@ class CreateDriveIntentInteractor {
   Stream<Either<Failure, Success>> execute(
     Uri platformUrl,
     String accessToken, {
-    required String addAsLink,
-    required String addAsAttachment,
+    required WorkplaceActionConfig addAsLink,
+    WorkplaceActionConfig? addAsAttachment,
   }) async* {
     try {
       yield Right(CreatingWorkplaceIntent());

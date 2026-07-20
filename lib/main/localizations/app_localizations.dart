@@ -5625,6 +5625,13 @@ class AppLocalizations {
     );
   }
 
+  String get driveAttachmentInDevelopment {
+    return Intl.message(
+      'The add-as-attachment feature is still in development.',
+      name: 'driveAttachmentInDevelopment',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',

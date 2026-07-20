@@ -5296,6 +5296,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "driveAttachmentInDevelopment": "The add-as-attachment feature is still in development.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "labelAs": "Label as",
   "@labelAs": {
     "type": "text",

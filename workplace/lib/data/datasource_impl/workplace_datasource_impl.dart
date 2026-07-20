@@ -9,6 +9,7 @@ import '../model/workplace_enums.dart';
 import '../model/workplace_intent_request.dart';
 import '../model/workplace_intent_response.dart';
 import '../workplace_dio.dart';
+import '../../domain/entity/workplace_action_config.dart';
 import '../../domain/entity/workplace_intent.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
@@ -25,9 +26,9 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    required String accessToken, 
-    required String addAsLink,
-    required String addAsAttachment,
+    required String accessToken,
+    required WorkplaceActionConfig addAsLink,
+    WorkplaceActionConfig? addAsAttachment,
   }) async {
     final response = await WorkplaceDio.instance.post(
       platformUrl.replace(
@@ -67,8 +68,8 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   }
 
   Map<String, dynamic> _buildIntentRequest({
-    required String addAsLink,
-    required String addAsAttachment,
+    required WorkplaceActionConfig addAsLink,
+    WorkplaceActionConfig? addAsAttachment,
   }) => WorkplaceIntentRequest(
     data: WorkplaceIntentDataRequest(
       type: WorkplaceDataRequestType.intents,
@@ -76,12 +77,12 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
         action: WorkplaceAction.pick,
         type: WorkplaceDocType.files,
         permissions: [WorkplacePermission.get],
-        actions: [
-          WorkplaceIntentActionsRequest(
-            addAsLink: addAsLink,
-            addAsAttachment: addAsAttachment,
-          ),
-        ],
+        data: WorkplaceFilePickerConfigRequest(
+          sharingLink: WorkplaceActionConfigRequest.fromEntity(addAsLink),
+          downloadLink: addAsAttachment == null
+              ? null
+              : WorkplaceActionConfigRequest.fromEntity(addAsAttachment),
+        ),
       ),
     ),
   ).toJson();

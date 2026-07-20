@@ -22,7 +22,9 @@ class _TestState extends State<_TestWidget> with DriveIntentMessageHandlerMixin 
   final List<DrivePickOutcome> outcomes = [];
 
   @override
-  void sendAck() => ackCalls.add('ack');
+  void sendAck() {
+    ackCalls.add('ack');
+  }
 
   @override
   void loadIntent(WorkplaceIntent intent) => loadCalls.add(intent);
