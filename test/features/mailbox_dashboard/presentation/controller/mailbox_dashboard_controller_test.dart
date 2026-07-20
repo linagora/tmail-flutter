@@ -4,7 +4,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -86,7 +85,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/quick_search_filter_action_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -327,6 +328,13 @@ void main() {
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
 
+  SearchEmailFilter committedFilter() =>
+      appProviderContainer.read(searchFilterProvider);
+  SearchFilterNotifier searchFilterNotifier() =>
+      appProviderContainer.read(searchFilterProvider.notifier);
+  QuickSearchFilterActionNotifier searchFilterActionNotifier() =>
+      appProviderContainer.read(quickSearchFilterActionProvider.notifier);
+
   setUp(() {
     Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
     Get.put<EmailReceiveManager>(emailReceiveManager);
@@ -433,12 +441,14 @@ void main() {
         refreshAllMailboxInteractor);
       mailboxController.onReady();
 
+      // The central SearchEmailNotifier executor resolves its interactors via
+      // Get.find; register the mocks so ThreadController's delegated searches run.
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
       threadController = ThreadController(
         getEmailsInMailboxInteractor,
         refreshChangesEmailsInMailboxInteractor,
         loadMoreEmailsInMailboxInteractor,
-        searchEmailInteractor,
-        searchMoreEmailInteractor,
         getEmailByIdInteractor,
         cleanAndGetEmailsInMailboxInteractor);
       Get.put(threadController);
@@ -464,19 +474,27 @@ void main() {
       when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
       
       // expect query in search controller update as expected
-      mailboxDashboardController.searchEmailByQueryString(queryString);
-      expect(searchController.searchEmailFilter.value.text, SearchQuery(queryString));
+      searchController.searchInputController.text = queryString;
+      mailboxDashboardController.searchEmailByQueryString();
+      expect(committedFilter().text, SearchQuery(queryString));
       
       // expect sort in search controller update as expected
       mailboxDashboardController.selectSortOrderQuickSearchFilter(
-        EmailSortOrderType.oldest);
+        EmailSortOrderType.oldest,
+        searchFilterActionNotifier(),
+      );
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
 
       // expect filter in search controller update as expected
-      mailboxDashboardController.selectHasAttachmentSearchFilter();
-      expect(searchController.searchEmailFilter.value.hasAttachment, true);
-      mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
-      expect(searchController.searchEmailFilter.value.emailReceiveTimeType, EmailReceiveTimeType.last30Days);
+      searchFilterActionNotifier()
+          .selectQuickSearchFilter(QuickSearchFilter.hasAttachment);
+      expect(committedFilter().hasAttachment, true);
+      mailboxDashboardController.selectReceiveTimeQuickSearchFilter(
+        context,
+        EmailReceiveTimeType.last30Days,
+        searchFilterActionNotifier(),
+      );
+      expect(committedFilter().emailReceiveTimeType, EmailReceiveTimeType.last30Days);
 
       // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
       // when [selectedMailbox] is changed and triggered obx listener in thread controller
@@ -494,7 +512,7 @@ void main() {
         collapseThreads: anyNamed('collapseThreads'),
       ));
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
+      expect(committedFilter(), SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
@@ -541,7 +559,7 @@ void main() {
       advancedFilterController.applyAdvancedSearchFilter(
         committedFilter: appProviderContainer.read(searchFilterProvider),
         filterNotifier: filterNotifier);
-      final filterAfterAdvancedSearch = searchController.searchEmailFilter.value;
+      final filterAfterAdvancedSearch = committedFilter();
       expect(filterAfterAdvancedSearch.from, equals({fromEmailAddress.email!}));
       expect(filterAfterAdvancedSearch.to, equals({toEmailAddress.email!}));
       expect(filterAfterAdvancedSearch.subject, equals(emailSubject));
@@ -549,7 +567,9 @@ void main() {
       expect(filterAfterAdvancedSearch.text, equals(SearchQuery(emailContainsWord)));
       expect(filterAfterAdvancedSearch.notKeyword, equals({emailNotContainsWord}));
       expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
-      expect(filterAfterAdvancedSearch.position, equals(0));
+      // Pagination position is resolved on the transient request spec by the
+      // executor; it is never written to the committed SSOT (ADR-0093).
+      expect(filterAfterAdvancedSearch.position, isNull);
       expect(filterAfterAdvancedSearch.startDate, isNotNull);
       expect(filterAfterAdvancedSearch.endDate, isNotNull);
       expect(filterAfterAdvancedSearch.before, isNull);
@@ -571,7 +591,7 @@ void main() {
         collapseThreads: anyNamed('collapseThreads'),
       ));
       expect(searchController.sortOrderFiltered, SearchEmailFilter.defaultSortOrder);
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
+      expect(committedFilter(), SearchEmailFilter.initial());
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
@@ -595,9 +615,15 @@ void main() {
     when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
 
     // act
-    mailboxDashboardController.searchEmailByQueryString(queryString);
-    mailboxDashboardController.selectHasAttachmentSearchFilter();
-    mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
+    searchController.searchInputController.text = queryString;
+    mailboxDashboardController.searchEmailByQueryString();
+    searchFilterActionNotifier()
+        .selectQuickSearchFilter(QuickSearchFilter.hasAttachment);
+    mailboxDashboardController.selectReceiveTimeQuickSearchFilter(
+      context,
+      EmailReceiveTimeType.last30Days,
+      searchFilterActionNotifier(),
+    );
 
     await untilCalled(searchEmailInteractor.execute(
       any,
@@ -610,16 +636,39 @@ void main() {
       properties: anyNamed('properties')));
 
     // assert
-    final filterAfterQuickSearch = searchController.searchEmailFilter.value;
+    final filterAfterQuickSearch = committedFilter();
     expect(filterAfterQuickSearch.text, equals(SearchQuery(queryString)));
     expect(filterAfterQuickSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
     expect(filterAfterQuickSearch.hasAttachment, isTrue);
-    expect(filterAfterQuickSearch.position, equals(0));
+    // Pagination position is resolved on the transient request spec by the
+    // executor; it is never written to the committed SSOT (ADR-0093).
+    expect(filterAfterQuickSearch.position, isNull);
     expect(filterAfterQuickSearch.startDate, isNotNull);
     expect(filterAfterQuickSearch.endDate, isNotNull);
     expect(filterAfterQuickSearch.before, isNull);
     expect(filterAfterQuickSearch.after, isNull);
   });
+
+    test(
+      'WHEN the search query changes from an email address to plain text\n'
+      'SHOULD drop the auto-routed sender so it no longer narrows the search',
+    () {
+      // arrange
+      when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+
+      // Search by a bare email address: routed to `from`, text cleared.
+      searchController.searchInputController.text = 'alice@example.com';
+      mailboxDashboardController.searchEmailByQueryString();
+      expect(committedFilter().from, equals({'alice@example.com'}));
+      expect(committedFilter().text, isNull);
+
+      // Search by plain text: the previously derived sender must be cleared so
+      // the next request searches for the text, not "text from Alice".
+      searchController.searchInputController.text = 'invoice';
+      mailboxDashboardController.searchEmailByQueryString();
+      expect(committedFilter().from, isEmpty);
+      expect(committedFilter().text, equals(SearchQuery('invoice')));
+    });
 
     test(
       'WHEN stored sort order is loaded on app restart\n'
@@ -628,24 +677,24 @@ void main() {
       mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
 
       expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
-      expect(searchController.searchEmailFilter.value.sortOrderType, EmailSortOrderType.oldest);
+      expect(committedFilter().sortOrderType, EmailSortOrderType.oldest);
     });
 
     test(
       'WHEN setUpDefaultEmailSortOrder is called while load-more cursors are set\n'
-      'SHOULD clear before/after/position so restoring the sort order never leaks a stale cursor',
+      'SHOULD keep before/after/position out of the committed SSOT',
     () {
-      searchController.updateFilterEmail(
-        beforeOption: Some(UTCDate(DateTime.now())),
-        afterOption: Some(UTCDate(DateTime.now())),
-        positionOption: const Some(20),
-      );
+      searchFilterNotifier().set(SearchEmailFilter(
+        before: UTCDate(DateTime.now()),
+        after: UTCDate(DateTime.now()),
+        position: 20,
+      ));
 
       mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
 
-      expect(searchController.searchEmailFilter.value.before, isNull);
-      expect(searchController.searchEmailFilter.value.after, isNull);
-      expect(searchController.searchEmailFilter.value.position, isNull);
+      expect(committedFilter().before, isNull);
+      expect(committedFilter().after, isNull);
+      expect(committedFilter().position, isNull);
     });
 
     test(
@@ -762,12 +811,12 @@ void main() {
           refreshAllMailboxInteractor);
       mailboxController.onReady();
 
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
       threadController = ThreadController(
           getEmailsInMailboxInteractor,
           refreshChangesEmailsInMailboxInteractor,
           loadMoreEmailsInMailboxInteractor,
-          searchEmailInteractor,
-          searchMoreEmailInteractor,
           getEmailByIdInteractor,
           cleanAndGetEmailsInMailboxInteractor,
       );

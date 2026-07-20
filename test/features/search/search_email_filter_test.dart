@@ -164,22 +164,6 @@ void main() {
         );
       });
 
-      test('SHOULD includes moreFilterCondition WHEN provided', () {
-        // Arrange
-        final moreCondition = EmailFilterCondition(text: 'moreFilter');
-        final filter = SearchEmailFilter(
-          text: SearchQuery('example'),
-        );
-
-        // Act
-        final result = filter.mappingToEmailFilterCondition(moreFilterCondition: moreCondition);
-
-        // Assert
-        expect(result, isA<LogicFilterOperator>());
-        final logicOperator = result as LogicFilterOperator;
-        expect(logicOperator.conditions.contains(moreCondition), isTrue);
-      });
-
       test('SHOULD combines multiple fields into an AND filter', () {
         // Arrange
         final filter = SearchEmailFilter(
@@ -586,26 +570,6 @@ void main() {
         expect(sharedCond.inMailboxOtherThan, containsAll([trashId, spamId]));
       });
 
-      test('SHOULD combine events-exclusion with moreFilterCondition in AND WHEN notIncludeEvents is true and no other conditions', () {
-        // Arrange
-        final moreCondition = EmailFilterCondition(text: 'moreFilter');
-        final filter = SearchEmailFilter(notIncludeEvents: true);
-
-        // Act
-        final result = filter.mappingToEmailFilterCondition(moreFilterCondition: moreCondition);
-
-        // Assert
-        // Result: AND(eventsExclusion, moreCondition) — 2 conditions.
-        expect(result, isA<LogicFilterOperator>());
-        final andFilter = result as LogicFilterOperator;
-        expect(andFilter.operator, equals(Operator.AND));
-        expect(andFilter.conditions.length, equals(2));
-        expect(andFilter.conditions.contains(moreCondition), isTrue);
-
-        final eventsExclusion = andFilter.conditions.whereType<EmailFilterCondition>()
-            .firstWhere((c) => c.notKeyword != null);
-        expect(eventsExclusion.notKeyword, KeyWordIdentifierExtension.eventsMail.value);
-      });
     });
 
     group('isApplied::test', () {
@@ -777,6 +741,52 @@ void main() {
         final withCursor = SearchEmailFilter(after: cursor);
         final cleared = withCursor.copyWith(afterOption: const None());
         expect(cleared.after, isNull);
+      });
+    });
+
+    group('hasActiveQuickFilter::test', () {
+      test('SHOULD return false WHEN no chip filter is set', () {
+        expect(SearchEmailFilter().hasActiveQuickFilter, isFalse);
+      });
+
+      test('SHOULD return false WHEN only text, subject or sort '
+          'are set (these are not chip filters)', () {
+        final filter = SearchEmailFilter(
+          text: SearchQuery('hello'),
+          subject: 'invoice',
+          sortOrderType: EmailSortOrderType.oldest,
+        );
+
+        expect(filter.hasActiveQuickFilter, isFalse);
+      });
+
+      test('SHOULD return false WHEN the only mailbox is the unified mailbox '
+          '(it does not narrow results), matching isApplied', () {
+        final filter = SearchEmailFilter(
+          mailbox: PresentationMailbox.unifiedMailbox,
+        );
+
+        expect(filter.hasActiveQuickFilter, isFalse);
+      });
+
+      test('SHOULD return true WHEN any chip filter narrows the search', () {
+        final chipFilters = <SearchEmailFilter>[
+          SearchEmailFilter(from: {'alice@example.com'}),
+          SearchEmailFilter(to: {'bob@example.com'}),
+          SearchEmailFilter(mailbox: PresentationMailbox(MailboxId(Id('m')))),
+          SearchEmailFilter(label: Label(id: Id('l'), displayName: 'Work')),
+          SearchEmailFilter(emailReceiveTimeType: EmailReceiveTimeType.last7Days),
+          SearchEmailFilter(startDate: UTCDate(DateTime.utc(2026, 1, 1))),
+          SearchEmailFilter(endDate: UTCDate(DateTime.utc(2026, 1, 31))),
+          SearchEmailFilter(hasAttachment: true),
+          SearchEmailFilter(hasKeyword: {KeyWordIdentifier.emailFlagged.value}),
+          SearchEmailFilter(unread: true),
+          SearchEmailFilter(notIncludeEvents: true),
+        ];
+
+        for (final filter in chipFilters) {
+          expect(filter.hasActiveQuickFilter, isTrue);
+        }
       });
     });
 

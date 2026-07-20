@@ -221,6 +221,21 @@ void main() {
 
   tearDown(Get.reset);
 
+  test('clearResult resets rows and canLoadMore', () async {
+    final container = containerForSort(EmailSortOrderType.relevance);
+    stubSearch([emailWith('e1')]);
+    final notifier = container.read(searchEmailProvider.notifier);
+
+    await runExecute(container, const NewSearchIntent());
+    expect(notifier.canLoadMore, isTrue);
+
+    notifier.clearResult();
+
+    final result = container.read(searchEmailProvider).value;
+    expect(result?.emails, isEmpty);
+    expect(notifier.canLoadMore, isFalse);
+  });
+
   group('NewSearchIntent', () {
     test('clears load-more cursors regardless of prior SSOT values', () async {
       final committed = SearchEmailFilter(

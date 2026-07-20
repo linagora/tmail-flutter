@@ -108,6 +108,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -191,6 +192,7 @@ const fallbackGenerators = {
   MockSpec<LoadMoreEmailsInMailboxInteractor>(),
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
+  MockSpec<RefreshChangesSearchEmailInteractor>(),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
   MockSpec<DeleteCredentialInteractor>(),
@@ -300,6 +302,7 @@ void main() {
   final loadMoreEmailsInMailboxInteractor = MockLoadMoreEmailsInMailboxInteractor();
   final searchEmailInteractor = MockSearchEmailInteractor();
   final searchMoreEmailInteractor = MockSearchMoreEmailInteractor();
+  final refreshChangesSearchEmailInteractor = MockRefreshChangesSearchEmailInteractor();
 
   final getQuotasInteractor = MockGetQuotasInteractor();
 
@@ -326,7 +329,7 @@ void main() {
   }
 
   group('MailboxDashboardView', () {
-    setUp(() {
+    void registerMockDependencies() {
       Get.testMode = true;
 
       Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
@@ -370,7 +373,9 @@ void main() {
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       final isLabelSettingEnabled = RxBool(false);
       when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
+    }
 
+    void buildAndRegisterControllers() {
       searchController = SearchController(
         quickSearchEmailInteractor,
         saveRecentSearchInteractor,
@@ -429,12 +434,15 @@ void main() {
       Get.put(mailboxController);
       // mailboxController.onReady();
 
+      // The central SearchEmailNotifier executor resolves its interactors via
+      // Get.find; register the mocks so ThreadController's delegated searches run.
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
+      Get.put<RefreshChangesSearchEmailInteractor>(refreshChangesSearchEmailInteractor);
       threadController = ThreadController(
         getEmailsInMailboxInteractor,
         refreshChangesEmailsInMailboxInteractor,
         loadMoreEmailsInMailboxInteractor,
-        searchEmailInteractor,
-        searchMoreEmailInteractor,
         getEmailByIdInteractor,
         cleanAndGetEmailsInMailboxInteractor,
       );
@@ -442,10 +450,18 @@ void main() {
 
       quotasController = QuotasController(getQuotasInteractor);
       Get.put(quotasController);
+    }
 
+    void seedInitialDashboardState() {
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
+    }
+
+    setUp(() {
+      registerMockDependencies();
+      buildAndRegisterControllers();
+      seedInitialDashboardState();
     });
 
     group('ThreadView', () {

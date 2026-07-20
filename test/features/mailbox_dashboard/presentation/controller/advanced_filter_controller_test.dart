@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -126,6 +127,9 @@ void main() {
   SearchEmailFilter committedFilter() =>
       appProviderContainer.read(searchFilterProvider);
 
+  bool advancedSearchActive() =>
+      appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated;
+
   setUpAll(() {
     Get.testMode = true;
     // Mock base controller
@@ -194,20 +198,21 @@ void main() {
   });
 
   setUp(() {
-    // Reset synchronously (not invalidate) so no deferred rebuild flushes mid-test.
     appProviderContainer
         .read(searchFilterProvider.notifier)
         .set(SearchEmailFilter.initial());
+    // View state is a keepAlive provider with no public reset; invalidate it.
+    appProviderContainer.invalidate(searchViewStateProvider);
     searchController.deactivateAdvancedSearch();
     searchController.deactivateSimpleSearch();
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     clearInteractions(mockMailboxDashBoardController);
   });
 
   group('AdvancedFilterController::test', () {
     group('applyAdvancedSearchFilter::test', () {
       test(
-        'SHOULD keep the committed filter and search controller mirror in sync\n'
+        'SHOULD execute search from the committed filter SSOT\n'
         'WHEN the committed advanced filter is applied',
       () async {
         // Arrange
@@ -237,11 +242,12 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         final committedSearchFilter = appProviderContainer.read(searchFilterProvider);
-        final searchFilter = searchController.searchEmailFilter.value;
 
         // Assert
         verify(mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(committedSearchFilter, equals(searchFilter));
+        expect(committedSearchFilter.from, {'user1@example.com'});
+        expect(committedSearchFilter.to, {'user2@example.com'});
+        expect(committedSearchFilter.subject, 'Subject');
       });
 
       test(
@@ -258,7 +264,7 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         // Assert
-        expect(searchController.advancedSearchIsActivated.value, isTrue);
+        expect(advancedSearchActive(), isTrue);
       });
 
       test(
@@ -276,7 +282,7 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         // Assert
-        expect(searchController.advancedSearchIsActivated.value, isFalse);
+        expect(advancedSearchActive(), isFalse);
       });
     });
 
@@ -612,7 +618,7 @@ void main() {
             checkboxCase.readFlag(
               appProviderContainer.read(searchFilterProvider)),
             isTrue);
-          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          expect(advancedSearchActive(), isFalse);
           verifyNever(
             mockMailboxDashBoardController.handleAdvancedSearchEmail());
         });
@@ -637,7 +643,7 @@ void main() {
             checkboxCase.readFlag(
               appProviderContainer.read(searchFilterProvider)),
             isFalse);
-          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          expect(advancedSearchActive(), isFalse);
           verifyNever(
             mockMailboxDashBoardController.handleAdvancedSearchEmail());
         });
@@ -663,7 +669,7 @@ void main() {
 
         verify(
           mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(searchController.advancedSearchIsActivated.value, isTrue);
+        expect(advancedSearchActive(), isTrue);
         expect(
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isTrue);
@@ -690,7 +696,7 @@ void main() {
 
         verify(
           mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(searchController.advancedSearchIsActivated.value, isFalse);
+        expect(advancedSearchActive(), isFalse);
         expect(
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isFalse);

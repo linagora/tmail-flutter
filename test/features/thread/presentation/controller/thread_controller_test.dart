@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -19,22 +22,23 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
@@ -46,11 +50,18 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
+import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -64,6 +75,41 @@ const fallbackGenerators = {
   #onStart: mockControllerCallback,
   #onDelete: mockControllerCallback,
 };
+
+/// Records routing into the shared urgent-exception handler (ADR-0103).
+/// Treats only [BadCredentialsException] as urgent, like `BaseController`.
+class _RecordingUrgentExceptionHandler implements UrgentExceptionHandler {
+  int handleCallCount = 0;
+  Failure? handledFailure;
+  Exception? handledException;
+
+  @override
+  bool validateUrgentException(dynamic exception) =>
+      exception is BadCredentialsException;
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) {
+    handleCallCount++;
+    handledFailure = failure;
+    handledException = exception;
+  }
+}
+
+/// Pumps the event queue until [condition] holds, so a test waits for the
+/// provider listener to settle instead of sleeping for an arbitrary duration.
+/// Fails if [condition] never becomes true within [timeout].
+Future<void> _pumpUntil(
+  bool Function() condition, {
+  Duration timeout = const Duration(seconds: 2),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (!condition()) {
+    if (DateTime.now().isAfter(deadline)) {
+      fail('Timed out waiting for condition after ${timeout.inMilliseconds}ms');
+    }
+    await pumpEventQueue(times: 1);
+  }
+}
 
 @GenerateNiceMocks([
   // Base controller mock specs
@@ -89,6 +135,7 @@ const fallbackGenerators = {
   MockSpec<LoadMoreEmailsInMailboxInteractor>(),
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
+  MockSpec<RefreshChangesSearchEmailInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
 ])
@@ -101,12 +148,17 @@ void main() {
   late MockSearchController mockSearchController;
   late MockMailboxDashBoardController mockMailboxDashBoardController;
   late MockGetEmailsInMailboxInteractor mockGetEmailsInMailboxInteractor;
-  late MockRefreshChangesEmailsInMailboxInteractor mockRefreshChangesEmailsInMailboxInteractor;
-  late MockLoadMoreEmailsInMailboxInteractor mockLoadMoreEmailsInMailboxInteractor;
+  late MockRefreshChangesEmailsInMailboxInteractor
+  mockRefreshChangesEmailsInMailboxInteractor;
+  late MockLoadMoreEmailsInMailboxInteractor
+  mockLoadMoreEmailsInMailboxInteractor;
   late MockSearchEmailInteractor mockSearchEmailInteractor;
   late MockSearchMoreEmailInteractor mockSearchMoreEmailInteractor;
+  late MockRefreshChangesSearchEmailInteractor
+  mockRefreshChangesSearchEmailInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
-  late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
+  late MockCleanAndGetEmailsInMailboxInteractor
+  mockCleanAndGetEmailsInMailboxInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -163,23 +215,33 @@ void main() {
     mockSearchController = MockSearchController();
     mockMailboxDashBoardController = MockMailboxDashBoardController();
     mockGetEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
-    mockRefreshChangesEmailsInMailboxInteractor = MockRefreshChangesEmailsInMailboxInteractor();
-    mockLoadMoreEmailsInMailboxInteractor = MockLoadMoreEmailsInMailboxInteractor();
+    mockRefreshChangesEmailsInMailboxInteractor =
+        MockRefreshChangesEmailsInMailboxInteractor();
+    mockLoadMoreEmailsInMailboxInteractor =
+        MockLoadMoreEmailsInMailboxInteractor();
     mockSearchEmailInteractor = MockSearchEmailInteractor();
     mockSearchMoreEmailInteractor = MockSearchMoreEmailInteractor();
+    mockRefreshChangesSearchEmailInteractor =
+        MockRefreshChangesSearchEmailInteractor();
     mockGetEmailByIdInteractor = MockGetEmailByIdInteractor();
-    mockCleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
+    mockCleanAndGetEmailsInMailboxInteractor =
+        MockCleanAndGetEmailsInMailboxInteractor();
 
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    // The central SearchEmailNotifier executor resolves its interactors via
+    // Get.find; register the mocks so ThreadController's delegated searches run.
+    Get.put<SearchEmailInteractor>(mockSearchEmailInteractor);
+    Get.put<SearchMoreEmailInteractor>(mockSearchMoreEmailInteractor);
+    Get.put<RefreshChangesSearchEmailInteractor>(
+      mockRefreshChangesSearchEmailInteractor,
+    );
 
     threadController = ThreadController(
       mockGetEmailsInMailboxInteractor,
       mockRefreshChangesEmailsInMailboxInteractor,
       mockLoadMoreEmailsInMailboxInteractor,
-      mockSearchEmailInteractor,
-      mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
     );
@@ -195,19 +257,28 @@ void main() {
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
-            mailboxIds: {MailboxId(Id('mailbox1')): true}),
+            mailboxIds: {MailboxId(Id('mailbox1')): true},
+          ),
           PresentationEmail(
             id: EmailId(Id('email2')),
-            mailboxIds: {selectedMailboxId: true}),
+            mailboxIds: {selectedMailboxId: true},
+          ),
           PresentationEmail(
             id: EmailId(Id('email3')),
-            mailboxIds: {selectedMailboxId: true}),
+            mailboxIds: {selectedMailboxId: true},
+          ),
         ];
 
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
         when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailsInCurrentMailbox));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(emailsInCurrentMailbox));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
         when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
 
@@ -218,7 +289,8 @@ void main() {
         expect(result.length, 2);
         expect(
           result.map((e) => e.id).toList(),
-          containsAll([EmailId(Id('email2')), EmailId(Id('email3'))]));
+          containsAll([EmailId(Id('email2')), EmailId(Id('email3'))]),
+        );
       });
 
       test('SHOULD filters out duplicated emails', () {
@@ -226,20 +298,30 @@ void main() {
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
-            mailboxIds: {MailboxId(Id('mailbox1')): true}),
+            mailboxIds: {MailboxId(Id('mailbox1')): true},
+          ),
           PresentationEmail(
             id: EmailId(Id('email2')),
-            mailboxIds: {selectedMailboxId: true}),
+            mailboxIds: {selectedMailboxId: true},
+          ),
         ];
         emailsInCurrentMailbox.add(
           PresentationEmail(
             id: EmailId(Id('email2')),
-            mailboxIds: {selectedMailboxId: true}));
+            mailboxIds: {selectedMailboxId: true},
+          ),
+        );
 
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
         when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailsInCurrentMailbox));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(emailsInCurrentMailbox));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
         when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
 
@@ -254,10 +336,16 @@ void main() {
         // Arrange
         final emailList = <PresentationEmail>[];
 
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(PresentationMailbox(selectedMailboxId)));
         when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailsInCurrentMailbox));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(emailsInCurrentMailbox));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
         when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
 
@@ -273,12 +361,12 @@ void main() {
       late ThreadController refreshChangesController;
 
       setUp(() {
+        appProviderContainer.invalidate(searchFilterProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
         refreshChangesController = ThreadController(
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -286,67 +374,104 @@ void main() {
 
       tearDown(() {
         refreshChangesController.onClose();
+        appProviderContainer.invalidate(searchFilterProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
       });
 
-      test(
-        'WHEN thread controller in searching\n'
-        'AND `MarkAsStarEmailSuccess` is coming\n'
-        'THEN `SearchEmailInteractor` is invoked with proper arguments\n'
-        'AND `listEmailController` should not jumped\n'
-        'AND `mailboxDashBoardController.emailsInCurrentMailbox` should not be cleared',
-      () async {
+      test('WHEN thread controller in searching\n'
+          'AND a websocket `RefreshChangeEmailAction` is coming\n'
+          'THEN the central executor invokes `RefreshChangesSearchEmailInteractor`\n'
+          'AND the query carries ONLY the committed filter (no filterMessageOption leak)\n'
+          'AND `listEmailController` should not jump', () async {
         // Arrange
         PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
             subject: 'hello',
-            keywords: {KeyWordIdentifier.emailFlagged: true}),
-          PresentationEmail(
-            id: EmailId(Id('email2')),
-            subject: 'hello')
+            keywords: {KeyWordIdentifier.emailFlagged: true},
+          ),
+          PresentationEmail(id: EmailId(Id('email2')), subject: 'hello'),
         ];
+        final searchRefreshResultController =
+            StreamController<Either<Failure, Success>>();
+        addTearDown(() async => searchRefreshResultController.close());
 
-        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
-        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(SearchEmailSuccess(emailList))));
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailList));
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
-        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockMailboxDashBoardController.currentEmailState).thenReturn(State('old-state'));
-        when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
-        when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
+        when(
+          mockMailboxDashBoardController.sessionCurrent,
+        ).thenReturn(SessionFixtures.aliceSession);
+        when(
+          mockMailboxDashBoardController.accountId,
+        ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(emailList));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.dashBoardAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.emailUIAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.viewState,
+        ).thenReturn(Rx(Right(UIState.idle)));
+        when(
+          mockMailboxDashBoardController.listEmailSelected,
+        ).thenReturn(RxList([]));
+        when(
+          mockMailboxDashBoardController.trashSpamMailboxIds,
+        ).thenReturn(null);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        // The inbox quick-filter is unread, but the committed filter is empty.
+        // The old `moreFilterCondition` path must not leak into the query.
+        when(
+          mockMailboxDashBoardController.filterMessageOption,
+        ).thenReturn(Rx(FilterMessageOption.unread));
+        when(
+          mockMailboxDashBoardController.currentEmailState,
+        ).thenReturn(State('old-state'));
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-        when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
-        when(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
+        when(
+          mockRefreshChangesSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+          ),
+        ).thenAnswer((_) => searchRefreshResultController.stream);
 
-        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-          any,
-          any,
-          any,
-          sort: anyNamed('sort'),
-          limit: anyNamed('limit'),
-          propertiesCreated: anyNamed('propertiesCreated'),
-          propertiesUpdated: anyNamed('propertiesUpdated'),
-          emailFilter: anyNamed('emailFilter'),
-          collapseThreads: anyNamed('collapseThreads'),
-        )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
-          emailList: emailList,
-          currentEmailState: State('old-state'))))
+        when(
+          mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          ),
+        ).thenAnswer(
+          (_) => Stream.value(
+            Right(
+              RefreshChangesAllEmailSuccess(
+                emailList: emailList,
+                currentEmailState: State('old-state'),
+              ),
+            ),
+          ),
         );
 
         // Act
@@ -356,34 +481,57 @@ void main() {
         mockMailboxDashBoardController.emailUIAction.value =
             RefreshChangeEmailAction(newState: State('new-state'));
 
-        await untilCalled(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        ));
+        await untilCalled(
+          mockRefreshChangesSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+          ),
+        );
 
-        // Assert
-        verify(mockSearchEmailInteractor.execute(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          limit: UnsignedInt(emailList.length),
-          position: null,
-          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
-          filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
-          collapseThreads: false,
-          properties: EmailUtils.getPropertiesForEmailGetMethod(
+        // Refresh uses the executor and current window size.
+        // `filter: null` proves the inbox quick-filter did not leak.
+        verify(
+          mockRefreshChangesSearchEmailInteractor.execute(
             SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId),
-          needRefreshSearchState: true
-        )).called(1);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty, isTrue);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, emailList.length);
+            AccountFixtures.aliceAccountId,
+            limit: UnsignedInt(emailList.length),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: null,
+            collapseThreads: false,
+            properties: anyNamed('properties'),
+          ),
+        ).called(1);
+        // The removed `SearchEmailInteractor` refresh path must not run.
+        verifyNever(
+          mockSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+            needRefreshSearchState: anyNamed('needRefreshSearchState'),
+          ),
+        );
+        PlatformInfo.isTestingForWeb = false;
+        searchRefreshResultController.add(
+          Right(RefreshChangesSearchEmailSuccess(emailList)),
+        );
+        await searchRefreshResultController.close();
+        await pumpEventQueue();
+        expect(
+          mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty,
+          isTrue,
+        );
         expect(refreshChangesController.isListEmailScrollViewJumping, isFalse);
         PlatformInfo.isTestingForWeb = false;
       });
@@ -391,81 +539,380 @@ void main() {
       test(
         'WHEN thread controller in searching\n'
         'AND `StartSearchEmailAction` is coming\n'
-        'THEN `SearchEmailInteractor` is invoked with proper arguments\n'
-        'AND `listEmailController` should jumped\n'
+        'THEN the central executor invokes `SearchEmailInteractor` (NewSearchIntent)\n'
+        'AND the query carries ONLY the committed filter (no filterMessageOption leak)\n'
         'AND `mailboxDashBoardController.emailsInCurrentMailbox` should be cleared',
-      () async {
-        // Arrange
-        final emailList = [
-          PresentationEmail(
-            id: EmailId(Id('email1')),
-            subject: 'hello'),
-          PresentationEmail(
-            id: EmailId(Id('email2')),
-            subject: 'hello')
-        ];
+        () async {
+          // Arrange
+          final emailList = [
+            PresentationEmail(id: EmailId(Id('email1')), subject: 'hello'),
+            PresentationEmail(id: EmailId(Id('email2')), subject: 'hello'),
+          ];
 
-        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
-        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(SearchEmailSuccess(emailList))));
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailList));
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
-        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
-        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList([]));
-        when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
-        when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
+          when(
+            mockMailboxDashBoardController.sessionCurrent,
+          ).thenReturn(SessionFixtures.aliceSession);
+          when(
+            mockMailboxDashBoardController.accountId,
+          ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(
+            mockMailboxDashBoardController.emailsInCurrentMailbox,
+          ).thenReturn(RxList(emailList));
+          when(
+            mockMailboxDashBoardController.selectedMailbox,
+          ).thenReturn(Rxn(null));
+          when(
+            mockMailboxDashBoardController.searchController,
+          ).thenReturn(mockSearchController);
+          when(
+            mockMailboxDashBoardController.dashBoardAction,
+          ).thenReturn(Rxn(null));
+          when(
+            mockMailboxDashBoardController.emailUIAction,
+          ).thenReturn(Rxn(null));
+          when(
+            mockMailboxDashBoardController.viewState,
+          ).thenReturn(Rx(Right(UIState.idle)));
+          when(
+            mockMailboxDashBoardController.filterMessageOption,
+          ).thenReturn(Rx(FilterMessageOption.unread));
+          when(
+            mockMailboxDashBoardController.currentSelectMode,
+          ).thenReturn(Rx(SelectMode.INACTIVE));
+          when(
+            mockMailboxDashBoardController.listEmailSelected,
+          ).thenReturn(RxList([]));
+          when(
+            mockMailboxDashBoardController.trashSpamMailboxIds,
+          ).thenReturn(null);
+          when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          when(
+            mockSearchEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              position: anyNamed('position'),
+              sort: anyNamed('sort'),
+              filter: anyNamed('filter'),
+              collapseThreads: anyNamed('collapseThreads'),
+              properties: anyNamed('properties'),
+              needRefreshSearchState: anyNamed('needRefreshSearchState'),
+            ),
+          ).thenAnswer(
+            (_) => Stream.value(Right(SearchEmailSuccess(emailList))),
+          );
+
+          // Act
+          refreshChangesController.onInit();
+          mockMailboxDashBoardController.dashBoardAction.value =
+              StartSearchEmailAction();
+
+          await untilCalled(
+            mockSearchEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              position: anyNamed('position'),
+              sort: anyNamed('sort'),
+              filter: anyNamed('filter'),
+              collapseThreads: anyNamed('collapseThreads'),
+              properties: anyNamed('properties'),
+              needRefreshSearchState: anyNamed('needRefreshSearchState'),
+            ),
+          );
+
+          // Fresh search uses the default page limit.
+          // `filter: null` proves the inbox quick-filter did not leak.
+          verify(
+            mockSearchEmailInteractor.execute(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              limit: ThreadConstants.defaultLimit,
+              position: anyNamed('position'),
+              sort: anyNamed('sort'),
+              filter: null,
+              collapseThreads: false,
+              properties: anyNamed('properties'),
+              needRefreshSearchState: anyNamed('needRefreshSearchState'),
+            ),
+          ).called(1);
+          expect(
+            mockMailboxDashBoardController.emailsInCurrentMailbox.isEmpty,
+            isTrue,
+          );
+          expect(
+            mockMailboxDashBoardController.emailsInCurrentMailbox.length,
+            equals(0),
+          );
+        },
+      );
+
+      test('WHEN on web the executor emits search results\n'
+          'THEN the result bridge settles `viewState` off `SearchingState`\n'
+          'SO the searching loading bar disappears (regression)', () async {
+        // Arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        final emailList = [
+          PresentationEmail(id: EmailId(Id('email1')), subject: 'hello'),
+          PresentationEmail(id: EmailId(Id('email2')), subject: 'hello'),
+        ];
+        final searchResultController =
+            StreamController<Either<Failure, Success>>();
+        addTearDown(() async => searchResultController.close());
+
+        when(
+          mockMailboxDashBoardController.sessionCurrent,
+        ).thenReturn(SessionFixtures.aliceSession);
+        when(
+          mockMailboxDashBoardController.accountId,
+        ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(emailList));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.dashBoardAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.emailUIAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.viewState,
+        ).thenReturn(Rx(Right(UIState.idle)));
+        when(
+          mockMailboxDashBoardController.filterMessageOption,
+        ).thenReturn(Rx(FilterMessageOption.all));
+        when(
+          mockMailboxDashBoardController.currentSelectMode,
+        ).thenReturn(Rx(SelectMode.INACTIVE));
+        when(
+          mockMailboxDashBoardController.listEmailSelected,
+        ).thenReturn(RxList([]));
+        when(
+          mockMailboxDashBoardController.trashSpamMailboxIds,
+        ).thenReturn(null);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-        when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
-        when(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
+        when(
+          mockSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+            needRefreshSearchState: anyNamed('needRefreshSearchState'),
+          ),
+        ).thenAnswer((_) => searchResultController.stream);
 
         // Act
         refreshChangesController.onInit();
-        mockMailboxDashBoardController.dashBoardAction.value = StartSearchEmailAction();
+        refreshChangesController.searchEmail();
+        await untilCalled(
+          mockSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+            needRefreshSearchState: anyNamed('needRefreshSearchState'),
+          ),
+        );
+        PlatformInfo.isTestingForWeb = false;
+        searchResultController.add(Right(SearchEmailSuccess(emailList)));
+        await searchResultController.close();
+        // Wait for the bridge to settle the result rather than sleeping.
+        await _pumpUntil(
+          () => refreshChangesController.viewState.value
+              .getOrElse(() => UIState.idle) is SearchEmailSuccess,
+        );
 
-        await untilCalled(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        ));
-
-        // Assert
-        verify(mockSearchEmailInteractor.execute(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          limit: ThreadConstants.defaultLimit,
-          position: null,
-          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
-          filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
-          collapseThreads: false,
-          properties: EmailUtils.getPropertiesForEmailGetMethod(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId),
-          needRefreshSearchState: false
-        )).called(1);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isEmpty, isTrue);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, equals(0));
+        // Assert: after results arrive, the searching spinner state is cleared.
+        final settledState = refreshChangesController.viewState.value.getOrElse(
+          () => UIState.idle,
+        );
+        expect(settledState, isA<SearchEmailSuccess>());
+        expect(settledState, isNot(isA<SearchingState>()));
+        PlatformInfo.isTestingForWeb = false;
       });
+    });
+
+    group('web search executor urgent-exception routing (ADR-0103):', () {
+      late ThreadController urgentController;
+
+      final refreshFailureMatcher = predicate<Either<Failure, Success>>(
+        (state) => state.fold((f) => f is RefreshAllEmailFailure, (_) => false),
+      );
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        appProviderContainer.invalidate(searchFilterProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
+        urgentController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        urgentController.onClose();
+        if (Get.isRegistered<UrgentExceptionHandler>()) {
+          Get.delete<UrgentExceptionHandler>();
+        }
+        appProviderContainer.invalidate(searchFilterProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
+        PlatformInfo.isTestingForWeb = false;
+      });
+
+      void stubDashboardForFailedSearch(List<PresentationEmail> seededEmails) {
+        when(
+          mockMailboxDashBoardController.sessionCurrent,
+        ).thenReturn(SessionFixtures.aliceSession);
+        when(
+          mockMailboxDashBoardController.accountId,
+        ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList(seededEmails));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.dashBoardAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.emailUIAction,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.viewState,
+        ).thenReturn(Rx(Right(UIState.idle)));
+        when(
+          mockMailboxDashBoardController.filterMessageOption,
+        ).thenReturn(Rx(FilterMessageOption.all));
+        when(
+          mockMailboxDashBoardController.currentSelectMode,
+        ).thenReturn(Rx(SelectMode.INACTIVE));
+        when(
+          mockMailboxDashBoardController.listEmailSelected,
+        ).thenReturn(RxList([]));
+        when(
+          mockMailboxDashBoardController.trashSpamMailboxIds,
+        ).thenReturn(null);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+      }
+
+      void stubSearchInteractorFailure(dynamic exception) {
+        when(
+          mockSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+            needRefreshSearchState: anyNamed('needRefreshSearchState'),
+          ),
+        ).thenAnswer(
+          (_) => Stream.value(Left(SearchEmailFailure(exception))),
+        );
+      }
+
+      Future<void> runFailedSearch() async {
+        urgentController.onInit();
+        urgentController.searchEmail();
+        await untilCalled(
+          mockSearchEmailInteractor.execute(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
+            properties: anyNamed('properties'),
+            needRefreshSearchState: anyNamed('needRefreshSearchState'),
+          ),
+        );
+        // Wait for the executor to emit `AsyncError` and the bridge to settle the
+        // failure into viewState, rather than sleeping for a fixed duration.
+        await _pumpUntil(() => urgentController.viewState.value.isLeft());
+      }
+
+      test(
+        'GIVEN the executor errors with an urgent exception (BadCredentials)\n'
+        'WHEN the web search result bridge handles it\n'
+        'THEN it routes through the shared UrgentExceptionHandler\n'
+        'AND skips the destructive retry UI (no refresh-failure state)',
+        () async {
+          // Arrange
+          final fakeHandler = _RecordingUrgentExceptionHandler();
+          Get.put<UrgentExceptionHandler>(fakeHandler);
+          stubDashboardForFailedSearch([
+            PresentationEmail(id: EmailId(Id('email1'))),
+          ]);
+          stubSearchInteractorFailure(const BadCredentialsException());
+
+          // Act
+          await runFailedSearch();
+
+          // Assert: urgent exception routed once, retry UI skipped.
+          expect(fakeHandler.handleCallCount, 1);
+          expect(fakeHandler.handledException, isA<BadCredentialsException>());
+          verifyNever(
+            mockMailboxDashBoardController.updateRefreshAllEmailState(
+              argThat(refreshFailureMatcher),
+            ),
+          );
+        },
+      );
+
+      test(
+        'GIVEN the executor errors with a non-urgent exception\n'
+        'WHEN the web search result bridge handles it\n'
+        'THEN the handler declines\n'
+        'AND the destructive retry UI runs (refresh-failure state emitted)',
+        () async {
+          // Arrange
+          final fakeHandler = _RecordingUrgentExceptionHandler();
+          Get.put<UrgentExceptionHandler>(fakeHandler);
+          stubDashboardForFailedSearch([
+            PresentationEmail(id: EmailId(Id('email1'))),
+          ]);
+          stubSearchInteractorFailure(NotFoundSessionException());
+
+          // Act
+          await runFailedSearch();
+
+          // Assert: not routed as urgent, retry UI ran.
+          expect(fakeHandler.handleCallCount, 0);
+          verify(
+            mockMailboxDashBoardController.updateRefreshAllEmailState(
+              argThat(refreshFailureMatcher),
+            ),
+          ).called(1);
+        },
+      );
     });
 
     group('_registerObxStreamListener test:', () {
@@ -476,8 +923,6 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -490,56 +935,84 @@ void main() {
       test(
         'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
         'when mailboxDashBoardController.selectedMailbox updated',
-      () async {
-        // arrange
-        final mailboxBefore = PresentationMailbox(MailboxId(Id('mailbox-before-id')));
-        final mailboxAfter = PresentationMailbox(MailboxId(Id('mailbox-after-id')));
-        final selectedMailbox = Rxn(mailboxBefore);
-        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
-        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(selectedMailbox);
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
-        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
-        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList());
-        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
-        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+        () async {
+          // arrange
+          final mailboxBefore = PresentationMailbox(
+            MailboxId(Id('mailbox-before-id')),
+          );
+          final mailboxAfter = PresentationMailbox(
+            MailboxId(Id('mailbox-after-id')),
+          );
+          final selectedMailbox = Rxn(mailboxBefore);
+          when(
+            mockMailboxDashBoardController.sessionCurrent,
+          ).thenReturn(SessionFixtures.aliceSession);
+          when(
+            mockMailboxDashBoardController.accountId,
+          ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(
+            mockMailboxDashBoardController.selectedMailbox,
+          ).thenReturn(selectedMailbox);
+          when(
+            mockMailboxDashBoardController.searchController,
+          ).thenReturn(mockSearchController);
+          when(
+            mockMailboxDashBoardController.dashBoardAction,
+          ).thenReturn(Rxn());
+          when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+          when(
+            mockMailboxDashBoardController.viewState,
+          ).thenReturn(Rx(Right(UIState.idle)));
+          when(
+            mockMailboxDashBoardController.emailsInCurrentMailbox,
+          ).thenReturn(RxList());
+          when(
+            mockMailboxDashBoardController.listEmailSelected,
+          ).thenReturn(RxList());
+          when(
+            mockMailboxDashBoardController.currentSelectMode,
+          ).thenReturn(Rx(SelectMode.INACTIVE));
+          when(
+            mockMailboxDashBoardController.filterMessageOption,
+          ).thenReturn(Rx(FilterMessageOption.all));
 
-        // act
-        obxListenerController.onInit();
-        mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
-        await untilCalled(mockGetEmailsInMailboxInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          emailFilter: anyNamed('emailFilter'),
-          propertiesCreated: anyNamed('propertiesCreated'),
-          propertiesUpdated: anyNamed('propertiesUpdated'),
-          useCache: anyNamed('useCache'),
-          forceEmailQuery: anyNamed('forceEmailQuery'),
-          collapseThreads: anyNamed('collapseThreads'),
-          getLatestChanges: false,
-        ));
-        
-        // assert
-        verify(mockGetEmailsInMailboxInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          emailFilter: anyNamed('emailFilter'),
-          propertiesCreated: anyNamed('propertiesCreated'),
-          propertiesUpdated: anyNamed('propertiesUpdated'),
-          useCache: anyNamed('useCache'),
-          forceEmailQuery: anyNamed('forceEmailQuery'),
-          collapseThreads: anyNamed('collapseThreads'),
-          getLatestChanges: false,
-        ));
-      });
+          // act
+          obxListenerController.onInit();
+          mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
+          await untilCalled(
+            mockGetEmailsInMailboxInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              sort: anyNamed('sort'),
+              emailFilter: anyNamed('emailFilter'),
+              propertiesCreated: anyNamed('propertiesCreated'),
+              propertiesUpdated: anyNamed('propertiesUpdated'),
+              useCache: anyNamed('useCache'),
+              forceEmailQuery: anyNamed('forceEmailQuery'),
+              collapseThreads: anyNamed('collapseThreads'),
+              getLatestChanges: false,
+            ),
+          );
+
+          // assert
+          verify(
+            mockGetEmailsInMailboxInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              sort: anyNamed('sort'),
+              emailFilter: anyNamed('emailFilter'),
+              propertiesCreated: anyNamed('propertiesCreated'),
+              propertiesUpdated: anyNamed('propertiesUpdated'),
+              useCache: anyNamed('useCache'),
+              forceEmailQuery: anyNamed('forceEmailQuery'),
+              collapseThreads: anyNamed('collapseThreads'),
+              getLatestChanges: false,
+            ),
+          );
+        },
+      );
     });
 
     group('limitEmailFetched::test', () {
@@ -553,22 +1026,33 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
 
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(null));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
         when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
         when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(emailsRxList);
-        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
-        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+        when(
+          mockMailboxDashBoardController.viewState,
+        ).thenReturn(Rx(Right(UIState.idle)));
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(emailsRxList);
+        when(
+          mockMailboxDashBoardController.listEmailSelected,
+        ).thenReturn(RxList());
+        when(
+          mockMailboxDashBoardController.currentSelectMode,
+        ).thenReturn(Rx(SelectMode.INACTIVE));
+        when(
+          mockMailboxDashBoardController.filterMessageOption,
+        ).thenReturn(Rx(FilterMessageOption.all));
 
         limitEmailFetchedController.onInit();
       });
@@ -577,25 +1061,27 @@ void main() {
         limitEmailFetchedController.onClose();
       });
 
-      List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
+      List<PresentationEmail> generateEmails(
+        int count, {
+        String prefix = 'email',
+      }) {
         return List.generate(
           count,
           (i) => PresentationEmail(id: EmailId(Id('$prefix$i'))),
         );
       }
 
-      test(
-        'SHOULD return defaultLimit\n'
-        'WHEN no emails loaded',
-      () {
+      test('SHOULD return defaultLimit\n'
+          'WHEN no emails loaded', () {
         // Assert
-        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
+        expect(
+          limitEmailFetchedController.limitEmailFetched,
+          ThreadConstants.defaultLimit,
+        );
       });
 
-      test(
-        'SHOULD return email count\n'
-        'WHEN emails are loaded into the list',
-      () {
+      test('SHOULD return email count\n'
+          'WHEN emails are loaded into the list', () {
         // Act
         emailsRxList.addAll(generateEmails(40));
 
@@ -603,10 +1089,8 @@ void main() {
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
       });
 
-      test(
-        'SHOULD retain peak count\n'
-        'WHEN emails are bulk deleted from the list',
-      () {
+      test('SHOULD retain peak count\n'
+          'WHEN emails are bulk deleted from the list', () {
         // Arrange
         emailsRxList.addAll(generateEmails(40));
 
@@ -617,10 +1101,8 @@ void main() {
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
       });
 
-      test(
-        'SHOULD reset to defaultLimit\n'
-        'WHEN resetToOriginalValue is called (mailbox switch)',
-      () {
+      test('SHOULD reset to defaultLimit\n'
+          'WHEN resetToOriginalValue is called (mailbox switch)', () {
         // Arrange
         emailsRxList.addAll(generateEmails(40));
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
@@ -629,30 +1111,38 @@ void main() {
         limitEmailFetchedController.resetToOriginalValue();
 
         // Assert
-        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
+        expect(
+          limitEmailFetchedController.limitEmailFetched,
+          ThreadConstants.defaultLimit,
+        );
       });
 
       test(
         'SHOULD track peak across load-more then delete\n'
         'WHEN emails are loaded incrementally and then partially deleted',
-      () {
-        // Arrange - simulate initial load + 2 load-mores
-        emailsRxList.addAll(generateEmails(20, prefix: 'init'));
-        emailsRxList.addAll(generateEmails(20, prefix: 'more1'));
-        emailsRxList.addAll(generateEmails(20, prefix: 'more2'));
-        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
+        () {
+          // Arrange - simulate initial load + 2 load-mores
+          emailsRxList.addAll(generateEmails(20, prefix: 'init'));
+          emailsRxList.addAll(generateEmails(20, prefix: 'more1'));
+          emailsRxList.addAll(generateEmails(20, prefix: 'more2'));
+          expect(
+            limitEmailFetchedController.limitEmailFetched,
+            UnsignedInt(60),
+          );
 
-        // Act - delete 30 emails
-        emailsRxList.removeRange(0, 30);
+          // Act - delete 30 emails
+          emailsRxList.removeRange(0, 30);
 
-        // Assert - peak was 60
-        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
-      });
+          // Assert - peak was 60
+          expect(
+            limitEmailFetchedController.limitEmailFetched,
+            UnsignedInt(60),
+          );
+        },
+      );
 
-      test(
-        'SHOULD reset between mailbox switches\n'
-        'WHEN switching to a mailbox with fewer emails',
-      () {
+      test('SHOULD reset between mailbox switches\n'
+          'WHEN switching to a mailbox with fewer emails', () {
         // Arrange - first mailbox has 40 emails
         emailsRxList.addAll(generateEmails(40));
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
@@ -667,52 +1157,48 @@ void main() {
     });
 
     group('shouldAutoLoadMoreByScrollExtent unit test:', () {
-      test(
-        'GIVEN maxScrollExtent is 0 '
-        'WHEN content exactly fills the viewport '
-        'THEN SHOULD return true',
-      () {
+      test('GIVEN maxScrollExtent is 0 '
+          'WHEN content exactly fills the viewport '
+          'THEN SHOULD return true', () {
         expect(AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(0), isTrue);
       });
 
-      test(
-        'GIVEN maxScrollExtent is positive '
-        'WHEN content overflows the viewport '
-        'THEN SHOULD return false',
-      () {
+      test('GIVEN maxScrollExtent is positive '
+          'WHEN content overflows the viewport '
+          'THEN SHOULD return false', () {
         expect(AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(1), isFalse);
       });
 
-      test(
-        'GIVEN maxScrollExtent is 785 with viewport 816 '
-        'WHEN content fills between 1× and 2× the viewport (large-screen device) '
-        'THEN SHOULD return false to prevent infinite load-more loop',
-      () {
+      test('GIVEN maxScrollExtent is 785 with viewport 816 '
+          'WHEN content fills between 1× and 2× the viewport (large-screen device) '
+          'THEN SHOULD return false to prevent infinite load-more loop', () {
         expect(
-          AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(785.0459770114941),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByScrollExtent(
+            785.0459770114941,
+          ),
           isFalse,
         );
       });
     });
 
     group('shouldAutoLoadMoreByScrollExtent widget test:', () {
-      testWidgets(
-        'GIVEN a ListView whose content overflows the viewport '
-        'THEN maxScrollExtent > 0 and SHOULD return false',
-      (tester) async {
+      testWidgets('GIVEN a ListView whose content overflows the viewport '
+          'THEN maxScrollExtent > 0 and SHOULD return false', (tester) async {
         final scrollController = ScrollController();
         addTearDown(scrollController.dispose);
 
-        await tester.pumpWidget(MaterialApp(
-          home: SizedBox(
-            height: 500,
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: 20,
-              itemBuilder: (_, __) => const SizedBox(height: 80),
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SizedBox(
+              height: 500,
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: 20,
+                itemBuilder: (_, __) => const SizedBox(height: 80),
+              ),
             ),
           ),
-        ));
+        );
 
         final maxScroll = scrollController.position.maxScrollExtent;
         expect(maxScroll, greaterThan(0));
@@ -722,23 +1208,23 @@ void main() {
         );
       });
 
-      testWidgets(
-        'GIVEN a ListView whose content does not fill the viewport '
-        'THEN maxScrollExtent == 0 and SHOULD return true',
-      (tester) async {
+      testWidgets('GIVEN a ListView whose content does not fill the viewport '
+          'THEN maxScrollExtent == 0 and SHOULD return true', (tester) async {
         final scrollController = ScrollController();
         addTearDown(scrollController.dispose);
 
-        await tester.pumpWidget(MaterialApp(
-          home: SizedBox(
-            height: 500,
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: 3,
-              itemBuilder: (_, __) => const SizedBox(height: 80),
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SizedBox(
+              height: 500,
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: 3,
+                itemBuilder: (_, __) => const SizedBox(height: 80),
+              ),
             ),
           ),
-        ));
+        );
 
         final maxScroll = scrollController.position.maxScrollExtent;
         expect(maxScroll, 0.0);
@@ -762,16 +1248,16 @@ void main() {
 
       void setupMocksForOnDone() {
         PlatformInfo.isTestingForWeb = false;
-        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+        when(
+          mockMailboxDashBoardController.isEmailListDisplayed,
+        ).thenReturn(false);
       }
 
       tearDown(() => PlatformInfo.isTestingForWeb = false);
 
-      test(
-        'GIVEN server returns fewer than limit emails '
-        'WHEN getAllEmail stream completes (e.g. mailbox with 3 emails) '
-        'THEN canLoadMore SHOULD be false — no Load More button',
-      () {
+      test('GIVEN server returns fewer than limit emails '
+          'WHEN getAllEmail stream completes (e.g. mailbox with 3 emails) '
+          'THEN canLoadMore SHOULD be false — no Load More button', () {
         setupMocksForOnDone();
         final emails = makeEmails(3);
         threadController.viewState.value = Right(
@@ -783,11 +1269,9 @@ void main() {
         expect(threadController.canLoadMore, isFalse);
       });
 
-      test(
-        'GIVEN server returns exactly limit emails '
-        'WHEN getAllEmail stream completes '
-        'THEN canLoadMore SHOULD be true — more may exist',
-      () {
+      test('GIVEN server returns exactly limit emails '
+          'WHEN getAllEmail stream completes '
+          'THEN canLoadMore SHOULD be true — more may exist', () {
         setupMocksForOnDone();
         final emails = makeEmails(ThreadConstants.maxCountEmails);
         threadController.viewState.value = Right(
@@ -799,14 +1283,15 @@ void main() {
         expect(threadController.canLoadMore, isTrue);
       });
 
-      test(
-        'GIVEN server returns an empty list '
-        'WHEN getAllEmail stream completes (empty mailbox) '
-        'THEN canLoadMore SHOULD be false',
-      () {
+      test('GIVEN server returns an empty list '
+          'WHEN getAllEmail stream completes (empty mailbox) '
+          'THEN canLoadMore SHOULD be false', () {
         setupMocksForOnDone();
         threadController.viewState.value = Right(
-          GetAllEmailSuccess(emailList: makeEmails(0), currentMailboxId: mailboxId),
+          GetAllEmailSuccess(
+            emailList: makeEmails(0),
+            currentMailboxId: mailboxId,
+          ),
         );
 
         threadController.onDone();
@@ -814,15 +1299,14 @@ void main() {
         expect(threadController.canLoadMore, isFalse);
       });
 
-      test(
-        'GIVEN getAllEmail fails and auto-load is not active '
-        'WHEN the stream completes with GetAllEmailFailure '
-        'THEN canLoadMore SHOULD be false',
-      () {
+      test('GIVEN getAllEmail fails and auto-load is not active '
+          'WHEN the stream completes with GetAllEmailFailure '
+          'THEN canLoadMore SHOULD be false', () {
         setupMocksForOnDone();
         threadController.canLoadMore = true;
-        threadController.viewState.value =
-            Left(GetAllEmailFailure(Exception('boom')));
+        threadController.viewState.value = Left(
+          GetAllEmailFailure(Exception('boom')),
+        );
 
         threadController.onDone();
 
@@ -843,13 +1327,16 @@ void main() {
 
       void setupMocksForLoadMore() {
         PlatformInfo.isTestingForWeb = false;
-        when(mockMailboxDashBoardController.selectedMailbox)
-            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
+        when(
+          mockMailboxDashBoardController.selectedMailbox,
+        ).thenReturn(Rxn(PresentationMailbox(mailboxId)));
         when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
-            .thenReturn(RxList([]));
-        when(mockMailboxDashBoardController.searchController)
-            .thenReturn(mockSearchController);
+        when(
+          mockMailboxDashBoardController.emailsInCurrentMailbox,
+        ).thenReturn(RxList([]));
+        when(
+          mockMailboxDashBoardController.searchController,
+        ).thenReturn(mockSearchController);
         when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
       }
@@ -860,45 +1347,39 @@ void main() {
         'GIVEN server returns fewer than limit emails in load-more response '
         'WHEN the last page has fewer items (e.g. 5 remaining) '
         'THEN canLoadMore SHOULD be false immediately — no extra empty request needed',
-      () {
-        setupMocksForLoadMore();
-        final emails = makeEmails(5);
+        () {
+          setupMocksForLoadMore();
+          final emails = makeEmails(5);
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
-          emails,
-          serverEmailCount: emails.length,
-        ));
+          threadController.handleSuccessViewState(
+            LoadMoreEmailsSuccess(emails, serverEmailCount: emails.length),
+          );
 
-        expect(threadController.canLoadMore, isFalse);
-      });
+          expect(threadController.canLoadMore, isFalse);
+        },
+      );
 
-      test(
-        'GIVEN server returns exactly limit emails in load-more response '
-        'WHEN more pages may exist '
-        'THEN canLoadMore SHOULD be true',
-      () {
+      test('GIVEN server returns exactly limit emails in load-more response '
+          'WHEN more pages may exist '
+          'THEN canLoadMore SHOULD be true', () {
         setupMocksForLoadMore();
         final emails = makeEmails(ThreadConstants.maxCountEmails);
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
-          emails,
-          serverEmailCount: emails.length,
-        ));
+        threadController.handleSuccessViewState(
+          LoadMoreEmailsSuccess(emails, serverEmailCount: emails.length),
+        );
 
         expect(threadController.canLoadMore, isTrue);
       });
 
-      test(
-        'GIVEN server returns 0 emails in load-more response '
-        'WHEN all emails have been loaded '
-        'THEN canLoadMore SHOULD be false',
-      () {
+      test('GIVEN server returns 0 emails in load-more response '
+          'WHEN all emails have been loaded '
+          'THEN canLoadMore SHOULD be false', () {
         setupMocksForLoadMore();
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
-          [],
-          serverEmailCount: 0,
-        ));
+        threadController.handleSuccessViewState(
+          LoadMoreEmailsSuccess([], serverEmailCount: 0),
+        );
 
         expect(threadController.canLoadMore, isFalse);
       });
@@ -908,17 +1389,20 @@ void main() {
         '(arrives here as limit-1 = 19 all-new emails) '
         'WHEN more pages still exist on the server '
         'THEN canLoadMore SHOULD be true — a 19-item page must NOT be read as end-of-list',
-      () {
-        setupMocksForLoadMore();
-        final emails = makeEmails(ThreadConstants.maxCountEmails - 1);
+        () {
+          setupMocksForLoadMore();
+          final emails = makeEmails(ThreadConstants.maxCountEmails - 1);
 
-        threadController.handleSuccessViewState(LoadMoreEmailsSuccess(
-          emails,
-          serverEmailCount: ThreadConstants.maxCountEmails,
-        ));
+          threadController.handleSuccessViewState(
+            LoadMoreEmailsSuccess(
+              emails,
+              serverEmailCount: ThreadConstants.maxCountEmails,
+            ),
+          );
 
-        expect(threadController.canLoadMore, isTrue);
-      });
+          expect(threadController.canLoadMore, isTrue);
+        },
+      );
     });
 
     group('canLoadMore lifecycle & guard regression:', () {
@@ -926,25 +1410,27 @@ void main() {
         'GIVEN canLoadMore was exhausted (false) '
         'WHEN resetToOriginalValue runs (e.g. switching mailbox) '
         'THEN canLoadMore SHOULD be re-enabled so the new mailbox can paginate',
-      () {
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
-            .thenReturn(RxList([]));
-        when(mockMailboxDashBoardController.listEmailSelected)
-            .thenReturn(RxList([]));
-        when(mockMailboxDashBoardController.currentSelectMode)
-            .thenReturn(Rx(SelectMode.INACTIVE));
-        threadController.canLoadMore = false;
+        () {
+          when(
+            mockMailboxDashBoardController.emailsInCurrentMailbox,
+          ).thenReturn(RxList([]));
+          when(
+            mockMailboxDashBoardController.listEmailSelected,
+          ).thenReturn(RxList([]));
+          when(
+            mockMailboxDashBoardController.currentSelectMode,
+          ).thenReturn(Rx(SelectMode.INACTIVE));
+          threadController.canLoadMore = false;
 
-        threadController.resetToOriginalValue();
+          threadController.resetToOriginalValue();
 
-        expect(threadController.canLoadMore, isTrue);
-      });
+          expect(threadController.canLoadMore, isTrue);
+        },
+      );
 
-      test(
-        'GIVEN a load-more request failed '
-        'WHEN handleFailureViewState receives LoadMoreEmailsFailure '
-        'THEN canLoadMore SHOULD be true so the user can retry',
-      () {
+      test('GIVEN a load-more request failed '
+          'WHEN handleFailureViewState receives LoadMoreEmailsFailure '
+          'THEN canLoadMore SHOULD be true so the user can retry', () {
         threadController.canLoadMore = false;
 
         threadController.handleFailureViewState(
@@ -958,32 +1444,128 @@ void main() {
         'GIVEN canLoadMore is false and search is not active '
         'WHEN handleLoadMoreEmailsRequest is invoked '
         'THEN the load-more interactor SHOULD NOT be called — the guard blocks it',
-      () {
-        when(mockMailboxDashBoardController.searchController)
-            .thenReturn(mockSearchController);
-        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
-        threadController.canLoadMore = false;
+        () {
+          when(
+            mockMailboxDashBoardController.searchController,
+          ).thenReturn(mockSearchController);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+          threadController.canLoadMore = false;
 
-        threadController.handleLoadMoreEmailsRequest();
+          threadController.handleLoadMoreEmailsRequest();
 
-        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
-      });
+          verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        },
+      );
 
       test(
-        'GIVEN search is active '
+        'GIVEN search is active with a loaded search page '
         'WHEN handleLoadMoreEmailsRequest is invoked '
-        'THEN it routes to search-more, NOT load-more (canLoadMore is not consulted)',
-      () {
-        when(mockMailboxDashBoardController.searchController)
-            .thenReturn(mockSearchController);
-        when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-        threadController.canSearchMore = false;
-        threadController.canLoadMore = true;
+        'THEN it routes to search-more (SearchMoreEmailInteractor), '
+        'NOT mailbox load-more',
+        () async {
+          final searchPage = [
+            PresentationEmail(id: EmailId(Id('s1'))),
+            PresentationEmail(id: EmailId(Id('s2'))),
+          ];
+          when(
+            mockMailboxDashBoardController.searchController,
+          ).thenReturn(mockSearchController);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          when(
+            mockMailboxDashBoardController.sessionCurrent,
+          ).thenReturn(SessionFixtures.aliceSession);
+          when(
+            mockMailboxDashBoardController.accountId,
+          ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(
+            mockMailboxDashBoardController.emailsInCurrentMailbox,
+          ).thenReturn(RxList(searchPage));
+          when(
+            mockMailboxDashBoardController.trashSpamMailboxIds,
+          ).thenReturn(null);
+          when(
+            mockSearchEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              position: anyNamed('position'),
+              sort: anyNamed('sort'),
+              filter: anyNamed('filter'),
+              collapseThreads: anyNamed('collapseThreads'),
+              properties: anyNamed('properties'),
+              needRefreshSearchState: anyNamed('needRefreshSearchState'),
+            ),
+          ).thenAnswer(
+            (_) => Stream.value(Right(SearchEmailSuccess(searchPage))),
+          );
+          when(
+            mockSearchMoreEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              sort: anyNamed('sort'),
+              position: anyNamed('position'),
+              filter: anyNamed('filter'),
+              properties: anyNamed('properties'),
+              collapseThreads: anyNamed('collapseThreads'),
+              lastEmailId: anyNamed('lastEmailId'),
+            ),
+          ).thenAnswer(
+            (_) => const Stream<Either<Failure, Success>>.empty(),
+          );
 
-        threadController.handleLoadMoreEmailsRequest();
+          // Seed the executor with a first page so canSearchMore is true;
+          // a bare clearResult() would let a no-op pass this assertion.
+          appProviderContainer.invalidate(searchEmailProvider);
+          await appProviderContainer.read(searchEmailProvider.notifier).execute(
+                const NewSearchIntent(),
+                session: SessionFixtures.aliceSession,
+                accountId: AccountFixtures.aliceAccountId,
+                properties: EmailUtils.getPropertiesForEmailGetMethod(
+                  SessionFixtures.aliceSession,
+                  AccountFixtures.aliceAccountId,
+                ),
+                collapseThreads: false,
+                trashSpamMailboxIds: null,
+              );
+          expect(
+            appProviderContainer.read(searchEmailProvider.notifier).canLoadMore,
+            isTrue,
+          );
 
-        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
-      });
+          // Act
+          threadController.handleLoadMoreEmailsRequest();
+          await untilCalled(
+            mockSearchMoreEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              sort: anyNamed('sort'),
+              position: anyNamed('position'),
+              filter: anyNamed('filter'),
+              properties: anyNamed('properties'),
+              collapseThreads: anyNamed('collapseThreads'),
+              lastEmailId: anyNamed('lastEmailId'),
+            ),
+          );
+
+          // Assert: search-more ran exactly once; mailbox load-more never did.
+          verify(
+            mockSearchMoreEmailInteractor.execute(
+              any,
+              any,
+              limit: anyNamed('limit'),
+              sort: anyNamed('sort'),
+              position: anyNamed('position'),
+              filter: anyNamed('filter'),
+              properties: anyNamed('properties'),
+              collapseThreads: anyNamed('collapseThreads'),
+              lastEmailId: anyNamed('lastEmailId'),
+            ),
+          ).called(1);
+          verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        },
+      );
     });
 
     group('auto-load-more collapseThreads partial-page edge case test:', () {
@@ -1004,8 +1586,6 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -1022,101 +1602,122 @@ void main() {
         'WHEN getAllEmail stream completes '
         'THEN auto-load-more IS triggered to fill the viewport '
         'AND canLoadMore reflects the subsequent load-more server response',
-      (tester) async {
-        PlatformInfo.isTestingForWeb = false;
+        (tester) async {
+          PlatformInfo.isTestingForWeb = false;
 
-        final partialEmails = makeEmails(15); // fewer than maxCountEmails = 20
+          final partialEmails = makeEmails(
+            15,
+          ); // fewer than maxCountEmails = 20
 
-        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
-        when(mockMailboxDashBoardController.sessionCurrent)
-            .thenReturn(SessionFixtures.aliceSession);
-        when(mockMailboxDashBoardController.accountId)
-            .thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.selectedMailbox)
-            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
-        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
-            .thenReturn(RxList(partialEmails));
-        when(mockMailboxDashBoardController.filterMessageOption)
-            .thenReturn(Rx(FilterMessageOption.all));
-        when(mockMailboxDashBoardController.searchController)
-            .thenReturn(mockSearchController);
-        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
-        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
-        when(mockLoadMoreEmailsInMailboxInteractor.execute(any))
-            .thenAnswer((_) => Stream.value(
+          when(
+            mockMailboxDashBoardController.isEmailListDisplayed,
+          ).thenReturn(false);
+          when(
+            mockMailboxDashBoardController.sessionCurrent,
+          ).thenReturn(SessionFixtures.aliceSession);
+          when(
+            mockMailboxDashBoardController.accountId,
+          ).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(
+            mockMailboxDashBoardController.selectedMailbox,
+          ).thenReturn(Rxn(PresentationMailbox(mailboxId)));
+          when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+          when(
+            mockMailboxDashBoardController.emailsInCurrentMailbox,
+          ).thenReturn(RxList(partialEmails));
+          when(
+            mockMailboxDashBoardController.filterMessageOption,
+          ).thenReturn(Rx(FilterMessageOption.all));
+          when(
+            mockMailboxDashBoardController.searchController,
+          ).thenReturn(mockSearchController);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+          when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+          when(mockLoadMoreEmailsInMailboxInteractor.execute(any)).thenAnswer(
+            (_) => Stream.value(
               Right(LoadMoreEmailsSuccess([], serverEmailCount: 0)),
-            ));
+            ),
+          );
 
-        // Mount an empty ListView so listEmailController.hasClients = true
-        // and maxScrollExtent = 0 (content does not fill viewport).
-        await tester.pumpWidget(MaterialApp(
-          home: SizedBox(
-            height: 600,
-            child: ListView(controller: collapseController.listEmailController),
-          ),
-        ));
+          // Mount an empty ListView so listEmailController.hasClients = true
+          // and maxScrollExtent = 0 (content does not fill viewport).
+          await tester.pumpWidget(
+            MaterialApp(
+              home: SizedBox(
+                height: 600,
+                child: ListView(
+                  controller: collapseController.listEmailController,
+                ),
+              ),
+            ),
+          );
 
-        expect(
-          collapseController.listEmailController.position.maxScrollExtent,
-          0.0,
-        );
+          expect(
+            collapseController.listEmailController.position.maxScrollExtent,
+            0.0,
+          );
 
-        collapseController.viewState.value = Right(
-          GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
-        );
+          collapseController.viewState.value = Right(
+            GetAllEmailSuccess(
+              emailList: partialEmails,
+              currentMailboxId: mailboxId,
+            ),
+          );
 
-        collapseController.onDone();
-        await tester.pumpAndSettle();
+          collapseController.onDone();
+          await tester.pumpAndSettle();
 
-        // Load-more interactor MUST be called to attempt filling the viewport.
-        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+          // Load-more interactor MUST be called to attempt filling the viewport.
+          verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
 
-        // After the empty load-more response (serverEmailCount = 0 < maxCountEmails),
-        // canLoadMore is set to false by _loadMoreEmailsSuccess.
-        expect(collapseController.canLoadMore, isFalse);
-      });
+          // After the empty load-more response (serverEmailCount = 0 < maxCountEmails),
+          // canLoadMore is set to false by _loadMoreEmailsSuccess.
+          expect(collapseController.canLoadMore, isFalse);
+        },
+      );
 
       test(
         'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
         'AND canLoadMore is initially true before the call '
         'WHEN viewport is already full (_isAutoLoadMore = false) '
         'THEN canLoadMore SHOULD be false — no spurious Load More button',
-      () {
-        PlatformInfo.isTestingForWeb = false;
-        // No scroll controller client → _isAutoLoadMore = false
-        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+        () {
+          PlatformInfo.isTestingForWeb = false;
+          // No scroll controller client → _isAutoLoadMore = false
+          when(
+            mockMailboxDashBoardController.isEmailListDisplayed,
+          ).thenReturn(false);
 
-        final partialEmails = makeEmails(15);
-        threadController.canLoadMore = true;
-        threadController.viewState.value = Right(
-          GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
-        );
+          final partialEmails = makeEmails(15);
+          threadController.canLoadMore = true;
+          threadController.viewState.value = Right(
+            GetAllEmailSuccess(
+              emailList: partialEmails,
+              currentMailboxId: mailboxId,
+            ),
+          );
 
-        threadController.onDone();
+          threadController.onDone();
 
-        expect(threadController.canLoadMore, isFalse);
-        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
-      });
+          expect(threadController.canLoadMore, isFalse);
+          verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        },
+      );
     });
 
     group('shouldAutoLoadMoreByEstimatedHeight unit test:', () {
-      test(
-        'GIVEN totalHeight is 0 (empty list) '
-        'WHEN no emails are loaded '
-        'THEN SHOULD return false — nothing to trigger load from',
-      () {
+      test('GIVEN totalHeight is 0 (empty list) '
+          'WHEN no emails are loaded '
+          'THEN SHOULD return false — nothing to trigger load from', () {
         expect(
           AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(0, 816),
           isFalse,
         );
       });
 
-      test(
-        'GIVEN totalHeight is less than viewportHeight '
-        'WHEN content does not fill the viewport '
-        'THEN SHOULD return true',
-      () {
+      test('GIVEN totalHeight is less than viewportHeight '
+          'WHEN content does not fill the viewport '
+          'THEN SHOULD return true', () {
         expect(
           AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(800, 816),
           isTrue,
@@ -1127,18 +1728,17 @@ void main() {
         'GIVEN totalHeight equals viewportHeight '
         'WHEN estimated height exactly fills the viewport '
         'THEN SHOULD return false — actual rendered height likely already overflows',
-      () {
-        expect(
-          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(816, 816),
-          isFalse,
-        );
-      });
+        () {
+          expect(
+            AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(816, 816),
+            isFalse,
+          );
+        },
+      );
 
-      test(
-        'GIVEN totalHeight exceeds viewportHeight '
-        'WHEN content overflows the viewport '
-        'THEN SHOULD return false',
-      () {
+      test('GIVEN totalHeight exceeds viewportHeight '
+          'WHEN content overflows the viewport '
+          'THEN SHOULD return false', () {
         expect(
           AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(1200, 816),
           isFalse,
@@ -1149,24 +1749,57 @@ void main() {
         'GIVEN 20 emails × 40px estimate = 800px with viewport 816px '
         'WHEN actual rendered height is likely larger (e.g. 70px/email = 1400px) '
         'THEN SHOULD return true — one extra load may occur but no infinite loop',
-      () {
-        const estimatedHeight =
-            20 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
-        expect(
-          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
-          isTrue,
-        );
-      });
+        () {
+          const estimatedHeight =
+              20 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
+          expect(
+            AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(
+              estimatedHeight,
+              816,
+            ),
+            isTrue,
+          );
+        },
+      );
 
-      test(
-        'GIVEN 21 emails × 40px estimate = 840px with viewport 816px '
-        'WHEN estimated height exceeds viewport on large-screen browser '
-        'THEN SHOULD return false to prevent infinite load-more loop',
-      () {
+      test('GIVEN 21 emails × 40px estimate = 840px with viewport 816px '
+          'WHEN estimated height exceeds viewport on large-screen browser '
+          'THEN SHOULD return false to prevent infinite load-more loop', () {
         const estimatedHeight =
             21 * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
         expect(
-          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(estimatedHeight, 816),
+          AutoLoadMorePolicy.shouldAutoLoadMoreByEstimatedHeight(
+            estimatedHeight,
+            816,
+          ),
+          isFalse,
+        );
+      });
+    });
+
+    group('shouldAutoLoadMoreSearchResult (auto-load-more guard):', () {
+      SearchEmailResult resultWith(LoadMoreState loadMore) => SearchEmailResult(
+            emails: const [],
+            canLoadMore: true,
+            loadMore: loadMore,
+          );
+
+      test('GIVEN a failed load-more result THEN SHOULD NOT auto-retry '
+          '(prevents a retry loop on urgent/persistent failure)', () {
+        expect(
+          threadController.shouldAutoLoadMoreSearchResult(
+            resultWith(LoadMoreState.failure),
+          ),
+          isFalse,
+        );
+      });
+
+      test('GIVEN an in-progress load-more result THEN SHOULD NOT auto-fetch again',
+          () {
+        expect(
+          threadController.shouldAutoLoadMoreSearchResult(
+            resultWith(LoadMoreState.inProgress),
+          ),
           isFalse,
         );
       });

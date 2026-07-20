@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -19,10 +18,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -80,37 +79,45 @@ void main() {
     Get.put<SearchController>(searchController);
   });
 
-  // Reset synchronously (not invalidate) so no deferred rebuild flushes mid-test.
-  setUp(() => appProviderContainer
-      .read(searchFilterProvider.notifier)
-      .set(SearchEmailFilter.initial()));
+  // Filter/input reset synchronously; the view state is a keepAlive provider with
+  // no public reset, so invalidate it back to `initial()`.
+  setUp(() {
+    appProviderContainer
+        .read(searchFilterProvider.notifier)
+        .set(SearchEmailFilter.initial());
+    appProviderContainer.invalidate(searchViewStateProvider);
+  });
 
   SearchEmailFilter committed() => appProviderContainer.read(searchFilterProvider);
+  SearchFilterNotifier notifier() =>
+      appProviderContainer.read(searchFilterProvider.notifier);
 
   void toggle(QuickSearchFilter filter) =>
-      searchController.toggleQuickSearchFilter(filter, currentUserEmail: _me);
+      searchController.toggleQuickSearchFilter(
+        filter,
+        currentUserEmail: _me,
+        searchFilterNotifier: notifier(),
+      );
 
-  group('updateFilterEmail', () {
-    test('user intent writes the committed SSOT and the mirror syncs the obs', () {
-      searchController.updateFilterEmail(unreadOption: const Some(true));
+  group('searchFilterNotifier', () {
+    test('user intent writes the committed SSOT', () {
+      notifier().setUnread(true.asSearchFilterToggle());
 
       expect(committed().unread, isTrue);
-      expect(searchController.searchEmailFilter.value.unread, isTrue);
     });
 
-    test('cursor options stay on the obs, never in the committed SSOT', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
+    test('cursor options stay out of the committed SSOT', () {
+      notifier().set(SearchEmailFilter(position: 40));
 
       expect(committed().position, isNull);
-      expect(searchController.searchEmailFilter.value.position, 40);
     });
 
-    test('a later user-intent update must not clobber an existing cursor', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
-      searchController.updateFilterEmail(unreadOption: const Some(true));
+    test('a later user-intent update keeps cursor state out of the SSOT', () {
+      notifier().set(SearchEmailFilter(position: 40));
+      notifier().setUnread(true.asSearchFilterToggle());
 
-      expect(searchController.searchEmailFilter.value.position, 40);
-      expect(searchController.searchEmailFilter.value.unread, isTrue);
+      expect(committed().position, isNull);
+      expect(committed().unread, isTrue);
     });
   });
 
@@ -141,9 +148,8 @@ void main() {
     });
 
     test('fromMe collapses from to only the current user, dropping others', () {
-      searchController.updateFilterEmail(
-        fromOption: const Some({'other@example.com', 'friend@example.com'}),
-      );
+      notifier().setSenders(
+        {'other@example.com', 'friend@example.com'}.asSearchFilterEmailSet());
 
       toggle(QuickSearchFilter.fromMe);
       expect(committed().from, {_me});
@@ -151,20 +157,19 @@ void main() {
 
     test('fromMe replaces the current user when it is already the sole sender',
         () {
-      searchController.updateFilterEmail(fromOption: const Some({_me}));
+      notifier().setSenders({_me}.asSearchFilterEmailSet());
 
       toggle(QuickSearchFilter.fromMe);
       expect(committed().from, isEmpty);
     });
 
     test('fromMe is a no-op when the current user email is empty', () {
-      searchController.updateFilterEmail(
-        fromOption: const Some({'other@example.com'}),
-      );
+      notifier().setSenders({'other@example.com'}.asSearchFilterEmailSet());
 
       searchController.toggleQuickSearchFilter(
         QuickSearchFilter.fromMe,
         currentUserEmail: '',
+        searchFilterNotifier: notifier(),
       );
 
       expect(committed().from, {'other@example.com'});
@@ -185,10 +190,8 @@ void main() {
 
   group('clearSearchFilter', () {
     test('resets committed but keeps the current sort order', () {
-      searchController.updateFilterEmail(
-        unreadOption: const Some(true),
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-      );
+      notifier().setUnread(true.asSearchFilterToggle());
+      notifier().setSortOrder(EmailSortOrderType.oldest);
 
       searchController.clearSearchFilter();
 
@@ -196,39 +199,55 @@ void main() {
       expect(committed().sortOrderType, EmailSortOrderType.oldest);
     });
 
-    // Clearing must drop a stale cursor left on the obs mirror. The
-    // committed SSOT never tracks cursors, so a bare notifier.clear() can't null
-    // it — every clear entry point must route through here. See ADR-0093.
-    test('drops a stale position cursor left on the obs', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
-      expect(searchController.searchEmailFilter.value.position, 40);
+    test('keeps cursor-only updates out of the committed filter', () {
+      notifier().set(SearchEmailFilter(position: 40));
 
       searchController.clearSearchFilter();
 
-      expect(searchController.searchEmailFilter.value.position, isNull);
+      expect(committed().position, isNull);
     });
   });
 
   // The search bar and the advanced "has the words" field are one full-text
-  // term (SSOT.text). Editing either surface must reflect in the other.
+  // term (SSOT.text). Editing the bar debounces into the SSOT (same cadence as
+  // the suggestion search); committing the SSOT mirrors straight back.
   group('search bar <-> SSOT.text sync', () {
-    test('typing in the search bar commits the term to the SSOT', () {
+    test('typing does not commit to the SSOT immediately (debounced)', () {
       searchController.searchInputController.text = 'hello';
+
+      expect(committed().text, isNull, reason: 'commit waits for the debounce');
+
+      // Cancel the pending debounce so it cannot leak into a later test.
+      searchController.commitSearchTextNow();
+    });
+
+    test('the debounce eventually commits the typed term to the SSOT', () async {
+      searchController.searchInputController.text = 'hello';
+
+      await Future.delayed(const Duration(milliseconds: 400));
 
       expect(committed().text?.value, 'hello');
     });
 
+    test('commitSearchTextNow flushes the pending text without waiting', () {
+      searchController.searchInputController.text = 'hi';
+      searchController.commitSearchTextNow();
+
+      expect(committed().text?.value, 'hi');
+    });
+
     test('a blank search bar clears the committed term', () {
       searchController.searchInputController.text = 'hello';
+      searchController.commitSearchTextNow();
+
       searchController.searchInputController.text = '   ';
+      searchController.commitSearchTextNow();
 
       expect(committed().text, isNull);
     });
 
     test('committing the term on the SSOT mirrors into the search bar', () {
-      searchController.updateFilterEmail(
-        textOption: Some(SearchQuery('world')),
-      );
+      notifier().setText('world'.asSearchFilterTextInput());
 
       expect(searchController.searchInputController.text, 'world');
       expect(
@@ -238,17 +257,16 @@ void main() {
     });
 
     test('clearing the term on the SSOT clears the search bar', () {
-      searchController.updateFilterEmail(
-        textOption: Some(SearchQuery('world')),
-      );
+      notifier().setText('world'.asSearchFilterTextInput());
 
-      searchController.updateFilterEmail(textOption: const None());
+      notifier().setText(''.asSearchFilterTextInput());
 
       expect(searchController.searchInputController.text, isEmpty);
     });
 
     test('mirroring a committed term back does not wipe the in-progress edit', () {
       searchController.searchInputController.text = 'abc';
+      searchController.commitSearchTextNow();
 
       // The mirror sees the bar already holds the committed term and skips the
       // write-back, so the listener feedback loop never clobbers the edit.

@@ -11,7 +11,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+
+typedef FilterSnapshot = ({
+  bool unread,
+  bool hasAttachment,
+  bool starred,
+});
 
 void main() {
   late ProviderContainer container;
@@ -22,6 +29,28 @@ void main() {
   SearchFilterNotifier notifierOf() =>
       container.read(searchFilterProvider.notifier);
   SearchEmailFilter stateOf() => container.read(searchFilterProvider);
+
+  FilterSnapshot filterSnapshot({
+    bool unread = false,
+    bool hasAttachment = false,
+    bool starred = false,
+  }) => (
+    unread: unread,
+    hasAttachment: hasAttachment,
+    starred: starred,
+  );
+
+  void expectFilter(FilterSnapshot expected) {
+    expect(stateOf().unread, expected.unread ? isTrue : isFalse);
+    expect(stateOf().hasAttachment, expected.hasAttachment ? isTrue : isFalse);
+    expect(
+      stateOf().hasKeyword,
+      expected.starred
+          ? contains(KeyWordIdentifier.emailFlagged.value)
+          : isEmpty,
+    );
+    expect(stateOf().isContainFlagged, expected.starred ? isTrue : isFalse);
+  }
 
   test('build() starts at SearchEmailFilter.initial()', () {
     expect(stateOf(), SearchEmailFilter.initial());
@@ -140,6 +169,51 @@ void main() {
       expect(stateOf().mailbox, isNull);
     });
 
+    test('clear helpers reset their fields', () {
+      final mailbox = PresentationMailbox(
+        MailboxId(Id('inbox-id')),
+        name: MailboxName('Inbox'),
+      );
+
+      notifierOf().setSenders({'alice@example.com'}.asSearchFilterEmailSet());
+      notifierOf().setRecipients({'bob@example.com'}.asSearchFilterEmailSet());
+      notifierOf().setMailbox(mailbox);
+
+      notifierOf().clearSenders();
+      notifierOf().clearRecipients();
+      notifierOf().clearMailbox();
+
+      expect(stateOf().from, isEmpty);
+      expect(stateOf().to, isEmpty);
+      expect(stateOf().mailbox, isNull);
+    });
+
+    test('setReceiveTime stores receive-time bounds', () {
+      final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
+      final end = UTCDate(DateTime.parse('2026-01-07T00:00:00.000Z'));
+
+      notifierOf().setReceiveTime(
+        EmailReceiveTimeType.customRange,
+        startDate: start,
+        endDate: end,
+      );
+
+      expect(stateOf().emailReceiveTimeType, EmailReceiveTimeType.customRange);
+      expect(stateOf().startDate, start);
+      expect(stateOf().endDate, end);
+    });
+
+    test('setLabel assigns and clears the label without toggling by id', () {
+      final workLabel = Label(id: Id('work-label'), displayName: 'Work');
+
+      notifierOf().setLabel(workLabel);
+      notifierOf().setLabel(workLabel);
+      expect(stateOf().label, workLabel);
+
+      notifierOf().setLabel(null);
+      expect(stateOf().label, isNull);
+    });
+
     test('toggleLabel selects, clears, and replaces labels by id', () {
       final workLabel = Label(id: Id('work-label'), displayName: 'Work');
       final travelLabel = Label(id: Id('travel-label'), displayName: 'Travel');
@@ -181,13 +255,13 @@ void main() {
     });
   });
 
-  group('toggleStarred', () {
+  group('setStarred', () {
     final flagged = KeyWordIdentifier.emailFlagged.value;
 
     test('adds the flagged keyword when starred, keeping other keywords', () {
       notifierOf().setHasKeywords({'custom'}.asSearchFilterKeywordSet());
 
-      notifierOf().toggleStarred(true.asSearchFilterToggle());
+      notifierOf().setStarred(true.asSearchFilterToggle());
 
       expect(stateOf().hasKeyword, {'custom', flagged});
     });
@@ -195,10 +269,159 @@ void main() {
     test('removes only the flagged keyword when unstarred', () {
       notifierOf().setHasKeywords({'custom', flagged}.asSearchFilterKeywordSet());
 
-      notifierOf().toggleStarred(false.asSearchFilterToggle());
+      notifierOf().setStarred(false.asSearchFilterToggle());
 
       expect(stateOf().hasKeyword, {'custom'});
     });
+  });
+
+  group('toggleStarred', () {
+    final flagged = KeyWordIdentifier.emailFlagged.value;
+
+    test('adds the flagged keyword when it is not present', () {
+      notifierOf().setHasKeywords({'custom'}.asSearchFilterKeywordSet());
+
+      notifierOf().toggleStarred();
+
+      expect(stateOf().hasKeyword, {'custom', flagged});
+    });
+
+    test('removes the flagged keyword when it is present', () {
+      notifierOf().setHasKeywords({'custom', flagged}.asSearchFilterKeywordSet());
+
+      notifierOf().toggleStarred();
+
+      expect(stateOf().hasKeyword, {'custom'});
+    });
+  });
+
+  group('keyword helpers', () {
+    final flagged = KeyWordIdentifier.emailFlagged.value;
+
+    test('addHasKeyword and removeHasKeyword preserve other keywords', () {
+      notifierOf().setHasKeywords({'custom'}.asSearchFilterKeywordSet());
+
+      notifierOf().addHasKeyword(flagged);
+      expect(stateOf().hasKeyword, {'custom', flagged});
+
+      notifierOf().removeHasKeyword(flagged);
+      expect(stateOf().hasKeyword, {'custom'});
+    });
+  });
+
+  group('filter message option helpers', () {
+    final emptyFilter = filterSnapshot();
+    final unreadFilter = filterSnapshot(unread: true);
+    final attachmentFilter = filterSnapshot(hasAttachment: true);
+    final starredFilter = filterSnapshot(starred: true);
+    final unreadAndAttachmentFilter = filterSnapshot(
+      unread: true,
+      hasAttachment: true,
+    );
+
+    final seedCases = [
+      (
+        name: 'unread option seeds the unread search filter',
+        option: FilterMessageOption.unread,
+        expected: unreadFilter,
+      ),
+      (
+        name: 'attachments option seeds the has-attachment search filter',
+        option: FilterMessageOption.attachments,
+        expected: attachmentFilter,
+      ),
+      (
+        name: 'starred option seeds the flagged keyword search filter',
+        option: FilterMessageOption.starred,
+        expected: starredFilter,
+      ),
+      (
+        name: 'all option leaves the search filter untouched',
+        option: FilterMessageOption.all,
+        expected: emptyFilter,
+      ),
+    ];
+
+    for (final seedCase in seedCases) {
+      test(seedCase.name, () {
+        notifierOf().applyFilterMessageOption(seedCase.option);
+
+        expectFilter(seedCase.expected);
+      });
+    }
+
+    void testSyncFilterMessageOptionChange(
+      String description, {
+      FilterMessageOption? seed,
+      FilterSnapshot? beforeSync,
+      required FilterMessageOption previous,
+      required FilterMessageOption next,
+      required FilterSnapshot expected,
+    }) {
+      test(description, () {
+        if (seed != null) {
+          notifierOf().applyFilterMessageOption(seed);
+        }
+        if (beforeSync != null) {
+          expectFilter(beforeSync);
+        }
+
+        notifierOf().syncFilterMessageOptionChange(
+          previous: previous,
+          next: next,
+        );
+
+        expectFilter(expected);
+      });
+    }
+
+    testSyncFilterMessageOptionChange(
+      'selecting an option turns its toggle on',
+      previous: FilterMessageOption.all,
+      next: FilterMessageOption.unread,
+      expected: unreadFilter,
+    );
+
+    testSyncFilterMessageOptionChange(
+      'deselecting an option turns its toggle off',
+      seed: FilterMessageOption.unread,
+      beforeSync: unreadFilter,
+      previous: FilterMessageOption.unread,
+      next: FilterMessageOption.all,
+      expected: emptyFilter,
+    );
+
+    testSyncFilterMessageOptionChange(
+      'switching options clears the previous and sets the next',
+      seed: FilterMessageOption.unread,
+      previous: FilterMessageOption.unread,
+      next: FilterMessageOption.attachments,
+      expected: attachmentFilter,
+    );
+
+    testSyncFilterMessageOptionChange(
+      'preserves an unrelated active toggle',
+      seed: FilterMessageOption.attachments,
+      previous: FilterMessageOption.all,
+      next: FilterMessageOption.unread,
+      expected: unreadAndAttachmentFilter,
+    );
+
+    testSyncFilterMessageOptionChange(
+      'switching to starred sets the flagged keyword',
+      previous: FilterMessageOption.all,
+      next: FilterMessageOption.starred,
+      expected: starredFilter,
+    );
+
+    testSyncFilterMessageOptionChange(
+      'switching away from starred clears the flagged keyword',
+      seed: FilterMessageOption.starred,
+      beforeSync: starredFilter,
+      previous: FilterMessageOption.starred,
+      next: FilterMessageOption.unread,
+      expected: unreadFilter,
+    );
   });
 
   group('sender / recipient membership', () {

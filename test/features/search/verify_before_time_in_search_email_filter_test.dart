@@ -1,22 +1,14 @@
-import 'dart:math' as math;
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:model/email/presentation_email.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
@@ -30,7 +22,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
@@ -63,6 +54,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -71,10 +63,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_send
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -86,9 +75,9 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
-import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -174,20 +163,6 @@ const fallbackGenerators = {
   MockSpec<StoreEmailSortOrderInteractor>(),
   MockSpec<GetStoredEmailSortOrderInteractor>(),
 ])
-UTCDate? _extractBeforeFromFilter(Object? filter) {
-  if (filter is EmailFilterCondition) {
-    return filter.before;
-  } else if (filter is LogicFilterOperator) {
-    for (final condition in filter.conditions) {
-      final before = _extractBeforeFromFilter(condition);
-      if (before != null) {
-        return before;
-      }
-    }
-  }
-  return null;
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -410,12 +385,14 @@ void main() {
 
     Get.put<MailboxDashBoardController>(mailboxDashboardController);
 
+    // The central SearchEmailNotifier executor resolves its interactors via
+    // Get.find; register the mocks so any delegated search can run.
+    Get.put<SearchEmailInteractor>(mockSearchEmailInteractor);
+    Get.put<SearchMoreEmailInteractor>(mockSearchMoreEmailInteractor);
     threadController = ThreadController(
       mockGetEmailsInMailboxInteractor,
       mockRefreshChangesEmailsInMailboxInteractor,
       mockLoadMoreEmailsInMailboxInteractor,
-      mockSearchEmailInteractor,
-      mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
     );
@@ -428,814 +405,36 @@ void main() {
     mailboxDashboardController.onInit();
   });
 
-  List<PresentationEmail> generateEmailList({
-    required DateTime startDate,
-    required DateTime endDate,
-    required int count,
-    EmailSortOrderType? sortOrderType,
-  }) {
-    const uuid = Uuid();
-    final random = math.Random();
-
-    DateTime randomDate(DateTime start, DateTime end) {
-      final differenceInSeconds = end.difference(start).inSeconds;
-      final randomSeconds = random.nextInt(differenceInSeconds + 1);
-      return start.add(Duration(seconds: randomSeconds));
-    }
-
-    List<PresentationEmail> emails = List.generate(count, (index) {
-      final date = randomDate(startDate, endDate);
-      return PresentationEmail(
-        id: EmailId(Id(uuid.v4())),
-        subject: 'Subject $index',
-        receivedAt: UTCDate(date),
-      );
-    });
-
-    if (sortOrderType != null) {
-      switch (sortOrderType) {
-        case EmailSortOrderType.mostRecent:
-          emails.sort((a, b) => b.receivedAt!.value.compareTo(a.receivedAt!.value));
-          break;
-        case EmailSortOrderType.subjectAscending:
-          emails.sort((a, b) => a.subject!.compareTo(b.subject!));
-          break;
-        default:
-          break;
-      }
-    }
-
-    return emails;
-  }
-
-  group('SearchEmailFilter::test', () {
-    test(
-      'WHEN ThreadController searches for emails in the time range from `2025/01/10` to `2025/01/20`\n'
-      'AND SortBy is `Most recent, the result returns 20 elements.`\n'
-      'THEN perform LOAD MORE EMAILS, now the value of `before` in search filter AND `before` in JMAP request\n'
-      'SHOULD be `receivedAt` of last email',
-    () async {
-      // Arrange
-      final startDate = DateTime(2025, 1, 10);
-      final endDate = DateTime(2025, 1, 20, 23, 59, 59);
-      final emailList = generateEmailList(
-        startDate: startDate,
-        endDate: endDate,
-        count: 20,
-        sortOrderType: EmailSortOrderType.mostRecent,
-      );
-      log('verify_before_time_in_search_email_filter_test::LoadMore::EmailList = ${emailList.map((email) => email.receivedAt.toString()).toList()}');
-      final searchEmailFilter = SearchEmailFilter(
-        sortOrderType: EmailSortOrderType.mostRecent,
-        startDate: UTCDate(startDate),
-        endDate: UTCDate(endDate),
-      );
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      // Act
-      searchController.searchEmailFilter.value = searchEmailFilter;
-
-      threadController.searchEmail();
-
-      await untilCalled(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      ));
-
-      // Assert
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: false,
-      )).called(1);
-
-      expect(
-        mailboxDashboardController.emailsInCurrentMailbox,
-        isNotEmpty,
-      );
-      expect(threadController.canSearchMore, isTrue);
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      // Act
-      threadController.searchMoreEmails();
-
-      await untilCalled(mockSearchMoreEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        lastEmailId: anyNamed('lastEmailId'),
-      ));
-
-      final filterInJMapRequest = searchController
-        .searchEmailFilter
-        .value
-        .mappingToEmailFilterCondition();
-
-      // Assert
-      verify(mockSearchMoreEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        position: searchController.searchEmailFilter.value.position,
-        filter: filterInJMapRequest,
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        lastEmailId: emailList.last.id,
-      )).called(1);
-
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        equals(emailList.last.receivedAt),
-      );
-
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(emailList.last.receivedAt));
-    });
-
-    test(
-      'WHEN ThreadController searches for emails in the time range from `2025/01/10` to `2025/01/20`\n'
-      'AND SortBy is `Subject: A-Z`, the result returns 20 elements.\n'
-      'THEN perform LOAD MORE EMAILS, now the value of `before` in search filter is null AND `before` in JMAP request\n'
-      'SHOULD be `endDate`',
-    () async {
-      // Arrange
-      final startDate = DateTime(2025, 1, 10);
-      final endDate = DateTime(2025, 1, 20, 23, 59, 59);
-      final emailList = generateEmailList(
-        startDate: startDate,
-        endDate: endDate,
-        count: 20,
-        sortOrderType: EmailSortOrderType.subjectAscending
-      );
-      log('verify_before_time_in_search_email_filter_test::LoadMore::EmailList = ${emailList.map((email) => email.subject.toString()).toList()}');
-      final searchEmailFilter = SearchEmailFilter(
-        position: 0,
-        sortOrderType: EmailSortOrderType.subjectAscending,
-        startDate: UTCDate(startDate),
-        endDate: UTCDate(endDate),
-      );
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      // Act
-      searchController.searchEmailFilter.value = searchEmailFilter;
-
-      threadController.searchEmail();
-
-      await untilCalled(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      ));
-
-      // Assert
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: false,
-      )).called(1);
-
-      expect(
-        mailboxDashboardController.emailsInCurrentMailbox,
-        isNotEmpty,
-      );
-      expect(threadController.canSearchMore, isTrue);
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.position,
-        equals(0),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      // Act
-      threadController.searchMoreEmails();
-
-      await untilCalled(mockSearchMoreEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        lastEmailId: anyNamed('lastEmailId'),
-      ));
-
-      final filterInJMapRequest = searchController
-        .searchEmailFilter
-        .value
-        .mappingToEmailFilterCondition();
-
-      // Assert
-      verify(mockSearchMoreEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        position: searchController.searchEmailFilter.value.position,
-        filter: filterInJMapRequest,
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        lastEmailId: emailList.last.id,
-      )).called(1);
-
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.position,
-        equals(20),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
-    });
-
-    test(
-      'WHEN ThreadController searches for emails in the time range from `2025/01/10` to `2025/01/20`\n'
-      'AND SortBy is `Most recent`, the result returns 20 elements\n'
-      'THEN perform REFRESH EMAIL CHANGE, now the value of `before` in search filter is null AND `before` in JMAP request\n'
-      'SHOULD be `endDate`',
-    () async {
-      // Arrange
-      final startDate = DateTime(2025, 1, 10);
-      final endDate = DateTime(2025, 1, 20, 23, 59, 59);
-      final emailList = generateEmailList(
-        startDate: startDate,
-        endDate: endDate,
-        count: 20,
-        sortOrderType: EmailSortOrderType.mostRecent,
-      );
-      log('verify_before_time_in_search_email_filter_test::RefreshEmailChange::EmailList = ${emailList.map((email) => email.receivedAt.toString()).toList()}');
-      final searchEmailFilter = SearchEmailFilter(
-        sortOrderType: EmailSortOrderType.mostRecent,
-        startDate: UTCDate(startDate),
-        endDate: UTCDate(endDate),
-      );
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      // Act
-      searchController.searchEmailFilter.value = searchEmailFilter;
-
-      threadController.searchEmail();
-
-      await untilCalled(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      ));
-
-      // Assert
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: false,
-      )).called(1);
-
-      expect(
-        mailboxDashboardController.emailsInCurrentMailbox,
-        isNotEmpty,
-      );
-      expect(threadController.canSearchMore, isTrue);
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      // Act
-      mailboxDashboardController.setCurrentEmailState(State('current-state'));
-
-      when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        any,
-        any,
-        any,
-        sort: anyNamed('sort'),
-        limit: anyNamed('limit'),
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-        emailFilter: anyNamed('emailFilter'),
-        collapseThreads: anyNamed('collapseThreads'),
-      )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      await threadController.refreshChangeSearchEmail();
-
-      final filterInJMapRequest = searchController
-        .searchEmailFilter
-        .value
-        .mappingToEmailFilterCondition();
-
-      // Assert
-      verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        mailboxDashboardController.currentEmailState!,
-        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        limit: threadController.limitEmailFetched,
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: false,
-      )).called(1);
-
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: threadController.limitEmailFetched,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: true,
-      )).called(1);
-
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
-    });
-
-    test(
-      'WHEN ThreadController searches for emails in the time range from `2025/01/10` to `2025/01/20`\n'
-      'AND SortBy is `Subject: A-Z`, the result returns 20 elements.\n'
-      'THEN perform REFRESH EMAIL CHANGE, now the value of `before` in search filter is null AND `before` in JMAP request\n'
-      'SHOULD be `endDate`',
-    () async {
-      // Arrange
-      final startDate = DateTime(2025, 1, 10);
-      final endDate = DateTime(2025, 1, 20, 23, 59, 59);
-      final emailList = generateEmailList(
-        startDate: startDate,
-        endDate: endDate,
-        count: 20,
-        sortOrderType: EmailSortOrderType.subjectAscending,
-      );
-      log('verify_before_time_in_search_email_filter_test::RefreshEmailChange::EmailList = ${emailList.map((email) => email.subject.toString()).toList()}');
-      final searchEmailFilter = SearchEmailFilter(
-        position: 0,
-        sortOrderType: EmailSortOrderType.subjectAscending,
-        startDate: UTCDate(startDate),
-        endDate: UTCDate(endDate),
-      );
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      // Act
-      searchController.searchEmailFilter.value = searchEmailFilter;
-
-      threadController.searchEmail();
-
-      await untilCalled(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      ));
-
-      // Assert
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: ThreadConstants.defaultLimit,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: false
-      )).called(1);
-
-      expect(
-        mailboxDashboardController.emailsInCurrentMailbox,
-        isNotEmpty,
-      );
-      expect(threadController.canSearchMore, isTrue);
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.position,
-        equals(0),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      // Act
-      mailboxDashboardController.setCurrentEmailState(State('current-state'));
-
-      when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        any,
-        any,
-        any,
-        sort: anyNamed('sort'),
-        limit: anyNamed('limit'),
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-        emailFilter: anyNamed('emailFilter'),
-        collapseThreads: anyNamed('collapseThreads'),
-      )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      await threadController.refreshChangeSearchEmail();
-
-      final filterInJMapRequest = searchController
-        .searchEmailFilter
-        .value
-        .mappingToEmailFilterCondition();
-
-      // Assert
-      verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        mailboxDashboardController.currentEmailState!,
-        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        limit: threadController.limitEmailFetched,
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: false,
-      )).called(1);
-
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: threadController.limitEmailFetched,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: true,
-      )).called(1);
-
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.position,
-        equals(0),
-      );
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
-    });
-
-    test(
-      'WHEN ThreadController searches & load more for emails in the time range from `2025/01/10` to `2025/01/20`\n'
-      'AND SortBy is `Subject: A-Z`, the result returns 40 elements.\n'
-      'THEN perform REFRESH EMAIL CHANGE, the stale `before` cursor is cleared AND `before` in JMAP request\n'
-      'SHOULD fall back to `endDate`',
-    () async {
-      // Arrange
-      final startDate = DateTime(2025, 1, 10);
-      final endDate = DateTime(2025, 1, 20, 23, 59, 59);
-      final loadMoreDate = DateTime(2025, 1, 15);
-      final emailList = generateEmailList(
-        startDate: startDate,
-        endDate: endDate,
-        count: 40,
-        sortOrderType: EmailSortOrderType.subjectAscending,
-      );
-      log('verify_before_time_in_search_email_filter_test::RefreshEmailChange::EmailList = ${emailList.map((email) => email.subject.toString()).toList()}');
-      final searchEmailFilter = SearchEmailFilter(
-        position: 20,
-        sortOrderType: EmailSortOrderType.subjectAscending,
-        startDate: UTCDate(startDate),
-        endDate: UTCDate(endDate),
-        before: UTCDate(loadMoreDate),
-      );
-
-      // Act
-      mailboxDashboardController.updateEmailList(emailList);
-      searchController.searchEmailFilter.value = searchEmailFilter;
-
-      mailboxDashboardController.setCurrentEmailState(State('current-state'));
-
-      when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        any,
-        any,
-        any,
-        sort: anyNamed('sort'),
-        limit: anyNamed('limit'),
-        propertiesCreated: anyNamed('propertiesCreated'),
-        propertiesUpdated: anyNamed('propertiesUpdated'),
-        emailFilter: anyNamed('emailFilter'),
-        collapseThreads: anyNamed('collapseThreads'),
-      )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
-
-      when(mockSearchEmailInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
-        needRefreshSearchState: anyNamed('needRefreshSearchState'),
-      )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-      await threadController.refreshChangeSearchEmail();
-
-      final filterInJMapRequest = searchController
-        .searchEmailFilter
-        .value
-        .mappingToEmailFilterCondition();
-
-      // Assert
-      verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        mailboxDashboardController.currentEmailState!,
-        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        limit: threadController.limitEmailFetched,
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: threadController.getEmailFilterForLoadMailbox(),
-        collapseThreads: false,
-      )).called(1);
-
-      verify(mockSearchEmailInteractor.execute(
-        SessionFixtures.aliceSession,
-        AccountFixtures.aliceAccountId,
-        limit: threadController.limitEmailFetched,
-        position: searchController.searchEmailFilter.value.position,
-        sort: searchController.searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
-        collapseThreads: false,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-        needRefreshSearchState: true,
-      )).called(1);
-
-      expect(
-        searchController.searchEmailFilter.value.startDate,
-        equals(UTCDate(startDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.endDate,
-        equals(UTCDate(endDate)),
-      );
-      expect(
-        searchController.searchEmailFilter.value.position,
-        equals(0),
-      );
-      // The stale load-more `before` cursor must be cleared on a fresh refresh,
-      // even for position-based sorts, so it cannot truncate the next query.
-      expect(
-        searchController.searchEmailFilter.value.before,
-        isNull,
-      );
-
-      // With `before` cleared, the JMAP request falls back to the date-range
-      // bound `endDate` instead of the leaked `loadMoreDate`.
-      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
-    });
-  });
+  SearchEmailFilter committed() => appProviderContainer.read(searchFilterProvider);
+  SearchFilterNotifier notifier() =>
+      appProviderContainer.read(searchFilterProvider.notifier);
 
   group('SearchController::updateSortOrderFilter', () {
     setUp(() {
-      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+      appProviderContainer
+          .read(searchFilterProvider.notifier)
+          .set(SearchEmailFilter.initial());
     });
 
     test(
-      'SHOULD preserve startDate and endDate AND clear before, after and position '
+      'SHOULD preserve startDate/endDate and keep cursors out '
       'WHEN sort order changes on any filter',
     () {
       // Arrange: snapshotted date bounds set when last7Days was selected
       // (last7Days.toDateRange() snapshots both bounds, so seed endDate too)
       final snapshotStart = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
       final snapshotEnd = UTCDate(DateTime.parse('2026-01-17T00:00:00.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
-        startDateOption: Some(snapshotStart),
-        endDateOption: Some(snapshotEnd),
-      );
+      notifier().update(SearchFilterPatch()
+        ..sortOrderTypeOption = const Some(EmailSortOrderType.oldest)
+        ..emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.last7Days)
+        ..startDateOption = Some(snapshotStart)
+        ..endDateOption = Some(snapshotEnd));
 
       // Act
       searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
 
-      // Assert: date bounds are preserved; only load-more cursors are cleared
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: date bounds are preserved; cursors stay transient.
+      final filter = committed();
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.startDate, equals(snapshotStart));
       expect(filter.endDate, equals(snapshotEnd));
@@ -1251,18 +450,17 @@ void main() {
       // Arrange: user has a custom date range applied
       final start = UTCDate(DateTime.parse('2026-01-01T00:00:00.000Z'));
       final end = UTCDate(DateTime.parse('2026-03-31T23:59:59.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
-        startDateOption: Some(start),
-        endDateOption: Some(end),
-      );
+      notifier().update(SearchFilterPatch()
+        ..sortOrderTypeOption = const Some(EmailSortOrderType.oldest)
+        ..emailReceiveTimeTypeOption = const Some(EmailReceiveTimeType.customRange)
+        ..startDateOption = Some(start)
+        ..endDateOption = Some(end));
 
       // Act
       searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
 
       // Assert
-      final filter = searchController.searchEmailFilter.value;
+      final filter = committed();
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.startDate, equals(start));
       expect(filter.endDate, equals(end));
@@ -1272,22 +470,22 @@ void main() {
     });
 
     test(
-      'SHOULD clear after cursor WHEN sort order changes while after cursor is active',
+      'SHOULD keep after cursor out of the committed SSOT WHEN sort order changes',
     () {
-      // Arrange: simulate oldest sort load-more → after cursor set by ThreadController
+      // Arrange: simulate a cursor reaching the dashboard controller.
       final cursor = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-        afterOption: Some(cursor),
-      );
-      expect(searchController.searchEmailFilter.value.after, equals(cursor));
+      notifier().set(SearchEmailFilter(
+        sortOrderType: EmailSortOrderType.oldest,
+        emailReceiveTimeType: EmailReceiveTimeType.allTime,
+        after: cursor,
+      ));
+      expect(committed().after, isNull);
 
       // Act: user changes sort order
       searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
 
-      // Assert: after cursor cleared
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: after cursor is still outside the SSOT
+      final filter = committed();
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.after, isNull);
       expect(filter.before, isNull);
@@ -1295,22 +493,22 @@ void main() {
     });
 
     test(
-      'SHOULD clear before cursor WHEN sort order changes while before cursor is active',
+      'SHOULD keep before cursor out of the committed SSOT WHEN sort order changes',
     () {
-      // Arrange: simulate mostRecent sort load-more → before cursor set by ThreadController
+      // Arrange: simulate a cursor reaching the dashboard controller.
       final cursor = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-        beforeOption: Some(cursor),
-      );
-      expect(searchController.searchEmailFilter.value.before, equals(cursor));
+      notifier().set(SearchEmailFilter(
+        sortOrderType: EmailSortOrderType.mostRecent,
+        emailReceiveTimeType: EmailReceiveTimeType.allTime,
+        before: cursor,
+      ));
+      expect(committed().before, isNull);
 
       // Act: user changes sort order
       searchController.updateSortOrderFilter(EmailSortOrderType.oldest);
 
-      // Assert: before cursor cleared
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: before cursor is still outside the SSOT
+      final filter = committed();
       expect(filter.sortOrderType, equals(EmailSortOrderType.oldest));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
@@ -1318,28 +516,28 @@ void main() {
     });
   });
 
-  group('SearchController::resetCursorsForFreshSearch', () {
+  group('SearchFilterMutation.set strips pagination cursors', () {
     setUp(() {
-      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+      appProviderContainer
+          .read(searchFilterProvider.notifier)
+          .set(SearchEmailFilter.initial());
     });
 
     test(
-      'SHOULD clear before/after and the position '
+      'SHOULD keep before/after/position out of the SSOT '
       'WHEN the sort order is time-based (oldest)',
     () {
-      // Arrange: oldest sort load-more left an after cursor and a position
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        startDateOption: Some(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
+      // Arrange & Act: oldest sort load-more left an after cursor and a position;
+      // committing it through `set` must strip the cursors while keeping the bound.
+      notifier().set(SearchEmailFilter(
+        sortOrderType: EmailSortOrderType.oldest,
+        startDate: UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z')),
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
+        position: 20,
+      ));
 
-      // Act
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
-
-      // Assert: cursors cleared, date bound preserved
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: cursors stay transient; date bound is preserved.
+      final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
       expect(filter.position, isNull);
@@ -1347,47 +545,41 @@ void main() {
     });
 
     test(
-      'SHOULD clear the stale before/after cursors AND restart position at 0 '
+      'SHOULD keep stale cursors out of the SSOT '
       'WHEN the sort order is position-based (subjectAscending)',
     () {
-      // Arrange: stale time cursors (both before and after) linger from a
-      // previous time-based sort
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.subjectAscending),
-        beforeOption: Some(UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z'))),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
+      // Arrange & Act: stale time cursors (both before and after) linger from a
+      // previous time-based sort; `set` must drop them.
+      notifier().set(SearchEmailFilter(
+        sortOrderType: EmailSortOrderType.subjectAscending,
+        before: UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z')),
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
+        position: 20,
+      ));
 
-      // Act
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
-
-      // Assert: stale cursor cleared so it cannot truncate the fresh query
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: stale cursors cannot seed the fresh query.
+      final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, equals(0));
+      expect(filter.position, isNull);
     });
 
     test(
-      'SHOULD clear the stale before/after cursors AND restart position at 0 '
-      'WHEN collapsed threads are enabled on a time-based sort',
+      'SHOULD keep stale cursors out of the SSOT '
+      'WHEN a leftover after cursor and position are committed together',
     () {
-      // Arrange: oldest sort with a leftover after cursor, then collapse enabled
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
+      // Arrange & Act: oldest sort with a leftover after cursor and position.
+      notifier().set(SearchEmailFilter(
+        sortOrderType: EmailSortOrderType.oldest,
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
+        position: 20,
+      ));
 
-      // Act: collapsed threads switch pagination to position mode
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: true);
-
-      // Assert: no stale cursor leaks into the collapsed-thread query
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: no stale cursor leaks into the committed filter.
+      final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, equals(0));
+      expect(filter.position, isNull);
     });
   });
 }

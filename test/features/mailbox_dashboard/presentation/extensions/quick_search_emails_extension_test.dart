@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/state_manager.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
@@ -19,6 +18,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
@@ -41,6 +42,9 @@ void main() {
   setUp(() {
     quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
     searchController = MockSearchController();
+    appProviderContainer
+        .read(searchFilterProvider.notifier)
+        .set(SearchEmailFilter.initial());
     when(searchController.quickSearchEmailInteractor)
         .thenReturn(quickSearchEmailInteractor);
     when(
@@ -55,14 +59,17 @@ void main() {
     ).thenAnswer((_) => Future.value(Right(QuickSearchEmailSuccess([]))));
   });
 
+  void setCommittedFilter(SearchEmailFilter filter) {
+    appProviderContainer.read(searchFilterProvider.notifier).set(filter);
+  }
+
   group('quickSearchEmails', () {
     test(
       'should invoke quickSearchEmailInteractor.execute() with SearchController\'s sort '
       'when sortOrderType is null',
       () async {
         sortOrderType = null;
-        when(searchController.searchEmailFilter)
-            .thenReturn(SearchEmailFilter(sortOrderType: sortOrderType).obs);
+        setCommittedFilter(SearchEmailFilter(sortOrderType: sortOrderType));
         await searchController.quickSearchEmails(
           session: session,
           accountId: accountId,
@@ -84,8 +91,7 @@ void main() {
       'when sortOrderType is not null',
       () async {
         sortOrderType = EmailSortOrderType.oldest;
-        when(searchController.searchEmailFilter)
-            .thenReturn(SearchEmailFilter(sortOrderType: sortOrderType).obs);
+        setCommittedFilter(SearchEmailFilter(sortOrderType: sortOrderType));
         await searchController.quickSearchEmails(
           session: session,
           accountId: accountId,
@@ -107,11 +113,11 @@ void main() {
       () async {
         final start = UTCDate(DateTime.utc(2026, 1, 1));
         final end = UTCDate(DateTime.utc(2026, 1, 31));
-        when(searchController.searchEmailFilter).thenReturn(SearchEmailFilter(
+        setCommittedFilter(SearchEmailFilter(
           emailReceiveTimeType: EmailReceiveTimeType.customRange,
           startDate: start,
           endDate: end,
-        ).obs);
+        ));
 
         await searchController.quickSearchEmails(
           session: session,
@@ -138,11 +144,11 @@ void main() {
       'so previously-dropped filters (subject, mailbox, unread) are applied',
       () async {
         final mailbox = PresentationMailbox(MailboxId(Id('mailbox-1')));
-        when(searchController.searchEmailFilter).thenReturn(SearchEmailFilter(
+        setCommittedFilter(SearchEmailFilter(
           subject: 'invoice',
           mailbox: mailbox,
           unread: true,
-        ).obs);
+        ));
 
         await searchController.quickSearchEmails(
           session: session,
@@ -167,11 +173,38 @@ void main() {
     );
 
     test(
+      'should commit the debounced query to the search filter SSOT',
+      () async {
+        setCommittedFilter(SearchEmailFilter(subject: 'invoice'));
+
+        await searchController.quickSearchEmails(
+          session: session,
+          accountId: accountId,
+          query: '  test  ',
+        );
+
+        final committed = appProviderContainer.read(searchFilterProvider);
+        final captured = verify(quickSearchEmailInteractor.execute(
+          session,
+          accountId,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          filter: captureAnyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).captured.single as EmailFilterCondition;
+
+        expect(committed.text?.value, equals('test'));
+        expect(captured.text, equals('test'));
+        expect(captured.subject, equals('invoice'));
+      },
+    );
+
+    test(
       'should apply the recipient (to/cc/bcc) filter dropped by the old suggestion mapping',
       () async {
-        when(searchController.searchEmailFilter).thenReturn(SearchEmailFilter(
+        setCommittedFilter(SearchEmailFilter(
           to: {'bob@linagora.com'},
-        ).obs);
+        ));
 
         await searchController.quickSearchEmails(
           session: session,
@@ -210,8 +243,10 @@ void main() {
     test(
       'should drop the text condition when the query is blank',
       () async {
-        when(searchController.searchEmailFilter)
-            .thenReturn(SearchEmailFilter(subject: 'invoice').obs);
+        setCommittedFilter(SearchEmailFilter(subject: 'invoice'));
+        appProviderContainer
+            .read(searchFilterProvider.notifier)
+            .setText('old'.asSearchFilterTextInput());
 
         await searchController.quickSearchEmails(
           session: session,
@@ -228,6 +263,7 @@ void main() {
           properties: anyNamed('properties'),
         )).captured.single as EmailFilterCondition;
 
+        expect(appProviderContainer.read(searchFilterProvider).text, isNull);
         expect(captured.text, isNull);
         expect(captured.subject, equals('invoice'));
       },
