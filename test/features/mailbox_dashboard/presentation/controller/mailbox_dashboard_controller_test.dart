@@ -77,7 +77,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -737,6 +739,99 @@ void main() {
         EmailSortOrderType.subjectAscending,
       );
       expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
+    });
+
+    group('onDeleteSearchFilterAction:', () {
+      setUp(() => searchFilterNotifier().set(SearchEmailFilter.initial()));
+
+      test(
+        'WHEN deleting the dateTime quick filter\n'
+        'SHOULD reset receive time to allTime AND dispatch '
+        'SelectDateRangeToAdvancedSearch(allTime)',
+      () {
+        searchFilterNotifier().setReceiveTime(EmailReceiveTimeType.last30Days);
+
+        mailboxDashboardController.onDeleteSearchFilterAction(
+          searchFilterActionNotifier(),
+          QuickSearchFilter.dateTime,
+        );
+
+        expect(
+          committedFilter().emailReceiveTimeType,
+          EmailReceiveTimeType.allTime,
+        );
+        final action = mailboxDashboardController.dashBoardAction.value;
+        expect(action, isA<SelectDateRangeToAdvancedSearch>());
+        expect(
+          (action as SelectDateRangeToAdvancedSearch).receiveTime,
+          EmailReceiveTimeType.allTime,
+        );
+      });
+
+      test(
+        'WHEN deleting the sortBy quick filter\n'
+        'SHOULD reset sort order to default in both the committed filter '
+        'and currentSortOrder',
+      () {
+        searchFilterNotifier().setSortOrder(EmailSortOrderType.oldest);
+
+        mailboxDashboardController.onDeleteSearchFilterAction(
+          searchFilterActionNotifier(),
+          QuickSearchFilter.sortBy,
+        );
+
+        expect(
+          committedFilter().sortOrderType,
+          SearchEmailFilter.defaultSortOrder,
+        );
+        expect(
+          mailboxDashboardController.currentSortOrder,
+          SearchEmailFilter.defaultSortOrder,
+        );
+      });
+
+      test(
+        'WHEN deleting a mapped chip filter that is neither dateTime nor sortBy '
+        '(hasAttachment)\n'
+        'SHOULD clear that filter WITHOUT dispatching a date-range action or '
+        'changing the sort order',
+      () {
+        searchFilterActionNotifier()
+            .selectQuickSearchFilter(QuickSearchFilter.hasAttachment);
+        mailboxDashboardController.storeEmailSortOrder(EmailSortOrderType.oldest);
+        mailboxDashboardController.dashBoardAction.value = null;
+
+        mailboxDashboardController.onDeleteSearchFilterAction(
+          searchFilterActionNotifier(),
+          QuickSearchFilter.hasAttachment,
+        );
+
+        expect(committedFilter().hasAttachment, isFalse);
+        expect(mailboxDashboardController.dashBoardAction.value, isNull);
+        expect(
+          mailboxDashboardController.currentSortOrder,
+          EmailSortOrderType.oldest,
+        );
+      });
+
+      test(
+        'WHEN deleting a quick filter with no delete mapping (fromMe)\n'
+        'SHOULD be a no-op: no action dispatched and sort order unchanged',
+      () {
+        mailboxDashboardController.storeEmailSortOrder(EmailSortOrderType.oldest);
+        mailboxDashboardController.dashBoardAction.value = null;
+
+        mailboxDashboardController.onDeleteSearchFilterAction(
+          searchFilterActionNotifier(),
+          QuickSearchFilter.fromMe,
+        );
+
+        expect(mailboxDashboardController.dashBoardAction.value, isNull);
+        expect(
+          mailboxDashboardController.currentSortOrder,
+          EmailSortOrderType.oldest,
+        );
+      });
     });
 
     tearDown(() {
