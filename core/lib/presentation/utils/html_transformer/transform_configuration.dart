@@ -96,7 +96,10 @@ class TransformConfiguration {
   factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.standardConfiguration;
 
   factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.create(
-    customDomTransformers: [const ImageTransformer()]
+    customDomTransformers: [const ImageTransformer()],
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
   );
 
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([

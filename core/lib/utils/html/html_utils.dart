@@ -232,7 +232,7 @@ class HtmlUtils {
           if (!el || el.tagName !== 'DIV') return false;
           let child = el.firstElementChild;
           while (child) {
-            if (child.tagName === 'A' && child.getAttribute('contenteditable') === 'false') {
+            if (child.tagName === 'A' && child.classList.contains('tmail-file-link-card')) {
               return true;
             }
             child = child.nextElementSibling;
@@ -354,6 +354,7 @@ class HtmlUtils {
             event.preventDefault();
 
             splitRowAt(row, getSplitIndex(row, selection), selection);
+            root.dispatchEvent(new Event('input', { bubbles: true }));
           } catch (error) {
             console.error('File link row Enter handler error:', error);
           }
@@ -383,12 +384,21 @@ class HtmlUtils {
         function closestCardAnchor(node) {
           let el = node && node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
           while (el && el !== root.parentElement) {
-            if (el.tagName === 'A' && el.getAttribute('contenteditable') === 'false') {
+            if (el.tagName === 'A' && el.classList.contains('tmail-file-link-card')) {
               return el;
             }
             el = el.parentElement;
           }
           return null;
+        }
+
+        function isSafeCardHref(href) {
+          try {
+            const protocol = new URL(href, window.location.href).protocol;
+            return protocol === 'http:' || protocol === 'https:';
+          } catch (error) {
+            return false;
+          }
         }
 
         root.addEventListener('mousedown', function (event) {
@@ -407,7 +417,7 @@ class HtmlUtils {
 
           try {
             const href = anchor.getAttribute('href');
-            if (href) {
+            if (href && isSafeCardHref(href)) {
               window.open(href, '_blank', 'noopener,noreferrer');
             }
           } catch (error) {
