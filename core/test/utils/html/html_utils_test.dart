@@ -144,10 +144,10 @@ void main() {
       expect(result.script, contains("'#editor'"));
     });
 
-    test('Should identify a file-link card row only via a direct contenteditable="false" anchor child', () {
+    test('Should identify a file-link card row only via a direct tmail-file-link-card anchor child', () {
       final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
 
-      expect(result.script, contains('contenteditable') );
+      expect(result.script, contains("classList.contains('tmail-file-link-card')"));
       expect(result.script, contains('firstElementChild'));
     });
 
