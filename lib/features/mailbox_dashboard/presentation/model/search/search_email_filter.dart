@@ -231,40 +231,40 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     }
   }
 
-  /// True when the filter carries at least one active search criterion that
-  /// should mark the current results as filtered/search results.
-  bool get isApplied => from.isNotEmpty ||
+  /// Chip-style narrowing criteria shared by [isApplied] and
+  /// [hasActiveQuickFilter]. Each getter ORs its own extra terms on top, so
+  /// these overlapping terms stay in sync automatically. A unified mailbox does
+  /// not narrow results, so it is excluded.
+  bool get _hasActiveChipCriteria =>
+    from.isNotEmpty ||
     to.isNotEmpty ||
-    text?.value.trim().isNotEmpty == true ||
-    subject?.trim().isNotEmpty == true ||
-    hasKeyword.isNotEmpty ||
-    notKeyword.isNotEmpty ||
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
-    sortOrderType != SearchEmailFilter.defaultSortOrder ||
     (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
     label != null ||
     hasAttachment ||
     unread ||
     notIncludeEvents;
 
+  /// True when the filter carries at least one active search criterion that
+  /// should mark the current results as filtered/search results.
+  bool get isApplied =>
+    _hasActiveChipCriteria ||
+    text?.value.trim().isNotEmpty == true ||
+    subject?.trim().isNotEmpty == true ||
+    hasKeyword.isNotEmpty ||
+    notKeyword.isNotEmpty ||
+    sortOrderType != SearchEmailFilter.defaultSortOrder;
+
   /// True when any chip-style filter narrows the search (recipients, folder,
   /// label, date range, attachment, starred, unread, events). Drives a filter
   /// button's context-menu alignment: an applied filter makes the button wider,
   /// so its menu aligns to the button's end. Excludes text/subject/sort — not
-  /// chips here. Kept in sync with [isApplied]: a unified mailbox does not narrow
-  /// results, and attachment is a chip.
+  /// chips here.
   bool get hasActiveQuickFilter =>
-      from.isNotEmpty ||
-      to.isNotEmpty ||
+      _hasActiveChipCriteria ||
       startDate != null ||
       endDate != null ||
-      emailReceiveTimeType != EmailReceiveTimeType.allTime ||
-      (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
-      label != null ||
-      hasAttachment ||
-      isContainFlagged ||
-      unread ||
-      notIncludeEvents;
+      isContainFlagged;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 
