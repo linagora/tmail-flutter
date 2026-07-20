@@ -3481,9 +3481,9 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   void onClose() {
-    if (PlatformInfo.isWeb) {
-      _listSearchFilterScrollController?.dispose();
-    }
+    // Dispose unconditionally: the getter lazily creates it on any platform,
+    // so keep creation/disposal symmetric.
+    _listSearchFilterScrollController?.dispose();
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();
       _currentEmailIdInNotificationIOSStreamSubscription?.cancel();

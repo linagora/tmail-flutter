@@ -416,6 +416,8 @@ void main() {
   group('search/sort/filter feature:', () {
     setUp(() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+      // Reset the committed search-filter SSOT so state can't leak between tests.
+      appProviderContainer.invalidate(searchFilterProvider);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
@@ -737,7 +739,10 @@ void main() {
       expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
     });
 
-    tearDown(Get.deleteAll);
+    tearDown(() {
+      appProviderContainer.invalidate(searchFilterProvider);
+      Get.deleteAll();
+    });
   });
 
   group('spamMailboxId:test', () {

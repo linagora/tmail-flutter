@@ -118,6 +118,12 @@ extension HandleSearchEmailExecutionExtension on ThreadController {
     }
     final result = next.value;
     if (result == null) return;
+
+    // `clearResult()` also fires from mailbox reset/switch and the null-session
+    // path, emitting an empty result. Ignore it while no search is active so it
+    // can't overwrite the mailbox list with `SearchEmailSuccess([])`.
+    if (!isSearchActive && result.emails.isEmpty) return;
+
     _applySearchResult(result);
   }
 
