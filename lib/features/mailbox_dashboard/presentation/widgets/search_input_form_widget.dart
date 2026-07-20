@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/contact_quick_search_item.dart';
@@ -64,7 +65,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        debounceDuration: const Duration(milliseconds: 300),
+        debounceDuration: SearchConstants.inputDebounceDuration,
         listActionButton: const [
           QuickSearchFilter.hasAttachment,
           QuickSearchFilter.last7Days,
