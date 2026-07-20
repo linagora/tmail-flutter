@@ -25,8 +25,8 @@ extension QuickSearchEmailsExtension on SearchController {
       accountId,
       limit: UnsignedInt(5),
       sort: filter.sortOrderType.getSortOrder().toNullable(),
-      // Suggestion and result screens share the committed SSOT.
-      // The debounce callback commits text before building this filter.
+      // Suggestion and result screens share the committed SSOT: the `setText`
+      // above commits this live query so both build from the same filter.
       filter: filter.mappingToEmailFilterCondition(
         trashSpamMailboxIds: trashSpamMailboxIds,
       ),
