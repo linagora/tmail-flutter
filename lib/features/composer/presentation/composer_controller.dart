@@ -1195,7 +1195,15 @@ class ComposerController extends BaseController
     }
   }
 
-  void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
+  void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) async {
+    if (PlatformInfo.isMobile) {
+      try {
+        await htmlEditorApi?.storeSelectionRange();
+      } catch (e) {
+        log('ComposerController::openPickAttachmentMenu(): $e');
+      }
+    }
+    if (!context.mounted) return;
     clearFocus();
 
     (ContextMenuBuilder(context)
@@ -1900,7 +1908,6 @@ class ComposerController extends BaseController
   }
 
   Future<void> onInitialContentLoadCompleteWeb(String? initContent) async {
-    await restoreCollapsibleSignatureButton(initContent);
     await setupSelectedIdentity();
     _autoFocusFieldWhenLauncher();
   }

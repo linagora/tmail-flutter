@@ -347,6 +347,7 @@ abstract class ComposerBindings extends BaseBindings {
     Get.lazyPut(
       () => DriveAttachmentHandler(requireHttps: BuildUtils.isReleaseMode),
       tag: composerId,
+      fenix: true,
     );
     bindPlatformRichTextController();
     Get.lazyPut(
