@@ -82,7 +82,7 @@ void main() {
     activateTarget: () => notifier().activateSimpleSearch(),
     deactivateTarget: () => notifier().deactivateSimpleSearch(),
     targetIsActivated: () => state().activation.simpleIsActivated,
-    preservedIsActivated: () => state().advancedSearchIsActivated,
+    preservedIsActivated: () => state().activation.advancedIsActivated,
     preservedReason: 'advanced activation must be independent of simple',
   );
 
@@ -91,7 +91,7 @@ void main() {
     activatePreserved: () => notifier().activateSimpleSearch(),
     activateTarget: () => notifier().activateAdvancedSearch(),
     deactivateTarget: () => notifier().deactivateAdvancedSearch(),
-    targetIsActivated: () => state().advancedSearchIsActivated,
+    targetIsActivated: () => state().activation.advancedIsActivated,
     preservedIsActivated: () => state().activation.simpleIsActivated,
     preservedReason: 'simple activation must be independent of advanced',
   );
