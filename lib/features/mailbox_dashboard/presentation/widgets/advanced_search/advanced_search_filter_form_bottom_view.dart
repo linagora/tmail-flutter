@@ -131,7 +131,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         value: ref.watch(searchFilterProvider.select((filter) => filter.isContainFlagged)),
         onChanged: (isChecked) => ref
           .read(searchFilterProvider.notifier)
-          .toggleStarred((isChecked ?? false).asSearchFilterToggle()),
+          .setStarred((isChecked ?? false).asSearchFilterToggle()),
       ),
     );
   }
@@ -150,7 +150,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         value: ref.watch(searchFilterProvider.select((filter) => filter.unread)),
         onChanged: (isChecked) => ref
           .read(searchFilterProvider.notifier)
-          .setUnread((isChecked == true).asSearchFilterToggle()),
+          .setUnread((isChecked ?? false).asSearchFilterToggle()),
       ),
     );
   }
@@ -169,7 +169,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         value: ref.watch(searchFilterProvider.select((filter) => filter.notIncludeEvents)),
         onChanged: (isChecked) => ref
           .read(searchFilterProvider.notifier)
-          .setNotIncludeEvents((isChecked == true).asSearchFilterToggle()),
+          .setNotIncludeEvents((isChecked ?? false).asSearchFilterToggle()),
       ),
     );
   }

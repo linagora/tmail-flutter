@@ -136,7 +136,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       );
 
   Filter? mappingToEmailFilterCondition({
-    EmailFilterCondition? moreFilterCondition,
     Set<MailboxId>? trashSpamMailboxIds,
   }) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
@@ -186,8 +185,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         EmailFilterCondition(
           notKeyword: KeyWordIdentifierExtension.eventsMail.value,
         ),
-      if (moreFilterCondition != null && moreFilterCondition.hasCondition)
-        moreFilterCondition
     };
 
     if (listEmailCondition.isEmpty) {
@@ -247,8 +244,27 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
     label != null ||
     hasAttachment ||
-    unread || 
+    unread ||
     notIncludeEvents;
+
+  /// True when any chip-style filter narrows the search (recipients, folder,
+  /// label, date range, attachment, starred, unread, events). Drives a filter
+  /// button's context-menu alignment: an applied filter makes the button wider,
+  /// so its menu aligns to the button's end. Excludes text/subject/sort — not
+  /// chips here. Kept in sync with [isApplied]: a unified mailbox does not narrow
+  /// results, and attachment is a chip.
+  bool get hasActiveQuickFilter =>
+      from.isNotEmpty ||
+      to.isNotEmpty ||
+      startDate != null ||
+      endDate != null ||
+      emailReceiveTimeType != EmailReceiveTimeType.allTime ||
+      (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
+      label != null ||
+      hasAttachment ||
+      isContainFlagged ||
+      unread ||
+      notIncludeEvents;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 

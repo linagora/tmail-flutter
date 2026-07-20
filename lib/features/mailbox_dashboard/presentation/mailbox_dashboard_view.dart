@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
@@ -8,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/empty_folder_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
@@ -35,33 +37,36 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       child: Scaffold(
         drawerEnableOpenDragGesture:
             controller.responsiveUtils.hasLeftMenuDrawerActive(context),
-        body: Obx(() {
-          switch (controller.dashboardRoute.value) {
-            case DashboardRoutes.thread:
-              return buildResponsiveWithDrawer(
-                left: ThreadView(),
-                right: const EmailViewEmptyWidget(),
-                mobile: buildScaffoldHaveDrawer(body: ThreadView()),
-              );
+        body: Consumer(builder: (context, ref, _) {
+          final searchViewState = ref.watch(searchViewStateProvider);
+          return Obx(() {
+            switch (controller.dashboardRoute.value) {
+              case DashboardRoutes.thread:
+                return buildResponsiveWithDrawer(
+                  left: ThreadView(),
+                  right: const EmailViewEmptyWidget(),
+                  mobile: buildScaffoldHaveDrawer(body: ThreadView()),
+                );
 
-            case DashboardRoutes.threadDetailed:
-              return controller.searchController.isSearchEmailRunning
-                  ? const ThreadDetailView()
-                  : buildResponsiveWithDrawer(
-                      left: ThreadView(),
-                      right: const ThreadDetailView(),
-                      mobile: const ThreadDetailView(),
-                    );
+              case DashboardRoutes.threadDetailed:
+                return searchViewState.isSearchEmailRunning
+                    ? const ThreadDetailView()
+                    : buildResponsiveWithDrawer(
+                        left: ThreadView(),
+                        right: const ThreadDetailView(),
+                        mobile: const ThreadDetailView(),
+                      );
 
-            case DashboardRoutes.searchEmail:
-              return const SafeArea(child: SearchEmailView());
+              case DashboardRoutes.searchEmail:
+                return const SafeArea(child: SearchEmailView());
 
-            case DashboardRoutes.sendingQueue:
-              return buildScaffoldHaveDrawer(body: const SendingQueueView());
+              case DashboardRoutes.sendingQueue:
+                return buildScaffoldHaveDrawer(body: const SendingQueueView());
 
-            case DashboardRoutes.waiting:
-              return _loadingIndicator();
-          }
+              case DashboardRoutes.waiting:
+                return _loadingIndicator();
+            }
+          });
         }),
       ),
     );

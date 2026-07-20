@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/widget/default_field/default_date_dr
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/email_address_set_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
@@ -67,8 +68,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
     (
       field: FilterField.from,
       config: (
-        listEmailAddress: (ref) => _toEmailAddresses(ref.watch(
-          searchFilterProvider.select((filter) => filter.from))),
+        listEmailAddress: (ref) => ref.watch(
+          searchFilterProvider.select((filter) => filter.from)).toEmailAddresses(),
         expandMode: () => controller.fromAddressExpandMode.value,
         textEditingController: controller.fromEmailAddressController,
         keyTagEditor: controller.keyFromEmailTagEditor,
@@ -79,8 +80,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
     (
       field: FilterField.to,
       config: (
-        listEmailAddress: (ref) => _toEmailAddresses(ref.watch(
-          searchFilterProvider.select((filter) => filter.to))),
+        listEmailAddress: (ref) => ref.watch(
+          searchFilterProvider.select((filter) => filter.to)).toEmailAddresses(),
         expandMode: () => controller.toAddressExpandMode.value,
         textEditingController: controller.toEmailAddressController,
         keyTagEditor: controller.keyToEmailTagEditor,
@@ -268,7 +269,4 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
       )),
     );
   }
-
-  List<EmailAddress> _toEmailAddresses(Set<String> emails) =>
-      emails.map((email) => EmailAddress(null, email)).toList();
 }

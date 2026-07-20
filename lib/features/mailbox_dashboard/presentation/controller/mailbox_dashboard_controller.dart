@@ -8,6 +8,7 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -132,6 +133,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dow
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/setup_linagora_eco_system_extension.dart';
@@ -153,7 +155,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quick_search_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
@@ -167,8 +168,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/drag
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/quick_search_filter_action_notifier.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
@@ -182,7 +183,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
@@ -195,6 +195,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/notificati
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
@@ -207,7 +209,6 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -257,6 +258,8 @@ class MailboxDashBoardController extends ReloadableController
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final search.SearchController searchController = Get.find<search.SearchController>();
+  SearchFilterNotifier get _searchFilterNotifier =>
+      appProviderContainer.read(searchFilterProvider.notifier);
   final DownloadController downloadController = Get.find<DownloadController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
@@ -320,6 +323,14 @@ class MailboxDashBoardController extends ReloadableController
   final dashboardRoute = DashboardRoutes.waiting.obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
+  // Quick-filter snapshot from search entry; null means no active search session.
+  // Used to seed once and restore the mailbox filter after search closes.
+  FilterMessageOption? _filterMessageOptionBeforeSearch;
+  // Sender auto-routed from the search bar when the query was an email address.
+  // Cleared from `from` once the query becomes non-email, so a stale sender does
+  // not silently narrow a later full-text search. Null means the search bar has
+  // no derived sender.
+  String? _searchBarDerivedSender;
   final listEmailSelected = <PresentationEmail>[].obs;
   final viewStateMailboxActionProgress = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final _emptyFolderStreamController = StreamController<EmptyFolderRequest>.broadcast();
@@ -350,7 +361,9 @@ class MailboxDashBoardController extends ReloadableController
   PresentationMailbox? outboxMailbox;
   List<Identity>? _identities;
   jmap.State? _currentEmailState;
-  ScrollController? listSearchFilterScrollController;
+  ScrollController? _listSearchFilterScrollController;
+  ScrollController get listSearchFilterScrollController =>
+      _listSearchFilterScrollController ??= ScrollController();
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
   bool _isFirstSessionLoad = false;
@@ -361,6 +374,7 @@ class MailboxDashBoardController extends ReloadableController
   LinagoraEcosystem? cachedLinagoraEcosystem;
   PaywallController? paywallController;
   final workerObxVariables = <Worker>[];
+  ProviderSubscription<SearchViewState>? searchViewStateSubscription;
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -434,7 +448,6 @@ class MailboxDashBoardController extends ReloadableController
   @override
   void onReady() {
     if (PlatformInfo.isWeb) {
-      listSearchFilterScrollController = ScrollController();
       twakeAppManager.setExecutingBeforeReconnect(false);
       registerReactiveObxVariableListener();
       initialTextFormattingMenuState();
@@ -1093,15 +1106,17 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
+    applyCurrentFilterMessageOptionToSearch();
     _unSelectedMailbox();
     FocusManager.instance.primaryFocus?.unfocus();
-    storeEmailSortOrder(searchController.searchEmailFilter.value.sortOrderType);
+    storeEmailSortOrder(searchController.sortOrderFiltered);
     dispatchAction(StartSearchEmailAction());
   }
 
   void handleClearAdvancedSearchFilterEmail() {
     log('MailboxDashBoardController::handleClearAdvancedSearchFilterEmail:');
     clearFilterMessageOption();
+    _searchBarDerivedSender = null;
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
@@ -1111,26 +1126,34 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(ClearAdvancedSearchFilterEmailAction());
   }
 
-  void searchEmailByQueryString(String queryString) {
+  void searchEmailByQueryString() {
+    // Flush the live search-bar text into the SSOT, then search from the SSOT —
+    // so the query always matches what the user sees, never a stale keyword.
+    searchController.commitSearchTextNow();
+    final queryString = searchController.searchInputController.text.trim();
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
+    final isEnteringSearchSession = !searchController.isSearchEmailRunning;
     log('MailboxDashBoardController::searchEmailByQueryString():QueryString = $queryString | isMailAddress = $isMailAddress');
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
 
-    // A bare email address routes to the `from` filter; clear the live text term
-    // so the same string is not also applied as a full-text condition.
-    searchController.updateFilterEmail(
-      textOption: isMailAddress
-        ? const None()
-        : Some(SearchQuery(queryString)),
-      fromOption: isMailAddress
-        ? Some({queryString})
-        : null);
+    // A bare email address routes to the `from` filter instead of full-text; the
+    // committed text was set by the flush above, so only this case rewrites it.
+    // When the query stops being an address, drop the sender we auto-routed so it
+    // does not keep narrowing the now full-text search (address → text).
+    if (isMailAddress) {
+      _searchFilterNotifier.update(SearchFilterPatch()
+        ..textOption = const None()
+        ..fromOption = Some({queryString}));
+      _searchBarDerivedSender = queryString;
+    } else {
+      _clearSearchBarDerivedSender();
+    }
 
-    if (searchController.searchEmailFilter.value.isContainFlagged) {
-      filterMessageOption.value = FilterMessageOption.starred;
+    if (isEnteringSearchSession) {
+      applyCurrentFilterMessageOptionToSearch();
     }
 
     FocusManager.instance.primaryFocus?.unfocus();
@@ -2020,6 +2043,37 @@ class MailboxDashBoardController extends ReloadableController
 
   void clearFilterMessageOption() {
     filterMessageOption.value = FilterMessageOption.all;
+    _filterMessageOptionBeforeSearch = null;
+  }
+
+  /// Removes the sender auto-routed from the search bar (if still committed) and
+  /// forgets it. No-op when the search bar never derived a sender.
+  void _clearSearchBarDerivedSender() {
+    final derivedSender = _searchBarDerivedSender;
+    _searchBarDerivedSender = null;
+    if (derivedSender == null) return;
+    final committedSenders =
+        appProviderContainer.read(searchFilterProvider).from;
+    if (!committedSenders.contains(derivedSender)) return;
+    _searchFilterNotifier.removeSender(
+      derivedSender.asSearchFilterEmailAddress());
+  }
+
+  /// Seeds the mailbox quick-filter into the committed filter once per search.
+  /// The snapshot is restored when search exits (#4490/#4590).
+  void applyCurrentFilterMessageOptionToSearch() {
+    if (_filterMessageOptionBeforeSearch != null) return;
+    _filterMessageOptionBeforeSearch = filterMessageOption.value;
+    _searchFilterNotifier.applyFilterMessageOption(filterMessageOption.value);
+  }
+
+  /// Restores the mailbox quick-filter active before search started.
+  void restoreFilterMessageOptionAfterSearch() {
+    final previousOption = _filterMessageOptionBeforeSearch;
+    _filterMessageOptionBeforeSearch = null;
+    if (previousOption != null) {
+      filterMessageOption.value = previousOption;
+    }
   }
 
   void markAsReadMailboxAction(BuildContext context) {
@@ -2244,18 +2298,16 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void selectHasAttachmentSearchFilter() {
-    searchController.updateFilterEmail(hasAttachmentOption: const Some(true));
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  Future<void> selectFromSearchFilter({required AppLocalizations appLocalizations}) async {
+  Future<void> selectFromSearchFilter({
+    required AppLocalizations appLocalizations,
+    required QuickSearchFilterActionNotifier searchFilterActionNotifier,
+  }) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      selectedContactList: searchController.searchEmailFilter.value.from,
+      selectedContactList: searchController.listAddressOfFromFiltered,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
     );
 
@@ -2267,18 +2319,22 @@ class MailboxDashBoardController extends ReloadableController
       final listMailAddress = newListContact
         .map((emailAddress) => emailAddress.emailAddress)
         .toSet();
-      searchController.updateFilterEmail(fromOption: Some(listMailAddress));
-      dispatchAction(StartSearchEmailAction());
+      searchFilterActionNotifier.mutateAndSearch(
+        (filter) => filter.setSenders(listMailAddress.asSearchFilterEmailSet()),
+      );
     }
   }
 
-  Future<void> selectToSearchFilter({required AppLocalizations appLocalizations}) async {
+  Future<void> selectToSearchFilter({
+    required AppLocalizations appLocalizations,
+    required QuickSearchFilterActionNotifier searchFilterActionNotifier,
+  }) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      selectedContactList: searchController.searchEmailFilter.value.to,
+      selectedContactList: searchController.listAddressOfToFiltered,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
     );
 
@@ -2290,12 +2346,15 @@ class MailboxDashBoardController extends ReloadableController
       final listMailAddress = newListContact
         .map((emailAddress) => emailAddress.emailAddress)
         .toSet();
-      searchController.updateFilterEmail(toOption: Some(listMailAddress));
-      dispatchAction(StartSearchEmailAction());
+      searchFilterActionNotifier.mutateAndSearch(
+        (filter) => filter.setRecipients(listMailAddress.asSearchFilterEmailSet()),
+      );
     }
   }
 
-  Future<void> selectFolderSearchFilter() async {
+  Future<void> selectFolderSearchFilter(
+    QuickSearchFilterActionNotifier searchFilterActionNotifier,
+  ) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final mailboxIdSelected = searchController.mailboxFiltered?.id;
@@ -2316,11 +2375,16 @@ class MailboxDashBoardController extends ReloadableController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    searchController.updateFilterEmail(mailboxOption: Some(destinationMailbox));
-    dispatchAction(StartSearchEmailAction());
+    searchFilterActionNotifier.mutateAndSearch(
+      (filter) => filter.setMailbox(destinationMailbox),
+    );
   }
 
-  void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
+  void selectReceiveTimeQuickSearchFilter(
+    BuildContext context,
+    EmailReceiveTimeType receiveTime,
+    QuickSearchFilterActionNotifier searchFilterActionNotifier,
+  ) {
     log('MailboxDashBoardController::selectReceiveTimeQuickSearchFilter():receiveTime: $receiveTime');
     if (receiveTime == EmailReceiveTimeType.customRange) {
       searchController.showMultipleViewDateRangePicker(
@@ -2328,12 +2392,18 @@ class MailboxDashBoardController extends ReloadableController
         searchController.startDateFiltered,
         searchController.endDateFiltered,
         onCallbackAction: (startDate, endDate) =>
-          _applyReceiveTimeFilter(receiveTime, startDate: startDate, endDate: endDate),
+          _applyReceiveTimeFilter(
+            receiveTime,
+            searchFilterActionNotifier,
+            startDate: startDate,
+            endDate: endDate,
+          ),
       );
     } else {
       final dateRange = receiveTime.toDateRange();
       _applyReceiveTimeFilter(
         receiveTime,
+        searchFilterActionNotifier,
         startDate: dateRange.start?.value.toLocal(),
         endDate: dateRange.end?.value.toLocal(),
       );
@@ -2341,7 +2411,8 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _applyReceiveTimeFilter(
-    EmailReceiveTimeType receiveTime, {
+    EmailReceiveTimeType receiveTime,
+    QuickSearchFilterActionNotifier searchFilterActionNotifier, {
     DateTime? startDate,
     DateTime? endDate,
   }) {
@@ -2350,83 +2421,24 @@ class MailboxDashBoardController extends ReloadableController
       startDate: startDate,
       endDate: endDate,
     ));
-    searchController.updateFilterEmail(
-      emailReceiveTimeTypeOption: Some(receiveTime),
-      startDateOption: optionOf(startDate?.toUTCDate()),
-      endDateOption: optionOf(endDate?.toUTCDate()),
-      beforeOption: const None(),
-      afterOption: const None(),
-      positionOption: const None(),
+    searchFilterActionNotifier.mutateAndSearch(
+      (filter) => filter.setReceiveTime(
+        receiveTime,
+        startDate: startDate?.toUTCDate(),
+        endDate: endDate?.toUTCDate(),
+      ),
     );
-    dispatchAction(StartSearchEmailAction());
   }
 
-  void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
+  void selectSortOrderQuickSearchFilter(
+    EmailSortOrderType sortOrder,
+    QuickSearchFilterActionNotifier searchFilterActionNotifier,
+  ) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
-    searchController.updateSortOrderFilter(sortOrder);
     storeEmailSortOrder(sortOrder);
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void _deleteDateTimeSearchFilter() {
-    _applyReceiveTimeFilter(EmailReceiveTimeType.allTime);
-  }
-
-  void _deleteSortOrderSearchFilter() {
-    searchController.updateSortOrderFilter(SearchEmailFilter.defaultSortOrder);
-    storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void _deleteFromSearchFilter() {
-    searchController.updateFilterEmail(fromOption: const None());
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void _deleteToSearchFilter() {
-    searchController.updateFilterEmail(toOption: const None());
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void _deleteHasAttachmentSearchFilter() {
-    searchController.updateFilterEmail(hasAttachmentOption: const None());
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void _deleteFolderSearchFilter() {
-    searchController.updateFilterEmail(mailboxOption: const None());
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void onDeleteSearchFilterAction(QuickSearchFilter searchFilter) {
-    switch(searchFilter) {
-      case QuickSearchFilter.dateTime:
-        _deleteDateTimeSearchFilter();
-        break;
-      case QuickSearchFilter.sortBy:
-        _deleteSortOrderSearchFilter();
-        break;
-      case QuickSearchFilter.from:
-        _deleteFromSearchFilter();
-        break;
-      case QuickSearchFilter.hasAttachment:
-        _deleteHasAttachmentSearchFilter();
-        break;
-      case QuickSearchFilter.to:
-        _deleteToSearchFilter();
-        break;
-      case QuickSearchFilter.folder:
-        _deleteFolderSearchFilter();
-        break;
-      case QuickSearchFilter.starred:
-      case QuickSearchFilter.unread:
-      case QuickSearchFilter.labels:
-      case QuickSearchFilter.events:
-        deleteQuickSearchFilter(filter: searchFilter);
-        break;
-      default:
-        break;
-    }
+    searchFilterActionNotifier.mutateAndSearch(
+      (filter) => filter.setSortOrder(sortOrder),
+    );
   }
 
   bool _trashHasContent(PresentationMailbox mailbox) =>
@@ -3413,7 +3425,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   bool get isSearchFilterHasApplied {
-    return searchController.searchEmailFilter.value.isApplied ||
+    return appProviderContainer.read(searchFilterProvider).isApplied ||
       filterMessageOption.value != FilterMessageOption.all;
   }
 
@@ -3463,12 +3475,14 @@ class MailboxDashBoardController extends ReloadableController
       worker.dispose();
     }
     workerObxVariables.clear();
+    searchViewStateSubscription?.close();
+    searchViewStateSubscription = null;
   }
 
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
-      listSearchFilterScrollController?.dispose();
+      _listSearchFilterScrollController?.dispose();
     }
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();

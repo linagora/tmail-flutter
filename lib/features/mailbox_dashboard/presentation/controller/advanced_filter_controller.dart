@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/email_address_set_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -73,10 +74,10 @@ class AdvancedFilterController extends BaseController {
       appProviderContainer.read(searchFilterProvider.notifier);
 
   List<EmailAddress> get listFromEmailAddress =>
-      _toEmailAddresses(_committedFilter.from);
+      _committedFilter.from.toEmailAddresses();
 
   List<EmailAddress> get listToEmailAddress =>
-      _toEmailAddresses(_committedFilter.to);
+      _committedFilter.to.toEmailAddresses();
 
   @override
   void onInit() {
@@ -158,7 +159,7 @@ class AdvancedFilterController extends BaseController {
     } else {
       searchController.deactivateAdvancedSearch();
     }
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     _mailboxDashBoardController.handleAdvancedSearchEmail();
   }
 
@@ -511,7 +512,7 @@ class AdvancedFilterController extends BaseController {
     _clearAllTextFieldInput();
     searchController.searchInputController.clear();
     searchController.deactivateAdvancedSearch();
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     _filterNotifier.addSender(emailAddress.emailAddress.asSearchFilterEmailAddress());
     _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
   }
@@ -528,7 +529,4 @@ class AdvancedFilterController extends BaseController {
     _unregisterWorkerListener();
     super.onClose();
   }
-
-  List<EmailAddress> _toEmailAddresses(Set<String> emails) =>
-      emails.map((email) => EmailAddress(null, email)).toList();
 }

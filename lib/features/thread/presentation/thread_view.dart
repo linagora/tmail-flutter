@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -11,7 +12,6 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
-import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
@@ -28,12 +28,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/clean_and_get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -57,6 +59,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_compose_floating_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/dialogs/empty_trash_confirmation_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -289,7 +292,16 @@ class ThreadView extends GetWidget<ThreadController>
               return const SizedBox.shrink();
             }
           }),
-          _buildFloatingButtonCompose(context),
+          Obx(() {
+            return ThreadComposeFloatingButton(
+              responsiveUtils: controller.responsiveUtils,
+              scrollController: controller.listEmailController,
+              isTrashViewOpen: controller.isMailboxTrash,
+              isSelectModeActive: controller.mailboxDashBoardController.isSelectionEnabled(),
+              hasSelectedEmails: controller.listEmailSelected.isNotEmpty,
+              onTapCompose: () => controller.mailboxDashBoardController.openComposer(ComposerArguments()),
+            );
+          }),
         ],
       ),
     );
@@ -314,37 +326,6 @@ class ThreadView extends GetWidget<ThreadController>
         controller.responsiveUtils.isTabletLarge(context) ||
         controller.responsiveUtils.isLandscapeTablet(context);
     }
-  }
-
-  Widget _buildFloatingButtonCompose(BuildContext context) {
-    if (controller.responsiveUtils.isWebDesktop(context)) {
-      return const SizedBox.shrink();
-    }
-
-    return Obx(() {
-      final isAdvancedSearchViewOpen = controller.searchController.isAdvancedSearchViewOpen.value;
-      final isTrashViewOpen = controller.isMailboxTrash;
-      final isSelectModeActive = controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.ACTIVE;
-      if (
-        !controller.searchController.isSearchActive()
-        && !isAdvancedSearchViewOpen
-        && !isTrashViewOpen
-        && !isSelectModeActive
-      ) {
-        return Container(
-          padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
-            ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
-            : EdgeInsets.zero,
-          child: ComposeFloatingButton(
-            key: const ValueKey(UiKeys.composeEmailButton),
-            scrollController: controller.listEmailController,
-            onTap: () => controller.mailboxDashBoardController.openComposer(ComposerArguments())
-          ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
@@ -503,108 +484,116 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildEmailItemWhenDragging(BuildContext context, PresentationEmail presentationEmail) {
     final dashboardController = controller.mailboxDashBoardController;
 
-    return Obx(() {
-      final selectAllMode = dashboardController.currentSelectMode.value;
+    return Consumer(builder: (context, ref, _) {
+      final searchViewState = ref.watch(searchViewStateProvider);
+      final searchFilter = ref.watch(searchFilterProvider);
+      return Obx(() {
+        final selectAllMode = dashboardController.currentSelectMode.value;
 
-      final isSenderImportantFlagEnabled =
-          dashboardController.isSenderImportantFlagEnabled.value;
+        final isSenderImportantFlagEnabled =
+            dashboardController.isSenderImportantFlagEnabled.value;
 
-      final isShowingEmailContent =
-          dashboardController.selectedEmail.value?.id == presentationEmail.id;
+        final isShowingEmailContent =
+            dashboardController.selectedEmail.value?.id == presentationEmail.id;
 
-      final isSearchEmailRunning =
-          controller.searchController.isSearchEmailRunning;
+        final isSearchEmailRunning =
+            searchViewState.isSearchEmailRunning;
 
-      final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
+        final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
-      final isLabelMailboxOpened =
-          dashboardController.selectedMailbox.value?.isLabelMailbox == true;
+        final isLabelMailboxOpened =
+            dashboardController.selectedMailbox.value?.isLabelMailbox == true;
 
-      return EmailTileBuilder(
-        key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-        presentationEmail: presentationEmail,
-        selectAllMode: selectAllMode,
-        isShowingEmailContent: isShowingEmailContent,
-        searchQuery: controller.searchQuery,
-        mailboxContain: presentationEmail.mailboxContain,
-        isSearchEmailRunning: isSearchEmailRunning,
-        isLabelMailboxOpened: isLabelMailboxOpened,
-        isDrag: true,
-        isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-        isAINeedsActionEnabled: isAINeedsActionEnabled,
-      );
+        return EmailTileBuilder(
+          key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+          presentationEmail: presentationEmail,
+          selectAllMode: selectAllMode,
+          isShowingEmailContent: isShowingEmailContent,
+          searchQuery: searchFilter.text,
+          mailboxContain: presentationEmail.mailboxContain,
+          isSearchEmailRunning: isSearchEmailRunning,
+          isLabelMailboxOpened: isLabelMailboxOpened,
+          isDrag: true,
+          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+          isAINeedsActionEnabled: isAINeedsActionEnabled,
+        );
+      });
     });
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
     final dashboardController = controller.mailboxDashBoardController;
 
-    return Obx(() {
-      final selectModeAll = dashboardController.currentSelectMode.value;
+    return Consumer(builder: (context, ref, _) {
+      final searchViewState = ref.watch(searchViewStateProvider);
+      final searchFilter = ref.watch(searchFilterProvider);
+      return Obx(() {
+        final selectModeAll = dashboardController.currentSelectMode.value;
 
-      final isSenderImportantFlagEnabled =
-          dashboardController.isSenderImportantFlagEnabled.value;
+        final isSenderImportantFlagEnabled =
+            dashboardController.isSenderImportantFlagEnabled.value;
 
-      final isShowingEmailContent =
-          dashboardController.selectedEmail.value?.id == presentationEmail.id;
+        final isShowingEmailContent =
+            dashboardController.selectedEmail.value?.id == presentationEmail.id;
 
-      final isSearchEmailRunning =
-          controller.searchController.isSearchEmailRunning;
+        final isSearchEmailRunning =
+            searchViewState.isSearchEmailRunning;
 
-      final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
+        final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
-      final isLabelAvailable = controller
-          .mailboxDashBoardController.isLabelAvailable;
+        final isLabelAvailable = controller
+            .mailboxDashBoardController.isLabelAvailable;
 
-      final listLabels =
-          controller.mailboxDashBoardController.labelController.labels;
+        final listLabels =
+            controller.mailboxDashBoardController.labelController.labels;
 
-      final isLabelMailboxOpened =
-          controller.selectedMailbox?.isLabelMailbox == true;
+        final isLabelMailboxOpened =
+            controller.selectedMailbox?.isLabelMailbox == true;
 
-      List<Label>? emailLabels;
+        List<Label>? emailLabels;
 
-      if (isLabelAvailable) {
-        emailLabels = presentationEmail.getLabelList(listLabels);
-      }
+        if (isLabelAvailable) {
+          emailLabels = presentationEmail.getLabelList(listLabels);
+        }
 
-      return Dismissible(
-        key: ValueKey<EmailId?>(presentationEmail.id),
-        direction: controller.getSwipeDirection(
-            controller.responsiveUtils.isWebDesktop(context),
-            selectModeAll,
-            presentationEmail
-        ),
-        background: _buildEmailSwipeBackground(context, presentationEmail),
-        secondaryBackground: controller.isInArchiveMailbox(presentationEmail)
-            ? null
-            : _buildEmailSwipeSecondaryBackground(context),
-        confirmDismiss: (direction) => controller.swipeEmailAction(
-          presentationEmail,
-          direction,
-        ),
-        child: EmailTileBuilder(
-          key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-          presentationEmail: presentationEmail,
-          selectAllMode: selectModeAll,
-          isShowingEmailContent: isShowingEmailContent,
-          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-          searchQuery: controller.searchQuery,
-          mailboxContain: presentationEmail.mailboxContain,
-          isSearchEmailRunning: isSearchEmailRunning,
-          isAINeedsActionEnabled: isAINeedsActionEnabled,
-          isLabelMailboxOpened: isLabelMailboxOpened,
-          labels: emailLabels,
-          emailActionClick: _handleEmailActionClicked,
-          onMoreActionClick: (email, position) => _openMoreActionForEmail(
-            context: context,
-            email: email,
-            position: position,
-            isLabelAvailable: isLabelAvailable,
-            listLabels: listLabels,
+        return Dismissible(
+          key: ValueKey<EmailId?>(presentationEmail.id),
+          direction: controller.getSwipeDirection(
+              controller.responsiveUtils.isWebDesktop(context),
+              selectModeAll,
+              presentationEmail
           ),
-        ),
-      );
+          background: _buildEmailSwipeBackground(context, presentationEmail),
+          secondaryBackground: controller.isInArchiveMailbox(presentationEmail)
+              ? null
+              : _buildEmailSwipeSecondaryBackground(context),
+          confirmDismiss: (direction) => controller.swipeEmailAction(
+            presentationEmail,
+            direction,
+          ),
+          child: EmailTileBuilder(
+            key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+            presentationEmail: presentationEmail,
+            selectAllMode: selectModeAll,
+            isShowingEmailContent: isShowingEmailContent,
+            isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+            searchQuery: searchFilter.text,
+            mailboxContain: presentationEmail.mailboxContain,
+            isSearchEmailRunning: isSearchEmailRunning,
+            isAINeedsActionEnabled: isAINeedsActionEnabled,
+            isLabelMailboxOpened: isLabelMailboxOpened,
+            labels: emailLabels,
+            emailActionClick: _handleEmailActionClicked,
+            onMoreActionClick: (email, position) => _openMoreActionForEmail(
+              context: context,
+              email: email,
+              position: position,
+              isLabelAvailable: isLabelAvailable,
+              listLabels: listLabels,
+            ),
+          ),
+        );
+      });
     });
   }
 

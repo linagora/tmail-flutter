@@ -908,6 +908,9 @@ class SearchEmailController extends BaseController
     clearAllTextInputSearchForm();
     clearAllResultSearch();
     mailboxDashBoardController.searchController.disableAllSearchEmail();
+    // Bring back the mailbox quick-filter that was active before search so the
+    // reloaded mailbox shows the same (still-applied) filter (#4490).
+    mailboxDashBoardController.restoreFilterMessageOptionAfterSearch();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     if (PlatformInfo.isWeb) {
       final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
@@ -1139,7 +1142,7 @@ class SearchEmailController extends BaseController
   }
 
   void _clearStarredSearchFilter(SearchFilterNotifier notifier) {
-    notifier.toggleStarred(SearchFilterToggle.unselected);
+    notifier.setStarred(SearchFilterToggle.unselected);
   }
 
   void _clearUnreadSearchFilter(SearchFilterNotifier notifier) {

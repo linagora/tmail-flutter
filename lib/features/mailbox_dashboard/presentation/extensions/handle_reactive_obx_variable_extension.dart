@@ -1,22 +1,28 @@
 
 import 'package:core/utils/app_logger.dart';
-import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
 
   void registerReactiveObxVariableListener() {
-    workerObxVariables.add(ever(
-      searchController.isAdvancedSearchViewOpen,
-      _onAdvancedSearchVisibleChanged
-    ));
-
-    workerObxVariables.add(ever(
-      searchController.isSearchInputFocused,
-      onSearchInputFocusChanged
-    ));
+    searchViewStateSubscription ??=
+        appProviderContainer.listen<SearchViewState>(
+      searchViewStateProvider,
+      (previous, next) {
+        if (previous?.isAdvancedSearchViewOpen !=
+            next.isAdvancedSearchViewOpen) {
+          _onAdvancedSearchVisibleChanged(next.isAdvancedSearchViewOpen);
+        }
+        if (previous?.isSearchInputFocused != next.isSearchInputFocused) {
+          onSearchInputFocusChanged(next.isSearchInputFocused);
+        }
+      },
+    );
   }
 
   void _onAdvancedSearchVisibleChanged(bool visible) {

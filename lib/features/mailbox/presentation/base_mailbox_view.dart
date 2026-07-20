@@ -259,7 +259,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         controller.mailboxDashBoardController.searchController;
 
     return searchController.isSearchEmailRunning &&
-        searchController.searchEmailFilter.value.isOnlyStarredApplied;
+        searchController.isOnlyStarredApplied;
   }
 
   bool isFolderHighlighted(MailboxNode mailboxNode) =>

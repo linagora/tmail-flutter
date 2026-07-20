@@ -2,6 +2,7 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
@@ -12,7 +13,39 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
+/// Inputs for per-row mailbox, selection, and web-route sync.
+class PresentationEmailSyncContext {
+  const PresentationEmailSyncContext({
+    required this.mapMailboxById,
+    this.selectedMailbox,
+    this.searchQuery,
+    this.isSearchEmailRunning = false,
+  });
+
+  final Map<MailboxId, PresentationMailbox> mapMailboxById;
+  final PresentationMailbox? selectedMailbox;
+  final SearchQuery? searchQuery;
+  final bool isSearchEmailRunning;
+}
+
 extension ListPresentationEmailExtensions on List<PresentationEmail> {
+
+  /// Converts the executor's full search result into display-ready rows.
+  /// Keeps current selection by combining with [previousList].
+  List<PresentationEmail> toSyncedSearchResults({
+    required PresentationEmailSyncContext context,
+    required List<PresentationEmail> previousList,
+  }) {
+    return map((email) => email.toSearchPresentationEmail(context.mapMailboxById))
+        .toList()
+        .combine(previousList)
+        .syncPresentationEmail(
+          mapMailboxById: context.mapMailboxById,
+          selectedMailbox: context.selectedMailbox,
+          searchQuery: context.searchQuery,
+          isSearchEmailRunning: context.isSearchEmailRunning,
+        );
+  }
 
   List<PresentationEmail> syncPresentationEmail({
     required Map<MailboxId, PresentationMailbox> mapMailboxById,

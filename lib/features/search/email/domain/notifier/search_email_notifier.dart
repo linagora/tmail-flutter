@@ -48,8 +48,23 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   SearchEmailResult get _currentResult =>
       state.value ?? SearchEmailResult.empty();
 
+  /// False while a page is already loading, so repeated scroll/button events
+  /// can't start duplicate backend requests.
+  bool get canLoadMore {
+    final result = state.value;
+    return result?.canLoadMore == true &&
+        result?.loadMore != LoadMoreState.inProgress;
+  }
+
   @override
   AsyncValue<SearchEmailResult> build() => AsyncData(SearchEmailResult.empty());
+
+  /// Advances the request token so any in-flight search that completes after this
+  /// can't restore results for a previous mailbox/filter.
+  void clearResult() {
+    _latestRequestId++;
+    state = AsyncData(SearchEmailResult.empty());
+  }
 
   /// Runs [intent] and updates [state]; never mutates the committed SSOT.
   Future<void> execute(
@@ -104,10 +119,9 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     );
   }
 
-  /// Load-more: mark the page in progress, then append it. On failure the loaded
-  /// page stays and [LoadMoreState.failure] lets the UI offer a retry. Concurrency
-  /// (e.g. a socket-driven refresh arriving mid-load) is handled by [_latestRequestId]
-  /// in [_runGuarded], which drops a superseded page — not by [LoadMoreState].
+  /// Load-more: mark in progress, then append the page. On failure the loaded page
+  /// stays and [LoadMoreState.failure] offers a retry. Superseded pages are dropped
+  /// by [_latestRequestId] in [_runGuarded], not by [LoadMoreState].
   Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.inProgress,
@@ -169,8 +183,8 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
       onPageLoaded: (page) => state = AsyncData(
         SearchEmailResult(emails: page, canLoadMore: page.isNotEmpty),
       ),
-      // Nothing visible changes on failure — keep the list. The consume seam
-      // routes urgent ones at the failure point (ADR-0103), so repeats all route.
+      // Keep the current list on failure; the consume seam routes urgent
+      // failures at the failure point (ADR-0103).
       onFailure: (_, __) {},
     );
   }

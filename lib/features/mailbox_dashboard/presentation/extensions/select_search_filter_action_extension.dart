@@ -1,68 +1,26 @@
-import 'package:dartz/dartz.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
-import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/quick_search_filter_action_notifier.dart';
 
 extension SelectSearchFilterActionExtension on MailboxDashBoardController {
-  void selectKeywordSearchFilter(KeyWordIdentifier keyword) {
-    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.add(keyword.value);
-    searchController.updateFilterEmail(
-      hasKeywordOption: Some(listHasKeywordFiltered),
-    );
-    dispatchAction(StartSearchEmailAction());
-  }
+  void onDeleteSearchFilterAction(
+    QuickSearchFilterActionNotifier searchFilterActionNotifier,
+    QuickSearchFilter searchFilter,
+  ) {
+    final applied =
+        searchFilterActionNotifier.deleteQuickSearchFilter(searchFilter);
+    if (!applied) return;
 
-  void selectUnreadSearchFilter() {
-    searchController.updateFilterEmail(unreadOption: const Some(true));
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void selectNotIncludeEventsSearchFilter() {
-    searchController.updateFilterEmail(notIncludeEventsOption: const Some(true));
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void deleteStarredSearchFilter() {
-    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
-    searchController.updateFilterEmail(
-      hasKeywordOption: Some(listHasKeywordFiltered),
-    );
-  }
-
-  void deleteUnreadSearchFilter() {
-    searchController.updateFilterEmail(unreadOption: const None());
-  }
-
-  void deleteNotIncludeEventsSearchFilter() {
-    searchController.updateFilterEmail(notIncludeEventsOption: const None());
-  }
-
-  void deleteQuickSearchFilter({required QuickSearchFilter filter}) {
-    switch (filter) {
-      case QuickSearchFilter.labels:
-        searchController.updateFilterEmail(labelOption: const None());
-        break;
-      case QuickSearchFilter.starred:
-        deleteStarredSearchFilter();
-        break;
-      case QuickSearchFilter.unread:
-        deleteUnreadSearchFilter();
-        break;
-      case QuickSearchFilter.events:
-        deleteNotIncludeEventsSearchFilter();
-        break;
-      default:
-        break;
+    if (searchFilter == QuickSearchFilter.dateTime) {
+      dispatchAction(SelectDateRangeToAdvancedSearch(
+        receiveTime: EmailReceiveTimeType.allTime,
+      ));
+    } else if (searchFilter == QuickSearchFilter.sortBy) {
+      storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     }
-    dispatchAction(StartSearchEmailAction());
-  }
-
-  void onSelectLabelFilter(Label? newLabel) {
-    searchController.updateFilterEmail(labelOption: optionOf(newLabel));
-    dispatchAction(StartSearchEmailAction());
   }
 }

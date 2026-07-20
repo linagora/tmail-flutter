@@ -1,14 +1,10 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -22,10 +18,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
@@ -36,25 +34,32 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   final searchInputController = TextEditingController();
 
-  /// Read-only mirror of the committed SSOT ([searchFilterProvider]) for existing
-  /// `Obx` widgets. Cursors (position/before/after) are still written here locally
-  /// by [updateFilterEmail] until the executor owns them (ticket 5).
-  final searchEmailFilter = SearchEmailFilter.initial().obs;
-  final searchState = SearchState.initial().obs;
-  final isAdvancedSearchViewOpen = false.obs;
-  final simpleSearchIsActivated = RxBool(false);
-  final advancedSearchIsActivated = RxBool(false);
-  final isSearchInputFocused = RxBool(false);
+  SearchEmailFilter get _committedFilter =>
+      appProviderContainer.read(searchFilterProvider);
 
-  SearchQuery? get searchQuery => searchEmailFilter.value.text;
+  SearchFilterNotifier get _searchFilterNotifier =>
+      appProviderContainer.read(searchFilterProvider.notifier);
+
+  SearchViewState get _searchViewState =>
+      appProviderContainer.read(searchViewStateProvider);
+
+  SearchViewStateNotifier get _searchViewStateNotifier =>
+      appProviderContainer.read(searchViewStateProvider.notifier);
+
+  SearchQuery? get searchQuery => _committedFilter.text;
 
   FocusNode searchFocus = FocusNode();
   FocusNode? keyboardFocusNode;
-  String currentSearchText = '';
   ProviderSubscription<SearchEmailFilter>? _committedFilterSubscription;
 
-  /// Guards the search-bar ↔ SSOT.text round-trip so mirroring the committed
-  /// term back into [searchInputController] never re-enters as a fresh edit.
+  /// Debounces committing the search-bar text into the committed SSOT on the
+  /// shared [SearchConstants.inputDebounceDuration] (same cadence as suggestions).
+  /// Flushed synchronously by [commitSearchTextNow].
+  Timer? _commitSearchTextDebounce;
+
+  /// Local re-entrancy guard for the search-bar ↔ SSOT.text round-trip. Kept as a
+  /// plain field (not shared state) since no widget observes it — only
+  /// [_syncSearchInputFromFilter] reads/writes it, synchronously.
   bool _isSyncingSearchInputFromFilter = false;
 
   SearchController(
@@ -68,40 +73,38 @@ class SearchController extends BaseController with DateRangePickerMixin {
     super.onInit();
     searchFocus.addListener(_onSearchFocusChanged);
     onKeyboardShortcutInit();
-    // Mirror committed SSOT → obs so existing Obx widgets keep reading it.
-    // The SSOT never tracks cursors (before/after/position), so re-layer the
-    // obs's local cursors onto every synced value; otherwise an unrelated
-    // user-intent update would silently wipe active pagination (until the
-    // executor owns cursors — ticket 5).
     _committedFilterSubscription = appProviderContainer.listen<SearchEmailFilter>(
       searchFilterProvider,
-      (_, next) {
-        searchEmailFilter.value = next.copyWith(
-          beforeOption: optionOf(searchEmailFilter.value.before),
-          afterOption: optionOf(searchEmailFilter.value.after),
-          positionOption: optionOf(searchEmailFilter.value.position),
-        );
-        // The search bar and the advanced "has the words" field are the same
-        // full-text term (SSOT.text); keep the bar in lockstep with it.
-        _syncSearchInputFromFilter(next.text);
-      },
+      (_, next) => _syncSearchInputFromFilter(next.text),
       fireImmediately: true,
     );
     searchInputController.addListener(_onSearchInputChanged);
   }
 
-  /// Push search-bar edits into the committed SSOT so the advanced "has the
-  /// words" field (and result chips) always reflect the same full-text term.
+  /// Debounces search-bar edits into the committed filter text (SSOT), so the
+  /// input feeds the SSOT on the same cadence as the suggestion search.
   void _onSearchInputChanged() {
     if (_isSyncingSearchInputFromFilter) return;
-    final value = searchInputController.text.trim();
-    updateFilterEmail(
-      textOption: option(value.isNotEmpty, SearchQuery(value)),
+    _commitSearchTextDebounce?.cancel();
+    _commitSearchTextDebounce =
+        Timer(SearchConstants.inputDebounceDuration, _commitSearchText);
+  }
+
+  void _commitSearchText() {
+    _searchFilterNotifier.setText(
+      searchInputController.text.asSearchFilterTextInput(),
     );
   }
 
-  /// Mirror the committed full-text term back onto the search bar. Compares on
-  /// trimmed text so a trailing space being typed is not wiped mid-edit.
+  /// Flushes the pending debounced search-bar text into the SSOT immediately, so
+  /// the suggestion fetch and submit query read an up-to-date SSOT instead of
+  /// waiting out the debounce.
+  void commitSearchTextNow() {
+    _commitSearchTextDebounce?.cancel();
+    _commitSearchText();
+  }
+
+  /// Mirrors committed filter text back onto the search bar.
   void _syncSearchInputFromFilter(SearchQuery? text) {
     final nextText = text?.value ?? '';
     if (searchInputController.text.trim() == nextText.trim()) return;
@@ -115,7 +118,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void _onSearchFocusChanged() {
     log('SearchController::_onSearchFocusChanged: ${searchFocus.hasFocus}');
-    isSearchInputFocused.value = searchFocus.hasFocus;
+    _searchViewStateNotifier.setSearchInputFocused(searchFocus.hasFocus);
     if (searchFocus.hasFocus) {
       refocusKeyboardShortcutFocus();
     } else {
@@ -124,197 +127,86 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void openAdvanceSearch() {
-    isAdvancedSearchViewOpen.value = true;
+    _searchViewStateNotifier.openAdvancedSearch();
   }
 
   void closeAdvanceSearch() {
-    isAdvancedSearchViewOpen.value = false;
+    _searchViewStateNotifier.closeAdvancedSearch();
   }
 
   void clearSearchFilter({EmailSortOrderType? sortOrderType}) {
     final restoredSortOrder =
-        sortOrderType ?? searchEmailFilter.value.sortOrderType;
+        sortOrderType ?? _committedFilter.sortOrderType;
     final clearedFilter = SearchEmailFilter.withSortOrder(restoredSortOrder);
-    searchEmailFilter.value = clearedFilter;
 
-    appProviderContainer
-        .read(searchFilterProvider.notifier)
-        .set(clearedFilter);
+    _searchFilterNotifier.set(clearedFilter);
   }
 
-  void updateFilterEmail({
-    Option<Set<String>>? fromOption,
-    Option<Set<String>>? toOption,
-    Option<SearchQuery>? textOption,
-    Option<String>? subjectOption,
-    Option<Set<String>>? notKeywordOption,
-    Option<Set<String>>? hasKeywordOption,
-    Option<PresentationMailbox>? mailboxOption,
-    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
-    Option<bool>? hasAttachmentOption,
-    Option<bool>? unreadOption,
-    Option<bool>? notIncludeEventsOption,
-    Option<UTCDate>? beforeOption,
-    Option<UTCDate>? afterOption,
-    Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption,
-    Option<int>? positionOption,
-    Option<EmailSortOrderType>? sortOrderTypeOption,
-    Option<Label>? labelOption,
-  }) {
-    // User intent → committed SSOT; the mirror syncs it back into the obs.
-    final userIntentOptions = [
-      fromOption, toOption, textOption, subjectOption, notKeywordOption,
-      hasKeywordOption, mailboxOption, emailReceiveTimeTypeOption,
-      hasAttachmentOption, unreadOption, notIncludeEventsOption,
-      startDateOption, endDateOption, sortOrderTypeOption, labelOption,
-    ];
-    if (userIntentOptions.any((option) => option != null)) {
-      appProviderContainer.read(searchFilterProvider.notifier).update(
-            SearchFilterPatch()
-              ..fromOption = fromOption
-              ..toOption = toOption
-              ..textOption = textOption
-              ..subjectOption = subjectOption
-              ..notKeywordOption = notKeywordOption
-              ..hasKeywordOption = hasKeywordOption
-              ..mailboxOption = mailboxOption
-              ..emailReceiveTimeTypeOption = emailReceiveTimeTypeOption
-              ..hasAttachmentOption = hasAttachmentOption
-              ..unreadOption = unreadOption
-              ..notIncludeEventsOption = notIncludeEventsOption
-              ..startDateOption = startDateOption
-              ..endDateOption = endDateOption
-              ..sortOrderTypeOption = sortOrderTypeOption
-              ..labelOption = labelOption);
-    }
-    // Cursors aren't user intent — layered onto the obs only, until the executor
-    // owns them (ticket 5).
-    if (beforeOption != null || afterOption != null || positionOption != null) {
-      searchEmailFilter.value = searchEmailFilter.value.copyWith(
-        beforeOption: beforeOption,
-        afterOption: afterOption,
-        positionOption: positionOption,
-      );
-      searchEmailFilter.refresh();
-    }
-  }
-
-  EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
+  EmailReceiveTimeType get receiveTimeFiltered => _committedFilter.emailReceiveTimeType;
 
   void updateSortOrderFilter(EmailSortOrderType sortOrder) {
-    updateFilterEmail(
-      sortOrderTypeOption: Some(sortOrder),
-      beforeOption: const None(),
-      afterOption: const None(),
-      positionOption: const None(),
-    );
+    _searchFilterNotifier.setSortOrder(sortOrder);
   }
 
-  /// Resets load-more cursors before a fresh search so stale pagination state
-  /// never leaks into the next query.
-  ///
-  /// The `before`/`after` time cursors are always cleared (the date-range bounds
-  /// in `startDate`/`endDate` are preserved). Position-based pagination
-  /// (relevance sort or collapsed threads) restarts from offset 0; otherwise the
-  /// position is cleared too.
-  void resetCursorsForFreshSearch({required bool isCollapseThreadsEnabled}) {
-    final usesPositionPagination =
-        searchEmailFilter.value.sortOrderType.isScrollByPosition() ||
-            isCollapseThreadsEnabled;
-    updateFilterEmail(
-      beforeOption: const None(),
-      afterOption: const None(),
-      positionOption: option(usesPositionPagination, 0),
-    );
-  }
-
-  /// Toggles a suggestion-bar chip straight on the committed SSOT (no staging), so
-  /// the selection takes effect immediately — the fix for #4421.
+  /// Toggles a suggestion chip directly on the committed filter. Each branch
+  /// self-toggles from the notifier's own state, so callers only pass the
+  /// [searchFilterNotifier] (from `ref`) — no filter snapshot needed.
   void toggleQuickSearchFilter(
     QuickSearchFilter filter, {
     required String currentUserEmail,
+    required SearchFilterNotifier searchFilterNotifier,
   }) {
-    final current = searchEmailFilter.value;
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
-        updateFilterEmail(
-          hasAttachmentOption:
-              current.hasAttachment ? const None() : const Some(true),
-        );
+        searchFilterNotifier.toggleHasAttachment();
         break;
       case QuickSearchFilter.last7Days:
-        if (current.emailReceiveTimeType == EmailReceiveTimeType.last7Days) {
-          updateFilterEmail(
-            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-            startDateOption: const None(),
-            endDateOption: const None(),
-          );
-        } else {
-          final range = EmailReceiveTimeType.last7Days.toDateRange();
-          updateFilterEmail(
-            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
-            startDateOption: optionOf(range.start),
-            endDateOption: optionOf(range.end),
-          );
-        }
+        searchFilterNotifier.toggleLast7Days();
         break;
       case QuickSearchFilter.fromMe:
-        if (currentUserEmail.isEmpty) return;
-        // Selecting collapses `from` to just the current user; deselecting clears
-        // it. Any other sender means it isn't selected, so a tap selects it.
-        updateFilterEmail(
-          fromOption: Some(
-            current.isOnlySender(currentUserEmail)
-                ? const <String>{}
-                : {currentUserEmail},
-          ),
-        );
+        searchFilterNotifier.toggleOnlySender(currentUserEmail);
         break;
       case QuickSearchFilter.starred:
-        final keywords = Set<String>.of(current.hasKeyword);
-        final flagged = KeyWordIdentifier.emailFlagged.value;
-        keywords.contains(flagged)
-            ? keywords.remove(flagged)
-            : keywords.add(flagged);
-        updateFilterEmail(hasKeywordOption: Some(keywords));
+        searchFilterNotifier.toggleStarred();
         break;
       default:
         break;
     }
   }
 
-  DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
+  DateTime? get startDateFiltered => _committedFilter.startDate?.value.toLocal();
 
-  DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
+  DateTime? get endDateFiltered => _committedFilter.endDate?.value.toLocal();
 
-  PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
+  PresentationMailbox? get mailboxFiltered => _committedFilter.mailbox;
 
-  Label? get labelFiltered => searchEmailFilter.value.label;
+  Label? get labelFiltered => _committedFilter.label;
 
-  Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
+  Set<String> get listAddressOfToFiltered => _committedFilter.to;
 
-  Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
+  Set<String> get listAddressOfFromFiltered => _committedFilter.from;
 
-  Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
+  Set<String> get listHasKeywordFiltered => _committedFilter.hasKeyword;
 
-  bool get unreadFiltered => searchEmailFilter.value.unread;
+  EmailSortOrderType get sortOrderFiltered => _committedFilter.sortOrderType;
 
-  bool get notIncludeEventsFiltered => searchEmailFilter.value.notIncludeEvents;
+  bool get isOnlyStarredApplied => _committedFilter.isOnlyStarredApplied;
 
-  EmailSortOrderType get sortOrderFiltered => searchEmailFilter.value.sortOrderType;
+  // NOTE: `unread`/`notIncludeEvents` are read straight from `searchFilterProvider`
+  // by their widgets, so no pass-through getters are exposed here.
 
   bool isSearchActive() =>
-      searchState.value.searchStatus == SearchStatus.ACTIVE;
+      _searchViewState.searchState.searchStatus == SearchStatus.ACTIVE;
 
-  bool get isSearchEmailRunning => simpleSearchIsActivated.isTrue || advancedSearchIsActivated.isTrue;
+  bool get isSearchEmailRunning => _searchViewState.isSearchEmailRunning;
 
   void enableSearch() {
-    searchState.value = searchState.value.enableSearchState();
+    _searchViewStateNotifier.enableSearch();
   }
 
   void clearTextSearch() {
     searchInputController.clear();
+    commitSearchTextNow();
     searchFocus.requestFocus();
   }
 
@@ -349,27 +241,27 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void activateSimpleSearch() {
-    simpleSearchIsActivated.value = true;
+    _searchViewStateNotifier.activateSimpleSearch();
   }
 
   void deactivateSimpleSearch() {
-    simpleSearchIsActivated.value = false;
+    _searchViewStateNotifier.deactivateSimpleSearch();
   }
 
   void activateAdvancedSearch() {
-    advancedSearchIsActivated.value = true;
+    _searchViewStateNotifier.activateAdvancedSearch();
   }
 
   void deactivateAdvancedSearch() {
-    advancedSearchIsActivated.value = false;
+    _searchViewStateNotifier.deactivateAdvancedSearch();
   }
 
   void hideAdvancedSearchFormView() {
-    isAdvancedSearchViewOpen.value = false;
+    _searchViewStateNotifier.closeAdvancedSearch();
   }
 
   void hideSimpleSearchFormView() {
-    searchState.value = searchState.value.disableSearchState();
+    _searchViewStateNotifier.disableSearch();
   }
 
   void _clearAllTextInputSimpleSearch() {
@@ -396,6 +288,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   @override
   void onClose() {
+    _searchViewStateNotifier.release();
+    _commitSearchTextDebounce?.cancel();
     _committedFilterSubscription?.close();
     searchInputController.removeListener(_onSearchInputChanged);
     searchInputController.dispose();
