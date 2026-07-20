@@ -363,11 +363,19 @@ class HtmlUtils {
         name: 'registerFileLinkRowEnterKeyHandler',
       );
 
+  /// JS handler name used to bridge file-link-card taps back to Dart on
+  /// mobile, since `window.open()` inside the InAppWebView editor has no
+  /// `onCreateWindow` wired up and is silently swallowed.
+  static const String fileLinkCardClickHandlerName = 'tmailFileLinkCardClick';
+
   /// `target="_blank"` on the card anchor doesn't survive
   /// StandardizeHtmlSanitizingTransformers (draft reload strips it), and
   /// Summernote's image-handle module hijacks mousedown on any `<img>` before
   /// it reaches the anchor - so this bypasses both by opening the link itself
-  /// on a capture-phase listener.
+  /// on a capture-phase listener. On mobile, `window.open()` inside the
+  /// InAppWebView editor has no `onCreateWindow` handler and is silently
+  /// swallowed, so the tap is bridged to Dart instead, which opens the link
+  /// via `url_launcher`.
   static ({String name, String script}) registerFileLinkCardClickHandler({
     bool isWebPlatform = false,
   }) =>
@@ -418,7 +426,11 @@ class HtmlUtils {
           try {
             const href = anchor.getAttribute('href');
             if (href && isSafeCardHref(href)) {
-              window.open(href, '_blank', 'noopener,noreferrer');
+              if (isWebPlatform) {
+                window.open(href, '_blank', 'noopener,noreferrer');
+              } else {
+                window.flutter_inappwebview.callHandler('$fileLinkCardClickHandlerName', href);
+              }
             }
           } catch (error) {
             console.error('File link card click handler error:', error);

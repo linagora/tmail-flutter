@@ -7,6 +7,7 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
+import 'package:url_launcher/url_launcher.dart' as launcher;
 
 typedef OnCreatedEditorAction = Function(BuildContext context, HtmlEditorApi editorApi, String content);
 typedef OnLoadCompletedEditorAction = Function(HtmlEditorApi editorApi, WebUri? url);
@@ -90,6 +91,11 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
       },
     );
 
+    _editorController?.addJavaScriptHandler(
+      handlerName: HtmlUtils.fileLinkCardClickHandlerName,
+      callback: (args) => _handleFileLinkCardClick(args),
+    );
+
     await _editorController?.evaluateJavascript(
       source: registerSelectionChange!.script,
     );
@@ -103,6 +109,24 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
         isWebPlatform: PlatformInfo.isWeb,
       ).script,
     );
+  }
+
+  Future<void> _handleFileLinkCardClick(List<dynamic> args) async {
+    if (args.isEmpty) return;
+
+    final href = args[0];
+    if (href is! String) return;
+
+    final uri = Uri.tryParse(href);
+    if (uri == null) return;
+
+    try {
+      if (await launcher.canLaunchUrl(uri)) {
+        await launcher.launchUrl(uri, mode: launcher.LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      logWarning('MobileEditorWidget::_handleFileLinkCardClick: $e');
+    }
   }
 
   Future<void> _onWebViewCreated(HtmlEditorApi editorApi) async {

@@ -178,13 +178,23 @@ void main() {
             equals('<a href="https://example.com">card</a>'));
       });
 
-      test('SHOULD preserve contenteditable="false" on <a> WHEN allowAttributes opts in (drive link card)', () {
+      test('SHOULD preserve contenteditable="false" on the Drive link card <a> WHEN allowAttributes opts in', () {
         const driveCardTransformer =
             StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']);
-        const html = '<a href="https://example.com" contenteditable="false">card</a>';
+        const html = '<a href="https://example.com" class="tmail-file-link-card" contenteditable="false">card</a>';
         expect(
             driveCardTransformer.process(html, htmlEscape).trim(),
-            equals('<a href="https://example.com" contenteditable="false">card</a>'));
+            equals('<a href="https://example.com" class="tmail-file-link-card" contenteditable="false">card</a>'));
+      });
+
+      test('SHOULD strip contenteditable FROM non-Drive-card elements EVEN WHEN allowAttributes opts in', () {
+        const driveCardTransformer =
+            StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']);
+        const html = '<a href="https://example.com" contenteditable="false">plain link</a>'
+            '<div contenteditable="false">editable island</div>';
+        expect(
+            driveCardTransformer.process(html, htmlEscape).trim(),
+            equals('<a href="https://example.com">plain link</a><div>editable island</div>'));
       });
     });
 

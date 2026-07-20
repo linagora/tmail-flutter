@@ -245,7 +245,6 @@ void main() {
         home: Builder(
           builder: (ctx) => ext.buildContextMenuTile(
             ctx,
-            composerId: _composerId,
             imagePaths: imagePaths,
             label: _label,
           ),
@@ -264,7 +263,6 @@ void main() {
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
-              composerId: _composerId,
               imagePaths: imagePaths,
               label: _label,
             ),
@@ -284,7 +282,6 @@ void main() {
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
-              composerId: _composerId,
               imagePaths: imagePaths,
               label: _label,
             ),
@@ -308,7 +305,6 @@ void main() {
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
-              composerId: _composerId,
               imagePaths: imagePaths,
               label: _label,
             ),
@@ -331,7 +327,6 @@ void main() {
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
-              composerId: _composerId,
               imagePaths: imagePaths,
               label: _label,
             ),
@@ -363,7 +358,6 @@ void main() {
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
-              composerId: _composerId,
               imagePaths: imagePaths,
               label: _label,
             ),
@@ -377,7 +371,7 @@ void main() {
       final fakeState = DrivePickFailure(Exception('test'));
       tile.onPickCallback!(fakeState);
 
-      expect(receivedId, equals(_composerId));
+      expect(receivedId, isNull);
       expect(receivedState, equals(fakeState));
     });
   });

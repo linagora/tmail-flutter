@@ -26,7 +26,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         doc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, contains('&amp;'));
       expect(insertedHtml.first, contains('My &lt;Report&gt;'));
@@ -44,7 +44,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         doc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) async => insertedHtml.add(html));
 
       expect(insertedHtml.first, contains('Open in drive'));
     });
@@ -60,7 +60,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         doc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       final html = insertedHtml.first;
       expect('<a '.allMatches(html).length, 1);
@@ -79,7 +79,7 @@ void main() {
       handler.insertDriveLinkHtml([
         linkDoc,
         doc2,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       final html = insertedHtml.first;
       expect(html, contains('Report'));
@@ -92,7 +92,7 @@ void main() {
     test('Should produce empty string for docs with null sharingLink', () async {
       handler.insertDriveLinkHtml([
         noLinkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, isEmpty);
     });
@@ -109,7 +109,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         imageDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, contains('<img src="https://cdn.example.com/thumbnails/photo.png"'));
     });
@@ -125,7 +125,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         xlsDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, isNot(contains('<img')));
     });
@@ -143,7 +143,7 @@ void main() {
 
       strictHandler.insertDriveLinkHtml([
         untrustedHttpDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, isNot(contains('<img')));
     });
@@ -160,7 +160,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         httpThumbnailDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, contains('<img src="http://cdn.example.com/thumbnails/photo3.png"'));
     });
@@ -177,7 +177,7 @@ void main() {
 
       strictHandler.insertDriveLinkHtml([
         httpDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, isEmpty);
     });
@@ -193,7 +193,7 @@ void main() {
 
       handler.insertDriveLinkHtml([
         httpDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: AppLocalizations());
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, contains('http://example.com/file'));
     });

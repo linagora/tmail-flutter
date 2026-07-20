@@ -90,10 +90,17 @@ class TransformConfiguration {
       const NormalizeLineHeightInStyleTransformer(),
       const ResponsiveTableCellTransformer(),
       const RemoveNegativeMarginFloatTransformer(),
-    ]
+    ],
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
   );
 
-  factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.standardConfiguration;
+  factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.create(
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
+  );
 
   factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.create(
     customDomTransformers: [const ImageTransformer()],

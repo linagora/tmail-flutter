@@ -19,7 +19,7 @@ void main() {
     test('Should insert link html for docs with sharingLink', () async {
       handler.handleDrivePickResult([
         linkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: appLocalizations);
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: appLocalizations);
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/report'));
@@ -29,7 +29,7 @@ void main() {
     test('Should still work and fall back to hardcoded English label when appLocalizations is omitted', () async {
       handler.handleDrivePickResult([
         linkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html));
+      ], insertHtml: (html) async => insertedHtml.add(html));
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('Open in drive'));
@@ -47,7 +47,7 @@ void main() {
 
       handler.handleDrivePickResult([
         bothLinksDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: appLocalizations);
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: appLocalizations);
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('https://drive.example.com/both'));
@@ -56,7 +56,7 @@ void main() {
     test('Should skip docs with neither sharingLink nor downloadLink', () async {
       handler.handleDrivePickResult([
         noLinkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: appLocalizations);
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: appLocalizations);
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, isEmpty);
@@ -67,7 +67,7 @@ void main() {
         linkDoc,
         attachmentDoc,
         noLinkDoc,
-      ], insertHtml: (html) => insertedHtml.add(html), appLocalizations: appLocalizations);
+      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: appLocalizations);
 
       expect(insertedHtml, hasLength(1));
       expect(insertedHtml.first, contains('Report'));

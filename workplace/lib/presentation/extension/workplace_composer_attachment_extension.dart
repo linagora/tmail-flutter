@@ -17,7 +17,7 @@ import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
 typedef OnDrivePickStateChanged =
-    void Function(String composerId, DrivePickState state);
+    void Function(String? composerId, DrivePickState state);
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
@@ -140,7 +140,6 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   @override
   Widget buildContextMenuTile(
     BuildContext context, {
-    required String composerId,
     required ImagePaths imagePaths,
     required String label,
   }) {
@@ -149,13 +148,12 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       builder: (_, uri, __) {
         if (uri == null) return const SizedBox.shrink();
         return DriveAttachmentContextMenuTile(
-          composerId: composerId,
           imagePaths: imagePaths,
           workplaceUri: uri,
           label: label,
           onPickCallback: onPickState == null
               ? null
-              : (state) => onPickState!(composerId, state),
+              : (state) => onPickState!(null, state),
           onFetchIntent: ({required addAsLinkTitle, required addAsAttachmentTitle}) => _fetchIntent(
             uri,
             addAsLinkTitle: addAsLinkTitle,
