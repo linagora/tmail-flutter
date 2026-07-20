@@ -179,7 +179,6 @@ void main() {
           before: UTCDate(DateTime.parse('2024-10-30 12:00:00')),
           startDate: UTCDate(DateTime.parse('2024-10-30 12:00:00')),
           endDate: UTCDate(DateTime.parse('2024-10-31 12:00:00')),
-          position: 0,
           sortOrderType: EmailSortOrderType.oldest,
         );
 
@@ -887,9 +886,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const Some(0),
-        );
+          endDateOption: const None(),        );
 
         expect(afterSortChange.startDate, isNull);
         expect(afterSortChange.endDate, isNull);
@@ -911,9 +908,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const Some(0),
-        );
+          endDateOption: const None(),        );
 
         // startDate cleared → no after bound in the JMAP filter
         expect(afterSortChange.startDate, isNull);
@@ -935,9 +930,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const Some(0),
-        );
+          endDateOption: const None(),        );
 
         expect(afterSortChange.before, isNull);
       });
@@ -956,9 +949,7 @@ void main() {
 
         final afterSortChange = filter.copyWith(
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
-          beforeOption: const None(),
-          positionOption: const Some(0),
-        );
+          beforeOption: const None(),        );
 
         expect(afterSortChange.startDate, equals(start));
         expect(afterSortChange.endDate, equals(end));
@@ -975,15 +966,13 @@ void main() {
         var filter = SearchEmailFilter(
           emailReceiveTimeType: EmailReceiveTimeType.allTime,
           sortOrderType: EmailSortOrderType.relevance,
-        ).copyWith(positionOption: const Some(20));
+        );
 
         filter = filter.copyWith(
           sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const None(),
-        );
+          endDateOption: const None(),        );
         expect(filter.startDate, isNull);
 
         final cursor1 = UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'));
@@ -993,9 +982,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const None(),
-        );
+          endDateOption: const None(),        );
         expect(filter.startDate, isNull);
 
         final cursor2 = UTCDate(DateTime.parse('2026-01-20T00:00:00.000Z'));
@@ -1005,9 +992,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const None(),
-        );
+          endDateOption: const None(),        );
         expect(filter.before, isNull);
 
         final cursor3 = UTCDate(DateTime.parse('2026-01-05T00:00:00.000Z'));
@@ -1017,9 +1002,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const Some(0),
-        );
+          endDateOption: const None(),        );
         expect(filter.startDate, isNull);
         expect(filter.before, isNull);
         expect(extractAfterFromFilter(filter.mappingToEmailFilterCondition()), isNull);
@@ -1040,9 +1023,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const None(),
-        );
+          endDateOption: const None(),        );
         expect(filter.startDate, isNull);
 
         final cursor2 = UTCDate(DateTime.parse('2026-06-15T12:00:00.000Z'));
@@ -1052,9 +1033,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const None(),
-        );
+          endDateOption: const None(),        );
         expect(filter.before, isNull);
 
         final cursor3 = UTCDate(DateTime.parse('2026-06-13T06:00:00.000Z'));
@@ -1064,9 +1043,7 @@ void main() {
           sortOrderTypeOption: const Some(EmailSortOrderType.relevance),
           beforeOption: const None(),
           startDateOption: const None(),
-          endDateOption: const None(),
-          positionOption: const Some(0),
-        );
+          endDateOption: const None(),        );
         // startDate cleared → no after bound in JMAP filter (cursors fully reset)
         expect(filter.startDate, isNull);
         expect(filter.before, isNull);
@@ -1092,9 +1069,7 @@ void main() {
           emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
           startDateOption: const None(),
           endDateOption: const None(),
-          beforeOption: const None(),
-          positionOption: const None(),
-        );
+          beforeOption: const None(),        );
 
         expect(filter.before, isNull);
         expect(filter.startDate, isNull);
@@ -1120,9 +1095,7 @@ void main() {
           emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.customRange),
           startDateOption: Some(userStart),
           endDateOption: Some(userEnd),
-          beforeOption: const None(),
-          positionOption: const None(),
-        );
+          beforeOption: const None(),        );
 
         expect(filter.before, isNull);
         expect(filter.startDate, equals(userStart));
@@ -1150,15 +1123,12 @@ void main() {
         filter = filter.copyWith(
           sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
           beforeOption: const None(),
-          afterOption: const None(),
-          positionOption: const None(),
-        );
+          afterOption: const None(),        );
 
         expect(filter.startDate, equals(snapshotStart));
         expect(filter.endDate, equals(snapshotEnd));
         expect(filter.before, isNull);
         expect(filter.after, isNull);
-        expect(filter.position, isNull);
         expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       });
 
@@ -1178,9 +1148,7 @@ void main() {
           emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
           startDateOption: optionOf(dateRange.start),
           endDateOption: optionOf(dateRange.end),
-          beforeOption: const None(),
-          positionOption: const None(),
-        );
+          beforeOption: const None(),        );
 
         expect(filter.before, isNull);
         expect(filter.startDate, isNotNull);
@@ -1205,9 +1173,7 @@ void main() {
           emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
           startDateOption: const None(),
           endDateOption: const None(),
-          beforeOption: const None(),
-          positionOption: const None(),
-        );
+          beforeOption: const None(),        );
         expect(filter.before, isNull);
 
         final cursor2 = UTCDate(DateTime.parse('2026-06-14T10:00:00.000Z'));
@@ -1220,9 +1186,7 @@ void main() {
           emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last30Days),
           startDateOption: const None(),
           endDateOption: const None(),
-          beforeOption: const None(),
-          positionOption: const None(),
-        );
+          beforeOption: const None(),        );
         expect(filter.startDate, isNull);
 
         // startDate cleared → no after bound in JMAP filter

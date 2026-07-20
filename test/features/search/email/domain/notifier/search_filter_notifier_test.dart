@@ -469,7 +469,6 @@ void main() {
         after: cursor,
         startDate: startDate,
         endDate: endDate,
-        position: 5,
       ));
 
       expect(stateOf().subject, 'invoice'); // intent preserved
@@ -477,7 +476,6 @@ void main() {
       expect(stateOf().endDate, endDate);
       expect(stateOf().before, isNull);
       expect(stateOf().after, isNull);
-      expect(stateOf().position, isNull);
     });
 
     test('snapshots filter sets instead of aliasing replacement state', () {

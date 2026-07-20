@@ -440,7 +440,6 @@ void main() {
       expect(filter.endDate, equals(snapshotEnd));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
 
     test(
@@ -466,7 +465,6 @@ void main() {
       expect(filter.endDate, equals(end));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
 
     test(
@@ -489,7 +487,6 @@ void main() {
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.after, isNull);
       expect(filter.before, isNull);
-      expect(filter.position, isNull);
     });
 
     test(
@@ -512,7 +509,6 @@ void main() {
       expect(filter.sortOrderType, equals(EmailSortOrderType.oldest));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
   });
 
@@ -532,15 +528,12 @@ void main() {
       notifier().set(SearchEmailFilter(
         sortOrderType: EmailSortOrderType.oldest,
         startDate: UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z')),
-        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
-        position: 20,
-      ));
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),      ));
 
       // Assert: cursors stay transient; date bound is preserved.
       final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
       expect(filter.startDate, equals(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))));
     });
 
@@ -553,15 +546,12 @@ void main() {
       notifier().set(SearchEmailFilter(
         sortOrderType: EmailSortOrderType.subjectAscending,
         before: UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z')),
-        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
-        position: 20,
-      ));
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),      ));
 
       // Assert: stale cursors cannot seed the fresh query.
       final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
 
     test(
@@ -571,15 +561,12 @@ void main() {
       // Arrange & Act: oldest sort with a leftover after cursor and position.
       notifier().set(SearchEmailFilter(
         sortOrderType: EmailSortOrderType.oldest,
-        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),
-        position: 20,
-      ));
+        after: UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z')),      ));
 
       // Assert: no stale cursor leaks into the committed filter.
       final filter = committed();
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
   });
 }

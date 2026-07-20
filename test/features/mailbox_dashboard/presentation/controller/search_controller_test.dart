@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:mockito/annotations.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -107,16 +108,16 @@ void main() {
     });
 
     test('cursor options stay out of the committed SSOT', () {
-      notifier().set(SearchEmailFilter(position: 40));
+      notifier().set(SearchEmailFilter(before: UTCDate(DateTime(2026))));
 
-      expect(committed().position, isNull);
+      expect(committed().before, isNull);
     });
 
     test('a later user-intent update keeps cursor state out of the SSOT', () {
-      notifier().set(SearchEmailFilter(position: 40));
+      notifier().set(SearchEmailFilter(before: UTCDate(DateTime(2026))));
       notifier().setUnread(true.asSearchFilterToggle());
 
-      expect(committed().position, isNull);
+      expect(committed().before, isNull);
       expect(committed().unread, isTrue);
     });
   });
@@ -200,11 +201,11 @@ void main() {
     });
 
     test('keeps cursor-only updates out of the committed filter', () {
-      notifier().set(SearchEmailFilter(position: 40));
+      notifier().set(SearchEmailFilter(before: UTCDate(DateTime(2026))));
 
       searchController.clearSearchFilter();
 
-      expect(committed().position, isNull);
+      expect(committed().before, isNull);
     });
   });
 

@@ -571,9 +571,6 @@ void main() {
       expect(filterAfterAdvancedSearch.text, equals(SearchQuery(emailContainsWord)));
       expect(filterAfterAdvancedSearch.notKeyword, equals({emailNotContainsWord}));
       expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
-      // Pagination position is resolved on the transient request spec by the
-      // executor; it is never written to the committed SSOT (ADR-0093).
-      expect(filterAfterAdvancedSearch.position, isNull);
       expect(filterAfterAdvancedSearch.startDate, isNotNull);
       expect(filterAfterAdvancedSearch.endDate, isNotNull);
       expect(filterAfterAdvancedSearch.before, isNull);
@@ -644,9 +641,6 @@ void main() {
     expect(filterAfterQuickSearch.text, equals(SearchQuery(queryString)));
     expect(filterAfterQuickSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
     expect(filterAfterQuickSearch.hasAttachment, isTrue);
-    // Pagination position is resolved on the transient request spec by the
-    // executor; it is never written to the committed SSOT (ADR-0093).
-    expect(filterAfterQuickSearch.position, isNull);
     expect(filterAfterQuickSearch.startDate, isNotNull);
     expect(filterAfterQuickSearch.endDate, isNotNull);
     expect(filterAfterQuickSearch.before, isNull);
@@ -686,19 +680,17 @@ void main() {
 
     test(
       'WHEN setUpDefaultEmailSortOrder is called while load-more cursors are set\n'
-      'SHOULD keep before/after/position out of the committed SSOT',
+      'SHOULD keep before/after cursors out of the committed SSOT',
     () {
       searchFilterNotifier().set(SearchEmailFilter(
         before: UTCDate(DateTime.now()),
         after: UTCDate(DateTime.now()),
-        position: 20,
       ));
 
       mailboxDashboardController.setUpDefaultEmailSortOrder(EmailSortOrderType.oldest);
 
       expect(committedFilter().before, isNull);
       expect(committedFilter().after, isNull);
-      expect(committedFilter().position, isNull);
     });
 
     test(

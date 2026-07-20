@@ -242,7 +242,6 @@ void main() {
         subject: 'invoice',
         before: cursorDate,
         after: cursorDate,
-        position: 99,
         sortOrderType: EmailSortOrderType.relevance,
       );
       final container = containerWith(committed: committed);
