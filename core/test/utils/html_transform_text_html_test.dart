@@ -481,17 +481,24 @@ void main() {
 
       test('SHOULD preserve contenteditable="false" on a drive-link card row', () async {
         const html =
-            '<div><a href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
+            '<div><a class="tmail-file-link-card" href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
         final out = await transformWithEditDraftsConfig(html);
         expect(out, contains('contenteditable="false"'));
       });
 
       test('SHOULD still strip <script> while preserving drive-link card contenteditable', () async {
         const html = '<script>alert(1)</script>'
-            '<a href="https://drive.example.com/file" contenteditable="false">file.pdf</a>';
+            '<a class="tmail-file-link-card" href="https://drive.example.com/file" contenteditable="false">file.pdf</a>';
         final out = await transformWithEditDraftsConfig(html);
         expect(out, isNot(contains('<script')));
         expect(out, contains('contenteditable="false"'));
+      });
+
+      test('SHOULD strip contenteditable="false" from a non-drive-link-card element', () async {
+        const html =
+            '<div><a href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
+        final out = await transformWithEditDraftsConfig(html);
+        expect(out, isNot(contains('contenteditable')));
       });
     });
 
