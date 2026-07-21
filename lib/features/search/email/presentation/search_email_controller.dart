@@ -69,6 +69,10 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
@@ -99,7 +103,8 @@ class SearchEmailController extends BaseController
         DateRangePickerMixin,
         SearchLabelFilterModalMixin,
         LabelSubMenuMixin,
-        EmailMoreActionContextMenu {
+        EmailMoreActionContextMenu
+    implements SearchExecutionObserver {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -120,7 +125,6 @@ class SearchEmailController extends BaseController
   FocusNode? keyboardFocusNode;
   StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
-  ProviderSubscription<AsyncValue<SearchEmailResult>>? _searchEmailResultSubscription;
 
   /// Emails reference last pushed to the presentation list. The executor reuses
   /// the same list instance when only the load-more lifecycle changes (e.g. the
@@ -175,6 +179,18 @@ class SearchEmailController extends BaseController
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
+  SearchExecutorService get _searchService =>
+      appProviderContainer.read(searchExecutorServiceProvider);
+
+  SearchDispatchContext get _dispatchContext => SearchDispatchContext(
+        session: session!,
+        accountId: accountId!,
+        properties:
+            EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+        collapseThreads: _isCollapseThreadsEnabled,
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+      );
+
   bool get _hasSearchSession {
     if (accountId == null) return false;
 
@@ -190,7 +206,7 @@ class SearchEmailController extends BaseController
   @override
   void onInit() {
     super.onInit();
-    _registerSearchEmailResultBridge();
+    _searchService.register(this);
     _initializeDebounceTimeTextSearchChange();
     _initWorkerListener();
     _initWebSocketQueueHandler();
@@ -209,15 +225,6 @@ class SearchEmailController extends BaseController
       mailboxDashBoardController.currentSortOrder,
     );
     super.onReady();
-  }
-
-  void _registerSearchEmailResultBridge() {
-    if (_searchEmailResultSubscription != null) return;
-    _searchEmailResultSubscription =
-        appProviderContainer.listen<AsyncValue<SearchEmailResult>>(
-      searchEmailProvider,
-      (previous, next) => _handleSearchEmailResult(previous, next),
-    );
   }
 
   void _initializeDebounceTimeTextSearchChange() {
@@ -381,13 +388,9 @@ class SearchEmailController extends BaseController
         return Future.value();
       }
 
-      await appProviderContainer.read(searchEmailProvider.notifier).execute(
+      await _searchService.dispatch(
         RefreshChangesIntent(currentCount: listResultSearch.length),
-        session: session!,
-        accountId: accountId!,
-        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
-        collapseThreads: _isCollapseThreadsEnabled,
-        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+        _dispatchContext,
       );
     } catch (e, stackTrace) {
       logWarning('SearchEmailController::handleWebSocketMessage:Error processing state: $e');
@@ -467,47 +470,9 @@ class SearchEmailController extends BaseController
 
   void searchEmailAction() => _searchEmailAction();
 
-  /// Bridges executor results into mobile presentation state.
-  void _handleSearchEmailResult(
-    AsyncValue<SearchEmailResult>? previous,
-    AsyncValue<SearchEmailResult> value,
-  ) {
-    if (value.isLoading) {
-      _searchEmailPresentationNotifier.setResultSearchViewState(
-        Right(SearchingState()),
-      );
-      return;
-    }
-    if (value.hasError) {
-      // The notifier's consume seam already routed urgent failures (ADR-0103);
-      // only suppress the retry toast for them here — do not re-route.
-      if (!isUrgentException(value.error)) {
-        _searchEmailsFailure(_asSearchEmailFailure(value.error));
-      }
-      return;
-    }
-    final result = value.value;
-    if (result == null) return;
-    _applySearchResult(result, shouldScrollToTop: previous?.isLoading == true);
-  }
-
-  SearchEmailFailure _asSearchEmailFailure(Object? error) {
-    if (error is SearchEmailFailure) return error;
-    if (error is FeatureFailure) return SearchEmailFailure(error.exception);
-    return SearchEmailFailure(error);
-  }
-
-  void _searchEmailAction() {
+  @override
+  void onNewSearchStarted() {
     textInputSearchFocus.unfocus();
-
-    if (session == null || accountId == null) {
-      _searchEmailsFailure(SearchEmailFailure(NotFoundSessionException()));
-      return;
-    }
-
-    _searchEmailPresentationNotifier.setResultSearchViewState(
-      Right(SearchingState()),
-    );
     _searchEmailPresentationNotifier.resetSearchMore();
     _searchEmailPresentationNotifier.setSearchIsRunning(true);
     cancelSelectionMode();
@@ -518,20 +483,38 @@ class SearchEmailController extends BaseController
           AppRoutes.dashboard,
           router: NavigationRouter(
             searchQuery: searchEmailFilter.text,
-            dashboardType: DashboardType.search
-          )
-        )
+            dashboardType: DashboardType.search,
+          ),
+        ),
       );
     }
+  }
 
-    appProviderContainer.read(searchEmailProvider.notifier).execute(
-      const NewSearchIntent(),
-      session: session!,
-      accountId: accountId!,
-      properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
-      collapseThreads: _isCollapseThreadsEnabled,
-      trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+  @override
+  void onSearchLoading() {
+    _searchEmailPresentationNotifier.setResultSearchViewState(
+      Right(SearchingState()),
     );
+  }
+
+  @override
+  void onSearchResult(SearchEmailResult result, {required bool isFreshResult}) {
+    _applySearchResult(result, shouldScrollToTop: isFreshResult);
+  }
+
+  @override
+  void onSearchFailure(Object error) {
+    // Urgent failures are already routed by the executor's consume seam.
+    if (isUrgentException(error)) return;
+    _searchEmailsFailure(asSearchEmailFailure(error));
+  }
+
+  void _searchEmailAction() {
+    if (session == null || accountId == null) {
+      _searchEmailsFailure(SearchEmailFailure(NotFoundSessionException()));
+      return;
+    }
+    _searchService.dispatch(const NewSearchIntent(), _dispatchContext);
   }
 
   void _applySearchResult(
@@ -604,18 +587,13 @@ class SearchEmailController extends BaseController
     if (!_canSearchMoreEmails) return;
 
     final lastEmail = listResultSearch.last;
-
-    appProviderContainer.read(searchEmailProvider.notifier).execute(
+    _searchService.dispatch(
       LoadMoreIntent(
         currentCount: listResultSearch.length,
         lastEmailDate: lastEmail.receivedAt,
         lastEmailId: lastEmail.id,
       ),
-      session: session!,
-      accountId: accountId!,
-      properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
-      collapseThreads: _isCollapseThreadsEnabled,
-      trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+      _dispatchContext,
     );
   }
 
@@ -1173,7 +1151,7 @@ class SearchEmailController extends BaseController
     emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
     viewStateWorker.dispose();
-    _searchEmailResultSubscription?.close();
+    _searchService.unregister(this);
     _webSocketQueueHandler?.dispose();
     onKeyboardShortcutDispose();
     // Release keepAlive search state with the binding, including the committed
