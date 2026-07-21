@@ -344,10 +344,10 @@ abstract class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(
-      () => DriveAttachmentHandler(requireHttps: BuildUtils.isReleaseMode),
+    Get.put(
+      DriveAttachmentHandler(requireHttps: BuildUtils.isReleaseMode),
       tag: composerId,
-      fenix: true,
+      permanent: true,
     );
     bindPlatformRichTextController();
     Get.lazyPut(
@@ -436,6 +436,6 @@ abstract class ComposerBindings extends BaseBindings {
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();
 
-    Get.delete<DriveAttachmentHandler>(tag: composerId);
+    Get.delete<DriveAttachmentHandler>(tag: composerId, force: true);
   }
 }

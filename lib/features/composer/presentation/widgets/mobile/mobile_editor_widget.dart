@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -119,6 +120,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
 
     final uri = Uri.tryParse(href);
     if (uri == null) return;
+    if (uri.scheme != 'https' && BuildUtils.isReleaseMode) return;
 
     try {
       if (await launcher.canLaunchUrl(uri)) {
