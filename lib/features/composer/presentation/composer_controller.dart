@@ -1908,6 +1908,7 @@ class ComposerController extends BaseController
   }
 
   Future<void> onInitialContentLoadCompleteWeb(String? initContent) async {
+    await restoreCollapsibleSignatureButton(initContent);
     await setupSelectedIdentity();
     _autoFocusFieldWhenLauncher();
   }

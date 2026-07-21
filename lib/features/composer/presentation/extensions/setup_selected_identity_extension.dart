@@ -30,7 +30,8 @@ extension SetupSelectedIdentityExtension on ComposerController {
       ) ?? listFromIdentities.first;
 
       if (currentEmailActionType == EmailActionType.editDraft ||
-          currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+          currentEmailActionType == EmailActionType.reopenComposerBrowser &&
+              savedActionType == EmailActionType.editDraft) {
         identitySelected.value = currentIdentity;
       } else if (currentEmailActionType == EmailActionType.editAsNewEmail) {
         identitySelected.value = currentIdentity;

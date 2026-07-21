@@ -4,6 +4,24 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 
 extension SanitizeSignatureInEmailContentExtension on ComposerController {
 
+  Future<void> restoreCollapsibleSignatureButton(String? emailContent) async {
+    try {
+      if (emailContent == null) return;
+
+      final emailDocument = parse(emailContent);
+      final existedSignatureButton = emailDocument.querySelector('.tmail-signature-button');
+      if (existedSignatureButton != null) return;
+
+      final signature = emailDocument.querySelector('.tmail-signature');
+      if (signature == null) return;
+
+      restoringSignatureButton = true;
+      await applySignature(signature.innerHtml);
+    } catch (e) {
+      logWarning('SanitizeSignatureInEmailContentExtension::restoreCollapsibleSignatureButton:Exception = $e');
+    }
+  }
+
   void synchronizeInitEmailDraftHash(String? emailContent) {
     try {
       final emailDocument = parse(emailContent);
