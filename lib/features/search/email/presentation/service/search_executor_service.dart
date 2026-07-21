@@ -18,15 +18,21 @@ class SearchExecutorService {
   final ProviderContainer _container;
   final Set<SearchExecutionObserver> _observers = <SearchExecutionObserver>{};
   ProviderSubscription<AsyncValue<SearchEmailResult>>? _subscription;
+  bool _hasDispatchedSearch = false;
+  SearchExecutionIntent? _lastDispatchedIntent;
 
   SearchEmailNotifier get _notifier =>
       _container.read(searchEmailProvider.notifier);
 
-  /// Registers [observer] and opens the executor subscription on the first one.
+  /// Registers [observer], opens the executor subscription on the first one,
+  /// and replays the current state when a search has already been dispatched.
   void register(SearchExecutionObserver observer) {
-    _observers.add(observer);
+    final isNewObserver = _observers.add(observer);
     _subscription ??=
         _container.listen(searchEmailProvider, _onExecutorStateChanged);
+    if (isNewObserver && _hasDispatchedSearch) {
+      _notifyCurrentState(observer);
+    }
   }
 
   /// Unregisters [observer]; closes the subscription once none remain.
@@ -42,6 +48,8 @@ class SearchExecutorService {
     SearchExecutionIntent intent,
     SearchDispatchContext context,
   ) {
+    _hasDispatchedSearch = true;
+    _lastDispatchedIntent = intent;
     if (intent is NewSearchIntent) {
       _notifyObservers((observer) => observer.onNewSearchStarted());
     }
@@ -71,7 +79,8 @@ class SearchExecutorService {
     } else {
       final result = next.value;
       if (result == null) return;
-      final isFreshResult = previous?.isLoading == true;
+      final isFreshResult =
+          _lastDispatchedIntent is NewSearchIntent && previous?.isLoading == true;
       _notifyObservers(
         (observer) => observer.onSearchResult(result, isFreshResult: isFreshResult),
       );
@@ -82,6 +91,17 @@ class SearchExecutorService {
   void _notifyObservers(void Function(SearchExecutionObserver) action) {
     for (final observer in _observers.toList()) {
       action(observer);
+    }
+  }
+
+  void _notifyCurrentState(SearchExecutionObserver observer) {
+    final current = _container.read(searchEmailProvider);
+    if (current.isLoading) {
+      observer.onSearchLoading();
+    } else if (current.hasError) {
+      observer.onSearchFailure(current.error!);
+    } else if (current.value != null) {
+      observer.onSearchResult(current.value!, isFreshResult: false);
     }
   }
 
