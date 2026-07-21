@@ -1,3 +1,15 @@
+## [0.31.0] - 2026-07-22
+### Added
+- #4410 ADR for attach as attachment from Drive
+
+### Fixed
+- #4674 Handle Download file without putting wrong extension
+- #4213 Align Keyboard shortcut view in Settings
+- #4709 Handle style for link card UI
+
+### Changed
+- Reduce flaky in E2E: not depend on toast in assertion 
+
 ## [0.30.3] - 2026-07-15
 ### Added
 - TF-4661 Drive Link attachments as a cardview in email content
