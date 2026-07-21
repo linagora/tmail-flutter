@@ -256,6 +256,7 @@ class ComposerController extends BaseController
   EmailActionType? savedActionType;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
+  DriveAttachmentHandler? _driveAttachmentHandler;
 
   AppLifecycleListener? mobileAutoSaveLifecycleListener;
   Timer? periodicSnapshotTimer;
@@ -331,6 +332,9 @@ class ComposerController extends BaseController
     if (PlatformInfo.isAndroid) {
       initMobileAutoSave();
     }
+    _driveAttachmentHandler = DriveAttachmentHandler(
+      requireHttps: BuildUtils.isReleaseMode,
+    );
   }
 
   @override
@@ -347,6 +351,7 @@ class ComposerController extends BaseController
 
   @override
   void onClose() {
+    _driveAttachmentHandler = null;
     _textEditorWeb = null;
     savedActionType = null;
     _savedEmailDraftHash = null;
@@ -1003,7 +1008,7 @@ class ComposerController extends BaseController
 
   Future<void> handleDrivePickResult(List<DriveDocument> result) async {
     try {
-      await getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+      await _driveAttachmentHandler?.handleDrivePickResult(
         result,
         insertHtml: (html) async {
           if (PlatformInfo.isWeb) {
