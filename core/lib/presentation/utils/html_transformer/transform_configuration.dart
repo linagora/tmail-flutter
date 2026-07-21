@@ -62,12 +62,20 @@ class TransformConfiguration {
       const NormalizeLineHeightInStyleTransformer(),
     ]
   );
+  /// Reloading a draft feeds its HTML back into the composer's editable
+  /// webview, so unlike [forPreviewEmail]/[forDraftsEmail] (read-only), the
+  /// sanitizer here must let `contenteditable` survive - otherwise a drive
+  /// link card loses its `contenteditable="false"` guard and becomes an
+  /// editable region inside the editor.
   factory TransformConfiguration.forEditDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [
       ...TransformConfiguration.forDraftsEmail().domTransformers,
       if (PlatformInfo.isWeb)
         const HideDraftSignatureTransformer()
-    ]
+    ],
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
   );
 
   factory TransformConfiguration.forPreviewEmailOnWeb() => TransformConfiguration.create(
@@ -82,13 +90,23 @@ class TransformConfiguration {
       const NormalizeLineHeightInStyleTransformer(),
       const ResponsiveTableCellTransformer(),
       const RemoveNegativeMarginFloatTransformer(),
-    ]
+    ],
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
   );
 
-  factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.standardConfiguration;
+  factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.create(
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
+  );
 
   factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.create(
-    customDomTransformers: [const ImageTransformer()]
+    customDomTransformers: [const ImageTransformer()],
+    customTextTransformers: const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
   );
 
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([

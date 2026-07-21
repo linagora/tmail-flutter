@@ -497,7 +497,6 @@ class ComposerView extends GetWidget<ComposerController> {
           .watch(composerAttachmentExtensionRegistryProvider)
           .buildContextMenuTiles(
             context,
-            composerId: controller.composerId ?? '',
             imagePaths: controller.imagePaths,
             label: AppLocalizations.of(context).browse,
           ),

@@ -192,6 +192,254 @@ class HtmlUtils {
         name: 'onSelectionChange',
       );
 
+  /// Intercepts Enter inside a drive-link file card row (a DIV whose direct
+  /// children include a `contenteditable="false"` card) and breaks the row
+  /// into two rows at the caret's position, with a new empty paragraph in
+  /// between - instead of letting the editor's native paragraph-split run.
+  /// Pressing Enter at the very start/end of the row just adds a blank line
+  /// before/after it instead of producing a pointless empty row.
+  ///
+  /// Neither editor's own Enter can be reused here, and the reason is worth
+  /// recording because the alternative looks tempting. The row contains only
+  /// cards, so it holds no text node. Summernote's `insertParagraph` first
+  /// calls `range.normalize()`, which for a collapsed caret walks *backward*
+  /// looking for a "visible point"; that check accepts any text node but never
+  /// consults `contenteditable`, so with nothing at row level it descends into
+  /// the previous card and lands on its title text. `ancestor(sc, isPara)`
+  /// then resolves to the card's inner DIV - Summernote's `isPara` matches
+  /// `/^DIV|^P|^LI|^H[1-7]/` - and `splitTree` splits *inside* the card, which
+  /// is what made Enter grow the card before the caret. Mobile's raw
+  /// `contenteditable` div hits the same missing-text-node problem natively.
+  ///
+  /// Padding the row with zero-width text nodes to give the caret somewhere
+  /// legal to sit was measured and rejected: it fixes only the row's two ends,
+  /// and each filler costs an extra arrow press to cross because its two
+  /// offsets render at the same pixel.
+  static ({String name, String script}) registerFileLinkRowEnterKeyHandler({
+    bool isWebPlatform = false,
+  }) =>
+      (
+        script: '''
+      (() => {
+        const isWebPlatform = $isWebPlatform;
+        const root = isWebPlatform
+          ? document.querySelector('.note-editor .note-editable')
+          : document.querySelector('#editor');
+        if (!root || root.dataset.fileLinkRowEnterHandlerAttached) return;
+        root.dataset.fileLinkRowEnterHandlerAttached = 'true';
+
+        function isFileLinkCardRow(el) {
+          if (!el || el.tagName !== 'DIV') return false;
+          let child = el.firstElementChild;
+          while (child) {
+            if (child.tagName === 'A' && child.classList.contains('tmail-file-link-card')) {
+              return true;
+            }
+            child = child.nextElementSibling;
+          }
+          return false;
+        }
+
+        function findFileLinkCardRow(node) {
+          let el = node && node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el !== root) {
+            if (isFileLinkCardRow(el)) return el;
+            el = el.parentElement;
+          }
+          return null;
+        }
+
+        function isEmptyBlock(el) {
+          return !!el
+            && (el.tagName === 'P' || el.tagName === 'DIV')
+            && !isFileLinkCardRow(el)
+            && el.textContent.trim() === '';
+        }
+
+        // Index into row.childNodes (not just element children), splitting
+        // a text node in two if the caret sits mid-text - handles text typed
+        // between cards, which lands as a direct child text node of `row`.
+        function getSplitIndex(row, selection) {
+          const node = selection.anchorNode;
+          const offset = selection.anchorOffset;
+
+          if (node === row) return Math.min(offset, row.childNodes.length);
+
+          if (node.nodeType === Node.TEXT_NODE && node.parentNode === row) {
+            if (offset > 0 && offset < node.length) {
+              node.splitText(offset);
+            }
+            const index = Array.prototype.indexOf.call(row.childNodes, node);
+            return offset === 0 ? index : index + 1;
+          }
+
+          let el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el.parentNode !== row) {
+            el = el.parentNode;
+          }
+          if (!el) return row.childNodes.length;
+          const index = Array.prototype.indexOf.call(row.childNodes, el);
+          return index < 0 ? row.childNodes.length : index + 1;
+        }
+
+        function makeEmptyParagraph() {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          return p;
+        }
+
+        function placeCaretAtStart(selection, target) {
+          const range = document.createRange();
+          range.setStart(target, 0);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        // Reuses an already-empty block sibling of `row` (on `side`) as the
+        // caret's landing line instead of stacking a new blank line on top
+        // of one that's already there, creating one only if needed.
+        function placeCaretInAdjacentLine(row, side, selection) {
+          const sibling = side === 'before' ? row.previousElementSibling : row.nextElementSibling;
+          let target = sibling;
+          if (!isEmptyBlock(target)) {
+            target = makeEmptyParagraph();
+            row.parentNode.insertBefore(target, side === 'before' ? row : row.nextSibling);
+          }
+          placeCaretAtStart(selection, target);
+        }
+
+        function hasCard(nodes) {
+          return nodes.some(function (node) {
+            return node.nodeType === Node.ELEMENT_NODE && node.tagName === 'A';
+          });
+        }
+
+        // Splits row's child nodes at splitIndex. If a side has no card
+        // left, docks the caret in the adjacent line instead.
+        function splitRowAt(row, splitIndex, selection) {
+          const childNodes = Array.prototype.slice.call(row.childNodes);
+          const before = childNodes.slice(0, splitIndex);
+          const after = childNodes.slice(splitIndex);
+
+          if (!hasCard(before)) {
+            placeCaretInAdjacentLine(row, 'before', selection);
+            return;
+          }
+          if (!hasCard(after)) {
+            placeCaretInAdjacentLine(row, 'after', selection);
+            return;
+          }
+
+          const secondRow = row.cloneNode(false);
+          after.forEach(function (node) {
+            secondRow.appendChild(node);
+          });
+          const newLine = makeEmptyParagraph();
+          row.parentNode.insertBefore(newLine, row.nextSibling);
+          row.parentNode.insertBefore(secondRow, newLine.nextSibling);
+          placeCaretAtStart(selection, newLine);
+        }
+
+        root.addEventListener('keydown', function (event) {
+          if (event.key !== 'Enter') return;
+
+          try {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const row = findFileLinkCardRow(selection.anchorNode);
+            if (!row) return;
+
+            event.preventDefault();
+
+            splitRowAt(row, getSplitIndex(row, selection), selection);
+            root.dispatchEvent(new Event('input', { bubbles: true }));
+          } catch (error) {
+            console.error('File link row Enter handler error:', error);
+          }
+        }, true);
+      })();''',
+        name: 'registerFileLinkRowEnterKeyHandler',
+      );
+
+  /// JS handler name used to bridge file-link-card taps back to Dart on
+  /// mobile, since `window.open()` inside the InAppWebView editor has no
+  /// `onCreateWindow` wired up and is silently swallowed.
+  static const String fileLinkCardClickHandlerName = 'tmailFileLinkCardClick';
+
+  /// `target="_blank"` on the card anchor doesn't survive
+  /// StandardizeHtmlSanitizingTransformers (draft reload strips it), and
+  /// Summernote's image-handle module hijacks mousedown on any `<img>` before
+  /// it reaches the anchor - so this bypasses both by opening the link itself
+  /// on a capture-phase listener. On mobile, `window.open()` inside the
+  /// InAppWebView editor has no `onCreateWindow` handler and is silently
+  /// swallowed, so the tap is bridged to Dart instead, which opens the link
+  /// via `url_launcher`.
+  static ({String name, String script}) registerFileLinkCardClickHandler({
+    bool isWebPlatform = false,
+  }) =>
+      (
+        script: '''
+      (() => {
+        const isWebPlatform = $isWebPlatform;
+        const root = isWebPlatform
+          ? document.querySelector('.note-editor .note-editable')
+          : document.querySelector('#editor');
+        if (!root || root.dataset.fileLinkCardClickHandlerAttached) return;
+        root.dataset.fileLinkCardClickHandlerAttached = 'true';
+
+        function closestCardAnchor(node) {
+          let el = node && node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+          while (el && el !== root.parentElement) {
+            if (el.tagName === 'A' && el.classList.contains('tmail-file-link-card')) {
+              return el;
+            }
+            el = el.parentElement;
+          }
+          return null;
+        }
+
+        function isSafeCardHref(href) {
+          try {
+            const protocol = new URL(href, window.location.href).protocol;
+            return protocol === 'http:' || protocol === 'https:';
+          } catch (error) {
+            return false;
+          }
+        }
+
+        root.addEventListener('mousedown', function (event) {
+          if (closestCardAnchor(event.target)) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }, true);
+
+        root.addEventListener('click', function (event) {
+          const anchor = closestCardAnchor(event.target);
+          if (!anchor) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          try {
+            const href = anchor.getAttribute('href');
+            if (href && isSafeCardHref(href)) {
+              if (isWebPlatform) {
+                window.open(href, '_blank', 'noopener,noreferrer');
+              } else {
+                window.flutter_inappwebview.callHandler('$fileLinkCardClickHandlerName', href);
+              }
+            }
+          } catch (error) {
+            console.error('File link card click handler error:', error);
+          }
+        }, true);
+      })();''',
+        name: 'registerFileLinkCardClickHandler',
+      );
+
   static const collapseSelectionToEnd = (
     script: '''
       (() => {
@@ -923,6 +1171,7 @@ class HtmlUtils {
     bool removeStyle = true,
     bool removeScript = true,
     bool removeTMailSignature = true,
+    bool removeFileLinkCards = true,
   }) {
     var cleaned = html;
 
@@ -943,6 +1192,13 @@ class HtmlUtils {
     }
     if (removeTMailSignature) {
       doc.querySelectorAll('div.tmail-signature').forEach((e) => e.remove());
+    }
+    if (removeFileLinkCards) {
+      // File-link cards (e.g. Drive attachments, see FileLinkCardHtmlBuilder)
+      // carry the "tmail-file-link-card" class. Their title/action-label
+      // text is card chrome, not user-authored content, so it must not feed
+      // the attachment-reminder keyword scan.
+      doc.querySelectorAll('a.tmail-file-link-card').forEach((e) => e.remove());
     }
 
     cleaned = doc.outerHtml;

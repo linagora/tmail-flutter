@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/html_transformer/dom/responsive_table_ce
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -424,6 +425,80 @@ void main() {
           contains('After'),
           contains('Hello'),
         ));
+      });
+    });
+
+    group('HTML-attachment preview config — used by GetHtmlContentFromUploadFileInteractor and PreviewAttachmentDownloadControllerExtension', () {
+      // Both consumers preview an arbitrary .html file (attacker-controlled if
+      // it came from a received email's attachment), so this must behave like
+      // read-only email preview: no contenteditable survives. Pipeline:
+      // TransformConfiguration.create(
+      //   customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
+      //   customTextTransformers: [StandardizeHtmlSanitizingTransformers()],
+      // )
+      Future<String> transformWithHtmlAttachmentConfig(String content) =>
+          htmlTransform.transformToHtml(
+            htmlContent: content,
+            transformConfiguration: TransformConfiguration.create(
+              customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
+              customTextTransformers: const [StandardizeHtmlSanitizingTransformers()],
+            ),
+          );
+
+      test('SHOULD strip contenteditable from a crafted .html attachment', () async {
+        const html =
+            '<div><a href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
+        final out = await transformWithHtmlAttachmentConfig(html);
+        expect(out, isNot(contains('contenteditable')));
+      });
+
+      test('SHOULD still add target/rel to plain links AND strip <script>', () async {
+        const input =
+            HtmlEmailCorpus.htmlWithScriptTag + HtmlEmailCorpus.htmlWithBoldAndLink;
+        final out = await transformWithHtmlAttachmentConfig(input);
+        expect(out, isNot(contains('<script')));
+        expect(out, contains('target="_blank"'));
+        expect(out, contains('rel="noreferrer"'));
+      });
+
+      test('SHOULD sanitize javascript: href AND strip contenteditable', () async {
+        const html = '<div>'
+            '<a href="javascript:alert(1)">evil</a>'
+            '<a href="https://drive.example.com/file" contenteditable="false">file.pdf</a>'
+            '</div>';
+        final out = await transformWithHtmlAttachmentConfig(html);
+        expect(out, isNot(contains('javascript:')));
+        expect(out, isNot(contains('contenteditable')));
+      });
+    });
+
+    group('Draft-reload config — TransformConfiguration.forEditDraftsEmail (composer editing a saved draft)', () {
+      Future<String> transformWithEditDraftsConfig(String content) =>
+          htmlTransform.transformToHtml(
+            htmlContent: content,
+            transformConfiguration: TransformConfiguration.forEditDraftsEmail(),
+          );
+
+      test('SHOULD preserve contenteditable="false" on a drive-link card row', () async {
+        const html =
+            '<div><a class="tmail-file-link-card" href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
+        final out = await transformWithEditDraftsConfig(html);
+        expect(out, contains('contenteditable="false"'));
+      });
+
+      test('SHOULD still strip <script> while preserving drive-link card contenteditable', () async {
+        const html = '<script>alert(1)</script>'
+            '<a class="tmail-file-link-card" href="https://drive.example.com/file" contenteditable="false">file.pdf</a>';
+        final out = await transformWithEditDraftsConfig(html);
+        expect(out, isNot(contains('<script')));
+        expect(out, contains('contenteditable="false"'));
+      });
+
+      test('SHOULD strip contenteditable="false" from a non-drive-link-card element', () async {
+        const html =
+            '<div><a href="https://drive.example.com/file" contenteditable="false">file.pdf</a></div>';
+        final out = await transformWithEditDraftsConfig(html);
+        expect(out, isNot(contains('contenteditable')));
       });
     });
 

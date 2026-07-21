@@ -8,7 +8,6 @@ import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 
 class DriveAttachmentContextMenuTile extends StatefulWidget {
-  final String composerId;
   final ImagePaths imagePaths;
   final Uri workplaceUri;
   final String label;
@@ -17,7 +16,6 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
 
   const DriveAttachmentContextMenuTile({
     super.key,
-    required this.composerId,
     required this.imagePaths,
     required this.workplaceUri,
     required this.label,

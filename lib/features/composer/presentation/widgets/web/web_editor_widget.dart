@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_scripts.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 
@@ -180,52 +181,12 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         disableDragAndDrop: true,
         normalizeHtmlTextWhenDropping: true,
         normalizeHtmlTextWhenPasting: true,
-        webInitialScripts: UnmodifiableListView([
-          WebScript(
-            name: HtmlUtils.removeLineHeight1px.name,
-            script: HtmlUtils.removeLineHeight1px.script,
+        webInitialScripts: UnmodifiableListView(
+          buildWebEditorInitialScripts(
+            maxHeight: maxHeight,
+            selectionChangeScript: _selectionChangeScript,
           ),
-          WebScript(
-            name: HtmlUtils.registerDropListener.name,
-            script: HtmlUtils.registerDropListener.script,
-          ),
-          WebScript(
-            name: HtmlUtils.unregisterDropListener.name,
-            script: HtmlUtils.unregisterDropListener.script,
-          ),
-          WebScript(
-            name: _selectionChangeScript.name,
-            script: _selectionChangeScript.script,
-          ),
-          WebScript(
-            name: HtmlUtils.collapseSelectionToEnd.name,
-            script: HtmlUtils.collapseSelectionToEnd.script,
-          ),
-          WebScript(
-            name: HtmlUtils.deleteSelectionContent.name,
-            script: HtmlUtils.deleteSelectionContent.script,
-          ),
-          WebScript(
-            name: HtmlUtils.saveSelection.name,
-            script: HtmlUtils.saveSelection.script,
-          ),
-          WebScript(
-            name: HtmlUtils.restoreSelection.name,
-            script: HtmlUtils.restoreSelection.script,
-          ),
-          WebScript(
-            name: HtmlUtils.getSavedSelection.name,
-            script: HtmlUtils.getSavedSelection.script,
-          ),
-          WebScript(
-            name: HtmlUtils.clearSavedSelection.name,
-            script: HtmlUtils.clearSavedSelection.script,
-          ),
-          WebScript(
-            name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
-            script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
-          ),
-        ])
+        )
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
         toolbarType: ToolbarType.hide,
@@ -237,13 +198,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onChangeContent: widget.onChangeContent,
         onInit: () {
           widget.onInitial?.call(widget.content);
-          if (!_editorListenerRegistered) {
-            _editorController.evaluateJavascriptWeb(
-              HtmlUtils.registerDropListener.name);
-            _editorController.evaluateJavascriptWeb(
-              _selectionChangeScript.name);
-            _editorListenerRegistered = true;
-          }
+          _registerEditorScripts();
         },
         onFocus: widget.onFocus,
         onUnFocus: widget.onUnFocus,
@@ -276,6 +231,26 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onKeyDown: widget.onKeyDownEditorAction,
       ),
     );
+  }
+
+  void _registerEditorScripts() {
+    if (_editorListenerRegistered) return;
+
+    _editorController.evaluateJavascriptWeb(
+      HtmlUtils.registerDropListener.name);
+    _editorController.evaluateJavascriptWeb(
+      _selectionChangeScript.name);
+    _editorController.evaluateJavascriptWeb(
+      HtmlUtils.registerFileLinkRowEnterKeyHandler(
+        isWebPlatform: true,
+      ).name,
+    );
+    _editorController.evaluateJavascriptWeb(
+      HtmlUtils.registerFileLinkCardClickHandler(
+        isWebPlatform: true,
+      ).name,
+    );
+    _editorListenerRegistered = true;
   }
 
   void _showSignatureTooltipAtPosition(

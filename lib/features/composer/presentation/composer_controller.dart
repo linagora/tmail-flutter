@@ -1001,15 +1001,17 @@ class ComposerController extends BaseController
     }
   }
 
-  void handleDrivePickResult(List<DriveDocument> result) {
+  Future<void> handleDrivePickResult(List<DriveDocument> result) async {
     try {
-      getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+      await getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
         result,
-        insertHtml: (html) {
+        insertHtml: (html) async {
           if (PlatformInfo.isWeb) {
             richTextWebController?.editorController.insertHtml(html);
           } else {
-            htmlEditorApi?.insertHtml(html);
+            popBack();
+            await richTextMobileTabletController?.restoreMobileEditorFocus();
+            await htmlEditorApi?.insertHtml(html);
           }
         },
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
@@ -1193,7 +1195,15 @@ class ComposerController extends BaseController
     }
   }
 
-  void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
+  Future<void> openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) async {
+    if (PlatformInfo.isMobile) {
+      try {
+        await htmlEditorApi?.storeSelectionRange();
+      } catch (e) {
+        log('ComposerController::openPickAttachmentMenu(): $e');
+      }
+    }
+    if (!context.mounted) return;
     clearFocus();
 
     (ContextMenuBuilder(context)

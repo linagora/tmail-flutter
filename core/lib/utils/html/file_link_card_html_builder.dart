@@ -40,7 +40,7 @@ class FileLinkCardHtmlBuilder {
     final safeTitle = _textEscape.convert(content.title);
     final safeActionLabel = _textEscape.convert(content.actionLabel);
 
-    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" style="display:inline-block;vertical-align:top;width:${size.cardWidthPx}px;'
+    return '<a href="$safeHref" target="_blank" rel="noopener noreferrer" contenteditable="false" tabindex="-1" class="tmail-file-link-card" style="display:inline-block;vertical-align:top;width:${size.cardWidthPx}px;'
         'min-height:${size.cardMinHeightPx}px;margin:0 8px 8px 0;border:1px solid #E5E7EB;'
         'border-radius:10px;overflow:hidden;background:#FFFFFF;color:inherit;text-decoration:none;">'
         '${content.iconZoneHtml}'
@@ -69,8 +69,16 @@ class FileLinkCardHtmlBuilder {
         '</div>';
   }
 
-  static String wrapFileCardsHtml(String cardsHtml) {
-    if (cardsHtml.isEmpty) return '';
-    return '<div style="display:block;max-width:100%;">$cardsHtml</div><br>';
+  static String wrapFileCardsHtml(List<String> cards) {
+    if (cards.isEmpty) return '';
+    // The row div is left editable (not contenteditable="false") so each
+    // card stays individually selectable/deletable as an atomic unit -
+    // browsers already let you select and Backspace a non-editable child
+    // without entering it. Enter anywhere inside this row is handled by
+    // HtmlUtils.registerFileLinkRowEnterKeyHandler, which recognizes the row
+    // by its direct contenteditable="false" <a> children and redirects the
+    // caret to the trailing <p><br></p> below instead of letting the
+    // editor's native (card-unaware) paragraph-split run.
+    return '<div style="display:block;max-width:100%;">${cards.join()}</div><p><br></p>';
   }
 }

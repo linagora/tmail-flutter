@@ -26,14 +26,12 @@ class ComposerAttachmentExtensionRegistry {
 
   List<Widget> buildContextMenuTiles(
     BuildContext context, {
-    required String composerId,
     required ImagePaths imagePaths,
     required String label,
   }) => extensions
       .map(
         (e) => e.buildContextMenuTile(
           context,
-          composerId: composerId,
           imagePaths: imagePaths,
           label: label,
         ),

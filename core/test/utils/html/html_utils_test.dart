@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:universal_html/html.dart' as html;
 
 void main() {
@@ -120,4 +121,97 @@ void main() {
     });
   });
 
+  group('HtmlUtils registerFileLinkRowEnterKeyHandler tests', () {
+    test('Should return a stable script name regardless of platform', () {
+      final web = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true);
+      final mobile = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: false);
+
+      expect(web.name, 'registerFileLinkRowEnterKeyHandler');
+      expect(mobile.name, 'registerFileLinkRowEnterKeyHandler');
+    });
+
+    test('Should target the Summernote editable root when isWebPlatform is true', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true);
+
+      expect(result.script, contains('const isWebPlatform = true'));
+      expect(result.script, contains(".note-editor .note-editable'"));
+    });
+
+    test('Should target the mobile editor root when isWebPlatform is false', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: false);
+
+      expect(result.script, contains('const isWebPlatform = false'));
+      expect(result.script, contains("'#editor'"));
+    });
+
+    test('Should identify a file-link card row only via a direct tmail-file-link-card anchor child', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains("classList.contains('tmail-file-link-card')"));
+      expect(result.script, contains('firstElementChild'));
+    });
+
+    test('Should split the row into two at the caret index rather than always inserting after it', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function splitRowAt'));
+      expect(result.script, contains('function getSplitIndex'));
+      expect(result.script, contains('cloneNode(false)'));
+    });
+
+    test('Should fall back to a blank line before/after the row at its edges instead of an empty split', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function placeCaretInAdjacentLine'));
+      expect(result.script, contains('function hasCard'));
+      expect(result.script, contains('if (!hasCard(before))'));
+      expect(result.script, contains('if (!hasCard(after))'));
+    });
+
+    test('Should reuse an existing empty adjacent line instead of stacking a new one', () {
+      final result = HtmlUtils.registerFileLinkRowEnterKeyHandler();
+
+      expect(result.script, contains('function isEmptyBlock'));
+      expect(result.script, contains('if (!isEmptyBlock(target))'));
+    });
+  });
+
+  group('HtmlUtils extractPlainText file link card tests', () {
+    final card = FileLinkCardHtmlBuilder.buildFileLinkCard(
+      const FileLinkCardContent(
+        href: 'https://drive.example.com/file/1',
+        title: 'report_attachment.pdf',
+        actionLabel: 'Open in Drive',
+        iconZoneHtml: '',
+      ),
+    );
+
+    test('Should strip file link card title/action text by default', () {
+      final result = HtmlUtils.extractPlainText('<p>Hello there</p>$card');
+
+      expect(result, contains('Hello there'));
+      expect(result, isNot(contains('report_attachment.pdf')));
+      expect(result, isNot(contains('Open in Drive')));
+    });
+
+    test('Should keep file link card text when removeFileLinkCards is false', () {
+      final result = HtmlUtils.extractPlainText(
+        '<p>Hello there</p>$card',
+        removeFileLinkCards: false,
+      );
+
+      expect(result, contains('Hello there'));
+      expect(result, contains('report_attachment.pdf'));
+      expect(result, contains('Open in Drive'));
+    });
+
+    test('Should still detect user-typed attachment mentions outside the card', () {
+      final result = HtmlUtils.extractPlainText(
+        '<p>I forgot the attachment</p>$card',
+      );
+
+      expect(result, contains('I forgot the attachment'));
+      expect(result, isNot(contains('report_attachment.pdf')));
+    });
+  });
 }

@@ -12,25 +12,25 @@ class DriveAttachmentHandler {
   /// without this class depending on `BuildUtils` directly.
   final bool requireHttps;
 
-  void handleDrivePickResult(
+  Future<void> handleDrivePickResult(
     List<DriveDocument> result, {
-    required void Function(String html) insertHtml,
+    required Future<void> Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
-  }) {
+  }) async {
     final linkDocs = result.where((doc) => doc.sharingLink != null).toList();
-    insertDriveLinkHtml(
+    await insertDriveLinkHtml(
       linkDocs,
       insertHtml: insertHtml,
       appLocalizations: appLocalizations,
     );
   }
 
-  void insertDriveLinkHtml(
+  Future<void> insertDriveLinkHtml(
     List<DriveDocument> docs, {
-    required void Function(String html) insertHtml,
+    required Future<void> Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
-  }) {
-    insertHtml(
+  }) async {
+    await insertHtml(
       buildDriveLinksHtml(docs, appLocalizations: appLocalizations),
     );
   }
@@ -47,7 +47,7 @@ class DriveAttachmentHandler {
           ),
         )
         .nonNulls
-        .join();
+        .toList();
     return FileLinkCardHtmlBuilder.wrapFileCardsHtml(cards);
   }
 

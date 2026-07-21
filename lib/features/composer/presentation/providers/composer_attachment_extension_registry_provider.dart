@@ -18,10 +18,10 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
     WorkplaceComposerAttachmentExtension(
       workplaceUri: uriNotifier,
       oidcTokenGetter: () => getBinding<AuthorizationInterceptors>()?.currentOidcIdToken,
-      onPickState: (composerId, state) {
+      onPickState: (composerId, state) async {
         if (state is DrivePickResult) {
           try {
-            getBinding<ComposerController>(tag: composerId)?.handleDrivePickResult(state.documents);
+            await getBinding<ComposerController>(tag: composerId)?.handleDrivePickResult(state.documents);
           } catch (e) {
             logWarning('ComposerAttachmentExtensionRegistry::onPickState: $e');
           }
