@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -10,9 +11,13 @@ void main() {
   late DriveAttachmentHandler handler;
   final appLocalizations = AppLocalizations();
 
+  setUpAll(() {
+    Get.put(DriveAttachmentHandler());
+  });
+
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler.instance;
+    handler = Get.find<DriveAttachmentHandler>();
   });
 
   group('DriveAttachmentHandler::handleDrivePickResult::', () {

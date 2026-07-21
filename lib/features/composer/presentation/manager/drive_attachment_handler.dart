@@ -4,9 +4,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
 class DriveAttachmentHandler {
-  DriveAttachmentHandler._();
-
-  static final DriveAttachmentHandler instance = DriveAttachmentHandler._();
+  DriveAttachmentHandler();
 
   static const _fallbackOpenInDriveLabel = 'Open in drive';
 

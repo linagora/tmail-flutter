@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/permissions/permission_service.dart';
@@ -37,6 +38,7 @@ class CoreBindings extends Bindings {
     _bindingUtils();
     _bindingIsolate();
     _bindingStorage();
+    _bindingDriveAttachmentHandler();
   }
 
   void _bindingAppImagePaths() {
@@ -45,6 +47,10 @@ class CoreBindings extends Bindings {
 
   void _bindingResponsiveManager() {
     Get.put(ResponsiveUtils());
+  }
+
+  void _bindingDriveAttachmentHandler() {
+    Get.put(DriveAttachmentHandler());
   }
 
   Future _bindingSharePreference() async {
