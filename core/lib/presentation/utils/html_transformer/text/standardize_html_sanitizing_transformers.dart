@@ -19,7 +19,7 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     if (text.isEmpty) return '';
 
     final scopedText = allowAttributes?.contains(_contentEditableAttribute) == true &&
-            text.contains(_contentEditableAttribute)
+            text.toLowerCase().contains(_contentEditableAttribute)
       ? _stripContentEditableOutsideDriveLinkCard(text)
       : text;
 
