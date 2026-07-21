@@ -356,6 +356,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
 
   bool get _isIconDisplayed =>
       widget.mailboxNode.item.isPersonal ||
+      widget.mailboxNode.item.isSharedAccount ||
       widget.mailboxNode.item.hasParentId();
 
   String get _iconMailbox =>

@@ -122,7 +122,8 @@ class ThreadController extends BaseController with EmailActionController {
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
   ProviderSubscription<PreferencesSetting>? _localSettingsSubscription;
 
-  AccountId? get _accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get _accountId =>
+      selectedMailbox?.accountId ?? mailboxDashBoardController.accountId.value;
 
   Session? get _session => mailboxDashBoardController.sessionCurrent;
 
