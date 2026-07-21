@@ -197,7 +197,9 @@ class ThreadController extends BaseController with EmailActionController {
     }
     _webSocketQueueHandler?.dispose();
     _localSettingsSubscription?.close();
-    _searchService.unregister(_searchExecutionObserver);
+    if (PlatformInfo.isWeb) {
+      _searchService.unregister(_searchExecutionObserver);
+    }
     super.onClose();
   }
 
@@ -811,9 +813,9 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> refreshChangeSearchEmail() => _refreshChangeSearchEmail();
 
   Future<void> _refreshChangeSearchEmail() async {
+    if (_session == null || _accountId == null) return;
     await _refreshChangeListEmailCache();
     log('ThreadController::_refreshChangeSearchEmail:');
-    if (_session == null || _accountId == null) return;
     await _searchService.dispatch(
       RefreshChangesIntent(
         currentCount: mailboxDashBoardController.emailsInCurrentMailbox.length,
@@ -1155,7 +1157,10 @@ class ThreadController extends BaseController with EmailActionController {
     }
     _searchService.dispatch(
       refresh
-          ? RefreshChangesIntent(currentCount: limitEmailFetched.value.toInt())
+          ? RefreshChangesIntent(
+              currentCount:
+                  mailboxDashBoardController.emailsInCurrentMailbox.length,
+            )
           : const NewSearchIntent(),
       _dispatchContext,
     );
