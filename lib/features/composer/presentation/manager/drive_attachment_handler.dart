@@ -1,16 +1,15 @@
+import 'package:core/core.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
 class DriveAttachmentHandler {
-  DriveAttachmentHandler({required this.requireHttps});
+  DriveAttachmentHandler();
 
   static const _fallbackOpenInDriveLabel = 'Open in drive';
 
   /// Whether non-https sharing/thumbnail links should be rejected.
-  /// Injected by the binding so it reflects the app's build mode
-  /// without this class depending on `BuildUtils` directly.
-  final bool requireHttps;
+  bool get requireHttps => BuildUtils.isReleaseMode;
 
   Future<void> handleDrivePickResult(
     List<DriveDocument> result, {

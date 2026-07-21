@@ -1003,7 +1003,7 @@ class ComposerController extends BaseController
 
   Future<void> handleDrivePickResult(List<DriveDocument> result) async {
     try {
-      await getBinding<DriveAttachmentHandler>(tag: composerId)?.handleDrivePickResult(
+      await Get.find<DriveAttachmentHandler>().handleDrivePickResult(
         result,
         insertHtml: (html) async {
           if (PlatformInfo.isWeb) {

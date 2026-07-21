@@ -18,7 +18,8 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
   String process(String text, HtmlEscape htmlEscape) {
     if (text.isEmpty) return '';
 
-    final scopedText = allowAttributes?.contains(_contentEditableAttribute) == true
+    final scopedText = allowAttributes?.contains(_contentEditableAttribute) == true &&
+            text.toLowerCase().contains(_contentEditableAttribute)
       ? _stripContentEditableOutsideDriveLinkCard(text)
       : text;
 

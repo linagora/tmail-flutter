@@ -643,7 +643,7 @@ class HtmlUtils {
             width: 100% !important;
           }
           
-          a {
+          a:not(.tmail-file-link-card) {
             width: -webkit-fill-available !important;
           }
         }

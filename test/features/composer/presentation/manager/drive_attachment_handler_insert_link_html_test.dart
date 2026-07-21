@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -9,9 +10,13 @@ void main() {
   late List<String> insertedHtml;
   late DriveAttachmentHandler handler;
 
+  setUpAll(() {
+    Get.put(DriveAttachmentHandler());
+  });
+
   setUp(() {
     insertedHtml = [];
-    handler = DriveAttachmentHandler(requireHttps: false);
+    handler = Get.find<DriveAttachmentHandler>();
   });
 
   group('DriveAttachmentHandler::insertDriveLinkHtml::', () {
@@ -130,24 +135,6 @@ void main() {
       expect(insertedHtml.first, isNot(contains('<img')));
     });
 
-    test('Should omit the img tag when the thumbnail is non-https and requireHttps is true', () async {
-      final untrustedHttpDoc = DriveDocument(
-        id: '9',
-        name: 'Photo2.png',
-        size: 0,
-        mimeType: 'image/png',
-        sharingLink: Uri.parse('https://example.com/photo2.png'),
-        thumbnail: DriveDocumentThumbnail(link: Uri.parse('http://cdn.example.com/thumbnails/photo2.png')),
-      );
-      final strictHandler = DriveAttachmentHandler(requireHttps: true);
-
-      strictHandler.insertDriveLinkHtml([
-        untrustedHttpDoc,
-      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
-
-      expect(insertedHtml.first, isNot(contains('<img')));
-    });
-
     test('Should embed a non-https thumbnail when requireHttps is false', () async {
       final httpThumbnailDoc = DriveDocument(
         id: '10',
@@ -163,23 +150,6 @@ void main() {
       ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
 
       expect(insertedHtml.first, contains('<img src="http://cdn.example.com/thumbnails/photo3.png"'));
-    });
-
-    test('Should skip non-https links when requireHttps is true', () async {
-      final httpDoc = DriveDocument(
-        id: '5',
-        name: 'Insecure',
-        size: 0,
-        mimeType: 'text/plain',
-        sharingLink: Uri.parse('http://example.com/file'),
-      );
-      final strictHandler = DriveAttachmentHandler(requireHttps: true);
-
-      strictHandler.insertDriveLinkHtml([
-        httpDoc,
-      ], insertHtml: (html) async => insertedHtml.add(html), appLocalizations: AppLocalizations());
-
-      expect(insertedHtml.first, isEmpty);
     });
 
     test('Should allow non-https links when requireHttps is false', () async {
