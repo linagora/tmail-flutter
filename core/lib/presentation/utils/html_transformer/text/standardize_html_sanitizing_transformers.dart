@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/sanitize_html.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:html/parser.dart' show parseFragment;
 
 class StandardizeHtmlSanitizingTransformers extends TextTransformer {
@@ -33,14 +34,22 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
   /// `a.tmail-file-link-card` before sanitizing, so the allow-list can only
   /// ever surface it on that card.
   String _stripContentEditableOutsideDriveLinkCard(String html) {
-    final fragment = parseFragment(html);
-    for (final element in fragment.querySelectorAll('[$_contentEditableAttribute]')) {
-      final isDriveLinkCard = element.localName == 'a' &&
-        element.classes.contains(_driveLinkCardClassName);
-      if (!isDriveLinkCard) {
-        element.attributes.remove(_contentEditableAttribute);
+    try {
+      final fragment = parseFragment(html);
+      for (final element in fragment.querySelectorAll(
+        '[$_contentEditableAttribute]',
+      )) {
+        final isDriveLinkCard =
+            element.localName == 'a' &&
+            element.classes.contains(_driveLinkCardClassName);
+        if (!isDriveLinkCard) {
+          element.attributes.remove(_contentEditableAttribute);
+        }
       }
+      return fragment.outerHtml;
+    } catch (e) {
+      log('Failed to strip contenteditable attribute from HTML: $e');
+      return html;
     }
-    return fragment.outerHtml;
   }
 }

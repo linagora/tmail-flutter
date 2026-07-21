@@ -1195,7 +1195,7 @@ class ComposerController extends BaseController
     }
   }
 
-  void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) async {
+  Future<void> openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) async {
     if (PlatformInfo.isMobile) {
       try {
         await htmlEditorApi?.storeSelectionRange();
