@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
@@ -21,7 +22,7 @@ class PresentationMailbox with EquatableMixin {
   static const String favoriteRole = 'favorite';
   static const String actionRequiredRole = 'needs-action';
 
-  static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
+  static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')),);
   static final PresentationMailbox favoriteFolder = PresentationMailbox(
     MailboxId(Id(favoriteRole)),
     name: MailboxName('Starred'),
@@ -49,6 +50,9 @@ class PresentationMailbox with EquatableMixin {
   static final roleActionRequired = Role(actionRequiredRole);
 
   final MailboxId id;
+  final AccountId? accountId;
+  final bool isSharedAccount;
+  final bool isSharedAccountRoot;
   final MailboxName? name;
   final MailboxId? parentId;
   final Role? role;
@@ -69,7 +73,10 @@ class PresentationMailbox with EquatableMixin {
   PresentationMailbox(
     this.id,
     {
-      this.name,
+      this.accountId,
+    this.isSharedAccount = false,
+    this.isSharedAccountRoot = false,
+    this.name,
       this.parentId,
       this.role,
       this.sortOrder,
@@ -84,13 +91,16 @@ class PresentationMailbox with EquatableMixin {
       this.state = MailboxState.activated,
       this.namespace,
       this.displayName,
-      this.rights
+      this.rights,
     }
   );
 
   @override
   List<Object?> get props => [
     id,
+        accountId,
+        isSharedAccount,
+        isSharedAccountRoot,
     name,
     parentId,
     role,
@@ -106,11 +116,14 @@ class PresentationMailbox with EquatableMixin {
     state,
     namespace,
     displayName,
-    rights
+    rights,
   ];
 
   PresentationMailbox copyWith({
     MailboxId? id,
+    AccountId? accountId,
+    bool? isSharedAccount,
+    bool? isSharedAccountRoot,
     MailboxName? name,
     MailboxId? parentId,
     Role? role,
@@ -126,9 +139,13 @@ class PresentationMailbox with EquatableMixin {
     MailboxState? state,
     Namespace? namespace,
     String? displayName,
+    Map<String, List<String>?>? rights,
   }) {
     return PresentationMailbox(
       id ?? this.id,
+      accountId: accountId ?? this.accountId,
+      isSharedAccount: isSharedAccount ?? this.isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot ?? this.isSharedAccountRoot,
       name: name ?? this.name,
       parentId: parentId ?? this.parentId,
       role: role ?? this.role,
@@ -144,6 +161,7 @@ class PresentationMailbox with EquatableMixin {
       state: state ?? this.state,
       namespace: namespace ?? this.namespace,
       displayName: displayName ?? this.displayName,
+      rights: rights ?? this.rights,
     );
   }
 }

@@ -15,11 +15,15 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isDefault => hasRole();
 
-  bool get isPersonal => namespace == null || namespace == Namespace('Personal');
+  bool get isPersonal =>
+      !isSharedAccount &&
+      ( namespace == null || namespace == Namespace('Personal'));
 
-  bool get isTeamMailboxes => !isPersonal && !hasParentId();
+  bool get isTeamMailboxes => !isSharedAccount && !isPersonal && !hasParentId();
 
-  bool get isChildOfTeamMailboxes => !isPersonal && hasParentId();
+  bool get isChildOfTeamMailboxes =>
+      (isSharedAccount && !isSharedAccountRoot) ||
+      ( !isPersonal && hasParentId());
 
   String get countUnReadEmailsAsString {
     if (countUnreadEmails <= 0) return '';
@@ -128,7 +132,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
     return name;
   }
 
-  bool get allowedToDisplay => isSubscribedMailbox || isDefault;
+  bool get allowedToDisplay =>
+      isSharedAccountRoot || isSubscribedMailbox || isDefault;
 
   MailboxId? get mailboxId {
     if (id == PresentationMailbox.unifiedMailbox.id) {
@@ -143,6 +148,9 @@ extension PresentationMailboxExtension on PresentationMailbox {
   PresentationMailbox toPresentationMailboxWithMailboxPath(String mailboxPath) {
     return PresentationMailbox(
       id,
+      accountId: accountId,
+      isSharedAccount: isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot,
       name: name,
       parentId: parentId,
       role: role,
@@ -158,13 +166,16 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
-      rights: rights
+      rights: rights,
     );
   }
 
   PresentationMailbox withDisplayName(String? displayName) {
     return PresentationMailbox(
       id,
+      accountId: accountId,
+      isSharedAccount: isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot,
       name: name,
       parentId: parentId,
       role: role,
@@ -180,13 +191,16 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
-      rights: rights
+      rights: rights,
     );
   }
 
   PresentationMailbox withMailboxSate(MailboxState newMailboxState) {
     return PresentationMailbox(
       id,
+      accountId: accountId,
+      isSharedAccount: isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot,
       name: name,
       parentId: parentId,
       role: role,
@@ -202,7 +216,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: newMailboxState,
       namespace: namespace,
       displayName: displayName,
-      rights: rights
+      rights: rights,
     );
   }
 
@@ -220,13 +234,16 @@ extension PresentationMailboxExtension on PresentationMailbox {
       myRights: myRights,
       isSubscribed: isSubscribed,
       namespace: namespace,
-      rights: rights
+      rights: rights,
     );
   }
 
   PresentationMailbox toggleSelectPresentationMailbox() {
     return PresentationMailbox(
       id,
+      accountId: accountId,
+      isSharedAccount: isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot,
       name: name,
       parentId: parentId,
       role: role,
@@ -242,13 +259,16 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
-      rights: rights
+      rights: rights,
     );
   }
 
-  PresentationMailbox toSelectedPresentationMailbox({required SelectMode selectMode}) {
+  PresentationMailbox toSelectedPresentationMailbox({required SelectMode selectMode,}) {
     return PresentationMailbox(
       id,
+      accountId: accountId,
+      isSharedAccount: isSharedAccount,
+      isSharedAccountRoot: isSharedAccountRoot,
       name: name,
       parentId: parentId,
       role: role,
@@ -264,7 +284,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
-      rights: rights
+      rights: rights,
     );
   }
 }
