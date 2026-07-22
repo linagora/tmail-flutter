@@ -433,7 +433,6 @@ void main() {
       expect(filter.endDate, equals(snapshotEnd));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
 
     test(
@@ -460,7 +459,6 @@ void main() {
       expect(filter.endDate, equals(end));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
-      expect(filter.position, isNull);
     });
   });
 }

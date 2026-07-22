@@ -86,6 +86,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -552,7 +553,6 @@ void main() {
       expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
       // Pagination cursors are resolved per search request, not committed to
       // the shared search filter.
-      expect(filterAfterAdvancedSearch.position, isNull);
       expect(filterAfterAdvancedSearch.startDate, isNotNull);
       expect(filterAfterAdvancedSearch.endDate, isNotNull);
       expect(filterAfterAdvancedSearch.before, isNull);
@@ -619,7 +619,6 @@ void main() {
     expect(filterAfterQuickSearch.hasAttachment, isTrue);
     // Pagination cursors are resolved per search request, not committed to
     // the shared search filter.
-    expect(filterAfterQuickSearch.position, isNull);
     expect(filterAfterQuickSearch.startDate, isNotNull);
     expect(filterAfterQuickSearch.endDate, isNotNull);
     expect(filterAfterQuickSearch.before, isNull);
@@ -674,6 +673,32 @@ void main() {
         EmailSortOrderType.subjectAscending,
       );
       expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
+    });
+
+    test(
+      'WHEN the dashboard closes\n'
+      'SHOULD reset the committed filter and cached result state '
+      'via the DashboardSearchCoordinator',
+    () {
+      appProviderContainer
+          .read(searchFilterProvider.notifier)
+          .set(SearchEmailFilter(subject: 'invoice'));
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
+          .setCurrentSearchText('invoice');
+
+      mailboxDashboardController.onClose();
+
+      expect(
+        appProviderContainer.read(searchFilterProvider),
+        SearchEmailFilter.initial(),
+      );
+      expect(
+        appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .currentSearchText,
+        isEmpty,
+      );
     });
 
     tearDown(Get.deleteAll);

@@ -1,8 +1,11 @@
 
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum FilterMessageOption {
@@ -76,6 +79,27 @@ extension FilterMessageOptionExtension on FilterMessageOption {
         return email.withAttachments;
       case FilterMessageOption.starred:
         return email.hasStarred;
+    }
+  }
+
+  /// Maps the selected dashboard filter into the search-filter SSOT so the search
+  /// chips and the JMAP query both honour it (ADR-0093 §Decision). `starred` is the
+  /// flagged keyword merged into `hasKeyword`, not a bool field; `all` is a no-op.
+  SearchEmailFilter applyTo(SearchEmailFilter filter) {
+    switch (this) {
+      case FilterMessageOption.all:
+        return filter;
+      case FilterMessageOption.unread:
+        return filter.copyWith(unreadOption: const Some(true));
+      case FilterMessageOption.attachments:
+        return filter.copyWith(hasAttachmentOption: const Some(true));
+      case FilterMessageOption.starred:
+        return filter.copyWith(
+          hasKeywordOption: Some({
+            ...filter.hasKeyword,
+            KeyWordIdentifier.emailFlagged.value,
+          }),
+        );
     }
   }
 
