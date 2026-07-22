@@ -5646,5 +5646,65 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "我们无法完成单点登录重定向。请重试。",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "无法预览 PDF",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageMongolian": "蒙古语",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "在云盘中打开",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachment": "云盘附件",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "在编辑器中显示或隐藏 Twake 云盘附件按钮",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "启用云盘附件按钮",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "无法删除已删除邮件中的部分子文件夹",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "已删除邮件子文件夹已删除",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "无法删除已删除邮件中的子文件夹",
+  "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
