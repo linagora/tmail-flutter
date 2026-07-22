@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/search_
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
@@ -791,7 +792,7 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
-        await _refreshChangeSearchEmail();
+        await _refreshChangeListEmailCache();
       } else if (selectedMailbox?.isVirtualFolder == true) {
         await _refreshChangeListEmailsInVirtualFolder();
       } else {
@@ -806,21 +807,6 @@ class ThreadController extends BaseController with EmailActionController {
             mailboxDashBoardController.currentEmailState!.value);
       }
     }
-  }
-
-  @visibleForTesting
-  Future<void> refreshChangeSearchEmail() => _refreshChangeSearchEmail();
-
-  Future<void> _refreshChangeSearchEmail() async {
-    if (_session == null || _accountId == null) return;
-    await _refreshChangeListEmailCache();
-    log('ThreadController::_refreshChangeSearchEmail:');
-    await _searchService.dispatch(
-      RefreshChangesIntent(
-        currentCount: mailboxDashBoardController.emailsInCurrentMailbox.length,
-      ),
-      _dispatchContext,
-    );
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {

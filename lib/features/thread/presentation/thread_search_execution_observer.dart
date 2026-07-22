@@ -58,6 +58,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
           isSearchEmailRunning: _controller.isSearchActive,
         );
     _controller.mailboxDashBoardController.updateEmailList(syncedEmails);
+    // Leave the loading state the spinner watches (SearchingState set by
+    // onSearchLoading), otherwise ThreadViewLoadingBarWidget spins forever.
+    _controller.dispatchState(Right(SearchEmailSuccess(syncedEmails)));
     if (_controller.mailboxDashBoardController.isSelectionEnabled()) {
       _controller.mailboxDashBoardController.listEmailSelected.value =
           _controller.listEmailSelected;
@@ -77,11 +80,14 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   @override
   void onSearchFailure(Object error) {
     if (!_ownsSearchResults) return;
+    final failure = asSearchEmailFailure(error);
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     _controller.canSearchMore = false;
     _controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
     _controller.mailboxDashBoardController.emailsInCurrentMailbox.clear();
-    _controller.showRetryToast(asSearchEmailFailure(error));
+    // Clear the loading state so the spinner stops on a failed search too.
+    _controller.dispatchState(Left(failure));
+    _controller.showRetryToast(failure);
   }
 }

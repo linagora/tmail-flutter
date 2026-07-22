@@ -24,7 +24,7 @@ typedef InteractorFailureHandler = void Function(
 mixin InteractorConsumer {
   /// Awaits [run], drops the result when [isStale], dispatches the outcome.
   /// Failures are logged + routed before [onFailure], which only touches UI/state.
-  Future<void> consumeInteractor(
+  Future<bool> consumeInteractor(
     InteractorCall run, {
     required StaleGuard isStale,
     required InteractorSuccessHandler onSuccess,
@@ -36,15 +36,20 @@ mixin InteractorConsumer {
     try {
       result = await run();
     } catch (error, stackTrace) {
-      if (isStale()) return;
+      if (isStale()) return false;
       _fail(error, stackTrace, onFailure);
-      return;
+      return false;
     }
-    if (isStale()) return;
+    if (isStale()) return false;
+    var succeeded = true;
     result.fold(
-      (failure) => _fail(failure, StackTrace.current, onFailure),
+      (failure) {
+        succeeded = false;
+        _fail(failure, StackTrace.current, onFailure);
+      },
       onSuccess,
     );
+    return succeeded;
   }
 
   /// Logs the failure (no filter/email content), routes urgent ones through the

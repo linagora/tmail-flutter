@@ -12,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -36,7 +35,6 @@ import 'package:tmail_ui_user/features/contact/presentation/model/contact_argume
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -63,8 +61,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
@@ -72,6 +68,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/search_
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
@@ -117,10 +114,8 @@ class SearchEmailController extends BaseController
   final listSearchFilterScrollController = ScrollController();
 
   late Debouncer<String> _deBouncerTime;
-  late Worker emailUIActionWorker;
   late Worker dashBoardActionWorker;
   late Worker viewStateWorker;
-  WebSocketQueueHandler? _webSocketQueueHandler;
   FocusNode? keyboardFocusNode;
   StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
@@ -156,9 +151,6 @@ class SearchEmailController extends BaseController
 
   List<PresentationEmail> get listSuggestionSearch =>
       searchEmailPresentationState.listSuggestionSearch;
-
-  bool get searchIsRunning =>
-      searchEmailPresentationState.searchIsRunning;
 
   SelectMode get selectionMode =>
       searchEmailPresentationState.selectionMode;
@@ -208,7 +200,6 @@ class SearchEmailController extends BaseController
     _searchService.register(this);
     _initializeDebounceTimeTextSearchChange();
     _initWorkerListener();
-    _initWebSocketQueueHandler();
     onKeyboardShortcutInit();
   }
 
@@ -322,15 +313,6 @@ class SearchEmailController extends BaseController
       }
     );
 
-    emailUIActionWorker = ever(
-      mailboxDashBoardController.emailUIAction,
-      (action) {
-        if (action is RefreshChangeEmailAction) {
-          _refreshEmailChanges(newState: action.newState);
-        }
-      },
-    );
-
     viewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
       if (!mailboxDashBoardController.searchController.isSearchEmailRunning) return;
       final reactionState = viewState.getOrElse(() => UIState.idle);
@@ -351,63 +333,6 @@ class SearchEmailController extends BaseController
         );
       }
     });
-  }
-
-  void _refreshEmailChanges({required jmap.State newState}) {
-    log('SearchEmailController::_refreshEmailChanges(): newState: $newState');
-    if (!_canRefreshEmailChanges(newState)) {
-      return;
-    }
-    log('SearchEmailController::_refreshEmailChanges: websocket enqueue message');
-    _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
-  }
-
-  bool _canRefreshEmailChanges(jmap.State newState) {
-    final currentEmailState = mailboxDashBoardController.currentEmailState;
-
-    if (!_hasSearchSession) return false;
-    if (!searchIsRunning) return false;
-    if (currentEmailState == null) return false;
-
-    return currentEmailState != newState;
-  }
-
-  void _initWebSocketQueueHandler() {
-    _webSocketQueueHandler = WebSocketQueueHandler(
-      processMessageCallback: handleWebSocketMessage,
-      onErrorCallback: onError,
-    );
-  }
-
-  @visibleForTesting
-  Future<void> handleWebSocketMessage(WebSocketMessage message) async {
-    try {
-      if (_shouldSkipWebSocketMessage(message)) {
-        log('SearchEmailController::handleWebSocketMessage:Skipping redundant state: ${message.newState}');
-        return Future.value();
-      }
-
-      await _searchService.dispatch(
-        RefreshChangesIntent(currentCount: listResultSearch.length),
-        _dispatchContext,
-      );
-    } catch (e, stackTrace) {
-      logWarning('SearchEmailController::handleWebSocketMessage:Error processing state: $e');
-      onError(e, stackTrace);
-    } finally {
-      if (mailboxDashBoardController.currentEmailState != null) {
-        _webSocketQueueHandler?.removeMessagesUpToCurrent(
-            mailboxDashBoardController.currentEmailState!.value);
-      }
-    }
-  }
-
-  bool _shouldSkipWebSocketMessage(WebSocketMessage message) {
-    final currentEmailState = mailboxDashBoardController.currentEmailState;
-
-    if (currentEmailState == null) return true;
-
-    return currentEmailState == message.newState;
   }
 
   Future<List<RecentSearch>> getAllRecentSearchAction({String pattern = ''}) async {
@@ -1145,14 +1070,13 @@ class SearchEmailController extends BaseController
     resultSearchScrollController.dispose();
     listSearchFilterScrollController.dispose();
     _deBouncerTime.cancel();
-    emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
     viewStateWorker.dispose();
     _searchService.unregister(this);
-    _webSocketQueueHandler?.dispose();
     onKeyboardShortcutDispose();
     // Release keepAlive search state with the binding, including the committed
     // filter, so no stale filter leaks into the next search session.
+    _searchService.resetSession();
     appProviderContainer.invalidate(searchEmailPresentationProvider);
     appProviderContainer.invalidate(searchEmailProvider);
     appProviderContainer.invalidate(searchFilterProvider);

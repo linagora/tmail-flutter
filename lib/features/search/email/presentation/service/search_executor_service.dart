@@ -1,13 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
+import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
-
-part 'search_executor_service.g.dart';
 
 /// Single owner of the search executor: dispatches intents and fans each
 /// [searchEmailProvider] result out to registered observers. Holds no view
@@ -20,6 +18,7 @@ class SearchExecutorService {
   ProviderSubscription<AsyncValue<SearchEmailResult>>? _subscription;
   bool _hasDispatchedSearch = false;
   SearchExecutionIntent? _lastDispatchedIntent;
+  bool _disposed = false;
 
   SearchEmailNotifier get _notifier =>
       _container.read(searchEmailProvider.notifier);
@@ -27,9 +26,9 @@ class SearchExecutorService {
   /// Registers [observer], opens the executor subscription on the first one,
   /// and replays the current state when a search has already been dispatched.
   void register(SearchExecutionObserver observer) {
+    if (_disposed) return;
     final isNewObserver = _observers.add(observer);
-    _subscription ??=
-        _container.listen(searchEmailProvider, _onExecutorStateChanged);
+    _ensureSubscription();
     if (isNewObserver && _hasDispatchedSearch) {
       _notifyCurrentState(observer);
     }
@@ -37,6 +36,7 @@ class SearchExecutorService {
 
   /// Unregisters [observer]; closes the subscription once none remain.
   void unregister(SearchExecutionObserver observer) {
+    if (_disposed) return;
     _observers.remove(observer);
     if (_observers.isEmpty) _closeSubscription();
   }
@@ -44,10 +44,12 @@ class SearchExecutorService {
   /// Runs [intent] via the executor; a new search first resets its observers.
   /// The returned future completes when the executor finishes (awaited by the
   /// websocket-refresh path to order message-dedup after the refresh).
-  Future<void> dispatch(
+  Future<SearchExecutionResult> dispatch(
     SearchExecutionIntent intent,
     SearchDispatchContext context,
   ) {
+    if (_disposed) return Future.value(SearchExecutionResult.superseded);
+    _ensureSubscription();
     _hasDispatchedSearch = true;
     _lastDispatchedIntent = intent;
     if (intent is NewSearchIntent) {
@@ -64,8 +66,24 @@ class SearchExecutorService {
   }
 
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     _closeSubscription();
     _observers.clear();
+  }
+
+  /// Clears the replay marker when the dashboard session ends.
+  void resetSession() {
+    if (_disposed) return;
+    _closeSubscription();
+    _hasDispatchedSearch = false;
+    _lastDispatchedIntent = null;
+  }
+
+  void _ensureSubscription() {
+    if (_observers.isEmpty) return;
+    _subscription ??=
+        _container.listen(searchEmailProvider, _onExecutorStateChanged);
   }
 
   void _onExecutorStateChanged(
@@ -115,12 +133,4 @@ class SearchExecutorService {
     _subscription?.close();
     _subscription = null;
   }
-}
-
-/// App-lifetime singleton bridging every search consumer to the executor.
-@Riverpod(keepAlive: true)
-SearchExecutorService searchExecutorService(Ref ref) {
-  final service = SearchExecutorService(ref.container);
-  ref.onDispose(service.dispose);
-  return service;
 }

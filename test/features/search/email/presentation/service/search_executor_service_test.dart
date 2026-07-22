@@ -404,6 +404,21 @@ void main() {
     expect(replacement.freshFlags.single, isFalse);
   });
 
+  test('resetSession prevents replaying a previous session snapshot', () async {
+    final service = serviceWithObserver();
+    await dispatchNewSearch(service);
+
+    service.resetSession();
+    final replacement = _RecordingObserver();
+    service.register(replacement);
+
+    expect(replacement.results, isEmpty);
+    expect(replacement.failures, isEmpty);
+
+    await dispatchNewSearch(service);
+    expect(replacement.results, hasLength(1));
+  });
+
   test('dispose stops observing and drops all observers', () async {
     final (:service, :observer) = registeredService();
     service.dispose();
