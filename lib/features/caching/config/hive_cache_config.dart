@@ -40,6 +40,12 @@ class HiveCacheConfig {
   bool _isolatedAdaptersRegistered = false;
   bool _regularAdaptersRegistered = false;
 
+  int _closeGeneration = 0;
+
+  /// Bumped by every deliberate [closeHive], so an operation that started
+  /// before one can tell it happened underneath.
+  int get closeGeneration => _closeGeneration;
+
   Future<void> setUp({String? cachePath, bool isolated = true}) async {
     await initializeDatabase(databasePath: cachePath, isolated: isolated);
     _registerAdapter(isolated: isolated);
@@ -148,6 +154,9 @@ class HiveCacheConfig {
   }
 
   Future<void> closeHive({bool isolated = true}) async {
+    // Bumped before the close, so an operation this very close aborts still
+    // observes it.
+    _closeGeneration++;
     if (isolated) {
       await IsolatedHive.close();
     } else {

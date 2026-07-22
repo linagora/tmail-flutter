@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
@@ -48,13 +49,126 @@ abstract class HiveCacheClient<T> {
     }
   }
 
+  /// The latest recovery of each box, kept after it completes so it doubles as
+  /// the token that says which box a caller started out against.
+  ///
+  /// Keyed on the table
+  static final Map<String, Future<void>> _recoveries = {};
+
+  /// Runs [action], retrying once if the IndexedDB connection died underneath us.
+  ///
+  /// Hive's web backend registers no close listener, so when a connection goes
+  /// away the box stays registered as open and every later operation throws for
+  /// the rest of the session — only a page reload recovers. Closing the stale box
+  /// unregisters it, so re-running [action] opens a live connection instead.
+  ///
+  /// Every caller resolves its box *inside* [action], so the retry picks up
+  /// whatever the recovery reopened.
+  Future<R> _runWithRecovery<R>(bool isolated, Future<R> Function() action) async {
+    final recoveryAtStart = _recoveries[tableName];
+    final closeGeneration = HiveCacheConfig.instance.closeGeneration;
+    try {
+      return await action();
+    } catch (error) {
+      if (!_isRecoverableConnectionLoss(error, isolated, closeGeneration)) {
+        rethrow;
+      }
+
+      logWarning(
+        '$runtimeType::_runWithRecovery: reopening "$tableName" '
+        '(isolated: $isolated) after a closed IndexedDB connection | $error',
+      );
+
+      if (identical(_recoveries[tableName], recoveryAtStart)) {
+        await (_recoveries[tableName] = _discardStaleBox(isolated));
+      } else {
+        await _recoveries[tableName];
+      }
+
+      return _retryAfterRecovery(action);
+    }
+  }
+
+  /// Whether [error] is a dead connection this client may reopen.
+  ///
+  /// [closeGeneration] is what [HiveCacheConfig] reported when the operation
+  /// started, so a teardown that has run since is visible here.
+  bool _isRecoverableConnectionLoss(
+    Object error,
+    bool isolated,
+    int closeGeneration,
+  ) {
+    // Web-only by construction. IndexedDB is the one backend that can lose a
+    // connection while Hive still holds the box
+    if (!PlatformInfo.isWeb) return false;
+
+    if (!_isClosedConnectionError(error)) return false;
+
+    if (HiveCacheConfig.instance.closeGeneration != closeGeneration) {
+      logWarning(
+        '$runtimeType::_isRecoverableConnectionLoss: "$tableName" spans a '
+        'deliberate close, not retrying | $error',
+      );
+      return false;
+    }
+
+    if (!_isBoxRegistered(isolated)) {
+      // Somebody closed this box on purpose
+      logWarning(
+        '$runtimeType::_isRecoverableConnectionLoss: "$tableName" was closed '
+        'deliberately, not reopening | $error',
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  /// The one retry, run against whatever [_discardStaleBox] left behind.
+  Future<R> _retryAfterRecovery<R>(Future<R> Function() action) async {
+    try {
+      final result = await action();
+      logWarning('$runtimeType::_retryAfterRecovery: "$tableName" recovered');
+      return result;
+    } catch (retryError, retryStackTrace) {
+      logError(
+        '$runtimeType::_retryAfterRecovery: "$tableName" still failing after '
+        'reopen',
+        exception: retryError,
+        stackTrace: retryStackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  bool _isBoxRegistered(bool isolated) => isolated
+      ? IsolatedHive.isBoxOpen(tableName)
+      : Hive.isBoxOpen(tableName);
+
+  bool _isClosedConnectionError(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('invalidstateerror') ||
+        message.contains('connection is closing') ||
+        message.contains('closed database');
+  }
+
+  Future<void> _discardStaleBox(bool isolated) async {
+    try {
+      await closeBox(isolated: isolated);
+    } catch (e) {
+      // Best-effort: the connection is already gone. What matters is that Hive
+      // unregisters the box, which happens before the backend close is attempted.
+      logWarning('$runtimeType::_discardStaleBox: "$tableName" close failed | $e');
+    }
+  }
+
   Future<void> insertItem(
     String key,
     T newObject, {
     bool isolated = true,
   }) {
     log('$runtimeType::insertItem:encryption: $encryption - key = $key - isolated = $isolated');
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.put(key, newObject);
@@ -62,8 +176,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.put(key, newObject);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -71,7 +183,7 @@ abstract class HiveCacheClient<T> {
     Map<String, T> mapObject, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.putAll(mapObject);
@@ -79,8 +191,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.putAll(mapObject);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -88,7 +198,7 @@ abstract class HiveCacheClient<T> {
     String key, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.get(key);
@@ -96,13 +206,11 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.get(key);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
   Future<List<T>> getAll({bool isolated = true}) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       Iterable<T> items;
 
       if (isolated) {
@@ -114,13 +222,11 @@ abstract class HiveCacheClient<T> {
       }
       log('$runtimeType::getAll: Length of items is ${items.length}');
       return items.toList();
-    }).catchError((error) {
-      throw error;
     });
   }
 
   Future<Map<String, T>> getMapItems({bool isolated = true}) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       late Map<dynamic, T> mapItems;
 
       if (isolated) {
@@ -132,8 +238,6 @@ abstract class HiveCacheClient<T> {
       }
       log('$runtimeType::getMapItems: Length of mapItems is ${mapItems.length}');
       return mapItems.map((key, value) => MapEntry(key.toString(), value));
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -141,7 +245,7 @@ abstract class HiveCacheClient<T> {
     String nestedKey, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       late Map<dynamic, T> mapItems;
 
       if (isolated) {
@@ -158,8 +262,6 @@ abstract class HiveCacheClient<T> {
         .toList();
       log('$runtimeType::getListByNestedKey: Length of listItem is ${listItem.length}');
       return listItem;
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -167,7 +269,7 @@ abstract class HiveCacheClient<T> {
     List<String> listKeys, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       late Map<dynamic, T> mapItems;
 
       if (isolated) {
@@ -182,8 +284,6 @@ abstract class HiveCacheClient<T> {
         .where((key, value) => listKeys.contains(key))
         .values
         .toList();
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -198,7 +298,7 @@ abstract class HiveCacheClient<T> {
     T newObject, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.put(key, newObject);
@@ -206,8 +306,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.put(key, newObject);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -215,7 +313,7 @@ abstract class HiveCacheClient<T> {
     Map<String, T> mapObject, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.putAll(mapObject);
@@ -223,8 +321,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.putAll(mapObject);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -232,7 +328,7 @@ abstract class HiveCacheClient<T> {
     String key, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.delete(key);
@@ -240,8 +336,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.delete(key);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -249,7 +343,7 @@ abstract class HiveCacheClient<T> {
     List<String> listKey, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.deleteAll(listKey);
@@ -257,8 +351,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.deleteAll(listKey);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -266,7 +358,7 @@ abstract class HiveCacheClient<T> {
     String key, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         return boxItem.containsKey(key);
@@ -274,8 +366,6 @@ abstract class HiveCacheClient<T> {
         final boxItem = await openBox();
         return boxItem.containsKey(key);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -288,16 +378,14 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> clearAllData({bool isolated = true}) {
-    return Future.sync(() async {
+    return _runWithRecovery<void>(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
-        return boxItem.clear();
+        await boxItem.clear();
       } else {
         final boxItem = await openBox();
-        return boxItem.clear();
+        await boxItem.clear();
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
@@ -305,7 +393,7 @@ abstract class HiveCacheClient<T> {
     String nestedKey, {
     bool isolated = true,
   }) {
-    return Future.sync(() async {
+    return _runWithRecovery(isolated, () async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
         final mapItems = await boxItem.toMap();
@@ -322,8 +410,6 @@ abstract class HiveCacheClient<T> {
         log('$runtimeType::clearAllDataContainKey: Length of keys is ${listKeys.length}');
         return boxItem.deleteAll(listKeys);
       }
-    }).catchError((error) {
-      throw error;
     });
   }
 
