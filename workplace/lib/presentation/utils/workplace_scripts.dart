@@ -25,6 +25,21 @@ class WorkplaceScripts {
 
           const isWebPlatform = $isWebPlatform;
           const removeLabel = ${jsonEncode(removeLabel)};
+          $_overlayStateSetup
+          $_cardInteractionHelpers
+          if (isTouch) {
+            $_touchOverlayLogic
+          } else {
+            $_hoverOverlayLogic
+          }
+        } catch (e) {}
+      })();''',
+    name: 'registerDriveCardDeleteOverlay',
+  );
+
+  /// Shared card selector/touch-detection and the cleanup registry that
+  /// both the touch and hover branches push their teardown callbacks into.
+  static const _overlayStateSetup = '''
           const cardSelector = '.tmail-file-link-card';
           const isTouch = window.matchMedia &&
             window.matchMedia('(hover: none), (pointer: coarse)').matches;
@@ -43,8 +58,11 @@ class WorkplaceScripts {
             });
             window.__tmailDriveCardDeleteOverlayInstalled = false;
             window.__tmailDriveCardDeleteOverlayCleanup = null;
-          };
+          };''';
 
+  /// Helpers shared by both the touch and hover overlay branches: content
+  /// sync, focus restoration, delete activation, and overlay creation.
+  static const _cardInteractionHelpers = '''
           function syncEditorContent() {
             try {
               const editable = document.querySelector('.note-editable');
@@ -137,9 +155,11 @@ class WorkplaceScripts {
               overlay.style.left = (rect.right - 42) + 'px';
               overlay.style.display = 'flex';
             } catch (e) {}
-          }
+          }''';
 
-          if (isTouch) {
+  /// Touch branch: a persistently visible overlay button per card, synced
+  /// against DOM mutations since touch devices have no hover state to key off.
+  static const _touchOverlayLogic = '''
             const overlaysByCard = new Map();
 
             function bindDelete(card, overlay) {
@@ -212,8 +232,11 @@ class WorkplaceScripts {
             });
 
             trackListener(window, 'scroll', scheduleReposition, true);
-            trackListener(window, 'resize', scheduleReposition, false);
-          } else {
+            trackListener(window, 'resize', scheduleReposition, false);''';
+
+  /// Hover branch: a single reusable overlay button that follows whichever
+  /// card is currently hovered.
+  static const _hoverOverlayLogic = '''
             let activeCard = null;
             const overlay = makeOverlay();
 
@@ -274,12 +297,7 @@ class WorkplaceScripts {
             }, false);
 
             trackListener(window, 'scroll', scheduleReposition, true);
-            trackListener(window, 'resize', scheduleReposition, false);
-          }
-        } catch (e) {}
-      })();''',
-    name: 'registerDriveCardDeleteOverlay',
-  );
+            trackListener(window, 'resize', scheduleReposition, false);''';
 
   /// Tears down everything installed by [registerDriveCardDeleteOverlay]:
   /// cancels the pending animation frame, disconnects the `MutationObserver`,
