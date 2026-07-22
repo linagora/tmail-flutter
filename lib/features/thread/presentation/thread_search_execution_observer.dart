@@ -5,8 +5,20 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
 
   ThreadSearchExecutionObserver(this._controller);
 
+  // The thread list owns search results only in the web desktop layout, where
+  // it renders them inline (across both the thread and threadDetailed routes).
+  // On small screens the dedicated SearchEmailView owns them, so the thread must
+  // ignore executor events dispatched by SearchEmailController to avoid mutating
+  // the off-screen mailbox list and emitting duplicate toasts. This mirrors the
+  // layout's own ownership predicate (see MailboxDashBoardView web build).
+  bool get _ownsSearchResults {
+    final context = currentContext;
+    return context != null && _controller.responsiveUtils.isWebDesktop(context);
+  }
+
   @override
   void onNewSearchStarted() {
+    if (!_ownsSearchResults) return;
     if (_controller.listEmailController.hasClients) {
       _controller.isListEmailScrollViewJumping = true;
       _controller.listEmailController.jumpTo(0);
@@ -18,13 +30,17 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   }
 
   @override
-  void onSearchLoading() => _controller.dispatchState(Right(SearchingState()));
+  void onSearchLoading() {
+    if (!_ownsSearchResults) return;
+    _controller.dispatchState(Right(SearchingState()));
+  }
 
   @override
   void onSearchResult(
     SearchEmailResult result, {
     required bool isFreshResult,
   }) {
+    if (!_ownsSearchResults) return;
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
     final emailList = result.emails;
@@ -60,6 +76,7 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
 
   @override
   void onSearchFailure(Object error) {
+    if (!_ownsSearchResults) return;
     // Urgent failures are already routed by the executor's consume seam.
     if (isUrgentException(error)) return;
     _controller.mailboxDashBoardController
