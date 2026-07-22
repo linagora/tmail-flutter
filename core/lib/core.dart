@@ -16,6 +16,7 @@ export 'presentation/extensions/string_extension.dart';
 export 'presentation/extensions/tap_down_details_extension.dart';
 export 'presentation/extensions/map_extensions.dart';
 export 'presentation/extensions/either_view_state_extension.dart';
+export 'presentation/extensions/either_stream_extension.dart';
 export 'presentation/extensions/media_type_extension.dart';
 export 'presentation/extensions/scroll_controller_extension.dart';
 export 'presentation/extensions/hex_color_extension.dart';

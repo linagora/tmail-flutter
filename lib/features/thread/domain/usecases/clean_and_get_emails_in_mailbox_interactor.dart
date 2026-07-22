@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -38,17 +39,19 @@ class CleanAndGetEmailsInMailboxInteractor {
 
       await _threadRepository.clearEmailCacheAndStateCache();
 
-      yield* _getEmailsInMailboxInteractor.execute(
-        session,
-        accountId,
-        limit: limit,
-        sort: sort,
-        emailFilter: emailFilter,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated,
-        getLatestChanges: getLatestChanges,
-        useCache: useCache,
-      );
+      yield* _getEmailsInMailboxInteractor
+        .execute(
+          session,
+          accountId,
+          limit: limit,
+          sort: sort,
+          emailFilter: emailFilter,
+          propertiesCreated: propertiesCreated,
+          propertiesUpdated: propertiesUpdated,
+          getLatestChanges: getLatestChanges,
+          useCache: useCache,
+        )
+        .mapErrorToLeft((error, _) => CleanAndGetAllEmailFailure(error));
     } catch (e) {
       yield Left(CleanAndGetAllEmailFailure(e));
     }
