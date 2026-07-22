@@ -1171,5 +1171,24 @@ void main() {
         );
       });
     });
+
+    group('handleErrorViewState defensive fallback::test', () {
+      test(
+        'GIVEN an unknown error broke the state stream while loading '
+        'WHEN handleErrorViewState is called with an unhandled error '
+        'THEN SHOULD clear the loading state back to idle so the list is not stuck',
+      () {
+        // Arrange: list is currently showing a loading state.
+        threadController.dispatchState(Right(LoadingState()));
+
+        // Act: an interactor forwarded an unexpected error instead of a Left failure.
+        threadController.handleErrorViewState(Exception('boom'), StackTrace.empty);
+
+        // Assert: state cleared back to idle (loading spinner removed).
+        final state = threadController.viewState.value;
+        expect(state.isRight(), isTrue);
+        expect(state.getOrElse(() => LoadingState()), UIState.idle);
+      });
+    });
   });
 }
