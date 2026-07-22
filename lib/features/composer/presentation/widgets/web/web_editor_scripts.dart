@@ -9,6 +9,7 @@ List<WebScript> buildWebEditorInitialScripts({
 }) {
   final driveCardDeleteOverlayScript = WorkplaceScripts.registerDriveCardDeleteOverlay(
     driveCardDeleteOverlayRemoveLabel,
+    isWebPlatform: true,
   );
 
   return [

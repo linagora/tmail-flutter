@@ -13,8 +13,9 @@ class WorkplaceScripts {
   /// single debounced `requestAnimationFrame`, not a perpetual per-frame
   /// loop, to avoid forcing a layout reflow every frame while idle.
   static ({String name, String script}) registerDriveCardDeleteOverlay(
-    String removeLabel,
-  ) => (
+    String removeLabel, {
+    bool isWebPlatform = false,
+  }) => (
     script:
         '''
       (function() {
@@ -22,6 +23,7 @@ class WorkplaceScripts {
           if (window.__tmailDriveCardDeleteOverlayInstalled) return;
           window.__tmailDriveCardDeleteOverlayInstalled = true;
 
+          const isWebPlatform = $isWebPlatform;
           const removeLabel = ${jsonEncode(removeLabel)};
           const cardSelector = '.tmail-file-link-card';
           const isTouch = window.matchMedia &&
@@ -52,13 +54,57 @@ class WorkplaceScripts {
             } catch (e) {}
           }
 
+          function notifyCardDeleted() {
+            if (isWebPlatform) {
+              // A synthetic `input` event would route through Summernote's
+              // `toDart: onChangeContent` message, which html_editor_enhanced
+              // reacts to with `Scrollable.ensureVisible()` on the whole
+              // editor — that's the scroll-to-top bug. Sync content directly
+              // via this app-owned message instead. Mobile's WebView has no
+              // such side effect, so it keeps the normal pipeline below.
+              try {
+                window.parent.postMessage(
+                  JSON.stringify({ type: 'toDart: driveCardDeleted' }),
+                  '*'
+                );
+              } catch (e) {}
+            } else {
+              syncEditorContent();
+            }
+          }
+
+          function refocusEditable() {
+            // Restores focus so the existing onFocus->hideMenu chain still
+            // dismisses any open popup menu, same as clicking editor text.
+            // `preventScroll: true` avoids the browser's default "scroll the
+            // iframe into view in the outer page" behavior on focus.
+            try {
+              const editable = document.querySelector('.note-editable');
+              if (editable && document.activeElement !== editable) {
+                editable.focus({ preventScroll: true });
+              }
+            } catch (e) {}
+          }
+
+          function blockFocusScrollOnMousedown(event) {
+            // Overlay buttons are `tabindex="0"` divs, so mousedown natively
+            // focuses them before `click` runs, triggering the same iframe
+            // scroll-into-view jump — and can even shift the layout enough
+            // to make the click miss the button. Suppress it; refocusEditable
+            // handles focus explicitly afterward with preventScroll.
+            try {
+              event.preventDefault();
+            } catch (e) {}
+          }
+
           function removeCardOnActivate(event, card, onOverlayCleanup) {
             try {
               event.preventDefault();
               event.stopPropagation();
               if (card) card.remove();
               onOverlayCleanup();
-              syncEditorContent();
+              notifyCardDeleted();
+              refocusEditable();
             } catch (e) {}
           }
 
@@ -104,6 +150,7 @@ class WorkplaceScripts {
                     overlaysByCard.delete(card);
                   });
                 }
+                overlay.addEventListener('mousedown', blockFocusScrollOnMousedown);
                 overlay.addEventListener('click', onActivate);
                 overlay.addEventListener('keydown', function(event) {
                   if (event.key === 'Enter' || event.key === ' ') onActivate(event);
@@ -197,6 +244,7 @@ class WorkplaceScripts {
               });
             }
             if (overlay) {
+              overlay.addEventListener('mousedown', blockFocusScrollOnMousedown);
               overlay.addEventListener('click', onActivate);
               overlay.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter' || event.key === ' ') onActivate(event);

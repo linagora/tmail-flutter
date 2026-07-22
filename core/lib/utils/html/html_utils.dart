@@ -413,6 +413,12 @@ class HtmlUtils {
           if (closestCardAnchor(event.target)) {
             event.preventDefault();
             event.stopPropagation();
+            // preventDefault() also blocks the native focus shift, so the
+            // app's onFocus->hideMenu bridge never fires. Refocus explicitly
+            // (preventScroll avoids the iframe scroll-into-view jump).
+            if (document.activeElement !== root) {
+              root.focus({ preventScroll: true });
+            }
           }
         }, true);
 

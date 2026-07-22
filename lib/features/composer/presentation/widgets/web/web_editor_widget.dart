@@ -123,6 +123,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
           } else if (data['name'] == _selectionChangeScript.name
               && data['viewId'] == _createdViewId) {
             handleSelectionChange(data);
+          } else if (data['type'] == 'toDart: driveCardDeleted') {
+            _syncContentAfterDriveCardDeleted();
           }
         }
       } catch (e) {
@@ -235,6 +237,14 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onKeyDown: widget.onKeyDownEditorAction,
       ),
     );
+  }
+
+  /// Syncs draft content after a Drive card is removed, bypassing
+  /// Summernote's `onChangeContent` pipeline (which triggers
+  /// html_editor_enhanced's scroll-to-top `ensureVisible()`).
+  Future<void> _syncContentAfterDriveCardDeleted() async {
+    final text = await _editorController.getText();
+    widget.onChangeContent?.call(text);
   }
 
   void _registerEditorScripts() {
