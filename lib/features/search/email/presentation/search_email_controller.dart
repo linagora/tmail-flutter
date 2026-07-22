@@ -30,7 +30,6 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
@@ -504,8 +503,6 @@ class SearchEmailController extends BaseController
 
   @override
   void onSearchFailure(Object error) {
-    // Urgent failures are already routed by the executor's consume seam.
-    if (isUrgentException(error)) return;
     _searchEmailsFailure(asSearchEmailFailure(error));
   }
 

@@ -229,6 +229,32 @@ void main() {
     expect(observer.results, isEmpty);
   });
 
+  test('an urgent search failure is not fanned out to observers', () async {
+    when(urgentHandler.validateUrgentException(any)).thenReturn(true);
+    stubSearch((_) =>
+        Stream.value(Left(SearchEmailFailure(Exception('urgent')))));
+    final (:service, :observer) = registeredService();
+
+    await dispatchNewSearch(service);
+
+    expect(observer.failures, isEmpty);
+    expect(observer.results, isEmpty);
+  });
+
+  test('a late observer does not receive an urgent failure snapshot', () async {
+    when(urgentHandler.validateUrgentException(any)).thenReturn(true);
+    stubSearch((_) =>
+        Stream.value(Left(SearchEmailFailure(Exception('urgent')))));
+    final service = serviceWithObserver();
+
+    await dispatchNewSearch(service);
+
+    final lateObserver = registerObserver(service);
+
+    expect(lateObserver.failures, isEmpty);
+    expect(lateObserver.results, isEmpty);
+  });
+
   test('a second observer reuses the subscription and both receive the result',
       () async {
     final service = makeService();

@@ -14,7 +14,8 @@ abstract class SearchExecutionObserver {
   /// [isFreshResult] is true only for the first page of a new search.
   void onSearchResult(SearchEmailResult result, {required bool isFreshResult});
 
-  /// The search failed. Urgent failures are already routed by the executor's
-  /// consume seam (ADR-0103), so callers only handle the non-urgent case.
+  /// The search failed with a non-urgent error. Urgent failures are routed by
+  /// the executor's consume seam and filtered by [SearchExecutorService]
+  /// (ADR-0103), so this is never called for them.
   void onSearchFailure(Object error);
 }

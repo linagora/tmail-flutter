@@ -77,8 +77,6 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   @override
   void onSearchFailure(Object error) {
     if (!_ownsSearchResults) return;
-    // Urgent failures are already routed by the executor's consume seam.
-    if (isUrgentException(error)) return;
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     _controller.canSearchMore = false;

@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 part 'search_executor_service.g.dart';
 
@@ -75,7 +75,11 @@ class SearchExecutorService {
     if (next.isLoading) {
       _notifyObservers((observer) => observer.onSearchLoading());
     } else if (next.hasError) {
-      _notifyObservers((observer) => observer.onSearchFailure(next.error!));
+      final error = next.error!;
+      // Urgent failures were already routed by the executor's consume seam
+      // (ADR-0103); no observer reacts to them, so don't fan them out.
+      if (isUrgentException(error)) return;
+      _notifyObservers((observer) => observer.onSearchFailure(error));
     } else {
       final result = next.value;
       if (result == null) return;
@@ -99,6 +103,8 @@ class SearchExecutorService {
     if (current.isLoading) {
       observer.onSearchLoading();
     } else if (current.hasError) {
+      // Urgent failures were already routed by the consume seam (ADR-0103).
+      if (isUrgentException(current.error!)) return;
       observer.onSearchFailure(current.error!);
     } else if (current.value != null) {
       observer.onSearchResult(current.value!, isFreshResult: false);
@@ -114,7 +120,7 @@ class SearchExecutorService {
 /// App-lifetime singleton bridging every search consumer to the executor.
 @Riverpod(keepAlive: true)
 SearchExecutorService searchExecutorService(Ref ref) {
-  final service = SearchExecutorService(appProviderContainer);
+  final service = SearchExecutorService(ref.container);
   ref.onDispose(service.dispose);
   return service;
 }
