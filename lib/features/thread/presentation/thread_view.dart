@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -30,6 +31,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
@@ -321,16 +324,18 @@ class ThreadView extends GetWidget<ThreadController>
       return const SizedBox.shrink();
     }
 
-    return Obx(() {
-      final isAdvancedSearchViewOpen = controller.searchController.isAdvancedSearchViewOpen.value;
-      final isTrashViewOpen = controller.isMailboxTrash;
-      final isSelectModeActive = controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.ACTIVE;
-      if (
-        !controller.searchController.isSearchActive()
-        && !isAdvancedSearchViewOpen
-        && !isTrashViewOpen
-        && !isSelectModeActive
-      ) {
+    return Consumer(builder: (context, ref, child) {
+      final isSearchActive = ref.watch(
+        searchViewStateProvider.select((state) => state.isSearchActive),
+      );
+      final isAdvancedSearchViewOpen = ref.watch(
+        searchViewStateProvider.select((state) => state.isAdvancedSearchViewOpen),
+      );
+      return Obx(() {
+      if (_canShowComposeButton(
+        isSearchActive: isSearchActive,
+        isAdvancedSearchViewOpen: isAdvancedSearchViewOpen,
+      )) {
         return Container(
           padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
             ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
@@ -344,7 +349,19 @@ class ThreadView extends GetWidget<ThreadController>
       } else {
         return const SizedBox.shrink();
       }
+      });
     });
+  }
+
+  bool _canShowComposeButton({
+    required bool isSearchActive,
+    required bool isAdvancedSearchViewOpen,
+  }) {
+    if (isSearchActive) return false;
+    if (isAdvancedSearchViewOpen) return false;
+    if (controller.isMailboxTrash) return false;
+    return controller.mailboxDashBoardController.currentSelectMode.value !=
+        SelectMode.ACTIVE;
   }
 
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
@@ -443,25 +460,45 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildLoadMoreButton(BuildContext context, LoadingMoreStatus loadingMoreStatus) {
-    if (((controller.canLoadMore && !controller.isSearchActive) ||
-        (controller.canSearchMore && controller.isSearchActive)) &&
-        !loadingMoreStatus.isRunning) {
-      return Center(
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
-          onPressed: controller.handleLoadMoreEmailsRequest,
-          child: Text(
-            AppLocalizations.of(context).loadMore,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.black
-            )
-          ),
-        ),
+    return Consumer(builder: (context, ref, child) {
+      final isSearchEmailRunning = ref.watch(
+        searchViewStateProvider.select((state) => state.isSearchEmailRunning),
       );
-    }
-    return const SizedBox.shrink();
+      final canSearchMore = ref.watch(
+        searchEmailPresentationProvider.select((state) => state.canSearchMore),
+      );
+      if (_canShowLoadMoreButton(
+        isSearchEmailRunning: isSearchEmailRunning,
+        canSearchMore: canSearchMore,
+        loadingMoreStatus: loadingMoreStatus,
+      )) {
+        return Center(
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            ),
+            onPressed: controller.handleLoadMoreEmailsRequest,
+            child: Text(
+              AppLocalizations.of(context).loadMore,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.black
+              )
+            ),
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    });
+  }
+
+  bool _canShowLoadMoreButton({
+    required bool isSearchEmailRunning,
+    required bool canSearchMore,
+    required LoadingMoreStatus loadingMoreStatus,
+  }) {
+    if (loadingMoreStatus.isRunning) return false;
+    if (isSearchEmailRunning) return canSearchMore;
+    return controller.canLoadMore;
   }
 
   Widget _buildLoadMoreProgressBar(LoadingMoreStatus loadingMoreStatus) {
@@ -503,7 +540,11 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildEmailItemWhenDragging(BuildContext context, PresentationEmail presentationEmail) {
     final dashboardController = controller.mailboxDashBoardController;
 
-    return Obx(() {
+    return Consumer(builder: (context, ref, child) {
+      final isSearchEmailRunning = ref.watch(
+        searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+      );
+      return Obx(() {
       final selectAllMode = dashboardController.currentSelectMode.value;
 
       final isSenderImportantFlagEnabled =
@@ -511,9 +552,6 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isShowingEmailContent =
           dashboardController.selectedEmail.value?.id == presentationEmail.id;
-
-      final isSearchEmailRunning =
-          controller.searchController.isSearchEmailRunning;
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
@@ -533,13 +571,18 @@ class ThreadView extends GetWidget<ThreadController>
         isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
         isAINeedsActionEnabled: isAINeedsActionEnabled,
       );
+      });
     });
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
     final dashboardController = controller.mailboxDashBoardController;
 
-    return Obx(() {
+    return Consumer(builder: (context, ref, child) {
+      final isSearchEmailRunning = ref.watch(
+        searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+      );
+      return Obx(() {
       final selectModeAll = dashboardController.currentSelectMode.value;
 
       final isSenderImportantFlagEnabled =
@@ -547,9 +590,6 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isShowingEmailContent =
           dashboardController.selectedEmail.value?.id == presentationEmail.id;
-
-      final isSearchEmailRunning =
-          controller.searchController.isSearchEmailRunning;
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
@@ -605,6 +645,7 @@ class ThreadView extends GetWidget<ThreadController>
           ),
         ),
       );
+      });
     });
   }
 

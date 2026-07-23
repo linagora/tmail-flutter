@@ -1,22 +1,30 @@
 
 import 'package:core/utils/app_logger.dart';
-import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
 
   void registerReactiveObxVariableListener() {
-    workerObxVariables.add(ever(
-      searchController.isAdvancedSearchViewOpen,
-      _onAdvancedSearchVisibleChanged
-    ));
+    advancedSearchViewSubscription ??= appProviderContainer.listen(
+      searchViewStateProvider.select((state) => state.isAdvancedSearchViewOpen),
+      (_, visible) => _onAdvancedSearchVisibleChanged(visible),
+    );
+    searchInputFocusSubscription ??= appProviderContainer.listen(
+      searchViewStateProvider.select((state) => state.isSearchInputFocused),
+      (_, focused) => onSearchInputFocusChanged(focused),
+    );
+  }
 
-    workerObxVariables.add(ever(
-      searchController.isSearchInputFocused,
-      onSearchInputFocusChanged
-    ));
+  void disposeReactiveSearchStateListeners() {
+    advancedSearchViewSubscription?.close();
+    searchInputFocusSubscription?.close();
+    advancedSearchViewSubscription = null;
+    searchInputFocusSubscription = null;
   }
 
   void _onAdvancedSearchVisibleChanged(bool visible) {

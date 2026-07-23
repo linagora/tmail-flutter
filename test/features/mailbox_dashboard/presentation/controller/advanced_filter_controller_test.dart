@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -200,7 +201,7 @@ void main() {
         .set(SearchEmailFilter.initial());
     searchController.deactivateAdvancedSearch();
     searchController.deactivateSimpleSearch();
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     clearInteractions(mockMailboxDashBoardController);
   });
 
@@ -237,7 +238,7 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         final committedSearchFilter = appProviderContainer.read(searchFilterProvider);
-        final searchFilter = searchController.searchEmailFilter.value;
+        final searchFilter = searchController.committedSearchFilter;
 
         // Assert
         verify(mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
@@ -258,7 +259,10 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         // Assert
-        expect(searchController.advancedSearchIsActivated.value, isTrue);
+        expect(
+          appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+          isTrue,
+        );
       });
 
       test(
@@ -276,7 +280,10 @@ void main() {
         await untilCalled(mockMailboxDashBoardController.handleAdvancedSearchEmail());
 
         // Assert
-        expect(searchController.advancedSearchIsActivated.value, isFalse);
+        expect(
+          appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+          isFalse,
+        );
       });
     });
 
@@ -612,7 +619,10 @@ void main() {
             checkboxCase.readFlag(
               appProviderContainer.read(searchFilterProvider)),
             isTrue);
-          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          expect(
+            appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+            isFalse,
+          );
           verifyNever(
             mockMailboxDashBoardController.handleAdvancedSearchEmail());
         });
@@ -637,7 +647,10 @@ void main() {
             checkboxCase.readFlag(
               appProviderContainer.read(searchFilterProvider)),
             isFalse);
-          expect(searchController.advancedSearchIsActivated.value, isFalse);
+          expect(
+            appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+            isFalse,
+          );
           verifyNever(
             mockMailboxDashBoardController.handleAdvancedSearchEmail());
         });
@@ -663,7 +676,10 @@ void main() {
 
         verify(
           mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(searchController.advancedSearchIsActivated.value, isTrue);
+        expect(
+          appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+          isTrue,
+        );
         expect(
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isTrue);
@@ -690,7 +706,10 @@ void main() {
 
         verify(
           mockMailboxDashBoardController.handleAdvancedSearchEmail()).called(1);
-        expect(searchController.advancedSearchIsActivated.value, isFalse);
+        expect(
+          appProviderContainer.read(searchViewStateProvider).advancedSearchIsActivated,
+          isFalse,
+        );
         expect(
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isFalse);

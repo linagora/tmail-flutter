@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
@@ -12,6 +13,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_vi
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
   MailboxDashBoardView({Key? key}) : super(key: key);
@@ -35,8 +37,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       child: Scaffold(
         drawerEnableOpenDragGesture:
             controller.responsiveUtils.hasLeftMenuDrawerActive(context),
-        body: Obx(() {
-          switch (controller.dashboardRoute.value) {
+        body: Consumer(builder: (context, ref, child) {
+          final isSearchEmailRunning = ref.watch(
+            searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+          );
+          return Obx(() {
+            switch (controller.dashboardRoute.value) {
             case DashboardRoutes.thread:
               return buildResponsiveWithDrawer(
                 left: ThreadView(),
@@ -45,7 +51,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               );
 
             case DashboardRoutes.threadDetailed:
-              return controller.searchController.isSearchEmailRunning
+              return isSearchEmailRunning
                   ? const ThreadDetailView()
                   : buildResponsiveWithDrawer(
                       left: ThreadView(),
@@ -61,7 +67,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
             case DashboardRoutes.waiting:
               return _loadingIndicator();
-          }
+            }
+          });
         }),
       ),
     );

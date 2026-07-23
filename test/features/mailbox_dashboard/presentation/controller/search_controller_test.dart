@@ -91,26 +91,25 @@ void main() {
       searchController.toggleQuickSearchFilter(filter, currentUserEmail: _me);
 
   group('updateFilterEmail', () {
-    test('user intent writes the committed SSOT and the mirror syncs the obs', () {
+    test('user intent writes the committed SSOT', () {
       searchController.updateFilterEmail(unreadOption: const Some(true));
 
       expect(committed().unread, isTrue);
-      expect(searchController.searchEmailFilter.value.unread, isTrue);
+      expect(searchController.committedSearchFilter.unread, isTrue);
     });
 
-    test('cursor options stay on the obs, never in the committed SSOT', () {
+    test('cursor options never enter the committed SSOT', () {
       searchController.updateFilterEmail(positionOption: const Some(40));
 
       expect(committed().position, isNull);
-      expect(searchController.searchEmailFilter.value.position, 40);
     });
 
-    test('a later user-intent update must not clobber an existing cursor', () {
+    test('a later user-intent update keeps pagination out of the SSOT', () {
       searchController.updateFilterEmail(positionOption: const Some(40));
       searchController.updateFilterEmail(unreadOption: const Some(true));
 
-      expect(searchController.searchEmailFilter.value.position, 40);
-      expect(searchController.searchEmailFilter.value.unread, isTrue);
+      expect(committed().position, isNull);
+      expect(searchController.committedSearchFilter.unread, isTrue);
     });
   });
 
@@ -163,7 +162,7 @@ void main() {
         isNot(contains(KeyWordIdentifier.emailFlagged.value)),
       );
       expect(
-        searchController.searchEmailFilter.value.hasKeyword,
+        searchController.listHasKeywordFiltered,
         isNot(contains(KeyWordIdentifier.emailFlagged.value)),
       );
     });
@@ -232,17 +231,6 @@ void main() {
       expect(committed().sortOrderType, EmailSortOrderType.oldest);
     });
 
-    // Clearing must drop a stale cursor left on the obs mirror. The
-    // committed SSOT never tracks cursors, so a bare notifier.clear() can't null
-    // it — every clear entry point must route through here. See ADR-0093.
-    test('drops a stale position cursor left on the obs', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
-      expect(searchController.searchEmailFilter.value.position, 40);
-
-      searchController.clearSearchFilter();
-
-      expect(searchController.searchEmailFilter.value.position, isNull);
-    });
   });
 
   // The search bar and the advanced "has the words" field are one full-text

@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -32,6 +33,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_load
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 
 abstract class BaseMailboxView extends GetWidget<MailboxController>
     with AppLoaderMixin {
@@ -200,7 +203,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     }
 
     return parentNode.childrenItems!.map((mailboxNode) {
-      final mailboxItemWidget = Obx(() => MailboxItemWidget(
+      final mailboxItemWidget = Consumer(builder: (context, ref, child) {
+        final isSearchByStarredOnly = _isSearchByStarredOnly(ref);
+        return Obx(() => MailboxItemWidget(
         mailboxNode: mailboxNode,
         mailboxNodeSelected: controller
           .mailboxDashBoardController
@@ -209,7 +214,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         isDraggingMailbox: controller
             .mailboxDashBoardController
             .isDraggingMailbox,
-        isHighlighted: isFolderHighlighted(mailboxNode),
+        isHighlighted: isFolderHighlighted(mailboxNode, isSearchByStarredOnly),
         onOpenMailboxFolderClick: (mailboxNode) =>
             mailboxNode != null
                 ? controller.openMailbox(context, mailboxNode.item)
@@ -239,6 +244,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
             mailboxNode.item,
           ),
       ));
+      });
 
       if (mailboxNode.hasChildren()) {
         return TreeViewChild(
@@ -254,15 +260,17 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     }).toList();
   }
 
-  bool get isSearchByStarredOnly {
-    final searchController =
-        controller.mailboxDashBoardController.searchController;
-
-    return searchController.isSearchEmailRunning &&
-        searchController.searchEmailFilter.value.isOnlyStarredApplied;
+  bool _isSearchByStarredOnly(WidgetRef ref) {
+    final isSearchEmailRunning = ref.watch(
+      searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+    );
+    final isOnlyStarredApplied = ref.watch(
+      searchFilterProvider.select((filter) => filter.isOnlyStarredApplied),
+    );
+    return isSearchEmailRunning && isOnlyStarredApplied;
   }
 
-  bool isFolderHighlighted(MailboxNode mailboxNode) =>
+  bool isFolderHighlighted(MailboxNode mailboxNode, bool isSearchByStarredOnly) =>
       mailboxNode.item.isFavorite && isSearchByStarredOnly;
 
   Widget buildListMailbox(BuildContext context) {

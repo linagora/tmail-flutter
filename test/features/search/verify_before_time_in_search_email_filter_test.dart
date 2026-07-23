@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -68,6 +69,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
@@ -403,11 +405,11 @@ void main() {
 
   group('SearchController::updateSortOrderFilter', () {
     setUp(() {
-      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
+      appProviderContainer.read(searchFilterProvider.notifier).set(SearchEmailFilter.initial());
     });
 
     test(
-      'SHOULD preserve startDate and endDate AND clear before, after and position '
+      'SHOULD preserve startDate and endDate '
       'WHEN sort order changes on any filter',
     () {
       // Arrange: snapshotted date bounds set when last7Days was selected
@@ -424,8 +426,8 @@ void main() {
       // Act
       searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
 
-      // Assert: date bounds are preserved; only load-more cursors are cleared
-      final filter = searchController.searchEmailFilter.value;
+      // Assert: user date bounds are preserved
+      final filter = searchController.committedSearchFilter;
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.startDate, equals(snapshotStart));
       expect(filter.endDate, equals(snapshotEnd));
@@ -452,132 +454,13 @@ void main() {
       searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
 
       // Assert
-      final filter = searchController.searchEmailFilter.value;
+      final filter = searchController.committedSearchFilter;
       expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
       expect(filter.startDate, equals(start));
       expect(filter.endDate, equals(end));
       expect(filter.before, isNull);
       expect(filter.after, isNull);
       expect(filter.position, isNull);
-    });
-
-    test(
-      'SHOULD clear after cursor WHEN sort order changes while after cursor is active',
-    () {
-      // Arrange: simulate oldest sort load-more → after cursor set by ThreadController
-      final cursor = UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-        afterOption: Some(cursor),
-      );
-      expect(searchController.searchEmailFilter.value.after, equals(cursor));
-
-      // Act: user changes sort order
-      searchController.updateSortOrderFilter(EmailSortOrderType.mostRecent);
-
-      // Assert: after cursor cleared
-      final filter = searchController.searchEmailFilter.value;
-      expect(filter.sortOrderType, equals(EmailSortOrderType.mostRecent));
-      expect(filter.after, isNull);
-      expect(filter.before, isNull);
-      expect(filter.position, isNull);
-    });
-
-    test(
-      'SHOULD clear before cursor WHEN sort order changes while before cursor is active',
-    () {
-      // Arrange: simulate mostRecent sort load-more → before cursor set by ThreadController
-      final cursor = UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'));
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent),
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-        beforeOption: Some(cursor),
-      );
-      expect(searchController.searchEmailFilter.value.before, equals(cursor));
-
-      // Act: user changes sort order
-      searchController.updateSortOrderFilter(EmailSortOrderType.oldest);
-
-      // Assert: before cursor cleared
-      final filter = searchController.searchEmailFilter.value;
-      expect(filter.sortOrderType, equals(EmailSortOrderType.oldest));
-      expect(filter.before, isNull);
-      expect(filter.after, isNull);
-      expect(filter.position, isNull);
-    });
-  });
-
-  group('SearchController::resetCursorsForFreshSearch', () {
-    setUp(() {
-      searchController.searchEmailFilter.value = SearchEmailFilter.initial();
-    });
-
-    test(
-      'SHOULD clear before/after and the position '
-      'WHEN the sort order is time-based (oldest)',
-    () {
-      // Arrange: oldest sort load-more left an after cursor and a position
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        startDateOption: Some(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
-
-      // Act
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
-
-      // Assert: cursors cleared, date bound preserved
-      final filter = searchController.searchEmailFilter.value;
-      expect(filter.before, isNull);
-      expect(filter.after, isNull);
-      expect(filter.position, isNull);
-      expect(filter.startDate, equals(UTCDate(DateTime.parse('2026-01-10T00:00:00.000Z'))));
-    });
-
-    test(
-      'SHOULD clear the stale before/after cursors AND restart position at 0 '
-      'WHEN the sort order is position-based (subjectAscending)',
-    () {
-      // Arrange: stale time cursors (both before and after) linger from a
-      // previous time-based sort
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.subjectAscending),
-        beforeOption: Some(UTCDate(DateTime.parse('2026-06-15T00:00:00.000Z'))),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
-
-      // Act
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: false);
-
-      // Assert: stale cursor cleared so it cannot truncate the fresh query
-      final filter = searchController.searchEmailFilter.value;
-      expect(filter.before, isNull);
-      expect(filter.after, isNull);
-      expect(filter.position, equals(0));
-    });
-
-    test(
-      'SHOULD clear the stale before/after cursors AND restart position at 0 '
-      'WHEN collapsed threads are enabled on a time-based sort',
-    () {
-      // Arrange: oldest sort with a leftover after cursor, then collapse enabled
-      searchController.updateFilterEmail(
-        sortOrderTypeOption: const Some(EmailSortOrderType.oldest),
-        afterOption: Some(UTCDate(DateTime.parse('2026-06-10T00:00:00.000Z'))),
-        positionOption: const Some(20),
-      );
-
-      // Act: collapsed threads switch pagination to position mode
-      searchController.resetCursorsForFreshSearch(isCollapseThreadsEnabled: true);
-
-      // Assert: no stale cursor leaks into the collapsed-thread query
-      final filter = searchController.searchEmailFilter.value;
-      expect(filter.before, isNull);
-      expect(filter.after, isNull);
-      expect(filter.position, equals(0));
     });
   });
 }

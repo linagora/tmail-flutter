@@ -6,6 +6,7 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.d
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -86,12 +88,16 @@ class EmailView extends GetWidget<SingleEmailController> {
           return Column(
             children: [
               if (!isInsideThreadDetailView)
-                Obx(
+                Consumer(builder: (context, ref, child) {
+                  final isSearchEmailRunning = ref.watch(
+                    searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+                  );
+                  return Obx(
                   () => EmailViewAppBarWidget(
                     key: const Key('email_view_app_bar_widget'),
                     presentationEmail: currentEmail,
                     mailboxContain: _getMailboxContain(currentEmail),
-                    isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+                    isSearchActivated: isSearchEmailRunning,
                     onBackAction: () => controller.closeEmailView(context: context),
                     onEmailActionClick: controller.handleEmailAction,
                     onMoreActionClick: (presentationEmail, position) {
@@ -135,7 +141,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     emailLoaded: controller.currentEmailLoaded.value,
                     isInsideThreadDetailView: isInsideThreadDetailView,
                   ),
-                ),
+                  );
+                }),
               if (!isInsideThreadDetailView)
                 Obx(() {
                   final vacation = controller.mailboxDashBoardController.vacationResponse.value;
