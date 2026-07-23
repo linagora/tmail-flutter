@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>IndexedDB Check</title>
+<style>
+  body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         max-width: 860px; margin: 0 auto; padding: 24px; color: #1a1a1a; background: #fff; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: #666; margin: 0 0 20px; }
+  button { font-size: 15px; padding: 10px 20px; margin-right: 8px; cursor: pointer;
+           border: 1px solid #0b57d0; background: #0b57d0; color: #fff; border-radius: 6px; }
+  button:disabled { opacity: .45; cursor: default; }
+  button.secondary { background: #fff; color: #0b57d0; }
+  #status { margin: 16px 0 8px; font-weight: 600; }
+  pre { background: #f6f7f9; border: 1px solid #e2e4e8; border-radius: 6px;
+        padding: 14px; overflow-x: auto; white-space: pre; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<h1>IndexedDB Check</h1>
+<p class="sub">
+  Tests how this browser reports a closed IndexedDB connection.
+  Runs 7 short cases (about 15 seconds). Uses its own throwaway databases &mdash;
+  it never touches application data, and writes at most 5&nbsp;MB.
+</p>
+
+<button id="run">Run check</button>
+<button id="download" class="secondary" disabled>Download report</button>
+
+<div id="status">Ready.</div>
+<pre id="out">(no results yet)</pre>
+
+<script>
+'use strict';
+/*
+ * Single-file by design: this page is served standalone and handed to an affected
+ * user by URL, so it must run with no build step, no bundler and no dependencies.
+ *
+ * Purpose: determine, on the user's exact browser build, which error name/message
+ * IDBDatabase.transaction() produces for each way a connection can stop being
+ * usable. That mapping is what lets a reported error string be traced back to a
+ * cause. Every case is deterministic and provokes its own precondition; nothing
+ * here is a soak test.
+ */
+
+var RUN_ID = Math.random().toString(36).slice(2, 10);
+var DB_PREFIX = '__idb_check_' + RUN_ID + '_';
+var STORE = 'probe';
+var LOG_TAG = '[IDB-CHECK]';
+var DELETE_TIMEOUT_MS = 10000;
+var QUOTA_PROBE_BYTES = 5 * 1024 * 1024;
+
+var startedAt = null;
+var report = null;
+
+// ---------------------------------------------------------------- primitives
+
+function log(msg) { console.log(LOG_TAG, msg); }
+
+function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
+
+function wrap(request) {
+  return new Promise(function (resolve, reject) {
+    request.onsuccess = function () { resolve(request.result); };
+    request.onerror = function () { reject(request.error); };
+  });
+}
+
+function withTimeout(promise, ms) {
+  var timer;
+  var timeout = new Promise(function (resolve) {
+    timer = setTimeout(function () { resolve({ __timedOut: true }); }, ms);
+  });
+  return Promise.race([promise, timeout]).then(function (value) {
+    clearTimeout(timer);
+    return value;
+  });
+}
+
+/** Opens a connection, exposing the lifecycle events the caller wants to observe. */
+function openDb(name, version, hooks) {
+  hooks = hooks || {};
+  return new Promise(function (resolve, reject) {
+    var request = indexedDB.open(name, version);
+    request.onupgradeneeded = function () {
+      var db = request.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+    };
+    request.onblocked = function () {
+      log('open blocked: ' + name + ' v' + version);
+      if (hooks.onblocked) hooks.onblocked();
+    };
+    request.onsuccess = function () {
+      var db = request.result;
+      // versionchange fires when another connection wants to upgrade or delete.
+      db.onversionchange = function () {
+        log('versionchange on ' + name);
+        if (hooks.onversionchange) hooks.onversionchange(db);
+      };
+      // close fires only on a forced close, never on an explicit db.close().
+      db.onclose = function () {
+        log('forced close on ' + name);
+        if (hooks.onclose) hooks.onclose();
+      };
+      resolve(db);
+    };
+    request.onerror = function () { reject(request.error); };
+  });
+}
+
+/**
+ * Attempts to start a transaction and reports exactly how it failed.
+ * transaction() throws synchronously on an unusable connection, so the thrown
+ * error is captured here rather than through transaction.onerror.
+ */
+function tryTransaction(db) {
+  try {
+    db.transaction(STORE, 'readwrite').objectStore(STORE);
+    return { outcome: 'OK' };
+  } catch (e) {
+    return { outcome: 'THROW', errorName: e.name, message: String(e.message || e) };
+  }
+}
+
+function deleteDb(name) {
+  return withTimeout(wrap(indexedDB.deleteDatabase(name)).catch(function () { return null; }), 3000);
+}
+
+// -------------------------------------------------------------------- cases
+
+/** Baseline: what an explicit close() produces, checked immediately. */
+async function case1() {
+  var name = DB_PREFIX + 'c1';
+  var db = await openDb(name, 1);
+  db.close();
+  var res = tryTransaction(db);
+  await deleteDb(name);
+  return res;
+}
+
+/** Same as case 1 but one task later, once the close has had a chance to finish. */
+async function case2() {
+  var name = DB_PREFIX + 'c2';
+  var db = await openDb(name, 1);
+  db.close();
+  await tick();
+  var res = tryTransaction(db);
+  await deleteDb(name);
+  return res;
+}
+
+/**
+ * A second connection upgrades the version while the first ignores versionchange.
+ * Mirrors a code path that registers no onversionchange handler: the question is
+ * whether the browser force-closes the old connection or blocks the upgrade.
+ */
+async function case3() {
+  var name = DB_PREFIX + 'c3';
+  var blocked = false, forcedClose = false;
+  var connA = await openDb(name, 1, {
+    onversionchange: function () { /* deliberately ignored */ },
+    onclose: function () { forcedClose = true; }
+  });
+  var upgrade = openDb(name, 2, { onblocked: function () { blocked = true; } });
+  var heldResult = await withTimeout(upgrade, 3000);
+  var upgradeCompletedWhileHeld = !(heldResult && heldResult.__timedOut);
+
+  // While the old connection is still open the browser either force-closes it
+  // (transaction throws) or leaves it usable and stalls the upgrade instead.
+  var after = tryTransaction(connA);
+
+  // Releasing the old connection must let the stalled upgrade through; the
+  // pending open is awaited again so its connection is not left dangling.
+  connA.close();
+  var released = await withTimeout(upgrade, 3000);
+  if (released && !released.__timedOut) released.close();
+  await deleteDb(name);
+
+  return Object.assign(after, {
+    upgradeBlocked: blocked,
+    upgradeCompletedWhileOldConnectionHeld: upgradeCompletedWhileHeld,
+    upgradeCompletedAfterRelease: !(released && released.__timedOut),
+    forcedCloseEventFired: forcedClose
+  });
+}
+
+/** The same upgrade, but the old connection closes on versionchange as it should. */
+async function case4() {
+  var name = DB_PREFIX + 'c4';
+  var blocked = false, forcedClose = false;
+  var connA = await openDb(name, 1, {
+    onversionchange: function (db) { db.close(); },
+    onclose: function () { forcedClose = true; }
+  });
+  var connB = await withTimeout(
+    openDb(name, 2, { onblocked: function () { blocked = true; } }), 3000);
+
+  var after = tryTransaction(connA);
+  if (connB && !connB.__timedOut) connB.close();
+  await deleteDb(name);
+
+  return Object.assign(after, {
+    upgradeBlocked: blocked,
+    upgradeCompleted: !(connB && connB.__timedOut),
+    forcedCloseEventFired: forcedClose
+  });
+}
+
+/** close() called while a readwrite transaction is still in flight. */
+async function case5() {
+  var name = DB_PREFIX + 'c5';
+  var db = await openDb(name, 1);
+  var tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).put('a', 'k1');
+
+  var settled = new Promise(function (resolve) {
+    tx.oncomplete = function () { resolve('COMPLETED'); };
+    tx.onabort = function () { resolve('ABORTED: ' + (tx.error ? tx.error.name : 'unknown')); };
+    tx.onerror = function () { resolve('ERROR: ' + (tx.error ? tx.error.name : 'unknown')); };
+  });
+
+  db.close(); // close is pending until the open transaction settles
+  var second = tryTransaction(db);
+  var outcome = await withTimeout(settled, 3000);
+  await deleteDb(name);
+
+  return {
+    outcome: 'INFO',
+    inFlightTransaction: outcome.__timedOut ? 'NEVER SETTLED' : outcome,
+    secondTransactionAfterClose: second.outcome === 'OK'
+      ? 'OK' : second.errorName + ': ' + second.message
+  };
+}
+
+/**
+ * Reproduces a delete-from-disk sequence: close our own connection, then delete
+ * the database while a second connection is still open and ignoring
+ * versionchange. deleteDatabase() is blocked by any other live connection, so an
+ * awaited delete with no onblocked handling can never resolve.
+ */
+async function case6() {
+  var name = DB_PREFIX + 'c6';
+  var blocked = false;
+  var connA = await openDb(name, 1);
+  var connB = await openDb(name, 1, {
+    onversionchange: function () { /* the other holder does not let go */ }
+  });
+
+  connA.close();
+  var request = indexedDB.deleteDatabase(name);
+  request.onblocked = function () { blocked = true; log('deleteDatabase blocked'); };
+
+  var t0 = performance.now();
+  var settled = await withTimeout(
+    wrap(request).then(function () { return 'RESOLVED'; })
+      .catch(function (e) { return 'REJECTED: ' + (e && e.name); }),
+    DELETE_TIMEOUT_MS);
+
+  var hung = settled && settled.__timedOut;
+  connB.close(); // releases the block so the pending delete can finish
+  await deleteDb(name);
+
+  return {
+    outcome: hung ? 'HUNG' : 'SETTLED',
+    result: hung ? 'never resolved within ' + DELETE_TIMEOUT_MS + 'ms' : settled,
+    onblockedFired: blocked,
+    elapsedMs: Math.round(performance.now() - t0)
+  };
+}
+
+/** Storage headroom, plus a bounded write to see whether pressure forces a close. */
+async function case7() {
+  var name = DB_PREFIX + 'c7';
+  var before = navigator.storage && navigator.storage.estimate
+    ? await navigator.storage.estimate() : null;
+  var persisted = navigator.storage && navigator.storage.persisted
+    ? await navigator.storage.persisted() : null;
+
+  var forcedClose = false;
+  var db = await openDb(name, 1, { onclose: function () { forcedClose = true; } });
+
+  var chunk = new Uint8Array(256 * 1024); // 256 KB per record, capped in total
+  var written = 0, quotaError = null;
+  try {
+    for (var i = 0; i < QUOTA_PROBE_BYTES / chunk.length; i++) {
+      var tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).put(chunk, 'blob' + i);
+      await new Promise(function (resolve, reject) {
+        tx.oncomplete = resolve;
+        tx.onerror = function () { reject(tx.error); };
+        tx.onabort = function () { reject(tx.error); };
+      });
+      written += chunk.length;
+    }
+  } catch (e) {
+    quotaError = (e && e.name) + ': ' + (e && e.message);
+  }
+
+  var after = navigator.storage && navigator.storage.estimate
+    ? await navigator.storage.estimate() : null;
+  db.close();
+  await deleteDb(name);
+
+  return {
+    outcome: 'INFO',
+    usageBefore: before ? before.usage : null,
+    quota: before ? before.quota : null,
+    usageAfter: after ? after.usage : null,
+    persisted: persisted,
+    bytesWritten: written,
+    quotaError: quotaError,
+    forcedCloseEventFired: forcedClose
+  };
+}
+
+var CASES = [
+  { id: 1, title: 'close() then transaction()', run: case1 },
+  { id: 2, title: 'close(), wait one tick, transaction()', run: case2 },
+  { id: 3, title: 'other connection upgrades, versionchange ignored', run: case3 },
+  { id: 4, title: 'other connection upgrades, versionchange handled', run: case4 },
+  { id: 5, title: 'close() during an in-flight readwrite transaction', run: case5 },
+  { id: 6, title: 'deleteDatabase() while a second connection is open', run: case6 },
+  { id: 7, title: 'storage headroom + bounded 5 MB write', run: case7 }
+];
+
+// ------------------------------------------------------------------- runner
+
+function environment() {
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    origin: location.origin,
+    protocol: location.protocol,
+    indexedDBAvailable: typeof indexedDB !== 'undefined' && indexedDB !== null
+  };
+}
+
+/** Groups the close-related cases by the exact message text they produced. */
+function fingerprints(results) {
+  var byMessage = {};
+  results.forEach(function (r) {
+    if (r.outcome !== 'THROW' || !r.message) return;
+    var key = r.errorName + ' | ' + r.message;
+    (byMessage[key] = byMessage[key] || []).push(r.id);
+  });
+  return Object.keys(byMessage).map(function (k) {
+    return { signature: k, producedByCases: byMessage[k] };
+  });
+}
+
+/**
+ * Turns the raw case results into the few statements that actually constrain a
+ * root cause: whether the error text can distinguish causes at all, whether the
+ * browser ever closed a connection on its own, and whether a delete can stall.
+ */
+function verdict(results, fps) {
+  var byId = {};
+  results.forEach(function (r) { byId[r.id] = r; });
+  var out = [];
+
+  if (fps.length === 0) {
+    out.push('No case produced a transaction error on this browser.');
+  } else if (fps.length === 1) {
+    out.push('The error text does NOT distinguish causes: cases '
+      + fps[0].producedByCases.join(', ') + ' all produce the same message.');
+    out.push('A report of this message therefore only narrows to "the connection was closed",');
+    out.push('not to which caller closed it.');
+  } else {
+    out.push('The error text DOES distinguish causes — ' + fps.length + ' distinct messages:');
+    fps.forEach(function (f) {
+      out.push('  cases ' + f.producedByCases.join(', ') + ' -> ' + f.signature);
+    });
+  }
+
+  var forced = results.filter(function (r) { return r.forcedCloseEventFired === true; });
+  if (forced.length) {
+    out.push('Browser-initiated (forced) close observed in cases '
+      + forced.map(function (r) { return r.id; }).join(', ') + '.');
+  } else {
+    out.push('No browser-initiated close observed: every failure followed an explicit close() call.');
+  }
+
+  if (byId[3]) {
+    out.push(byId[3].outcome === 'OK'
+      ? 'Ignoring versionchange does not break the old connection; it stalls the upgrade instead.'
+      : 'Ignoring versionchange broke the old connection.');
+  }
+
+  if (byId[6]) {
+    out.push(byId[6].outcome === 'HUNG'
+      ? 'deleteDatabase() NEVER RESOLVES while another connection is open (onblocked fired: '
+        + byId[6].onblockedFired + '). Awaiting it without handling onblocked hangs forever.'
+      : 'deleteDatabase() settled while another connection was open: ' + byId[6].result + '.');
+  }
+
+  if (byId[7]) {
+    out.push('Storage: ' + byId[7].usageBefore + ' of ' + byId[7].quota
+      + ' bytes used, persisted=' + byId[7].persisted
+      + (byId[7].quotaError ? ', quota error: ' + byId[7].quotaError : ', no quota error at 5 MB'));
+  }
+
+  return out;
+}
+
+function render(rep) {
+  var lines = [];
+  lines.push('IndexedDB Check — report v1');
+  lines.push('Run id:    ' + rep.runId);
+  lines.push('Started:   ' + rep.startedAt);
+  lines.push('Duration:  ' + rep.durationMs + ' ms');
+  lines.push('Origin:    ' + rep.environment.origin + '  (' + rep.environment.protocol + ')');
+  lines.push('UA:        ' + rep.environment.userAgent);
+  lines.push('Timezone:  ' + rep.environment.timezone);
+  lines.push('');
+  lines.push('CASES');
+  lines.push('-----');
+  rep.results.forEach(function (r) {
+    lines.push('#' + r.id + '  ' + r.title);
+    if (r.error) {
+      lines.push('     CASE FAILED TO RUN: ' + r.error);
+    } else if (r.outcome === 'THROW') {
+      lines.push('     THROW  ' + r.errorName);
+      lines.push('     "' + r.message + '"');
+    } else {
+      lines.push('     ' + r.outcome);
+    }
+    Object.keys(r).forEach(function (k) {
+      if (['id', 'title', 'outcome', 'errorName', 'message', 'error'].indexOf(k) >= 0) return;
+      lines.push('     ' + k + ': ' + JSON.stringify(r[k]));
+    });
+    lines.push('');
+  });
+  lines.push('MESSAGE FINGERPRINTS');
+  lines.push('--------------------');
+  if (!rep.fingerprints.length) {
+    lines.push('(no case produced a thrown transaction error)');
+  } else {
+    rep.fingerprints.forEach(function (f) {
+      lines.push('cases ' + f.producedByCases.join(', ') + '  ->  ' + f.signature);
+    });
+  }
+  lines.push('');
+  lines.push('VERDICT');
+  lines.push('-------');
+  rep.verdict.forEach(function (v) { lines.push(v); });
+  lines.push('');
+  lines.push('--- raw json below ---');
+  lines.push(JSON.stringify(rep, null, 2));
+  return lines.join('\n');
+}
+
+async function run() {
+  var runBtn = document.getElementById('run');
+  var dlBtn = document.getElementById('download');
+  var status = document.getElementById('status');
+  var out = document.getElementById('out');
+
+  runBtn.disabled = true;
+  dlBtn.disabled = true;
+  startedAt = new Date();
+  var t0 = performance.now();
+  var results = [];
+
+  if (!window.indexedDB) {
+    status.textContent = 'IndexedDB is unavailable on this page.';
+    out.textContent = 'This browser denies IndexedDB here. If the address bar shows '
+      + '"file://", open the page over http:// or https:// instead.';
+    runBtn.disabled = false;
+    return;
+  }
+
+  for (var i = 0; i < CASES.length; i++) {
+    var c = CASES[i];
+    status.textContent = 'Running case ' + c.id + ' of ' + CASES.length + '…';
+    out.textContent = 'Case ' + c.id + ': ' + c.title;
+    log('case ' + c.id + ' start: ' + c.title);
+    var entry;
+    try {
+      entry = Object.assign({ id: c.id, title: c.title }, await c.run());
+    } catch (e) {
+      entry = { id: c.id, title: c.title, outcome: 'CASE_ERROR', error: (e && e.name) + ': ' + (e && e.message) };
+    }
+    log('case ' + c.id + ' result: ' + JSON.stringify(entry));
+    results.push(entry);
+  }
+
+  var fps = fingerprints(results);
+  report = {
+    reportVersion: 1,
+    runId: RUN_ID,
+    startedAt: startedAt.toISOString(),
+    durationMs: Math.round(performance.now() - t0),
+    environment: environment(),
+    results: results,
+    fingerprints: fps,
+    verdict: verdict(results, fps)
+  };
+
+  var text = render(report);
+  out.textContent = text;
+  console.log(LOG_TAG + ' full report follows\n' + text);
+  status.textContent = 'Done — ' + CASES.length + ' cases in ' + report.durationMs + ' ms.';
+  runBtn.disabled = false;
+  dlBtn.disabled = false;
+}
+
+function download() {
+  var blob = new Blob([render(report)], { type: 'text/plain' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'idb-check-' + RUN_ID + '.txt';
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+document.getElementById('run').addEventListener('click', run);
+document.getElementById('download').addEventListener('click', download);
+
+// ?auto=1 starts the run without a click, so the page can be driven headlessly.
+if (/[?&]auto=1\b/.test(location.search)) run();
+</script>
+</body>
+</html>
