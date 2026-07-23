@@ -6,6 +6,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 abstract class EmailStateChangeSource {
   /// Emits server email-state changes.
   Stream<jmap.State> get onEmailStateChanged;
+
+  /// The email state the app is already synced to, or null before the first
+  /// sync. Lets a refresh skip a change it has already applied.
+  jmap.State? get currentAppliedState;
 }
 
 /// Adapts the dashboard email action stream to [EmailStateChangeSource].
@@ -19,6 +23,9 @@ class DashboardEmailStateChangeSource implements EmailStateChangeSource {
   Stream<jmap.State> get onEmailStateChanged => _dashboard.emailUIAction.stream
       .where((action) => action is RefreshChangeEmailAction)
       .map((action) => (action as RefreshChangeEmailAction).newState);
+
+  @override
+  jmap.State? get currentAppliedState => _dashboard.currentEmailState;
 
   // Same dashboard ⇒ equal source, so a provider recompute keeps the identical
   // value and does not rebuild the refresh coordinator — preserving its

@@ -7,10 +7,13 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/email_s
 
 class _FakeMailboxDashboardController extends Fake
     implements MailboxDashBoardController {
-  _FakeMailboxDashboardController(this.emailUIAction);
+  _FakeMailboxDashboardController(this.emailUIAction, {this.currentEmailState});
 
   @override
   final Rxn<EmailUIAction> emailUIAction;
+
+  @override
+  jmap.State? currentEmailState;
 }
 
 void main() {
@@ -31,6 +34,20 @@ void main() {
     await pumpEventQueue();
 
     expect(states, [state]);
+  });
+
+  test('currentAppliedState reflects the dashboard current email state', () {
+    final dashboard = _FakeMailboxDashboardController(
+      Rxn<EmailUIAction>(),
+      currentEmailState: jmap.State('state-1'),
+    );
+
+    final source = DashboardEmailStateChangeSource(dashboard);
+
+    expect(source.currentAppliedState, jmap.State('state-1'));
+
+    dashboard.currentEmailState = null;
+    expect(source.currentAppliedState, isNull);
   });
 
   test('sources wrapping the same dashboard are equal', () {

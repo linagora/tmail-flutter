@@ -63,13 +63,13 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
-import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_session_reset.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
@@ -1088,11 +1088,7 @@ class SearchEmailController extends BaseController
     viewStateWorker.dispose();
     _searchService.unregister(this);
     onKeyboardShortcutDispose();
-    // Release keepAlive search state with the binding, including the committed
-    // filter, so no stale filter leaks into the next search session.
-    _searchService.resetSession();
-    appProviderContainer.invalidate(searchEmailPresentationProvider);
-    appProviderContainer.invalidate(searchEmailProvider);
+    resetSearchResultSession(appProviderContainer);
     appProviderContainer.invalidate(searchFilterProvider);
     super.onClose();
   }

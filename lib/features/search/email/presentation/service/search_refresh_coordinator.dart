@@ -75,6 +75,7 @@ class SearchRefreshCoordinator {
   /// Adds a state change to the serialized queue.
   void _enqueue(jmap.State state) {
     if (_disposed) return;
+    if (state == _stateSource.currentAppliedState) return;
     final message = WebSocketMessage(newState: state);
     if (_isStateKnown(message.id)) return;
     _queue.enqueue(message);

@@ -18,6 +18,9 @@ class _FakeEmailStateChangeSource implements EmailStateChangeSource {
   final _controller = StreamController<jmap.State>.broadcast();
 
   @override
+  jmap.State? currentAppliedState;
+
+  @override
   Stream<jmap.State> get onEmailStateChanged => _controller.stream;
 
   void emit(jmap.State state) {
@@ -105,6 +108,14 @@ void main() {
       (executor.lastIntent as RefreshChangesIntent).currentCount,
       7,
     );
+  });
+
+  test('skips a state the app is already synced to', () async {
+    source.currentAppliedState = jmap.State('state-1');
+    source.emit(jmap.State('state-1'));
+    await pumpEventQueue();
+
+    expect(executor.dispatchCount, 0);
   });
 
   test('ignores a repeated state', () async {
