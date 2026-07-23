@@ -75,7 +75,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       borderRadius: BorderRadius.all(Radius.circular(6)),
     ),
     haveCloseButton: false,
-    onClose: cancel,
+    onClose: () {
+      if (!showSkeleton) cancel();
+    },
     child: Stack(
       children: [
         HtmlIframeWidget(
