@@ -31,7 +31,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin, WebWindowMessageMixin<DriveIntentWebViewModal> {
   html.IFrameElement? _iframeElement;
 
-  bool showWideLoading(BuildContext context) {
+  bool wideScreen(BuildContext context) {
     return ResponsiveUtils().isDesktop(context) ||
         ResponsiveUtils().isTabletLarge(context);
   }
@@ -75,12 +75,14 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   Widget build(BuildContext context) => DriveIntentWebViewModalShell(
-    insetPadding: const EdgeInsets.all(24),
+    insetPadding: wideScreen(context)
+        ? const EdgeInsets.all(24)
+        : const EdgeInsets.only(top: 24),
     constraints: const BoxConstraints(maxWidth: 800, maxHeight: 677),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(6)),
     ),
-    haveCloseButton: false,
+    haveCloseButton: !wideScreen(context),
     onClose: () {
       if (!showSkeleton) cancel();
     },
@@ -93,9 +95,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
             notifyPlatformViewReady();
           },
         ),
-        // if (showSkeleton)
+        if (showSkeleton)
           Positioned.fill(
-            child: showWideLoading(context)
+            child: wideScreen(context)
                 ? const DriveIntentSkeletonLoader.table()
                 : const DriveIntentSkeletonLoader.list(),
           ),
