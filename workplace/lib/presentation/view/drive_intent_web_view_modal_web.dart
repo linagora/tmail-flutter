@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
@@ -29,6 +30,11 @@ class DriveIntentWebViewModal extends StatefulWidget {
 class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin, WebWindowMessageMixin<DriveIntentWebViewModal> {
   html.IFrameElement? _iframeElement;
+
+  bool showWideLoading(BuildContext context) {
+    return ResponsiveUtils().isDesktop(context) ||
+        ResponsiveUtils().isTabletLarge(context);
+  }
 
   @override
   void initState() {
@@ -87,8 +93,12 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
             notifyPlatformViewReady();
           },
         ),
-        if (showSkeleton)
-          const Positioned.fill(child: DriveIntentSkeletonLoader.table()),
+        // if (showSkeleton)
+          Positioned.fill(
+            child: showWideLoading(context)
+                ? const DriveIntentSkeletonLoader.table()
+                : const DriveIntentSkeletonLoader.list(),
+          ),
       ],
     ),
   );
