@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/search/email/domain/execution/search_exec
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
@@ -173,19 +174,24 @@ class SearchEmailController extends BaseController
   SearchExecutorService get _searchService =>
       appProviderContainer.read(searchExecutorServiceProvider);
 
-  SearchDispatchContext get _dispatchContext => SearchDispatchContext(
-        session: session!,
-        accountId: accountId!,
-        properties:
-            EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+  SearchDispatchContext? get _dispatchContext =>
+      mailboxDashBoardController.buildSearchDispatchContext(
         collapseThreads: _isCollapseThreadsEnabled,
-        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
       );
 
   bool get _hasSearchSession {
     if (accountId == null) return false;
 
     return session != null;
+  }
+
+  // SearchEmailView owns search results on every layout except web desktop, where
+  // the thread list renders them inline (ThreadSearchExecutionObserver owns them).
+  // Without this guard a desktop search would still populate this view's result
+  // list, which then leaks into a later mobile/tablet search after a resize.
+  bool get _ownsSearchResults {
+    final context = currentContext;
+    return context == null || !responsiveUtils.isWebDesktop(context);
   }
 
   SearchEmailController(
@@ -396,6 +402,7 @@ class SearchEmailController extends BaseController
 
   @override
   void onNewSearchStarted() {
+    if (!_ownsSearchResults) return;
     textInputSearchFocus.unfocus();
     _searchEmailPresentationNotifier.resetSearchMore();
     _searchEmailPresentationNotifier.setSearchIsRunning(true);
@@ -416,6 +423,7 @@ class SearchEmailController extends BaseController
 
   @override
   void onSearchLoading() {
+    if (!_ownsSearchResults) return;
     _searchEmailPresentationNotifier.setResultSearchViewState(
       Right(SearchingState()),
     );
@@ -423,20 +431,23 @@ class SearchEmailController extends BaseController
 
   @override
   void onSearchResult(SearchEmailResult result, {required bool isFreshResult}) {
+    if (!_ownsSearchResults) return;
     _applySearchResult(result, shouldScrollToTop: isFreshResult);
   }
 
   @override
   void onSearchFailure(Object error) {
+    if (!_ownsSearchResults) return;
     _searchEmailsFailure(asSearchEmailFailure(error));
   }
 
   void _searchEmailAction() {
-    if (session == null || accountId == null) {
+    final context = _dispatchContext;
+    if (context == null) {
       _searchEmailsFailure(SearchEmailFailure(NotFoundSessionException()));
       return;
     }
-    _searchService.dispatch(const NewSearchIntent(), _dispatchContext);
+    _searchService.dispatch(const NewSearchIntent(), context);
   }
 
   void _applySearchResult(
@@ -508,6 +519,9 @@ class SearchEmailController extends BaseController
   void searchMoreEmailsAction() {
     if (!_canSearchMoreEmails) return;
 
+    final context = _dispatchContext;
+    if (context == null) return;
+
     final lastEmail = listResultSearch.last;
     _searchService.dispatch(
       LoadMoreIntent(
@@ -515,7 +529,7 @@ class SearchEmailController extends BaseController
         lastEmailDate: lastEmail.receivedAt,
         lastEmailId: lastEmail.id,
       ),
-      _dispatchContext,
+      context,
     );
   }
 

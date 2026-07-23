@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_email_failure_mapper.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
@@ -159,13 +160,9 @@ class ThreadController extends BaseController with EmailActionController {
   SearchExecutorService get _searchService =>
       appProviderContainer.read(searchExecutorServiceProvider);
 
-  SearchDispatchContext get _dispatchContext => SearchDispatchContext(
-        session: _session!,
-        accountId: _accountId!,
-        properties:
-            EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+  SearchDispatchContext? get _dispatchContext =>
+      mailboxDashBoardController.buildSearchDispatchContext(
         collapseThreads: _isCollapseThreadsEnabled,
-        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
       );
 
   @override
@@ -1134,7 +1131,8 @@ class ThreadController extends BaseController with EmailActionController {
   void searchEmail() => _searchEmail();
 
   void _searchEmail({bool refresh = false}) {
-    if (_session == null || _accountId == null) {
+    final context = _dispatchContext;
+    if (context == null) {
       _searchExecutionObserver.onSearchFailure(
         SearchEmailFailure(NotFoundSessionException()),
       );
@@ -1147,7 +1145,7 @@ class ThreadController extends BaseController with EmailActionController {
                   mailboxDashBoardController.emailsInCurrentMailbox.length,
             )
           : const NewSearchIntent(),
-      _dispatchContext,
+      context,
     );
   }
 
@@ -1172,11 +1170,12 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _searchMoreEmails() {
     if (!canSearchMore) return;
-    if (_session == null) return;
-    if (_accountId == null) return;
 
     final currentEmailList = mailboxDashBoardController.emailsInCurrentMailbox;
     if (currentEmailList.isEmpty) return;
+
+    final context = _dispatchContext;
+    if (context == null) return;
 
     final lastEmail = currentEmailList.last;
     _searchService.dispatch(
@@ -1185,7 +1184,7 @@ class ThreadController extends BaseController with EmailActionController {
         lastEmailDate: lastEmail.receivedAt,
         lastEmailId: lastEmail.id,
       ),
-      _dispatchContext,
+      context,
     );
   }
 

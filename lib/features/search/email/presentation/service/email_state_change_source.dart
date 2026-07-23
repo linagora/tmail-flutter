@@ -19,4 +19,16 @@ class DashboardEmailStateChangeSource implements EmailStateChangeSource {
   Stream<jmap.State> get onEmailStateChanged => _dashboard.emailUIAction.stream
       .where((action) => action is RefreshChangeEmailAction)
       .map((action) => (action as RefreshChangeEmailAction).newState);
+
+  // Same dashboard ⇒ equal source, so a provider recompute keeps the identical
+  // value and does not rebuild the refresh coordinator — preserving its
+  // websocket queue and dedup memory. Only a real dashboard swap (re-login)
+  // yields a new source and a fresh coordinator.
+  @override
+  bool operator ==(Object other) =>
+      other is DashboardEmailStateChangeSource &&
+      identical(other._dashboard, _dashboard);
+
+  @override
+  int get hashCode => identityHashCode(_dashboard);
 }

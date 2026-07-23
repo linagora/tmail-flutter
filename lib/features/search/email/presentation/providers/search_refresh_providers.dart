@@ -1,11 +1,11 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/email_state_change_source.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_refresh_coordinator.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
@@ -21,24 +21,6 @@ DashboardEmailStateChangeSource? dashboardEmailStateChangeSource(Ref ref) {
   return DashboardEmailStateChangeSource(dashboard);
 }
 
-/// Builds the current arguments required by a search refresh dispatch.
-@riverpod
-SearchDispatchContext? searchDispatchContext(Ref ref) {
-  final dashboard = getBinding<MailboxDashBoardController>();
-  final session = dashboard?.sessionCurrent;
-  final accountId = dashboard?.accountId.value;
-  if (session == null || accountId == null) return null;
-
-  return SearchDispatchContext(
-    session: session,
-    accountId: accountId,
-    properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
-    collapseThreads:
-        ref.read(localSettingsProvider).threadConfig.isEnabled,
-    trashSpamMailboxIds: dashboard?.trashSpamMailboxIds,
-  );
-}
-
 /// Owns search refreshes for the lifetime of the dashboard widget.
 @riverpod
 SearchRefreshCoordinator? searchRefreshCoordinator(Ref ref) {
@@ -49,8 +31,9 @@ SearchRefreshCoordinator? searchRefreshCoordinator(Ref ref) {
     executor: ref.read(searchExecutorServiceProvider),
     stateSource: stateSource,
     callbacks: SearchRefreshCoordinatorCallbacks(
-      resolveDispatchContext: () => ref.read(searchDispatchContextProvider),
-      isSearchActive: () => ref.read(searchViewStateProvider).isSearchActive,
+      resolveDispatchContext: () => _resolveDispatchContext(ref),
+      isSearchRunning: () =>
+          ref.read(searchViewStateProvider).isSearchEmailRunning,
       resolveResultCount: () =>
           ref.read(searchEmailProvider).value?.emails.length ?? 0,
       onError: (error, stackTrace) => logWarning(
@@ -60,4 +43,15 @@ SearchRefreshCoordinator? searchRefreshCoordinator(Ref ref) {
   );
   ref.onDispose(coordinator.dispose);
   return coordinator;
+}
+
+/// Builds the refresh dispatch context from the currently-bound dashboard.
+/// Null until a session and account are available.
+SearchDispatchContext? _resolveDispatchContext(Ref ref) {
+  final dashboard = getBinding<MailboxDashBoardController>();
+  if (dashboard == null) return null;
+
+  return dashboard.buildSearchDispatchContext(
+    collapseThreads: ref.read(localSettingsProvider).threadConfig.isEnabled,
+  );
 }

@@ -300,7 +300,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
 
-  Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
+  Set<String> get listHasKeywordFiltered =>
+      Set<String>.unmodifiable(searchEmailFilter.value.hasKeyword);
 
   bool get unreadFiltered => searchEmailFilter.value.unread;
 

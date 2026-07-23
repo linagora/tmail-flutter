@@ -32,4 +32,25 @@ void main() {
 
     expect(states, [state]);
   });
+
+  test('sources wrapping the same dashboard are equal', () {
+    final dashboard = _FakeMailboxDashboardController(Rxn<EmailUIAction>());
+
+    final first = DashboardEmailStateChangeSource(dashboard);
+    final second = DashboardEmailStateChangeSource(dashboard);
+
+    expect(first, second);
+    expect(first.hashCode, second.hashCode);
+  });
+
+  test('sources wrapping different dashboards are not equal', () {
+    final first = DashboardEmailStateChangeSource(
+      _FakeMailboxDashboardController(Rxn<EmailUIAction>()),
+    );
+    final second = DashboardEmailStateChangeSource(
+      _FakeMailboxDashboardController(Rxn<EmailUIAction>()),
+    );
+
+    expect(first, isNot(second));
+  });
 }

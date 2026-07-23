@@ -12,8 +12,9 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/search_
 /// Resolves the current search dispatch context, if available.
 typedef SearchDispatchContextResolver = SearchDispatchContext? Function();
 
-/// Reports whether the search view can receive refresh results.
-typedef SearchActivePredicate = bool Function();
+/// Reports whether a search session is currently running (any platform/width),
+/// so refresh results can be applied.
+typedef SearchRunningPredicate = bool Function();
 
 /// Returns the number of currently loaded search results.
 typedef SearchResultCountResolver = int Function();
@@ -28,13 +29,13 @@ typedef SearchRefreshErrorHandler = void Function(
 class SearchRefreshCoordinatorCallbacks {
   const SearchRefreshCoordinatorCallbacks({
     required this.resolveDispatchContext,
-    required this.isSearchActive,
+    required this.isSearchRunning,
     required this.resolveResultCount,
     this.onError,
   });
 
   final SearchDispatchContextResolver resolveDispatchContext;
-  final SearchActivePredicate isSearchActive;
+  final SearchRunningPredicate isSearchRunning;
   final SearchResultCountResolver resolveResultCount;
   final SearchRefreshErrorHandler? onError;
 }
@@ -111,7 +112,7 @@ class SearchRefreshCoordinator {
 
   bool _canProcessMessage() {
     if (_disposed) return false;
-    return _callbacks.isSearchActive();
+    return _callbacks.isSearchRunning();
   }
 
   bool _retryMessage(

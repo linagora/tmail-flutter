@@ -60,7 +60,7 @@ void main() {
   late _FakeEmailStateChangeSource source;
   late _FakeSearchExecutorService executor;
   late SearchRefreshCoordinator coordinator;
-  var searchActive = true;
+  var searchRunning = true;
   SearchDispatchContext? dispatchContext;
   final errors = <Object>[];
 
@@ -75,7 +75,7 @@ void main() {
   setUp(() {
     source = _FakeEmailStateChangeSource();
     executor = _FakeSearchExecutorService(ProviderContainer());
-    searchActive = true;
+    searchRunning = true;
     dispatchContext = context;
     errors.clear();
     coordinator = SearchRefreshCoordinator(
@@ -83,7 +83,7 @@ void main() {
       stateSource: source,
       callbacks: SearchRefreshCoordinatorCallbacks(
         resolveDispatchContext: () => dispatchContext,
-        isSearchActive: () => searchActive,
+        isSearchRunning: () => searchRunning,
         resolveResultCount: () => 7,
         onError: (error, _) => errors.add(error),
       ),
@@ -117,8 +117,8 @@ void main() {
     expect(executor.dispatchCount, 1);
   });
 
-  test('does not dispatch while search is inactive', () async {
-    searchActive = false;
+  test('does not dispatch while search is not running', () async {
+    searchRunning = false;
     source.emit(jmap.State('state-1'));
     await pumpEventQueue();
 

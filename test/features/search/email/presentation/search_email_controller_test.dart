@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
@@ -1013,5 +1014,35 @@ void main() {
         verifyNewSearchExecutedOnce();
       },
     );
+  });
+
+  group('web-desktop search-results ownership guard', () {
+    testWidgets('ignores executor results while web desktop', (tester) async {
+      await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+      when(Get.find<ResponsiveUtils>().isWebDesktop(Get.context!))
+          .thenReturn(true);
+
+      controller.onSearchResult(
+        SearchEmailResult(emails: [email('desktop-1')], canLoadMore: true),
+        isFreshResult: true,
+      );
+      await tester.pump();
+
+      expect(controller.listResultSearch, isEmpty);
+    });
+
+    testWidgets('applies executor results when not web desktop', (tester) async {
+      await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+      when(Get.find<ResponsiveUtils>().isWebDesktop(Get.context!))
+          .thenReturn(false);
+
+      controller.onSearchResult(
+        SearchEmailResult(emails: [email('mobile-1')], canLoadMore: true),
+        isFreshResult: true,
+      );
+      await tester.pump();
+
+      expect(resultIds(), ['mobile-1']);
+    });
   });
 }
