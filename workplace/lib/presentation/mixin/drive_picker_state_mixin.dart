@@ -46,14 +46,20 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         addAsLinkTitle: l10n.addAsLink,
         addAsAttachmentTitle: l10n.addAsAttachment,
       );
-      final outcome = await showDialog<DrivePickOutcome>(
-        context: context,
-        useSafeArea: false,
-        builder: (_) => DriveIntentWebViewModal(
-          intentFuture: intentFuture,
-          onRegisterExternalHandler: externalHandlerRegistrar,
-        ),
-      );
+      DrivePickOutcome? outcome;
+      try {
+        outcome = await showDialog<DrivePickOutcome>(
+          context: context,
+          useSafeArea: false,
+          barrierDismissible: false,
+          builder: (_) => DriveIntentWebViewModal(
+            intentFuture: intentFuture,
+            onRegisterExternalHandler: externalHandlerRegistrar,
+          ),
+        );
+      } catch (e) {
+        outcome = DrivePickOutcomeFailed(e);
+      }
       _handleOutcome(outcome, failingMessage);
     } finally {
       clearExternalHandler();

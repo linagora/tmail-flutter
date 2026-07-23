@@ -54,7 +54,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     return SafeArea(
       bottom: false,
       child: DriveIntentWebViewModalShell(
-        onClose: cancel,
+        onClose: () {
+          if (!showSkeleton) cancel();
+        },
         child: Stack(
           children: [
             InAppWebView(
