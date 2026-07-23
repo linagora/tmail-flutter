@@ -83,6 +83,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       borderRadius: BorderRadius.all(Radius.circular(6)),
     ),
     haveCloseButton: !wideScreen(context),
+    alignment: wideScreen(context) ? Alignment.center : Alignment.bottomCenter,
     onClose: () {
       if (!showSkeleton) cancel();
     },

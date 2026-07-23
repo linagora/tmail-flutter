@@ -13,6 +13,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   final ShapeBorder? shape;
   final BoxConstraints? constraints;
   final bool haveCloseButton;
+  final AlignmentGeometry? alignment;
 
   const DriveIntentWebViewModalShell({
     super.key,
@@ -22,6 +23,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
     this.shape,
     this.constraints,
     this.haveCloseButton = true,
+    this.alignment,
   });
 
   @override
@@ -35,6 +37,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
           insetPadding: insetPadding,
           shape: shape,
           constraints: constraints,
+          alignment: alignment,
           child: GestureDetector(
             onTap: () {},
             behavior: HitTestBehavior.opaque,
