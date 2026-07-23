@@ -234,7 +234,21 @@ void _readyTimeoutTests() {
     expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
   });
 
-  testWidgets('cancelled if ready arrives before timeout', (tester) async {
+  testWidgets('cancelled if readyToUse arrives before timeout', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
+    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
+    state.startLoading(Future.value(_intent()));
+    await tester.pump();
+    state.notifyPlatformViewReady();
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:readyToUse'}), origin: _origin);
+
+    await tester.pump(const Duration(milliseconds: 60));
+
+    expect(state.outcomes, isEmpty);
+  });
+
+  testWidgets('fires Failed(DriveIntentTimeoutException) if readyToUse never arrives, even after ready', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
     final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
     state.startLoading(Future.value(_intent()));
@@ -244,7 +258,19 @@ void _readyTimeoutTests() {
 
     await tester.pump(const Duration(milliseconds: 60));
 
-    expect(state.outcomes, isEmpty);
+    expect(state.outcomes, hasLength(1));
+    expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
+  });
+
+  testWidgets('fires Failed(DriveIntentTimeoutException) if platform view never becomes ready', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
+    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
+    state.startLoading(Future.value(_intent()));
+
+    await tester.pump(const Duration(milliseconds: 60));
+
+    expect(state.outcomes, hasLength(1));
+    expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
   });
 }
 
