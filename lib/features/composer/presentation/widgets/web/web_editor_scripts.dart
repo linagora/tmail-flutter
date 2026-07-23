@@ -6,9 +6,11 @@ List<WebScript> buildWebEditorInitialScripts({
   required double maxHeight,
   required WebScript selectionChangeScript,
   required String driveCardDeleteOverlayRemoveLabel,
+  required String driveCardDeleteOverlayViewId,
 }) {
   final driveCardDeleteOverlayScript = WorkplaceScripts.registerDriveCardDeleteOverlay(
     driveCardDeleteOverlayRemoveLabel,
+    viewId: driveCardDeleteOverlayViewId,
     isWebPlatform: true,
   );
 

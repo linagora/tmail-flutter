@@ -123,7 +123,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
           } else if (data['name'] == _selectionChangeScript.name
               && data['viewId'] == _createdViewId) {
             handleSelectionChange(data);
-          } else if (data['type'] == 'toDart: driveCardDeleted') {
+          } else if (data['type'] == 'toDart: driveCardDeleted'
+              && data['viewId'] == _createdViewId) {
             _syncContentAfterDriveCardDeleted();
           }
         }
@@ -191,6 +192,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             maxHeight: maxHeight,
             selectionChangeScript: _selectionChangeScript,
             driveCardDeleteOverlayRemoveLabel: AppLocalizations.of(context).remove,
+            driveCardDeleteOverlayViewId: _createdViewId,
           ),
         )
       ),
@@ -267,6 +269,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     _editorController.evaluateJavascriptWeb(
       WorkplaceScripts.registerDriveCardDeleteOverlay(
         AppLocalizations.of(context).remove,
+        viewId: _createdViewId,
+        isWebPlatform: true,
       ).name,
     );
     _editorListenerRegistered = true;

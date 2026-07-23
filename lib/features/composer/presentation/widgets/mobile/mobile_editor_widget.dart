@@ -150,6 +150,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     if (!mounted) return;
     final script = WorkplaceScripts.registerDriveCardDeleteOverlay(
       AppLocalizations.of(context).remove,
+      viewId: _createdViewId,
     );
     await editorApi.webViewController.evaluateJavascript(source: script.script);
   }

@@ -14,6 +14,7 @@ class WorkplaceScripts {
   /// loop, to avoid forcing a layout reflow every frame while idle.
   static ({String name, String script}) registerDriveCardDeleteOverlay(
     String removeLabel, {
+    required String viewId,
     bool isWebPlatform = false,
   }) => (
     script:
@@ -25,6 +26,7 @@ class WorkplaceScripts {
 
           const isWebPlatform = $isWebPlatform;
           const removeLabel = ${jsonEncode(removeLabel)};
+          const viewId = ${jsonEncode(viewId)};
           $_overlayStateSetup
           $_cardInteractionHelpers
           if (isTouch) {
@@ -63,9 +65,15 @@ class WorkplaceScripts {
   /// Helpers shared by both the touch and hover overlay branches: content
   /// sync, focus restoration, delete activation, and overlay creation.
   static const _cardInteractionHelpers = '''
+          function getEditableRoot() {
+            return isWebPlatform
+              ? document.querySelector('.note-editor .note-editable')
+              : document.querySelector('#editor');
+          }
+
           function syncEditorContent() {
             try {
-              const editable = document.querySelector('.note-editable');
+              const editable = getEditableRoot();
               if (editable) {
                 editable.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
               }
@@ -82,7 +90,7 @@ class WorkplaceScripts {
               // such side effect, so it keeps the normal pipeline below.
               try {
                 window.parent.postMessage(
-                  JSON.stringify({ type: 'toDart: driveCardDeleted' }),
+                  JSON.stringify({ type: 'toDart: driveCardDeleted', viewId: viewId }),
                   '*'
                 );
               } catch (e) {}
@@ -97,7 +105,7 @@ class WorkplaceScripts {
             // `preventScroll: true` avoids the browser's default "scroll the
             // iframe into view in the outer page" behavior on focus.
             try {
-              const editable = document.querySelector('.note-editable');
+              const editable = getEditableRoot();
               if (editable && document.activeElement !== editable) {
                 editable.focus({ preventScroll: true });
               }
@@ -115,11 +123,54 @@ class WorkplaceScripts {
             } catch (e) {}
           }
 
+          function removeCardViaExecCommand(card) {
+            // Routes the removal through the editor's native delete command
+            // so it lands on the undo/redo history stack, instead of
+            // silently mutating the DOM via card.remove().
+            const editable = getEditableRoot();
+            if (!editable || !editable.contains(card) || !document.execCommand) {
+              return false;
+            }
+            const selection = window.getSelection();
+            if (!selection) return false;
+
+            const originalRange = isWebPlatform && selection.rangeCount > 0
+              ? selection.getRangeAt(0).cloneRange()
+              : null;
+
+            const range = document.createRange();
+            range.selectNode(card);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            const removed = document.execCommand('delete');
+
+            // Web only: execCommand('delete') collapses the caret to where
+            // the card used to sit. Restore whatever the caret actually was
+            // before we hijacked the selection to perform the delete,
+            // unless it's no longer attached (e.g. it was inside the
+            // removed card). Mobile intentionally leaves the caret where
+            // the card was (see removeCardOnActivate).
+            if (removed && originalRange
+                && originalRange.startContainer.isConnected
+                && originalRange.endContainer.isConnected) {
+              selection.removeAllRanges();
+              selection.addRange(originalRange);
+            }
+
+            return removed;
+          }
+
           function removeCardOnActivate(event, card, onOverlayCleanup) {
             try {
               event.preventDefault();
               event.stopPropagation();
-              if (card) card.remove();
+              if (card) {
+                let removed = false;
+                try {
+                  removed = removeCardViaExecCommand(card);
+                } catch (e) {}
+                if (!removed && document.body.contains(card)) card.remove();
+              }
               onOverlayCleanup();
               notifyCardDeleted();
               refocusEditable();
@@ -194,6 +245,7 @@ class WorkplaceScripts {
 
             function syncTouchOverlays() {
               try {
+                if (overlaysByCard.size === 0 && !document.querySelector(cardSelector)) return;
                 const seen = new Set();
                 document.querySelectorAll(cardSelector).forEach(function(card) {
                   seen.add(card);
@@ -217,7 +269,7 @@ class WorkplaceScripts {
             syncTouchOverlays();
 
             try {
-              const editableRoot = document.querySelector('.note-editable') || document.body;
+              const editableRoot = getEditableRoot() || document.body;
               const observer = new MutationObserver(syncTouchOverlays);
               observer.observe(editableRoot, {
                 childList: true,

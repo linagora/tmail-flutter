@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -1012,6 +1013,7 @@ class ComposerController extends BaseController
             popBack();
             await richTextMobileTabletController?.restoreMobileEditorFocus();
             await htmlEditorApi?.insertHtml(html);
+            await SchedulerBinding.instance.endOfFrame;
           }
         },
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
