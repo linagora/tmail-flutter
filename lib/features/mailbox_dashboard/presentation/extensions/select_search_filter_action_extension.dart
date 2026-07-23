@@ -7,11 +7,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 
 extension SelectSearchFilterActionExtension on MailboxDashBoardController {
   void selectKeywordSearchFilter(KeyWordIdentifier keyword) {
-    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.add(keyword.value);
-    searchController.updateFilterEmail(
-      hasKeywordOption: Some(listHasKeywordFiltered),
-    );
+    final keywords = {...searchController.listHasKeywordFiltered}
+      ..add(keyword.value);
+    searchController.updateFilterEmail(hasKeywordOption: Some(keywords));
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -26,11 +24,9 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
   }
 
   void deleteStarredSearchFilter() {
-    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
-    searchController.updateFilterEmail(
-      hasKeywordOption: Some(listHasKeywordFiltered),
-    );
+    final keywords = {...searchController.listHasKeywordFiltered}
+      ..remove(KeyWordIdentifier.emailFlagged.value);
+    searchController.updateFilterEmail(hasKeywordOption: Some(keywords));
   }
 
   void deleteUnreadSearchFilter() {

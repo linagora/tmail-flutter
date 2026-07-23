@@ -385,6 +385,68 @@ void main() {
     });
 
     group('Error Handling', () {
+      test('Should retry when the retry callback requests it', () async {
+        late WebSocketQueueHandler handler;
+        var attempts = 0;
+
+        handler = WebSocketQueueHandler(
+          processMessageCallback: (message) async {
+            attempts++;
+            if (attempts == 1) throw Exception('Retry once');
+            processedMessages.add(message.id);
+          },
+          retryMessageCallback: (message, _, __) {
+            Timer(const Duration(milliseconds: 1), () {
+              handler.enqueue(message);
+            });
+            return true;
+          },
+        );
+
+        handler.enqueue(MockWebSocketMessage('retry'));
+        await handler.waitForEmpty();
+
+        expect(attempts, 2);
+        expect(processedMessages, ['retry']);
+        expect(handler.isMessageProcessed('retry'), isTrue);
+        handler.dispose();
+      });
+
+      test('Should ignore enqueue after dispose', () async {
+        final handler = createHandler(
+          processMessageCallback: (message) async {
+            processedMessages.add(message.id);
+          },
+        );
+
+        handler.dispose();
+        handler.enqueue(MockWebSocketMessage('after_dispose'));
+        await handler.waitForEmpty();
+
+        expect(processedMessages, isEmpty);
+        expect(handler.queueSize, 0);
+      });
+
+      test('Should not update processed state after dispose', () async {
+        final processingStarted = Completer<void>();
+        final processingFinished = Completer<void>();
+        final handler = WebSocketQueueHandler(
+          processMessageCallback: (message) async {
+            processingStarted.complete();
+            await processingFinished.future;
+          },
+        );
+        final message = MockWebSocketMessage('in_flight');
+
+        handler.enqueue(message);
+        await processingStarted.future;
+        handler.dispose();
+        processingFinished.complete();
+        await handler.waitForEmpty();
+
+        expect(handler.isMessageProcessed(message.id), isFalse);
+      });
+
       test('Should continue processing after message failure', () async {
         final handler = createHandler(
           processMessageCallback: (message) async {

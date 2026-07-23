@@ -34,8 +34,6 @@ class ThreadBindings extends BaseBindings {
       Get.find<GetEmailsInMailboxInteractor>(),
       Get.find<RefreshChangesEmailsInMailboxInteractor>(),
       Get.find<LoadMoreEmailsInMailboxInteractor>(),
-      Get.find<SearchEmailInteractor>(),
-      Get.find<SearchMoreEmailInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
       Get.find<CleanAndGetEmailsInMailboxInteractor>(),
     ));

@@ -31,9 +31,8 @@ class SearchViewState with EquatableMixin {
 
   bool get isSearchEmailRunning => activation.isRunning;
 
-  /// True while the user is in any search UI — an open session, a running query,
-  /// or the advanced-search panel. Both session and running are checked because
-  /// [isSearchEmailRunning] drops to false once results load.
+  /// True whenever the user is in any search UI — an active session, a running
+  /// search, or the open advanced-search panel.
   bool get isSearchEngaged =>
       isSearchActive || isSearchEmailRunning || isAdvancedSearchViewOpen;
 

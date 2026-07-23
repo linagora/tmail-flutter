@@ -132,6 +132,42 @@ void main() {
       expect(committed().hasKeyword, isNot(contains(KeyWordIdentifier.emailFlagged.value)));
     });
 
+    test('listHasKeywordFiltered is unmodifiable — no in-place mutation', () {
+      searchController.updateFilterEmail(
+        hasKeywordOption: Some({KeyWordIdentifier.emailFlagged.value}),
+      );
+
+      expect(
+        () => searchController.listHasKeywordFiltered
+            .remove(KeyWordIdentifier.emailFlagged.value),
+        throwsUnsupportedError,
+      );
+    });
+
+    test('removing flagged via a fresh set clears it on committed and the mirror',
+        () {
+      searchController.updateFilterEmail(
+        hasKeywordOption: Some({KeyWordIdentifier.emailFlagged.value}),
+      );
+      expect(
+        committed().hasKeyword,
+        contains(KeyWordIdentifier.emailFlagged.value),
+      );
+
+      final keywords = {...searchController.listHasKeywordFiltered}
+        ..remove(KeyWordIdentifier.emailFlagged.value);
+      searchController.updateFilterEmail(hasKeywordOption: Some(keywords));
+
+      expect(
+        committed().hasKeyword,
+        isNot(contains(KeyWordIdentifier.emailFlagged.value)),
+      );
+      expect(
+        searchController.searchEmailFilter.value.hasKeyword,
+        isNot(contains(KeyWordIdentifier.emailFlagged.value)),
+      );
+    });
+
     test('fromMe selects the current user then clears from on deselect', () {
       toggle(QuickSearchFilter.fromMe);
       expect(committed().from, {_me});

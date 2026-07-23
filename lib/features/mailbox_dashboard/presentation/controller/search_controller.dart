@@ -24,6 +24,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_session_reset.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
@@ -52,6 +54,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
   FocusNode? keyboardFocusNode;
   String currentSearchText = '';
   ProviderSubscription<SearchEmailFilter>? _committedFilterSubscription;
+
+  SearchViewStateNotifier get _searchViewStateNotifier =>
+      appProviderContainer.read(searchViewStateProvider.notifier);
 
   /// Guards the search-bar ↔ SSOT.text round-trip so mirroring the committed
   /// term back into [searchInputController] never re-enters as a fresh edit.
@@ -296,7 +301,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
 
-  Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
+  Set<String> get listHasKeywordFiltered =>
+      Set<String>.unmodifiable(searchEmailFilter.value.hasKeyword);
 
   bool get unreadFiltered => searchEmailFilter.value.unread;
 
@@ -311,6 +317,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
+    _searchViewStateNotifier.enableSearch();
   }
 
   void clearTextSearch() {
@@ -350,18 +357,22 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void activateSimpleSearch() {
     simpleSearchIsActivated.value = true;
+    _searchViewStateNotifier.activateSimpleSearch();
   }
 
   void deactivateSimpleSearch() {
     simpleSearchIsActivated.value = false;
+    _searchViewStateNotifier.deactivateSimpleSearch();
   }
 
   void activateAdvancedSearch() {
     advancedSearchIsActivated.value = true;
+    _searchViewStateNotifier.activateAdvancedSearch();
   }
 
   void deactivateAdvancedSearch() {
     advancedSearchIsActivated.value = false;
+    _searchViewStateNotifier.deactivateAdvancedSearch();
   }
 
   void hideAdvancedSearchFormView() {
@@ -370,6 +381,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void hideSimpleSearchFormView() {
     searchState.value = searchState.value.disableSearchState();
+    _searchViewStateNotifier.disableSearch();
   }
 
   void _clearAllTextInputSimpleSearch() {
@@ -392,6 +404,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
     clearSearchFilter();
     deactivateAdvancedSearch();
     hideAdvancedSearchFormView();
+
+    resetSearchResultSession(appProviderContainer);
   }
 
   @override
@@ -402,6 +416,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchFocus.removeListener(_onSearchFocusChanged);
     searchFocus.dispose();
     onKeyboardShortcutDispose();
+    appProviderContainer.invalidate(searchViewStateProvider);
     super.onClose();
   }
 }

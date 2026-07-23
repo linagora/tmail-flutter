@@ -110,6 +110,17 @@ void main() {
     expect(state().isSearchEmailRunning, isFalse);
   });
 
+  test('a simple search runs without an active session (mobile/tablet gate)', () {
+    notifier().activateSimpleSearch();
+
+    expect(state().isSearchEmailRunning, isTrue);
+    expect(
+      state().isSearchActive,
+      isFalse,
+      reason: 'activateSimpleSearch must not set searchStatus ACTIVE',
+    );
+  });
+
   test('isSearchEngaged is true for a session, a running query, or advanced open', () {
     expect(state().isSearchEngaged, isFalse);
 

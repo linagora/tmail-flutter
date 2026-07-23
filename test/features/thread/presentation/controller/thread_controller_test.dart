@@ -9,10 +9,9 @@ import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -21,11 +20,9 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -35,17 +32,18 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
@@ -173,13 +171,14 @@ void main() {
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    // The central executor resolves these via Get.find, not the controller ctor.
+    Get.put<SearchEmailInteractor>(mockSearchEmailInteractor);
+    Get.put<SearchMoreEmailInteractor>(mockSearchMoreEmailInteractor);
 
     threadController = ThreadController(
       mockGetEmailsInMailboxInteractor,
       mockRefreshChangesEmailsInMailboxInteractor,
       mockLoadMoreEmailsInMailboxInteractor,
-      mockSearchEmailInteractor,
-      mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
     );
@@ -269,133 +268,109 @@ void main() {
       });
     });
 
-    group('_refreshEmailChanges::test', () {
-      late ThreadController refreshChangesController;
+    group('search execution', () {
 
-      setUp(() {
-        refreshChangesController = ThreadController(
-          mockGetEmailsInMailboxInteractor,
-          mockRefreshChangesEmailsInMailboxInteractor,
-          mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
-          mockGetEmailByIdInteractor,
-          mockCleanAndGetEmailsInMailboxInteractor,
-        );
-      });
+      testWidgets(
+        'WHEN web search receives an email state change '
+        'THEN the mailbox cache refresh is still executed',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
 
-      tearDown(() {
-        refreshChangesController.onClose();
-      });
+          final emailAction = Rxn<EmailUIAction>();
+          final cacheController = ThreadController(
+            mockGetEmailsInMailboxInteractor,
+            mockRefreshChangesEmailsInMailboxInteractor,
+            mockLoadMoreEmailsInMailboxInteractor,
+            mockGetEmailByIdInteractor,
+            mockCleanAndGetEmailsInMailboxInteractor,
+          );
+          addTearDown(() {
+            cacheController.onClose();
+            PlatformInfo.isTestingForWeb = false;
+          });
 
-      test(
+          when(mockMailboxDashBoardController.sessionCurrent)
+              .thenReturn(SessionFixtures.aliceSession);
+          when(mockMailboxDashBoardController.accountId)
+              .thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(mockMailboxDashBoardController.currentEmailState)
+              .thenReturn(jmap.State('old-state'));
+          when(mockMailboxDashBoardController.selectedMailbox)
+              .thenReturn(Rxn(null));
+          when(mockMailboxDashBoardController.searchController)
+              .thenReturn(mockSearchController);
+          when(mockMailboxDashBoardController.emailUIAction)
+              .thenReturn(emailAction);
+          when(mockMailboxDashBoardController.dashBoardAction)
+              .thenReturn(Rxn(null));
+          when(mockMailboxDashBoardController.viewState)
+              .thenReturn(Rx(Right(UIState.idle)));
+          when(mockMailboxDashBoardController.filterMessageOption)
+              .thenReturn(Rx(FilterMessageOption.all));
+          when(mockMailboxDashBoardController.mapMailboxById)
+              .thenReturn({});
+          when(mockMailboxDashBoardController.trashSpamMailboxIds)
+              .thenReturn(null);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          when(mockSearchController.searchState)
+              .thenReturn(Rx(SearchState.initial()));
+          when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          )).thenAnswer((_) => Stream.value(
+                Right(RefreshChangesAllEmailSuccess(emailList: const [])),
+              ));
+
+          cacheController.onInit();
+          emailAction.value = RefreshChangeEmailAction(
+            newState: jmap.State('new-state'),
+          );
+
+          await untilCalled(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          ));
+
+          verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            jmap.State('old-state'),
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          )).called(1);
+        },
+      );
+
+      testWidgets(
         'WHEN thread controller in searching\n'
-        'AND `MarkAsStarEmailSuccess` is coming\n'
-        'THEN `SearchEmailInteractor` is invoked with proper arguments\n'
-        'AND `listEmailController` should not jumped\n'
-        'AND `mailboxDashBoardController.emailsInCurrentMailbox` should not be cleared',
-      () async {
+        'AND a new search is triggered\n'
+        'THEN `SearchEmailInteractor` is invoked via a new search with no filter leak\n'
+        'AND `mailboxDashBoardController.emailsInCurrentMailbox` should be cleared',
+      (tester) async {
         // Arrange
         PlatformInfo.isTestingForWeb = true;
-        final emailList = [
-          PresentationEmail(
-            id: EmailId(Id('email1')),
-            subject: 'hello',
-            keywords: {KeyWordIdentifier.emailFlagged: true}),
-          PresentationEmail(
-            id: EmailId(Id('email2')),
-            subject: 'hello')
-        ];
-
-        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
-        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(SearchEmailSuccess(emailList))));
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailList));
-        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
-        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockMailboxDashBoardController.currentEmailState).thenReturn(State('old-state'));
-        when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
-        when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
-        when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-        when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
-        when(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-
-        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-          any,
-          any,
-          any,
-          sort: anyNamed('sort'),
-          limit: anyNamed('limit'),
-          propertiesCreated: anyNamed('propertiesCreated'),
-          propertiesUpdated: anyNamed('propertiesUpdated'),
-          emailFilter: anyNamed('emailFilter'),
-          collapseThreads: anyNamed('collapseThreads'),
-        )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
-          emailList: emailList,
-          currentEmailState: State('old-state'))))
-        );
-
-        // Act
-        refreshChangesController.onInit();
-        mockMailboxDashBoardController.emailsInCurrentMailbox.refresh();
-
-        mockMailboxDashBoardController.emailUIAction.value =
-            RefreshChangeEmailAction(newState: State('new-state'));
-
-        await untilCalled(mockSearchEmailInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort:anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-          needRefreshSearchState: anyNamed('needRefreshSearchState'),
-        ));
-
-        // Assert
-        verify(mockSearchEmailInteractor.execute(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          limit: UnsignedInt(emailList.length),
-          position: null,
-          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
-          filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
-          collapseThreads: false,
-          properties: EmailUtils.getPropertiesForEmailGetMethod(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId),
-          needRefreshSearchState: true
-        )).called(1);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty, isTrue);
-        expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, emailList.length);
-        expect(refreshChangesController.isListEmailScrollViewJumping, isFalse);
-        PlatformInfo.isTestingForWeb = false;
-      });
-
-      test(
-        'WHEN thread controller in searching\n'
-        'AND `StartSearchEmailAction` is coming\n'
-        'THEN `SearchEmailInteractor` is invoked with proper arguments\n'
-        'AND `listEmailController` should jumped\n'
-        'AND `mailboxDashBoardController.emailsInCurrentMailbox` should be cleared',
-      () async {
-        // Arrange
+        // Web desktop inline search: the thread list owns the search results.
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(true);
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
@@ -407,19 +382,22 @@ void main() {
 
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
-        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(SearchEmailSuccess(emailList))));
         when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailList));
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
         when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.unread));
+        when(mockMailboxDashBoardController.trashSpamMailboxIds).thenReturn(null);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.isSelectionEnabled()).thenReturn(false);
         when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
         when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+        when(mockSearchController.searchQuery).thenReturn(null);
         when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
         when(mockSearchEmailInteractor.execute(
           any,
@@ -434,8 +412,8 @@ void main() {
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
         // Act
-        refreshChangesController.onInit();
-        mockMailboxDashBoardController.dashBoardAction.value = StartSearchEmailAction();
+        threadController.onInit();
+        threadController.searchEmail();
 
         await untilCalled(mockSearchEmailInteractor.execute(
           any,
@@ -449,22 +427,20 @@ void main() {
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         ));
 
-        // Assert
+        // Assert — new search with an empty committed filter carries no leak.
         verify(mockSearchEmailInteractor.execute(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
-          limit: ThreadConstants.defaultLimit,
-          position: null,
-          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
-          filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
-          collapseThreads: false,
-          properties: EmailUtils.getPropertiesForEmailGetMethod(
-            SessionFixtures.aliceSession,
-            AccountFixtures.aliceAccountId),
-          needRefreshSearchState: false
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: null,
+          collapseThreads: anyNamed('collapseThreads'),
+          properties: anyNamed('properties'),
         )).called(1);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, equals(0));
+        PlatformInfo.isTestingForWeb = false;
       });
     });
 
@@ -476,8 +452,6 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -553,8 +527,6 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -1004,8 +976,6 @@ void main() {
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
-          mockSearchEmailInteractor,
-          mockSearchMoreEmailInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
         );
@@ -1097,6 +1067,115 @@ void main() {
 
         expect(threadController.canLoadMore, isFalse);
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+      });
+    });
+
+    group('ThreadSearchExecutionObserver ownership guard test:', () {
+      final mailboxId = MailboxId(Id('inbox'));
+      late ThreadSearchExecutionObserver observer;
+
+      setUp(() {
+        observer = ThreadSearchExecutionObserver(threadController);
+        clearInteractions(mockMailboxDashBoardController);
+      });
+
+      tearDown(() => reset(mockResponsiveUtils));
+
+      testWidgets(
+        'GIVEN the layout is not web desktop (small screen) '
+        'WHEN a search result is dispatched by the executor '
+        'THEN the thread SHOULD ignore it — no mutation of the off-screen list',
+      (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(false);
+
+        observer.onSearchResult(
+          const SearchEmailResult(emails: [], canLoadMore: false),
+          isFreshResult: true,
+        );
+
+        verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+        verifyNever(
+          mockMailboxDashBoardController.updateRefreshAllEmailState(any),
+        );
+      });
+
+      testWidgets(
+        'GIVEN the layout is not web desktop (small screen) '
+        'WHEN a search failure is dispatched by the executor '
+        'THEN the thread SHOULD ignore it — no duplicate failure state/toast',
+      (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(false);
+
+        observer.onSearchFailure(Exception('search failed'));
+
+        verifyNever(
+          mockMailboxDashBoardController.updateRefreshAllEmailState(any),
+        );
+      });
+
+      testWidgets(
+        'GIVEN the layout IS web desktop (inline search, incl. threadDetailed) '
+        'WHEN a search result is dispatched by the executor '
+        'THEN the thread SHOULD apply it to the mailbox list',
+      (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(true);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.isSelectionEnabled())
+            .thenReturn(false);
+        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+
+        observer.onSearchResult(
+          const SearchEmailResult(emails: [], canLoadMore: false),
+          isFreshResult: true,
+        );
+
+        verify(mockMailboxDashBoardController.updateEmailList(any)).called(1);
+      });
+
+      testWidgets(
+        'GIVEN the layout IS web desktop and a search is loading '
+        'WHEN the executor delivers the result '
+        'THEN viewState SHOULD leave SearchingState so the loading bar stops',
+      (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(true);
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(PresentationMailbox(mailboxId)));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.isSelectionEnabled())
+            .thenReturn(false);
+        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+
+        observer.onSearchLoading();
+        expect(
+          threadController.viewState.value.getOrElse(() => UIState.idle),
+          isA<SearchingState>(),
+        );
+
+        observer.onSearchResult(
+          const SearchEmailResult(emails: [], canLoadMore: false),
+          isFreshResult: true,
+        );
+
+        expect(
+          threadController.viewState.value.getOrElse(() => UIState.idle),
+          isA<SearchEmailSuccess>(),
+        );
       });
     });
 

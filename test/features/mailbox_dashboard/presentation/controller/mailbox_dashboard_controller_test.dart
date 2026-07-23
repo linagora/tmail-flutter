@@ -433,12 +433,12 @@ void main() {
         refreshAllMailboxInteractor);
       mailboxController.onReady();
 
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
       threadController = ThreadController(
         getEmailsInMailboxInteractor,
         refreshChangesEmailsInMailboxInteractor,
         loadMoreEmailsInMailboxInteractor,
-        searchEmailInteractor,
-        searchMoreEmailInteractor,
         getEmailByIdInteractor,
         cleanAndGetEmailsInMailboxInteractor);
       Get.put(threadController);
@@ -549,7 +549,9 @@ void main() {
       expect(filterAfterAdvancedSearch.text, equals(SearchQuery(emailContainsWord)));
       expect(filterAfterAdvancedSearch.notKeyword, equals({emailNotContainsWord}));
       expect(filterAfterAdvancedSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
-      expect(filterAfterAdvancedSearch.position, equals(0));
+      // Pagination cursors are resolved per search request, not committed to
+      // the shared search filter.
+      expect(filterAfterAdvancedSearch.position, isNull);
       expect(filterAfterAdvancedSearch.startDate, isNotNull);
       expect(filterAfterAdvancedSearch.endDate, isNotNull);
       expect(filterAfterAdvancedSearch.before, isNull);
@@ -614,7 +616,9 @@ void main() {
     expect(filterAfterQuickSearch.text, equals(SearchQuery(queryString)));
     expect(filterAfterQuickSearch.emailReceiveTimeType, equals(EmailReceiveTimeType.last30Days));
     expect(filterAfterQuickSearch.hasAttachment, isTrue);
-    expect(filterAfterQuickSearch.position, equals(0));
+    // Pagination cursors are resolved per search request, not committed to
+    // the shared search filter.
+    expect(filterAfterQuickSearch.position, isNull);
     expect(filterAfterQuickSearch.startDate, isNotNull);
     expect(filterAfterQuickSearch.endDate, isNotNull);
     expect(filterAfterQuickSearch.before, isNull);
@@ -762,12 +766,12 @@ void main() {
           refreshAllMailboxInteractor);
       mailboxController.onReady();
 
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
       threadController = ThreadController(
           getEmailsInMailboxInteractor,
           refreshChangesEmailsInMailboxInteractor,
           loadMoreEmailsInMailboxInteractor,
-          searchEmailInteractor,
-          searchMoreEmailInteractor,
           getEmailByIdInteractor,
           cleanAndGetEmailsInMailboxInteractor,
       );

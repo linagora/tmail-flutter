@@ -12,7 +12,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -43,11 +42,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
-import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
-import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
@@ -100,7 +97,6 @@ void main() {
   late thread_mocks.MockSearchController searchController;
   late notifier_mocks.MockSearchEmailInteractor searchEmailInteractor;
   late notifier_mocks.MockSearchMoreEmailInteractor searchMoreEmailInteractor;
-  late notifier_mocks.MockRefreshChangesSearchEmailInteractor refreshInteractor;
   late advanced_mocks.MockGetAllRecentSearchLatestInteractor
       getAllRecentSearchLatestInteractor;
   late advanced_mocks.MockStoreEmailSortOrderInteractor
@@ -157,21 +153,6 @@ void main() {
         properties: anyNamed('properties'),
         collapseThreads: anyNamed('collapseThreads'),
         lastEmailId: anyNamed('lastEmailId'),
-      ),
-    ).thenAnswer((_) => Stream.value(result));
-  }
-
-  void stubRefreshResult(Either<Failure, Success> result) {
-    when(
-      refreshInteractor.execute(
-        any,
-        any,
-        limit: anyNamed('limit'),
-        position: anyNamed('position'),
-        sort: anyNamed('sort'),
-        filter: anyNamed('filter'),
-        collapseThreads: anyNamed('collapseThreads'),
-        properties: anyNamed('properties'),
       ),
     ).thenAnswer((_) => Stream.value(result));
   }
@@ -311,7 +292,6 @@ void main() {
     searchController = thread_mocks.MockSearchController();
     searchEmailInteractor = notifier_mocks.MockSearchEmailInteractor();
     searchMoreEmailInteractor = notifier_mocks.MockSearchMoreEmailInteractor();
-    refreshInteractor = notifier_mocks.MockRefreshChangesSearchEmailInteractor();
     getAllRecentSearchLatestInteractor =
         advanced_mocks.MockGetAllRecentSearchLatestInteractor();
     storeEmailSortOrderInteractor =
@@ -327,7 +307,6 @@ void main() {
     Get.put<MailboxDashBoardController>(mailboxDashBoardController);
     Get.put<SearchEmailInteractor>(searchEmailInteractor);
     Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
-    Get.put<RefreshChangesSearchEmailInteractor>(refreshInteractor);
 
     stubMailboxDashboard();
     stubRecentSearchResult(Right(GetAllRecentSearchLatestSuccess(const [])));
@@ -663,73 +642,6 @@ void main() {
     },
   );
 
-  test(
-    'websocket message replaces the rendered list via RefreshChangesIntent',
-    () async {
-      stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
-      controller.searchEmailAction();
-      await pumpEventQueue();
-
-      when(
-        mailboxDashBoardController.currentEmailState,
-      ).thenReturn(jmap.State('state-1'));
-      stubRefreshResult(
-        Right(RefreshChangesSearchEmailSuccess([
-          email('email-1'),
-          email('email-2'),
-        ])),
-      );
-
-      await controller.handleWebSocketMessage(
-        WebSocketMessage(newState: jmap.State('state-2')),
-      );
-      await pumpEventQueue();
-
-      verify(
-        refreshInteractor.execute(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-        ),
-      ).called(1);
-      expect(resultIds(), [
-        'email-1',
-        'email-2',
-      ]);
-    },
-  );
-
-  test(
-    'websocket refresh failure keeps the rendered list (non-destructive)',
-    () async {
-      stubNewSearchResult(Right(SearchEmailSuccess([email('email-1')])));
-      controller.searchEmailAction();
-      await pumpEventQueue();
-
-      when(
-        mailboxDashBoardController.currentEmailState,
-      ).thenReturn(jmap.State('state-1'));
-      stubRefreshResult(
-        Left<Failure, Success>(SearchEmailFailure(Exception('boom'))),
-      );
-
-      await controller.handleWebSocketMessage(
-        WebSocketMessage(newState: jmap.State('state-2')),
-      );
-      await pumpEventQueue();
-
-      expect(resultIds(), [
-        'email-1',
-      ]);
-      expect(controller.resultSearchViewState.isRight(), isTrue);
-    },
-  );
-
   final start = UTCDate(DateTime.utc(2026, 1, 1));
   final end = UTCDate(DateTime.utc(2026, 1, 7));
   final mailbox = PresentationMailbox(
@@ -905,32 +817,6 @@ void main() {
         verifyNever(mailboxDashBoardController.clearDashBoardAction());
       },
     );
-  });
-
-  group('handleWebSocketMessage', () {
-    test('skips execution when the websocket state is unchanged', () async {
-      when(
-        mailboxDashBoardController.currentEmailState,
-      ).thenReturn(jmap.State('state-1'));
-
-      await controller.handleWebSocketMessage(
-        WebSocketMessage(newState: jmap.State('state-1')),
-      );
-      await pumpEventQueue();
-
-      verifyNever(
-        refreshInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          position: anyNamed('position'),
-          sort: anyNamed('sort'),
-          filter: anyNamed('filter'),
-          collapseThreads: anyNamed('collapseThreads'),
-          properties: anyNamed('properties'),
-        ),
-      );
-    });
   });
 
   group('search suggestion flow', () {
@@ -1128,5 +1014,35 @@ void main() {
         verifyNewSearchExecutedOnce();
       },
     );
+  });
+
+  group('web-desktop search-results ownership guard', () {
+    testWidgets('ignores executor results while web desktop', (tester) async {
+      await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+      when(Get.find<ResponsiveUtils>().isWebDesktop(Get.context!))
+          .thenReturn(true);
+
+      controller.onSearchResult(
+        SearchEmailResult(emails: [email('desktop-1')], canLoadMore: true),
+        isFreshResult: true,
+      );
+      await tester.pump();
+
+      expect(controller.listResultSearch, isEmpty);
+    });
+
+    testWidgets('applies executor results when not web desktop', (tester) async {
+      await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+      when(Get.find<ResponsiveUtils>().isWebDesktop(Get.context!))
+          .thenReturn(false);
+
+      controller.onSearchResult(
+        SearchEmailResult(emails: [email('mobile-1')], canLoadMore: true),
+        isFreshResult: true,
+      );
+      await tester.pump();
+
+      expect(resultIds(), ['mobile-1']);
+    });
   });
 }

@@ -429,12 +429,12 @@ void main() {
       Get.put(mailboxController);
       // mailboxController.onReady();
 
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
       threadController = ThreadController(
         getEmailsInMailboxInteractor,
         refreshChangesEmailsInMailboxInteractor,
         loadMoreEmailsInMailboxInteractor,
-        searchEmailInteractor,
-        searchMoreEmailInteractor,
         getEmailByIdInteractor,
         cleanAndGetEmailsInMailboxInteractor,
       );

@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/search/email/domain/execution/search_exec
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_request.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_pagination_strategies.dart';
+import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_request_spec.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_query_params.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
@@ -52,7 +53,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   AsyncValue<SearchEmailResult> build() => AsyncData(SearchEmailResult.empty());
 
   /// Runs [intent] and updates [state]; never mutates the committed SSOT.
-  Future<void> execute(
+  Future<SearchExecutionResult> execute(
     SearchExecutionIntent intent, {
     required Session session,
     required AccountId accountId,
@@ -78,7 +79,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
 
   /// New search: show a first-page spinner, then replace the list or error (a
   /// fresh search has no prior list to fall back on).
-  Future<void> _runNewSearch(int requestId, SearchExecutionRequest request) {
+  Future<SearchExecutionResult> _runNewSearch(
+    int requestId,
+    SearchExecutionRequest request,
+  ) {
     state = const AsyncLoading();
     return _runGuarded(
       requestId,
@@ -108,7 +112,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   /// page stays and [LoadMoreState.failure] lets the UI offer a retry. Concurrency
   /// (e.g. a socket-driven refresh arriving mid-load) is handled by [_latestRequestId]
   /// in [_runGuarded], which drops a superseded page — not by [LoadMoreState].
-  Future<void> _runLoadMore(int requestId, SearchExecutionRequest request) {
+  Future<SearchExecutionResult> _runLoadMore(
+    int requestId,
+    SearchExecutionRequest request,
+  ) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.inProgress,
     ));
@@ -145,7 +152,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
 
   /// Refresh: replace the list on success; on failure keep the current list, never
   /// erroring the whole result.
-  Future<void> _runRefresh(int requestId, SearchExecutionRequest request) {
+  Future<SearchExecutionResult> _runRefresh(
+    int requestId,
+    SearchExecutionRequest request,
+  ) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.idle,
     ));
@@ -177,13 +187,13 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
 
   /// Runs [runInteractor] through the [InteractorConsumer] seam (auto urgent
   /// routing, ADR-0093/0103), dropping stale results; intermediate successes kept.
-  Future<void> _runGuarded(
+  Future<SearchExecutionResult> _runGuarded(
     int requestId,
     InteractorCall runInteractor, {
     required SearchPageHandler onPageLoaded,
     required InteractorFailureHandler onFailure,
-  }) {
-    return consumeInteractor(
+  }) async {
+    final succeeded = await consumeInteractor(
       runInteractor,
       isStale: () => !ref.mounted || requestId != _latestRequestId,
       onSuccess: (success) {
@@ -192,6 +202,14 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
       },
       onFailure: onFailure,
     );
+    if (succeeded) return SearchExecutionResult.success;
+    // Re-check staleness after the await: a newer execute() during the
+    // interactor call advances _latestRequestId. A failure that raced a newer
+    // request is superseded, not a real failure, so the refresh path skips the
+    // retry — the newer request now owns the result.
+    return !ref.mounted || requestId != _latestRequestId
+        ? SearchExecutionResult.superseded
+        : SearchExecutionResult.failure;
   }
 
   /// Resolves the interactor args via the pagination strategies for [request].
