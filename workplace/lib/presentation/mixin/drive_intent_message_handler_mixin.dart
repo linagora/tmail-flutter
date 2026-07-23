@@ -28,6 +28,10 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   Duration get readyTimeout => const Duration(seconds: 20);
 
   void startLoading(Future<WorkplaceIntent> intentFuture) {
+    // Starts the deadline immediately so a platform view that never becomes
+    // ready (e.g. WebView/iframe init silently failing) still times out.
+    _readyTimeoutTimer?.cancel();
+    _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
     intentFuture
         .then((intent) {
           if (!mounted) return;
@@ -53,8 +57,6 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
         ? 'null'
         : intent.intentUrl.origin;
     _messageHandlerReady = true;
-    _readyTimeoutTimer?.cancel();
-    _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
     loadIntent(intent);
   }
 
@@ -92,12 +94,12 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   void _handleWorkplaceMessage(WorkplaceIntentMessage msg) {
     switch (msg) {
       case WorkplaceIntentReadyMessage():
-        _readyTimeoutTimer?.cancel();
         log('driveIntent: ready received, sending ack');
         sendAck();
         break;
       case WorkplaceIntentReadyToUseMessage():
         log('driveIntent: readyToUse received, hiding loading');
+        _readyTimeoutTimer?.cancel();
         if (mounted) setState(() => _showSkeleton = false);
         break;
       case WorkplaceIntentDoneMessage():
