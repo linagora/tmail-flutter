@@ -203,6 +203,10 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
       onFailure: onFailure,
     );
     if (succeeded) return SearchExecutionResult.success;
+    // Re-check staleness after the await: a newer execute() during the
+    // interactor call advances _latestRequestId. A failure that raced a newer
+    // request is superseded, not a real failure, so the refresh path skips the
+    // retry — the newer request now owns the result.
     return !ref.mounted || requestId != _latestRequestId
         ? SearchExecutionResult.superseded
         : SearchExecutionResult.failure;
