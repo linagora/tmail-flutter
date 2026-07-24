@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -1012,6 +1013,7 @@ class ComposerController extends BaseController
             popBack();
             await richTextMobileTabletController?.restoreMobileEditorFocus();
             await htmlEditorApi?.insertHtml(html);
+            await SchedulerBinding.instance.endOfFrame;
           }
         },
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
@@ -1914,10 +1916,37 @@ class ComposerController extends BaseController
   }
 
   void handleOnFocusHtmlEditorWeb() {
+    // This handler only ever runs because the html editor's own native DOM
+    // element just gained focus (wired exclusively to the editor widget's
+    // `onFocus` callback), so calling editorController.setFocus() again is
+    // redundant unless something else in this method actually diverted
+    // focus away in the meantime. Calling it unconditionally created a
+    // steady stream of redundant async round-trips (postMessage to the
+    // iframe) that could resolve later, at an unrelated moment — e.g. right
+    // after a *different* click's native mousedown-triggered blur — at
+    // which point Summernote's `hasFocus() || focus()` finds the editable
+    // blurred and performs a real, un-prevented native `.focus()`, which
+    // the browser auto-scrolls into view and can shift page content
+    // mid-click so the click misses its target. Only re-assert focus if we
+    // actually took focus away from something else in this same call.
+    final recipientsWereFocused = toAddressFocusNode?.hasFocus == true ||
+        ccAddressFocusNode?.hasFocus == true ||
+        bccAddressFocusNode?.hasFocus == true ||
+        replyToAddressFocusNode?.hasFocus == true;
     clearFocusRecipients();
+    final subjectWasFocused = subjectEmailInputFocusNode?.hasFocus == true;
     clearFocusSubject();
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (richTextWebController?.codeViewEnabled != true) {
+    // `FocusScopeNode`s (root scope, Navigator scope, modal route scope,
+    // etc.) are ambient focus-tree scaffolding, not a real focused widget —
+    // only a genuine leaf FocusNode counts as "something else was focused".
+    final primaryFocus = FocusManager.instance.primaryFocus;
+    var primaryWasUnfocused = false;
+    if (primaryFocus != null && primaryFocus is! FocusScopeNode) {
+      primaryFocus.unfocus();
+      primaryWasUnfocused = true;
+    }
+    if (richTextWebController?.codeViewEnabled != true &&
+        (recipientsWereFocused || subjectWasFocused || primaryWasUnfocused)) {
       richTextWebController?.editorController.setFocus();
     }
     richTextWebController?.closeAllMenuPopup();

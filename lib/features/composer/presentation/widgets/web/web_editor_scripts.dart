@@ -1,10 +1,19 @@
 import 'package:core/utils/html/html_utils.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:workplace/presentation/utils/workplace_scripts.dart';
 
 List<WebScript> buildWebEditorInitialScripts({
   required double maxHeight,
   required WebScript selectionChangeScript,
+  required String driveCardDeleteOverlayRemoveLabel,
+  required String driveCardDeleteOverlayViewId,
 }) {
+  final driveCardDeleteOverlayScript = WorkplaceScripts.registerDriveCardDeleteOverlay(
+    driveCardDeleteOverlayRemoveLabel,
+    viewId: driveCardDeleteOverlayViewId,
+    isWebPlatform: true,
+  );
+
   return [
     WebScript(
       name: HtmlUtils.removeLineHeight1px.name,
@@ -65,6 +74,14 @@ List<WebScript> buildWebEditorInitialScripts({
       script: HtmlUtils.registerFileLinkCardClickHandler(
         isWebPlatform: true,
       ).script,
+    ),
+    WebScript(
+      name: driveCardDeleteOverlayScript.name,
+      script: driveCardDeleteOverlayScript.script,
+    ),
+    WebScript(
+      name: WorkplaceScripts.unregisterDriveCardDeleteOverlay.name,
+      script: WorkplaceScripts.unregisterDriveCardDeleteOverlay.script,
     ),
   ];
 }

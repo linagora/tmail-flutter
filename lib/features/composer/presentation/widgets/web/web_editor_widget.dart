@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signatu
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_scripts.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
+import 'package:workplace/presentation/utils/workplace_scripts.dart';
 
 typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
@@ -122,6 +123,9 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
           } else if (data['name'] == _selectionChangeScript.name
               && data['viewId'] == _createdViewId) {
             handleSelectionChange(data);
+          } else if (data['type'] == 'toDart: driveCardDeleted'
+              && data['viewId'] == _createdViewId) {
+            _syncContentAfterDriveCardDeleted();
           }
         }
       } catch (e) {
@@ -147,6 +151,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   void dispose() {
     _editorController.evaluateJavascriptWeb(
       HtmlUtils.unregisterDropListener.name);
+    _editorController.evaluateJavascriptWeb(
+      WorkplaceScripts.unregisterDriveCardDeleteOverlay.name);
     if (_editorListener != null) {
       window.removeEventListener("message", _editorListener!);
       _editorListener = null;
@@ -185,6 +191,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
           buildWebEditorInitialScripts(
             maxHeight: maxHeight,
             selectionChangeScript: _selectionChangeScript,
+            driveCardDeleteOverlayRemoveLabel: AppLocalizations.of(context).remove,
+            driveCardDeleteOverlayViewId: _createdViewId,
           ),
         )
       ),
@@ -233,6 +241,14 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     );
   }
 
+  /// Syncs draft content after a Drive card is removed, bypassing
+  /// Summernote's `onChangeContent` pipeline (which triggers
+  /// html_editor_enhanced's scroll-to-top `ensureVisible()`).
+  Future<void> _syncContentAfterDriveCardDeleted() async {
+    final text = await _editorController.getText();
+    widget.onChangeContent?.call(text);
+  }
+
   void _registerEditorScripts() {
     if (_editorListenerRegistered) return;
 
@@ -247,6 +263,13 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     );
     _editorController.evaluateJavascriptWeb(
       HtmlUtils.registerFileLinkCardClickHandler(
+        isWebPlatform: true,
+      ).name,
+    );
+    _editorController.evaluateJavascriptWeb(
+      WorkplaceScripts.registerDriveCardDeleteOverlay(
+        AppLocalizations.of(context).remove,
+        viewId: _createdViewId,
         isWebPlatform: true,
       ).name,
     );
