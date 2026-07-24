@@ -7,20 +7,29 @@ import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/message/workplace_intent_message.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 
+enum _Phase { waiting, loadingPage, interactive, closed }
+
 /// Shared loading/messaging lifecycle for the mobile and web Drive picker modals.
 mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   late String _intentId;
   String _intentOrigin = 'null';
-  bool _closed = false;
-  bool _messageHandlerReady = false;
   Timer? _readyTimeoutTimer;
 
+  _Phase _phase = _Phase.waiting;
   WorkplaceIntent? _resolvedIntent;
   bool _platformViewReady = false;
-  bool _intentApplied = false;
-  bool _showSkeleton = true;
 
-  bool get showSkeleton => _showSkeleton;
+  bool get showSkeleton =>
+      _phase == _Phase.waiting || _phase == _Phase.loadingPage;
+
+  void _setPhase(_Phase next) {
+    if (_phase == _Phase.closed || next == _phase) return;
+    if (mounted) {
+      setState(() => _phase = next);
+    } else {
+      _phase = next;
+    }
+  }
 
   String get intentOrigin => _intentOrigin;
 
@@ -50,13 +59,14 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
 
   void _tryApplyIntent() {
     final intent = _resolvedIntent;
-    if (intent == null || !_platformViewReady || _intentApplied) return;
-    _intentApplied = true;
+    if (intent == null || !_platformViewReady || _phase != _Phase.waiting) {
+      return;
+    }
     _intentId = intent.intentId;
     _intentOrigin = intent.intentUrl.scheme == 'data'
         ? 'null'
         : intent.intentUrl.origin;
-    _messageHandlerReady = true;
+    _setPhase(_Phase.loadingPage);
     loadIntent(intent);
   }
 
@@ -68,7 +78,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   }
 
   void onMessage({required String raw, required String? origin}) {
-    if (!_messageHandlerReady) return;
+    if (_phase.index < _Phase.loadingPage.index) return;
     if (!_isValidOrigin(origin)) {
       log('driveIntent: dropped message from unexpected origin: $origin');
       return;
@@ -100,7 +110,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
       case WorkplaceIntentReadyToUseMessage():
         log('driveIntent: readyToUse received, hiding loading');
         _readyTimeoutTimer?.cancel();
-        if (mounted) setState(() => _showSkeleton = false);
+        _setPhase(_Phase.interactive);
         break;
       case WorkplaceIntentDoneMessage():
         log('driveIntent: done received, docs: ${msg.documents.map((d) => '{id:${d.id}, name:${d.name}, size:${d.size}, mimeType:${d.mimeType}').join(', ')}');
@@ -129,8 +139,8 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   }
 
   void _finish(DrivePickOutcome outcome) {
-    if (_closed) return;
-    _closed = true;
+    if (_phase == _Phase.closed) return;
+    _setPhase(_Phase.closed);
     _readyTimeoutTimer?.cancel();
     onCleanup();
     onFinished(outcome);
