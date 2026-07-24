@@ -9,6 +9,10 @@ typedef OnRegisterExternalHandler = void Function(DriveMessageHandler handler);
 class DriveIntentWebViewModalShell extends StatelessWidget {
   final Widget child;
   final VoidCallback onClose;
+  // Tap outside the dialog card (the backdrop). Defaults to [onClose], but
+  // must stay disabled while loading — unlike the close button, which should
+  // always work — so callers pass a guarded callback here when needed.
+  final VoidCallback? onBarrierTap;
   final EdgeInsets insetPadding;
   final ShapeBorder? shape;
   final BoxConstraints? constraints;
@@ -19,6 +23,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
     super.key,
     required this.child,
     required this.onClose,
+    this.onBarrierTap,
     this.insetPadding = const EdgeInsets.all(0),
     this.shape,
     this.constraints,
@@ -30,7 +35,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return PointerInterceptor(
       child: GestureDetector(
-        onTap: onClose,
+        onTap: onBarrierTap ?? onClose,
         behavior: HitTestBehavior.opaque,
         child: Dialog(
           backgroundColor: Colors.white,

@@ -52,9 +52,16 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: true,
+      left: false,
+      right: false,
       bottom: false,
       child: DriveIntentWebViewModalShell(
-        onClose: () {
+        insetPadding: EdgeInsets.zero,
+        constraints: const BoxConstraints.expand(),
+        shape: const RoundedRectangleBorder(),
+        onClose: cancel,
+        onBarrierTap: () {
           if (!showSkeleton) cancel();
         },
         child: Stack(

@@ -74,37 +74,54 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   }
 
   @override
-  Widget build(BuildContext context) => DriveIntentWebViewModalShell(
-    insetPadding: wideScreen(context)
-        ? const EdgeInsets.all(24)
-        : const EdgeInsets.only(top: 24),
-    constraints: const BoxConstraints(maxWidth: 800, maxHeight: 677),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(6)),
-    ),
-    haveCloseButton: !wideScreen(context),
-    alignment: wideScreen(context) ? Alignment.center : Alignment.bottomCenter,
-    onClose: () {
-      if (!showSkeleton) cancel();
-    },
-    child: Stack(
-      children: [
-        HtmlIframeWidget(
-          key: const ValueKey('drive-intent-webview'),
-          onIframeCreated: (iframe) {
-            _iframeElement = iframe;
-            notifyPlatformViewReady();
-          },
-        ),
-        if (showSkeleton)
-          Positioned.fill(
-            child: wideScreen(context)
-                ? const DriveIntentSkeletonLoader.table()
-                : const DriveIntentSkeletonLoader.list(),
+  Widget build(BuildContext context) {
+    final isWideScreen = wideScreen(context);
+    final shell = DriveIntentWebViewModalShell(
+      insetPadding: isWideScreen
+          ? const EdgeInsets.all(24)
+          : EdgeInsets.zero,
+      constraints: isWideScreen
+          ? const BoxConstraints(maxWidth: 800, maxHeight: 677)
+          : const BoxConstraints.expand(),
+      shape: isWideScreen
+          ? const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            )
+          : const RoundedRectangleBorder(),
+      haveCloseButton: !isWideScreen,
+      alignment: isWideScreen ? Alignment.center : null,
+      onClose: cancel,
+      onBarrierTap: () {
+        if (!showSkeleton) cancel();
+      },
+      child: Stack(
+        children: [
+          HtmlIframeWidget(
+            key: const ValueKey('drive-intent-webview'),
+            onIframeCreated: (iframe) {
+              _iframeElement = iframe;
+              notifyPlatformViewReady();
+            },
           ),
-      ],
-    ),
-  );
+          if (showSkeleton)
+            Positioned.fill(
+              child: isWideScreen
+                  ? const DriveIntentSkeletonLoader.table()
+                  : const DriveIntentSkeletonLoader.list(),
+            ),
+        ],
+      ),
+    );
+    return isWideScreen
+        ? shell
+        : SafeArea(
+            top: true,
+            left: false,
+            right: false,
+            bottom: false,
+            child: shell,
+          );
+  }
 
   @override
   void sendAck() {
