@@ -498,7 +498,7 @@ class ComposerView extends GetWidget<ComposerController> {
           .buildContextMenuTiles(
             context,
             imagePaths: controller.imagePaths,
-            label: AppLocalizations.of(context).browse,
+            label: AppLocalizations.of(context).attachFromDrive,
           ),
       const SizedBox(height: kIsWeb ? 16 : 30),
     ];

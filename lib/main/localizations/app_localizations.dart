@@ -5618,6 +5618,13 @@ class AppLocalizations {
     );
   }
 
+  String get attachFromDrive {
+    return Intl.message(
+      'Attach from Drive',
+      name: 'attachFromDrive',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',
