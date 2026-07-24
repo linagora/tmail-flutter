@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/presentation/extension/workplace_composer_attachment_extension.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
@@ -413,7 +414,12 @@ void main() {
       final callback = await extractCallback(tester, ext);
 
       await expectLater(
-        callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
+        callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+          ),
+        ),
         throwsA(isA<StateError>().having(
           (e) => e.message, 'message', contains('OIDC token'),
         )),
@@ -429,7 +435,12 @@ void main() {
 
       await tester.runAsync(() async {
         await expectLater(
-          callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
+          callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+          ),
+        ),
           throwsA(isA<DioException>()),
         );
       });
@@ -447,7 +458,12 @@ void main() {
 
       await tester.runAsync(() async {
         await expectLater(
-          callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
+          callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+          ),
+        ),
           throwsA(isA<DioException>()),
         );
       });
@@ -464,7 +480,12 @@ void main() {
       final callback = await extractCallback(tester, ext);
 
       final result = await tester.runAsync(
-        () => callback(addAsLinkTitle: 'Link', addAsAttachmentTitle: 'Attachment'),
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+          ),
+        ),
       );
       expect(result, isNotNull);
       expect(result!.intentId, equals('intent-xyz'));

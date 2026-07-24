@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
@@ -12,8 +13,7 @@ typedef OnPickDriveCallback = void Function(DrivePickState state);
 
 typedef FetchDriveIntentCallback =
     Future<WorkplaceIntent> Function({
-      required String addAsLinkTitle,
-      String? addAsAttachmentTitle,
+      required WorkplaceFilePickerConfigRequest filePickerConfig,
     });
 
 /// Shared state logic for widgets that open [DriveIntentWebViewModal].
@@ -43,10 +43,13 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       // menu tile) before the intent future settles, disposing this state.
       final failingMessage = l10n.attachFromDriveFailingMessage;
       const addAsAttachmentTitle = null; // TODO: Add attachment title here after implement 103. Attach Drive File as Attachment
-      final intentFuture = pickerFetchIntent(
-        addAsLinkTitle: l10n.addAsLink,
-        addAsAttachmentTitle: addAsAttachmentTitle,
+      final filePickerConfig = WorkplaceFilePickerConfigRequest(
+        sharingLink: WorkplaceActionConfigRequest(label: l10n.addAsLink),
+        downloadLink: addAsAttachmentTitle == null
+            ? null
+            : const WorkplaceActionConfigRequest(label: addAsAttachmentTitle),
       );
+      final intentFuture = pickerFetchIntent(filePickerConfig: filePickerConfig);
       DrivePickOutcome? outcome;
       try {
         outcome = await showDialog<DrivePickOutcome>(
@@ -55,10 +58,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           barrierDismissible: false,
           builder: (_) => DriveIntentWebViewModal(
             intentFuture: intentFuture,
-            filePickerConfig: _buildFilePickerConfig(
-              addAsLinkLabel: l10n.addAsLink,
-              addAsAttachmentLabel: addAsAttachmentTitle,
-            ),
+            filePickerConfig: filePickerConfig,
             onRegisterExternalHandler: externalHandlerRegistrar,
           ),
         );
@@ -84,18 +84,6 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         break;
     }
   }
-
-  /// Mirrors the `sharingLink`/`downloadLink` shape Drive expects — must be
-  /// echoed back on the ready handshake, see [DriveIntentMessageHandlerMixin].
-  Map<String, dynamic> _buildFilePickerConfig({
-    required String addAsLinkLabel,
-    String? addAsAttachmentLabel,
-  }) => {
-    'sharingLink': {'label': addAsLinkLabel},
-    'downloadLink': addAsAttachmentLabel == null
-        ? null
-        : {'label': addAsAttachmentLabel},
-  };
 }
 
 /// Web-specific extension of [DrivePickerStateMixin] that wires a single

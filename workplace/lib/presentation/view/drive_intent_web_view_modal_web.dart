@@ -2,6 +2,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
@@ -10,7 +11,7 @@ import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.da
 
 class DriveIntentWebViewModal extends StatefulWidget {
   final Future<WorkplaceIntent> intentFuture;
-  final Map<String, dynamic> filePickerConfig;
+  final WorkplaceFilePickerConfigRequest filePickerConfig;
   // ADR-93: composer registers the window listener at composer-init time and
   // forwards messages here, so the handler is ready before the iframe loads.
   final OnRegisterExternalHandler? onRegisterExternalHandler;
@@ -127,8 +128,8 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   void sendAck() {
     // data: URIs have opaque 'null' origin — postMessage requires '*' for those.
     final targetOrigin = intentOrigin == 'null' ? '*' : intentOrigin;
-    // Pass the Map directly — dart:html's postMessage structured-clones it into
-    // a real JS object, which is what Drive's getFilePickerConfig expects.
-    _iframeElement?.contentWindow?.postMessage(widget.filePickerConfig, targetOrigin);
+    // dart:html's postMessage structured-clones the Map into a real JS
+    // object, which is what Drive's getFilePickerConfig expects.
+    _iframeElement?.contentWindow?.postMessage(widget.filePickerConfig.toJson(), targetOrigin);
   }
 }

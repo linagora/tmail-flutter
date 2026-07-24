@@ -6,6 +6,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
@@ -40,8 +41,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<WorkplaceIntent> _fetchIntent(
     Uri platformUrl, {
-    required String addAsLinkTitle,
-    String? addAsAttachmentTitle,
+    required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     final oidcToken = oidcTokenGetter();
     if (oidcToken == null) throw StateError('OIDC token is unavailable');
@@ -50,8 +50,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return _createIntent(
       platformUrl,
       accessToken,
-      addAsLinkTitle: addAsLinkTitle,
-      addAsAttachmentTitle: addAsAttachmentTitle,
+      filePickerConfig: filePickerConfig,
     );
   }
 
@@ -84,17 +83,16 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
     String accessToken, {
-    required String addAsLinkTitle,
-    String? addAsAttachmentTitle,
+    required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     WorkplaceIntent? intent;
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
       accessToken,
-      addAsLink: WorkplaceActionConfig(label: addAsLinkTitle),
-      addAsAttachment: addAsAttachmentTitle == null
+      addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink?.label),
+      addAsAttachment: filePickerConfig.downloadLink == null
           ? null
-          : WorkplaceActionConfig(label: addAsAttachmentTitle),
+          : WorkplaceActionConfig(label: filePickerConfig.downloadLink!.label),
     )) {
       either.fold(
         (failure) {
@@ -130,10 +128,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(composerId, state),
-          onFetchIntent: ({required addAsLinkTitle, addAsAttachmentTitle}) => _fetchIntent(
+          onFetchIntent: ({required filePickerConfig}) => _fetchIntent(
             uri,
-            addAsLinkTitle: addAsLinkTitle,
-            addAsAttachmentTitle: addAsAttachmentTitle,
+            filePickerConfig: filePickerConfig,
           ),
         );
       },
@@ -157,10 +154,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(null, state),
-          onFetchIntent: ({required addAsLinkTitle, addAsAttachmentTitle}) => _fetchIntent(
+          onFetchIntent: ({required filePickerConfig}) => _fetchIntent(
             uri,
-            addAsLinkTitle: addAsLinkTitle,
-            addAsAttachmentTitle: addAsAttachmentTitle,
+            filePickerConfig: filePickerConfig,
           ),
         );
       },
