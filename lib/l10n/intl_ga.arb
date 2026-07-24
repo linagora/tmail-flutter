@@ -5616,5 +5616,101 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "confirm": "Deimhnigh",
+  "@confirm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "Níorbh fhéidir linn an t-atreorú sínithe isteach aonair a chríochnú. Déan iarracht arís.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "Ní féidir réamhamharc a dhéanamh ar an PDF",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageMongolian": "Mongólach",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleConfirmRuleWithRejectAction": "Diúltaigh do gach ríomhphost a chomhlíonann an coinníoll seo?",
+  "@titleConfirmRuleWithRejectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationRuleWithRejectAction": "Ní féidir an gníomh seo a aisiompú. An bhfuil tú cinnte gur mian leat leanúint ar aghaidh?",
+  "@messageConfirmationRuleWithRejectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "Oscail sa tiomántán",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachment": "Ceangaltán tiomántáin",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "Taispeáin nó folaigh an cnaipe ceangaltáin Twake Drive sa chumadóir",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "Cumasaigh cnaipe ceangaltán Drive",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorization": "Catagóiriú lipéid",
+  "@aiLabelCategorization": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationToggleDescription": "Cumasaigh catagóiriú lipéid",
+  "@aiLabelCategorizationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiLabelCategorizationSettingExplanation": "Cuir mo lipéid i bhfeidhm ar ríomhphoist isteach ag baint úsáide as a dtuairisc",
+  "@aiLabelCategorizationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "Scriosadh fo-fhillteáin sa bhruscar",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "Níorbh fhéidir roinnt fo-fhillteán sa Bhruscar a scriosadh",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "Theip ar fho-fhillteáin a scriosadh sa Bhruscar",
+  "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
