@@ -72,7 +72,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       case DrivePickOutcomePicked(:final documents):
         pickerOnCallback?.call(DrivePickResult(documents));
       case DrivePickOutcomeFailed(:final error):
-        logWarning('DrivePickerStateMixin::onPickerTap: $error');
+        logError('DrivePickerStateMixin::onPickerTap: $error');
         pickerOnCallback?.call(DrivePickFailure(error, message: failingMessage));
       case DrivePickOutcomeCancelled():
       case null:
