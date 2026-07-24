@@ -511,6 +511,50 @@ void main() {
       ));
     });
 
+    test(
+      'REGRESSION WHEN search is active and the current mailbox is opened again '
+      'THEN the mailbox list SHOULD be reloaded after search is disabled',
+      () async {
+      when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+      when(context.mounted).thenReturn(true);
+      final currentMailbox = PresentationMailbox(testMailboxId);
+      mailboxDashboardController.selectedMailbox.value = currentMailbox;
+      await pumpEventQueue();
+      clearInteractions(getEmailsInMailboxInteractor);
+      searchController.activateSimpleSearch();
+
+      mailboxController.openMailbox(context, currentMailbox);
+
+      await untilCalled(getEmailsInMailboxInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      ));
+
+      verify(getEmailsInMailboxInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      )).called(1);
+      },
+    );
+
     test('WHEN user use advanced search/sort/filter feature, '
       'THEN user tap on mail box, '
       'SHOULD reset all advanced search and filter options, '
@@ -624,6 +668,21 @@ void main() {
     expect(filterAfterQuickSearch.before, isNull);
     expect(filterAfterQuickSearch.after, isNull);
   });
+
+    test(
+      'REGRESSION WHEN email search starts from a selected mailbox\n'
+      'THEN the mailbox SHOULD remain selected as the Back navigation context',
+    () {
+      final inbox = PresentationMailbox(
+        testMailboxId,
+        role: PresentationMailbox.roleInbox,
+      );
+      mailboxDashboardController.selectedMailbox.value = inbox;
+
+      mailboxDashboardController.searchEmailByQueryString(queryString);
+
+      expect(mailboxDashboardController.selectedMailbox.value, inbox);
+    });
 
     test(
       'WHEN stored sort order is loaded on app restart\n'

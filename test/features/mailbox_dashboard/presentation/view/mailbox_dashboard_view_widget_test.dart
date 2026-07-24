@@ -84,6 +84,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/desktop_dashboard_route_body.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -446,6 +448,76 @@ void main() {
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
+    });
+
+    testWidgets('mailbox selection is hidden while email search is active',
+        (tester) async {
+      // Flush the MailboxController.onReady scheduled by Get.put in setUp so it
+      // runs on the live controller instead of leaking a post-frame callback
+      // that fires (on a disposed ScrollController) inside the next widget test.
+      await tester.pumpWidget(const SizedBox());
+
+      final inbox = MailboxFixtures.inboxMailbox.toPresentationMailbox();
+      mailboxDashboardController.selectedMailbox.value = inbox;
+
+      expect(mailboxDashboardController.selectedMailboxForDisplay, inbox);
+
+      searchController.activateSimpleSearch();
+
+      expect(mailboxDashboardController.selectedMailboxForDisplay, isNull);
+      expect(mailboxDashboardController.selectedMailbox.value, inbox);
+
+      searchController.disableAllSearchEmail();
+
+      expect(mailboxDashboardController.selectedMailboxForDisplay, inbox);
+      expect(mailboxDashboardController.selectedMailbox.value, inbox);
+    });
+
+    group('DesktopDashboardRouteBody', () {
+      const threadListKey = Key('desktop_thread_list_stub');
+
+      Future<void> pumpRouteBody(
+        WidgetTester tester,
+        DashboardRoutes route,
+      ) async {
+        await tester.pumpWidget(
+          makeTestableWidget(
+            child: DesktopDashboardRouteBody(
+              route: route,
+              threadListBuilder: (_) =>
+                  const SizedBox(key: threadListKey),
+            ),
+          ),
+        );
+        await tester.pump();
+      }
+
+      testWidgets(
+        'renders the inline thread list for the residual searchEmail route',
+        (tester) async {
+          await pumpRouteBody(tester, DashboardRoutes.searchEmail);
+
+          expect(find.byKey(threadListKey), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'renders the inline thread list for the thread route',
+        (tester) async {
+          await pumpRouteBody(tester, DashboardRoutes.thread);
+
+          expect(find.byKey(threadListKey), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'does not render the thread list for non-list routes',
+        (tester) async {
+          await pumpRouteBody(tester, DashboardRoutes.waiting);
+
+          expect(find.byKey(threadListKey), findsNothing);
+        },
+      );
     });
 
     group('ThreadView', () {
