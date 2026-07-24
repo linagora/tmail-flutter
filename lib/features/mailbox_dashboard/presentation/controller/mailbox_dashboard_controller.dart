@@ -313,6 +313,8 @@ class MailboxDashBoardController extends ReloadableController
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
+  PresentationMailbox? get selectedMailboxForDisplay =>
+      searchController.isSearchEmailRunning ? null : selectedMailbox.value;
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
   final dashBoardAction = Rxn<UIAction>();
@@ -1109,7 +1111,6 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
-    _unSelectedMailbox();
     FocusManager.instance.primaryFocus?.unfocus();
     storeEmailSortOrder(searchController.committedSearchFilter.sortOrderType);
     dispatchAction(StartSearchEmailAction());
@@ -1121,7 +1122,6 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
-    _unSelectedMailbox();
     searchController.clearAllFilterSearch();
     FocusManager.instance.primaryFocus?.unfocus();
     dispatchAction(ClearAdvancedSearchFilterEmailAction());
@@ -1133,7 +1133,6 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
-    _unSelectedMailbox();
 
     // A bare email address routes to the `from` filter; clear the live text term
     // so the same string is not also applied as a full-text condition.
@@ -1159,10 +1158,6 @@ class MailboxDashBoardController extends ReloadableController
       && currentContext != null
       && responsiveUtils.isDesktop(currentContext!)
       && dashboardRoute.value == DashboardRoutes.threadDetailed;
-  }
-
-  void _unSelectedMailbox() {
-    selectedMailbox.value = null;
   }
 
   void _closeEmailDetailedView() {
@@ -3059,7 +3054,6 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
-    _unSelectedMailbox();
     dispatchAction(QuickSearchEmailByFromAction(emailAddress));
   }
 

@@ -16,6 +16,7 @@ abstract class SearchExecutionObserver {
 
   /// The search failed with a non-urgent error. Urgent failures are routed by
   /// the executor's consume seam and filtered by [SearchExecutorService]
-  /// (ADR-0103), so this is never called for them.
-  void onSearchFailure(Object error);
+  /// (ADR-0103), so this is never called for them. [isReplay] hydrates a new
+  /// layout owner and must not repeat one-shot user notifications.
+  void onSearchFailure(Object error, {bool isReplay = false});
 }

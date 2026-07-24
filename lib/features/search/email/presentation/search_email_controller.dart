@@ -126,7 +126,8 @@ class SearchEmailController extends BaseController
   /// load-more spinner toggling), so an identity check skips the full rebuild.
   List<PresentationEmail>? _lastAppliedResultEmails;
 
-  PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
+  PresentationMailbox? get currentMailbox =>
+      mailboxDashBoardController.selectedMailboxForDisplay;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
@@ -436,9 +437,12 @@ class SearchEmailController extends BaseController
   }
 
   @override
-  void onSearchFailure(Object error) {
+  void onSearchFailure(Object error, {bool isReplay = false}) {
     if (!_ownsSearchResults) return;
-    _searchEmailsFailure(asSearchEmailFailure(error));
+    _searchEmailsFailure(
+      asSearchEmailFailure(error),
+      showToast: !isReplay,
+    );
   }
 
   void _searchEmailAction() {
@@ -510,10 +514,15 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void _searchEmailsFailure(SearchEmailFailure failure) {
+  void _searchEmailsFailure(
+    SearchEmailFailure failure, {
+    bool showToast = true,
+  }) {
     _searchEmailPresentationNotifier.clearResultSearches();
     _searchEmailPresentationNotifier.setResultSearchViewState(Left(failure));
-    showRetryToast(failure);
+    if (showToast) {
+      showRetryToast(failure);
+    }
   }
 
   void searchMoreEmailsAction() {
@@ -801,6 +810,15 @@ class SearchEmailController extends BaseController
     textInputSearchController.text = value;
   }
 
+  void prepareForSearchHandoff() {
+    onNewSearchStarted();
+    final committedSearchText = searchEmailFilter.text?.value ?? '';
+    setTextInputSearchForm(committedSearchText);
+    _searchEmailPresentationNotifier.setCurrentSearchText(
+      committedSearchText,
+    );
+  }
+
   void clearAllTextInputSearchForm({bool requestFocus = false}) {
     textInputSearchController.clear();
     _searchEmailPresentationNotifier.clearAllTextInputSearchState();
@@ -823,6 +841,9 @@ class SearchEmailController extends BaseController
     clearAllResultSearch();
     mailboxDashBoardController.searchController.disableAllSearchEmail();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    mailboxDashBoardController.dispatchAction(
+      RestoreMailboxEmailListAfterSearchAction(),
+    );
     if (PlatformInfo.isWeb) {
       final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
       RouteUtils.replaceBrowserHistory(

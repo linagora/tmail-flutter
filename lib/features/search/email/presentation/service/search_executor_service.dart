@@ -41,6 +41,15 @@ class SearchExecutorService {
     if (_observers.isEmpty) _closeSubscription();
   }
 
+  /// Replays the executor's current state to every registered observer.
+  ///
+  /// Used when responsive layouts hand an active search between presentation
+  /// stores without executing the search again.
+  void replayCurrentStateToOwners() {
+    if (_disposed || !_hasDispatchedSearch) return;
+    _notifyObservers(_notifyCurrentState);
+  }
+
   /// Runs [intent] via the executor; a new search first resets its observers.
   /// The returned future completes when the executor finishes (awaited by the
   /// websocket-refresh path to order message-dedup after the refresh).
@@ -123,7 +132,7 @@ class SearchExecutorService {
     } else if (current.hasError) {
       // Urgent failures were already routed by the consume seam (ADR-0103).
       if (isUrgentException(current.error!)) return;
-      observer.onSearchFailure(current.error!);
+      observer.onSearchFailure(current.error!, isReplay: true);
     } else if (current.value != null) {
       observer.onSearchResult(current.value!, isFreshResult: false);
     }

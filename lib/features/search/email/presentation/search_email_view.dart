@@ -71,24 +71,10 @@ class SearchEmailView extends ConsumerWidget {
       searchFilterProvider.select((filter) => filter.text),
     );
 
-    _dismissSearchOnWebDesktop(context);
-
     return _buildScaffold(
       context,
       _buildBody(ref, context, presentationState, searchQuery),
     );
-  }
-
-  /// Close mobile search on web desktop rebuilds.
-  void _dismissSearchOnWebDesktop(BuildContext context) {
-    if (!controller.responsiveUtils.isWebDesktop(context)) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!context.mounted ||
-          !Get.isRegistered<SearchEmailController>()) {
-        return;
-      }
-      Get.find<SearchEmailController>().closeSearchView(context: context);
-    });
   }
 
   Widget _buildBody(

@@ -88,6 +88,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/restore_mailbox_email_list_after_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
@@ -923,12 +924,17 @@ class MailboxController extends BaseMailboxController
     log('MailboxController::_handleOpenMailbox():MAILBOX_ID = ${presentationMailboxSelected.id.asString} | MAILBOX_NAME: ${presentationMailboxSelected.name?.name}');
     KeyboardUtils.hideKeyboard(context);
     mailboxDashBoardController.clearSelectedEmail();
+    final shouldRestoreMailboxEmailList = mailboxDashBoardController
+        .shouldRestoreMailboxEmailListAfterSearch(presentationMailboxSelected);
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
       mailboxDashBoardController.clearFilterMessageOption();
     }
     _disableAllSearchEmail();
     mailboxDashBoardController.closeMailboxMenuDrawer();
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
+    if (shouldRestoreMailboxEmailList) {
+      mailboxDashBoardController.restoreMailboxEmailListAfterSearch();
+    }
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     _replaceBrowserHistory();
   }

@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
@@ -47,6 +48,8 @@ import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.da
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/coordinator/get_search_email_layout_owner_registry.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_layout_coordinator.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -127,10 +130,11 @@ class ThreadController extends BaseController with EmailActionController {
   StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
 
-  StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
   ProviderSubscription<PreferencesSetting>? _localSettingsSubscription;
   late final SearchExecutionObserver _searchExecutionObserver =
       ThreadSearchExecutionObserver(this);
+  late final SearchLayoutCoordinator _searchLayoutCoordinator =
+      _createSearchLayoutCoordinator();
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -171,11 +175,15 @@ class ThreadController extends BaseController with EmailActionController {
         collapseThreads: _isCollapseThreadsEnabled,
       );
 
+  bool get _isSearchEngaged =>
+      appProviderContainer.read(searchViewStateProvider).isSearchEngaged ||
+      searchController.isSearchEmailRunning;
+
   @override
   void onInit() {
     _registerObxStreamListener();
     if (PlatformInfo.isWeb) {
-      _registerBrowserResizeListener();
+      _searchLayoutCoordinator.start();
       onKeyboardShortcutInit();
     }
     _initWebSocketQueueHandler();
@@ -195,7 +203,7 @@ class ThreadController extends BaseController with EmailActionController {
     _currentMemoryMailboxId = null;
     listEmailController.dispose();
     if (PlatformInfo.isWeb) {
-      _resizeBrowserStreamSubscription?.cancel();
+      _searchLayoutCoordinator.dispose();
       onKeyboardShortcutDispose();
     }
     _webSocketQueueHandler?.dispose();
@@ -385,6 +393,9 @@ class ThreadController extends BaseController with EmailActionController {
       } else if (action is ClearMailListKeyboardShortcutFocusAction) {
         clearMailShortcutFocus();
         mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is RestoreMailboxEmailListAfterSearchAction) {
+        restoreMailboxEmailListAfterSearch(force: action.force);
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -522,10 +533,20 @@ class ThreadController extends BaseController with EmailActionController {
     dispatchState(Right(GetAllEmailLoading()));
   }
 
-  void _registerBrowserResizeListener() {
-    _resizeBrowserStreamSubscription = html.window.onResize.listen((_) {
-      _validateBrowserHeight();
-    });
+  SearchLayoutCoordinator _createSearchLayoutCoordinator() {
+    return SearchLayoutCoordinator(
+      responsiveUtils: responsiveUtils,
+      searchService: _searchService,
+      isSearchEngaged: () => _isSearchEngaged,
+      isEmailOpened: () => mailboxDashBoardController.isEmailOpened,
+      prepareDesktopSearchHandoff: () =>
+          _searchExecutionObserver.onNewSearchStarted(),
+      activateMobileSearch: () => searchController.activateSimpleSearch(),
+      dispatchRoute: mailboxDashBoardController.dispatchRoute,
+      isClosed: () => isClosed,
+      mobileOwnerRegistry: const GetSearchEmailLayoutOwnerRegistry(),
+      onBrowserResize: _validateBrowserHeight,
+    );
   }
 
   void _validateBrowserHeight() {
@@ -623,6 +644,19 @@ class ThreadController extends BaseController with EmailActionController {
         .read(searchEmailPresentationProvider.notifier)
         .resetSearchMore();
     loadingMoreStatus.value = LoadingMoreStatus.idle;
+  }
+
+  @visibleForTesting
+  void restoreMailboxEmailListAfterSearch({bool force = false}) {
+    if (!_searchLayoutCoordinator.takeDesktopSearchPresentation(force: force)) {
+      return;
+    }
+    resetToOriginalValue();
+    consumeState(Stream.value(Right(GetAllEmailLoading())));
+    getAllEmailAction(
+      getLatestChanges: false,
+      forceEmailQuery: forceEmailQuery,
+    );
   }
 
   void _getAllEmailSuccess(
@@ -912,7 +946,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _loadMoreEmails() {
     log('ThreadController::_loadMoreEmails()::canLoadMore = $canLoadMore');
-    if (!canLoadMore) return;
+    if (!canLoadMore || loadingMoreStatus.value.isRunning) return;
 
     if (_session != null && _accountId != null) {
       final currentListEmail =
@@ -929,6 +963,7 @@ class ThreadController extends BaseController with EmailActionController {
         'filterOption = ${filterOption.name}',
       );
 
+      loadingMoreStatus.value = LoadingMoreStatus.running;
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
@@ -981,11 +1016,13 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
 
-    canLoadMore = success.serverEmailCount >= ThreadConstants.maxCountEmails;
+    // Without an appendable email the oldest-email cursor does not move, so
+    // another automatic request would repeat the same full page forever.
+    canLoadMore = appendableList.isNotEmpty &&
+        success.serverEmailCount >= ThreadConstants.maxCountEmails;
+    loadingMoreStatus.value = LoadingMoreStatus.completed;
     if (_isAutoLoadMore && canLoadMore) {
       _performAutomaticallyLoadMoreEmails();
-    } else {
-      loadingMoreStatus.value = LoadingMoreStatus.completed;
     }
   }
 

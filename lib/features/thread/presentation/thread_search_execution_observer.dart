@@ -19,6 +19,7 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   @override
   void onNewSearchStarted() {
     if (!_ownsSearchResults) return;
+    _controller._searchLayoutCoordinator.markDesktopSearchPresentation();
     if (_controller.listEmailController.hasClients) {
       _controller.isListEmailScrollViewJumping = true;
       _controller.listEmailController.jumpTo(0);
@@ -34,6 +35,7 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   @override
   void onSearchLoading() {
     if (!_ownsSearchResults) return;
+    _controller._searchLayoutCoordinator.markDesktopSearchPresentation();
     _controller.dispatchState(Right(SearchingState()));
   }
 
@@ -43,6 +45,7 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
     required bool isFreshResult,
   }) {
     if (!_ownsSearchResults) return;
+    _controller._searchLayoutCoordinator.markDesktopSearchPresentation();
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
     final emailList = result.emails;
@@ -82,8 +85,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   }
 
   @override
-  void onSearchFailure(Object error) {
+  void onSearchFailure(Object error, {bool isReplay = false}) {
     if (!_ownsSearchResults) return;
+    _controller._searchLayoutCoordinator.markDesktopSearchPresentation();
     final failure = asSearchEmailFailure(error);
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
@@ -94,6 +98,8 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
     _controller.mailboxDashBoardController.emailsInCurrentMailbox.clear();
     // Clear the loading state so the spinner stops on a failed search too.
     _controller.dispatchState(Left(failure));
-    _controller.showRetryToast(failure);
+    if (!isReplay) {
+      _controller.showRetryToast(failure);
+    }
   }
 }
