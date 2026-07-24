@@ -209,8 +209,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         mailboxNode: mailboxNode,
         mailboxNodeSelected: controller
           .mailboxDashBoardController
-          .selectedMailbox
-          .value,
+          .selectedMailboxForDisplay,
         isDraggingMailbox: controller
             .mailboxDashBoardController
             .isDraggingMailbox,

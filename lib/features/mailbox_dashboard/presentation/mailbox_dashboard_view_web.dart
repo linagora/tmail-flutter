@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/desktop_dashboard_route_body.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -284,16 +285,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               }),
                               _buildListButtonQuickSearchFilter(context),
                               Expanded(
-                                child: Obx(() {
-                                  switch(controller.dashboardRoute.value) {
-                                    case DashboardRoutes.thread:
-                                      return _buildThreadViewForWebDesktop(context);
-                                    case DashboardRoutes.threadDetailed:
-                                      return const ThreadDetailView();
-                                    default:
-                                      return const SizedBox.shrink();
-                                  }
-                                }),
+                                child: Obx(() => DesktopDashboardRouteBody(
+                                  route: controller.dashboardRoute.value,
+                                  threadListBuilder: _buildThreadViewForWebDesktop,
+                                )),
                               )
                             ],
                           ),

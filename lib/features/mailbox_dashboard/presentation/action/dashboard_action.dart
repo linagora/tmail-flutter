@@ -134,6 +134,15 @@ class QuickSearchEmailByFromAction extends DashBoardAction {
 
 class CloseSearchEmailViewAction extends DashBoardAction {}
 
+class RestoreMailboxEmailListAfterSearchAction extends DashBoardAction {
+  final bool force;
+
+  RestoreMailboxEmailListAfterSearchAction({this.force = false});
+
+  @override
+  List<Object?> get props => [force];
+}
+
 class CancelSelectionSearchEmailAction extends DashBoardAction {}
 
 class OpenAdvancedSearchViewAction extends DashBoardAction {}
