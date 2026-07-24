@@ -37,6 +37,7 @@ class _RecordingObserver implements SearchExecutionObserver {
   final results = <SearchEmailResult>[];
   final freshFlags = <bool>[];
   final failures = <Object>[];
+  final failureReplayFlags = <bool>[];
 
   @override
   void onNewSearchStarted() => newSearchStarted++;
@@ -51,7 +52,10 @@ class _RecordingObserver implements SearchExecutionObserver {
   }
 
   @override
-  void onSearchFailure(Object error) => failures.add(error);
+  void onSearchFailure(Object error, {bool isReplay = false}) {
+    failures.add(error);
+    failureReplayFlags.add(isReplay);
+  }
 }
 
 @GenerateNiceMocks([
@@ -226,6 +230,7 @@ void main() {
     await dispatchNewSearch(service);
 
     expect(observer.failures, hasLength(1));
+    expect(observer.failureReplayFlags.single, isFalse);
     expect(observer.results, isEmpty);
   });
 
@@ -314,6 +319,7 @@ void main() {
     final lateObserver = registerObserver(service);
 
     expect(lateObserver.failures.single, same(failure));
+    expect(lateObserver.failureReplayFlags.single, isTrue);
     expect(lateObserver.results, isEmpty);
   });
 
@@ -375,6 +381,68 @@ void main() {
 
     expect(observer.results, hasLength(1));
     expect(observer.freshFlags.single, isTrue);
+  });
+
+  group('replayCurrentStateToOwners', () {
+    test('fans the current data snapshot out to every observer', () async {
+      final service = makeService();
+      final first = registerObserver(service);
+      final second = registerObserver(service);
+      await dispatchNewSearch(service);
+      first.results.clear();
+      first.freshFlags.clear();
+      second.results.clear();
+      second.freshFlags.clear();
+
+      service.replayCurrentStateToOwners();
+
+      expect(first.results.single.emails, [email]);
+      expect(second.results.single.emails, [email]);
+      expect(first.freshFlags.single, isFalse);
+      expect(second.freshFlags.single, isFalse);
+    });
+
+    test('replays the current loading snapshot', () async {
+      final (:service, :observer) = registeredService();
+      final pending = Completer<Either<Failure, Success>>();
+      stubSearch((_) => Stream.fromFuture(pending.future));
+      final search = service.dispatch(const NewSearchIntent(), context);
+      await pumpEventQueue();
+      observer.loading = 0;
+
+      service.replayCurrentStateToOwners();
+
+      expect(observer.loading, 1);
+      pending.complete(Right(SearchEmailSuccess([email])));
+      await search;
+    });
+
+    test('replays the current error snapshot', () async {
+      final failure = SearchEmailFailure(Exception('boom'));
+      stubSearch((_) => Stream.value(Left(failure)));
+      final (:service, :observer) = registeredService();
+      await dispatchNewSearch(service);
+      observer.failures.clear();
+      observer.failureReplayFlags.clear();
+
+      service.replayCurrentStateToOwners();
+
+      expect(observer.failures.single, same(failure));
+      expect(observer.failureReplayFlags.single, isTrue);
+    });
+
+    test('is a no-op before dispatch and after disposal', () {
+      final service = makeService();
+      final observer = registerObserver(service);
+
+      service.replayCurrentStateToOwners();
+      service.dispose();
+      service.replayCurrentStateToOwners();
+
+      expect(observer.loading, 0);
+      expect(observer.results, isEmpty);
+      expect(observer.failures, isEmpty);
+    });
   });
 
   test('after the last observer unregisters, no fan-out reaches it', () async {

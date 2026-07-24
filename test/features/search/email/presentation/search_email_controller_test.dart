@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_sea
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/store_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -50,6 +51,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/notifier/search
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -367,6 +369,53 @@ void main() {
       ]);
     },
   );
+
+  test('closing search requests restoration of the mailbox email list', () {
+    clearInteractions(mailboxDashBoardController);
+    clearInteractions(searchController);
+
+    controller.closeSearchView();
+
+    verifyInOrder([
+      searchController.disableAllSearchEmail(),
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread),
+      mailboxDashBoardController.dispatchAction(
+        argThat(isA<RestoreMailboxEmailListAfterSearchAction>()),
+      ),
+    ]);
+  });
+
+  test(
+    'prepareForSearchHandoff hydrates the input from the committed keyword',
+  () {
+    const committedText = 'responsive search';
+    appProviderContainer.read(searchFilterProvider.notifier).set(
+          SearchEmailFilter(text: SearchQuery(committedText)),
+        );
+    controller.textInputSearchController.text = 'stale text';
+
+    controller.prepareForSearchHandoff();
+
+    expect(controller.textInputSearchController.text, committedText);
+    expect(controller.currentSearchText, committedText);
+  });
+
+  test(
+    'prepareForSearchHandoff clears stale input for filter-only searches',
+  () {
+    appProviderContainer.read(searchFilterProvider.notifier).set(
+          SearchEmailFilter(from: {'alice@example.com'}),
+        );
+    controller.textInputSearchController.text = 'stale text';
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setCurrentSearchText('stale text');
+
+    controller.prepareForSearchHandoff();
+
+    expect(controller.textInputSearchController.text, isEmpty);
+    expect(controller.currentSearchText, isEmpty);
+  });
 
   test(
     'searchMoreEmailsAction delegates load-more to central executor and bridges append',
@@ -1044,5 +1093,31 @@ void main() {
 
       expect(resultIds(), ['mobile-1']);
     });
+
+    testWidgets(
+      'replayed failure hydrates mobile state without repeating the toast',
+      (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(Get.find<ResponsiveUtils>().isWebDesktop(Get.context!))
+            .thenReturn(false);
+        final appToast = Get.find<AppToast>() as advanced_mocks.MockAppToast;
+        clearInteractions(appToast);
+
+        controller.onSearchFailure(
+          SearchEmailFailure(Exception('boom')),
+          isReplay: true,
+        );
+
+        expect(controller.resultSearchViewState.isLeft(), isTrue);
+        verifyNever(appToast.showToastMessageWithMultipleActions(
+          any,
+          any,
+          actions: anyNamed('actions'),
+          textColor: anyNamed('textColor'),
+          backgroundColor: anyNamed('backgroundColor'),
+          infinityToast: anyNamed('infinityToast'),
+        ));
+      },
+    );
   });
 }
