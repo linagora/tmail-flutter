@@ -87,7 +87,7 @@ void main() {
     test(
       'Should remove small absolute line-height values and keep larger ones',
       () async {
-        for (final value in ['0px', '1px', '1pt']) {
+        for (final value in ['1px', '1pt']) {
           final doc = await run('<p style="line-height:$value;">Hi</p>');
           expect(
             doc.querySelector('p')!.attributes.containsKey('style'),
@@ -106,7 +106,7 @@ void main() {
     );
 
     test('Should enforce exact line-height removal boundaries', () async {
-      for (final value in ['0', '.99', '+0.1', '0.99em', '1.0px', '0.5pt']) {
+      for (final value in ['.99', '+0.1', '0.99em', '1.0px', '0.5pt']) {
         final doc = await run('<p style="line-height:$value;">Hi</p>');
         expect(
           doc.querySelector('p')!.attributes.containsKey('style'),
@@ -125,6 +125,12 @@ void main() {
         '100.01%',
         '-0.1',
         '1e-1',
+        // Zero is the intentional image-gap/spacer trick — preserved in any unit.
+        '0',
+        '0.0',
+        '0px',
+        '0em',
+        '0%',
       ]) {
         final doc = await run('<p style="line-height:$value;">Hi</p>');
         expect(

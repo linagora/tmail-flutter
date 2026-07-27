@@ -7,6 +7,8 @@ import 'package:html/dom.dart';
 /// Strips `line-height` values small enough to overlap text lines (e.g. some
 /// signatures ship `line-height:0.1`), letting the renderer fall back to its
 /// default leading. Removed rather than clamped, matching correct clients.
+/// `line-height:0` is left untouched: it is the intentional image-gap/spacer
+/// trick, not an overlap bug.
 class NormalizeLineHeightInStyleTransformer extends DomTransformer {
   const NormalizeLineHeightInStyleTransformer();
 
@@ -176,6 +178,11 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
 
     final number = double.tryParse(match.group(1) ?? '');
     if (number == null || !number.isFinite) return false;
+
+    // `line-height:0` (any unit) is the intentional image-gap/spacer trick used
+    // to collapse whitespace around images; preserve it. Only strip the small
+    // non-zero values that overlap text.
+    if (number <= 0) return false;
 
     switch (match.group(2)?.toLowerCase()) {
       case '%':
