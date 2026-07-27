@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/workplace_dio.dart';
+import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/extension/workplace_composer_attachment_extension.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
@@ -243,6 +244,8 @@ void main() {
       final ext = _makeExtension(notifier);
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (ctx) => ext.buildContextMenuTile(
             ctx,
@@ -259,6 +262,8 @@ void main() {
       final ext = _makeExtension(notifier);
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
@@ -277,6 +282,8 @@ void main() {
       final ext = _makeExtension(notifier);
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
@@ -299,6 +306,8 @@ void main() {
       final ext = _makeExtension(notifier);
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
@@ -317,6 +326,8 @@ void main() {
       final ext = _makeExtension(notifier, onPickState: null);
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
@@ -347,6 +358,8 @@ void main() {
       );
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
             builder: (ctx) => ext.buildContextMenuTile(
