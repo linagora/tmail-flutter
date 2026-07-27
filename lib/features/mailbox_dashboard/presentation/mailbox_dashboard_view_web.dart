@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -61,7 +62,10 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/mailbox_dashboard_provider_listener_delegate_factories.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
@@ -300,27 +304,32 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 ],
               ),
             ),
-            tabletLarge: Obx(() {
-              switch (controller.dashboardRoute.value) {
-                case DashboardRoutes.searchEmail:
-                  return const SearchEmailView();
-                case DashboardRoutes.threadDetailed:
-                  return controller.searchController.isSearchEmailRunning
-                      ? const ThreadDetailView()
-                      : buildResponsiveWithDrawer(
-                          left: ThreadView(),
-                          right: const ThreadDetailView(),
-                          mobile: const ThreadDetailView(),
-                        );
-                default:
-                  return controller.searchController.isSearchEmailRunning
-                      ? const ThreadDetailView()
-                      : buildResponsiveWithDrawer(
-                          left: ThreadView(),
-                          right: const EmailViewEmptyWidget(),
-                          mobile: ThreadView(),
-                        );
-              }
+            tabletLarge: Consumer(builder: (context, ref, child) {
+              final isSearchEmailRunning = ref.watch(
+                searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+              );
+              return Obx(() {
+                switch (controller.dashboardRoute.value) {
+                  case DashboardRoutes.searchEmail:
+                    return const SearchEmailView();
+                  case DashboardRoutes.threadDetailed:
+                    return isSearchEmailRunning
+                        ? const ThreadDetailView()
+                        : buildResponsiveWithDrawer(
+                            left: ThreadView(),
+                            right: const ThreadDetailView(),
+                            mobile: const ThreadDetailView(),
+                          );
+                  default:
+                    return isSearchEmailRunning
+                        ? const ThreadDetailView()
+                        : buildResponsiveWithDrawer(
+                            left: ThreadView(),
+                            right: const EmailViewEmptyWidget(),
+                            mobile: ThreadView(),
+                          );
+                }
+              });
             }),
             mobile: Obx(() {
               switch(controller.dashboardRoute.value) {
@@ -485,24 +494,29 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           );
         }
       }),
-      Obx(() {
-        final filterMessageCurrent = controller.filterMessageOption.value;
+      Consumer(builder: (context, ref, child) {
+        final isSearchEmailRunning = ref.watch(
+          searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+        );
+        return Obx(() {
+          final filterMessageCurrent = controller.filterMessageOption.value;
 
-        if (controller.validateNoEmailsInTrashAndSpamFolder() ||
-            controller.searchController.isSearchEmailRunning) {
-          return const SizedBox.shrink();
-        } else {
-          return Padding(
-            padding: FilterMessageButtonStyle.buttonMargin,
-            child: FilterMessageButton(
-              filterMessageOption: filterMessageCurrent,
-              imagePaths: controller.imagePaths,
-              isSelected: filterMessageCurrent != FilterMessageOption.all,
-              onSelectFilterMessageOptionAction: _onSelectFilterMessageOptionAction,
-              onDeleteFilterMessageOptionAction: (_) => _onDeleteFilterMessageOptionAction(),
-            ),
-          );
-        }
+          if (controller.validateNoEmailsInTrashAndSpamFolder() ||
+              isSearchEmailRunning) {
+            return const SizedBox.shrink();
+          } else {
+            return Padding(
+              padding: FilterMessageButtonStyle.buttonMargin,
+              child: FilterMessageButton(
+                filterMessageOption: filterMessageCurrent,
+                imagePaths: controller.imagePaths,
+                isSelected: filterMessageCurrent != FilterMessageOption.all,
+                onSelectFilterMessageOptionAction: _onSelectFilterMessageOptionAction,
+                onDeleteFilterMessageOptionAction: (_) => _onDeleteFilterMessageOptionAction(),
+              ),
+            );
+          }
+        });
       }),
       Obx(() {
         if (controller.selectedMailbox.value?.isTrashPersonal == true) {
@@ -519,19 +533,23 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           return const SizedBox.shrink();
         }
       }),
-      Obx(() {
-        if (controller.searchController.isSearchEmailRunning &&
-            controller.dashboardRoute.value == DashboardRoutes.thread) {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 16),
-            child: _buildQuickSearchFilterButton(
-              context,
-              QuickSearchFilter.sortBy,
-            ),
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
+      Consumer(builder: (context, ref, child) {
+        final isSearchEmailRunning = ref.watch(
+          searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+        );
+        return Obx(() {
+          if (_isQuickSearchFilterVisible(isSearchEmailRunning)) {
+            return Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16),
+              child: _buildQuickSearchFilterButton(
+                context,
+                QuickSearchFilter.sortBy,
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        });
       })
     ]);
   }
@@ -656,119 +674,140 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
-    return Obx(() {
-      final isSearchEmailRunning =
-          controller.searchController.isSearchEmailRunning;
-      final isThreadRoute =
-          controller.dashboardRoute.value == DashboardRoutes.thread;
-      final isLabelAvailable = controller.isLabelAvailable;
-      final labelList = controller.labelController.labels;
+    return Consumer(builder: (context, ref, child) {
+      final isSearchEmailRunning = ref.watch(
+        searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+      );
+      final isSearchFilterApplied = ref.watch(
+        searchFilterProvider.select((filter) => filter.isApplied),
+      );
+      return Obx(() {
+        if (!_isQuickSearchFilterVisible(isSearchEmailRunning)) {
+          return const SizedBox.shrink();
+        }
 
-      if (isSearchEmailRunning && isThreadRoute) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: SizedBox(
-                  height: 45,
-                  child: ScrollbarListView(
-                    scrollBehavior: ScrollConfiguration.of(context).copyWith(
-                      dragDevices: {
-                        PointerDeviceKind.touch,
-                        PointerDeviceKind.mouse,
-                        PointerDeviceKind.trackpad
-                      },
-                      scrollbars: false
-                    ),
-                    scrollController: controller.listSearchFilterScrollController!,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      padding: const EdgeInsetsDirectional.only(bottom: 10),
-                      controller: controller.listSearchFilterScrollController!,
-                      children: [
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.folder),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        if (isLabelAvailable && labelList.isNotEmpty)
-                          ...[
-                            _buildQuickSearchFilterButton(
-                              context,
-                              QuickSearchFilter.labels,
-                            ),
-                            MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                          ],
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.from),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.to),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.dateTime),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.hasAttachment),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.starred),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(context, QuickSearchFilter.unread),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        _buildQuickSearchFilterButton(
-                          context,
-                          QuickSearchFilter.events,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ),
-              if (controller.isSearchFilterHasApplied)
-                TMailButtonWidget.fromText(
-                  text: AppLocalizations.of(context).clearFilter,
-                  backgroundColor: Colors.transparent,
-                  margin: const EdgeInsetsDirectional.only(start: 8),
-                  borderRadius: 10,
-                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    color: AppColor.primaryColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500),
-                  onTapActionCallback: controller.clearAllSearchFilterApplied)
-              else
-                TMailButtonWidget.fromText(
-                  text: AppLocalizations.of(context).advancedSearch,
-                  backgroundColor: Colors.transparent,
-                  margin: const EdgeInsetsDirectional.only(start: 8),
-                  borderRadius: 10,
-                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    color: AppColor.primaryColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500),
-                  onTapActionCallback: controller.openAdvancedSearchView)
-            ]
+              _buildQuickSearchFilterList(context),
+              _buildSearchFilterActionButton(context, isSearchFilterApplied),
+            ],
           ),
         );
-      } else {
-        return const SizedBox.shrink();
-      }
+      });
     });
+  }
+
+  bool _isQuickSearchFilterVisible(bool isSearchEmailRunning) {
+    // Read dashboardRoute.value unconditionally so the enclosing Obx always
+    // subscribes to it; a short-circuit on isSearchEmailRunning (a non-observable
+    // Riverpod value) would otherwise leave the Obx with no observable and crash.
+    final isThreadRoute =
+        controller.dashboardRoute.value == DashboardRoutes.thread;
+    return isSearchEmailRunning && isThreadRoute;
+  }
+
+  Widget _buildQuickSearchFilterList(BuildContext context) {
+    final showLabelFilter = controller.isLabelAvailable &&
+        controller.labelController.labels.isNotEmpty;
+
+    return Flexible(
+      child: SizedBox(
+        height: 45,
+        child: ScrollbarListView(
+          scrollBehavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.trackpad,
+            },
+            scrollbars: false,
+          ),
+          scrollController: controller.listSearchFilterScrollController!,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            padding: const EdgeInsetsDirectional.only(bottom: 10),
+            controller: controller.listSearchFilterScrollController!,
+            children: _buildQuickSearchFilterButtons(context, showLabelFilter),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildQuickSearchFilterButtons(
+    BuildContext context,
+    bool showLabelFilter,
+  ) {
+    final quickSearchFilters = <QuickSearchFilter>[
+      QuickSearchFilter.folder,
+      if (showLabelFilter) QuickSearchFilter.labels,
+      QuickSearchFilter.from,
+      QuickSearchFilter.to,
+      QuickSearchFilter.dateTime,
+      QuickSearchFilter.hasAttachment,
+      QuickSearchFilter.starred,
+      QuickSearchFilter.unread,
+      QuickSearchFilter.events,
+    ];
+
+    return [
+      for (final filter in quickSearchFilters) ...[
+        if (filter != quickSearchFilters.first)
+          MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
+        _buildQuickSearchFilterButton(context, filter),
+      ],
+    ];
+  }
+
+  Widget _buildSearchFilterActionButton(
+    BuildContext context,
+    bool isSearchFilterApplied,
+  ) {
+    final isMessageFilterApplied =
+        controller.filterMessageOption.value != FilterMessageOption.all;
+    final showClearFilter = isSearchFilterApplied || isMessageFilterApplied;
+    final localizations = AppLocalizations.of(context);
+
+    return TMailButtonWidget.fromText(
+      text: showClearFilter
+          ? localizations.clearFilter
+          : localizations.advancedSearch,
+      backgroundColor: Colors.transparent,
+      margin: const EdgeInsetsDirectional.only(start: 8),
+      borderRadius: 10,
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+        color: AppColor.primaryColor,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+      ),
+      onTapActionCallback: showClearFilter
+          ? controller.clearAllSearchFilterApplied
+          : controller.openAdvancedSearchView,
+    );
   }
 
   Widget _buildQuickSearchFilterButton(
     BuildContext context,
     QuickSearchFilter searchFilter,
   ) {
-    return Obx(() {
-      final searchEmailFilter = controller.searchController.searchEmailFilter.value;
-      final sortOrderType = controller.searchController.sortOrderFiltered;
-      final listAddressOfFrom = controller.searchController.listAddressOfFromFiltered;
+    return Consumer(builder: (context, ref, child) {
+      final searchEmailFilter = ref.watch(searchFilterProvider);
+      final sortOrderType = searchEmailFilter.sortOrderType;
+      final listAddressOfFrom = searchEmailFilter.from;
       final currentUserEmail = controller.sessionCurrent?.getOwnEmailAddressOrEmpty();
-      final startDate = controller.searchController.startDateFiltered;
-      final endDate = controller.searchController.endDateFiltered;
-      final receiveTimeType = controller.searchController.receiveTimeFiltered;
-      final mailbox = controller.searchController.mailboxFiltered;
-      final label = controller.searchController.labelFiltered;
-      final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
-      final listHasKeywordFiltered = controller.searchController.listHasKeywordFiltered;
-      final unreadFiltered = controller.searchController.unreadFiltered;
-      final notIncludeEventsFiltered = controller.searchController.notIncludeEventsFiltered;
+      final startDate = searchEmailFilter.startDate?.value.toLocal();
+      final endDate = searchEmailFilter.endDate?.value.toLocal();
+      final receiveTimeType = searchEmailFilter.emailReceiveTimeType;
+      final mailbox = searchEmailFilter.mailbox;
+      final label = searchEmailFilter.label;
+      final listAddressOfTo = searchEmailFilter.to;
+      final listHasKeywordFiltered = searchEmailFilter.hasKeyword;
+      final unreadFiltered = searchEmailFilter.unread;
+      final notIncludeEventsFiltered = searchEmailFilter.notIncludeEvents;
 
       final isSelected = searchFilter.isSelected(
         context,
@@ -862,7 +901,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.labelController.labels;
-        final selectedLabel = controller.searchController.labelFiltered;
+        final selectedLabel =
+            appProviderContainer.read(searchFilterProvider).label;
 
         controller.openLabelsFilterModal(
           context: context,
@@ -879,13 +919,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
+    final selectedReceiveTime =
+        appProviderContainer.read(searchFilterProvider).emailReceiveTimeType;
     final popupMenuItems = EmailReceiveTimeType.valuesForSearch.map((timeType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemDateFilterAction(
             timeType,
-            controller.searchController.receiveTimeFiltered,
+            selectedReceiveTime,
             AppLocalizations.of(context),
             controller.imagePaths,
           ),
@@ -904,13 +946,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
+    final selectedSortOrder =
+        appProviderContainer.read(searchFilterProvider).sortOrderType;
     final popupMenuItems = EmailSortOrderType.values.map((sortType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemSortOrderTypeAction(
             sortType,
-            controller.searchController.sortOrderFiltered,
+            selectedSortOrder,
             AppLocalizations.of(context),
             controller.imagePaths,
           ),

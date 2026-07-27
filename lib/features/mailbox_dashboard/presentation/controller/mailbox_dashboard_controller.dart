@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -361,6 +362,8 @@ class MailboxDashBoardController extends ReloadableController
   LinagoraEcosystem? cachedLinagoraEcosystem;
   PaywallController? paywallController;
   final workerObxVariables = <Worker>[];
+  ProviderSubscription<bool>? advancedSearchViewSubscription;
+  ProviderSubscription<bool>? searchInputFocusSubscription;
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -1095,7 +1098,7 @@ class MailboxDashBoardController extends ReloadableController
     }
     _unSelectedMailbox();
     FocusManager.instance.primaryFocus?.unfocus();
-    storeEmailSortOrder(searchController.searchEmailFilter.value.sortOrderType);
+    storeEmailSortOrder(searchController.committedSearchFilter.sortOrderType);
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -1129,7 +1132,7 @@ class MailboxDashBoardController extends ReloadableController
         ? Some({queryString})
         : null);
 
-    if (searchController.searchEmailFilter.value.isContainFlagged) {
+    if (searchController.committedSearchFilter.isContainFlagged) {
       filterMessageOption.value = FilterMessageOption.starred;
     }
 
@@ -2255,7 +2258,7 @@ class MailboxDashBoardController extends ReloadableController
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      selectedContactList: searchController.searchEmailFilter.value.from,
+      selectedContactList: searchController.committedSearchFilter.from,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
     );
 
@@ -2278,7 +2281,7 @@ class MailboxDashBoardController extends ReloadableController
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      selectedContactList: searchController.searchEmailFilter.value.to,
+      selectedContactList: searchController.committedSearchFilter.to,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
     );
 
@@ -3413,7 +3416,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   bool get isSearchFilterHasApplied {
-    return searchController.searchEmailFilter.value.isApplied ||
+    return searchController.committedSearchFilter.isApplied ||
       filterMessageOption.value != FilterMessageOption.all;
   }
 
@@ -3463,6 +3466,7 @@ class MailboxDashBoardController extends ReloadableController
       worker.dispose();
     }
     workerObxVariables.clear();
+    disposeReactiveSearchStateListeners();
   }
 
   @override

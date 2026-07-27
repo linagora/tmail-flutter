@@ -24,7 +24,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
       _controller.listEmailController.jumpTo(0);
     }
     _controller.mailboxDashBoardController.emailsInCurrentMailbox.clear();
-    _controller.canSearchMore = true;
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .resetSearchMore();
     _controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
     _controller.searchController.activateSimpleSearch();
   }
@@ -66,7 +68,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
           _controller.listEmailSelected;
     }
 
-    _controller.canSearchMore = result.canLoadMore;
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setCanSearchMore(result.canLoadMore);
     _controller.loadingMoreStatus.value =
         result.loadMore == LoadMoreState.inProgress
             ? LoadingMoreStatus.running
@@ -83,7 +87,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
     final failure = asSearchEmailFailure(error);
     _controller.mailboxDashBoardController
         .updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
-    _controller.canSearchMore = false;
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setCanSearchMore(false);
     _controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
     _controller.mailboxDashBoardController.emailsInCurrentMailbox.clear();
     // Clear the loading state so the spinner stops on a failed search too.

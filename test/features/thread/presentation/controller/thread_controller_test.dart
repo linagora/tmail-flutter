@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
@@ -41,14 +42,14 @@ import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_stat
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -313,8 +314,6 @@ void main() {
           when(mockMailboxDashBoardController.trashSpamMailboxIds)
               .thenReturn(null);
           when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-          when(mockSearchController.searchState)
-              .thenReturn(Rx(SearchState.initial()));
           when(mockRefreshChangesEmailsInMailboxInteractor.execute(
             any,
             any,
@@ -394,11 +393,10 @@ void main() {
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList([]));
         when(mockMailboxDashBoardController.isSelectionEnabled()).thenReturn(false);
-        when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
-        when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);
         when(mockSearchController.searchQuery).thenReturn(null);
-        when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
+        when(mockSearchController.committedSearchFilter)
+            .thenReturn(SearchEmailFilter.initial());
         when(mockSearchEmailInteractor.execute(
           any,
           any,
@@ -480,8 +478,6 @@ void main() {
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
-
         // act
         obxListenerController.onInit();
         mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
@@ -540,8 +536,6 @@ void main() {
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
-
         limitEmailFetchedController.onInit();
       });
 
@@ -894,6 +888,12 @@ void main() {
     });
 
     group('canLoadMore lifecycle & guard regression:', () {
+      tearDown(() {
+        appProviderContainer
+            .read(searchEmailPresentationProvider.notifier)
+            .resetSearchMore();
+      });
+
       test(
         'GIVEN canLoadMore was exhausted (false) '
         'WHEN resetToOriginalValue runs (e.g. switching mailbox) '
@@ -944,16 +944,61 @@ void main() {
       test(
         'GIVEN search is active '
         'WHEN handleLoadMoreEmailsRequest is invoked '
-        'THEN it routes to search-more, NOT load-more (canLoadMore is not consulted)',
-      () {
+        'THEN it invokes search-more, NOT load-more (canLoadMore is not consulted)',
+      () async {
         when(mockMailboxDashBoardController.searchController)
             .thenReturn(mockSearchController);
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);
-        threadController.canSearchMore = false;
-        threadController.canLoadMore = true;
+        appProviderContainer
+            .read(searchEmailPresentationProvider.notifier)
+            .setCanSearchMore(true);
+        when(mockMailboxDashBoardController.sessionCurrent)
+            .thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId)
+            .thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.trashSpamMailboxIds)
+            .thenReturn(null);
+        final email = PresentationEmail(id: EmailId(Id('search-more-email')));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList([email]));
+        when(mockSearchMoreEmailInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          position: anyNamed('position'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+          lastEmailId: anyNamed('lastEmailId'),
+        )).thenAnswer((_) => Stream.value(Right(SearchMoreEmailSuccess([]))));
+        threadController.canLoadMore = false;
 
         threadController.handleLoadMoreEmailsRequest();
 
+        await untilCalled(mockSearchMoreEmailInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          position: anyNamed('position'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+          lastEmailId: anyNamed('lastEmailId'),
+        ));
+
+        verify(mockSearchMoreEmailInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          position: anyNamed('position'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+          lastEmailId: anyNamed('lastEmailId'),
+        )).called(1);
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
       });
     });

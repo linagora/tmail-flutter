@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/advanced_filter_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_drop_down_button.dart';
@@ -22,7 +23,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef _AddressFieldConfig = ({
   List<EmailAddress> Function(WidgetRef ref) listEmailAddress,
-  ExpandMode Function() expandMode,
+  ExpandMode Function(WidgetRef ref) expandMode,
   TextEditingController textEditingController,
   GlobalKey<TagsEditorState> keyTagEditor,
   FocusNode focusNode,
@@ -69,7 +70,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
       config: (
         listEmailAddress: (ref) => _toEmailAddresses(ref.watch(
           searchFilterProvider.select((filter) => filter.from))),
-        expandMode: () => controller.fromAddressExpandMode.value,
+        expandMode: (ref) => ref.watch(advancedFilterViewStateProvider.select(
+          (state) => state.fromAddressExpandMode,
+        )),
         textEditingController: controller.fromEmailAddressController,
         keyTagEditor: controller.keyFromEmailTagEditor,
         focusNode: controller.focusManager.fromFieldFocusNode,
@@ -81,7 +84,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
       config: (
         listEmailAddress: (ref) => _toEmailAddresses(ref.watch(
           searchFilterProvider.select((filter) => filter.to))),
-        expandMode: () => controller.toAddressExpandMode.value,
+        expandMode: (ref) => ref.watch(advancedFilterViewStateProvider.select(
+          (state) => state.toAddressExpandMode,
+        )),
         textEditingController: controller.toEmailAddressController,
         keyTagEditor: controller.keyToEmailTagEditor,
         focusNode: controller.focusManager.toFieldFocusNode,
@@ -125,10 +130,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
       useHeight: false,
       child: Consumer(builder: (context, ref, _) {
         final listEmailAddress = config.listEmailAddress(ref);
-        return Obx(() => DefaultAutocompleteInputFieldWidget(
+        return DefaultAutocompleteInputFieldWidget(
           field: field,
           listEmailAddress: listEmailAddress,
-          expandMode: config.expandMode(),
+          expandMode: config.expandMode(ref),
           minInputLengthAutocomplete: controller
             .mailboxDashBoardController
             .minInputLengthAutocomplete,
@@ -136,7 +141,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           focusNode: config.focusNode,
           nextFocusNode: config.nextFocusNode,
           keyTagEditor: config.keyTagEditor,
-          onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+          onShowFullListEmailAddressAction: (field) =>
+              controller.showFullEmailAddress(
+                field,
+                ref.read(advancedFilterViewStateProvider.notifier)),
           onUpdateListEmailAddressAction: (field, listEmailAddress) =>
               controller.updateListEmailAddress(
                 field,
@@ -149,8 +157,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           onRemoveDraggableEmailAddressAction: (draggableEmailAddress) =>
               controller.removeDraggableEmailAddress(
                 draggableEmailAddress,
-                ref.read(searchFilterProvider.notifier)),
-        ));
+                ref.read(searchFilterProvider.notifier),
+                ref.read(advancedFilterViewStateProvider.notifier)),
+        );
       }),
     );
   }

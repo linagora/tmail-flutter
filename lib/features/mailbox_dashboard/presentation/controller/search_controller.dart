@@ -4,7 +4,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -27,8 +26,6 @@ import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filte
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_session_reset.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class SearchController extends BaseController with DateRangePickerMixin {
@@ -38,21 +35,13 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   final searchInputController = TextEditingController();
 
-  /// Read-only mirror of the committed SSOT ([searchFilterProvider]) for existing
-  /// `Obx` widgets. Cursors (position/before/after) are still written here locally
-  /// by [updateFilterEmail] until the executor owns them (ticket 5).
-  final searchEmailFilter = SearchEmailFilter.initial().obs;
-  final searchState = SearchState.initial().obs;
-  final isAdvancedSearchViewOpen = false.obs;
-  final simpleSearchIsActivated = RxBool(false);
-  final advancedSearchIsActivated = RxBool(false);
-  final isSearchInputFocused = RxBool(false);
+  SearchEmailFilter get committedSearchFilter =>
+      appProviderContainer.read(searchFilterProvider);
 
-  SearchQuery? get searchQuery => searchEmailFilter.value.text;
+  SearchQuery? get searchQuery => committedSearchFilter.text;
 
   FocusNode searchFocus = FocusNode();
   FocusNode? keyboardFocusNode;
-  String currentSearchText = '';
   ProviderSubscription<SearchEmailFilter>? _committedFilterSubscription;
 
   SearchViewStateNotifier get _searchViewStateNotifier =>
@@ -73,21 +62,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
     super.onInit();
     searchFocus.addListener(_onSearchFocusChanged);
     onKeyboardShortcutInit();
-    // Mirror committed SSOT → obs so existing Obx widgets keep reading it.
-    // The SSOT never tracks cursors (before/after/position), so re-layer the
-    // obs's local cursors onto every synced value; otherwise an unrelated
-    // user-intent update would silently wipe active pagination (until the
-    // executor owns cursors — ticket 5).
     _committedFilterSubscription = appProviderContainer.listen<SearchEmailFilter>(
       searchFilterProvider,
       (_, next) {
-        searchEmailFilter.value = next.copyWith(
-          beforeOption: optionOf(searchEmailFilter.value.before),
-          afterOption: optionOf(searchEmailFilter.value.after),
-          positionOption: optionOf(searchEmailFilter.value.position),
-        );
-        // The search bar and the advanced "has the words" field are the same
-        // full-text term (SSOT.text); keep the bar in lockstep with it.
         _syncSearchInputFromFilter(next.text);
       },
       fireImmediately: true,
@@ -120,7 +97,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void _onSearchFocusChanged() {
     log('SearchController::_onSearchFocusChanged: ${searchFocus.hasFocus}');
-    isSearchInputFocused.value = searchFocus.hasFocus;
+    _searchViewStateNotifier.setSearchInputFocused(searchFocus.hasFocus);
     if (searchFocus.hasFocus) {
       refocusKeyboardShortcutFocus();
     } else {
@@ -129,19 +106,17 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void openAdvanceSearch() {
-    isAdvancedSearchViewOpen.value = true;
+    _searchViewStateNotifier.openAdvancedSearch();
   }
 
   void closeAdvanceSearch() {
-    isAdvancedSearchViewOpen.value = false;
+    _searchViewStateNotifier.closeAdvancedSearch();
   }
 
   void clearSearchFilter({EmailSortOrderType? sortOrderType}) {
     final restoredSortOrder =
-        sortOrderType ?? searchEmailFilter.value.sortOrderType;
+        sortOrderType ?? committedSearchFilter.sortOrderType;
     final clearedFilter = SearchEmailFilter.withSortOrder(restoredSortOrder);
-    searchEmailFilter.value = clearedFilter;
-
     appProviderContainer
         .read(searchFilterProvider.notifier)
         .set(clearedFilter);
@@ -167,7 +142,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
   }) {
-    // User intent → committed SSOT; the mirror syncs it back into the obs.
     final userIntentOptions = [
       fromOption, toOption, textOption, subjectOption, notKeywordOption,
       hasKeywordOption, mailboxOption, emailReceiveTimeTypeOption,
@@ -193,19 +167,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
               ..sortOrderTypeOption = sortOrderTypeOption
               ..labelOption = labelOption);
     }
-    // Cursors aren't user intent — layered onto the obs only, until the executor
-    // owns them (ticket 5).
-    if (beforeOption != null || afterOption != null || positionOption != null) {
-      searchEmailFilter.value = searchEmailFilter.value.copyWith(
-        beforeOption: beforeOption,
-        afterOption: afterOption,
-        positionOption: positionOption,
-      );
-      searchEmailFilter.refresh();
-    }
   }
 
-  EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
+  EmailReceiveTimeType get receiveTimeFiltered =>
+      committedSearchFilter.emailReceiveTimeType;
 
   void updateSortOrderFilter(EmailSortOrderType sortOrder) {
     updateFilterEmail(
@@ -216,31 +181,13 @@ class SearchController extends BaseController with DateRangePickerMixin {
     );
   }
 
-  /// Resets load-more cursors before a fresh search so stale pagination state
-  /// never leaks into the next query.
-  ///
-  /// The `before`/`after` time cursors are always cleared (the date-range bounds
-  /// in `startDate`/`endDate` are preserved). Position-based pagination
-  /// (relevance sort or collapsed threads) restarts from offset 0; otherwise the
-  /// position is cleared too.
-  void resetCursorsForFreshSearch({required bool isCollapseThreadsEnabled}) {
-    final usesPositionPagination =
-        searchEmailFilter.value.sortOrderType.isScrollByPosition() ||
-            isCollapseThreadsEnabled;
-    updateFilterEmail(
-      beforeOption: const None(),
-      afterOption: const None(),
-      positionOption: option(usesPositionPagination, 0),
-    );
-  }
-
   /// Toggles a suggestion-bar chip straight on the committed SSOT (no staging), so
   /// the selection takes effect immediately — the fix for #4421.
   void toggleQuickSearchFilter(
     QuickSearchFilter filter, {
     required String currentUserEmail,
   }) {
-    final current = searchEmailFilter.value;
+    final current = committedSearchFilter;
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
         updateFilterEmail(
@@ -289,34 +236,35 @@ class SearchController extends BaseController with DateRangePickerMixin {
     }
   }
 
-  DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
+  DateTime? get startDateFiltered =>
+      committedSearchFilter.startDate?.value.toLocal();
 
-  DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
+  DateTime? get endDateFiltered => committedSearchFilter.endDate?.value.toLocal();
 
-  PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
+  PresentationMailbox? get mailboxFiltered => committedSearchFilter.mailbox;
 
-  Label? get labelFiltered => searchEmailFilter.value.label;
+  Label? get labelFiltered => committedSearchFilter.label;
 
-  Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
+  Set<String> get listAddressOfToFiltered => committedSearchFilter.to;
 
-  Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
+  Set<String> get listAddressOfFromFiltered => committedSearchFilter.from;
 
   Set<String> get listHasKeywordFiltered =>
-      Set<String>.unmodifiable(searchEmailFilter.value.hasKeyword);
+      Set<String>.unmodifiable(committedSearchFilter.hasKeyword);
 
-  bool get unreadFiltered => searchEmailFilter.value.unread;
+  bool get unreadFiltered => committedSearchFilter.unread;
 
-  bool get notIncludeEventsFiltered => searchEmailFilter.value.notIncludeEvents;
+  bool get notIncludeEventsFiltered => committedSearchFilter.notIncludeEvents;
 
-  EmailSortOrderType get sortOrderFiltered => searchEmailFilter.value.sortOrderType;
+  EmailSortOrderType get sortOrderFiltered => committedSearchFilter.sortOrderType;
 
   bool isSearchActive() =>
-      searchState.value.searchStatus == SearchStatus.ACTIVE;
+      appProviderContainer.read(searchViewStateProvider).isSearchActive;
 
-  bool get isSearchEmailRunning => simpleSearchIsActivated.isTrue || advancedSearchIsActivated.isTrue;
+  bool get isSearchEmailRunning =>
+      appProviderContainer.read(searchViewStateProvider).isSearchEmailRunning;
 
   void enableSearch() {
-    searchState.value = searchState.value.enableSearchState();
     _searchViewStateNotifier.enableSearch();
   }
 
@@ -356,31 +304,26 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void activateSimpleSearch() {
-    simpleSearchIsActivated.value = true;
     _searchViewStateNotifier.activateSimpleSearch();
   }
 
   void deactivateSimpleSearch() {
-    simpleSearchIsActivated.value = false;
     _searchViewStateNotifier.deactivateSimpleSearch();
   }
 
   void activateAdvancedSearch() {
-    advancedSearchIsActivated.value = true;
     _searchViewStateNotifier.activateAdvancedSearch();
   }
 
   void deactivateAdvancedSearch() {
-    advancedSearchIsActivated.value = false;
     _searchViewStateNotifier.deactivateAdvancedSearch();
   }
 
   void hideAdvancedSearchFormView() {
-    isAdvancedSearchViewOpen.value = false;
+    closeAdvanceSearch();
   }
 
   void hideSimpleSearchFormView() {
-    searchState.value = searchState.value.disableSearchState();
     _searchViewStateNotifier.disableSearch();
   }
 

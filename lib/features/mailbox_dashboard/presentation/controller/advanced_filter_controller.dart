@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/advanced_filter_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -28,8 +29,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef _AddressFocusConfig = ({
   FocusNode focusNode,
-  Rx<ExpandMode> expandMode,
-  Rx<ExpandMode> otherExpandMode,
+  void Function(ExpandMode mode) setExpandMode,
+  void Function(ExpandMode mode) setOtherExpandMode,
   void Function() autoCreateTag,
 });
 
@@ -45,8 +46,6 @@ class AdvancedFilterController extends BaseController {
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
-  final fromAddressExpandMode = ExpandMode.EXPAND.obs;
-  final toAddressExpandMode = ExpandMode.EXPAND.obs;
 
   TextEditingController fromEmailAddressController = TextEditingController();
   TextEditingController toEmailAddressController = TextEditingController();
@@ -71,6 +70,9 @@ class AdvancedFilterController extends BaseController {
   /// or copyWith plumbing. See ADR-0093.
   SearchFilterNotifier get _filterNotifier =>
       appProviderContainer.read(searchFilterProvider.notifier);
+
+  AdvancedFilterViewStateNotifier get _viewStateNotifier =>
+      appProviderContainer.read(advancedFilterViewStateProvider.notifier);
 
   List<EmailAddress> get listFromEmailAddress =>
       _toEmailAddresses(_committedFilter.from);
@@ -105,10 +107,9 @@ class AdvancedFilterController extends BaseController {
   }
 
   void clearSearchFilter() {
-    // Route through SearchController so the obs mirror's stale cursors are dropped
-    // too; a bare notifier.clear() only resets the committed SSOT. See ADR-0093.
     searchController.clearSearchFilter();
     _clearAllTextFieldInput();
+    _viewStateNotifier.reset();
     _mailboxDashBoardController.handleClearAdvancedSearchFilterEmail();
   }
 
@@ -158,7 +159,7 @@ class AdvancedFilterController extends BaseController {
     } else {
       searchController.deactivateAdvancedSearch();
     }
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     _mailboxDashBoardController.handleAdvancedSearchEmail();
   }
 
@@ -188,18 +189,6 @@ class AdvancedFilterController extends BaseController {
 
     notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
       _committedFilter.notKeyword.join(','));
-
-    if (_committedFilter.from.isEmpty) {
-      fromAddressExpandMode.value = ExpandMode.EXPAND;
-    } else {
-      fromAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
-
-    if (_committedFilter.to.isEmpty) {
-      toAddressExpandMode.value = ExpandMode.EXPAND;
-    } else {
-      toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
   }
 
   void selectDateRange(
@@ -275,11 +264,11 @@ class AdvancedFilterController extends BaseController {
   void _onAddressFieldFocusChange(FilterField field) {
     final config = _addressFocusConfig(field);
     if (config.focusNode.hasFocus) {
-      config.expandMode.value = ExpandMode.EXPAND;
-      config.otherExpandMode.value = ExpandMode.COLLAPSE;
+      config.setExpandMode(ExpandMode.EXPAND);
+      config.setOtherExpandMode(ExpandMode.COLLAPSE);
       _closeSuggestionBox();
     } else {
-      config.expandMode.value = ExpandMode.COLLAPSE;
+      config.setExpandMode(ExpandMode.COLLAPSE);
       config.autoCreateTag();
     }
   }
@@ -289,15 +278,15 @@ class AdvancedFilterController extends BaseController {
       case FilterField.from:
         return (
           focusNode: focusManager.fromFieldFocusNode,
-          expandMode: fromAddressExpandMode,
-          otherExpandMode: toAddressExpandMode,
+          setExpandMode: _viewStateNotifier.setFromAddressExpandMode,
+          setOtherExpandMode: _viewStateNotifier.setToAddressExpandMode,
           autoCreateTag: _autoCreateTagFromField,
         );
       case FilterField.to:
         return (
           focusNode: focusManager.toFieldFocusNode,
-          expandMode: toAddressExpandMode,
-          otherExpandMode: fromAddressExpandMode,
+          setExpandMode: _viewStateNotifier.setToAddressExpandMode,
+          setOtherExpandMode: _viewStateNotifier.setFromAddressExpandMode,
           autoCreateTag: _autoCreateTagToField,
         );
       default:
@@ -315,15 +304,18 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void showFullEmailAddress(FilterField field) {
+  void showFullEmailAddress(
+    FilterField field,
+    AdvancedFilterViewStateNotifier viewStateNotifier,
+  ) {
     FocusManager.instance.primaryFocus?.unfocus();
 
     switch(field) {
       case FilterField.from:
-        fromAddressExpandMode.value = ExpandMode.EXPAND;
+        viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
         break;
       case FilterField.to:
-        toAddressExpandMode.value = ExpandMode.EXPAND;
+        viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
         break;
       default:
         break;
@@ -443,8 +435,8 @@ class AdvancedFilterController extends BaseController {
 
   void _handleClearAllFieldOfAdvancedSearch() {
     _clearAllTextFieldInput();
-    // Cursor-safe clear: also drop stale cursors on the obs mirror. See ADR-0093.
     searchController.clearSearchFilter();
+    _viewStateNotifier.reset();
   }
 
   void onSearchAction({
@@ -484,6 +476,7 @@ class AdvancedFilterController extends BaseController {
   void removeDraggableEmailAddress(
     DraggableEmailAddress draggableEmailAddress,
     SearchFilterNotifier filterNotifier,
+    AdvancedFilterViewStateNotifier viewStateNotifier,
   ) {
     log('AdvancedFilterController::removeDraggableEmailAddress:removeDraggableEmailAddress: $draggableEmailAddress');
     switch(draggableEmailAddress.filterField) {
@@ -491,15 +484,13 @@ class AdvancedFilterController extends BaseController {
         filterNotifier.removeRecipient(
           draggableEmailAddress.emailAddress.emailAddress
               .asSearchFilterEmailAddress());
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        toAddressExpandMode.refresh();
+        viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
         break;
       case FilterField.from:
         filterNotifier.removeSender(
           draggableEmailAddress.emailAddress.emailAddress
               .asSearchFilterEmailAddress());
-        fromAddressExpandMode.value = ExpandMode.EXPAND;
-        fromAddressExpandMode.refresh();
+        viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
         break;
       default:
         break;
@@ -511,7 +502,7 @@ class AdvancedFilterController extends BaseController {
     _clearAllTextFieldInput();
     searchController.searchInputController.clear();
     searchController.deactivateAdvancedSearch();
-    searchController.isAdvancedSearchViewOpen.value = false;
+    searchController.closeAdvanceSearch();
     _filterNotifier.addSender(emailAddress.emailAddress.asSearchFilterEmailAddress());
     _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
   }

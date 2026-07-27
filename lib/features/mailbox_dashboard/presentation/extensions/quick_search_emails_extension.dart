@@ -7,7 +7,9 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension QuickSearchEmailsExtension on SearchController {
   Future<List<PresentationEmail>> quickSearchEmails({
@@ -16,8 +18,10 @@ extension QuickSearchEmailsExtension on SearchController {
     required String query,
     Set<MailboxId>? trashSpamMailboxIds,
   }) async {
-    currentSearchText = query;
-    final filter = searchEmailFilter.value;
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setCurrentSearchText(query);
+    final filter = committedSearchFilter;
     return await quickSearchEmailInteractor.execute(
       session,
       accountId,
