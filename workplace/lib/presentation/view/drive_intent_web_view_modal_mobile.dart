@@ -8,16 +8,19 @@ import 'drive_intent_skeleton_loader.dart';
 import 'drive_intent_web_view_modal_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
   final Future<WorkplaceIntent> intentFuture;
+  final WorkplaceFilePickerConfigRequest filePickerConfig;
   // Ignored on mobile — only used by the web variant (ADR-93).
   final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
     required this.intentFuture,
+    required this.filePickerConfig,
     this.onRegisterExternalHandler,
   });
 
@@ -97,10 +100,13 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   void sendAck() {
-    final payload = jsonEncode({});
+    // Embedded unquoted: JSON object syntax is valid JS object-literal syntax,
+    // so `event.data` in the page ends up a real object, not a JSON string —
+    // Drive's getFilePickerConfig never calls JSON.parse on it.
+    final payload = jsonEncode(widget.filePickerConfig.toJson());
     _webViewController?.evaluateJavascript(source: '''
       window.dispatchEvent(new MessageEvent('message', {
-        data: '$payload',
+        data: $payload,
         origin: '$intentOrigin',
         source: window
       }));

@@ -1,4 +1,5 @@
 import '../datasource/workplace_datasource.dart';
+import '../../domain/entity/workplace_action_config.dart';
 import '../../domain/entity/workplace_intent.dart';
 import '../../domain/repository/workplace_repository.dart';
 
@@ -10,9 +11,9 @@ class WorkplaceRepositoryImpl implements WorkplaceRepository {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    required String accessToken, 
-    required String addAsLink,
-    required String addAsAttachment,
+    required String accessToken,
+    required WorkplaceActionConfig addAsLink,
+    WorkplaceActionConfig? addAsAttachment,
   }) => _dataSource.createIntent(
     platformUrl: platformUrl,
     accessToken: accessToken,

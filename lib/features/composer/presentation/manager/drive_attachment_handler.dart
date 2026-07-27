@@ -1,7 +1,10 @@
 import 'package:core/core.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 class DriveAttachmentHandler {
   DriveAttachmentHandler();
@@ -16,7 +19,27 @@ class DriveAttachmentHandler {
     required Future<void> Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
   }) async {
-    final linkDocs = result.where((doc) => doc.sharingLink != null).toList();
+    if (result.isEmpty) {
+      getBinding<ToastManager>()?.showMessageFailure(
+        DrivePickFailure(
+          Exception(),
+          message: appLocalizations?.driveNoValidAttachment,
+        ),
+      );
+      return;
+    }
+    final linkDocs = result.where((doc) {
+      final link = doc.sharingLink;
+      return link != null && (!requireHttps || link.isScheme('https'));
+    }).toList();
+    // TODO: Update logic here after implement 103. Attach Drive File as Attachment
+    if (linkDocs.isEmpty) {
+      getBinding<ToastManager>()?.showMessageFailure(DrivePickFailure(
+        Exception(),
+        message: appLocalizations?.driveAttachmentInDevelopment,
+      ));
+      return;
+    }
     await insertDriveLinkHtml(
       linkDocs,
       insertHtml: insertHtml,

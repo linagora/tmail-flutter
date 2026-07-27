@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
@@ -12,8 +13,7 @@ typedef OnPickDriveCallback = void Function(DrivePickState state);
 
 typedef FetchDriveIntentCallback =
     Future<WorkplaceIntent> Function({
-      required String addAsLinkTitle,
-      required String addAsAttachmentTitle,
+      required WorkplaceFilePickerConfigRequest filePickerConfig,
     });
 
 /// Shared state logic for widgets that open [DriveIntentWebViewModal].
@@ -42,10 +42,14 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       // Captured up front: the caller may pop this context (e.g. a context
       // menu tile) before the intent future settles, disposing this state.
       final failingMessage = l10n.attachFromDriveFailingMessage;
-      final intentFuture = pickerFetchIntent(
-        addAsLinkTitle: l10n.addAsLink,
-        addAsAttachmentTitle: l10n.addAsAttachment,
+      const addAsAttachmentTitle = null; // TODO: Add attachment title here after implement 103. Attach Drive File as Attachment
+      final filePickerConfig = WorkplaceFilePickerConfigRequest(
+        sharingLink: WorkplaceActionConfigRequest(label: l10n.addAsLink),
+        downloadLink: addAsAttachmentTitle == null
+            ? null
+            : const WorkplaceActionConfigRequest(label: addAsAttachmentTitle),
       );
+      final intentFuture = pickerFetchIntent(filePickerConfig: filePickerConfig);
       DrivePickOutcome? outcome;
       try {
         outcome = await showDialog<DrivePickOutcome>(
@@ -54,6 +58,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           barrierDismissible: false,
           builder: (_) => DriveIntentWebViewModal(
             intentFuture: intentFuture,
+            filePickerConfig: filePickerConfig,
             onRegisterExternalHandler: externalHandlerRegistrar,
           ),
         );

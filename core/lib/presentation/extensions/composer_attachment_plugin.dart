@@ -13,6 +13,5 @@ abstract class ComposerAttachmentPlugin {
   Widget buildContextMenuTile(
     BuildContext context, {
     required ImagePaths imagePaths,
-    required String label,
   });
 }
