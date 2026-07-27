@@ -1,3 +1,7 @@
+## [0.32.1] - 2026-07-27
+### Changed
+- Translate cn, ir, de
+
 ## [0.32.0] - 2026-07-27
 ### Added
 - TF-4660 Drive loading skeleton while the Drive intent webview is loading
