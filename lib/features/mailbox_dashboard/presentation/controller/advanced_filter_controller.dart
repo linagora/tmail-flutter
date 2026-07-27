@@ -189,13 +189,6 @@ class AdvancedFilterController extends BaseController {
 
     notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
       _committedFilter.notKeyword.join(','));
-
-    _viewStateNotifier.setFromAddressExpandMode(
-      _committedFilter.from.isEmpty ? ExpandMode.EXPAND : ExpandMode.COLLAPSE,
-    );
-    _viewStateNotifier.setToAddressExpandMode(
-      _committedFilter.to.isEmpty ? ExpandMode.EXPAND : ExpandMode.COLLAPSE,
-    );
   }
 
   void selectDateRange(
@@ -311,15 +304,18 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void showFullEmailAddress(FilterField field) {
+  void showFullEmailAddress(
+    FilterField field,
+    AdvancedFilterViewStateNotifier viewStateNotifier,
+  ) {
     FocusManager.instance.primaryFocus?.unfocus();
 
     switch(field) {
       case FilterField.from:
-        _viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
+        viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
         break;
       case FilterField.to:
-        _viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
+        viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
         break;
       default:
         break;
@@ -480,6 +476,7 @@ class AdvancedFilterController extends BaseController {
   void removeDraggableEmailAddress(
     DraggableEmailAddress draggableEmailAddress,
     SearchFilterNotifier filterNotifier,
+    AdvancedFilterViewStateNotifier viewStateNotifier,
   ) {
     log('AdvancedFilterController::removeDraggableEmailAddress:removeDraggableEmailAddress: $draggableEmailAddress');
     switch(draggableEmailAddress.filterField) {
@@ -487,13 +484,13 @@ class AdvancedFilterController extends BaseController {
         filterNotifier.removeRecipient(
           draggableEmailAddress.emailAddress.emailAddress
               .asSearchFilterEmailAddress());
-        _viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
+        viewStateNotifier.setToAddressExpandMode(ExpandMode.EXPAND);
         break;
       case FilterField.from:
         filterNotifier.removeSender(
           draggableEmailAddress.emailAddress.emailAddress
               .asSearchFilterEmailAddress());
-        _viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
+        viewStateNotifier.setFromAddressExpandMode(ExpandMode.EXPAND);
         break;
       default:
         break;

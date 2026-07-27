@@ -141,7 +141,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           focusNode: config.focusNode,
           nextFocusNode: config.nextFocusNode,
           keyTagEditor: config.keyTagEditor,
-          onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+          onShowFullListEmailAddressAction: (field) =>
+              controller.showFullEmailAddress(
+                field,
+                ref.read(advancedFilterViewStateProvider.notifier)),
           onUpdateListEmailAddressAction: (field, listEmailAddress) =>
               controller.updateListEmailAddress(
                 field,
@@ -154,7 +157,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           onRemoveDraggableEmailAddressAction: (draggableEmailAddress) =>
               controller.removeDraggableEmailAddress(
                 draggableEmailAddress,
-                ref.read(searchFilterProvider.notifier)),
+                ref.read(searchFilterProvider.notifier),
+                ref.read(advancedFilterViewStateProvider.notifier)),
         );
       }),
     );

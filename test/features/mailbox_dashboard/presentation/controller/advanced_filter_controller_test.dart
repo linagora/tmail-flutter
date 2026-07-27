@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/advanced_filter_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -123,6 +124,9 @@ void main() {
 
   SearchFilterNotifier filterNotifier() =>
       appProviderContainer.read(searchFilterProvider.notifier);
+
+  AdvancedFilterViewStateNotifier viewStateNotifier() =>
+      appProviderContainer.read(advancedFilterViewStateProvider.notifier);
 
   SearchEmailFilter committedFilter() =>
       appProviderContainer.read(searchFilterProvider);
@@ -362,7 +366,8 @@ void main() {
           DraggableEmailAddress(
             emailAddress: EmailAddress(null, 'a@example.com'),
             filterField: FilterField.from),
-          filterNotifier());
+          filterNotifier(),
+          viewStateNotifier());
 
         // Assert
         expect(
@@ -383,7 +388,8 @@ void main() {
           DraggableEmailAddress(
             emailAddress: EmailAddress(null, 'a@example.com'),
             filterField: FilterField.to),
-          filterNotifier());
+          filterNotifier(),
+          viewStateNotifier());
 
         // Assert
         expect(
