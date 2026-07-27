@@ -255,7 +255,7 @@ void main() {
       },
     );
 
-    test('Should not remove line-height inside a CSS function value', () async {
+    test('Should not split on semicolons inside a CSS function value', () async {
       final doc = await run(
         '<p style=\'background-image:url("data:image/svg+xml;a;b"); line-height:0.1; color:red;\'>Hi</p>',
       );
