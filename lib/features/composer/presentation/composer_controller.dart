@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -96,6 +97,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_temp
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
@@ -1718,13 +1720,47 @@ class ComposerController extends BaseController
   }
 
   Future<void> applySignature(String signature) async {
+    final normalizedSignature = await _normalizeSignature(signature);
     if (PlatformInfo.isWeb) {
       richTextWebController?.editorController.insertSignature(
-        signature,
+        normalizedSignature,
         allowCollapsed: false,
       );
     } else {
-      await htmlEditorApi?.insertSignature(signature, allowCollapsed: false);
+      await htmlEditorApi?.insertSignature(
+        normalizedSignature,
+        allowCollapsed: false,
+      );
+    }
+  }
+
+  /// Identity signatures are stored raw on the server, so a degenerate
+  /// `line-height` (e.g. `0.1`) would overlap text once inserted into the
+  /// editor. Normalize it like the preview pipeline does. The HTML transform
+  /// returns a complete document, while the editor expects a fragment, so only
+  /// the transformed body is inserted. Fail-open: any failure, unexpected
+  /// state, empty result, or exception falls back to the original signature so
+  /// insertion never breaks.
+  Future<String> _normalizeSignature(String signature) async {
+    try {
+      final resultState = await _transformHtmlEmailContentInteractor
+          .execute(signature, TransformConfiguration.forComposerSignature())
+          .last;
+      return resultState.fold(
+        (failure) => signature,
+        (success) {
+          if (success is! TransformHtmlEmailContentSuccess) return signature;
+
+          final normalizedSignature =
+              parse(success.htmlContent).body?.innerHtml ?? '';
+          return normalizedSignature.trim().isNotEmpty
+              ? normalizedSignature
+              : signature;
+        },
+      );
+    } catch (e) {
+      logWarning('ComposerController::_normalizeSignature: Exception = $e');
+      return signature;
     }
   }
 

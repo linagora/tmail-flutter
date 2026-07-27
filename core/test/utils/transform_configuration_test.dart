@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_negative_margin_float_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
@@ -8,6 +9,9 @@ bool _hasResponsiveTransformer(List transformers) =>
 
 bool _hasNegativeMarginFloatTransformer(List transformers) =>
     transformers.any((t) => t is RemoveNegativeMarginFloatTransformer);
+
+bool _hasNormalizeLineHeightTransformer(List transformers) =>
+    transformers.any((t) => t is NormalizeLineHeightInStyleTransformer);
 
 void main() {
   group('TransformConfiguration — ResponsiveTableCellTransformer membership', () {
@@ -121,6 +125,33 @@ void main() {
         isFalse,
         reason: 'Print pipeline renders the original email faithfully without layout adjustments',
       );
+    });
+  });
+
+  group('TransformConfiguration — NormalizeLineHeightInStyleTransformer membership', () {
+    test('forSignatureIdentity includes NormalizeLineHeightInStyleTransformer', () {
+      expect(
+        _hasNormalizeLineHeightTransformer(
+          TransformConfiguration.forSignatureIdentity().domTransformers,
+        ),
+        isTrue,
+        reason: 'Settings signature preview must not overlap text lines',
+      );
+    });
+
+    test('forComposerSignature contains ONLY NormalizeLineHeightInStyleTransformer', () {
+      final configuration = TransformConfiguration.forComposerSignature();
+      expect(
+        configuration.domTransformers.length,
+        1,
+        reason: 'Inserted signature is part of the sent email and must not be '
+            'rewritten by display-only transformers',
+      );
+      expect(
+        _hasNormalizeLineHeightTransformer(configuration.domTransformers),
+        isTrue,
+      );
+      expect(configuration.textTransformers, isEmpty);
     });
   });
 }

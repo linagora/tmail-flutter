@@ -48,8 +48,8 @@ void main() {
       );
     });
 
-    test('Should remove small unitless line-height values', () async {
-      for (final value in ['0.1', '0.9']) {
+    test('Should remove degenerate unitless line-height values', () async {
+      for (final value in ['0.1', '0.5', '0.79']) {
         final doc = await run('<p style="line-height:$value;">Hi</p>');
         expect(
           doc.querySelector('p')!.attributes.containsKey('style'),
@@ -59,29 +59,64 @@ void main() {
     });
 
     test(
-      'Should keep normal unitless and relative line-height values',
+      'Should keep tight-but-legitimate and normal relative values',
       () async {
-        for (final value in ['1', '1.5', '1.2em', '2em', '1.2rem']) {
+        // [0.8, 1) is deliberate tight typography (e.g. 90% newsletters);
+        // major clients render it as authored, so preserve for fidelity.
+        for (final value in ['0.8', '0.9', '1', '1.5', '0.8em', '0.9em', '1.2em', '2em']) {
           final doc = await run('<p style="line-height:$value;">Hi</p>');
           expect(
             doc.querySelector('p')!.attributes['style'],
             'line-height:$value;',
+            reason: 'Expected line-height $value to be preserved',
           );
         }
       },
     );
 
-    test('Should remove small percentage line-height values', () async {
-      for (final value in ['10%', '50%', '100%']) {
+    test('Should remove degenerate em values and the legacy 1em', () async {
+      // `1em` computes to the same length as the TF-3964 legacy `100%`.
+      for (final value in ['0.1em', '0.5em', '0.79em', '1em', '1.0em']) {
         final doc = await run('<p style="line-height:$value;">Hi</p>');
         expect(
           doc.querySelector('p')!.attributes.containsKey('style'),
           isFalse,
+          reason: 'Expected line-height $value to be removed',
+        );
+      }
+    });
+
+    test('Should never remove rem line-height values', () async {
+      // rem is root-relative: `0.9rem` ≈ 14.4px is fine leading for 12px
+      // text, so overlap cannot be judged from the number alone.
+      for (final value in ['0.1rem', '0.5rem', '0.9rem', '1rem', '1.2rem']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes['style'],
+          'line-height:$value;',
+          reason: 'Expected line-height $value to be preserved',
+        );
+      }
+    });
+
+    test('Should remove degenerate percentages and the legacy 100%', () async {
+      for (final value in ['10%', '50%', '79%', '100%']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes.containsKey('style'),
+          isFalse,
+          reason: 'Expected line-height $value to be removed',
         );
       }
 
-      final doc = await run('<p style="line-height:150%;">Hi</p>');
-      expect(doc.querySelector('p')!.attributes['style'], 'line-height:150%;');
+      for (final value in ['80%', '90%', '99.9%', '150%']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes['style'],
+          'line-height:$value;',
+          reason: 'Expected line-height $value to be preserved',
+        );
+      }
     });
 
     test(
@@ -106,7 +141,17 @@ void main() {
     );
 
     test('Should enforce exact line-height removal boundaries', () async {
-      for (final value in ['.99', '+0.1', '0.99em', '1.0px', '0.5pt']) {
+      for (final value in [
+        '.79',
+        '+0.1',
+        '0.79em',
+        '1em',
+        '1.0em',
+        '100%',
+        '100.0%',
+        '1.0px',
+        '0.5pt',
+      ]) {
         final doc = await run('<p style="line-height:$value;">Hi</p>');
         expect(
           doc.querySelector('p')!.attributes.containsKey('style'),
@@ -116,12 +161,20 @@ void main() {
       }
 
       for (final value in [
+        '0.8',
+        '.99',
         '1',
         '1.0',
         '1.01',
-        '1.0em',
+        '0.8em',
+        '0.99em',
+        '1.01em',
+        '0.79rem',
+        '1rem',
         '1.01px',
         '2pt',
+        '80%',
+        '99.99%',
         '100.01%',
         '-0.1',
         '1e-1',
@@ -269,6 +322,25 @@ void main() {
         doc.querySelector('p')!.attributes['style'],
         'background-image:url("data:image/svg+xml;a;b"); color:red;',
       );
+    });
+
+    test('Should treat /* inside url() as data, not a comment', () async {
+      // An unquoted URL containing `/*` must not fail-open the whole
+      // attribute, otherwise the degenerate line-height would survive
+      // (TF-3964 regression).
+      final doc = await run(
+        "<p style='background:url(https://example.com/a/*/b.png); line-height:1px; color:red;'>Hi</p>",
+      );
+      expect(
+        doc.querySelector('p')!.attributes['style'],
+        'background:url(https://example.com/a/*/b.png); color:red;',
+      );
+    });
+
+    test('Should still fail-open on a top-level unterminated comment', () async {
+      const style = 'line-height:1px; color:red; /* unclosed';
+      final doc = await run("<p style='$style'>Hi</p>");
+      expect(doc.querySelector('p')!.attributes['style'], style);
     });
 
     test('Should respect escaped quotes while removing line-height', () async {

@@ -12,13 +12,24 @@ import 'package:html/dom.dart';
 class NormalizeLineHeightInStyleTransformer extends DomTransformer {
   const NormalizeLineHeightInStyleTransformer();
 
-  // Removal bounds. Unitless/em/rem is exclusive, so a normal `line-height:1` is
-  // kept, while `%` and `px`/`pt` are inclusive: `100%` and `1px` are stripped
-  // deliberately (TF-3964 — those exact values broke email-preview rendering).
-  // The unitless-vs-`%` asymmetry is intentional, not an oversight.
-  static const _unitlessRemovalThreshold = 1.0; // unitless / em / rem multiplier
-  static const _percentRemovalThreshold = 100.0; // %
-  static const _absoluteRemovalThreshold = 1.0; // px / pt
+  // Removal bounds. Major mail clients (Gmail, Outlook, Apple Mail) never
+  // rewrite `line-height`, so intervene as narrowly as possible — two classes
+  // of removal only:
+  //  - Degenerate: element-relative values small enough to visibly overlap
+  //    text lines (< 0.8× font-size; the UA default is ~1.2×). Values in
+  //    [0.8, 1) such as `90%`/`0.9em` are tight-but-legitimate typography and
+  //    are preserved for fidelity — especially since reply/draft pipelines
+  //    save and send the transformed style.
+  //  - TF-3964 legacy: exactly `100%` (and `1em`, the same computed length),
+  //    plus absolute values up to `1px`/`1pt`. These shipped as removals and
+  //    must not silently come back.
+  //  `rem` is root-relative, so overlap cannot be judged from the number
+  //  alone (`0.9rem` ≈ 14.4px is fine leading for 12px text) — never removed.
+  static const _degenerateRatioBound = 0.8; // unitless & em, exclusive
+  static const _degeneratePercentBound = 80.0; // %, exclusive
+  static const _legacyRatio = 1.0; // TF-3964: `1em` ≡ `100%`
+  static const _legacyPercent = 100.0; // TF-3964
+  static const _absoluteRemovalThreshold = 1.0; // px / pt, inclusive
 
   /// A CSS number + optional unit. `!important` is stripped beforehand by
   /// [_stripImportant], so the pattern needs no whitespace: keywords,
@@ -120,7 +131,10 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
       } else if (char == '\\') {
         if (next.isEmpty) return null; // trailing backslash → fail-open
         i++; // escaped char is literal data (e.g. `\;`), never a boundary
-      } else if (char == '/' && next == '*') {
+      } else if (char == '/' && next == '*' && parenDepth == 0) {
+        // Inside parentheses `/*` is data, not a comment — an unquoted
+        // `url(https://x/a/*/b.png)` must not poison the whole attribute
+        // (fail-open would keep a degenerate line-height → TF-3964 returns).
         inComment = true;
         i++;
       } else if (char == "'") {
@@ -186,12 +200,16 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
 
     switch (match.group(2)?.toLowerCase()) {
       case '%':
-        return number <= _percentRemovalThreshold;
+        return number < _degeneratePercentBound || number == _legacyPercent;
+      case 'em':
+        return number < _degenerateRatioBound || number == _legacyRatio;
+      case 'rem':
+        return false; // root-relative: overlap cannot be judged from the number
       case 'px':
       case 'pt':
         return number <= _absoluteRemovalThreshold;
-      default: // unitless / em / rem multiplier
-        return number < _unitlessRemovalThreshold;
+      default: // unitless multiplier
+        return number < _degenerateRatioBound;
     }
   }
 }
