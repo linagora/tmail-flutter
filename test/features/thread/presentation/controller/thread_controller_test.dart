@@ -1507,6 +1507,15 @@ void main() {
         expect(coordinator.takeDesktopSearchPresentation(), isFalse);
       });
 
+      test('desktop handoff records desktop presentation ownership', () {
+        stubActiveSearchWithOpenEmail();
+        final coordinator = createSearchLayoutCoordinatorForTest();
+
+        coordinator.reconcile(true);
+
+        expect(coordinator.takeDesktopSearchPresentation(), isTrue);
+      });
+
       test('no active search is a no-op', () {
         when(mockMailboxDashBoardController.searchController)
             .thenReturn(mockSearchController);
