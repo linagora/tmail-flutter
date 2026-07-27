@@ -15,7 +15,6 @@ env:
   # "core"). Add more lines here as needed.
   CHROME_TEST_PATHS: |
     core/test/data/network/download/download_manager_test.dart
-    workplace/test/data/datasource/drive_transfer/
 
 jobs:
   analyze-test:
