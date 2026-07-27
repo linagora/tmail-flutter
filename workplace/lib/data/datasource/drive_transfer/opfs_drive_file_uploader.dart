@@ -11,13 +11,27 @@ import 'package:workplace/data/model/workplace_type_defs.dart';
 /// Held privately by the OPFS strategy, not exposed on
 /// `DriveTransferStrategy`.
 abstract class OpfsDriveFileUploader {
-  Future<Attachment> upload({
-    required OpfsFileHandle fileHandle,
-    required String fileName,
-    required String? mimeType,
-    required Uri uploadUri,
-    required String authHeader,
-    required OnFileProcessedProgress onUploadProgress,
-    required CancelToken cancelToken,
+  Future<Attachment> upload(OpfsUploadRequest request);
+}
+
+/// Bundles [OpfsDriveFileUploader.upload]'s parameters to keep its argument
+/// count low.
+class OpfsUploadRequest {
+  final OpfsFileHandle fileHandle;
+  final String fileName;
+  final Uri uploadUri;
+  final String authHeader;
+  final String? mimeType;
+  final OnFileProcessedProgress onUploadProgress;
+  final CancelToken cancelToken;
+
+  const OpfsUploadRequest({
+    required this.fileHandle,
+    required this.fileName,
+    required this.uploadUri,
+    required this.authHeader,
+    required this.mimeType,
+    required this.onUploadProgress,
+    required this.cancelToken,
   });
 }
