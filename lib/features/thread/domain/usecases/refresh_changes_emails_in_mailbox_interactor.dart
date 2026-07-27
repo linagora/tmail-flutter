@@ -48,7 +48,8 @@ class RefreshChangesEmailsInMailboxInteractor {
         .map((emailResponse) => _toGetEmailState(
           emailResponse: emailResponse,
           currentMailboxId: emailFilter?.mailboxId
-        ));
+        ))
+        .mapErrorToLeft((error, _) => RefreshChangesAllEmailFailure(error));
     } catch (e) {
       yield Left(RefreshChangesAllEmailFailure(e));
     }

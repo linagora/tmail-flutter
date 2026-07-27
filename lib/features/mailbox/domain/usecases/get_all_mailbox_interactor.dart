@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -21,9 +22,13 @@ class GetAllMailboxInteractor {
       yield* _mailboxRepository
         .getAllMailbox(
           session,
-          accountId, 
+          accountId,
           properties: properties)
-        .map(_toGetMailboxState);
+        .map(_toGetMailboxState)
+        .mapErrorToLeft((error, _) => GetAllMailboxFailure(
+          error,
+          onRetry: execute(session, accountId, properties: properties),
+        ));
     } catch (e) {
       yield Left<Failure, Success>(GetAllMailboxFailure(
         e,

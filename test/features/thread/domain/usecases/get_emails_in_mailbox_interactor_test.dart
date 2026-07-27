@@ -437,5 +437,119 @@ void main() {
         propertiesCreated: anyNamed('propertiesCreated'),
       ));
     });
+
+    test(
+        'useCache = false, should call loadAllEmailInFolderWithoutCache() '
+        'and not call getAllEmail()',
+        () async {
+      final sort = <EmailComparator>{
+        EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false),
+      };
+
+      final emailFilter = EmailFilter(
+        filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
+        mailboxId: MailboxFixtures.inboxMailbox.id,
+      );
+
+      when(threadRepository.loadAllEmailInFolderWithoutCache(
+        session: SessionFixtures.aliceSession,
+        accountId: AccountFixtures.aliceAccountId,
+        limit: UnsignedInt(20),
+        sort: sort,
+        emailFilter: emailFilter,
+        propertiesCreated: ThreadConstants.propertiesDefault,
+      )).thenAnswer((_) => Stream<EmailsResponse>.fromIterable([
+        EmailsResponse(
+          emailList: [EmailFixtures.email1, EmailFixtures.email2],
+          state: jmap.State('s1'),
+        ),
+      ]));
+
+      final states = await getEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        limit: UnsignedInt(20),
+        sort: sort,
+        emailFilter: emailFilter,
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        useCache: false,
+      ).toList();
+
+      expect(states, [
+        Right(GetAllEmailLoading()),
+        Right(GetAllEmailSuccess(
+          emailList: [
+            EmailFixtures.email1.toPresentationEmail(),
+            EmailFixtures.email2.toPresentationEmail(),
+          ],
+          currentEmailState: jmap.State('s1'),
+          currentMailboxId: MailboxFixtures.inboxMailbox.id,
+        )),
+      ]);
+
+      verify(threadRepository.loadAllEmailInFolderWithoutCache(
+        session: SessionFixtures.aliceSession,
+        accountId: AccountFixtures.aliceAccountId,
+        limit: UnsignedInt(20),
+        sort: sort,
+        emailFilter: emailFilter,
+        propertiesCreated: ThreadConstants.propertiesDefault,
+      )).called(1);
+
+      verifyNever(threadRepository.getAllEmail(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        getLatestChanges: true,
+      ));
+    });
+
+    test('getEmailsInMailboxInteractor should yield GetAllEmailFailure '
+        'when the source stream raises an error, instead of breaking the stream', () async {
+      final exception = StateError('cache read failed');
+
+      when(threadRepository.getAllEmail(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        getLatestChanges: true,
+      )).thenAnswer((_) async* {
+        yield EmailsResponse(
+          emailList: [EmailFixtures.email1],
+          state: jmap.State('s1'),
+        );
+        throw exception;
+      });
+
+      final states = await getEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+      ).toList();
+
+      expect(
+        states
+            .whereType<Right>()
+            .map((r) => r.value)
+            .whereType<GetAllEmailSuccess>()
+            .length,
+        1,
+      );
+
+      final failure = states
+          .whereType<Left>()
+          .map((l) => l.value)
+          .whereType<GetAllEmailFailure>()
+          .single;
+
+      expect(failure.exception, exception);
+    });
   });
 }

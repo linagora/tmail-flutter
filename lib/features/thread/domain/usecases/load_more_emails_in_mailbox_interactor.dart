@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -15,7 +16,11 @@ class LoadMoreEmailsInMailboxInteractor {
   Stream<Either<Failure, Success>> execute(GetEmailRequest emailRequest) async* {
     try {
       yield Right<Failure, Success>(LoadingMoreEmails());
-      yield* threadRepository.loadMoreEmails(emailRequest).map(_toGetEmailState);
+
+      yield* threadRepository
+        .loadMoreEmails(emailRequest)
+        .map(_toGetEmailState)
+        .mapErrorToLeft((error, _) => LoadMoreEmailsFailure(error));
     } catch (e) {
       yield Left(LoadMoreEmailsFailure(e));
     }

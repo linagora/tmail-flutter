@@ -117,4 +117,61 @@ void main() {
       expect(success.serverEmailCount, emails.length);
     });
   });
+
+  group('LoadMoreEmailsInMailboxInteractor stream error:', () {
+    test(
+      'GIVEN repo stream emits a value then raises an error '
+      'WHEN interactor executes '
+      'THEN it SHOULD emit the mapped success AND a LoadMoreEmailsFailure '
+      'rather than letting the error tear down the stream',
+    () async {
+      final exception = StateError('connection reset');
+      final emails = [Email(id: EmailId(Id('e0')))];
+
+      when(mockThreadRepository.loadMoreEmails(request)).thenAnswer((_) async* {
+        yield EmailsResponse(emailList: emails);
+        throw exception;
+      });
+
+      final states = await interactor.execute(request).toList();
+
+      expect(
+        states
+            .whereType<Right>()
+            .map((r) => r.value)
+            .whereType<LoadMoreEmailsSuccess>()
+            .length,
+        1,
+      );
+
+      final failure = states
+          .whereType<Left>()
+          .map((l) => l.value)
+          .whereType<LoadMoreEmailsFailure>()
+          .single;
+
+      expect(failure.exception, exception);
+    });
+
+    test(
+      'GIVEN repo stream raises an error before emitting anything '
+      'WHEN interactor executes '
+      'THEN it SHOULD complete with a LoadMoreEmailsFailure',
+    () async {
+      final exception = StateError('network down');
+
+      when(mockThreadRepository.loadMoreEmails(request))
+          .thenAnswer((_) => Stream<EmailsResponse>.error(exception));
+
+      final states = await interactor.execute(request).toList();
+
+      final failure = states
+          .whereType<Left>()
+          .map((l) => l.value)
+          .whereType<LoadMoreEmailsFailure>()
+          .single;
+
+      expect(failure.exception, exception);
+    });
+  });
 }

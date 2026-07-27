@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -25,9 +26,11 @@ class RefreshAllMailboxInteractor {
     try {
       log('RefreshAllMailboxInteractor::execute:properties: $properties');
       yield Right<Failure, Success>(RefreshChangesAllMailboxLoading());
+
       yield* _mailboxRepository
         .refresh(session, accountId, currentState, properties: properties)
-        .map(_toGetMailboxState);
+        .map(_toGetMailboxState)
+        .mapErrorToLeft((error, _) => RefreshChangesAllMailboxFailure(error));
     } catch (e) {
       yield Left<Failure, Success>(RefreshChangesAllMailboxFailure(e));
     }

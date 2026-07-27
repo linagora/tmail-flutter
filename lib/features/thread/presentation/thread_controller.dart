@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_st
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -578,7 +579,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
-    logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
+    logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error', webConsoleEnabled: true);
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearAllEmailAndStateCache();
       getAllEmailAction(forceEmailQuery: forceEmailQuery);
@@ -590,6 +591,19 @@ class ThreadController extends BaseController with EmailActionController {
         );
       }
       clearState();
+    } else {
+      logError(
+        'ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error',
+        exception: error,
+        stackTrace: stackTrace
+      );
+      clearState();
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).unknownError,
+        );
+      }
     }
   }
 

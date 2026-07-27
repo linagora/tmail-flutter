@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -70,12 +71,14 @@ class GetEmailsInMailboxInteractor {
         );
       }
 
-      yield* sourceStream.map(
-        (emailResponse) => _toGetEmailState(
-          emailResponse: emailResponse,
-          currentMailboxId: emailFilter?.mailboxId,
-        ),
-      );
+      yield* sourceStream
+        .map(
+          (emailResponse) => _toGetEmailState(
+            emailResponse: emailResponse,
+            currentMailboxId: emailFilter?.mailboxId,
+          ),
+        )
+        .mapErrorToLeft((error, _) => GetAllEmailFailure(error));
     } catch (e) {
       yield Left(GetAllEmailFailure(e));
     }

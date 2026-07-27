@@ -85,5 +85,81 @@ void main() {
         )
       }));
     });
+
+    test('refreshChangesEmailsInMailboxInteractor should emit a success state '
+        'for every response the repository streams, in order', () async {
+      when(threadRepository.refreshChanges(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        StateFixtures.currentEmailState,
+        sort: anyNamed('sort'),
+        limit: anyNamed('limit'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        collapseThreads: anyNamed('collapseThreads'),
+        emailFilter: anyNamed('emailFilter'),
+      )).thenAnswer((_) => Stream.fromIterable([
+        EmailsResponse(
+          emailList: [EmailFixtures.email1],
+          state: jmap.State('s1'),
+        ),
+        EmailsResponse(
+          emailList: [EmailFixtures.email1, EmailFixtures.email2],
+          state: jmap.State('s2'),
+        ),
+      ]));
+
+      final states = await refreshChangesEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        StateFixtures.currentEmailState,
+      ).toList();
+
+      expect(states, [
+        Right(RefreshChangesAllEmailLoading()),
+        Right(RefreshChangesAllEmailSuccess(
+          emailList: [EmailFixtures.email1.toPresentationEmail()],
+          currentEmailState: jmap.State('s1'),
+        )),
+        Right(RefreshChangesAllEmailSuccess(
+          emailList: [
+            EmailFixtures.email1.toPresentationEmail(),
+            EmailFixtures.email2.toPresentationEmail(),
+          ],
+          currentEmailState: jmap.State('s2'),
+        )),
+      ]);
+    });
+
+    test('refreshChangesEmailsInMailboxInteractor should yield RefreshChangesAllEmailFailure '
+        'when the source stream raises an error, instead of breaking the stream', () async {
+      final exception = StateError('getChanges failed');
+
+      when(threadRepository.refreshChanges(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        StateFixtures.currentEmailState,
+        sort: anyNamed('sort'),
+        limit: anyNamed('limit'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        collapseThreads: anyNamed('collapseThreads'),
+        emailFilter: anyNamed('emailFilter'),
+      )).thenAnswer((_) => Stream<EmailsResponse>.error(exception));
+
+      final states = await refreshChangesEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        StateFixtures.currentEmailState,
+      ).toList();
+
+      final failure = states
+          .whereType<Left>()
+          .map((l) => l.value)
+          .whereType<RefreshChangesAllEmailFailure>()
+          .single;
+
+      expect(failure.exception, exception);
+    });
   });
 }
