@@ -1,5 +1,6 @@
 {
     "addAsLink": "Thêm dưới dạng liên kết",
     "addAsAttachment": "Thêm dưới dạng tệp đính kèm",
-    "attachFromDriveFailingMessage": "Không thể đính kèm tệp từ drive"
+    "attachFromDriveFailingMessage": "Không thể đính kèm tệp từ drive",
+    "attachFromDrive": "Đính kèm từ Drive"
 }

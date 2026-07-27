@@ -1,5 +1,6 @@
 {
     "addAsLink": "Холбоос болгон нэмэх",
     "addAsAttachment": "Хавсралт болгон нэмэх",
-    "attachFromDriveFailingMessage": "Drive-аас файл(ууд) хавсаргах боломжгүй байна"
+    "attachFromDriveFailingMessage": "Drive-аас файл(ууд) хавсаргах боломжгүй байна",
+    "attachFromDrive": "Drive-аас хавсаргах"
 }

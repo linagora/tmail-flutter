@@ -45,7 +45,7 @@ abstract class _DriveAttachmentContextMenuTileState
   @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
-    final label = appLocalizations?.attachFromDrive ?? 'Attach from Drive';
+    final label = appLocalizations!.attachFromDrive;
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.only(left: 12),
