@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_w
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
@@ -900,7 +901,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.labelController.labels;
-        final selectedLabel = controller.searchController.labelFiltered;
+        final selectedLabel =
+            appProviderContainer.read(searchFilterProvider).label;
 
         controller.openLabelsFilterModal(
           context: context,
@@ -917,13 +919,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
+    final selectedReceiveTime =
+        appProviderContainer.read(searchFilterProvider).emailReceiveTimeType;
     final popupMenuItems = EmailReceiveTimeType.valuesForSearch.map((timeType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemDateFilterAction(
             timeType,
-            controller.searchController.receiveTimeFiltered,
+            selectedReceiveTime,
             AppLocalizations.of(context),
             controller.imagePaths,
           ),
@@ -942,13 +946,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
+    final selectedSortOrder =
+        appProviderContainer.read(searchFilterProvider).sortOrderType;
     final popupMenuItems = EmailSortOrderType.values.map((sortType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
           menuAction: PopupMenuItemSortOrderTypeAction(
             sortType,
-            controller.searchController.sortOrderFiltered,
+            selectedSortOrder,
             AppLocalizations.of(context),
             controller.imagePaths,
           ),
