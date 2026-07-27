@@ -122,6 +122,9 @@ class SearchLayoutCoordinator {
   bool _handoffToDesktop() {
     _dispatchSearchListRouteIfEmailClosed(DashboardRoutes.thread);
     _prepareDesktopSearchHandoff();
+    // The desktop thread list now owns the presentation, so mailbox restore can
+    // reclaim it via takeDesktopSearchPresentation().
+    _desktopSearchPresentationActive = true;
     _searchService.replayCurrentStateToOwners();
     return true;
   }
