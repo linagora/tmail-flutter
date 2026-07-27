@@ -19,6 +19,15 @@ class DriveAttachmentHandler {
     required Future<void> Function(String html) insertHtml,
     AppLocalizations? appLocalizations,
   }) async {
+    if (result.isEmpty) {
+      getBinding<ToastManager>()?.showMessageFailure(
+        DrivePickFailure(
+          Exception(),
+          message: appLocalizations?.driveNoValidAttachment,
+        ),
+      );
+      return;
+    }
     final linkDocs = result.where((doc) {
       final link = doc.sharingLink;
       return link != null && (!requireHttps || link.isScheme('https'));

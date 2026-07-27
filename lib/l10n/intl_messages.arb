@@ -5296,6 +5296,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "driveNoValidAttachment": "No valid attachment",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "labelAs": "Label as",
   "@labelAs": {
     "type": "text",

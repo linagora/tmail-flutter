@@ -5625,6 +5625,13 @@ class AppLocalizations {
     );
   }
 
+  String get driveNoValidAttachment {
+    return Intl.message(
+      'No valid attachment',
+      name: 'driveNoValidAttachment',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',
