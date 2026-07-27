@@ -1,3 +1,16 @@
+## [0.32.0] - 2026-07-27
+### Added
+- TF-4660 Drive loading skeleton while the Drive intent webview is loading
+- TF-4684 Add drive card hover close button
+
+### Fixed
+- #4721 Handle yield* error inside interactor
+- #4717 InvalidStateError in IndexDatabase prevent state be updated
+
+### Changed
+- #4716 Handle add as attachment in development
+- Translate vi, ru, fr, mn
+
 ## [0.31.0] - 2026-07-22
 ### Added
 - #4410 ADR for attach as attachment from Drive
