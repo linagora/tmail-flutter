@@ -7,6 +7,7 @@ import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploade
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 
 /// Buffers a drive document fully into memory. Explicit, feature-detected
 /// fallback for browsers without OPFS `createWritable()` support — checked
@@ -18,6 +19,9 @@ class BufferedWebDriveFileStager implements DriveFileStager {
     required void Function(int received, int total) onDownloadProgress,
     required CancelToken cancelToken,
   }) async {
+    if (doc.downloadLink == null) {
+      throw DriveDownloadNullAttachmentException();
+    }
     final response = await WorkplaceDio.instance.getUri<List<int>>(
       doc.downloadLink!,
       options: Options(
