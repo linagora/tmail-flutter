@@ -5881,5 +5881,71 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "Nous n'avons pas pu finaliser la redirection de l'authentification unique (SSO). Veuillez réessayer.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "Impossible de prévisualiser le PDF",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "Ouvrir dans Drive",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachment": "Pièce jointe Drive",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "Afficher ou masquer le bouton de pièce jointe Twake Drive dans l'éditeur de message",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "Activer le bouton de pièce jointe Drive",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "La fonctionnalité d'ajout en pièce jointe est encore en cours de développement.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "Aucune pièce jointe valide",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "Sous-dossiers de la corbeille supprimés",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "Certains sous-dossiers de la corbeille n'ont pas pu être supprimés",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "Échec de la suppression des sous-dossiers de la corbeille",
+  "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

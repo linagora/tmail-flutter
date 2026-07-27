@@ -5899,5 +5899,71 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "Не удалось завершить перенаправление единого входа (SSO). Пожалуйста, попробуйте ещё раз.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "Невозможно просмотреть PDF-файл",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "Открыть в Drive",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachment": "Вложение из Drive",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "Показать или скрыть кнопку вложения Twake Drive в редакторе письма",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "Включить кнопку вложения Drive",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "Функция добавления в качестве вложения ещё находится в разработке.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "Нет допустимых вложений",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "Подпапки Корзины удалены",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "Некоторые подпапки в Корзине не удалось удалить",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "Не удалось удалить подпапки в Корзине",
+  "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

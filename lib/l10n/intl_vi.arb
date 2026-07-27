@@ -5887,5 +5887,71 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "Chúng tôi không thể hoàn tất việc chuyển hướng đăng nhập một lần (SSO). Vui lòng thử lại.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "Không thể xem trước tệp PDF",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "Mở trong Drive",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachment": "Tệp đính kèm Drive",
+  "@driveAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentSettingExplanation": "Hiển thị hoặc ẩn nút đính kèm Twake Drive trong trình soạn thư",
+  "@driveAttachmentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentToggleDescription": "Bật nút đính kèm Drive",
+  "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "Tính năng thêm dưới dạng tệp đính kèm vẫn đang được phát triển.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "Không có tệp đính kèm hợp lệ",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersSuccess": "Đã xoá các thư mục con trong Thùng rác",
+  "@clearTrashSubfoldersSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersPartialSuccess": "Một số thư mục con trong Thùng rác không thể xoá được",
+  "@clearTrashSubfoldersPartialSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearTrashSubfoldersFailed": "Xoá các thư mục con trong Thùng rác không thành công",
+  "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

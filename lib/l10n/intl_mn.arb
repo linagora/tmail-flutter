@@ -5512,5 +5512,35 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "ssoRedirectFailedMessage": "Нэг удаагийн нэвтрэлтийн (SSO) чиглүүлэлтийг гүйцээж чадсангүй. Дахин оролдоно уу.",
+  "@ssoRedirectFailedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotPreviewPdf": "PDF файлыг урьдчилан үзэх боломжгүй",
+  "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInDrive": "Drive-д нээх",
+  "@openInDrive": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "Хавсралт болгон нэмэх боломж хараахан хөгжүүлэлтийн шатанд байна.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "Хүчинтэй хавсралт байхгүй",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
