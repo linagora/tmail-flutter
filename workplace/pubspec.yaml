@@ -26,6 +26,7 @@ dependencies:
   dartz: 0.10.1
   flutter_inappwebview: 6.1.0
   universal_html: 2.2.4
+  path_provider: 2.1.5
   flutter_svg:
   flutter_localization:
   intl:
@@ -37,6 +38,7 @@ dev_dependencies:
   build_runner: ^2.15.0
   json_serializable: ^6.11.3
   flutter_lints: 2.0.1
+  path_provider_platform_interface: 2.1.1
 
 flutter:
   uses-material-design: true
