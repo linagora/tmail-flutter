@@ -247,7 +247,6 @@ void main() {
           builder: (ctx) => ext.buildContextMenuTile(
             ctx,
             imagePaths: imagePaths,
-            label: _label,
           ),
         ),
       ));
@@ -265,7 +264,6 @@ void main() {
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
               imagePaths: imagePaths,
-              label: _label,
             ),
           ),
         ),
@@ -284,7 +282,6 @@ void main() {
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
               imagePaths: imagePaths,
-              label: _label,
             ),
           ),
         ),
@@ -307,16 +304,12 @@ void main() {
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
               imagePaths: imagePaths,
-              label: _label,
             ),
           ),
         ),
       ));
 
-      final tile = tester.widget<DriveAttachmentContextMenuTile>(
-        find.byType(DriveAttachmentContextMenuTile),
-      );
-      expect(tile.label, equals(_label));
+      expect(find.text(_label), findsOneWidget);
     });
 
     testWidgets('onPickCallback is null when onPickState is not provided', (tester) async {
@@ -329,7 +322,6 @@ void main() {
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
               imagePaths: imagePaths,
-              label: _label,
             ),
           ),
         ),
@@ -360,7 +352,6 @@ void main() {
             builder: (ctx) => ext.buildContextMenuTile(
               ctx,
               imagePaths: imagePaths,
-              label: _label,
             ),
           ),
         ),

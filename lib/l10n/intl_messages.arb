@@ -5290,12 +5290,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachFromDrive": "Attach from Drive",
-  "@attachFromDrive": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "driveAttachmentInDevelopment": "The add-as-attachment feature is still in development.",
   "@driveAttachmentInDevelopment": {
     "type": "text",

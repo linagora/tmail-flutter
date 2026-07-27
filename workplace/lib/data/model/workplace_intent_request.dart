@@ -19,7 +19,7 @@ class WorkplaceActionConfigRequest {
 
 @JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceFilePickerConfigRequest {
-  final WorkplaceActionConfigRequest? sharingLink;
+  final WorkplaceActionConfigRequest sharingLink;
   final WorkplaceActionConfigRequest? downloadLink;
 
   const WorkplaceFilePickerConfigRequest({

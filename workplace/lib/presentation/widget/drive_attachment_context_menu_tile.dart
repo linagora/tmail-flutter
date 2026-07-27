@@ -4,13 +4,13 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 
 class DriveAttachmentContextMenuTile extends StatefulWidget {
   final ImagePaths imagePaths;
   final Uri workplaceUri;
-  final String label;
   final OnPickDriveCallback? onPickCallback;
   final FetchDriveIntentCallback onFetchIntent;
 
@@ -18,7 +18,6 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
     super.key,
     required this.imagePaths,
     required this.workplaceUri,
-    required this.label,
     required this.onFetchIntent,
     this.onPickCallback,
   });
@@ -45,6 +44,8 @@ abstract class _DriveAttachmentContextMenuTileState
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    final label = appLocalizations?.attachFromDrive ?? 'Attach from Drive';
     return ListTile(
       leading: Padding(
         padding: const EdgeInsets.only(left: 12),
@@ -56,7 +57,7 @@ abstract class _DriveAttachmentContextMenuTileState
         ),
       ),
       title: Text(
-        widget.label,
+        label,
         style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 15,
           color: AppColor.nameUserColor,

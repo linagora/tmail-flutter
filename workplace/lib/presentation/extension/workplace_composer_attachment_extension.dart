@@ -89,7 +89,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
       accessToken,
-      addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink?.label),
+      addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
       addAsAttachment: filePickerConfig.downloadLink == null
           ? null
           : WorkplaceActionConfig(label: filePickerConfig.downloadLink!.label),
@@ -141,7 +141,6 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Widget buildContextMenuTile(
     BuildContext context, {
     required ImagePaths imagePaths,
-    required String label,
   }) {
     return ValueListenableBuilder<Uri?>(
       valueListenable: workplaceUri,
@@ -150,7 +149,6 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         return DriveAttachmentContextMenuTile(
           imagePaths: imagePaths,
           workplaceUri: uri,
-          label: label,
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(null, state),

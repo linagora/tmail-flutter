@@ -4,5 +4,7 @@
     "addAsAttachment": "Add as attachment",
     "@addAsAttachment": {},
     "attachFromDriveFailingMessage": "Unable to attach file(s) from drive",
-    "@attachFromDriveFailingMessage": {}
+    "@attachFromDriveFailingMessage": {},
+    "attachFromDrive": "Attach from drive",
+    "@attachFromDrive": {}
 }
