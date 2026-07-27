@@ -642,7 +642,12 @@ abstract class BaseController extends GetxController
     removeAllPageAndGoToLogin();
   }
 
-  Future<void> clearAllData() async {
+  /// Several entry points call this, some without awaiting. Overlapping runs
+  /// used to close Hive while another run was still writing to it, so they are
+  /// serialised through a single shared future.
+  Future<void> clearAllData() => twakeAppManager.runClearDataOnce(_clearAllData);
+
+  Future<void> _clearAllData() async {
     try {
       await Future.wait([
         if (isAuthenticatedWithOidc)

@@ -5,6 +5,14 @@ class TwakeAppManager {
   bool _hasComposer = false;
   bool _isExecutingBeforeReconnect = false;
   OidcUserInfo? _oidcUserInfo;
+  Future<void>? _clearingDataFuture;
+
+  /// Serialises cache teardown so only one run is ever in flight.
+  Future<void> runClearDataOnce(Future<void> Function() clearData) {
+    return _clearingDataFuture ??= clearData().whenComplete(() {
+      _clearingDataFuture = null;
+    });
+  }
 
   void setHasComposer(bool value) => _hasComposer = value;
 
