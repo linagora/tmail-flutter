@@ -89,6 +89,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipi
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/validator/composer_attachment_upload_state_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
@@ -119,7 +120,6 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
@@ -128,6 +128,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_st
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
+import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -186,6 +187,14 @@ class ComposerController extends BaseController
   final String? autoSaveComposerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
+
+  late AttachmentUploadValidationService attachmentUploadValidationService =
+      AttachmentUploadValidationService(
+        stateSource: ComposerAttachmentUploadStateSource.fromServerCapability(
+          uploadController: uploadController,
+          maxSizeAttachmentsPerEmail: mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value,
+        ),
+      );
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -860,7 +869,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    if (uploadController.isExceededMaxSizeAttachmentsPerEmail()) {
+    if (attachmentUploadValidationService.isExceededMaxSizeAttachmentsPerEmail()) {
       MessageDialogActionManager().showConfirmDialogAction(
         context,
         appLocalizations.message_dialog_send_email_exceeds_maximum_size(
@@ -1241,18 +1250,17 @@ class ComposerController extends BaseController
     }
   }
 
-  void _handlePickFileSuccess(LocalFilePickerSuccess success) {
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: success.pickedFiles.totalSize,
-      onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: success.pickedFiles)
-    );
+  Future<void> _handlePickFileSuccess(LocalFilePickerSuccess success) {
+    return attachmentUploadValidationService.validateFiles(
+      files: success.pickedFiles,
+      onAllowed: () => uploadAttachmentsAction(pickedFiles: success.pickedFiles));
   }
 
-  void _handlePickImageSuccess(LocalImagePickerSuccess success) {
-    uploadController.validateTotalSizeInlineAttachmentsBeforeUpload(
-      totalSizePreparedFiles: success.fileInfo.fileSize,
-      onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: [success.fileInfo.withInline()])
-    );
+  Future<void> _handlePickImageSuccess(LocalImagePickerSuccess success) {
+    final inlineFile = success.fileInfo.withInline();
+    return attachmentUploadValidationService.validateFiles(
+      files: [inlineFile],
+      onAllowed: () => uploadAttachmentsAction(pickedFiles: [inlineFile]));
   }
 
   void uploadAttachmentsAction({required List<FileInfo> pickedFiles}) {
@@ -2047,12 +2055,12 @@ class ComposerController extends BaseController
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
-  void onAttachmentDropZoneListener(Attachment attachment) {
+  Future<void> onAttachmentDropZoneListener(BuildContext context, Attachment attachment) {
     log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: attachment.size?.value ?? 0,
-      onValidationSuccess: () => uploadController.initializeUploadAttachments([attachment])
-    );
+    return attachmentUploadValidationService.validateAttachment(
+      context: context,
+      attachment: attachment,
+      onAllowed: () => uploadController.initializeUploadAttachments([attachment]));
   }
 
   Future<void> onChangeIdentity(Identity? newIdentity) async {
@@ -2189,7 +2197,9 @@ class ComposerController extends BaseController
 
     final listFileInfo = await onDragDone(context: context, details: details);
 
-    if (listFileInfo.isEmpty && context.mounted) {
+    if (!context.mounted) return;
+
+    if (listFileInfo.isEmpty) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).can_not_upload_this_file_as_attachments
@@ -2197,11 +2207,10 @@ class ComposerController extends BaseController
       return;
     }
 
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: listFileInfo.totalSize,
-      totalSizePreparedFilesWithDispositionAttachment: listFileInfo.listAttachmentFiles.totalSize,
-      onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: listFileInfo)
-    );
+    await attachmentUploadValidationService.validateFiles(
+      context: context,
+      files: listFileInfo,
+      onAllowed: () => uploadAttachmentsAction(pickedFiles: listFileInfo));
   }
 
   void _handleSaveMessageToDraft(BuildContext context) async {
@@ -2473,16 +2482,16 @@ class ComposerController extends BaseController
     required BuildContext context,
     required double maxWidth,
     required List<FileUpload> listFileUpload
-  }) {
+  }) async {
     log('ComposerController::handleOnPasteImageSuccessAction: listFileUpload = ${listFileUpload.length}');
     _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
 
     final listFileInfo = listFileUpload.toListFileInfo();
 
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: listFileInfo.totalSize,
-      onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: listFileInfo)
-    );
+    await attachmentUploadValidationService.validateFiles(
+      context: context,
+      files: listFileInfo,
+      onAllowed: () => uploadAttachmentsAction(pickedFiles: listFileInfo));
   }
 
   void handleOnPasteImageFailureAction({

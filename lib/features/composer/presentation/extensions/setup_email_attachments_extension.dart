@@ -1,5 +1,4 @@
 
-import 'package:core/utils/list_utils.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -7,7 +6,6 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/email/domain/extensions/email_attachment_classifier_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 
 extension SetupEmailAttachmentsExtension on ComposerController {
 
@@ -56,19 +54,11 @@ extension SetupEmailAttachmentsExtension on ComposerController {
     EmailActionType.restoreComposerFromPersistentCache,
   }.contains(currentEmailActionType);
 
-  void _uploadAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
+  Future<void> _uploadAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) async {
     final listFileInfo = listSharedMediaFile.toListFileInfo(isShared: true);
 
-    final tupleListFileInfo = partition(
-      listFileInfo,
-      (fileInfo) => fileInfo.isInline == true,
-    );
-    final listAttachments = tupleListFileInfo.value2;
-
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: listFileInfo.totalSize,
-      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
-      onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: listFileInfo),
-    );
+    await attachmentUploadValidationService.validateFiles(
+      files: listFileInfo,
+      onAllowed: () => uploadAttachmentsAction(pickedFiles: listFileInfo));
   }
 }
