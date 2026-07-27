@@ -411,7 +411,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
       final labelController = dashboardController.labelController;
 
-      final selectedMailbox = dashboardController.selectedMailbox.value;
+      final selectedMailbox = dashboardController.selectedMailboxForDisplay;
       Id? labelIdSelected;
       if (selectedMailbox?.isLabelMailbox == true) {
         labelIdSelected = selectedMailbox?.labelId;
