@@ -12,12 +12,25 @@ import 'package:model/email/attachment.dart';
 /// `BrowserOpfsDriveFileUploader` (web-only, `opfs_drive_file_uploader_web.dart`)
 /// is the only place that casts it back.
 abstract class OpfsDriveFileUploader {
-  Future<Attachment> upload({
-    required Object fileHandle,
-    required String fileName,
-    required Uri uploadUri,
-    required String authHeader,
-    required void Function(int sent, int total) onUploadProgress,
-    required CancelToken cancelToken,
+  Future<Attachment> upload(OpfsUploadRequest request);
+}
+
+/// Bundles [OpfsDriveFileUploader.upload]'s parameters to keep its argument
+/// count low.
+class OpfsUploadRequest {
+  final Object fileHandle;
+  final String fileName;
+  final Uri uploadUri;
+  final String authHeader;
+  final void Function(int sent, int total) onUploadProgress;
+  final CancelToken cancelToken;
+
+  const OpfsUploadRequest({
+    required this.fileHandle,
+    required this.fileName,
+    required this.uploadUri,
+    required this.authHeader,
+    required this.onUploadProgress,
+    required this.cancelToken,
   });
 }
