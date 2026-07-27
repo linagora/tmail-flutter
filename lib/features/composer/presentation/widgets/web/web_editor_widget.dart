@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_scripts.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_script_plan.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 import 'package:workplace/presentation/utils/workplace_scripts.dart';
@@ -164,6 +164,13 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   @override
   Widget build(BuildContext context) {
     final maxHeight = widget.height ?? _defaultHtmlEditorHeight;
+    final editorScriptPlan = WebEditorScriptPlan(
+      maxHeight: maxHeight,
+      selectionChangeScript: _selectionChangeScript,
+      driveCardDeleteOverlayRemoveLabel: AppLocalizations.of(context).remove,
+      driveCardDeleteOverlayViewId: _createdViewId,
+    );
+
     return HtmlEditor(
       controller: _editorController,
       htmlEditorOptions: HtmlEditorOptions(
@@ -188,12 +195,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         normalizeHtmlTextWhenDropping: true,
         normalizeHtmlTextWhenPasting: true,
         webInitialScripts: UnmodifiableListView(
-          buildWebEditorInitialScripts(
-            maxHeight: maxHeight,
-            selectionChangeScript: _selectionChangeScript,
-            driveCardDeleteOverlayRemoveLabel: AppLocalizations.of(context).remove,
-            driveCardDeleteOverlayViewId: _createdViewId,
-          ),
+          editorScriptPlan.initialScripts,
         )
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
@@ -206,7 +208,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onChangeContent: widget.onChangeContent,
         onInit: () {
           widget.onInitial?.call(widget.content);
-          _registerEditorScripts();
+          _registerEditorScripts(editorScriptPlan.initializationScriptNames);
         },
         onFocus: widget.onFocus,
         onUnFocus: widget.onUnFocus,
@@ -249,30 +251,13 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     widget.onChangeContent?.call(text);
   }
 
-  void _registerEditorScripts() {
+  void _registerEditorScripts(List<String> scriptNames) {
     if (_editorListenerRegistered) return;
 
-    _editorController.evaluateJavascriptWeb(
-      HtmlUtils.registerDropListener.name);
-    _editorController.evaluateJavascriptWeb(
-      _selectionChangeScript.name);
-    _editorController.evaluateJavascriptWeb(
-      HtmlUtils.registerFileLinkRowEnterKeyHandler(
-        isWebPlatform: true,
-      ).name,
-    );
-    _editorController.evaluateJavascriptWeb(
-      HtmlUtils.registerFileLinkCardClickHandler(
-        isWebPlatform: true,
-      ).name,
-    );
-    _editorController.evaluateJavascriptWeb(
-      WorkplaceScripts.registerDriveCardDeleteOverlay(
-        AppLocalizations.of(context).remove,
-        viewId: _createdViewId,
-        isWebPlatform: true,
-      ).name,
-    );
+    for (final scriptName in scriptNames) {
+      _editorController.evaluateJavascriptWeb(scriptName);
+    }
+
     _editorListenerRegistered = true;
   }
 
