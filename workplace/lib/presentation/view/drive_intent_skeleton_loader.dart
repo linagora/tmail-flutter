@@ -20,6 +20,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imagePaths = ImagePaths();
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -27,11 +28,13 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      child: mobile ? _buildMobile(context) : _buildWeb(),
+      child: mobile
+          ? _buildMobile(context, imagePaths: imagePaths)
+          : _buildWeb(imagePaths: imagePaths),
     );
   }
 
-  Widget _buildWeb() {
+  Widget _buildWeb({required ImagePaths imagePaths}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,7 +44,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SvgPicture.asset(
-                ImagePaths().twakeDriveLogo,
+                imagePaths.twakeDriveLogo,
                 width: 169,
                 height: 28,
               ),
@@ -146,7 +149,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         ),
       );
 
-  Widget _buildMobile(BuildContext context) {
+  Widget _buildMobile(BuildContext context, {required ImagePaths imagePaths}) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -156,7 +159,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
             children: [
               Expanded(
                 child: SvgPicture.asset(
-                  ImagePaths().twakeDriveLogo,
+                  imagePaths.twakeDriveLogo,
                   alignment: Alignment.centerLeft,
                   width: 169,
                   height: 28,
