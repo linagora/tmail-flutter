@@ -105,7 +105,6 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -1126,17 +1125,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           : selectedMailbox?.browserRouteTitle ?? '',
         url: RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
-          router: NavigationRouter(
-            mailboxId: isSearchRunning
-              ? null
-              : selectedMailbox?.browserRouteMailboxId,
-            labelId: selectedMailbox?.labelId,
-            dashboardType: isSearchRunning
-              ? DashboardType.search
-              : DashboardType.normal,
-            searchQuery: isSearchRunning
-              ? mailboxDashBoardController.searchController.searchQuery
-              : null
+          router: RouteUtils.dashboardRouterForMailboxOrSearch(
+            isSearchRunning: isSearchRunning,
+            selectedMailbox: selectedMailbox,
+            searchQuery: mailboxDashBoardController.searchController.searchQuery,
           )
         )
       );

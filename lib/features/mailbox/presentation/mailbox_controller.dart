@@ -433,8 +433,7 @@ class MailboxController extends BaseMailboxController
     } else if (action is OpenMailboxAction) {
       _onOpenMailboxAction(action);
     } else if (action is SystemBackToInboxAction) {
-      _disableAllSearchEmail();
-      _switchBackToMailboxDefault();
+      _backToInboxLeavingSearch();
       mailboxDashBoardController.clearMailboxUIAction();
     } else if (action is RefreshAllMailboxAction) {
       refreshAllMailbox();
@@ -1107,6 +1106,22 @@ class MailboxController extends BaseMailboxController
     _autoScrollToTopMailboxList();
   }
 
+  /// Returns to the inbox on a system Back, restoring its list. A search run
+  /// from the inbox re-selects the already-selected inbox, firing no mailbox
+  /// change, so the list must be restored explicitly. Searches from another
+  /// folder change the selection and reload on their own. The decision is read
+  /// before disabling search, which clears the flags it checks.
+  void _backToInboxLeavingSearch() {
+    final restoreNeeded =
+        mailboxDashBoardController.searchController.isSearchEmailRunning &&
+            mailboxDashBoardController.selectedMailbox.value?.isInbox == true;
+    _disableAllSearchEmail();
+    _switchBackToMailboxDefault();
+    if (restoreNeeded) {
+      mailboxDashBoardController.restoreMailboxEmailListAfterSearch();
+    }
+  }
+
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
@@ -1326,15 +1341,11 @@ class MailboxController extends BaseMailboxController
     if (PlatformInfo.isWeb && Get.currentRoute.startsWith(AppRoutes.dashboard)) {
       final route = RouteUtils.createUrlWebLocationBar(
         AppRoutes.dashboard,
-        router: NavigationRouter(
-          mailboxId: currentMailbox?.browserRouteMailboxId,
-          labelId: currentMailbox?.labelId,
-          searchQuery: mailboxDashBoardController.searchController.isSearchEmailRunning
-            ? mailboxDashBoardController.searchController.searchQuery
-            : null,
-          dashboardType: mailboxDashBoardController.searchController.isSearchEmailRunning
-            ? DashboardType.search
-            : DashboardType.normal
+        router: RouteUtils.dashboardRouterForMailboxOrSearch(
+          isSearchRunning:
+            mailboxDashBoardController.searchController.isSearchEmailRunning,
+          selectedMailbox: currentMailbox,
+          searchQuery: mailboxDashBoardController.searchController.searchQuery,
         )
       );
       RouteUtils.replaceBrowserHistory(
