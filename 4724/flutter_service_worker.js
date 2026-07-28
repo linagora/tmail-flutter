@@ -14,7 +14,7 @@ const RESOURCES = {"js/sentry-interceptor.js": "9f6d33a00bd6953c3526765bcca57470
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "main.dart.js_11.part.js": "20579ce95f32e75fcfee7e7c3e34868f",
-"flutter_bootstrap.js": "7ebffb393c6ef9225d437f406c0c052d",
+"flutter_bootstrap.js": "930739bce5488cf82693894eb8188334",
 "icons/Icon-192.png": "009a8eae32218365ab20cce81aa896c3",
 "icons/Icon-512.png": "3a55e614a03964225fd5b8ca94384524",
 "icons/Icon-maskable-512.png": "3a55e614a03964225fd5b8ca94384524",
