@@ -86,7 +86,6 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -116,7 +115,7 @@ class ThreadController extends BaseController with EmailActionController {
   final loadingMoreStatus = Rx(LoadingMoreStatus.idle);
 
   bool canLoadMore = true;
-  ProviderSubscription<SearchState>? _searchStateSubscription;
+  ProviderSubscription<SearchStatus>? _searchStateSubscription;
   MailboxId? _currentMemoryMailboxId;
   int _peakEmailCount = 0;
   final ScrollController listEmailController = ScrollController();
@@ -315,11 +314,13 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     _searchStateSubscription = appProviderContainer.listen(
-      searchViewStateProvider.select((state) => state.searchState),
-      (_, searchState) {
-      if (searchState.searchStatus == SearchStatus.ACTIVE) {
-        cancelSelectEmail();
-      }
+      searchViewStateProvider.select((state) => state.searchState.searchStatus),
+      (previous, next) {
+        // Only clear the selection on the transition into active search, so a
+        // later state change that stays ACTIVE cannot wipe a fresh selection.
+        if (previous != SearchStatus.ACTIVE && next == SearchStatus.ACTIVE) {
+          cancelSelectEmail();
+        }
       },
     );
 

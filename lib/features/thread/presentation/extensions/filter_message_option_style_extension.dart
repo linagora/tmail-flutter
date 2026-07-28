@@ -46,7 +46,7 @@ extension FilterMessageOptionStyleExtension on FilterMessageOption {
           (name: appLocalizations.unread, title: appLocalizations.with_unread),
         FilterMessageOption.attachments => (
             name: appLocalizations.with_attachments,
-            title: appLocalizations.with_attachments.capitalizeFirstEach
+            title: appLocalizations.with_attachments
           ),
         FilterMessageOption.starred => (
             name: appLocalizations.starred,
