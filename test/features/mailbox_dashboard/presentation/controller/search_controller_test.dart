@@ -101,17 +101,21 @@ void main() {
 
     test('cursor options never enter the committed SSOT', () {
       searchController.updateFilterEmail(
-        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))));
+        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-15T08:00:00.000Z'))));
 
       expect(committed().before, isNull);
+      expect(committed().after, isNull);
     });
 
     test('a later user-intent update keeps pagination out of the SSOT', () {
       searchController.updateFilterEmail(
-        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))));
+        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-15T08:00:00.000Z'))));
       searchController.updateFilterEmail(unreadOption: const Some(true));
 
       expect(committed().before, isNull);
+      expect(committed().after, isNull);
       expect(searchController.committedSearchFilter.unread, isTrue);
     });
   });

@@ -423,10 +423,17 @@ class MailboxDashBoardController extends ReloadableController
       _registerDeepLinks();
     }
     _registerStreamListener();
-    _dashboardSearchCoordinator ??= DashboardSearchCoordinator(
-      readFilterMessageOption: () => filterMessageOption.value,
-      writeFilterMessageOption: (option) => filterMessageOption.value = option,
-    )..start();
+    if (_dashboardSearchCoordinator == null) {
+      _dashboardSearchCoordinator = DashboardSearchCoordinator(
+        readFilterMessageOption: () => filterMessageOption.value,
+        writeFilterMessageOption: (option) => filterMessageOption.value = option,
+      )..start();
+      workerObxVariables.add(ever(
+        filterMessageOption,
+        (option) =>
+            _dashboardSearchCoordinator?.onFilterMessageOptionChanged(option),
+      ));
+    }
     registerLabelReactiveObxListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {

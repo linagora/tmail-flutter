@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_bi
 import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_style_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/clean_and_get_all_email_state.dart';

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_style_extension.dart';
 
 typedef OnSelectFilterMessageOptionAction = Function(BuildContext context,
     FilterMessageOption filterMessageOption, RelativeRect buttonPosition);
