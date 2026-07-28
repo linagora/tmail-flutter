@@ -3,17 +3,17 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_descriptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_group.dart';
 
-final class WebEditorHeightScriptGroup implements WebEditorScriptGroup {
+final class WebEditorHeightScriptGroup
+    with WebEditorScriptAdapterAware
+    implements WebEditorScriptGroup {
   const WebEditorHeightScriptGroup({required this.maxHeight});
 
   final double maxHeight;
 
   @override
   List<WebEditorScriptDescriptor> build() => [
-    _adapter.fromHtmlUtils(
+    adapter.fromHtmlUtils(
       HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight),
     ),
   ];
-
-  static const _adapter = WebEditorScriptAdapter();
 }

@@ -3,14 +3,14 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_descriptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_group.dart';
 
-final class WebEditorDropScriptGroup implements WebEditorScriptGroup {
+final class WebEditorDropScriptGroup
+    with WebEditorScriptAdapterAware
+    implements WebEditorScriptGroup {
   const WebEditorDropScriptGroup();
 
   @override
   List<WebEditorScriptDescriptor> build() => [
-    _adapter.fromHtmlUtils(HtmlUtils.registerDropListener, runOnInit: true),
-    _adapter.fromHtmlUtils(HtmlUtils.unregisterDropListener),
+    adapter.fromHtmlUtils(HtmlUtils.registerDropListener, runOnInit: true),
+    adapter.fromHtmlUtils(HtmlUtils.unregisterDropListener),
   ];
-
-  static const _adapter = WebEditorScriptAdapter();
 }

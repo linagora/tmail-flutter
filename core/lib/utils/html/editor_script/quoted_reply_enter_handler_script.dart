@@ -5,6 +5,7 @@ final class QuotedReplyEnterHandlerScript implements WebEditorScript {
 
   static final String _source = [
     QuotedReplyEnterHandlerSource.bootstrap,
+    QuotedReplyEnterHandlerSource.logging,
     QuotedReplyEnterHandlerSource.contentGuard,
     QuotedReplyEnterHandlerSource.domLookup,
     QuotedReplyEnterHandlerSource.emptyAncestorCleanup,
@@ -29,6 +30,15 @@ abstract final class QuotedReplyEnterHandlerSource {
         if (!root || typeof root.addEventListener !== 'function') return;
         if (root.dataset.quotedReplyEnterHandlerAttached) return;
         root.dataset.quotedReplyEnterHandlerAttached = 'true';''';
+
+  static const logging = r'''
+        function logHandlerError(context, error) {
+          if (typeof console !== 'undefined'
+              && console
+              && typeof console.error === 'function') {
+            console.error('[TwakeMail][QuotedReplyEnterHandler] ' + context, error);
+          }
+        }''';
 
   static const contentGuard = r'''
         function hasMeaningfulContent(node) {
@@ -82,7 +92,7 @@ abstract final class QuotedReplyEnterHandlerSource {
   static const emptyAncestorCleanup = r'''
         function removeEmptyAncestors(element, quote) {
           let current = element;
-          while (current && current !== quote) {
+          while (current && current !== quote && current !== root) {
             const parent = current.parentElement;
             if (!hasMeaningfulContent(current)) current.remove();
             current = parent;
@@ -102,18 +112,36 @@ abstract final class QuotedReplyEnterHandlerSource {
         }''';
 
   static const editorSync = r'''
+        function findSummernoteInstance() {
+          if (!window.jQuery) return null;
+          const noteEditor = typeof root.closest === 'function'
+            ? root.closest('.note-editor')
+            : null;
+          const source = noteEditor ? noteEditor.previousElementSibling : null;
+          if (!source) return null;
+          const note = window.jQuery(source);
+          if (!note || typeof note.summernote !== 'function') return null;
+          const initialized =
+            typeof note.data === 'function' && note.data('summernote');
+          return initialized ? note : null;
+        }
+
         function syncEditor() {
           try {
-            const note = window.jQuery && window.jQuery('#summernote-2');
-            if (note && typeof note.summernote === 'function') {
+            const note = findSummernoteInstance();
+            if (note) {
               note.summernote('editor.afterCommand');
               return;
             }
-          } catch (_) {}
+          } catch (error) {
+            logHandlerError('syncEditor summernote command failed', error);
+          }
 
           try {
             root.dispatchEvent(new Event('input', { bubbles: true }));
-          } catch (_) {}
+          } catch (error) {
+            logHandlerError('syncEditor input dispatch failed', error);
+          }
         }''';
 
   static const quoteSplit = r'''
@@ -143,6 +171,7 @@ abstract final class QuotedReplyEnterHandlerSource {
         }
 
         function splitQuote(block, quote, afterRange, selection, trimLeadingContent) {
+          if (!root.contains(quote)) return false;
           const quoteParent = quote.parentNode;
           const blockParent = block.parentElement;
           if (!quoteParent || !blockParent) return false;
@@ -226,28 +255,37 @@ abstract final class QuotedReplyEnterHandlerSource {
 
             event.preventDefault();
             enqueue(function () {
+              let handled = false;
               try {
-                const didSplit = splitQuote(
+                handled = splitQuote(
                   block,
                   quote,
                   afterRange,
                   selection,
                   !isEmptyBlock,
                 );
-                if (!didSplit) {
+              } catch (error) {
+                logHandlerError('splitQuote failed', error);
+                handled = false;
+              }
+
+              if (!handled) {
+                try {
                   insertFallbackAnswer(
                     fallbackParent,
                     fallbackReference,
                     selection,
                   );
+                } catch (error) {
+                  logHandlerError('insertFallbackAnswer failed', error);
                 }
-              } catch (_) {
-                syncEditor();
-                return;
               }
+
               syncEditor();
             });
-          } catch (_) {}
+          } catch (error) {
+            logHandlerError('keydown handler failed', error);
+          }
         }, true);''';
 
   static const close = '      })();';

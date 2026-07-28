@@ -24,3 +24,9 @@ final class WebEditorScriptAdapter {
     runOnInit: runOnInit,
   );
 }
+
+/// Shares a single [WebEditorScriptAdapter] with every script group so the
+/// adapter is declared once instead of being duplicated per group.
+mixin WebEditorScriptAdapterAware {
+  WebEditorScriptAdapter get adapter => const WebEditorScriptAdapter();
+}

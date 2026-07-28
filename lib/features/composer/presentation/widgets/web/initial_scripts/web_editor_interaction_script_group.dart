@@ -5,7 +5,9 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_group.dart';
 import 'package:workplace/presentation/utils/workplace_scripts.dart';
 
-final class WebEditorInteractionScriptGroup implements WebEditorScriptGroup {
+final class WebEditorInteractionScriptGroup
+    with WebEditorScriptAdapterAware
+    implements WebEditorScriptGroup {
   const WebEditorInteractionScriptGroup({
     required this.driveCardDeleteOverlayRemoveLabel,
     required this.driveCardDeleteOverlayViewId,
@@ -16,19 +18,19 @@ final class WebEditorInteractionScriptGroup implements WebEditorScriptGroup {
 
   @override
   List<WebEditorScriptDescriptor> build() => [
-    _adapter.fromHtmlUtils(
+    adapter.fromHtmlUtils(
       HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true),
       runOnInit: true,
     ),
-    _adapter.fromDefinition(
+    adapter.fromDefinition(
       const QuotedReplyEnterHandlerScript(),
       runOnInit: true,
     ),
-    _adapter.fromHtmlUtils(
+    adapter.fromHtmlUtils(
       HtmlUtils.registerFileLinkCardClickHandler(isWebPlatform: true),
       runOnInit: true,
     ),
-    _adapter.fromHtmlUtils(
+    adapter.fromHtmlUtils(
       WorkplaceScripts.registerDriveCardDeleteOverlay(
         driveCardDeleteOverlayRemoveLabel,
         viewId: driveCardDeleteOverlayViewId,
@@ -36,8 +38,6 @@ final class WebEditorInteractionScriptGroup implements WebEditorScriptGroup {
       ),
       runOnInit: true,
     ),
-    _adapter.fromHtmlUtils(WorkplaceScripts.unregisterDriveCardDeleteOverlay),
+    adapter.fromHtmlUtils(WorkplaceScripts.unregisterDriveCardDeleteOverlay),
   ];
-
-  static const _adapter = WebEditorScriptAdapter();
 }

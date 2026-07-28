@@ -4,7 +4,9 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_descriptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_group.dart';
 
-final class WebEditorSelectionScriptGroup implements WebEditorScriptGroup {
+final class WebEditorSelectionScriptGroup
+    with WebEditorScriptAdapterAware
+    implements WebEditorScriptGroup {
   const WebEditorSelectionScriptGroup({required this.selectionChangeScript});
 
   final WebScript selectionChangeScript;
@@ -12,13 +14,11 @@ final class WebEditorSelectionScriptGroup implements WebEditorScriptGroup {
   @override
   List<WebEditorScriptDescriptor> build() => [
     WebEditorScriptDescriptor(script: selectionChangeScript, runOnInit: true),
-    _adapter.fromHtmlUtils(HtmlUtils.collapseSelectionToEnd),
-    _adapter.fromHtmlUtils(HtmlUtils.deleteSelectionContent),
-    _adapter.fromHtmlUtils(HtmlUtils.saveSelection),
-    _adapter.fromHtmlUtils(HtmlUtils.restoreSelection),
-    _adapter.fromHtmlUtils(HtmlUtils.getSavedSelection),
-    _adapter.fromHtmlUtils(HtmlUtils.clearSavedSelection),
+    adapter.fromHtmlUtils(HtmlUtils.collapseSelectionToEnd),
+    adapter.fromHtmlUtils(HtmlUtils.deleteSelectionContent),
+    adapter.fromHtmlUtils(HtmlUtils.saveSelection),
+    adapter.fromHtmlUtils(HtmlUtils.restoreSelection),
+    adapter.fromHtmlUtils(HtmlUtils.getSavedSelection),
+    adapter.fromHtmlUtils(HtmlUtils.clearSavedSelection),
   ];
-
-  static const _adapter = WebEditorScriptAdapter();
 }

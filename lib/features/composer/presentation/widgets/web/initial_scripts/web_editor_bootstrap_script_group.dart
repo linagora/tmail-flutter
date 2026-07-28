@@ -3,13 +3,13 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_descriptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_group.dart';
 
-final class WebEditorBootstrapScriptGroup implements WebEditorScriptGroup {
+final class WebEditorBootstrapScriptGroup
+    with WebEditorScriptAdapterAware
+    implements WebEditorScriptGroup {
   const WebEditorBootstrapScriptGroup();
 
   @override
   List<WebEditorScriptDescriptor> build() => [
-    _adapter.fromHtmlUtils(HtmlUtils.removeLineHeight1px),
+    adapter.fromHtmlUtils(HtmlUtils.removeLineHeight1px),
   ];
-
-  static const _adapter = WebEditorScriptAdapter();
 }

@@ -8,14 +8,19 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_edi
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_scripts_factory.dart';
 import 'package:workplace/presentation/utils/workplace_scripts.dart';
 
+const _maxHeight = 400.0;
+const _selectionScriptName = 'selection';
+const _driveCardRemoveLabel = 'Remove';
+const _driveCardViewId = 'editor';
+
 void main() {
   WebEditorScriptPlan buildPlan({WebScript? selectionChangeScript}) =>
       WebEditorScriptPlan(
-        maxHeight: 400,
+        maxHeight: _maxHeight,
         selectionChangeScript: selectionChangeScript ??
-            WebScript(name: 'selection', script: 'void 0;'),
-        driveCardDeleteOverlayRemoveLabel: 'Remove',
-        driveCardDeleteOverlayViewId: 'editor',
+            WebScript(name: _selectionScriptName, script: 'void 0;'),
+        driveCardDeleteOverlayRemoveLabel: _driveCardRemoveLabel,
+        driveCardDeleteOverlayViewId: _driveCardViewId,
       );
 
   WebEditorScriptDescriptor buildDescriptor(
@@ -40,7 +45,7 @@ void main() {
 
   test('preserves the script initialization order', () {
     final selectionChangeScript = WebScript(
-      name: 'selection',
+      name: _selectionScriptName,
       script: 'void 0;',
     );
     final scripts =
@@ -59,13 +64,13 @@ void main() {
         HtmlUtils.restoreSelection.name,
         HtmlUtils.getSavedSelection.name,
         HtmlUtils.clearSavedSelection.name,
-        HtmlUtils.recalculateEditorHeight(maxHeight: 400).name,
+        HtmlUtils.recalculateEditorHeight(maxHeight: _maxHeight).name,
         HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true).name,
         const QuotedReplyEnterHandlerScript().name,
         HtmlUtils.registerFileLinkCardClickHandler(isWebPlatform: true).name,
         WorkplaceScripts.registerDriveCardDeleteOverlay(
-          'Remove',
-          viewId: 'editor',
+          _driveCardRemoveLabel,
+          viewId: _driveCardViewId,
           isWebPlatform: true,
         ).name,
         WorkplaceScripts.unregisterDriveCardDeleteOverlay.name,
@@ -78,13 +83,13 @@ void main() {
 
     expect(plan.initializationScriptNames, orderedEquals([
       HtmlUtils.registerDropListener.name,
-      'selection',
+      _selectionScriptName,
       HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true).name,
       const QuotedReplyEnterHandlerScript().name,
       HtmlUtils.registerFileLinkCardClickHandler(isWebPlatform: true).name,
       WorkplaceScripts.registerDriveCardDeleteOverlay(
-        'Remove',
-        viewId: 'editor',
+        _driveCardRemoveLabel,
+        viewId: _driveCardViewId,
         isWebPlatform: true,
       ).name,
     ]));
