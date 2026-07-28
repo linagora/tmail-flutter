@@ -1,7 +1,7 @@
 ((a,b)=>{a[b]=a[b]||{}})(self,"$__dart_deferred_initializers__")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,B,C={
 cfv(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){return new C.Sc(f,a2,l,h,g,x,k,r,t,v,u,d,w,j,i,p,m,n,s,a1,e,a0,o,q)},
-exm(d,e,f,g){if(g===e)return!1
+exp(d,e,f,g){if(g===e)return!1
 return d?g>=f:g>f},
 Sc:function Sc(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,a0,a1,a2){var _=this
 _.c=d
@@ -37,15 +37,15 @@ _.Q=!1
 _.as=null
 _.jv$=d
 _.c=_.a=null},
-doF:function doF(d,e){this.a=d
-this.b=e},
-doG:function doG(d){this.a=d},
 doH:function doH(d,e){this.a=d
 this.b=e},
 doI:function doI(d){this.a=d},
-doE:function doE(d){this.a=d},
+doJ:function doJ(d,e){this.a=d
+this.b=e},
+doK:function doK(d){this.a=d},
+doG:function doG(d){this.a=d},
 aFQ:function aFQ(){},
-a45:function a45(d,e,f){this.a=d
+a46:function a46(d,e,f){this.a=d
 this.b=e
 this.c=f},
 bqp:function bqp(){},
@@ -66,8 +66,8 @@ _.d=g
 _.e=h
 _.f=i},
 cii:function cii(d){this.a=d},
-exu(d){var x,w,v,u,t,s,r,q,p="text/html"
-if(!(B.d.q(d,$.eh2())&&B.d.q(d,$.eh1())))return d
+exx(d){var x,w,v,u,t,s,r,q,p="text/html"
+if(!(B.d.q(d,$.eh5())&&B.d.q(d,$.eh4())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
@@ -81,7 +81,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.eop(v)
+v=v==null?null:J.eos(v)
 return v==null?d:v}},D
 J=c[1]
 A=c[0]
@@ -101,7 +101,7 @@ if(!A.Gh()&&!A.Gi()){x=w.a.fy
 w.as=new C.aWd(x)}w.aHU()
 x=window
 x.toString
-x=A.k4(x,"message",w.gbuO(),!1,y._)
+x=A.k3(x,"message",w.gbuO(),!1,y._)
 w.z!==$&&A.cz()
 w.z=x},
 buP(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
@@ -121,11 +121,11 @@ t=(t==null?m:B.d.q(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.aa(x,"velocity")
-r=J.dWd(s==null?0:s,800)
+r=J.dWg(s==null?0:s,800)
 q=t.f
 p=B.c.gbz(q).at
 p.toString
-t.jF(B.i.ef(p+r,B.c.gbz(q).gfi(),B.c.gbz(q).geA()),B.fI,B.i8)
+t.jF(B.i.ef(p+r,B.c.gbz(q).gfi(),B.c.gbz(q).geA()),B.fH,B.i7)
 return}else{t=v
 q=n.a
 if(q.Q!=null)t=(t==null?m:B.d.q(t,"toDart: iframeKeydown"))===!0
@@ -183,15 +183,15 @@ x=t.e
 x===$&&A.d()
 u=t.y
 u===$&&A.d()
-if(C.exm(t.a.fr,x,u,v))t.W(new C.doF(t,v))}if(t.c!=null&&t.x)t.W(new C.doG(t))},
+if(C.exp(t.a.fr,x,u,v))t.W(new C.doH(t,v))}if(t.c!=null&&t.x)t.W(new C.doI(t))},
 bsk(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dWc(w,v.a.db)&&v.a.at)v.W(new C.doH(v,w))},
+if(v.c!=null&&J.dWf(w,v.a.db)&&v.a.at)v.W(new C.doJ(v,w))},
 bvv(d){var x,w,v,u,t=null
 try{v=J.ak(d)
-x=new C.a45(A.aB(v.i(d,"key")),A.aB(v.i(d,"code")),J.v(v.i(d,"shift"),!0))
+x=new C.a46(A.aB(v.i(d,"key")),A.aB(v.i(d,"code")),J.v(v.i(d,"shift"),!0))
 A.x(A.G(this).l(0)+"::_handleOnIFrameKeyboardEvent:\ud83d\udce5 Shortcut pressed: "+A.e(x),t,t,B.h,t,!1)
 v=this.a.Q
 if(v!=null)v.$1(x)}catch(u){w=A.L(u)
@@ -208,16 +208,16 @@ s=t.i(d,"url")
 x=s==null?"":s
 w=t.i(d,"rect")
 if(w!=null){t=J.aa(w,"x")
-t=t==null?m:J.xZ(t)
+t=t==null?m:J.y_(t)
 if(t==null)t=0
 r=J.aa(w,"y")
-r=r==null?m:J.xZ(r)
+r=r==null?m:J.y_(r)
 if(r==null)r=0
 q=J.aa(w,"width")
-q=q==null?m:J.xZ(q)
+q=q==null?m:J.y_(q)
 if(q==null)q=0
 p=J.aa(w,"height")
-p=p==null?m:J.xZ(p)
+p=p==null?m:J.y_(p)
 if(p==null)p=0
 v=new A.a9(t,r,t+q,r+p)
 t=n.c
@@ -240,11 +240,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-aHU(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.e0c(10),r=u.a,q=r.c,p=!r.fr,o=p?"            clearTimeout(_resizeDebounceTimer);\n            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();\n          ":"",n=p?'          var _lastResizeHeight = 0;\n          var _resizeDebounceTimer;\n          const resizeObserver = new ResizeObserver((entries) => {\n            clearTimeout(_resizeDebounceTimer);\n            _resizeDebounceTimer = setTimeout(function() {\n              var height = document.body.scrollHeight;\n              if (height === _lastResizeHeight) return;\n              _lastResizeHeight = height;\n              window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n            }, 50);\n          });\n        ':"",m=r.y!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=r.z!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+aHU(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.e0f(10),r=u.a,q=r.c,p=!r.fr,o=p?"            clearTimeout(_resizeDebounceTimer);\n            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();\n          ":"",n=p?'          var _lastResizeHeight = 0;\n          var _resizeDebounceTimer;\n          const resizeObserver = new ResizeObserver((entries) => {\n            clearTimeout(_resizeDebounceTimer);\n            _resizeDebounceTimer = setTimeout(function() {\n              var height = document.body.scrollHeight;\n              if (height === _lastResizeHeight) return;\n              _lastResizeHeight = height;\n              window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n            }, 50);\n          });\n        ':"",m=r.y!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=r.z!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 k=k?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 m=m?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.exu(q)
+if(r.ch)q=C.exx(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -274,13 +274,13 @@ u.r=A.bJ(!0,y.y)},
 t(d){var x=this
 x.yC(d)
 if(x.a.fr)return x.awL()
-else return A.eV(new C.doI(x))},
+else return A.eV(new C.doK(x))},
 awL(){var x,w=this,v=null,u=A.G(w).l(0),t=w.e
 t===$&&A.d()
 A.x(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),v,v,B.h,v,!1)
 t=A.c([],y.p)
 u=w.w
-if((u==null?v:B.d.ad(u).length!==0)===!0)t.push(A.RB(new C.doE(w),w.r,y.y))
+if((u==null?v:B.d.ad(u).length!==0)===!0)t.push(A.RB(new C.doG(w),w.r,y.y))
 if(w.x)t.push(D.a7U)
 x=new A.cy(B.a3,v,B.Z,B.F,t,v)
 w.a.toString
@@ -303,7 +303,7 @@ jd(){var x=this.jv$
 if(x!=null){x.b2()
 x.ir()
 this.jv$=null}this.qp()}}
-C.a45.prototype={
+C.a46.prototype={
 aTf(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
 Da(d,e){return this.aTf(0,e,!1)},
 gv(){return[this.a,this.b,this.c]}}
@@ -313,7 +313,7 @@ C.aWd.prototype={
 ate(d,e,f,g){var x,w,v,u,t,s,r,q,p,o,n=this,m={}
 if(n.a!=null){n.ex()
 A.akr(new C.cij(n,e,f,g),y.P)
-return}x=A.mx(e,!1)
+return}x=A.mw(e,!1)
 if(x==null)return
 w=e.gaq()
 v=g.iH(w instanceof A.a7?A.d1(w.cc(0,null),B.r):B.r)
@@ -326,31 +326,31 @@ q=r+28+4>u.a.b
 p=q?v.b-28-4:r+4
 o=m.a=v.a
 if((o+s>t?m.a=t-s-12:o)<12)m.a=12
-m=A.n4(new C.cik(m,n,q,p,s,f),!1,!1,!1)
+m=A.n3(new C.cik(m,n,q,p,s,f),!1,!1,!1)
 n.a=m
 x.lO(0,m)},
 ex(){var x=this.a
 if(x!=null)x.e8(0)
 this.a=null}}
-var z=a.updateTypes(["~(yS)","~()"])
-C.doF.prototype={
+var z=a.updateTypes(["~(yT)","~()"])
+C.doH.prototype={
 $0(){var x=this.a
 x.e=this.b
 x.x=!1},
 $S:0}
-C.doG.prototype={
+C.doI.prototype={
 $0(){this.a.x=!1},
 $S:0}
-C.doH.prototype={
+C.doJ.prototype={
 $0(){return this.a.f=this.b},
 $S:0}
-C.doI.prototype={
+C.doK.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
 return x.awL()},
 $S:106}
-C.doE.prototype={
+C.doG.prototype={
 $2(d,e){var x,w,v,u,t,s,r,q,p=null
 if(e.b!=null){x=this.a
 w=x.w
@@ -371,14 +371,14 @@ $0(){var x=this,w=x.b
 if(w.e!=null)x.a.ate(0,w,x.c,x.d)},
 $S:8}
 C.cik.prototype={
-$1(d){var x=this,w=null,v=x.b,u=A.k_(0,A.cX(B.c0,w,B.N,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gqW(),w,w,w,w,w,w,w,w,!1,B.a1),w),t=x.a.a,s=A.c([new A.c9(0,B.U,B.n.av(0.15),B.r,20)],y.V)
+$1(d){var x=this,w=null,v=x.b,u=A.jZ(0,A.cX(B.c0,w,B.N,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gqW(),w,w,w,w,w,w,w,w,!1,B.a1),w),t=x.a.a,s=A.c([new A.c9(0,B.U,B.n.av(0.15),B.r,20)],y.V)
 v=v.b.e
 if(v==null)v=D.b3S
-return A.dQP(new C.cii(x.c),new A.cy(B.a3,w,B.Z,B.F,A.c([u,A.kY(w,A.cY(A.cw(!1,B.C,!0,B.kv,A.a8(w,A.ai(x.f,w,1,B.A,w,w,v,w,w,w),B.k,w,new A.at(0,x.e,28,1/0),new A.bb(B.n,w,w,B.kv,s,w,w,B.B),w,w,w,w,B.mQ,w,w,w),B.k,w,0,w,w,w,w,w,B.aJ)),w,t,x.d,w)],y.p),w),B.fO,B.zI,new A.bF(0,1,y.t),y.i)},
+return A.dQS(new C.cii(x.c),new A.cy(B.a3,w,B.Z,B.F,A.c([u,A.kX(w,A.cY(A.cw(!1,B.C,!0,B.ku,A.a8(w,A.ai(x.f,w,1,B.A,w,w,v,w,w,w),B.k,w,new A.at(0,x.e,28,1/0),new A.bb(B.n,w,w,B.ku,s,w,w,B.B),w,w,w,w,B.mQ,w,w,w),B.k,w,0,w,w,w,w,w,B.aJ)),w,t,x.d,w)],y.p),w),B.fN,B.zI,new A.bF(0,1,y.t),y.i)},
 $S:351}
 C.cii.prototype={
 $3(d,e,f){var x=this.a?-1:1
-return A.nG(A.awM(f,new A.D(0,x*(1-e)*8)),null,e)},
+return A.nF(A.awM(f,new A.D(0,x*(1-e)*8)),null,e)},
 $S:352};(function aliases(){var x=C.aFQ.prototype
 x.bbr=x.ar})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
 x(C.aAt.prototype,"gbuO","buP",0)
@@ -386,19 +386,19 @@ w(C.aWd.prototype,"gqW","ex",1)})();(function inheritance(){var x=a.mixinHard,w=
 v(C.Sc,A.ag)
 v(C.aFQ,A.ae)
 v(C.aAt,C.aFQ)
-u(A.ye,[C.doF,C.doG,C.doH,C.cij])
-u(A.yf,[C.doI,C.doE])
+u(A.yf,[C.doH,C.doI,C.doJ,C.cij])
+u(A.yg,[C.doK,C.doG])
 u(A.U,[C.bqp,C.cig,C.aWd])
-v(C.a45,C.bqp)
+v(C.a46,C.bqp)
 u(A.qT,[C.cik,C.cii])
 x(C.aFQ,A.ui)
 w(C.bqp,A.k)})()
-A.Ie(b.typeUniverse,JSON.parse('{"Sc":{"ag":[],"j":[],"p":[]},"aAt":{"ae":["Sc"]},"a45":{"k":[]}}'))
+A.Ie(b.typeUniverse,JSON.parse('{"Sc":{"ag":[],"j":[],"p":[]},"aAt":{"ae":["Sc"]},"a46":{"k":[]}}'))
 var y=(function rtii(){var x=A.an
-return{V:x("O<c9>"),s:x("O<f>"),p:x("O<j>"),w:x("pc"),_:x("yS"),P:x("b1"),t:x("bF<aq>"),O:x("aT<f>"),N:x("abk<j2>"),y:x("B"),i:x("aq")}})();(function constants(){D.b_7=new A.b4(30,30,B.zk,null)
+return{V:x("O<c9>"),s:x("O<f>"),p:x("O<j>"),w:x("pb"),_:x("yT"),P:x("b1"),t:x("bF<aq>"),O:x("aT<f>"),N:x("abk<j2>"),y:x("B"),i:x("aq")}})();(function constants(){D.b_7=new A.b4(30,30,B.zk,null)
 D.aRs=new A.Z(B.cq,D.b_7,null)
 D.a7U=new A.ed(B.d5,null,null,D.aRs,null)
 D.b3S=new A.ao(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"fsA","eh2",()=>A.aY("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"fsz","eh1",()=>A.aY("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
-(a=>{a["C9Ze7NrQ9L80TmsjnEOtgfBGsE0="]=a.current})($__dart_deferred_initializers__);
+x($,"fsD","eh5",()=>A.aY("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"fsC","eh4",()=>A.aY("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+(a=>{a["i47jg2BNHTJtPUKX1ZGfS3hFUf4="]=a.current})($__dart_deferred_initializers__);
