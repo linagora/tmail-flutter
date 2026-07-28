@@ -196,34 +196,8 @@ void main() {
   }
 
   test('synchronizes through Summernote when jQuery is available', () async {
-    final summernoteStub = web.HTMLScriptElement()
-      ..type = 'text/javascript'
-      ..text = '''
-        window.__previousJQuery = window.jQuery;
-        window.jQuery = function (selector) {
-          const recorder = document.querySelector('.note-editor');
-          if (recorder) recorder.setAttribute('data-summernote-selector', selector);
-          return {
-            summernote: function (command) {
-              if (recorder) recorder.setAttribute('data-summernote-command', command);
-            }
-          };
-        };''';
-    _required(web.document.head, 'document head').append(summernoteStub);
-    addTearDown(() {
-      summernoteStub.remove();
-      final cleanup = web.HTMLScriptElement()
-        ..type = 'text/javascript'
-        ..text = '''
-          if (window.__previousJQuery === undefined) {
-            delete window.jQuery;
-          } else {
-            window.jQuery = window.__previousJQuery;
-          }
-          delete window.__previousJQuery;''';
-      _required(web.document.head, 'document head').append(cleanup);
-      cleanup.remove();
-    });
+    _installSummernoteSource(fixture);
+    _installSummernoteStub(initialized: true);
     final inputEvents = _observeInput(editable);
     _placeCaret(emptyLine);
 
@@ -233,12 +207,27 @@ void main() {
     expect(defaultPrevented, isTrue);
     expect(
       (
-        selector: fixture.getAttribute('data-summernote-selector'),
+        source: fixture.getAttribute('data-summernote-source'),
         command: fixture.getAttribute('data-summernote-command'),
       ),
-      (selector: '#summernote-2', command: 'editor.afterCommand'),
+      (source: _summernoteSourceId, command: 'editor.afterCommand'),
     );
     expect(inputEvents.count, 0);
+  });
+
+  test('falls back to an input event when Summernote is not initialized',
+      () async {
+    _installSummernoteSource(fixture);
+    _installSummernoteStub(initialized: false);
+    final inputEvents = _observeInput(editable);
+    _placeCaret(emptyLine);
+
+    final defaultPrevented = _dispatchEnter(emptyLine);
+    await _flushMicrotask();
+
+    expect(defaultPrevented, isTrue);
+    expect(fixture.getAttribute('data-summernote-command'), isNull);
+    expect(inputEvents.count, 1);
   });
 
   test('handles Enter once when the handler script is injected twice', () async {
@@ -380,6 +369,50 @@ void _verifyAnswerSelected(web.Element answer, _InputEvents inputEvents) {
 
 String _editableHtml(web.Element editable) =>
     (editable.innerHTML as JSString).toDart;
+
+const String _summernoteSourceId = 'summernote-source';
+
+void _installSummernoteSource(web.Element fixture) {
+  final source = web.HTMLDivElement()..id = _summernoteSourceId;
+  fixture.before(source);
+  addTearDown(() => source.remove());
+}
+
+void _installSummernoteStub({required bool initialized}) {
+  final summernoteStub = web.HTMLScriptElement()
+    ..type = 'text/javascript'
+    ..text = '''
+      window.__previousJQuery = window.jQuery;
+      window.jQuery = function (source) {
+        const recorder = document.querySelector('.note-editor');
+        if (recorder && source && source.id) {
+          recorder.setAttribute('data-summernote-source', source.id);
+        }
+        return {
+          summernote: function (command) {
+            if (recorder) recorder.setAttribute('data-summernote-command', command);
+          },
+          data: function (key) {
+            return key === 'summernote' && $initialized ? {} : undefined;
+          }
+        };
+      };''';
+  _required(web.document.head, 'document head').append(summernoteStub);
+  addTearDown(() {
+    summernoteStub.remove();
+    final cleanup = web.HTMLScriptElement()
+      ..type = 'text/javascript'
+      ..text = '''
+        if (window.__previousJQuery === undefined) {
+          delete window.jQuery;
+        } else {
+          window.jQuery = window.__previousJQuery;
+        }
+        delete window.__previousJQuery;''';
+    _required(web.document.head, 'document head').append(cleanup);
+    cleanup.remove();
+  });
+}
 
 _InputEvents _observeInput(web.Element target) {
   final events = _InputEvents();
