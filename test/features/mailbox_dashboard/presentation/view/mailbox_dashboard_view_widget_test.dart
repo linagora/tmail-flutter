@@ -468,6 +468,11 @@ void main() {
       expect(mailboxDashboardController.selectedMailbox.value, inbox);
 
       searchController.disableAllSearchEmail();
+      // resetSearchResultSession invalidates Riverpod providers, which the
+      // ProviderScheduler refreshes via a zero-duration Timer. Pump with a
+      // duration so the fake clock elapses and fires it before the test
+      // framework verifies no timers are pending.
+      await tester.pump(const Duration(milliseconds: 1));
 
       expect(mailboxDashboardController.selectedMailboxForDisplay, inbox);
       expect(mailboxDashboardController.selectedMailbox.value, inbox);
