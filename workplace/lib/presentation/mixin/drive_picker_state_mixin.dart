@@ -2,7 +2,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
-import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
@@ -39,7 +38,9 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     _modalOpen = true;
     try {
       if (!mounted) {
-        throw WorkplaceUIDisposedException();
+        // Tap raced state disposal — nothing to show a modal or toast on.
+        logError('DrivePickerStateMixin::onPickerTap: state disposed before opening modal');
+        return;
       }
       final l10n = AppLocalizations.of(context)!;
       // Captured up front: the caller may pop this context (e.g. a context
@@ -52,21 +53,15 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
             ? null
             : const WorkplaceActionConfigRequest(label: addAsAttachmentTitle),
       );
-      final intentFuture = pickerFetchIntent(filePickerConfig: filePickerConfig);
       DrivePickOutcome? outcome;
       try {
-        outcome = await showDialog<DrivePickOutcome>(
-          context: context,
-          useSafeArea: false,
-          barrierDismissible: false,
-          builder: (_) => DriveIntentWebViewModal(
-            intentFuture: intentFuture,
-            filePickerConfig: filePickerConfig,
-            imageAssets: driveIntentImageAssets,
-            onRegisterExternalHandler: externalHandlerRegistrar,
-          ),
+        outcome = await openDrivePickerModal(filePickerConfig);
+      } catch (e, s) {
+        logError(
+          'DrivePickerStateMixin::onPickerTap: modal failed',
+          exception: e,
+          stackTrace: s,
         );
-      } catch (e) {
         outcome = DrivePickOutcomeFailed(e);
       }
       _handleOutcome(outcome, failingMessage);
@@ -76,12 +71,36 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
+  /// Overridable seam so tests can stub the modal instead of pumping a real
+  /// WebView/iframe.
+  @protected
+  Future<DrivePickOutcome?> openDrivePickerModal(
+    WorkplaceFilePickerConfigRequest filePickerConfig,
+  ) {
+    return showDialog<DrivePickOutcome>(
+      context: context,
+      useSafeArea: false,
+      barrierDismissible: false,
+      builder: (_) => DriveIntentWebViewModal(
+        // Must stay lazy so the modal subscribes to failures before the
+        // token exchange or intent request starts.
+        intentLoader: () => pickerFetchIntent(
+          filePickerConfig: filePickerConfig,
+        ),
+        filePickerConfig: filePickerConfig,
+        imageAssets: driveIntentImageAssets,
+        onRegisterExternalHandler: externalHandlerRegistrar,
+      ),
+    );
+  }
+
   void _handleOutcome(DrivePickOutcome? outcome, String? failingMessage) {
     switch (outcome) {
       case DrivePickOutcomePicked(:final documents):
         pickerOnCallback?.call(DrivePickResult(documents));
       case DrivePickOutcomeFailed(:final error):
-        logError('DrivePickerStateMixin::onPickerTap: $error');
+        // Already reported to Sentry at the failing stage (modal mixin or the
+        // catch above) — only dispatch the UI failure callback here.
         pickerOnCallback?.call(DrivePickFailure(error, message: failingMessage));
       case DrivePickOutcomeCancelled():
       case null:

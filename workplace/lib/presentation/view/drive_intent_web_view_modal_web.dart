@@ -12,7 +12,7 @@ import 'package:workplace/presentation/view/drive_intent_skeleton_loader.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
-  final Future<WorkplaceIntent> intentFuture;
+  final DriveIntentLoader intentLoader;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
   final DriveIntentImageAssets imageAssets;
   // ADR-93: composer registers the window listener at composer-init time and
@@ -21,7 +21,7 @@ class DriveIntentWebViewModal extends StatefulWidget {
 
   const DriveIntentWebViewModal({
     super.key,
-    required this.intentFuture,
+    required this.intentLoader,
     required this.filePickerConfig,
     required this.imageAssets,
     this.onRegisterExternalHandler,
@@ -68,11 +68,14 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       // the composer context).
       startWindowMessageListener(_forwardMessage);
     }
-    startLoading(widget.intentFuture);
+    startLoading(widget.intentLoader);
   }
 
   @override
-  void loadIntent(WorkplaceIntent intent) {
+  Future<void> loadIntent(WorkplaceIntent intent) async {
+    // No web equivalent of mobile's onReceivedError: cross-origin iframes
+    // expose no navigation-failure signal, and probing the URL first could
+    // false-close on CSP mismatches — readyTimeout is the only safe fallback.
     _iframeElement!.src = intent.intentUrl.toString();
   }
 
@@ -140,7 +143,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   }
 
   @override
-  void sendAck() {
+  Future<void> sendAck() async {
     // data: URIs have opaque 'null' origin — postMessage requires '*' for those.
     final targetOrigin = intentOrigin == 'null' ? '*' : intentOrigin;
     // dart:html's postMessage structured-clones the Map into a real JS
