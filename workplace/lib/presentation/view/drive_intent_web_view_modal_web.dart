@@ -37,6 +37,15 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
         ResponsiveUtils().isTabletLarge(context);
   }
 
+  Widget? _loadingWidget({
+    required bool show,
+    required bool wideScreen,
+  }) {
+    if (!show) return null;
+    if (wideScreen) return const DriveIntentSkeletonLoader.table();
+    return const DriveIntentSkeletonLoader.list();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -95,22 +104,16 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       onBarrierTap: () {
         if (!showSkeleton) cancel();
       },
-      child: Stack(
-        children: [
-          HtmlIframeWidget(
-            key: const ValueKey('drive-intent-webview'),
-            onIframeCreated: (iframe) {
-              _iframeElement = iframe;
-              notifyPlatformViewReady();
-            },
-          ),
-          if (showSkeleton)
-            Positioned.fill(
-              child: isWideScreen
-                  ? const DriveIntentSkeletonLoader.table()
-                  : const DriveIntentSkeletonLoader.list(),
-            ),
-        ],
+      loadingWidget: _loadingWidget(
+        show: showSkeleton,
+        wideScreen: isWideScreen,
+      ),
+      child: HtmlIframeWidget(
+        key: const ValueKey('drive-intent-webview'),
+        onIframeCreated: (iframe) {
+          _iframeElement = iframe;
+          notifyPlatformViewReady();
+        },
       ),
     );
     return isWideScreen
