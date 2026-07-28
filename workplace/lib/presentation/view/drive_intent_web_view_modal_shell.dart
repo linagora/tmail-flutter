@@ -18,6 +18,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   final BoxConstraints? constraints;
   final bool haveCloseButton;
   final AlignmentGeometry? alignment;
+  final Widget? loadingWidget;
 
   const DriveIntentWebViewModalShell({
     super.key,
@@ -29,6 +30,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
     this.constraints,
     this.haveCloseButton = true,
     this.alignment,
+    this.loadingWidget,
   });
 
   @override
@@ -46,26 +48,30 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
           child: GestureDetector(
             onTap: () {},
             behavior: HitTestBehavior.opaque,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Stack(
               children: [
-                if (haveCloseButton) ...[
-                  const SizedBox(height: 14),
-                  Padding(
-                    padding: const EdgeInsetsGeometry.directional(end: 17),
-                    child: TMailButtonWidget.fromIcon(
-                      icon: ImagePaths().icClose,
-                      iconColor: const Color(
-                        0xFF424244,
-                      ).withValues(alpha: 0.64),
-                      padding: const EdgeInsets.all(12),
-                      backgroundColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      onTapActionCallback: onClose,
-                    ),
-                  ),
-                ],
-                Expanded(child: child),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (haveCloseButton)
+                      Padding(
+                        padding: const EdgeInsetsGeometry.directional(end: 17),
+                        child: TMailButtonWidget.fromIcon(
+                          icon: ImagePaths().icClose,
+                          iconColor: const Color(
+                            0xFF424244,
+                          ).withValues(alpha: 0.64),
+                          padding: const EdgeInsets.all(12),
+                          backgroundColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          onTapActionCallback: onClose,
+                        ),
+                      ),
+                    Expanded(child: child),
+                  ],
+                ),
+                if (loadingWidget != null)
+                  Positioned.fill(child: loadingWidget!),
               ],
             ),
           ),

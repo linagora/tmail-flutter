@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Static, non-interactive placeholder shown over the Drive intent
 /// webview/iframe while the real page is loading. Mirrors the Twake Drive
@@ -26,7 +27,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      child: mobile ? _buildMobile() : _buildWeb(),
+      child: mobile ? _buildMobile(context) : _buildWeb(),
     );
   }
 
@@ -39,11 +40,10 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  _rect(width: 169, height: 28),
-                  const Spacer(),
-                ],
+              SvgPicture.asset(
+                ImagePaths().twakeDriveLogo,
+                width: 169,
+                height: 28,
               ),
               const SizedBox(height: 14),
               Row(
@@ -146,7 +146,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         ),
       );
 
-  Widget _buildMobile() {
+  Widget _buildMobile(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -154,8 +154,24 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         children: [
           Row(
             children: [
-              _rect(width: 120, height: 24),
-              const Spacer(),
+              Expanded(
+                child: SvgPicture.asset(
+                  ImagePaths().twakeDriveLogo,
+                  alignment: Alignment.centerLeft,
+                  width: 169,
+                  height: 28,
+                ),
+              ),
+              TMailButtonWidget.fromIcon(
+                icon: ImagePaths().icClose,
+                iconColor: const Color(
+                  0xFF424244,
+                ).withValues(alpha: 0.64),
+                padding: const EdgeInsets.all(12),
+                backgroundColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                onTapActionCallback: Navigator.of(context).pop,
+              ),
             ],
           ),
           const SizedBox(height: 16),

@@ -67,32 +67,29 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
         onBarrierTap: () {
           if (!showSkeleton) cancel();
         },
-        child: Stack(
-          children: [
-            InAppWebView(
-              key: const ValueKey('drive-intent-webview'),
-              initialSettings: InAppWebViewSettings(),
-              initialUserScripts: UnmodifiableListView([
-                UserScript(
-                  source: DriveIntentShims.parentPostMessageShim,
-                  injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
-                ),
-              ]),
-              onWebViewCreated: (controller) {
-                _webViewController = controller;
-                controller.addJavaScriptHandler(
-                  handlerName: DriveIntentShims.handlerName,
-                  callback: (args) => onMessage(
-                    raw: args[0] as String,
-                    origin: args.length > 1 ? args[1] as String? : null,
-                  ),
-                );
-                notifyPlatformViewReady();
-              },
+        loadingWidget: showSkeleton
+            ? const DriveIntentSkeletonLoader.list()
+            : null,
+        child: InAppWebView(
+          key: const ValueKey('drive-intent-webview'),
+          initialSettings: InAppWebViewSettings(),
+          initialUserScripts: UnmodifiableListView([
+            UserScript(
+              source: DriveIntentShims.parentPostMessageShim,
+              injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
             ),
-            if (showSkeleton)
-              const Positioned.fill(child: DriveIntentSkeletonLoader.list()),
-          ],
+          ]),
+          onWebViewCreated: (controller) {
+            _webViewController = controller;
+            controller.addJavaScriptHandler(
+              handlerName: DriveIntentShims.handlerName,
+              callback: (args) => onMessage(
+                raw: args[0] as String,
+                origin: args.length > 1 ? args[1] as String? : null,
+              ),
+            );
+            notifyPlatformViewReady();
+          },
         ),
       ),
     );
