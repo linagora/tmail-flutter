@@ -234,7 +234,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
@@ -3123,18 +3122,11 @@ class MailboxDashBoardController extends ReloadableController
         title: title,
         url: uri ?? RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
-          router: NavigationRouter(
+          router: RouteUtils.dashboardRouterForMailboxOrSearch(
+            isSearchRunning: isSearchRunning,
             emailId: selectedEmail.value?.id,
-            mailboxId: isSearchRunning
-              ? null
-              : currentMailbox?.browserRouteMailboxId,
-            labelId: currentMailbox?.labelId,
-            dashboardType: isSearchRunning
-              ? DashboardType.search
-              : DashboardType.normal,
-            searchQuery: isSearchRunning
-              ? searchController.searchQuery
-              : null
+            selectedMailbox: currentMailbox,
+            searchQuery: searchController.searchQuery,
           )
         )
       );

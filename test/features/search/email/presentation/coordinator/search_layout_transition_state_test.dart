@@ -75,5 +75,25 @@ void main() {
 
       expectSkipped(transition);
     });
+
+    test('PROBE failed transition never settles in its own breakpoint', () {
+      final transition = arrangePendingMobileTransition();
+      state.complete(transition, succeeded: false);
+
+      expect(state.observeBreakpoint(false), isNotNull);
+      expect(state.observeBreakpoint(false), isNotNull);
+      expect(state.observeBreakpoint(false), isNotNull);
+      expect(state.transitionId, 4);
+      expect(state.lastReconciledDesktop, isNull);
+    });
+
+    test('PROBE successful transition settles after one crossing', () {
+      final transition = arrangePendingMobileTransition();
+      state.complete(transition, succeeded: true);
+
+      expect(state.observeBreakpoint(false), isNull);
+      expect(state.observeBreakpoint(false), isNull);
+      expect(state.transitionId, 1);
+    });
   });
 }

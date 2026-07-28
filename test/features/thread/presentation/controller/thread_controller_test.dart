@@ -1492,13 +1492,28 @@ void main() {
         verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
       });
 
-      test('mobile handoff clears desktop presentation ownership', () {
+      test(
+        'REGRESSION mobile handoff keeps desktop presentation ownership '
+        'so closing search on mobile restores the mailbox list',
+      () {
         stubActiveSearchWithOpenEmail();
         final coordinator = createSearchLayoutCoordinatorForTest(
           mobileOwnerRegistry: _TestSearchEmailLayoutOwnerRegistry(),
         );
 
         coordinator.markDesktopSearchPresentation();
+        coordinator.reconcile(false);
+
+        expect(coordinator.takeDesktopSearchPresentation(), isTrue);
+      });
+
+      test('mobile handoff without desktop presentation leaves ownership unset',
+      () {
+        stubActiveSearchWithOpenEmail();
+        final coordinator = createSearchLayoutCoordinatorForTest(
+          mobileOwnerRegistry: _TestSearchEmailLayoutOwnerRegistry(),
+        );
+
         coordinator.reconcile(false);
 
         expect(coordinator.takeDesktopSearchPresentation(), isFalse);

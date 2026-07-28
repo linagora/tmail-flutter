@@ -8,7 +8,9 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -121,6 +123,24 @@ abstract class RouteUtils {
       final servicePath = _createServicePath('$baseOriginUrl$route');
       return Uri.parse(servicePath.path);
     }
+  }
+
+  /// Dashboard router for a mailbox or an active search. During search it drops
+  /// [mailboxId] and [labelId] so the launching folder never leaks into the URL.
+  static NavigationRouter dashboardRouterForMailboxOrSearch({
+    required bool isSearchRunning,
+    EmailId? emailId,
+    PresentationMailbox? selectedMailbox,
+    SearchQuery? searchQuery,
+  }) {
+    return NavigationRouter(
+      emailId: emailId,
+      mailboxId: isSearchRunning ? null : selectedMailbox?.browserRouteMailboxId,
+      labelId: isSearchRunning ? null : selectedMailbox?.labelId,
+      searchQuery: isSearchRunning ? searchQuery : null,
+      dashboardType:
+          isSearchRunning ? DashboardType.search : DashboardType.normal,
+    );
   }
 
   static NavigationRouter parsingRouteParametersToNavigationRouter(Map<String, dynamic> parameters) {

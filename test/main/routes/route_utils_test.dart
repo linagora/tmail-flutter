@@ -1,240 +1,216 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
-void main() {
-  group('parseMapMailtoFromUri test', () {
-    test('should parse a valid mailto URI', () {
-      const mailtoUri = 'mailto:test@example.com?subject=Hello';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+/// Asserts the route, address and subject of a parsed mailto map, so tests read
+/// in domain terms instead of repeating `expect`s. [address]/[subject] default
+/// to being absent.
+void expectParsedMailto(
+  Map<String, dynamic> result, {
+  Object? address = isNull,
+  Object? subject = isNull,
+}) {
+  expect(result[RouteUtils.paramRouteName], AppRoutes.mailtoURL);
+  expect(result[RouteUtils.paramMailtoAddress], address);
+  expect(result[RouteUtils.paramSubject], subject);
+}
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals('test@example.com'));
-      expect(result[RouteUtils.paramSubject], equals('Hello'));
+/// Asserts every equivalent mailto form parses to the same map.
+void expectSameParsing(Iterable<Map<String, dynamic>> results) {
+  for (final result in results.skip(1)) {
+    expect(result, equals(results.first));
+  }
+}
+
+void main() {
+  group('dashboardRouterForMailboxOrSearch test', () {
+    final mailboxId = MailboxId(Id('mailbox-1'));
+    final regularMailbox = PresentationMailbox(mailboxId);
+    final labelMailbox = PresentationLabelMailbox(
+      MailboxId(Id('label-1')),
+      Label(id: Id('label-1'), displayName: 'Work'),
+    );
+    final query = SearchQuery('hello');
+
+    NavigationRouter buildRouter({
+      required bool isSearchRunning,
+      PresentationMailbox? selectedMailbox,
+    }) {
+      return RouteUtils.dashboardRouterForMailboxOrSearch(
+        isSearchRunning: isSearchRunning,
+        selectedMailbox: selectedMailbox,
+        searchQuery: query,
+      );
+    }
+
+    // NavigationRouter is an Equatable, so one expectation over the whole
+    // router covers mailboxId, labelId, searchQuery and dashboardType at once.
+    final searchRouter = NavigationRouter(
+      dashboardType: DashboardType.search,
+      searchQuery: query,
+    );
+
+    test('keeps the folder context off search', () {
+      expect(
+        buildRouter(isSearchRunning: false, selectedMailbox: regularMailbox),
+        NavigationRouter(mailboxId: mailboxId),
+      );
+    });
+
+    test('keeps the label context off search', () {
+      expect(
+        buildRouter(isSearchRunning: false, selectedMailbox: labelMailbox),
+        NavigationRouter(labelId: labelMailbox.labelId),
+      );
+    });
+
+    test('drops the folder context during search', () {
+      expect(
+        buildRouter(isSearchRunning: true, selectedMailbox: regularMailbox),
+        searchRouter,
+      );
+    });
+
+    test('drops the label context during search', () {
+      expect(
+        buildRouter(isSearchRunning: true, selectedMailbox: labelMailbox),
+        searchRouter,
+      );
+    });
+  });
+
+  group('parseMapMailtoFromUri test', () {
+    // Shared fixture for the "every possible parameters" cases.
+    const to1 = 'to1@example.com';
+    const to2 = 'to2@example.com';
+    const to3 = 'to3@example.com';
+    const cc1 = 'cc1@example.com';
+    const cc2 = 'cc2@example.com';
+    const bcc1 = 'bcc1@example.com';
+    const bcc2 = 'bcc2@example.com';
+    const subject = 'Hello';
+    const body = 'Bye';
+    const mailtoSchemeUri = 'mailto:$to1,$to2'
+        '?to=$to2,$to3'
+        '&cc=$cc1,$cc2'
+        '&bcc=$bcc1,$bcc2'
+        '&subject=$subject'
+        '&body=$body';
+    const mailtoPathUri = 'https://example.com/mailto'
+        '?uri=$to1,$to2'
+        '&to=$to2,$to3'
+        '&cc=$cc1,$cc2'
+        '&bcc=$bcc1,$bcc2'
+        '&subject=$subject'
+        '&body=$body';
+    const mailtoPathWithNestedMailtoUri = 'https://example.com/mailto/'
+        '?uri=mailto:$to1,$to2'
+        '&to=$to2,$to3'
+        '&cc=$cc1,$cc2'
+        '&bcc=$bcc1,$bcc2'
+        '&subject=$subject'
+        '&body=$body';
+
+    // Asserts a fully-populated mailto: the shared cc/bcc/subject/body fixture
+    // plus the recipients described by [address].
+    void expectFullyParsedMailto(Map<String, dynamic> result, Object address) {
+      expectParsedMailto(result, address: address, subject: subject);
+      expect(result[RouteUtils.paramCc], containsAll([cc1, cc2]));
+      expect(result[RouteUtils.paramBcc], containsAll([bcc1, bcc2]));
+      expect(result[RouteUtils.paramBody], body);
+    }
+
+    // Parses the scheme/path/nested URI forms (via [transform]) and asserts they
+    // agree and carry every parameter.
+    void expectAllUriFormsMatch(String Function(String uri) transform) {
+      final results = [
+        mailtoSchemeUri,
+        mailtoPathUri,
+        mailtoPathWithNestedMailtoUri,
+      ].map((uri) => RouteUtils.parseMapMailtoFromUri(transform(uri))).toList();
+
+      expectSameParsing(results);
+      expectFullyParsedMailto(results.first, containsAll([to1, to2, to3]));
+    }
+
+    test('should parse a valid mailto URI', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test@example.com?subject=Hello');
+
+      expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
     });
 
     test('should parse a valid mailto URI encoded', () {
-      const mailtoUri = 'mailto:test%40example.com%3Fsubject=Hello';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test%40example.com%3Fsubject=Hello');
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals('test@example.com'));
-      expect(result[RouteUtils.paramSubject], equals('Hello'));
+      expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
     });
 
     test('should handle a mailto URI without subject', () {
-      const mailtoUri = 'mailto:test@example.com';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+      final result = RouteUtils.parseMapMailtoFromUri('mailto:test@example.com');
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals('test@example.com'));
-      expect(result[RouteUtils.paramSubject], isNull);
+      expectParsedMailto(result, address: 'test@example.com');
     });
 
     test('should handle a mailto URI without subject encoded', () {
-      const mailtoUri = 'mailto:test%40example.com';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+      final result = RouteUtils.parseMapMailtoFromUri('mailto:test%40example.com');
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals('test@example.com'));
-      expect(result[RouteUtils.paramSubject], isNull);
+      expectParsedMailto(result, address: 'test@example.com');
     });
 
     test('should handle a non-mailto URI', () {
-      const nonMailtoUri = 'test@example.com';
-      final result = RouteUtils.parseMapMailtoFromUri(nonMailtoUri);
+      final result = RouteUtils.parseMapMailtoFromUri('test@example.com');
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals(nonMailtoUri));
-      expect(result[RouteUtils.paramSubject], isNull);
+      expectParsedMailto(result, address: 'test@example.com');
     });
 
     test('should handle a non-mailto URI encoded', () {
-      const nonMailtoUri = 'test%40example.com';
-      final result = RouteUtils.parseMapMailtoFromUri(nonMailtoUri);
+      final result = RouteUtils.parseMapMailtoFromUri('test%40example.com');
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], equals('test@example.com'));
-      expect(result[RouteUtils.paramSubject], isNull);
+      expectParsedMailto(result, address: 'test@example.com');
     });
 
     test('should handle null input', () {
       final result = RouteUtils.parseMapMailtoFromUri(null);
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], isNull);
-      expect(result[RouteUtils.paramSubject], isNull);
+      expectParsedMailto(result);
     });
 
-    test('should parse a valid mailto URI encoded contains multiple recipients', () {
-      const mailtoUri = 'mailto:test%40example.com%2Ctest2%40example.com%2Ctest3%40example.com%3Fsubject=Hello';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+    test('should parse multiple recipients from encoded and plain mailto URIs', () {
+      final results = [
+        'mailto:test%40example.com%2Ctest2%40example.com'
+            '%2Ctest3%40example.com%3Fsubject=Hello',
+        'mailto:test@example.com,test2@example.com,test3@example.com?subject=Hello',
+      ].map(RouteUtils.parseMapMailtoFromUri).toList();
 
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], containsAll(['test@example.com', 'test2@example.com', 'test3@example.com']));
-      expect(result[RouteUtils.paramSubject], equals('Hello'));
-    });
-
-    test('should parse a valid mailto URI contains multiple recipients', () {
-      const mailtoUri = 'mailto:test@example.com,test2@example.com,test3@example.com?subject=Hello';
-      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
-
-      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
-      expect(result[RouteUtils.paramMailtoAddress], containsAll(['test@example.com', 'test2@example.com', 'test3@example.com']));
-      expect(result[RouteUtils.paramSubject], equals('Hello'));
-    });
-
-    test(
-      'should parse a valid mailto URI encoded contains every possible parameters',
-    () {
-      // arrange
-      const to1 = 'to1@example.com';
-      const to2 = 'to2@example.com';
-      const to3 = 'to3@example.com';
-      const cc1 = 'cc1@example.com';
-      const cc2 = 'cc2@example.com';
-      const bcc1 = 'bcc1@example.com';
-      const bcc2 = 'bcc2@example.com';
-      const subject = 'Hello';
-      const body = 'Bye';
-      const mailtoSchemeUri = 'mailto:$to1,$to2'
-        '?to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      const mailtoPathUri = 'https://example.com/mailto'
-        '?uri=$to1,$to2'
-        '&to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      const mailtoPathWithNestedMailtoUri = 'https://example.com/mailto/'
-        '?uri=mailto:$to1,$to2'
-        '&to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      // act
-      final mailtoSchemeResult = RouteUtils.parseMapMailtoFromUri(
-        Uri.encodeFull(mailtoSchemeUri));
-      final mailtoPathResult = RouteUtils.parseMapMailtoFromUri(
-        Uri.encodeFull(mailtoPathUri));
-      final mailtoPathWithNestedMailtoResult = RouteUtils.parseMapMailtoFromUri(
-        Uri.encodeFull(mailtoPathWithNestedMailtoUri));
-
-      // assert
-      expect(mailtoSchemeResult, equals(mailtoPathResult));
-      expect(mailtoSchemeResult, equals(mailtoPathWithNestedMailtoResult));
-      expect(mailtoPathResult, equals(mailtoPathWithNestedMailtoResult));
-
-      expect(
-        mailtoSchemeResult[RouteUtils.paramMailtoAddress],
-        containsAll([to1, to2, to3,])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramCc],
-        containsAll([cc1, cc2])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramBcc],
-        containsAll([bcc1, bcc2])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramSubject],
-        equals(subject)
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramBody],
-        equals(body)
+      expectSameParsing(results);
+      expectParsedMailto(
+        results.first,
+        address: containsAll(
+          ['test@example.com', 'test2@example.com', 'test3@example.com']),
+        subject: 'Hello',
       );
     });
 
-    test(
-      'should parse a valid mailto URI contains every possible parameters',
-    () {
-      // arrange
-      const to1 = 'to1@example.com';
-      const to2 = 'to2@example.com';
-      const to3 = 'to3@example.com';
-      const cc1 = 'cc1@example.com';
-      const cc2 = 'cc2@example.com';
-      const bcc1 = 'bcc1@example.com';
-      const bcc2 = 'bcc2@example.com';
-      const subject = 'Hello';
-      const body = 'Bye';
-      const mailtoSchemeUri = 'mailto:$to1,$to2'
-        '?to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      const mailtoPathUri = 'https://example.com/mailto'
-        '?uri=$to1,$to2'
-        '&to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      const mailtoPathWithNestedMailtoUri = 'https://example.com/mailto/'
-        '?uri=mailto:$to1,$to2'
-        '&to=$to2,$to3'
-        '&cc=$cc1,$cc2'
-        '&bcc=$bcc1,$bcc2'
-        '&subject=$subject'
-        '&body=$body';
-
-      // act
-      final mailtoSchemeResult = RouteUtils.parseMapMailtoFromUri(
-        mailtoSchemeUri);
-      final mailtoPathResult = RouteUtils.parseMapMailtoFromUri(mailtoPathUri);
-      final mailtoPathWithNestedMailtoResult = RouteUtils.parseMapMailtoFromUri(
-        mailtoPathWithNestedMailtoUri);
-
-      // assert
-      expect(mailtoSchemeResult, equals(mailtoPathResult));
-      expect(mailtoSchemeResult, equals(mailtoPathWithNestedMailtoResult));
-      expect(mailtoPathResult, equals(mailtoPathWithNestedMailtoResult));
-
-      expect(
-        mailtoSchemeResult[RouteUtils.paramMailtoAddress],
-        containsAll([to1, to2, to3,])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramCc],
-        containsAll([cc1, cc2])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramBcc],
-        containsAll([bcc1, bcc2])
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramSubject],
-        equals(subject)
-      );
-      expect(
-        mailtoSchemeResult[RouteUtils.paramBody],
-        equals(body)
-      );
+    test('should parse every possible parameter from encoded and plain URIs', () {
+      expectAllUriFormsMatch(Uri.encodeFull);
+      expectAllUriFormsMatch((uri) => uri);
     });
 
     test(
       'should parse url with mailto uri '
       'when the query parameter belongs to the mailto uri',
     () {
-      // arrange
       const to = 'to@example.com';
-      const cc1 = 'cc1@example.com', cc2 = 'cc2@example.com';
-      const bcc1 = 'bcc1@example.com', bcc2 = 'bcc2@example.com';
-      const subject = 'Hello';
-      const body = 'Bye';
       const mailtoUri = 'https://example.com/mailto/'
         '?uri=mailto:$to'
         '?subject=$subject'
@@ -242,15 +218,9 @@ void main() {
         '&bcc=$bcc1,$bcc2'
         '&body=$body';
 
-      // act
       final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
-      
-      // assert
-      expect(result[RouteUtils.paramMailtoAddress], equals(to));
-      expect(result[RouteUtils.paramCc], containsAll([cc1, cc2]));
-      expect(result[RouteUtils.paramBcc], containsAll([bcc1, bcc2]));
-      expect(result[RouteUtils.paramSubject], equals(subject));
-      expect(result[RouteUtils.paramBody], equals(body));
+
+      expectFullyParsedMailto(result, to);
     });
   });
 

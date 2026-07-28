@@ -25,7 +25,9 @@ class SearchLayoutCoordinator {
   final SearchLayoutTransitionState _transitionState =
       SearchLayoutTransitionState();
 
-  /// Tracks whether the desktop thread list currently owns search results.
+  /// Whether the desktop thread list still holds search results and needs a
+  /// restore when search closes. Survives a desktop-to-mobile handoff, which
+  /// never clears that list.
   bool _desktopSearchPresentationActive = false;
 
   StreamSubscription<html.Event>? _resizeSubscription;
@@ -134,9 +136,8 @@ class SearchLayoutCoordinator {
   bool _handoffToMobile() {
     if (!_mobileOwnerRegistry.tryPrepareForSearchHandoff()) return false;
 
-    // The mobile list now owns the presentation, so mailbox restore must not
-    // treat the previous desktop list as active.
-    _desktopSearchPresentationActive = false;
+    // Mobile now shows the results, but the desktop list still holds them
+    // behind it. Keep desktop ownership so closing search restores that list.
     _activateMobileSearch();
     _dispatchSearchListRouteIfEmailClosed(DashboardRoutes.searchEmail);
     _searchService.replayCurrentStateToOwners();

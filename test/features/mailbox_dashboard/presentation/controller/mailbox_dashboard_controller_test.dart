@@ -64,7 +64,10 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
@@ -682,6 +685,66 @@ void main() {
       mailboxDashboardController.searchEmailByQueryString(queryString);
 
       expect(mailboxDashboardController.selectedMailbox.value, inbox);
+    });
+
+    test(
+      'REGRESSION WHEN a system Back leaves a search launched from the inbox\n'
+      'THEN the inbox list SHOULD be reloaded even though the inbox stays selected',
+      () async {
+      when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+      when(context.mounted).thenReturn(true);
+      // onInit registers the mailboxUIAction listener that handles the action
+      // (the harness only calls onReady).
+      mailboxController.onInit();
+      // One inbox instance backs both tree and selection, so switching back
+      // fires no mailbox change: only the restore can reload, making this a
+      // real guard for the fix.
+      final inbox = PresentationMailbox(
+        testMailboxId,
+        role: PresentationMailbox.roleInbox,
+      );
+      mailboxController.defaultMailboxTree.value = MailboxTree(
+        MailboxNode(
+          MailboxNode.rootItem(),
+          childrenItems: [MailboxNode(inbox)],
+        ),
+      );
+      mailboxDashboardController.selectedMailbox.value = inbox;
+      await pumpEventQueue();
+      clearInteractions(getEmailsInMailboxInteractor);
+      searchController.activateSimpleSearch();
+
+      mailboxDashboardController
+          .dispatchMailboxUIAction(SystemBackToInboxAction());
+
+      await untilCalled(getEmailsInMailboxInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      ));
+
+      expect(searchController.isSearchEmailRunning, isFalse);
+      verify(getEmailsInMailboxInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+        useCache: anyNamed('useCache'),
+        forceEmailQuery: anyNamed('forceEmailQuery'),
+        collapseThreads: anyNamed('collapseThreads'),
+      )).called(1);
     });
 
     test(
