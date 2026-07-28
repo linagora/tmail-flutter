@@ -58,7 +58,6 @@ import 'package:tmail_ui_user/features/search/email/domain/execution/search_exec
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/get_search_email_layout_owner_registry.dart';
@@ -68,8 +67,6 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/search_
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
