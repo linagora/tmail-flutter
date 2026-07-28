@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:core/utils/build_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
@@ -13,17 +14,25 @@ import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 /// fallback for browsers without OPFS `createWritable()` support — checked
 /// (the actual-byte guard still cancels on breach), not memory-flat.
 class BufferedWebDriveFileStager implements DriveFileStager {
+  BufferedWebDriveFileStager({Dio? dio}) : _dio = dio ?? WorkplaceDio.instance;
+
+  final Dio _dio;
+
   @override
   Future<StagedDriveFile> stage({
     required DriveDocument doc,
     required void Function(int received, int total) onDownloadProgress,
     required CancelToken cancelToken,
   }) async {
-    if (doc.downloadLink == null) {
+    final downloadLink = doc.downloadLink;
+    if (downloadLink == null) {
       throw DriveDownloadNullAttachmentException();
     }
-    final response = await WorkplaceDio.instance.getUri<List<int>>(
-      doc.downloadLink!,
+    if (BuildUtils.isReleaseMode && !downloadLink.isScheme('https')) {
+      throw DriveDownloadInsecureLinkException();
+    }
+    final response = await _dio.getUri<List<int>>(
+      downloadLink,
       options: Options(
         responseType: ResponseType.bytes,
         receiveTimeout: driveTransferReceiveTimeout,
@@ -32,7 +41,11 @@ class BufferedWebDriveFileStager implements DriveFileStager {
       onReceiveProgress: onDownloadProgress,
     );
 
-    final bytes = Uint8List.fromList(response.data!);
+    final data = response.data;
+    if (data == null) {
+      throw DriveDownloadEmptyResponseException();
+    }
+    final bytes = data is Uint8List ? data : Uint8List.fromList(data);
     return BytesStagedFile(
       bytes: bytes,
       fileName: doc.name,

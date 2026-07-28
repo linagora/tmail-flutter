@@ -79,6 +79,14 @@ final class BytesStagedFile extends StagedDriveFile {
   @override
   Future<void> dispose() async {}
 
+  /// Compares [bytes] by identity, not content — value equality over a
+  /// potentially large in-memory buffer would make `==`/`hashCode` O(file
+  /// size).
   @override
-  List<Object?> get props => [bytes, fileName, fileSize, mimeType];
+  List<Object?> get props => [
+        identityHashCode(bytes),
+        fileName,
+        fileSize,
+        mimeType,
+      ];
 }

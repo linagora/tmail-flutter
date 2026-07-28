@@ -44,13 +44,17 @@ void main() {
       await staged.dispose();
     });
 
-    test('equality is based on props, not identity', () {
+    test('equality compares bytes by identity, not content', () {
+      final sharedBytes = Uint8List.fromList([1]);
       final a = BytesStagedFile(
-          bytes: Uint8List.fromList([1]), fileName: 'a', fileSize: 1);
+          bytes: sharedBytes, fileName: 'a', fileSize: 1);
       final b = BytesStagedFile(
+          bytes: sharedBytes, fileName: 'a', fileSize: 1);
+      final c = BytesStagedFile(
           bytes: Uint8List.fromList([1]), fileName: 'a', fileSize: 1);
 
       expect(a, equals(b));
+      expect(a, isNot(equals(c)));
     });
   });
 }

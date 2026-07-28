@@ -9,3 +9,7 @@ class DriveIntentErrorException implements Exception {}
 class DriveIntentTimeoutException implements Exception {}
 
 class DriveDownloadNullAttachmentException implements Exception {}
+
+class DriveDownloadInsecureLinkException implements Exception {}
+
+class DriveDownloadEmptyResponseException implements Exception {}
