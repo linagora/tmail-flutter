@@ -807,6 +807,34 @@ void main() {
       });
 
       test(
+        'Should keep the signature stylesheet when inserting into the editor\n'
+        'When the transformed document carries a <style> block in <head>',
+      () async {
+        // A signature whose first node is a <style> block parses with that
+        // block hoisted into <head> — this is the exact document the
+        // forComposerSignature() pipeline returns for such a signature.
+        const transformedDocument =
+            '<html><head><style>.sig{color:#093}</style></head>'
+            '<body><p class="sig">Alice</p></body></html>';
+        const normalizedSignature =
+            '<style>.sig{color:#093}</style><p class="sig">Alice</p>';
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(
+                Right(TransformHtmlEmailContentSuccess(transformedDocument))));
+
+        await composerController?.applySignature(rawSignature);
+
+        verify(mockHtmlEditorApi.insertSignature(
+          normalizedSignature,
+          allowCollapsed: false,
+        )).called(1);
+      });
+
+      test(
         'Should insert the normalized signature fragment into the web editor\n'
         'When TransformHtmlEmailContentInteractor succeeds',
       () async {

@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -1736,11 +1735,9 @@ class ComposerController extends BaseController
 
   /// Identity signatures are stored raw on the server, so a degenerate
   /// `line-height` (e.g. `0.1`) would overlap text once inserted into the
-  /// editor. Normalize it like the preview pipeline does. The HTML transform
-  /// returns a complete document, while the editor expects a fragment, so only
-  /// the transformed body is inserted. Fail-open: any failure, unexpected
-  /// state, empty result, or exception falls back to the original signature so
-  /// insertion never breaks.
+  /// editor. Normalize it like the preview pipeline does. Fail-open: any
+  /// failure, unexpected state, empty result, or exception falls back to the
+  /// original signature so insertion never breaks.
   Future<String> _normalizeSignature(String signature) async {
     try {
       final resultState = await _transformHtmlEmailContentInteractor
@@ -1751,8 +1748,9 @@ class ComposerController extends BaseController
         (success) {
           if (success is! TransformHtmlEmailContentSuccess) return signature;
 
-          final normalizedSignature =
-              parse(success.htmlContent).body?.innerHtml ?? '';
+          // The transform returns a complete document while the editor
+          // expects a fragment.
+          final normalizedSignature = success.htmlContent.toHtmlFragment();
           return normalizedSignature.trim().isNotEmpty
               ? normalizedSignature
               : signature;
