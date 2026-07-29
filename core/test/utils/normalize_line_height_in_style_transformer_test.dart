@@ -31,6 +31,13 @@ void main() {
       expect(doc.querySelector('p')!.attributes['style'], 'font-size:14px;');
     });
 
+    test('Should remove line-height regardless of property casing', () async {
+      for (final property in ['LINE-HEIGHT', 'Line-Height', 'lInE-hEiGhT']) {
+        final doc = await run('<p style="$property:1px; color:red;">Hi</p>');
+        expect(doc.querySelector('p')!.attributes['style'], 'color:red;');
+      }
+    });
+
     test('Should keeps other line-height values', () async {
       final doc = await run(
         '<p style="line-height:150%; font-weight:bold;">Hi</p>',
@@ -41,14 +48,342 @@ void main() {
       );
     });
 
-    test('Should removes style attribute if only line-height existed',
-        () async {
-      final doc = await run('<div style="line-height:1px;"></div>');
+    test('Should remove degenerate unitless line-height values', () async {
+      for (final value in ['0.1', '0.5', '0.79']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes.containsKey('style'),
+          isFalse,
+        );
+      }
+    });
+
+    test(
+      'Should keep tight-but-legitimate and normal relative values',
+      () async {
+        // [0.8, 1) is deliberate tight typography (e.g. 90% newsletters);
+        // major clients render it as authored, so preserve for fidelity.
+        for (final value in ['0.8', '0.9', '1', '1.5', '0.8em', '0.9em', '1.2em', '2em']) {
+          final doc = await run('<p style="line-height:$value;">Hi</p>');
+          expect(
+            doc.querySelector('p')!.attributes['style'],
+            'line-height:$value;',
+            reason: 'Expected line-height $value to be preserved',
+          );
+        }
+      },
+    );
+
+    test('Should remove degenerate em values and the legacy 1em', () async {
+      // `1em` computes to the same length as the TF-3964 legacy `100%`.
+      for (final value in ['0.1em', '0.5em', '0.79em', '1em', '1.0em']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes.containsKey('style'),
+          isFalse,
+          reason: 'Expected line-height $value to be removed',
+        );
+      }
+    });
+
+    test('Should never remove rem line-height values', () async {
+      // rem is root-relative: `0.9rem` ≈ 14.4px is fine leading for 12px
+      // text, so overlap cannot be judged from the number alone.
+      for (final value in ['0.1rem', '0.5rem', '0.9rem', '1rem', '1.2rem']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes['style'],
+          'line-height:$value;',
+          reason: 'Expected line-height $value to be preserved',
+        );
+      }
+    });
+
+    test('Should remove degenerate percentages and the legacy 100%', () async {
+      for (final value in ['10%', '50%', '79%', '100%']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes.containsKey('style'),
+          isFalse,
+          reason: 'Expected line-height $value to be removed',
+        );
+      }
+
+      for (final value in ['80%', '90%', '99.9%', '150%']) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes['style'],
+          'line-height:$value;',
+          reason: 'Expected line-height $value to be preserved',
+        );
+      }
+    });
+
+    test(
+      'Should remove small absolute line-height values and keep larger ones',
+      () async {
+        for (final value in ['1px', '1pt']) {
+          final doc = await run('<p style="line-height:$value;">Hi</p>');
+          expect(
+            doc.querySelector('p')!.attributes.containsKey('style'),
+            isFalse,
+          );
+        }
+
+        for (final value in ['2px', '14px', '2pt']) {
+          final doc = await run('<p style="line-height:$value;">Hi</p>');
+          expect(
+            doc.querySelector('p')!.attributes['style'],
+            'line-height:$value;',
+          );
+        }
+      },
+    );
+
+    test('Should enforce exact line-height removal boundaries', () async {
+      for (final value in [
+        '.79',
+        '+0.1',
+        '0.79em',
+        '1em',
+        '1.0em',
+        '100%',
+        '100.0%',
+        '1.0px',
+        '0.5pt',
+      ]) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes.containsKey('style'),
+          isFalse,
+          reason: 'Expected line-height $value to be removed',
+        );
+      }
+
+      for (final value in [
+        '0.8',
+        '.99',
+        '1',
+        '1.0',
+        '1.01',
+        '0.8em',
+        '0.99em',
+        '1.01em',
+        '0.79rem',
+        '1rem',
+        '1.01px',
+        '2pt',
+        '80%',
+        '99.99%',
+        '100.01%',
+        '-0.1',
+        '1e-1',
+        // Zero is the intentional image-gap/spacer trick — preserved in any unit.
+        '0',
+        '0.0',
+        '0px',
+        '0em',
+        '0%',
+      ]) {
+        final doc = await run('<p style="line-height:$value;">Hi</p>');
+        expect(
+          doc.querySelector('p')!.attributes['style'],
+          'line-height:$value;',
+          reason: 'Expected line-height $value to be preserved',
+        );
+      }
+    });
+
+    test(
+      'Should preserve keywords, invalid values, and unrelated styles',
+      () async {
+        for (final value in ['normal', 'auto', 'inherit', 'calc(1em + 2px)']) {
+          final doc = await run(
+            '<p style="color:red; line-height:$value; font-size:14px;">Hi</p>',
+          );
+          expect(
+            doc.querySelector('p')!.attributes['style'],
+            'color:red; line-height:$value; font-size:14px;',
+          );
+        }
+      },
+    );
+
+    test('Should remove a degenerate line-height with !important', () async {
+      final doc = await run(
+        '<p style="color:red; line-height:0.1 !important; font-size:14px;">Hi</p>',
+      );
       expect(
-        doc.querySelector('div')!.attributes.containsKey('style'),
-        isFalse,
+        doc.querySelector('p')!.attributes['style'],
+        'color:red; font-size:14px;',
       );
     });
+
+    test('Should remove degenerate line-height with spaced !important',
+        () async {
+      // Arbitrary whitespace around !important is valid CSS and must not defeat
+      // removal (incl. > any fixed bound, and a space after `!`).
+      for (final value in [
+        '0.1 !important',
+        '0.1 ! important',
+        '0.1${' ' * 20}!important',
+      ]) {
+        final doc = await run('<p style="line-height:$value; color:red;">Hi</p>');
+        final style = doc.querySelector('p')!.attributes['style']!;
+        expect(style, isNot(contains('line-height')), reason: 'value: $value');
+        expect(style, contains('color:red'));
+      }
+    });
+
+    test('Should handle uppercase !IMPORTANT and mixed whitespace', () async {
+      final doc = await run('''
+        <p style="color:red;\n  LiNe-HeIgHt:\t0.5EM !IMPORTANT;\n font-size:14px">Hi</p>
+      ''');
+      final style = doc.querySelector('p')!.attributes['style']!;
+      expect(style.toLowerCase(), isNot(contains('line-height')));
+      expect(style, contains('color:red;'));
+      expect(style, contains('font-size:14px'));
+    });
+
+    test('Should not modify custom properties or quoted CSS values', () async {
+      final customPropertyDoc = await run(
+        '<p style="--line-height:0.1; color:red;">Hi</p>',
+      );
+      expect(
+        customPropertyDoc.querySelector('p')!.attributes['style'],
+        '--line-height:0.1; color:red;',
+      );
+
+      final quotedValueDoc = await run(
+        '<p style=\'line-height:1.5; content:"line-height:0.1;";\'>Hi</p>',
+      );
+      expect(
+        quotedValueDoc.querySelector('p')!.attributes['style'],
+        'line-height:1.5; content:"line-height:0.1;";',
+      );
+    });
+
+    test('Should not touch ";line-height:" embedded in a quoted value',
+        () async {
+      // The semicolons are inside a quoted value, so they are not top-level
+      // declaration boundaries and the property is left intact.
+      const style = '--payload:"x; line-height:0.1; y"; color:red;';
+      final doc = await run("<p style='$style'>Hi</p>");
+      expect(doc.querySelector('p')!.attributes['style'], style);
+    });
+
+    test('Should not touch ";line-height:" inside a single-quoted value',
+        () async {
+      // Semicolons inside a single-quoted value are not top-level boundaries.
+      final doc = await run(
+        '<p style="content:\'a; line-height:0.1; b\'; color:red;">Hi</p>',
+      );
+      expect(
+        doc.querySelector('p')!.attributes['style'],
+        "content:'a; line-height:0.1; b'; color:red;",
+      );
+    });
+
+    test('Should not split on an escaped semicolon', () async {
+      // `\;` is escaped data, not a boundary, so the trailing line-height:0.1 is
+      // part of the --payload value and must be preserved.
+      const style = '--payload:x\\;line-height:0.1; color:red;';
+      final doc = await run("<p style='$style'>Hi</p>");
+      expect(doc.querySelector('p')!.attributes['style'], style);
+    });
+
+    test('Should keep malformed CSS unchanged (fail-open)', () async {
+      for (final style in [
+        'line-height:0.1; content:"unclosed', // unterminated quote
+        'line-height:0.1; /* unclosed comment', // unterminated comment
+        'line-height:0.1 /*/', // unterminated comment (/*/)
+        'line-height:0.1); color:red', // unbalanced parenthesis
+        'line-height:0.1 \\', // trailing backslash
+      ]) {
+        final doc = await run("<p style='$style'>Hi</p>");
+        expect(doc.querySelector('p')!.attributes['style'], style);
+      }
+    });
+
+    test(
+      'Should preserve unrelated whitespace when line-height is kept',
+      () async {
+        const style = 'line-height:1.5; font-family:"A  B"; content:"x  y";';
+        final doc = await run("<p style='$style'>Hi</p>");
+        expect(doc.querySelector('p')!.attributes['style'], style);
+      },
+    );
+
+    test('Should not split on semicolons inside a CSS function value', () async {
+      final doc = await run(
+        '<p style=\'background-image:url("data:image/svg+xml;a;b"); line-height:0.1; color:red;\'>Hi</p>',
+      );
+      expect(
+        doc.querySelector('p')!.attributes['style'],
+        'background-image:url("data:image/svg+xml;a;b"); color:red;',
+      );
+    });
+
+    test('Should treat /* inside url() as data, not a comment', () async {
+      // An unquoted URL containing `/*` must not fail-open the whole
+      // attribute, otherwise the degenerate line-height would survive
+      // (TF-3964 regression).
+      final doc = await run(
+        "<p style='background:url(https://example.com/a/*/b.png); line-height:1px; color:red;'>Hi</p>",
+      );
+      expect(
+        doc.querySelector('p')!.attributes['style'],
+        'background:url(https://example.com/a/*/b.png); color:red;',
+      );
+    });
+
+    test('Should still fail-open on a top-level unterminated comment', () async {
+      const style = 'line-height:1px; color:red; /* unclosed';
+      final doc = await run("<p style='$style'>Hi</p>");
+      expect(doc.querySelector('p')!.attributes['style'], style);
+    });
+
+    test('Should respect escaped quotes while removing line-height', () async {
+      final doc = await run(
+        r'''<p style='content:"a\";b"; line-height:0.1; color:red;'>Hi</p>''',
+      );
+      expect(
+        doc.querySelector('p')!.attributes['style'],
+        r'''content:"a\";b"; color:red;''',
+      );
+    });
+
+    test(
+      'Should fix a multi-line signature without removing inline styles',
+      () async {
+        final doc = await run('''
+          <div>
+            <p style="color:#333; font-size:14px; line-height:0.1;">Name</p>
+            <p style="color:#333; font-size:12px; line-height:0.1;">Role</p>
+          </div>
+        ''');
+
+        final paragraphs = doc.querySelectorAll('p');
+        expect(paragraphs, hasLength(2));
+        for (final paragraph in paragraphs) {
+          final style = paragraph.attributes['style']!;
+          expect(style, isNot(contains('line-height')));
+          expect(style, contains('color:#333'));
+          expect(style, contains('font-size:'));
+        }
+      },
+    );
+
+    test(
+      'Should removes style attribute if only line-height existed',
+      () async {
+        final doc = await run('<div style="line-height:1px;"></div>');
+        expect(
+          doc.querySelector('div')!.attributes.containsKey('style'),
+          isFalse,
+        );
+      },
+    );
 
     test('Should handles missing style gracefully', () async {
       final doc = await run('<span>No style here</span>');
@@ -66,6 +401,14 @@ void main() {
         doc.querySelector('p')!.attributes['style'],
         'color:blue; font-size:12px;',
       );
+    });
+
+    test('Should remove back-to-back degenerate line-heights', () async {
+      // The boundary between them must survive removal of the first.
+      final doc = await run(
+        '<p style="line-height:0.1;line-height:0.2;color:blue;"></p>',
+      );
+      expect(doc.querySelector('p')!.attributes['style'], 'color:blue;');
     });
 
     test('Should removes line-height even with irregular spacing', () async {

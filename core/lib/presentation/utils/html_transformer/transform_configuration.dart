@@ -124,8 +124,18 @@ class TransformConfiguration {
        const BlockCodeTransformer(),
        SanitizeHyperLinkTagInHtmlTransformer(),
        const ImageTransformer(),
+       const NormalizeLineHeightInStyleTransformer(),
      ],
    );
+
+  /// Signature HTML inserted into the composer editor. Kept minimal — only
+  /// degenerate `line-height` values are stripped — because the inserted
+  /// signature becomes part of the email that is sent and must not be
+  /// rewritten by display-only transformers.
+  factory TransformConfiguration.forComposerSignature() =>
+      TransformConfiguration.fromDomTransformers([
+        const NormalizeLineHeightInStyleTransformer(),
+      ]);
 
   factory TransformConfiguration.forCalendarEvent() => TransformConfiguration.create(
     customTextTransformers: const [
