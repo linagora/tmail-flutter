@@ -215,7 +215,13 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     } catch (e, s) {
       logError('driveIntent: onFinished failed', exception: e, stackTrace: s);
     }
-    if (mounted) Navigator.of(context).pop(outcome);
+    // Guarded like the hooks above: _finish runs from Timer/unawaited paths, so
+    // a throwing pop must not escape as an uncaught async error.
+    try {
+      if (mounted) Navigator.of(context).pop(outcome);
+    } catch (e, s) {
+      logError('driveIntent: pop failed', exception: e, stackTrace: s);
+    }
   }
 
   /// Async so ack-delivery failures (e.g. evaluateJavascript) reject the

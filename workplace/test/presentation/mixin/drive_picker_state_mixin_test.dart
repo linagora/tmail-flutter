@@ -171,6 +171,41 @@ void main() {
         expect(state.openCalls, isEmpty);
         expect(state.pickStates, isEmpty);
       });
+
+      testWidgets('pick delivered even though the opener was disposed mid-flight', (tester) async {
+        final state = await _pumpPicker(tester);
+        final completer = Completer<DrivePickOutcome?>();
+        state.modalStub = () => completer.future;
+
+        final tap = state.onPickerTap();
+        await tester.pumpWidget(const SizedBox.shrink());
+        expect(state.mounted, isFalse, reason: 'sanity: opener really is gone');
+
+        completer.complete(DrivePickOutcomePicked([_doc()]));
+        await tap;
+
+        expect(state.pickStates, hasLength(1));
+        final result = state.pickStates.single as DrivePickResult;
+        expect(result.documents.single.id, 'doc1');
+      });
+
+      // Pins the up-front capture of the toast text: localizations need a live
+      // context, so reading them after the await would lose the message.
+      testWidgets('failure after opener disposal keeps the localized message', (tester) async {
+        final state = await _pumpPicker(tester);
+        final completer = Completer<DrivePickOutcome?>();
+        state.modalStub = () => completer.future;
+
+        final tap = state.onPickerTap();
+        await tester.pumpWidget(const SizedBox.shrink());
+
+        completer.complete(DrivePickOutcomeFailed(StateError('intent failed')));
+        await tap;
+
+        expect(state.pickStates, hasLength(1));
+        final failure = state.pickStates.single as DrivePickFailure;
+        expect(failure.message, isNotNull);
+      });
     });
   });
 }
