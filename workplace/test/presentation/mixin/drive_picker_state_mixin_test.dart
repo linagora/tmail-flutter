@@ -7,6 +7,7 @@ import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
+import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
@@ -25,10 +26,6 @@ class _TestState extends State<_TestWidget>
   final List<DrivePickState> pickStates = [];
   final List<WorkplaceFilePickerConfigRequest> openCalls = [];
   _ModalStub modalStub = () => Future.value();
-  int clearHandlerCalls = 0;
-
-  @override
-  void clearExternalHandler() => clearHandlerCalls++;
 
   @override
   FetchDriveIntentCallback get pickerFetchIntent =>
@@ -39,6 +36,10 @@ class _TestState extends State<_TestWidget>
 
   @override
   OnPickDriveCallback? get pickerOnCallback => pickStates.add;
+
+  @override
+  DriveIntentImageAssets get driveIntentImageAssets =>
+      const DriveIntentImageAssets(driveLogo: '', closeIcon: '', searchIcon: '');
 
   @override
   Future<DrivePickOutcome?> openDrivePickerModal(
@@ -159,15 +160,6 @@ void main() {
         await state.onPickerTap();
 
         expect(state.openCalls, hasLength(2));
-      });
-
-      testWidgets('external handler cleared even when modal fails', (tester) async {
-        final state = await _pumpPicker(tester);
-        state.modalStub = () => Future.error(StateError('modal crashed'));
-
-        await state.onPickerTap();
-
-        expect(state.clearHandlerCalls, 1);
       });
 
       testWidgets('tap after state disposed → no modal, no callback, no crash', (tester) async {

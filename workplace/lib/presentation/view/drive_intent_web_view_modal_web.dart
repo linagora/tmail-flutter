@@ -15,16 +15,12 @@ class DriveIntentWebViewModal extends StatefulWidget {
   final DriveIntentLoader intentLoader;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
   final DriveIntentImageAssets imageAssets;
-  // ADR-93: composer registers the window listener at composer-init time and
-  // forwards messages here, so the handler is ready before the iframe loads.
-  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
     required this.intentLoader,
     required this.filePickerConfig,
     required this.imageAssets,
-    this.onRegisterExternalHandler,
   });
 
   @override
@@ -59,15 +55,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   @override
   void initState() {
     super.initState();
-    if (widget.onRegisterExternalHandler != null) {
-      // ADR-93: composer registered window listener at composer-init; it
-      // forwards raw messages here so we don't need our own window listener.
-      widget.onRegisterExternalHandler!(_forwardMessage);
-    } else {
-      // Fallback: modal owns its own window listener (e.g. when used outside
-      // the composer context).
-      startWindowMessageListener(_forwardMessage);
-    }
+    // The modal owns its listener: bound to its own lifetime, not the opener's
+    // (a context menu tile pops its route on tap and would tear it down early).
+    startWindowMessageListener(_forwardMessage);
     startLoading(widget.intentLoader);
   }
 
@@ -89,9 +79,8 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   void dispose() {
-    // Guard against routes popped without going through the mixin's finish
-    // path (system back, parent nav, etc.) — onCleanup is idempotent so
-    // double-call is safe.
+    // Guards routes popped outside the finish path (system back, parent nav);
+    // onCleanup is idempotent.
     onCleanup();
     super.dispose();
   }

@@ -2,9 +2,6 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-typedef DriveMessageHandler = void Function(String raw, String? origin);
-typedef OnRegisterExternalHandler = void Function(DriveMessageHandler handler);
-
 class DriveIntentWebViewModalShell extends StatelessWidget {
   final Widget child;
   final VoidCallback onClose;

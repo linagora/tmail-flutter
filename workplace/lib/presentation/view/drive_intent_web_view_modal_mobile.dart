@@ -17,15 +17,12 @@ class DriveIntentWebViewModal extends StatefulWidget {
   final DriveIntentLoader intentLoader;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
   final DriveIntentImageAssets imageAssets;
-  // Ignored on mobile — only used by the web variant (ADR-93).
-  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
     required this.intentLoader,
     required this.filePickerConfig,
     required this.imageAssets,
-    this.onRegisterExternalHandler,
   });
 
   @override

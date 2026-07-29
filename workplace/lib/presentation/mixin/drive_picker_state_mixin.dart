@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
-import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
@@ -26,10 +25,6 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   DriveIntentImageAssets get driveIntentImageAssets;
 
   OnPickDriveCallback? get pickerOnCallback => null;
-
-  void Function(void Function(String raw, String? origin))?
-  get externalHandlerRegistrar => null;
-  void clearExternalHandler() {}
 
   bool _modalOpen = false;
 
@@ -66,7 +61,6 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       }
       _handleOutcome(outcome, failingMessage);
     } finally {
-      clearExternalHandler();
       _modalOpen = false;
     }
   }
@@ -89,7 +83,6 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         ),
         filePickerConfig: filePickerConfig,
         imageAssets: driveIntentImageAssets,
-        onRegisterExternalHandler: externalHandlerRegistrar,
       ),
     );
   }
@@ -106,34 +99,5 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       case null:
         break;
     }
-  }
-}
-
-/// Web-specific extension of [DrivePickerStateMixin] that wires a single
-/// `window.onmessage` listener (ADR-93) into the modal handler slot.
-mixin DrivePickerWebStateMixin<T extends StatefulWidget>
-    on State<T>, DrivePickerStateMixin<T>, WebWindowMessageMixin<T> {
-  void Function(String raw, String? origin)? _webModalHandler;
-
-  @override
-  void Function(void Function(String raw, String? origin))?
-  get externalHandlerRegistrar =>
-      (handler) => _webModalHandler = handler;
-
-  @override
-  void clearExternalHandler() => _webModalHandler = null;
-
-  @override
-  void initState() {
-    super.initState();
-    startWindowMessageListener(
-      (data, origin) => _webModalHandler?.call(data, origin),
-    );
-  }
-
-  @override
-  void dispose() {
-    stopWindowMessageListener();
-    super.dispose();
   }
 }
