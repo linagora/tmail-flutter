@@ -202,13 +202,20 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     _readyTimeoutTimer?.cancel();
     // Once closed, the timeout is cancelled and _finish won't run again, so
     // the pop must happen even if a subclass hook throws — otherwise the
-    // modal hangs with no fallback.
+    // modal hangs with no fallback. Each hook is guarded independently so a
+    // throwing onCleanup still runs onFinished, and neither escapes into the
+    // unawaited futures that call _finish as an unobserved async error.
     try {
       onCleanup();
-      onFinished(outcome);
-    } finally {
-      if (mounted) Navigator.of(context).pop(outcome);
+    } catch (e, s) {
+      logError('driveIntent: onCleanup failed', exception: e, stackTrace: s);
     }
+    try {
+      onFinished(outcome);
+    } catch (e, s) {
+      logError('driveIntent: onFinished failed', exception: e, stackTrace: s);
+    }
+    if (mounted) Navigator.of(context).pop(outcome);
   }
 
   /// Async so ack-delivery failures (e.g. evaluateJavascript) reject the

@@ -348,13 +348,14 @@ Future<_TestState> _pumpOnPushedRoute(
 }
 
 void _finishContractTests() {
-  testWidgets('onCleanup throws → route still pops', (tester) async {
+  testWidgets('onCleanup throws → swallowed, onFinished still runs, route still pops', (tester) async {
     final state = await _pumpOnPushedRoute(tester);
     state.throwOnCleanup = true;
 
-    expect(state.cancel, throwsStateError);
+    state.cancel();
     await tester.pumpAndSettle();
 
+    expect(state.outcomes.single, isA<DrivePickOutcomeCancelled>());
     expect(find.byType(_TestWidget), findsNothing);
   });
 
