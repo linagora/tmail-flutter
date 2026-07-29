@@ -72,7 +72,10 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
           if (!showSkeleton) cancel();
         },
         loadingWidget: showSkeleton
-            ? DriveIntentSkeletonLoader.list(imageAssets: widget.imageAssets)
+            ? (closeButton) => DriveIntentSkeletonLoader.list(
+                imageAssets: widget.imageAssets,
+                closeButton: closeButton,
+              )
             : null,
         child: InAppWebView(
           key: const ValueKey('drive-intent-webview'),

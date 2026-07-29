@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
@@ -40,15 +41,19 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
         ResponsiveUtils().isTabletLarge(context);
   }
 
-  Widget? _loadingWidget({
+  Widget _loadingWidget({
     required bool show,
     required bool wideScreen,
+    TMailButtonWidget? closeButton,
   }) {
-    if (!show) return null;
+    if (!show) return const SizedBox();
     if (wideScreen) {
       return DriveIntentSkeletonLoader.table(imageAssets: widget.imageAssets);
     }
-    return DriveIntentSkeletonLoader.list(imageAssets: widget.imageAssets);
+    return DriveIntentSkeletonLoader.list(
+      imageAssets: widget.imageAssets,
+      closeButton: closeButton,
+    );
   }
 
   @override
@@ -110,9 +115,10 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       onBarrierTap: () {
         if (!showSkeleton) cancel();
       },
-      loadingWidget: _loadingWidget(
+      loadingWidget: (closeButton) => _loadingWidget(
         show: showSkeleton,
         wideScreen: isWideScreen,
+        closeButton: closeButton,
       ),
       child: HtmlIframeWidget(
         key: const ValueKey('drive-intent-webview'),

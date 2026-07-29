@@ -17,7 +17,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   final BoxConstraints? constraints;
   final bool haveCloseButton;
   final AlignmentGeometry? alignment;
-  final Widget? loadingWidget;
+  final Widget Function(TMailButtonWidget closeButton)? loadingWidget;
   final String closeIconPath;
 
   const DriveIntentWebViewModalShell({
@@ -36,6 +36,14 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final closeButton = TMailButtonWidget.fromIcon(
+      icon: closeIconPath,
+      iconColor: const Color(0xFF424244).withValues(alpha: 0.64),
+      padding: const EdgeInsets.all(12),
+      backgroundColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      onTapActionCallback: onClose,
+    );
     return PointerInterceptor(
       child: GestureDetector(
         onTap: onBarrierTap ?? onClose,
@@ -57,22 +65,13 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
                     if (haveCloseButton)
                       Padding(
                         padding: const EdgeInsetsGeometry.directional(end: 17),
-                        child: TMailButtonWidget.fromIcon(
-                          icon: closeIconPath,
-                          iconColor: const Color(
-                            0xFF424244,
-                          ).withValues(alpha: 0.64),
-                          padding: const EdgeInsets.all(12),
-                          backgroundColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          onTapActionCallback: onClose,
-                        ),
+                        child: closeButton,
                       ),
                     Expanded(child: child),
                   ],
                 ),
                 if (loadingWidget != null)
-                  Positioned.fill(child: loadingWidget!),
+                  Positioned.fill(child: loadingWidget!(closeButton)),
               ],
             ),
           ),

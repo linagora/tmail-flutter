@@ -11,10 +11,11 @@ import '../model/drive_intent_image_assets.dart';
 class DriveIntentSkeletonLoader extends StatelessWidget {
   final bool mobile;
   final DriveIntentImageAssets imageAssets;
+  final TMailButtonWidget? closeButton;
 
-  const DriveIntentSkeletonLoader.table({super.key, required this.imageAssets})
+  const DriveIntentSkeletonLoader.table({super.key, required this.imageAssets, this.closeButton})
       : mobile = false;
-  const DriveIntentSkeletonLoader.list({super.key, required this.imageAssets})
+  const DriveIntentSkeletonLoader.list({super.key, required this.imageAssets, this.closeButton})
       : mobile = true;
 
   static const Color _rectColor = Color(0xFFE0E0E0);
@@ -166,16 +167,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
                   height: 28,
                 ),
               ),
-              TMailButtonWidget.fromIcon(
-                icon: imageAssets.closeIcon,
-                iconColor: const Color(
-                  0xFF424244,
-                ).withValues(alpha: 0.64),
-                padding: const EdgeInsets.all(12),
-                backgroundColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                onTapActionCallback: Navigator.of(context).pop,
-              ),
+              ?closeButton,
             ],
           ),
           const SizedBox(height: 16),
