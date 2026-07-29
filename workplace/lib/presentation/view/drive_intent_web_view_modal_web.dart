@@ -6,12 +6,14 @@ import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/view/drive_intent_skeleton_loader.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
   final Future<WorkplaceIntent> intentFuture;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
+  final DriveIntentImageAssets imageAssets;
   // ADR-93: composer registers the window listener at composer-init time and
   // forwards messages here, so the handler is ready before the iframe loads.
   final OnRegisterExternalHandler? onRegisterExternalHandler;
@@ -20,6 +22,7 @@ class DriveIntentWebViewModal extends StatefulWidget {
     super.key,
     required this.intentFuture,
     required this.filePickerConfig,
+    required this.imageAssets,
     this.onRegisterExternalHandler,
   });
 
@@ -42,8 +45,10 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     required bool wideScreen,
   }) {
     if (!show) return null;
-    if (wideScreen) return const DriveIntentSkeletonLoader.table();
-    return const DriveIntentSkeletonLoader.list();
+    if (wideScreen) {
+      return DriveIntentSkeletonLoader.table(imageAssets: widget.imageAssets);
+    }
+    return DriveIntentSkeletonLoader.list(imageAssets: widget.imageAssets);
   }
 
   @override
@@ -100,6 +105,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
           : const RoundedRectangleBorder(),
       haveCloseButton: !isWideScreen,
       alignment: isWideScreen ? Alignment.center : null,
+      closeIconPath: widget.imageAssets.closeIcon,
       onClose: cancel,
       onBarrierTap: () {
         if (!showSkeleton) cancel();

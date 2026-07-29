@@ -5,6 +5,7 @@ import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
@@ -22,6 +23,8 @@ typedef FetchDriveIntentCallback =
 /// call [onPickerTap] from their tap handler.
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   FetchDriveIntentCallback get pickerFetchIntent;
+
+  DriveIntentImageAssets get driveIntentImageAssets;
 
   OnPickDriveCallback? get pickerOnCallback => null;
 
@@ -59,6 +62,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
           builder: (_) => DriveIntentWebViewModal(
             intentFuture: intentFuture,
             filePickerConfig: filePickerConfig,
+            imageAssets: driveIntentImageAssets,
             onRegisterExternalHandler: externalHandlerRegistrar,
           ),
         );

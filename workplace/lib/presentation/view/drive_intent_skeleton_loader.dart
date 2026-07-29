@@ -1,7 +1,8 @@
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../model/drive_intent_image_assets.dart';
 
 /// Static, non-interactive placeholder shown over the Drive intent
 /// webview/iframe while the real page is loading. Mirrors the Twake Drive
@@ -9,9 +10,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// reference design has none) rather than a generic spinner.
 class DriveIntentSkeletonLoader extends StatelessWidget {
   final bool mobile;
+  final DriveIntentImageAssets imageAssets;
 
-  const DriveIntentSkeletonLoader.table({super.key}) : mobile = false;
-  const DriveIntentSkeletonLoader.list({super.key}) : mobile = true;
+  const DriveIntentSkeletonLoader.table({super.key, required this.imageAssets})
+      : mobile = false;
+  const DriveIntentSkeletonLoader.list({super.key, required this.imageAssets})
+      : mobile = true;
 
   static const Color _rectColor = Color(0xFFE0E0E0);
   static const Color _dividerColor = Color(0x1F424244);
@@ -20,7 +24,6 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = ImagePaths();
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -28,13 +31,11 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      child: mobile
-          ? _buildMobile(context, imagePaths: imagePaths)
-          : _buildWeb(imagePaths: imagePaths),
+      child: mobile ? _buildMobile(context) : _buildWeb(),
     );
   }
 
-  Widget _buildWeb({required ImagePaths imagePaths}) {
+  Widget _buildWeb() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,7 +45,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SvgPicture.asset(
-                imagePaths.twakeDriveLogo,
+                imageAssets.driveLogo,
                 width: 169,
                 height: 28,
               ),
@@ -149,7 +150,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         ),
       );
 
-  Widget _buildMobile(BuildContext context, {required ImagePaths imagePaths}) {
+  Widget _buildMobile(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -159,14 +160,14 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
             children: [
               Expanded(
                 child: SvgPicture.asset(
-                  imagePaths.twakeDriveLogo,
+                  imageAssets.driveLogo,
                   alignment: Alignment.centerLeft,
                   width: 169,
                   height: 28,
                 ),
               ),
               TMailButtonWidget.fromIcon(
-                icon: ImagePaths().icClose,
+                icon: imageAssets.closeIcon,
                 iconColor: const Color(
                   0xFF424244,
                 ).withValues(alpha: 0.64),
@@ -233,7 +234,7 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         child: Row(
           children: [
             TMailButtonWidget.fromIcon(
-              icon: ImagePaths().icSearchBar,
+              icon: imageAssets.searchIcon,
               iconColor: const Color(0xFF424244).withValues(alpha: 0.4),
               backgroundColor: Colors.transparent,
               hoverColor: Colors.transparent,
