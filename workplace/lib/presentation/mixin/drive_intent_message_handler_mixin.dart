@@ -42,8 +42,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   void startLoading(DriveIntentLoader intentLoader) {
     // Starts the deadline immediately so a platform view that never becomes
     // ready (e.g. WebView/iframe init silently failing) still times out.
-    _readyTimeoutTimer?.cancel();
-    _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
+    _restartReadyTimeout();
     unawaited(_loadIntent(intentLoader));
   }
 
@@ -69,8 +68,22 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     _finish(DrivePickOutcomeFailed(error));
   }
 
-  void notifyPlatformViewReady() {
+  void _restartReadyTimeout() {
+    _readyTimeoutTimer?.cancel();
+    _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
+  }
+
+  void notifyPlatformViewReady({bool viewRecreated = false}) {
     _platformViewReady = true;
+    if (viewRecreated && _phase == _Phase.loadingPage) {
+      final intent = _resolvedIntent;
+      if (intent != null) {
+        // A replacement iframe needs the resolved URL and a fresh deadline.
+        _restartReadyTimeout();
+        unawaited(_applyIntent(intent));
+      }
+      return;
+    }
     _tryApplyIntent();
   }
 

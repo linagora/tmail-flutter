@@ -35,42 +35,51 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final closeButton = TMailButtonWidget.fromIcon(
       icon: closeIconPath,
+      width: 40,
+      height: 40,
+      iconSize: 24,
       iconColor: const Color(0xFF424244).withValues(alpha: 0.64),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       backgroundColor: Colors.transparent,
-      hoverColor: Colors.transparent,
+      hoverColor: const Color(0x14424244),
       onTapActionCallback: onClose,
     );
-    return PointerInterceptor(
-      child: GestureDetector(
-        onTap: onBarrierTap ?? onClose,
-        behavior: HitTestBehavior.opaque,
-        child: Dialog(
-          backgroundColor: Colors.white,
-          insetPadding: insetPadding,
-          shape: shape,
-          constraints: constraints,
-          alignment: alignment,
-          child: GestureDetector(
-            onTap: () {},
-            behavior: HitTestBehavior.opaque,
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    if (haveCloseButton)
-                      Padding(
-                        padding: const EdgeInsetsGeometry.directional(end: 17),
-                        child: closeButton,
-                      ),
-                    Expanded(child: child),
-                  ],
+    return GestureDetector(
+      onTap: onBarrierTap ?? onClose,
+      behavior: HitTestBehavior.opaque,
+      child: Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: insetPadding,
+        shape: shape,
+        constraints: constraints,
+        alignment: alignment,
+        child: GestureDetector(
+          onTap: () {},
+          behavior: HitTestBehavior.opaque,
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (haveCloseButton)
+                    Padding(
+                      padding: const EdgeInsetsGeometry.directional(end: 17),
+                      child: closeButton,
+                    ),
+                  // Keep the iframe mounted across responsive changes (#4738).
+                  Expanded(
+                    key: const ValueKey('drive-shell-content'),
+                    child: child,
+                  ),
+                ],
+              ),
+              if (loadingWidget != null)
+                Positioned.fill(
+                  child: PointerInterceptor(
+                    child: loadingWidget!(closeButton),
+                  ),
                 ),
-                if (loadingWidget != null)
-                  Positioned.fill(child: loadingWidget!(closeButton)),
-              ],
-            ),
+            ],
           ),
         ),
       ),
