@@ -5,6 +5,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 
 class DriveAttachmentPickerButton extends StatefulWidget {
   final String composerId;
@@ -43,6 +44,13 @@ abstract class _DriveAttachmentPickerButtonState
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
+
+  @override
+  DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(
+        driveLogo: widget.imagePaths.twakeDriveLogo,
+        closeIcon: widget.imagePaths.icClose,
+        searchIcon: widget.imagePaths.icSearchBar,
+      );
 
   @override
   Widget build(BuildContext context) {

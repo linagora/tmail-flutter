@@ -284,6 +284,7 @@ class ImagePaths {
   String get icThumbsUp => _getImagePath('ic_thumbs_up.svg');
   String get icAllEmail => _getImagePath('ic_all_email.svg');
   String get icNoTag => _getImagePath('ic_no_tag.svg');
+  String get twakeDriveLogo => _getImagePath('twake-drive-logo.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

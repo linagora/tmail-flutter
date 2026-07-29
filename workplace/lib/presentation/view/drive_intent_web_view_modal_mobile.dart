@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import '../mixin/drive_intent_message_handler_mixin.dart';
 import '../mixin/drive_intent_shims.dart';
+import '../model/drive_intent_image_assets.dart';
 import 'drive_intent_fake_page.dart';
 import 'drive_intent_skeleton_loader.dart';
 import 'drive_intent_web_view_modal_shell.dart';
@@ -14,6 +15,7 @@ import 'package:workplace/domain/entity/workplace_intent.dart';
 class DriveIntentWebViewModal extends StatefulWidget {
   final Future<WorkplaceIntent> intentFuture;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
+  final DriveIntentImageAssets imageAssets;
   // Ignored on mobile — only used by the web variant (ADR-93).
   final OnRegisterExternalHandler? onRegisterExternalHandler;
 
@@ -21,6 +23,7 @@ class DriveIntentWebViewModal extends StatefulWidget {
     super.key,
     required this.intentFuture,
     required this.filePickerConfig,
+    required this.imageAssets,
     this.onRegisterExternalHandler,
   });
 
@@ -63,36 +66,37 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
         insetPadding: EdgeInsets.zero,
         constraints: const BoxConstraints.expand(),
         shape: const RoundedRectangleBorder(),
+        closeIconPath: widget.imageAssets.closeIcon,
         onClose: cancel,
         onBarrierTap: () {
           if (!showSkeleton) cancel();
         },
-        child: Stack(
-          children: [
-            InAppWebView(
-              key: const ValueKey('drive-intent-webview'),
-              initialSettings: InAppWebViewSettings(),
-              initialUserScripts: UnmodifiableListView([
-                UserScript(
-                  source: DriveIntentShims.parentPostMessageShim,
-                  injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
-                ),
-              ]),
-              onWebViewCreated: (controller) {
-                _webViewController = controller;
-                controller.addJavaScriptHandler(
-                  handlerName: DriveIntentShims.handlerName,
-                  callback: (args) => onMessage(
-                    raw: args[0] as String,
-                    origin: args.length > 1 ? args[1] as String? : null,
-                  ),
-                );
-                notifyPlatformViewReady();
-              },
+        loadingWidget: showSkeleton
+            ? (closeButton) => DriveIntentSkeletonLoader.list(
+                imageAssets: widget.imageAssets,
+                closeButton: closeButton,
+              )
+            : null,
+        child: InAppWebView(
+          key: const ValueKey('drive-intent-webview'),
+          initialSettings: InAppWebViewSettings(),
+          initialUserScripts: UnmodifiableListView([
+            UserScript(
+              source: DriveIntentShims.parentPostMessageShim,
+              injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
             ),
-            if (showSkeleton)
-              const Positioned.fill(child: DriveIntentSkeletonLoader.list()),
-          ],
+          ]),
+          onWebViewCreated: (controller) {
+            _webViewController = controller;
+            controller.addJavaScriptHandler(
+              handlerName: DriveIntentShims.handlerName,
+              callback: (args) => onMessage(
+                raw: args[0] as String,
+                origin: args.length > 1 ? args[1] as String? : null,
+              ),
+            );
+            notifyPlatformViewReady();
+          },
         ),
       ),
     );

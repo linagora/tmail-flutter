@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
+import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 
 class DriveAttachmentContextMenuTile extends StatefulWidget {
   final ImagePaths imagePaths;
@@ -41,6 +42,13 @@ abstract class _DriveAttachmentContextMenuTileState
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
+
+  @override
+  DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(
+        driveLogo: widget.imagePaths.twakeDriveLogo,
+        closeIcon: widget.imagePaths.icClose,
+        searchIcon: widget.imagePaths.icSearchBar,
+      );
 
   @override
   Widget build(BuildContext context) {
