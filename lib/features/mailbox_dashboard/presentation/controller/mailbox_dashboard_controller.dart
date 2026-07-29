@@ -197,6 +197,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/service/dashboard_search_coordinator.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
@@ -364,6 +365,7 @@ class MailboxDashBoardController extends ReloadableController
   final workerObxVariables = <Worker>[];
   ProviderSubscription<bool>? advancedSearchViewSubscription;
   ProviderSubscription<bool>? searchInputFocusSubscription;
+  DashboardSearchCoordinator? _dashboardSearchCoordinator;
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -421,6 +423,17 @@ class MailboxDashBoardController extends ReloadableController
       _registerDeepLinks();
     }
     _registerStreamListener();
+    if (_dashboardSearchCoordinator == null) {
+      _dashboardSearchCoordinator = DashboardSearchCoordinator(
+        readFilterMessageOption: () => filterMessageOption.value,
+        writeFilterMessageOption: (option) => filterMessageOption.value = option,
+      )..start();
+      workerObxVariables.add(ever(
+        filterMessageOption,
+        (option) =>
+            _dashboardSearchCoordinator?.onFilterMessageOptionChanged(option),
+      ));
+    }
     registerLabelReactiveObxListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -3504,6 +3517,8 @@ class MailboxDashBoardController extends ReloadableController
     cachedLinagoraEcosystem = null;
     _sentryEcosystem = null;
     _disposeWorkerObxVariables();
+    _dashboardSearchCoordinator?.dispose();
+    _dashboardSearchCoordinator = null;
     super.onClose();
   }
 

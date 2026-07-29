@@ -51,7 +51,6 @@ void main() {
     required Object? after,
   }) {
     expect(spec.position, position);
-    expect(spec.filter.position, isNull);
     expect(spec.filter.before, before);
     expect(spec.filter.after, after);
   }
@@ -208,7 +207,6 @@ void main() {
         intent: intent,
         committed: SearchEmailFilter(
           sortOrderType: sortOrder,
-          position: 99,
           before: lastDate,
           after: lastDate,
         ),

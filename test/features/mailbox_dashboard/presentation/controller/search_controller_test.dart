@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:mockito/annotations.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -99,16 +100,22 @@ void main() {
     });
 
     test('cursor options never enter the committed SSOT', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
+      searchController.updateFilterEmail(
+        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-15T08:00:00.000Z'))));
 
-      expect(committed().position, isNull);
+      expect(committed().before, isNull);
+      expect(committed().after, isNull);
     });
 
     test('a later user-intent update keeps pagination out of the SSOT', () {
-      searchController.updateFilterEmail(positionOption: const Some(40));
+      searchController.updateFilterEmail(
+        beforeOption: Some(UTCDate(DateTime.parse('2026-06-16T08:00:00.000Z'))),
+        afterOption: Some(UTCDate(DateTime.parse('2026-06-15T08:00:00.000Z'))));
       searchController.updateFilterEmail(unreadOption: const Some(true));
 
-      expect(committed().position, isNull);
+      expect(committed().before, isNull);
+      expect(committed().after, isNull);
       expect(searchController.committedSearchFilter.unread, isTrue);
     });
   });

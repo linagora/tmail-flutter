@@ -39,7 +39,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final UTCDate? after;
   final UTCDate? startDate;
   final UTCDate? endDate;
-  final int? position;
   final EmailSortOrderType sortOrderType;
   final Label? label;
 
@@ -56,7 +55,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     this.after,
     this.startDate,
     this.endDate,
-    this.position,
     this.label,
     Set<String>? from,
     Set<String>? to,
@@ -94,7 +92,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<UTCDate>? afterOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
-    Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
   }) {
@@ -114,7 +111,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       after: getOptionParam(afterOption, after),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
-      position: getOptionParam(positionOption, position),
       sortOrderType: getOptionParam(sortOrderTypeOption, sortOrderType),
       label: getOptionParam(labelOption, label),
     );
@@ -126,11 +122,11 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   bool isOnlySender(String address) =>
       address.isNotEmpty && from.length == 1 && from.first == address;
 
-  /// Strips pagination cursors (`position`, `before`, `after`), keeping all user
-  /// intent (incl. `startDate`/`endDate` bounds). Notifiers run full replacements
-  /// through this so a stale cursor can never enter the SSOT (ADR-0093).
+  /// Strips the load-more date cursors (`before`, `after`), keeping all user intent
+  /// (incl. `startDate`/`endDate` bounds). Notifiers run full replacements through
+  /// this so a stale cursor can never enter the SSOT (ADR-0093). Pagination `position`
+  /// no longer lives on the model — it is resolved on the transient `SearchRequestSpec`.
   SearchEmailFilter clearPaginationCursors() => copyWith(
-        positionOption: const None(),
         beforeOption: const None(),
         afterOption: const None(),
       );
@@ -302,7 +298,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     after,
     startDate,
     endDate,
-    position,
     sortOrderType,
     label,
   ];

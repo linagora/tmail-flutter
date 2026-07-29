@@ -1,154 +1,103 @@
-
-import 'package:core/core.dart';
-import 'package:flutter/material.dart';
+import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 
 enum FilterMessageOption {
-  all,
-  unread,
-  attachments,
-  starred,
+  all(_NoCriterion()),
+  unread(_UnreadCriterion()),
+  attachments(_AttachmentCriterion()),
+  starred(_StarredCriterion());
+
+  const FilterMessageOption(this._criterion);
+
+  final _SearchCriterion _criterion;
+
+  /// Whether [email] passes this option's client-side filter.
+  bool filterEmail(Email email) => _criterion.matchesEmail(email);
+
+  /// Whether this option's criterion is currently set on [filter].
+  bool isActiveIn(SearchEmailFilter filter) => _criterion.isActiveIn(filter);
+
+  /// Sets this option's criterion on [filter] (search chips + JMAP query).
+  SearchEmailFilter applyTo(SearchEmailFilter filter) =>
+      _criterion.write(filter, active: true);
+
+  /// Clears this option's criterion from [filter] (undo of [applyTo]).
+  SearchEmailFilter removeFrom(SearchEmailFilter filter) =>
+      _criterion.write(filter, active: false);
 }
 
-extension FilterMessageOptionExtension on FilterMessageOption {
+/// The one filter dimension a [FilterMessageOption] maps to, over a cached
+/// [Email] and the committed [SearchEmailFilter]. A new option means a new
+/// criterion, never editing a switch (Open/Closed).
+abstract class _SearchCriterion {
+  const _SearchCriterion();
 
-  String getIconToast(ImagePaths imagePaths) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return imagePaths.icFilterMessageAll;
-      case FilterMessageOption.unread:
-        return imagePaths.icUnreadToast;
-      case FilterMessageOption.attachments:
-        return imagePaths.icFilterMessageAttachments;
-      case FilterMessageOption.starred:
-        return imagePaths.icStar;
-    }
-  }
+  bool matchesEmail(Email email);
 
-  String getMessageToast(BuildContext context) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return AppLocalizations.of(context).disable_filter_message_toast;
-      case FilterMessageOption.unread:
-        return AppLocalizations.of(context).filter_message_toast(AppLocalizations.of(context).unread);
-      case FilterMessageOption.attachments:
-        return AppLocalizations.of(context).filter_message_toast(AppLocalizations.of(context).with_attachments);
-      case FilterMessageOption.starred:
-        return AppLocalizations.of(context).filter_message_toast(AppLocalizations.of(context).starred);
-    }
-  }
+  bool isActiveIn(SearchEmailFilter filter);
 
-  String getTitle(BuildContext context) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return AppLocalizations.of(context).filter_messages;
-      case FilterMessageOption.unread:
-        return AppLocalizations.of(context).with_unread;
-      case FilterMessageOption.attachments:
-        return AppLocalizations.of(context).with_attachments.capitalizeFirstEach;
-      case FilterMessageOption.starred:
-        return AppLocalizations.of(context).with_starred;
-    }
-  }
+  SearchEmailFilter write(SearchEmailFilter filter, {required bool active});
+}
 
-  bool filterPresentationEmail(PresentationEmail email) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return true;
-      case FilterMessageOption.unread:
-        return !email.hasRead;
-      case FilterMessageOption.attachments:
-        return email.withAttachments;
-      case FilterMessageOption.starred:
-        return email.hasStarred;
-    }
-  }
+class _NoCriterion extends _SearchCriterion {
+  const _NoCriterion();
 
-  bool filterEmail(Email email) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return true;
-      case FilterMessageOption.unread:
-        return !email.hasRead;
-      case FilterMessageOption.attachments:
-        return email.withAttachments;
-      case FilterMessageOption.starred:
-        return email.hasStarred;
-    }
-  }
+  @override
+  bool matchesEmail(Email email) => true;
 
-  String getName(AppLocalizations appLocalizations) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return '';
-      case FilterMessageOption.unread:
-        return appLocalizations.unread;
-      case FilterMessageOption.attachments:
-        return appLocalizations.with_attachments;
-      case FilterMessageOption.starred:
-        return appLocalizations.starred;
-    }
-  }
+  @override
+  bool isActiveIn(SearchEmailFilter filter) => false;
 
-  String getContextMenuIcon(ImagePaths imagePaths) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return '';
-      case FilterMessageOption.unread:
-        return imagePaths.icUnread;
-      case FilterMessageOption.attachments:
-        return imagePaths.icAttachment;
-      case FilterMessageOption.starred:
-        return imagePaths.icUnStar;
-    }
-  }
+  @override
+  SearchEmailFilter write(SearchEmailFilter filter, {required bool active}) =>
+      filter;
+}
 
-  String getIcon(ImagePaths imagePaths) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return imagePaths.icFilterAdvanced;
-      case FilterMessageOption.unread:
-      case FilterMessageOption.attachments:
-      case FilterMessageOption.starred:
-        return imagePaths.icSelectedSB;
-    }
-  }
+class _UnreadCriterion extends _SearchCriterion {
+  const _UnreadCriterion();
 
-  Color getIconColor() {
-    switch(this) {
-      case FilterMessageOption.all:
-        return AppColor.colorFilterMessageIcon;
-      case FilterMessageOption.unread:
-      case FilterMessageOption.attachments:
-      case FilterMessageOption.starred:
-        return AppColor.primaryColor;
-    }
-  }
+  @override
+  bool matchesEmail(Email email) => !email.hasRead;
 
-  Color getBackgroundColor({bool isSelected = false}) {
-    if (isSelected) {
-      return AppColor.primaryColor.withValues(alpha: 0.06);
-    } else {
-      return AppColor.colorFilterMessageButton.withValues(alpha: 0.6);
-    }
-  }
+  @override
+  bool isActiveIn(SearchEmailFilter filter) => filter.unread;
 
-  TextStyle getTextStyle() {
-    switch(this) {
-      case FilterMessageOption.all:
-        return ThemeUtils.defaultTextStyleInterFont.copyWith(
-          fontSize: 13,
-          fontWeight: FontWeight.normal,
-          color: AppColor.colorFilterMessageTitle);
-      case FilterMessageOption.unread:
-      case FilterMessageOption.attachments:
-      case FilterMessageOption.starred:
-        return ThemeUtils.defaultTextStyleInterFont.copyWith(
-          fontSize: 13,
-          fontWeight: FontWeight.normal,
-          color: AppColor.primaryColor);
-    }
+  @override
+  SearchEmailFilter write(SearchEmailFilter filter, {required bool active}) =>
+      filter.copyWith(unreadOption: Some(active));
+}
+
+class _AttachmentCriterion extends _SearchCriterion {
+  const _AttachmentCriterion();
+
+  @override
+  bool matchesEmail(Email email) => email.withAttachments;
+
+  @override
+  bool isActiveIn(SearchEmailFilter filter) => filter.hasAttachment;
+
+  @override
+  SearchEmailFilter write(SearchEmailFilter filter, {required bool active}) =>
+      filter.copyWith(hasAttachmentOption: Some(active));
+}
+
+class _StarredCriterion extends _SearchCriterion {
+  const _StarredCriterion();
+
+  @override
+  bool matchesEmail(Email email) => email.hasStarred;
+
+  @override
+  bool isActiveIn(SearchEmailFilter filter) => filter.isContainFlagged;
+
+  @override
+  SearchEmailFilter write(SearchEmailFilter filter, {required bool active}) {
+    final keywords = Set<String>.of(filter.hasKeyword);
+    final flagged = KeyWordIdentifier.emailFlagged.value;
+    active ? keywords.add(flagged) : keywords.remove(flagged);
+    return filter.copyWith(hasKeywordOption: Some(keywords));
   }
 }
