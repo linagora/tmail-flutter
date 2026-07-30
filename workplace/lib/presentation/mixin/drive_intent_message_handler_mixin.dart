@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/message/workplace_intent_message.dart';
+import 'package:workplace/presentation/model/drive_origin_validator.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 
 enum _Phase { waiting, loadingPage, interactive, closed }
@@ -16,6 +17,7 @@ typedef DriveIntentLoader = Future<WorkplaceIntent> Function();
 mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   late String _intentId;
   String _intentOrigin = 'null';
+  String? _intentClient;
   Timer? _readyTimeoutTimer;
 
   _Phase _phase = _Phase.waiting;
@@ -35,6 +37,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   }
 
   String get intentOrigin => _intentOrigin;
+  String? get intentClient => _intentClient;
 
   /// Covers silent failures like SSO blocking the page with no postMessage ever sent.
   Duration get readyTimeout => const Duration(seconds: 20);
@@ -101,6 +104,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     _intentOrigin = intent.intentUrl.scheme == 'data'
         ? 'null'
         : intent.intentUrl.origin;
+    _intentClient = intent.client;
     _setPhase(_Phase.loadingPage);
     unawaited(_applyIntent(intent));
   }
@@ -165,13 +169,15 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  bool _isValidOrigin(String? origin) {
-    if (origin == null) return false;
-    if (origin == _intentOrigin) return true;
-    // On mobile the JS shim forwards targetOrigin as the origin arg. Data URIs
-    // have opaque 'null' origin but the shim receives '*' from postMessage.
-    return _intentOrigin == 'null' && origin == '*';
-  }
+  bool _isValidOrigin(String? origin) => originValidator.isValid(
+        origin,
+        intentOrigin: _intentOrigin,
+        intentClient: _intentClient,
+      );
+
+  /// Platform-specific origin matching rules (web vs mobile JS channel).
+  @protected
+  DriveOriginValidator get originValidator;
 
   Future<void> _handleWorkplaceMessage(WorkplaceIntentMessage msg) async {
     switch (msg) {

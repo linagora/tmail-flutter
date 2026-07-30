@@ -11,6 +11,7 @@ import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
+import 'package:workplace/presentation/model/drive_origin_validator.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 
 // Exercises the real `window.postMessage` transport (other tests call
@@ -28,6 +29,7 @@ const _intentId = 'intent-1';
 WorkplaceIntent _intent() => WorkplaceIntent(
       intentId: _intentId,
       intentUrl: Uri.parse('$_origin/pick'),
+      client: _origin,
     );
 
 Future<WorkplaceIntent> _fetchIntentStub({
@@ -141,6 +143,9 @@ class _DriveModalUnderTestState extends State<_DriveModalUnderTest>
   // burn the deadline (production is 20s).
   @override
   Duration get readyTimeout => const Duration(seconds: 5);
+
+  @override
+  DriveOriginValidator get originValidator => const WebDriveOriginValidator();
 
   @override
   void initState() {

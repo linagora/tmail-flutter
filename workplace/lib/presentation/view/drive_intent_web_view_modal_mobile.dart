@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../mixin/drive_intent_message_handler_mixin.dart';
 import '../mixin/drive_intent_shims.dart';
 import '../model/drive_intent_image_assets.dart';
+import '../model/drive_origin_validator.dart';
 import 'drive_intent_fake_page.dart';
 import 'drive_intent_skeleton_loader.dart';
 import 'drive_intent_web_view_modal_shell.dart';
@@ -33,6 +34,9 @@ class DriveIntentWebViewModal extends StatefulWidget {
 class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin {
   InAppWebViewController? _webViewController;
+
+  @override
+  DriveOriginValidator get originValidator => const MobileDriveOriginValidator();
 
   @override
   void initState() {
@@ -130,6 +134,9 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   Future<void> sendAck() async {
+    if (!isValidDriveClient(intentClient)) {
+      throw WorkplaceNoIntentClientException();
+    }
     // Embedded unquoted: JSON object syntax is valid JS object-literal syntax,
     // so `event.data` in the page ends up a real object, not a JSON string —
     // Drive's getFilePickerConfig never calls JSON.parse on it.
@@ -137,7 +144,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     await _webViewController?.evaluateJavascript(source: '''
       window.dispatchEvent(new MessageEvent('message', {
         data: $payload,
-        origin: '$intentOrigin',
+        origin: ${jsonEncode(intentClient)},
         source: window
       }));
     ''');
