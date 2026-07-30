@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
+import 'package:workplace/domain/entity/workplace_theme.dart';
 
 /// Captures the last request and returns a fixed JSON response.
 class _MockAdapter implements HttpClientAdapter {
@@ -218,6 +219,7 @@ void main() {
         accessToken: 'test-token',
         addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
         addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+        theme: WorkplaceTheme.light,
       );
 
       expect(result.intentId, equals('intent-abc'));
@@ -233,6 +235,7 @@ void main() {
         accessToken: 'test-token',
         addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
         addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+        theme: WorkplaceTheme.light,
       );
 
       expect(
@@ -250,6 +253,7 @@ void main() {
         accessToken: 'my-secret-token',
         addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
         addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+        theme: WorkplaceTheme.light,
       );
 
       expect(
@@ -267,6 +271,7 @@ void main() {
         accessToken: 'test-token',
         addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
         addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+        theme: WorkplaceTheme.dark,
       );
 
       // Normalize through jsonEncode so nested Dart objects are fully serialized
@@ -284,6 +289,8 @@ void main() {
       expect(sharingLink['label'], equals('https://link.url'));
       final downloadLink = config['downloadLink'] as Map<String, dynamic>;
       expect(downloadLink['label'], equals('https://attach.url'));
+      final theme = config['theme'] as Map<String, dynamic>;
+      expect(theme['type'], equals('dark'));
     });
 
     test('Should send explicit null downloadLink to hide the attachment button when addAsAttachment is omitted', () async {
@@ -294,6 +301,7 @@ void main() {
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
         addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
+        theme: WorkplaceTheme.light,
       );
 
       final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
@@ -313,6 +321,7 @@ void main() {
           accessToken: 'test-token',
           addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
         ),
         throwsA(isA<DioException>()),
       );

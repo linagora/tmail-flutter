@@ -24,3 +24,10 @@ enum WorkplaceExchangeType {
   admin,
   app;
 }
+
+enum WorkplaceThemeType {
+  @JsonValue('light')
+  light,
+  @JsonValue('dark')
+  dark;
+}

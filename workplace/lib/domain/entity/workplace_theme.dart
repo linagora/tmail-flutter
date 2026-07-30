@@ -1,0 +1,1 @@
+enum WorkplaceTheme { light, dark }

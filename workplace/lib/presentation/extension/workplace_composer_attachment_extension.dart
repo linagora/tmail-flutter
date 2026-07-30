@@ -6,10 +6,12 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
+import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
@@ -93,6 +95,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       addAsAttachment: filePickerConfig.downloadLink == null
           ? null
           : WorkplaceActionConfig(label: filePickerConfig.downloadLink!.label),
+      theme: switch (filePickerConfig.theme.type) {
+        WorkplaceThemeType.light => WorkplaceTheme.light,
+        WorkplaceThemeType.dark => WorkplaceTheme.dark,
+      },
     )) {
       either.fold(
         (failure) {

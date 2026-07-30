@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
@@ -53,11 +54,12 @@ class _TestState extends State<_TestWidget>
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-Future<_TestState> _pumpPicker(WidgetTester tester) async {
-  await tester.pumpWidget(const MaterialApp(
+Future<_TestState> _pumpPicker(WidgetTester tester, {ThemeData? theme}) async {
+  await tester.pumpWidget(MaterialApp(
+    theme: theme,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: _TestWidget(),
+    home: const _TestWidget(),
   ));
   return tester.state<_TestState>(find.byType(_TestWidget));
 }
@@ -124,6 +126,29 @@ void main() {
         expect(state.pickStates, hasLength(1));
         final failure = state.pickStates.single as DrivePickFailure;
         expect(failure.error, same(error));
+      });
+    });
+
+    group('theme resolution', () {
+      testWidgets('uses the app declared theme (light) regardless of no explicit theme', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.modalStub = () => Future.value(const DrivePickOutcomeCancelled());
+
+        await state.onPickerTap();
+
+        expect(state.openCalls.single.theme.type, WorkplaceThemeType.light);
+      });
+
+      testWidgets('follows the app theme brightness when dark', (tester) async {
+        final state = await _pumpPicker(
+          tester,
+          theme: ThemeData(brightness: Brightness.dark),
+        );
+        state.modalStub = () => Future.value(const DrivePickOutcomeCancelled());
+
+        await state.onPickerTap();
+
+        expect(state.openCalls.single.theme.type, WorkplaceThemeType.dark);
       });
     });
 

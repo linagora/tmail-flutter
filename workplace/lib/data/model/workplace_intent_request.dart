@@ -1,6 +1,7 @@
 import 'workplace_enums.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entity/workplace_action_config.dart';
+import '../../domain/entity/workplace_theme.dart';
 
 part 'workplace_intent_request.g.dart';
 
@@ -17,14 +18,33 @@ class WorkplaceActionConfigRequest {
   Map<String, dynamic> toJson() => _$WorkplaceActionConfigRequestToJson(this);
 }
 
+@JsonSerializable(createFactory: false)
+class WorkplaceThemeConfigRequest {
+  final WorkplaceThemeType type;
+
+  const WorkplaceThemeConfigRequest({required this.type});
+
+  factory WorkplaceThemeConfigRequest.fromEntity(WorkplaceTheme theme) =>
+      WorkplaceThemeConfigRequest(
+        type: switch (theme) {
+          WorkplaceTheme.light => WorkplaceThemeType.light,
+          WorkplaceTheme.dark => WorkplaceThemeType.dark,
+        },
+      );
+
+  Map<String, dynamic> toJson() => _$WorkplaceThemeConfigRequestToJson(this);
+}
+
 @JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceFilePickerConfigRequest {
   final WorkplaceActionConfigRequest sharingLink;
   final WorkplaceActionConfigRequest? downloadLink;
+  final WorkplaceThemeConfigRequest theme;
 
   const WorkplaceFilePickerConfigRequest({
     required this.sharingLink,
     required this.downloadLink,
+    required this.theme,
   });
 
   Map<String, dynamic> toJson() =>
