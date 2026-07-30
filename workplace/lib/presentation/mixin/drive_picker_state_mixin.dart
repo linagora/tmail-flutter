@@ -2,6 +2,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
@@ -42,11 +43,13 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       // menu tile) before the intent future settles, disposing this state.
       final failingMessage = l10n.attachFromDriveFailingMessage;
       const addAsAttachmentTitle = null; // TODO: Add attachment title here after implement 103. Attach Drive File as Attachment
+      final theme = _resolveWorkplaceTheme(context);
       final filePickerConfig = WorkplaceFilePickerConfigRequest(
         sharingLink: WorkplaceActionConfigRequest(label: l10n.addAsLink),
         downloadLink: addAsAttachmentTitle == null
             ? null
             : const WorkplaceActionConfigRequest(label: addAsAttachmentTitle),
+        theme: WorkplaceThemeConfigRequest.fromEntity(theme),
       );
       DrivePickOutcome? outcome;
       try {
@@ -100,4 +103,9 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         break;
     }
   }
+
+  WorkplaceTheme _resolveWorkplaceTheme(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? WorkplaceTheme.dark
+        : WorkplaceTheme.light;
 }

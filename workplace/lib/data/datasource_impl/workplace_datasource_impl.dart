@@ -11,6 +11,7 @@ import '../model/workplace_intent_response.dart';
 import '../workplace_dio.dart';
 import '../../domain/entity/workplace_action_config.dart';
 import '../../domain/entity/workplace_intent.dart';
+import '../../domain/entity/workplace_theme.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   WorkplaceDataSourceImpl();
@@ -29,6 +30,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     required String accessToken,
     required WorkplaceActionConfig addAsLink,
     WorkplaceActionConfig? addAsAttachment,
+    required WorkplaceTheme theme,
   }) async {
     final response = await WorkplaceDio.instance.post(
       platformUrl.replace(
@@ -43,6 +45,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       data: _buildIntentRequest(
         addAsLink: addAsLink,
         addAsAttachment: addAsAttachment,
+        theme: theme,
       ),
     );
     return parseIntentResponse(response.data);
@@ -70,6 +73,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   Map<String, dynamic> _buildIntentRequest({
     required WorkplaceActionConfig addAsLink,
     WorkplaceActionConfig? addAsAttachment,
+    required WorkplaceTheme theme,
   }) => WorkplaceIntentRequest(
     data: WorkplaceIntentDataRequest(
       type: WorkplaceDataRequestType.intents,
@@ -82,6 +86,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
           downloadLink: addAsAttachment == null
               ? null
               : WorkplaceActionConfigRequest.fromEntity(addAsAttachment),
+          theme: WorkplaceThemeConfigRequest.fromEntity(theme),
         ),
       ),
     ),

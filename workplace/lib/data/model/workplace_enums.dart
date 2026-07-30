@@ -24,3 +24,8 @@ enum WorkplaceExchangeType {
   admin,
   app;
 }
+
+enum WorkplaceThemeType {
+  light,
+  dark;
+}

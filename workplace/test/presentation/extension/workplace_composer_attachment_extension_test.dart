@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
@@ -422,6 +423,7 @@ void main() {
           filePickerConfig: const WorkplaceFilePickerConfigRequest(
             sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
             downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
           ),
         ),
         throwsA(isA<StateError>().having(
@@ -443,6 +445,7 @@ void main() {
           filePickerConfig: const WorkplaceFilePickerConfigRequest(
             sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
             downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
           ),
         ),
           throwsA(isA<DioException>()),
@@ -466,6 +469,7 @@ void main() {
           filePickerConfig: const WorkplaceFilePickerConfigRequest(
             sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
             downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
           ),
         ),
           throwsA(isA<DioException>()),
@@ -488,6 +492,7 @@ void main() {
           filePickerConfig: const WorkplaceFilePickerConfigRequest(
             sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
             downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
           ),
         ),
       );
