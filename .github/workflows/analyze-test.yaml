@@ -16,6 +16,7 @@ env:
   CHROME_TEST_PATHS: |
     core/test/data/network/download/download_manager_test.dart
     workplace/test/presentation/mixin/web_window_message_mixin_web_test.dart
+    workplace/test/presentation/view/drive_intent_web_view_modal_web_test.dart
 
 jobs:
   analyze-test:
