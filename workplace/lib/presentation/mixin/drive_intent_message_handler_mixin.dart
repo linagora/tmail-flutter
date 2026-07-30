@@ -9,6 +9,9 @@ import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 
 enum _Phase { waiting, loadingPage, interactive, closed }
 
+/// Lazy so the modal starts the request only after its error handling is live.
+typedef DriveIntentLoader = Future<WorkplaceIntent> Function();
+
 /// Shared loading/messaging lifecycle for the mobile and web Drive picker modals.
 mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   late String _intentId;
@@ -36,20 +39,34 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
   /// Covers silent failures like SSO blocking the page with no postMessage ever sent.
   Duration get readyTimeout => const Duration(seconds: 20);
 
-  void startLoading(Future<WorkplaceIntent> intentFuture) {
+  void startLoading(DriveIntentLoader intentLoader) {
     // Starts the deadline immediately so a platform view that never becomes
     // ready (e.g. WebView/iframe init silently failing) still times out.
     _readyTimeoutTimer?.cancel();
     _readyTimeoutTimer = Timer(readyTimeout, _handleReadyTimeout);
-    intentFuture
-        .then((intent) {
-          if (!mounted) return;
-          _resolvedIntent = intent;
-          _tryApplyIntent();
-        })
-        .catchError((Object e) {
-          _finish(DrivePickOutcomeFailed(e));
-        });
+    unawaited(_loadIntent(intentLoader));
+  }
+
+  Future<void> _loadIntent(DriveIntentLoader intentLoader) async {
+    try {
+      final intent = await intentLoader();
+      if (!mounted) return;
+      _resolvedIntent = intent;
+      _tryApplyIntent();
+    } catch (e, s) {
+      _failWith('intent loader failed', e, s);
+    }
+  }
+
+  /// Single Sentry funnel for every failure path: reports the failing stage
+  /// with the original exception and stack, then closes the modal.
+  void _failWith(String stage, Object error, [StackTrace? stackTrace]) {
+    logError(
+      'driveIntent: $stage',
+      exception: error,
+      stackTrace: stackTrace,
+    );
+    _finish(DrivePickOutcomeFailed(error));
   }
 
   void notifyPlatformViewReady() {
@@ -57,28 +74,62 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     _tryApplyIntent();
   }
 
+  /// The intent can only be applied once: after both the intent resolved and
+  /// the platform view reported ready, and before leaving [_Phase.waiting].
+  bool get _canApplyIntent =>
+      _resolvedIntent != null &&
+      _platformViewReady &&
+      _phase == _Phase.waiting;
+
   void _tryApplyIntent() {
-    final intent = _resolvedIntent;
-    if (intent == null || !_platformViewReady || _phase != _Phase.waiting) {
-      return;
-    }
+    if (!_canApplyIntent) return;
+    final intent = _resolvedIntent!;
     _intentId = intent.intentId;
     _intentOrigin = intent.intentUrl.scheme == 'data'
         ? 'null'
         : intent.intentUrl.origin;
     _setPhase(_Phase.loadingPage);
-    loadIntent(intent);
+    unawaited(_applyIntent(intent));
   }
 
-  void loadIntent(WorkplaceIntent intent);
+  Future<void> _applyIntent(WorkplaceIntent intent) async {
+    try {
+      await loadIntent(intent);
+    } catch (e, s) {
+      _failWith('loading intent into platform view failed', e, s);
+    }
+  }
+
+  /// Async so platform-channel failures (e.g. WebView loadUrl) reject the
+  /// returned future and are funneled instead of becoming uncaught errors.
+  Future<void> loadIntent(WorkplaceIntent intent);
+
+  /// Fails fast on a main-frame page load failure instead of waiting for
+  /// [readyTimeout]. Only honored while the Drive page is loading: earlier
+  /// errors cannot be ours, later ones belong to the page's error protocol.
+  void notifyPageLoadFailed(Object error) {
+    if (_phase != _Phase.loadingPage) {
+      log('driveIntent: ignored page load failure in phase $_phase: $error');
+      return;
+    }
+    _failWith('platform view failed to load page', error);
+  }
 
   void _handleReadyTimeout() {
-    log('driveIntent: timed out waiting for ready after $readyTimeout');
-    _finish(DrivePickOutcomeFailed(DriveIntentTimeoutException()));
+    _failWith(
+      'timed out waiting for ready after $readyTimeout',
+      DriveIntentTimeoutException(),
+    );
   }
 
+  /// Protocol messages only make sense while the Drive page is loaded:
+  /// before that [_intentId]/[_intentOrigin] are unset, after close the
+  /// outcome is already delivered.
+  bool get _acceptsMessages =>
+      _phase == _Phase.loadingPage || _phase == _Phase.interactive;
+
   void onMessage({required String raw, required String? origin}) {
-    if (_phase.index < _Phase.loadingPage.index) return;
+    if (!_acceptsMessages) return;
     if (!_isValidOrigin(origin)) {
       log('driveIntent: dropped message from unexpected origin: $origin');
       return;
@@ -90,7 +141,15 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
       log('driveIntent: failed to parse message: $raw');
       return;
     }
-    _handleWorkplaceMessage(msg);
+    unawaited(_dispatchWorkplaceMessage(msg));
+  }
+
+  Future<void> _dispatchWorkplaceMessage(WorkplaceIntentMessage msg) async {
+    try {
+      await _handleWorkplaceMessage(msg);
+    } catch (e, s) {
+      _failWith('handling workplace message failed', e, s);
+    }
   }
 
   bool _isValidOrigin(String? origin) {
@@ -101,11 +160,11 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     return _intentOrigin == 'null' && origin == '*';
   }
 
-  void _handleWorkplaceMessage(WorkplaceIntentMessage msg) {
+  Future<void> _handleWorkplaceMessage(WorkplaceIntentMessage msg) async {
     switch (msg) {
       case WorkplaceIntentReadyMessage():
         log('driveIntent: ready received, sending ack');
-        sendAck();
+        await sendAck();
         break;
       case WorkplaceIntentReadyToUseMessage():
         log('driveIntent: readyToUse received, hiding loading');
@@ -117,8 +176,7 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
         _finish(DrivePickOutcomePicked(msg.documents));
         break;
       case WorkplaceIntentErrorMessage():
-        log('driveIntent: error received, closing modal');
-        _finish(DrivePickOutcomeFailed(DriveIntentErrorException()));
+        _failWith('drive page reported error', DriveIntentErrorException());
         break;
       case WorkplaceIntentCancelMessage():
         log('driveIntent: cancel received, closing modal');
@@ -142,12 +200,33 @@ mixin DriveIntentMessageHandlerMixin<T extends StatefulWidget> on State<T> {
     if (_phase == _Phase.closed) return;
     _setPhase(_Phase.closed);
     _readyTimeoutTimer?.cancel();
-    onCleanup();
-    onFinished(outcome);
-    if (mounted) Navigator.of(context).pop(outcome);
+    // Once closed, the timeout is cancelled and _finish won't run again, so
+    // the pop must happen even if a subclass hook throws — otherwise the
+    // modal hangs with no fallback. Each hook is guarded independently so a
+    // throwing onCleanup still runs onFinished, and neither escapes into the
+    // unawaited futures that call _finish as an unobserved async error.
+    try {
+      onCleanup();
+    } catch (e, s) {
+      logError('driveIntent: onCleanup failed', exception: e, stackTrace: s);
+    }
+    try {
+      onFinished(outcome);
+    } catch (e, s) {
+      logError('driveIntent: onFinished failed', exception: e, stackTrace: s);
+    }
+    // Guarded like the hooks above: _finish runs from Timer/unawaited paths, so
+    // a throwing pop must not escape as an uncaught async error.
+    try {
+      if (mounted) Navigator.of(context).pop(outcome);
+    } catch (e, s) {
+      logError('driveIntent: pop failed', exception: e, stackTrace: s);
+    }
   }
 
-  void sendAck();
+  /// Async so ack-delivery failures (e.g. evaluateJavascript) reject the
+  /// returned future and are funneled instead of becoming uncaught errors.
+  Future<void> sendAck();
 
   void onCleanup() {}
 

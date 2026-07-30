@@ -1,10 +1,8 @@
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
-import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 
 class DriveAttachmentPickerButton extends StatefulWidget {
@@ -27,18 +25,12 @@ class DriveAttachmentPickerButton extends StatefulWidget {
 
   @override
   State<DriveAttachmentPickerButton> createState() =>
-      _DriveAttachmentPickerButtonState.create();
+      _DriveAttachmentPickerButtonState();
 }
 
-abstract class _DriveAttachmentPickerButtonState
+class _DriveAttachmentPickerButtonState
     extends State<DriveAttachmentPickerButton>
     with DrivePickerStateMixin<DriveAttachmentPickerButton> {
-  _DriveAttachmentPickerButtonState();
-
-  factory _DriveAttachmentPickerButtonState.create() => PlatformInfo.isWeb
-      ? _WebDriveAttachmentPickerButtonState()
-      : _MobileDriveAttachmentPickerButtonState();
-
   @override
   FetchDriveIntentCallback get pickerFetchIntent => widget.onFetchIntent;
 
@@ -67,11 +59,3 @@ abstract class _DriveAttachmentPickerButtonState
     );
   }
 }
-
-class _MobileDriveAttachmentPickerButtonState
-    extends _DriveAttachmentPickerButtonState {}
-
-class _WebDriveAttachmentPickerButtonState
-    extends _DriveAttachmentPickerButtonState
-    with WebWindowMessageMixin<DriveAttachmentPickerButton>,
-         DrivePickerWebStateMixin<DriveAttachmentPickerButton> {}

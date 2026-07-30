@@ -11,20 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
-  final Future<WorkplaceIntent> intentFuture;
+  final DriveIntentLoader intentLoader;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
   final DriveIntentImageAssets imageAssets;
-  // Ignored on mobile — only used by the web variant (ADR-93).
-  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
-    required this.intentFuture,
+    required this.intentLoader,
     required this.filePickerConfig,
     required this.imageAssets,
-    this.onRegisterExternalHandler,
   });
 
   @override
@@ -39,20 +37,46 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   @override
   void initState() {
     super.initState();
-    startLoading(widget.intentFuture);
+    startLoading(widget.intentLoader);
   }
 
   @override
-  void loadIntent(WorkplaceIntent intent) {
+  Future<void> loadIntent(WorkplaceIntent intent) {
     if (intent.intentUrl.scheme == 'data') {
-      _webViewController!.loadData(
+      return _webViewController!.loadData(
         data: DriveIntentFakePage.buildHtml(intent.intentId),
       );
-    } else {
-      _webViewController!.loadUrl(
-        urlRequest: URLRequest(url: WebUri.uri(intent.intentUrl)),
-      );
     }
+    return _webViewController!.loadUrl(
+      urlRequest: URLRequest(url: WebUri.uri(intent.intentUrl)),
+    );
+  }
+
+  // Only main-frame failures mean the page is unusable; subframe errors
+  // (favicons, trackers) must not kill the picker. Unknown (null) counts as
+  // subframe — worst case is falling back to the ready timeout.
+  bool _isMainFrame(WebResourceRequest request) => request.isForMainFrame == true;
+
+  void _handleLoadError(
+    InAppWebViewController controller,
+    WebResourceRequest request,
+    WebResourceError error,
+  ) {
+    if (!_isMainFrame(request)) return;
+    notifyPageLoadFailed(
+      DriveIntentPageLoadException('${error.type}: ${error.description}'),
+    );
+  }
+
+  void _handleHttpError(
+    InAppWebViewController controller,
+    WebResourceRequest request,
+    WebResourceResponse errorResponse,
+  ) {
+    if (!_isMainFrame(request)) return;
+    notifyPageLoadFailed(
+      DriveIntentPageLoadException('HTTP ${errorResponse.statusCode}'),
+    );
   }
 
   @override
@@ -97,18 +121,20 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
             );
             notifyPlatformViewReady();
           },
+          onReceivedError: _handleLoadError,
+          onReceivedHttpError: _handleHttpError,
         ),
       ),
     );
   }
 
   @override
-  void sendAck() {
+  Future<void> sendAck() async {
     // Embedded unquoted: JSON object syntax is valid JS object-literal syntax,
     // so `event.data` in the page ends up a real object, not a JSON string —
     // Drive's getFilePickerConfig never calls JSON.parse on it.
     final payload = jsonEncode(widget.filePickerConfig.toJson());
-    _webViewController?.evaluateJavascript(source: '''
+    await _webViewController?.evaluateJavascript(source: '''
       window.dispatchEvent(new MessageEvent('message', {
         data: $payload,
         origin: '$intentOrigin',

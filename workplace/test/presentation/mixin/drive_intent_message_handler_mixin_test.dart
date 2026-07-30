@@ -20,14 +20,32 @@ class _TestState extends State<_TestWidget> with DriveIntentMessageHandlerMixin 
   final List<String> ackCalls = [];
   final List<WorkplaceIntent> loadCalls = [];
   final List<DrivePickOutcome> outcomes = [];
+  bool throwOnAck = false;
+  bool failAckAsync = false;
+  bool throwOnLoad = false;
+  bool failLoadAsync = false;
+  bool throwOnCleanup = false;
 
   @override
-  void sendAck() {
+  Future<void> sendAck() {
+    if (throwOnAck) throw StateError('send ack failed');
+    if (failAckAsync) return Future.error(StateError('send ack failed async'));
     ackCalls.add('ack');
+    return Future.value();
   }
 
   @override
-  void loadIntent(WorkplaceIntent intent) => loadCalls.add(intent);
+  Future<void> loadIntent(WorkplaceIntent intent) {
+    if (throwOnLoad) throw StateError('load intent failed');
+    if (failLoadAsync) return Future.error(StateError('load intent failed async'));
+    loadCalls.add(intent);
+    return Future.value();
+  }
+
+  @override
+  void onCleanup() {
+    if (throwOnCleanup) throw StateError('cleanup failed');
+  }
 
   @override
   void onFinished(DrivePickOutcome outcome) => outcomes.add(outcome);
@@ -42,10 +60,14 @@ const _origin = 'https://drive.example.com';
 WorkplaceIntent _intent({String intentId = _intentId, String url = '$_origin/pick'}) =>
     WorkplaceIntent(intentId: intentId, intentUrl: Uri.parse(url));
 
-Future<_TestState> _buildAndApply(WidgetTester tester, {WorkplaceIntent? intent}) async {
+Future<_TestState> _pumpHarness(WidgetTester tester) async {
   await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-  final s = tester.state<_TestState>(find.byType(_TestWidget));
-  s.startLoading(Future.value(intent ?? _intent()));
+  return tester.state<_TestState>(find.byType(_TestWidget));
+}
+
+Future<_TestState> _buildAndApply(WidgetTester tester, {WorkplaceIntent? intent}) async {
+  final s = await _pumpHarness(tester);
+  s.startLoading(() => Future.value(intent ?? _intent()));
   await tester.pump();
   s.notifyPlatformViewReady();
   return s;
@@ -53,13 +75,33 @@ Future<_TestState> _buildAndApply(WidgetTester tester, {WorkplaceIntent? intent}
 
 String _encode(Map<String, dynamic> map) => jsonEncode(map);
 
-void _messageTypeTests() {
+void _handshakeMessageTests() {
   testWidgets('ready → sendAck called, no outcome yet, skeleton still shown', (tester) async {
     final state = await _buildAndApply(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
     expect(state.ackCalls, hasLength(1));
     expect(state.outcomes, isEmpty);
     expect(state.showSkeleton, isTrue);
+  });
+
+  testWidgets('sendAck throws → Failed outcome', (tester) async {
+    final state = await _buildAndApply(tester);
+    state.throwOnAck = true;
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+
+  testWidgets('sendAck fails asynchronously → Failed outcome', (tester) async {
+    final state = await _buildAndApply(tester);
+    state.failAckAsync = true;
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
   });
 
   testWidgets('readyToUse → hides skeleton, no ack, no outcome', (tester) async {
@@ -69,7 +111,9 @@ void _messageTypeTests() {
     expect(state.outcomes, isEmpty);
     expect(state.showSkeleton, isFalse);
   });
+}
 
+void _terminalMessageTests() {
   testWidgets('done → Picked outcome with documents, no ack', (tester) async {
     final state = await _buildAndApply(tester);
     state.onMessage(
@@ -104,7 +148,9 @@ void _messageTypeTests() {
     expect(state.outcomes.single, isA<DrivePickOutcomeCancelled>());
     expect(state.ackCalls, isEmpty);
   });
+}
 
+void _invalidMessageTests() {
   testWidgets('malformed JSON → no crash, nothing dispatched', (tester) async {
     final state = await _buildAndApply(tester);
     state.onMessage(raw: '{not valid json{{', origin: _origin);
@@ -156,13 +202,12 @@ void _originFilterTests() {
 
 void _applyOrderingTests() {
   testWidgets('platform view ready before intent resolves — still applies once both are ready', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-    final state = tester.state<_TestState>(find.byType(_TestWidget));
+    final state = await _pumpHarness(tester);
     state.notifyPlatformViewReady();
     expect(state.loadCalls, isEmpty);
 
     final completer = Completer<WorkplaceIntent>();
-    state.startLoading(completer.future);
+    state.startLoading(() => completer.future);
     completer.complete(_intent());
     await tester.pump();
 
@@ -171,9 +216,8 @@ void _applyOrderingTests() {
   });
 
   testWidgets('intent resolves before platform view ready — applies once view is ready', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-    final state = tester.state<_TestState>(find.byType(_TestWidget));
-    state.startLoading(Future.value(_intent()));
+    final state = await _pumpHarness(tester);
+    state.startLoading(() => Future.value(_intent()));
     await tester.pump();
     expect(state.loadCalls, isEmpty);
 
@@ -182,15 +226,190 @@ void _applyOrderingTests() {
     state.cancelReadyTimeoutForTesting();
   });
 
+  testWidgets('message arriving before the intent is applied → dropped', (tester) async {
+    final state = await _pumpHarness(tester);
+    state.startLoading(() => Future.value(_intent()));
+    // Platform view never becomes ready — still in the waiting phase.
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+    await tester.pump();
+
+    expect(state.ackCalls, isEmpty);
+    expect(state.outcomes, isEmpty);
+    state.cancelReadyTimeoutForTesting();
+  });
+}
+
+void _intentLoadFailureTests() {
   testWidgets('intent fetch fails → Failed outcome, no load attempted', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
-    final state = tester.state<_TestState>(find.byType(_TestWidget));
-    state.startLoading(Future.error(StateError('token exchange failed')));
+    final state = await _pumpHarness(tester);
+    state.startLoading(() => Future.error(StateError('token exchange failed')));
     await tester.pump();
 
     expect(state.loadCalls, isEmpty);
     expect(state.outcomes, hasLength(1));
     expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+
+  testWidgets('intent loader throws synchronously → Failed outcome, no load attempted', (tester) async {
+    final state = await _pumpHarness(tester);
+    state.startLoading(() => throw StateError('token exchange failed'));
+    await tester.pump();
+
+    expect(state.loadCalls, isEmpty);
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+
+  testWidgets('loading the intent throws → Failed outcome', (tester) async {
+    final state = await _pumpHarness(tester);
+    state.throwOnLoad = true;
+    state.startLoading(() => Future.value(_intent()));
+    await tester.pump();
+    state.notifyPlatformViewReady();
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+
+  testWidgets('loading the intent fails asynchronously → Failed outcome', (tester) async {
+    final state = await _pumpHarness(tester);
+    state.failLoadAsync = true;
+    state.startLoading(() => Future.value(_intent()));
+    await tester.pump();
+    state.notifyPlatformViewReady();
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+}
+
+void _pageLoadFailureTests() {
+  testWidgets('notifyPageLoadFailed → Failed outcome without waiting for timeout', (tester) async {
+    final state = await _buildAndApply(tester);
+    state.notifyPageLoadFailed(DriveIntentPageLoadException('net::ERR_NAME_NOT_RESOLVED'));
+
+    expect(state.outcomes, hasLength(1));
+    final outcome = state.outcomes.single as DrivePickOutcomeFailed;
+    expect(outcome.error, isA<DriveIntentPageLoadException>());
+  });
+
+  testWidgets('page load failure before intent applied → ignored, modal stays', (tester) async {
+    final state = await _pumpHarness(tester);
+    state.startLoading(() => Future.value(_intent()));
+    // Platform view never becomes ready — still in the waiting phase; a
+    // WebView error here cannot be the Drive page (nothing was loaded yet).
+    state.notifyPageLoadFailed(DriveIntentPageLoadException('spurious init error'));
+
+    expect(state.outcomes, isEmpty);
+    expect(state.showSkeleton, isTrue);
+    state.cancelReadyTimeoutForTesting();
+  });
+
+  testWidgets('page load failure after interactive → ignored, picker keeps working', (tester) async {
+    final state = await _buildAndApply(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:readyToUse'}), origin: _origin);
+    state.notifyPageLoadFailed(DriveIntentPageLoadException('in-page navigation error'));
+
+    expect(state.outcomes, isEmpty);
+    expect(state.showSkeleton, isFalse);
+  });
+
+  testWidgets('notifyPageLoadFailed after finish → no second outcome', (tester) async {
+    final state = await _buildAndApply(tester);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:cancel'}), origin: _origin);
+    state.notifyPageLoadFailed(DriveIntentPageLoadException('HTTP 500'));
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeCancelled>());
+  });
+}
+
+Future<_TestState> _pumpOnPushedRoute(
+  WidgetTester tester, {
+  void Function(DrivePickOutcome?)? onResult,
+}) async {
+  await tester.pumpWidget(MaterialApp(
+    home: Builder(
+      builder: (context) => TextButton(
+        onPressed: () => Navigator.of(context)
+            .push<DrivePickOutcome>(
+              MaterialPageRoute(builder: (_) => const _TestWidget()),
+            )
+            .then((result) => onResult?.call(result)),
+        child: const Text('open'),
+      ),
+    ),
+  ));
+  await tester.tap(find.text('open'));
+  await tester.pumpAndSettle();
+  return tester.state<_TestState>(find.byType(_TestWidget));
+}
+
+void _finishContractTests() {
+  testWidgets('onCleanup throws → swallowed, onFinished still runs, route still pops', (tester) async {
+    final state = await _pumpOnPushedRoute(tester);
+    state.throwOnCleanup = true;
+
+    state.cancel();
+    await tester.pumpAndSettle();
+
+    expect(state.outcomes.single, isA<DrivePickOutcomeCancelled>());
+    expect(find.byType(_TestWidget), findsNothing);
+  });
+
+  testWidgets('finish pops the route with the outcome as dialog result', (tester) async {
+    DrivePickOutcome? result;
+    final state = await _pumpOnPushedRoute(tester, onResult: (r) => result = r);
+
+    state.cancel();
+    await tester.pumpAndSettle();
+
+    expect(result, const DrivePickOutcomeCancelled());
+  });
+}
+
+void _disposeRaceSafetyTests() {
+  testWidgets('intent resolves after dispose → no load, no outcome, no crash', (tester) async {
+    final state = await _pumpHarness(tester);
+    final completer = Completer<WorkplaceIntent>();
+    state.startLoading(() => completer.future);
+    state.notifyPlatformViewReady();
+    await tester.pumpWidget(const SizedBox.shrink());
+
+    completer.complete(_intent());
+    await tester.pump();
+
+    expect(state.loadCalls, isEmpty);
+    expect(state.outcomes, isEmpty);
+  });
+
+  testWidgets('intent fails after dispose → Failed outcome, no setState/pop crash', (tester) async {
+    final state = await _pumpHarness(tester);
+    final completer = Completer<WorkplaceIntent>();
+    state.startLoading(() => completer.future);
+    await tester.pumpWidget(const SizedBox.shrink());
+
+    completer.completeError(StateError('token exchange failed'));
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  });
+
+  testWidgets('cancel while loader pending → later failure adds no second outcome', (tester) async {
+    final state = await _pumpHarness(tester);
+    final completer = Completer<WorkplaceIntent>();
+    state.startLoading(() => completer.future);
+    state.notifyPlatformViewReady();
+    state.cancel();
+
+    completer.completeError(StateError('token exchange failed'));
+    await tester.pump();
+
+    expect(state.outcomes, hasLength(1));
+    expect(state.outcomes.single, isA<DrivePickOutcomeCancelled>());
   });
 }
 
@@ -209,10 +428,10 @@ class _TimeoutTestState extends State<_TimeoutTestWidget>
   Duration get readyTimeout => const Duration(milliseconds: 50);
 
   @override
-  void sendAck() {}
+  Future<void> sendAck() => Future.value();
 
   @override
-  void loadIntent(WorkplaceIntent intent) {}
+  Future<void> loadIntent(WorkplaceIntent intent) => Future.value();
 
   @override
   void onFinished(DrivePickOutcome outcome) => outcomes.add(outcome);
@@ -225,7 +444,7 @@ void _readyTimeoutTests() {
   testWidgets('fires Failed(DriveIntentTimeoutException) if ready never arrives', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
     final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(Future.value(_intent()));
+    state.startLoading(() => Future.value(_intent()));
     await tester.pump();
     state.notifyPlatformViewReady();
 
@@ -239,7 +458,7 @@ void _readyTimeoutTests() {
   testWidgets('cancelled if readyToUse arrives before timeout', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
     final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(Future.value(_intent()));
+    state.startLoading(() => Future.value(_intent()));
     await tester.pump();
     state.notifyPlatformViewReady();
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
@@ -253,7 +472,7 @@ void _readyTimeoutTests() {
   testWidgets('fires Failed(DriveIntentTimeoutException) if readyToUse never arrives, even after ready', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
     final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(Future.value(_intent()));
+    state.startLoading(() => Future.value(_intent()));
     await tester.pump();
     state.notifyPlatformViewReady();
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
@@ -267,7 +486,7 @@ void _readyTimeoutTests() {
   testWidgets('fires Failed(DriveIntentTimeoutException) if platform view never becomes ready', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
     final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(Future.value(_intent()));
+    state.startLoading(() => Future.value(_intent()));
 
     await tester.pump(const Duration(milliseconds: 60));
 
@@ -278,10 +497,16 @@ void _readyTimeoutTests() {
 
 void main() {
   group('DriveIntentMessageHandlerMixin', () {
-    group('message types', _messageTypeTests);
+    group('handshake messages', _handshakeMessageTests);
+    group('terminal messages', _terminalMessageTests);
+    group('invalid messages', _invalidMessageTests);
     group('origin filtering', _originFilterTests);
     group('apply ordering (intent resolution vs platform view ready)', _applyOrderingTests);
+    group('intent load failures', _intentLoadFailureTests);
+    group('page load failure', _pageLoadFailureTests);
     group('ready timeout wiring', _readyTimeoutTests);
+    group('finish contract', _finishContractTests);
+    group('dispose race safety', _disposeRaceSafetyTests);
 
     group('multi-state isolation', () {
       testWidgets('two states with different intentIds — only matching state handles done', (tester) async {
@@ -292,8 +517,8 @@ void main() {
         final stateA = states[0];
         final stateB = states[1];
 
-        stateA.startLoading(Future.value(_intent(intentId: 'intent-a')));
-        stateB.startLoading(Future.value(_intent(intentId: 'intent-b')));
+        stateA.startLoading(() => Future.value(_intent(intentId: 'intent-a')));
+        stateB.startLoading(() => Future.value(_intent(intentId: 'intent-b')));
         await tester.pump();
         stateA.notifyPlatformViewReady();
         stateB.notifyPlatformViewReady();

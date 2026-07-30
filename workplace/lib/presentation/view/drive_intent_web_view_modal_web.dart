@@ -12,19 +12,15 @@ import 'package:workplace/presentation/view/drive_intent_skeleton_loader.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
 
 class DriveIntentWebViewModal extends StatefulWidget {
-  final Future<WorkplaceIntent> intentFuture;
+  final DriveIntentLoader intentLoader;
   final WorkplaceFilePickerConfigRequest filePickerConfig;
   final DriveIntentImageAssets imageAssets;
-  // ADR-93: composer registers the window listener at composer-init time and
-  // forwards messages here, so the handler is ready before the iframe loads.
-  final OnRegisterExternalHandler? onRegisterExternalHandler;
 
   const DriveIntentWebViewModal({
     super.key,
-    required this.intentFuture,
+    required this.intentLoader,
     required this.filePickerConfig,
     required this.imageAssets,
-    this.onRegisterExternalHandler,
   });
 
   @override
@@ -59,20 +55,17 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   @override
   void initState() {
     super.initState();
-    if (widget.onRegisterExternalHandler != null) {
-      // ADR-93: composer registered window listener at composer-init; it
-      // forwards raw messages here so we don't need our own window listener.
-      widget.onRegisterExternalHandler!(_forwardMessage);
-    } else {
-      // Fallback: modal owns its own window listener (e.g. when used outside
-      // the composer context).
-      startWindowMessageListener(_forwardMessage);
-    }
-    startLoading(widget.intentFuture);
+    // The modal owns its listener: bound to its own lifetime, not the opener's
+    // (a context menu tile pops its route on tap and would tear it down early).
+    startWindowMessageListener(_forwardMessage);
+    startLoading(widget.intentLoader);
   }
 
   @override
-  void loadIntent(WorkplaceIntent intent) {
+  Future<void> loadIntent(WorkplaceIntent intent) async {
+    // No web equivalent of mobile's onReceivedError: cross-origin iframes
+    // expose no navigation-failure signal, and probing the URL first could
+    // false-close on CSP mismatches — readyTimeout is the only safe fallback.
     _iframeElement!.src = intent.intentUrl.toString();
   }
 
@@ -86,9 +79,8 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
 
   @override
   void dispose() {
-    // Guard against routes popped without going through the mixin's finish
-    // path (system back, parent nav, etc.) — onCleanup is idempotent so
-    // double-call is safe.
+    // Guards routes popped outside the finish path (system back, parent nav);
+    // onCleanup is idempotent.
     onCleanup();
     super.dispose();
   }
@@ -140,7 +132,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   }
 
   @override
-  void sendAck() {
+  Future<void> sendAck() async {
     // data: URIs have opaque 'null' origin — postMessage requires '*' for those.
     final targetOrigin = intentOrigin == 'null' ? '*' : intentOrigin;
     // dart:html's postMessage structured-clones the Map into a real JS
