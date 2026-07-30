@@ -26,8 +26,6 @@ enum WorkplaceExchangeType {
 }
 
 enum WorkplaceThemeType {
-  @JsonValue('light')
   light,
-  @JsonValue('dark')
   dark;
 }
