@@ -9,6 +9,7 @@ import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
 import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
+import 'package:workplace/presentation/model/drive_origin_validator.dart';
 import 'package:workplace/presentation/view/drive_intent_skeleton_loader.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal_shell.dart';
 
@@ -32,6 +33,9 @@ class DriveIntentWebViewModal extends StatefulWidget {
 class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     with DriveIntentMessageHandlerMixin, WebWindowMessageMixin<DriveIntentWebViewModal> {
   html.IFrameElement? _iframeElement;
+
+  @override
+  DriveOriginValidator get originValidator => const WebDriveOriginValidator();
 
   bool wideScreen(BuildContext context) {
     return ResponsiveUtils().isDesktop(context) ||

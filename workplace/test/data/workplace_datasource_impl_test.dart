@@ -163,6 +163,36 @@ void main() {
       }
     });
 
+    test('Should parse client from attributes when present', () {
+      final data = {
+        'data': {
+          'id': 'intent-1',
+          'attributes': {
+            'action': 'PICK',
+            'type': 'files',
+            'permissions': ['GET'],
+            'services': [
+              {'href': 'https://drive.example.com/pick'},
+            ],
+            'client': 'client-abc',
+          },
+        },
+      };
+
+      final result = datasource.parseIntentResponse(data, requireHttps: false);
+
+      expect(result.client, equals('client-abc'));
+    });
+
+    test('Should have null client when attributes omit it', () {
+      final result = datasource.parseIntentResponse(
+        buildResponse(id: 'intent-1', href: 'https://drive.example.com/pick'),
+        requireHttps: false,
+      );
+
+      expect(result.client, isNull);
+    });
+
     test('Should use first service href when multiple services are present', () {
       final data = {
         'data': {
@@ -241,6 +271,24 @@ void main() {
       expect(
         adapter.capturedOptions!.uri.pathSegments.last,
         equals('intents'),
+      );
+    });
+
+    test('Should include force_session_id=true query parameter', () async {
+      final adapter = _MockAdapter(intentResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await datasource.createIntent(
+        platformUrl: Uri.parse('https://platform.example.com'),
+        accessToken: 'test-token',
+        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
+        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
+        theme: WorkplaceTheme.light,
+      );
+
+      expect(
+        adapter.capturedOptions!.uri.queryParameters['force_session_id'],
+        equals('true'),
       );
     });
 

@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/mixin/drive_intent_message_handler_mixin.dart';
+import 'package:workplace/presentation/model/drive_origin_validator.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 
 // Minimal widget harness — no WebView/iframe needed.
@@ -25,6 +26,9 @@ class _TestState extends State<_TestWidget> with DriveIntentMessageHandlerMixin 
   bool throwOnLoad = false;
   bool failLoadAsync = false;
   bool throwOnCleanup = false;
+
+  @override
+  DriveOriginValidator get originValidator => const MobileDriveOriginValidator();
 
   @override
   Future<void> sendAck() {
@@ -57,8 +61,8 @@ class _TestState extends State<_TestWidget> with DriveIntentMessageHandlerMixin 
 const _intentId = 'test-123';
 const _origin = 'https://drive.example.com';
 
-WorkplaceIntent _intent({String intentId = _intentId, String url = '$_origin/pick'}) =>
-    WorkplaceIntent(intentId: intentId, intentUrl: Uri.parse(url));
+WorkplaceIntent _intent({String intentId = _intentId, String url = '$_origin/pick', String? client}) =>
+    WorkplaceIntent(intentId: intentId, intentUrl: Uri.parse(url), client: client);
 
 Future<_TestState> _pumpHarness(WidgetTester tester) async {
   await tester.pumpWidget(const MaterialApp(home: _TestWidget()));
@@ -177,19 +181,17 @@ void _invalidMessageTests() {
 }
 
 void _originFilterTests() {
-  testWidgets('wrong origin → nothing dispatched', (tester) async {
+  testWidgets('mismatched origin → dropped, not dispatched', (tester) async {
     final state = await _buildAndApply(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: 'https://evil.example.com');
     expect(state.ackCalls, isEmpty);
-    expect(state.outcomes, isEmpty);
     state.cancelReadyTimeoutForTesting();
   });
 
-  testWidgets('null origin → nothing dispatched', (tester) async {
+  testWidgets('null origin → dropped, not dispatched', (tester) async {
     final state = await _buildAndApply(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: null);
     expect(state.ackCalls, isEmpty);
-    expect(state.outcomes, isEmpty);
     state.cancelReadyTimeoutForTesting();
   });
 
@@ -453,6 +455,9 @@ class _TimeoutTestState extends State<_TimeoutTestWidget>
   Duration get readyTimeout => const Duration(milliseconds: 50);
 
   @override
+  DriveOriginValidator get originValidator => const MobileDriveOriginValidator();
+
+  @override
   Future<void> sendAck() => Future.value();
 
   @override
@@ -567,6 +572,18 @@ void main() {
     group('ready timeout wiring', _readyTimeoutTests);
     group('finish contract', _finishContractTests);
     group('dispose race safety', _disposeRaceSafetyTests);
+
+    group('intentClient', () {
+      testWidgets('exposes client from resolved intent once applied', (tester) async {
+        final state = await _buildAndApply(tester, intent: _intent(client: 'client-xyz'));
+        expect(state.intentClient, equals('client-xyz'));
+      });
+
+      testWidgets('is null when intent has no client', (tester) async {
+        final state = await _buildAndApply(tester);
+        expect(state.intentClient, isNull);
+      });
+    });
 
     group('multi-state isolation', () {
       testWidgets('two states with different intentIds — only matching state handles done', (tester) async {

@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
@@ -17,6 +18,7 @@ const _imageAssets = DriveIntentImageAssets(
 const _filePickerConfig = WorkplaceFilePickerConfigRequest(
   sharingLink: WorkplaceActionConfigRequest(),
   downloadLink: null,
+  theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
 );
 
 Widget _modal(Future<WorkplaceIntent> intent) {

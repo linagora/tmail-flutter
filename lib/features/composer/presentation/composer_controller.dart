@@ -1011,7 +1011,6 @@ class ComposerController extends BaseController
           if (PlatformInfo.isWeb) {
             richTextWebController?.editorController.insertHtml(html);
           } else {
-            popBack();
             await richTextMobileTabletController?.restoreMobileEditorFocus();
             await htmlEditorApi?.insertHtml(html);
             await SchedulerBinding.instance.endOfFrame;

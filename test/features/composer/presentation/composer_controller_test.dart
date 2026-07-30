@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_m
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
@@ -82,6 +83,7 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workplace/domain/entity/drive_document.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -1196,6 +1198,66 @@ void main() {
           () => composerController?.tearDownMobileAutoSave(),
           returnsNormally,
         );
+      });
+    });
+
+    group('handleDrivePickResult test:', () {
+      final linkDoc = DriveDocument(
+        id: 'drive-doc-1',
+        name: 'Report',
+        size: 100,
+        mimeType: 'application/pdf',
+        sharingLink: Uri.parse('https://drive.example.com/report'),
+      );
+
+      setUp(() {
+        Get.put(DriveAttachmentHandler());
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        when(mockRichTextMobileTabletController.restoreMobileEditorFocus())
+            .thenAnswer((_) async {});
+        when(mockHtmlEditorApi.insertHtml(any)).thenAnswer((_) async {});
+      });
+
+      // handleDrivePickResult awaits SchedulerBinding.instance.endOfFrame on
+      // mobile, which only resolves once a frame is pumped — testWidgets +
+      // tester.pump() drives that, a plain test() would hang forever.
+      testWidgets(
+        'Should restore mobile editor focus and insert the Drive link html\n'
+        'When a file is picked from Drive on mobile',
+      (tester) async {
+        final resultFuture = composerController?.handleDrivePickResult([linkDoc]);
+        await tester.pumpAndSettle();
+        await resultFuture;
+
+        verify(mockRichTextMobileTabletController.restoreMobileEditorFocus())
+            .called(1);
+        final captured =
+            verify(mockHtmlEditorApi.insertHtml(captureAny)).captured;
+        expect(captured, hasLength(1));
+        expect(captured.single as String, contains('https://drive.example.com/report'));
+      });
+
+      testWidgets(
+        'Should restore focus before inserting html\n'
+        'When a file is picked from Drive on mobile',
+      (tester) async {
+        final callOrder = <String>[];
+        when(mockRichTextMobileTabletController.restoreMobileEditorFocus())
+            .thenAnswer((_) async {
+          callOrder.add('restoreFocus');
+        });
+        when(mockHtmlEditorApi.insertHtml(any)).thenAnswer((_) async {
+          callOrder.add('insertHtml');
+        });
+
+        final resultFuture = composerController?.handleDrivePickResult([linkDoc]);
+        await tester.pumpAndSettle();
+        await resultFuture;
+
+        expect(callOrder, ['restoreFocus', 'insertHtml']);
       });
     });
 

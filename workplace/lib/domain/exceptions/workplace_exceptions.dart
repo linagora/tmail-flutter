@@ -14,3 +14,5 @@ class DriveIntentPageLoadException implements Exception {
 }
 
 class DriveIntentTimeoutException implements Exception {}
+
+class WorkplaceNoIntentClientException implements Exception {}

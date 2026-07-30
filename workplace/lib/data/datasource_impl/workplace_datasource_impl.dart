@@ -38,6 +38,10 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
           ...platformUrl.pathSegments.where((segment) => segment.isNotEmpty),
           'intents',
         ],
+        queryParameters: {
+          ...platformUrl.queryParameters,
+          'force_session_id': 'true',
+        },
       ).toString(),
       options: Options(
         headers: {'Authorization': 'Bearer $accessToken'},
@@ -67,7 +71,11 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       throw ArgumentError('Intent URL must use HTTPS, got: $href');
     }
 
-    return WorkplaceIntent(intentId: parsed.data.id, intentUrl: intentUrl);
+    return WorkplaceIntent(
+      intentId: parsed.data.id,
+      intentUrl: intentUrl,
+      client: parsed.data.attributes.client,
+    );
   }
 
   Map<String, dynamic> _buildIntentRequest({
