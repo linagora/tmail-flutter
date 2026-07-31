@@ -3110,16 +3110,12 @@ class MailboxDashBoardController extends ReloadableController
       final currentMailbox = selectedMailbox.value;
       final selectedEmailId = selectedEmail.value?.id;
       final isSearchRunning = searchController.isSearchEmailRunning;
-      String title = '';
-      if (selectedEmail.value != null) {
-        title = 'Email-${selectedEmailId?.asString ?? ''}';
-      } else if (isSearchRunning) {
-        title = 'SearchEmail';
-      } else {
-        title = currentMailbox?.browserRouteTitle ?? '';
-      }
       RouteUtils.replaceBrowserHistory(
-        title: title,
+        title: RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: isSearchRunning,
+          selectedEmailId: selectedEmailId,
+          selectedMailbox: currentMailbox,
+        ),
         url: uri ?? RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
           router: RouteUtils.dashboardRouterForMailboxOrSearch(

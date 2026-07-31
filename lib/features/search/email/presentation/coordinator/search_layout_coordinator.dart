@@ -100,8 +100,9 @@ class SearchLayoutCoordinator {
   }
 
   /// Replays the active search into the list owner for the current layout.
+  /// Returns true when no handoff is needed or the handoff succeeds.
   bool reconcile(bool isDesktop) {
-    if (!_isSearchEngaged()) return false;
+    if (!_isSearchEngaged()) return true;
 
     if (isDesktop) {
       return _handoffToDesktop();

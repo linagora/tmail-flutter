@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -141,6 +142,20 @@ abstract class RouteUtils {
       dashboardType:
           isSearchRunning ? DashboardType.search : DashboardType.normal,
     );
+  }
+
+  static String dashboardBrowserRouteTitle({
+    required bool isSearchRunning,
+    EmailId? selectedEmailId,
+    PresentationMailbox? selectedMailbox,
+  }) {
+    if (selectedEmailId != null) {
+      return 'Email-${selectedEmailId.asString}';
+    } else if (isSearchRunning) {
+      return 'SearchEmail';
+    } else {
+      return selectedMailbox?.browserRouteTitle ?? '';
+    }
   }
 
   static NavigationRouter parsingRouteParametersToNavigationRouter(Map<String, dynamic> parameters) {

@@ -76,7 +76,6 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_action_rea
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -1120,9 +1119,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       final selectedMailbox = mailboxDashBoardController.selectedMailbox.value;
       final isSearchRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
       RouteUtils.replaceBrowserHistory(
-        title: isSearchRunning
-          ? 'SearchEmail'
-          : selectedMailbox?.browserRouteTitle ?? '',
+        title: RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: isSearchRunning,
+          selectedMailbox: selectedMailbox,
+        ),
         url: RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
           router: RouteUtils.dashboardRouterForMailboxOrSearch(
