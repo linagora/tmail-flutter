@@ -1272,41 +1272,14 @@ class ComposerController extends BaseController
         uploadController.justUploadAttachmentsAction(
           uploadFiles: pickedFiles,
           uploadUri: uploadUri,
-          onFileSettled: _releaseReservedBytesForFile,
         );
       } catch (e) {
         logWarning('ComposerController::uploadAttachmentsAction: $e');
         uploadController.consumeState(Stream.value(Left(UploadAttachmentFailure(e, pickedFiles[0]))));
-        pickedFiles.forEach(_releaseReservedBytesForFile);
       }
     } else {
       logWarning('ComposerController::uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
-      pickedFiles.forEach(_releaseReservedBytesForFile);
     }
-  }
-
-  /// Mirrors the bytes reservation [AttachmentUploadValidationService] made
-  /// for [file] when its upload was allowed, now that it has actually
-  /// settled (or will never start).
-  void _releaseReservedBytesForFile(FileInfo file) {
-    attachmentUploadValidationService.releaseReservedBytes(
-      allAttachmentBytes: file.fileSize,
-      regularAttachmentBytes: file.isInline == true ? 0 : file.fileSize,
-    );
-  }
-
-  /// Mirrors the bytes reservation [AttachmentUploadValidationService] made
-  /// for a re-attached [attachment] whose bytes are transferred to
-  /// [uploadController]'s state synchronously by
-  /// [initializeUploadAttachments], so there is no later settlement event to
-  /// release it on.
-  void _releaseReservedBytesForAttachment(Attachment attachment) {
-    final attachmentBytes = (attachment.size?.value ?? 0).toInt();
-    attachmentUploadValidationService.releaseReservedBytes(
-      allAttachmentBytes: attachmentBytes,
-      regularAttachmentBytes:
-          attachment.isDispositionInlined() ? 0 : attachmentBytes,
-    );
   }
 
   void deleteAttachmentUploaded(UploadTaskId uploadId) {
@@ -2087,10 +2060,7 @@ class ComposerController extends BaseController
     return attachmentUploadValidationService.validateAttachment(
       context: context,
       attachment: attachment,
-      onAllowed: () {
-        uploadController.initializeUploadAttachments([attachment]);
-        _releaseReservedBytesForAttachment(attachment);
-      });
+      onAllowed: () => uploadController.initializeUploadAttachments([attachment]));
   }
 
   Future<void> onChangeIdentity(Identity? newIdentity) async {

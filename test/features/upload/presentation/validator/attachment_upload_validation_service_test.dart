@@ -303,8 +303,10 @@ void main() {
     });
   });
 
-  group('AttachmentUploadValidationService concurrency', () {
-    test('Should not allow concurrent uploads to exceed the hard limit', () async {
+  group('AttachmentUploadValidationService state reads', () {
+    test(
+        'Should reject a second upload that pushes the committed total over the hard limit',
+        () async {
       final stateSource = _MutableStateSource(
         warningLimitBytes: 10000,
         hardLimitBytes: 1000,
@@ -321,24 +323,27 @@ void main() {
         stateSource.currentRegularAttachmentBytes += 600;
       }
 
-      final firstValidation = service.validateFiles(
+      await service.validateFiles(
         files: [_file(fileSize: 600)],
         onAllowed: registerUpload,
       );
-      final secondValidation = service.validateFiles(
+      await service.validateFiles(
         files: [_file(fileSize: 600)],
         onAllowed: registerUpload,
       );
-
-      await Future.wait([firstValidation, secondValidation]);
 
       expect(allowedUploads, 1);
       expect(stateSource.currentAllAttachmentBytes, 600);
     });
 
     test(
-        'Should not double count an allowed re-attached attachment after it is registered',
-        () async {
+        'Should evaluate overlapping validations against uncommitted state, '
+        'letting both proceed past the hard limit', () async {
+      // Documents an accepted limitation rather than a guarantee. Validation is
+      // a UX guard evaluated against what is committed at call time. Two
+      // attachment actions can only overlap while a confirmation dialog awaits
+      // the user; neither then sees the other's bytes. The composer's send
+      // guard and the server both reject the combined total afterwards.
       final stateSource = _MutableStateSource(
         warningLimitBytes: 10000,
         hardLimitBytes: 1000,
@@ -347,55 +352,28 @@ void main() {
         stateSource: stateSource,
         feedback: _RecordingFeedback(),
       );
-      final attachment = Attachment(
-        blobId: Id('regular-attachment'),
-        size: UnsignedInt(600),
-        disposition: ContentDisposition.attachment,
-      );
+      var allowedUploads = 0;
 
-      await service.validateAttachment(
-        attachment: attachment,
-        onAllowed: () {
-          stateSource.currentAllAttachmentBytes += 600;
-          stateSource.currentRegularAttachmentBytes += 600;
-          service.releaseReservedBytes(
-            allAttachmentBytes: 600,
-            regularAttachmentBytes: 600,
-          );
-        },
-      );
+      void registerUpload() {
+        allowedUploads++;
+        stateSource.currentAllAttachmentBytes += 600;
+        stateSource.currentRegularAttachmentBytes += 600;
+      }
 
-      expect(stateSource.currentAllAttachmentBytes, 600);
-      expect(service.isExceededMaxSizeAttachmentsPerEmail(), isFalse);
-    });
-
-    test('Should roll back reserved bytes when onAllowed throws', () async {
-      final stateSource = _MutableStateSource(
-        warningLimitBytes: 10000,
-        hardLimitBytes: 1000,
-      );
-      final service = buildService(
-        stateSource: stateSource,
-        feedback: _RecordingFeedback(),
-      );
-
-      await expectLater(
+      await Future.wait([
         service.validateFiles(
           files: [_file(fileSize: 600)],
-          onAllowed: () => throw StateError('Upload registration failed'),
+          onAllowed: registerUpload,
         ),
-        throwsA(isA<StateError>()),
-      );
+        service.validateFiles(
+          files: [_file(fileSize: 600)],
+          onAllowed: registerUpload,
+        ),
+      ]);
 
-      var secondUploadAllowed = false;
-
-      await service.validateFiles(
-        files: [_file(fileSize: 500)],
-        onAllowed: () => secondUploadAllowed = true,
-      );
-
-      expect(stateSource.currentAllAttachmentBytes, 0);
-      expect(secondUploadAllowed, isTrue);
+      expect(allowedUploads, 2);
+      expect(stateSource.currentAllAttachmentBytes, 1200);
+      expect(service.isExceededMaxSizeAttachmentsPerEmail(), isTrue);
     });
   });
 }

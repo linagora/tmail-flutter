@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_size_limit_policy.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_failure.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_prompt.dart';
@@ -14,6 +15,9 @@ final class AttachmentSizeLimitRule implements AttachmentUploadRule {
     if (AttachmentSizeLimitPolicy.isExceededMaxSizeAttachmentsPerEmail(
         allAttachmentBytes: request.sizes.allAttachmentBytes,
         hardLimitBytes: hardLimit)) {
+      logWarning('AttachmentSizeLimitRule::validate: rejected, '
+          'allAttachmentBytes = ${request.sizes.allAttachmentBytes} | '
+          'hardLimitBytes = $hardLimit');
       return ValidationRejected(MaxEmailAttachmentSizeExceeded(hardLimit!));
     }
 
@@ -21,6 +25,9 @@ final class AttachmentSizeLimitRule implements AttachmentUploadRule {
         AttachmentSizeLimitPolicy.isExceededWarningAttachmentFileSizeInComposer(
             regularAttachmentBytes: request.sizes.regularAttachmentBytes,
             warningLimitBytes: request.limits.warningLimitBytes)) {
+      log('AttachmentSizeLimitRule::validate: confirmation required, '
+          'regularAttachmentBytes = ${request.sizes.regularAttachmentBytes} | '
+          'warningLimitBytes = ${request.limits.warningLimitBytes}');
       return ValidationConfirmationRequired(const [LargeRegularAttachmentWarning()]);
     }
 
