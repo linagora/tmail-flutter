@@ -133,7 +133,15 @@ class AttachmentUploadValidationService {
         if (allowed) {
           _reservedAllAttachmentBytes += request.sizes.proposedAllAttachmentBytes;
           _reservedRegularAttachmentBytes += request.sizes.proposedRegularAttachmentBytes;
-          onAllowed();
+          try {
+            onAllowed();
+          } catch (_) {
+            releaseReservedBytes(
+              allAttachmentBytes: request.sizes.proposedAllAttachmentBytes,
+              regularAttachmentBytes: request.sizes.proposedRegularAttachmentBytes,
+            );
+            rethrow;
+          }
         }
       } finally {
         completer.complete();

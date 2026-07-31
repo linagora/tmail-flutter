@@ -1295,6 +1295,20 @@ class ComposerController extends BaseController
     );
   }
 
+  /// Mirrors the bytes reservation [AttachmentUploadValidationService] made
+  /// for a re-attached [attachment] whose bytes are transferred to
+  /// [uploadController]'s state synchronously by
+  /// [initializeUploadAttachments], so there is no later settlement event to
+  /// release it on.
+  void _releaseReservedBytesForAttachment(Attachment attachment) {
+    final attachmentBytes = (attachment.size?.value ?? 0).toInt();
+    attachmentUploadValidationService.releaseReservedBytes(
+      allAttachmentBytes: attachmentBytes,
+      regularAttachmentBytes:
+          attachment.isDispositionInlined() ? 0 : attachmentBytes,
+    );
+  }
+
   void deleteAttachmentUploaded(UploadTaskId uploadId) {
     uploadController.deleteFileUploaded(uploadId);
   }
@@ -2073,7 +2087,10 @@ class ComposerController extends BaseController
     return attachmentUploadValidationService.validateAttachment(
       context: context,
       attachment: attachment,
-      onAllowed: () => uploadController.initializeUploadAttachments([attachment]));
+      onAllowed: () {
+        uploadController.initializeUploadAttachments([attachment]);
+        _releaseReservedBytesForAttachment(attachment);
+      });
   }
 
   Future<void> onChangeIdentity(Identity? newIdentity) async {

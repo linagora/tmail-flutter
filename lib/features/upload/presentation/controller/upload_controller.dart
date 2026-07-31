@@ -243,7 +243,12 @@ class UploadController extends BaseController {
     ).asBroadcastStream();
     consumeState(uploadStateStream);
     if (onSettled != null) {
-      uploadStateStream.listen(null, onDone: onSettled);
+      uploadStateStream.listen(
+        null,
+        onError: (error) => logWarning(
+          'UploadController::uploadFileAction:onError = $error'),
+        onDone: onSettled,
+      );
     }
     return Future.value();
   }

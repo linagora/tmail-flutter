@@ -335,5 +335,67 @@ void main() {
       expect(allowedUploads, 1);
       expect(stateSource.currentAllAttachmentBytes, 600);
     });
+
+    test(
+        'Should not double count an allowed re-attached attachment after it is registered',
+        () async {
+      final stateSource = _MutableStateSource(
+        warningLimitBytes: 10000,
+        hardLimitBytes: 1000,
+      );
+      final service = buildService(
+        stateSource: stateSource,
+        feedback: _RecordingFeedback(),
+      );
+      final attachment = Attachment(
+        blobId: Id('regular-attachment'),
+        size: UnsignedInt(600),
+        disposition: ContentDisposition.attachment,
+      );
+
+      await service.validateAttachment(
+        attachment: attachment,
+        onAllowed: () {
+          stateSource.currentAllAttachmentBytes += 600;
+          stateSource.currentRegularAttachmentBytes += 600;
+          service.releaseReservedBytes(
+            allAttachmentBytes: 600,
+            regularAttachmentBytes: 600,
+          );
+        },
+      );
+
+      expect(stateSource.currentAllAttachmentBytes, 600);
+      expect(service.isExceededMaxSizeAttachmentsPerEmail(), isFalse);
+    });
+
+    test('Should roll back reserved bytes when onAllowed throws', () async {
+      final stateSource = _MutableStateSource(
+        warningLimitBytes: 10000,
+        hardLimitBytes: 1000,
+      );
+      final service = buildService(
+        stateSource: stateSource,
+        feedback: _RecordingFeedback(),
+      );
+
+      await expectLater(
+        service.validateFiles(
+          files: [_file(fileSize: 600)],
+          onAllowed: () => throw StateError('Upload registration failed'),
+        ),
+        throwsA(isA<StateError>()),
+      );
+
+      var secondUploadAllowed = false;
+
+      await service.validateFiles(
+        files: [_file(fileSize: 500)],
+        onAllowed: () => secondUploadAllowed = true,
+      );
+
+      expect(stateSource.currentAllAttachmentBytes, 0);
+      expect(secondUploadAllowed, isTrue);
+    });
   });
 }
