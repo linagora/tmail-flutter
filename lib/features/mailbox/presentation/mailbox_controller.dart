@@ -1339,17 +1339,21 @@ class MailboxController extends BaseMailboxController
     final currentMailbox = selectedMailbox;
     log('MailboxController::_replaceBrowserHistory:selectedMailbox: ${currentMailbox?.id.asString}');
     if (PlatformInfo.isWeb && Get.currentRoute.startsWith(AppRoutes.dashboard)) {
+      final isSearchRunning =
+          mailboxDashBoardController.searchController.isSearchEmailRunning;
       final route = RouteUtils.createUrlWebLocationBar(
         AppRoutes.dashboard,
         router: RouteUtils.dashboardRouterForMailboxOrSearch(
-          isSearchRunning:
-            mailboxDashBoardController.searchController.isSearchEmailRunning,
+          isSearchRunning: isSearchRunning,
           selectedMailbox: currentMailbox,
           searchQuery: mailboxDashBoardController.searchController.searchQuery,
         )
       );
       RouteUtils.replaceBrowserHistory(
-        title: currentMailbox?.browserRouteTitle ?? '',
+        title: RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: isSearchRunning,
+          selectedMailbox: currentMailbox,
+        ),
         url: route
       );
     }

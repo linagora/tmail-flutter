@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/thread/data/model/email_change_response.d
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/get_search_email_layout_owner_registry.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_email_layout_owner_registry.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_layout_coordinator.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_change_response_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -110,6 +111,7 @@ class ThreadController extends BaseController with EmailActionController {
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
   final CleanAndGetEmailsInMailboxInteractor cleanAndGetEmailsInMailboxInteractor;
+  final SearchEmailLayoutOwnerRegistry _searchEmailLayoutOwnerRegistry;
 
   final listEmailDrag = <PresentationEmail>[].obs;
   bool rangeSelectionMode = false;
@@ -132,7 +134,8 @@ class ThreadController extends BaseController with EmailActionController {
   ProviderSubscription<PreferencesSetting>? _localSettingsSubscription;
   late final SearchExecutionObserver _searchExecutionObserver =
       ThreadSearchExecutionObserver(this);
-  late final SearchLayoutCoordinator _searchLayoutCoordinator =
+  @visibleForTesting
+  late final SearchLayoutCoordinator searchLayoutCoordinator =
       _createSearchLayoutCoordinator();
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
@@ -162,8 +165,10 @@ class ThreadController extends BaseController with EmailActionController {
     this._refreshChangesEmailsInMailboxInteractor,
     this._loadMoreEmailsInMailboxInteractor,
     this._getEmailByIdInteractor,
-    this.cleanAndGetEmailsInMailboxInteractor,
-  );
+    this.cleanAndGetEmailsInMailboxInteractor, {
+    SearchEmailLayoutOwnerRegistry searchEmailLayoutOwnerRegistry =
+        const GetSearchEmailLayoutOwnerRegistry(),
+  }) : _searchEmailLayoutOwnerRegistry = searchEmailLayoutOwnerRegistry;
 
   // Lazy so dispatch works before onInit, like the old late-final executor.
   SearchExecutorService get _searchService =>
@@ -182,7 +187,7 @@ class ThreadController extends BaseController with EmailActionController {
   void onInit() {
     _registerObxStreamListener();
     if (PlatformInfo.isWeb) {
-      _searchLayoutCoordinator.start();
+      searchLayoutCoordinator.start();
       onKeyboardShortcutInit();
     }
     _initWebSocketQueueHandler();
@@ -202,7 +207,7 @@ class ThreadController extends BaseController with EmailActionController {
     _currentMemoryMailboxId = null;
     listEmailController.dispose();
     if (PlatformInfo.isWeb) {
-      _searchLayoutCoordinator.dispose();
+      searchLayoutCoordinator.dispose();
       onKeyboardShortcutDispose();
     }
     _webSocketQueueHandler?.dispose();
@@ -541,7 +546,7 @@ class ThreadController extends BaseController with EmailActionController {
       activateMobileSearch: () => searchController.activateSimpleSearch(),
       dispatchRoute: mailboxDashBoardController.dispatchRoute,
       isClosed: () => isClosed,
-      mobileOwnerRegistry: const GetSearchEmailLayoutOwnerRegistry(),
+      mobileOwnerRegistry: _searchEmailLayoutOwnerRegistry,
       onBrowserResize: _validateBrowserHeight,
     );
   }
@@ -645,7 +650,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   @visibleForTesting
   void restoreMailboxEmailListAfterSearch({bool force = false}) {
-    if (!_searchLayoutCoordinator.takeDesktopSearchPresentation(force: force)) {
+    if (!searchLayoutCoordinator.takeDesktopSearchPresentation(force: force)) {
       return;
     }
     resetToOriginalValue();

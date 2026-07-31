@@ -62,7 +62,6 @@ import 'package:tmail_ui_user/features/search/email/presentation/providers/searc
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/get_search_email_layout_owner_registry.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_email_layout_owner_registry.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_layout_coordinator.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
@@ -245,26 +244,23 @@ void main() {
     );
   });
 
-  SearchLayoutCoordinator createSearchLayoutCoordinatorForTest({
+  ThreadController createThreadControllerForSearchLayoutTest({
     SearchEmailLayoutOwnerRegistry? mobileOwnerRegistry,
   }) {
-    final dashboardController = threadController.mailboxDashBoardController;
-    final searchController = threadController.searchController;
-    return SearchLayoutCoordinator(
-      responsiveUtils: threadController.responsiveUtils,
-      searchService: appProviderContainer.read(searchExecutorServiceProvider),
-      isSearchEngaged: () =>
-          appProviderContainer.read(searchViewStateProvider).isSearchEngaged ||
-          searchController.isSearchEmailRunning,
-      isEmailOpened: () => dashboardController.isEmailOpened,
-      prepareDesktopSearchHandoff: () =>
-          ThreadSearchExecutionObserver(threadController).onNewSearchStarted(),
-      activateMobileSearch: () => searchController.activateSimpleSearch(),
-      dispatchRoute: dashboardController.dispatchRoute,
-      isClosed: () => threadController.isClosed,
-      mobileOwnerRegistry: mobileOwnerRegistry ??
+    final controller = ThreadController(
+      mockGetEmailsInMailboxInteractor,
+      mockRefreshChangesEmailsInMailboxInteractor,
+      mockLoadMoreEmailsInMailboxInteractor,
+      mockGetEmailByIdInteractor,
+      mockCleanAndGetEmailsInMailboxInteractor,
+      searchEmailLayoutOwnerRegistry: mobileOwnerRegistry ??
           const GetSearchEmailLayoutOwnerRegistry(),
     );
+    addTearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+      controller.onClose();
+    });
+    return controller;
   }
 
   group('ThreadController::test', () {
@@ -1367,7 +1363,9 @@ void main() {
           stubSearchExecution();
           final service =
               appProviderContainer.read(searchExecutorServiceProvider);
-          final observer = ThreadSearchExecutionObserver(threadController);
+          final controllerUnderTest =
+              createThreadControllerForSearchLayoutTest();
+          final observer = ThreadSearchExecutionObserver(controllerUnderTest);
           service.register(observer);
           addTearDown(() => service.unregister(observer));
           await service.dispatch(const NewSearchIntent(), dispatchContext);
@@ -1376,7 +1374,7 @@ void main() {
           displayedEmails.clear();
           clearInteractions(mockMailboxDashBoardController);
 
-          createSearchLayoutCoordinatorForTest().reconcile(true);
+          controllerUnderTest.searchLayoutCoordinator.reconcile(true);
 
           expect(displayedEmails, hasLength(searchEmails.length));
           verify(
@@ -1432,7 +1430,9 @@ void main() {
           await service.dispatch(const NewSearchIntent(), dispatchContext);
           await tester.pump();
 
-          createSearchLayoutCoordinatorForTest().reconcile(false);
+          createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator
+              .reconcile(false);
           await tester.pump();
 
           expect(Get.isRegistered<SearchEmailController>(), isTrue);
@@ -1474,7 +1474,9 @@ void main() {
       () {
         stubActiveSearchWithOpenEmail();
 
-        createSearchLayoutCoordinatorForTest().reconcile(true);
+        createThreadControllerForSearchLayoutTest()
+            .searchLayoutCoordinator
+            .reconcile(true);
 
         verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
       });
@@ -1484,9 +1486,9 @@ void main() {
       () {
         stubActiveSearchWithOpenEmail();
 
-        createSearchLayoutCoordinatorForTest(
+        createThreadControllerForSearchLayoutTest(
           mobileOwnerRegistry: _TestSearchEmailLayoutOwnerRegistry(),
-        ).reconcile(false);
+        ).searchLayoutCoordinator.reconcile(false);
 
         verify(mockSearchController.activateSimpleSearch()).called(1);
         verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
@@ -1497,9 +1499,9 @@ void main() {
         'so closing search on mobile restores the mailbox list',
       () {
         stubActiveSearchWithOpenEmail();
-        final coordinator = createSearchLayoutCoordinatorForTest(
+        final coordinator = createThreadControllerForSearchLayoutTest(
           mobileOwnerRegistry: _TestSearchEmailLayoutOwnerRegistry(),
-        );
+        ).searchLayoutCoordinator;
 
         coordinator.markDesktopSearchPresentation();
         coordinator.reconcile(false);
@@ -1510,9 +1512,9 @@ void main() {
       test('mobile handoff without desktop presentation leaves ownership unset',
       () {
         stubActiveSearchWithOpenEmail();
-        final coordinator = createSearchLayoutCoordinatorForTest(
+        final coordinator = createThreadControllerForSearchLayoutTest(
           mobileOwnerRegistry: _TestSearchEmailLayoutOwnerRegistry(),
-        );
+        ).searchLayoutCoordinator;
 
         coordinator.reconcile(false);
 
@@ -1521,7 +1523,8 @@ void main() {
 
       test('desktop handoff records desktop presentation ownership', () {
         stubActiveSearchWithOpenEmail();
-        final coordinator = createSearchLayoutCoordinatorForTest();
+        final coordinator = createThreadControllerForSearchLayoutTest()
+            .searchLayoutCoordinator;
 
         coordinator.reconcile(true);
 
@@ -1533,21 +1536,47 @@ void main() {
             .thenReturn(mockSearchController);
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
 
-        createSearchLayoutCoordinatorForTest().reconcile(true);
+        createThreadControllerForSearchLayoutTest()
+            .searchLayoutCoordinator
+            .reconcile(true);
 
         verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
       });
 
-      test('width changes inside the same breakpoint are a no-op', () {
-        when(mockResponsiveUtils.isMatchedDesktopWidth(any))
-            .thenReturn(false);
-        final coordinator = createSearchLayoutCoordinatorForTest();
+      testWidgets(
+        'a resize inside the same breakpoint does not redo the handoff',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          await tester.pumpWidget(
+            const GetMaterialApp(home: SizedBox.shrink()),
+          );
+          when(mockResponsiveUtils.isMatchedDesktopWidth(any)).thenAnswer(
+            (invocation) =>
+                (invocation.positionalArguments.first as double) >= 1200,
+          );
+          when(mockMailboxDashBoardController.searchController)
+              .thenReturn(mockSearchController);
+          when(mockMailboxDashBoardController.isEmailOpened)
+              .thenReturn(false);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+          final coordinator = createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator;
 
-        coordinator.handleBrowserWidthChange(800);
-        coordinator.handleBrowserWidthChange(900);
+          coordinator.handleBrowserWidthChange(1400);
+          await tester.pump();
+          coordinator.handleBrowserWidthChange(1100);
+          await tester.pump();
+          coordinator.handleBrowserWidthChange(1400);
+          await tester.pump();
 
-        verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
-      });
+          clearInteractions(mockMailboxDashBoardController);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          coordinator.handleBrowserWidthChange(1400);
+          await tester.pump();
+
+          verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
+        },
+      );
 
       testWidgets(
         'failed mobile handoff retries after the owner becomes available',
@@ -1567,9 +1596,9 @@ void main() {
           when(mockSearchController.isSearchEmailRunning).thenReturn(true);
           final ownerRegistry =
               _ConfigurableSearchEmailLayoutOwnerRegistry();
-          final coordinator = createSearchLayoutCoordinatorForTest(
+          final coordinator = createThreadControllerForSearchLayoutTest(
             mobileOwnerRegistry: ownerRegistry,
-          );
+          ).searchLayoutCoordinator;
 
           coordinator.handleBrowserWidthChange(1200);
           await tester.pump();
@@ -1611,7 +1640,8 @@ void main() {
           when(mockMailboxDashBoardController.emailsInCurrentMailbox)
               .thenReturn(RxList([]));
           when(mockSearchController.isSearchEmailRunning).thenReturn(false);
-          final coordinator = createSearchLayoutCoordinatorForTest();
+          final coordinator = createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator;
           coordinator.handleBrowserWidthChange(900);
           await tester.pump();
           clearInteractions(mockMailboxDashBoardController);
@@ -1642,7 +1672,8 @@ void main() {
           when(mockMailboxDashBoardController.searchController)
               .thenReturn(mockSearchController);
           when(mockSearchController.isSearchEmailRunning).thenReturn(false);
-          final coordinator = createSearchLayoutCoordinatorForTest();
+          final coordinator = createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator;
           coordinator.handleBrowserWidthChange(1200);
           await tester.pump();
           clearInteractions(mockMailboxDashBoardController);
@@ -1672,7 +1703,8 @@ void main() {
           when(mockMailboxDashBoardController.emailsInCurrentMailbox)
               .thenReturn(RxList([]));
           when(mockSearchController.isSearchEmailRunning).thenReturn(false);
-          final coordinator = createSearchLayoutCoordinatorForTest();
+          final coordinator = createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator;
           coordinator.handleBrowserWidthChange(900);
           await tester.pump();
           clearInteractions(mockMailboxDashBoardController);
@@ -1856,7 +1888,8 @@ void main() {
               .thenReturn(mockSearchController);
           when(mockSearchController.isSearchEmailRunning).thenReturn(true);
 
-          final coordinator = createSearchLayoutCoordinatorForTest();
+          final coordinator = createThreadControllerForSearchLayoutTest()
+              .searchLayoutCoordinator;
 
           expect(
             () => coordinator.reconcile(false),

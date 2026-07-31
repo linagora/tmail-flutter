@@ -141,7 +141,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         suggestionsCallback: _dashBoardController.quickSearchEmails,
         itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(
             email,
-            _dashBoardController.selectedMailbox.value,
+            _dashBoardController.selectedMailboxForDisplay,
             searchQuery: SearchQuery(currentSearchText.trim())),
         onSuggestionSelected: _invokeSelectSuggestionItem,
         contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),

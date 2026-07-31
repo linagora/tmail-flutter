@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -83,6 +84,51 @@ void main() {
       expect(
         buildRouter(isSearchRunning: true, selectedMailbox: labelMailbox),
         searchRouter,
+      );
+    });
+  });
+
+  group('dashboardBrowserRouteTitle test', () {
+    final mailbox = PresentationMailbox(
+      MailboxId(Id('mailbox-1')),
+      name: MailboxName('Inbox'),
+    );
+
+    test('uses the selected email before search and mailbox', () {
+      expect(
+        RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: true,
+          selectedEmailId: EmailId(Id('email-1')),
+          selectedMailbox: mailbox,
+        ),
+        'Email-email-1',
+      );
+    });
+
+    test('uses search while search is running', () {
+      expect(
+        RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: true,
+          selectedMailbox: mailbox,
+        ),
+        'SearchEmail',
+      );
+    });
+
+    test('uses the selected mailbox outside search', () {
+      expect(
+        RouteUtils.dashboardBrowserRouteTitle(
+          isSearchRunning: false,
+          selectedMailbox: mailbox,
+        ),
+        mailbox.browserRouteTitle,
+      );
+    });
+
+    test('uses an empty title without a selected mailbox', () {
+      expect(
+        RouteUtils.dashboardBrowserRouteTitle(isSearchRunning: false),
+        isEmpty,
       );
     });
   });
