@@ -75,6 +75,10 @@ void main() {
         find.text(appLocalizations
             .message_dialog_upload_attachments_exceeds_maximum_size(filesize(100, 0))),
         findsOneWidget);
+
+      await tester.tap(find.text(appLocalizations.got_it));
+      await tester.pumpAndSettle();
+
       expect(await future, isFalse);
     });
 
