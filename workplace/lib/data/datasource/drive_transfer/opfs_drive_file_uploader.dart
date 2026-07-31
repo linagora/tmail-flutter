@@ -15,6 +15,7 @@ abstract class OpfsDriveFileUploader {
   Future<Attachment> upload({
     required Object fileHandle,
     required String fileName,
+    required String? mimeType,
     required Uri uploadUri,
     required String authHeader,
     required void Function(int sent, int total) onUploadProgress,

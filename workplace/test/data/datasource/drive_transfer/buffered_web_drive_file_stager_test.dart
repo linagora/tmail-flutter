@@ -173,6 +173,35 @@ void main() {
     );
   });
 
+  test('isReleaseMode true and http downloadLink throws DriveDownloadInsecureLinkException', () async {
+    final insecureLink = Uri.parse('http://drive.example/file');
+
+    expect(
+      () => BufferedWebDriveFileStager(isReleaseMode: true).stage(
+        doc: _buildDoc(downloadLink: insecureLink),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      ),
+      throwsA(isA<DriveDownloadInsecureLinkException>()),
+    );
+  });
+
+  test('isReleaseMode true and https downloadLink succeeds', () async {
+    final bytes = List<int>.generate(4, (i) => i);
+    final dio = Dio()..httpClientAdapter = _FakeHttpClientAdapter(bytes);
+
+    final staged = await BufferedWebDriveFileStager(
+      dio: dio,
+      isReleaseMode: true,
+    ).stage(
+      doc: _buildDoc(downloadLink: _defaultDownloadLink),
+      onDownloadProgress: (_, __) {},
+      cancelToken: CancelToken(),
+    );
+
+    expect(staged, isA<BytesStagedFile>());
+  });
+
   test('cancellation propagates as a DioException of type cancel', () async {
     final dio = Dio()..httpClientAdapter = _CancellingHttpClientAdapter();
     final cancelToken = CancelToken();

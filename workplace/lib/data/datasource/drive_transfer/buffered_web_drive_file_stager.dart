@@ -14,9 +14,12 @@ import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 /// fallback for browsers without OPFS `createWritable()` support — checked
 /// (the actual-byte guard still cancels on breach), not memory-flat.
 class BufferedWebDriveFileStager implements DriveFileStager {
-  BufferedWebDriveFileStager({Dio? dio}) : _dio = dio ?? WorkplaceDio.instance;
+  BufferedWebDriveFileStager({Dio? dio, bool? isReleaseMode})
+      : _dio = dio ?? WorkplaceDio.instance,
+        _isReleaseMode = isReleaseMode ?? BuildUtils.isReleaseMode;
 
   final Dio _dio;
+  final bool _isReleaseMode;
 
   @override
   Future<StagedDriveFile> stage({
@@ -28,7 +31,7 @@ class BufferedWebDriveFileStager implements DriveFileStager {
     if (downloadLink == null) {
       throw DriveDownloadNullAttachmentException();
     }
-    if (BuildUtils.isReleaseMode && !downloadLink.isScheme('https')) {
+    if (_isReleaseMode && !downloadLink.isScheme('https')) {
       throw DriveDownloadInsecureLinkException();
     }
     final response = await _dio.getUri<List<int>>(
