@@ -7,21 +7,15 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/validation_decision.dart';
 
 AttachmentUploadRequest _request({
-  int currentRegularAttachmentBytes = 0,
-  int proposedAllAttachmentBytes = 0,
-  int proposedRegularAttachmentBytes = 0,
-  int? hardLimitBytes,
-  int warningLimitBytes = 1000000000,
+  AttachmentUploadSizeSnapshot sizes = const AttachmentUploadSizeSnapshot(
+    currentAllAttachmentBytes: 0,
+    proposedAllAttachmentBytes: 0,
+    currentRegularAttachmentBytes: 0,
+    proposedRegularAttachmentBytes: 0,
+  ),
+  AttachmentUploadLimits limits = const AttachmentUploadLimits(warningLimitBytes: 1000000000),
 }) {
-  return AttachmentUploadRequest(
-    sizes: AttachmentUploadSizeSnapshot(
-      currentAllAttachmentBytes: 0,
-      proposedAllAttachmentBytes: proposedAllAttachmentBytes,
-      currentRegularAttachmentBytes: currentRegularAttachmentBytes,
-      proposedRegularAttachmentBytes: proposedRegularAttachmentBytes,
-    ),
-    limits: AttachmentUploadLimits(warningLimitBytes: warningLimitBytes, hardLimitBytes: hardLimitBytes),
-  );
+  return AttachmentUploadRequest(sizes: sizes, limits: limits);
 }
 
 void main() {
@@ -29,7 +23,14 @@ void main() {
 
   group('AttachmentSizeLimitRule', () {
     test('should return ValidationAllowed when neither the hard limit nor the warning threshold is exceeded', () {
-      final request = _request(proposedAllAttachmentBytes: 10, hardLimitBytes: 1000);
+      final request = _request(
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 10,
+          currentRegularAttachmentBytes: 0,
+          proposedRegularAttachmentBytes: 0,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000000, hardLimitBytes: 1000));
 
       final result = rule.validate(request);
 
@@ -37,7 +38,14 @@ void main() {
     });
 
     test('should return ValidationRejected with MaxEmailAttachmentSizeExceeded when over the hard cap', () {
-      final request = _request(proposedAllAttachmentBytes: 200, hardLimitBytes: 100);
+      final request = _request(
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 200,
+          currentRegularAttachmentBytes: 0,
+          proposedRegularAttachmentBytes: 0,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000000, hardLimitBytes: 100));
 
       final result = rule.validate(request) as ValidationRejected;
 
@@ -47,10 +55,13 @@ void main() {
 
     test('should return ValidationConfirmationRequired when only the warning threshold is exceeded', () {
       final request = _request(
-        proposedAllAttachmentBytes: 10,
-        proposedRegularAttachmentBytes: 20000000,
-        hardLimitBytes: 100000000,
-        warningLimitBytes: 1000000);
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 10,
+          currentRegularAttachmentBytes: 0,
+          proposedRegularAttachmentBytes: 20000000,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000, hardLimitBytes: 100000000));
 
       final result = rule.validate(request);
 
@@ -59,10 +70,13 @@ void main() {
 
     test('inline-only proposals never trigger the regular-attachment warning', () {
       final request = _request(
-        proposedAllAttachmentBytes: 20000000,
-        proposedRegularAttachmentBytes: 0,
-        hardLimitBytes: 100000000,
-        warningLimitBytes: 1000000);
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 20000000,
+          currentRegularAttachmentBytes: 0,
+          proposedRegularAttachmentBytes: 0,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000, hardLimitBytes: 100000000));
 
       final result = rule.validate(request);
 
@@ -71,11 +85,13 @@ void main() {
 
     test('should not re-trigger the warning for an inline-only proposal when existing regular attachments already exceed it', () {
       final request = _request(
-        currentRegularAttachmentBytes: 2000000,
-        proposedAllAttachmentBytes: 20000000,
-        proposedRegularAttachmentBytes: 0,
-        hardLimitBytes: 100000000,
-        warningLimitBytes: 1000000);
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 20000000,
+          currentRegularAttachmentBytes: 2000000,
+          proposedRegularAttachmentBytes: 0,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000, hardLimitBytes: 100000000));
 
       final result = rule.validate(request);
 
@@ -84,10 +100,13 @@ void main() {
 
     test('hard limit takes priority over the warning threshold', () {
       final request = _request(
-        proposedAllAttachmentBytes: 200,
-        proposedRegularAttachmentBytes: 20000000,
-        hardLimitBytes: 100,
-        warningLimitBytes: 1000000);
+        sizes: const AttachmentUploadSizeSnapshot(
+          currentAllAttachmentBytes: 0,
+          proposedAllAttachmentBytes: 200,
+          currentRegularAttachmentBytes: 0,
+          proposedRegularAttachmentBytes: 20000000,
+        ),
+        limits: const AttachmentUploadLimits(warningLimitBytes: 1000000, hardLimitBytes: 100));
 
       final result = rule.validate(request);
 
