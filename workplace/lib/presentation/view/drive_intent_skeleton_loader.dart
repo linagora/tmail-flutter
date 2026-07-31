@@ -32,7 +32,20 @@ class DriveIntentSkeletonLoader extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      child: mobile ? _buildMobile(context) : _buildWeb(),
+      // Table layout has no close slot (#4738).
+      child: mobile
+          ? _buildMobile(context)
+          : Stack(
+              children: [
+                Positioned.fill(child: _buildWeb()),
+                if (closeButton != null)
+                  Positioned(
+                    top: 12,
+                    right: 17,
+                    child: closeButton!,
+                  ),
+              ],
+            ),
     );
   }
 

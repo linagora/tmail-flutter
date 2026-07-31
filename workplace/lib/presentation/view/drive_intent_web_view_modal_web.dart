@@ -2,6 +2,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
@@ -38,13 +39,14 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
   }
 
   Widget _loadingWidget({
-    required bool show,
     required bool wideScreen,
     TMailButtonWidget? closeButton,
   }) {
-    if (!show) return const SizedBox();
     if (wideScreen) {
-      return DriveIntentSkeletonLoader.table(imageAssets: widget.imageAssets);
+      return DriveIntentSkeletonLoader.table(
+        imageAssets: widget.imageAssets,
+        closeButton: closeButton,
+      );
     }
     return DriveIntentSkeletonLoader.list(
       imageAssets: widget.imageAssets,
@@ -57,6 +59,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
     super.initState();
     // The modal owns its listener: bound to its own lifetime, not the opener's
     // (a context menu tile pops its route on tap and would tear it down early).
+    // Registered before the iframe can post its first ready message.
     startWindowMessageListener(_forwardMessage);
     startLoading(widget.intentLoader);
   }
@@ -107,28 +110,37 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
       onBarrierTap: () {
         if (!showSkeleton) cancel();
       },
-      loadingWidget: (closeButton) => _loadingWidget(
-        show: showSkeleton,
-        wideScreen: isWideScreen,
-        closeButton: closeButton,
-      ),
+      loadingWidget: showSkeleton
+          ? (closeButton) => _loadingWidget(
+              wideScreen: isWideScreen,
+              closeButton: closeButton,
+            )
+          : null,
       child: HtmlIframeWidget(
         key: const ValueKey('drive-intent-webview'),
         onIframeCreated: (iframe) {
+          final viewRecreated = _iframeElement != null &&
+              !identical(_iframeElement, iframe);
           _iframeElement = iframe;
-          notifyPlatformViewReady();
+          notifyPlatformViewReady(viewRecreated: viewRecreated);
         },
       ),
     );
-    return isWideScreen
-        ? shell
-        : SafeArea(
-            top: true,
-            left: false,
-            right: false,
-            bottom: false,
-            child: shell,
-          );
+    // Keep the iframe ancestry stable across resize (#4738).
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: PointerInterceptor(child: const SizedBox.expand()),
+        ),
+        SafeArea(
+          top: !isWideScreen,
+          left: false,
+          right: false,
+          bottom: false,
+          child: shell,
+        ),
+      ],
+    );
   }
 
   @override

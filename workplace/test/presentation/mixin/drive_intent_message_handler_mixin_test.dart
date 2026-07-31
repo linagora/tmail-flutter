@@ -237,6 +237,31 @@ void _applyOrderingTests() {
     expect(state.outcomes, isEmpty);
     state.cancelReadyTimeoutForTesting();
   });
+
+  testWidgets('recreated platform view reloads the intent while loading',
+      (tester) async {
+    final state = await _buildAndApply(tester);
+
+    state.notifyPlatformViewReady(viewRecreated: true);
+
+    expect(state.loadCalls, hasLength(2));
+    expect(state.outcomes, isEmpty);
+    state.cancelReadyTimeoutForTesting();
+  });
+
+  testWidgets('recreated platform view does not reload an interactive picker',
+      (tester) async {
+    final state = await _buildAndApply(tester);
+    state.onMessage(
+      raw: _encode({'type': 'intent-$_intentId:readyToUse'}),
+      origin: _origin,
+    );
+
+    state.notifyPlatformViewReady(viewRecreated: true);
+
+    expect(state.loadCalls, hasLength(1));
+    expect(state.outcomes, isEmpty);
+  });
 }
 
 void _intentLoadFailureTests() {
@@ -440,27 +465,38 @@ class _TimeoutTestState extends State<_TimeoutTestWidget>
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-void _readyTimeoutTests() {
+Future<_TimeoutTestState> _buildTimeoutState(
+  WidgetTester tester, {
+  bool notifyReady = true,
+}) async {
+  await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
+  final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
+  state.startLoading(() => Future.value(_intent()));
+  await tester.pump();
+  if (notifyReady) state.notifyPlatformViewReady();
+  return state;
+}
+
+void _expectTimeoutFailure(_TimeoutTestState state) {
+  expect(state.outcomes, hasLength(1));
+  expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
+  expect(
+    (state.outcomes.single as DrivePickOutcomeFailed).error,
+    isA<DriveIntentTimeoutException>(),
+  );
+}
+
+void _readyTimeoutFiringTests() {
   testWidgets('fires Failed(DriveIntentTimeoutException) if ready never arrives', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
-    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(() => Future.value(_intent()));
-    await tester.pump();
-    state.notifyPlatformViewReady();
+    final state = await _buildTimeoutState(tester);
 
     await tester.pump(const Duration(milliseconds: 60));
 
-    expect(state.outcomes, hasLength(1));
-    expect(state.outcomes.single, isA<DrivePickOutcomeFailed>());
-    expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
+    _expectTimeoutFailure(state);
   });
 
   testWidgets('cancelled if readyToUse arrives before timeout', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
-    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(() => Future.value(_intent()));
-    await tester.pump();
-    state.notifyPlatformViewReady();
+    final state = await _buildTimeoutState(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:readyToUse'}), origin: _origin);
 
@@ -470,29 +506,53 @@ void _readyTimeoutTests() {
   });
 
   testWidgets('fires Failed(DriveIntentTimeoutException) if readyToUse never arrives, even after ready', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
-    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(() => Future.value(_intent()));
-    await tester.pump();
-    state.notifyPlatformViewReady();
+    final state = await _buildTimeoutState(tester);
     state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
 
     await tester.pump(const Duration(milliseconds: 60));
 
-    expect(state.outcomes, hasLength(1));
-    expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
+    _expectTimeoutFailure(state);
   });
 
   testWidgets('fires Failed(DriveIntentTimeoutException) if platform view never becomes ready', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: _TimeoutTestWidget()));
-    final state = tester.state<_TimeoutTestState>(find.byType(_TimeoutTestWidget));
-    state.startLoading(() => Future.value(_intent()));
+    final state = await _buildTimeoutState(tester, notifyReady: false);
 
     await tester.pump(const Duration(milliseconds: 60));
 
-    expect(state.outcomes, hasLength(1));
-    expect((state.outcomes.single as DrivePickOutcomeFailed).error, isA<DriveIntentTimeoutException>());
+    _expectTimeoutFailure(state);
   });
+}
+
+void _recreatedViewTimeoutTests() {
+  testWidgets('recreated platform view restarts the ready timeout', (tester) async {
+    final state = await _buildTimeoutState(tester);
+
+    await tester.pump(const Duration(milliseconds: 40));
+    state.notifyPlatformViewReady(viewRecreated: true);
+    await tester.pump(const Duration(milliseconds: 20));
+
+    expect(state.outcomes, isEmpty);
+    await tester.pump(const Duration(milliseconds: 40));
+    expect(state.outcomes, hasLength(1));
+  });
+
+  testWidgets('recreated platform view becomes interactive before its new timeout', (tester) async {
+    final state = await _buildTimeoutState(tester);
+
+    await tester.pump(const Duration(milliseconds: 40));
+    state.notifyPlatformViewReady(viewRecreated: true);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:ready'}), origin: _origin);
+    state.onMessage(raw: _encode({'type': 'intent-$_intentId:readyToUse'}), origin: _origin);
+
+    expect(state.showSkeleton, isFalse);
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(state.outcomes, isEmpty);
+  });
+}
+
+void _readyTimeoutTests() {
+  _readyTimeoutFiringTests();
+  _recreatedViewTimeoutTests();
 }
 
 void main() {
