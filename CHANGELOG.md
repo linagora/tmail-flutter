@@ -1,3 +1,17 @@
+## [0.33.0] - 2026-07-31
+### Added
+- #4739 Enable mobile drive picker
+- Add logo drive loading
+
+### Fixed
+- #4738 Fix response view blocking drive picker while it loads
+- #4720 Fix signature is not well displayed
+- Fix Drive picker stuck 20s on readyTimeout when token_exchange/page load fails
+
+### Changed
+- #4742 Drive picker theme
+- Translate de, ga, zh_Hans
+
 ## [0.32.0] - 2026-07-27
 ### Added
 - TF-4660 Drive loading skeleton while the Drive intent webview is loading
