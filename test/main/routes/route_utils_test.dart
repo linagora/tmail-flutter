@@ -44,9 +44,11 @@ void main() {
     NavigationRouter buildRouter({
       required bool isSearchRunning,
       PresentationMailbox? selectedMailbox,
+      EmailId? emailId,
     }) {
       return RouteUtils.dashboardRouterForMailboxOrSearch(
         isSearchRunning: isSearchRunning,
+        emailId: emailId,
         selectedMailbox: selectedMailbox,
         searchQuery: query,
       );
@@ -85,6 +87,20 @@ void main() {
         buildRouter(isSearchRunning: true, selectedMailbox: labelMailbox),
         searchRouter,
       );
+    });
+
+    test('keeps the open email regardless of search state', () {
+      final emailId = EmailId(Id('email-1'));
+      for (final isSearchRunning in [true, false]) {
+        expect(
+          buildRouter(
+            isSearchRunning: isSearchRunning,
+            selectedMailbox: regularMailbox,
+            emailId: emailId,
+          ).emailId,
+          emailId,
+        );
+      }
     });
   });
 
