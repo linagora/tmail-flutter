@@ -6,12 +6,12 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class MaxSizeAttachmentsDialogPresenter {
   const MaxSizeAttachmentsDialogPresenter._();
 
-  static void show({
+  static Future<void> show({
     required BuildContext context,
     required num? maxSizeAttachmentsPerEmail,
   }) {
     final maxSize = filesize(maxSizeAttachmentsPerEmail ?? 0, 0);
-    MessageDialogActionManager().showConfirmDialogAction(
+    return MessageDialogActionManager().showConfirmDialogAction(
       context,
       AppLocalizations.of(context).message_dialog_upload_attachments_exceeds_maximum_size(maxSize),
       AppLocalizations.of(context).got_it,

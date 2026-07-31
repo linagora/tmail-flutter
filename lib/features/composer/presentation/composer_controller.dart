@@ -1272,14 +1272,27 @@ class ComposerController extends BaseController
         uploadController.justUploadAttachmentsAction(
           uploadFiles: pickedFiles,
           uploadUri: uploadUri,
+          onFileSettled: _releaseReservedBytesForFile,
         );
       } catch (e) {
         logWarning('ComposerController::uploadAttachmentsAction: $e');
         uploadController.consumeState(Stream.value(Left(UploadAttachmentFailure(e, pickedFiles[0]))));
+        pickedFiles.forEach(_releaseReservedBytesForFile);
       }
     } else {
       logWarning('ComposerController::uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
+      pickedFiles.forEach(_releaseReservedBytesForFile);
     }
+  }
+
+  /// Mirrors the bytes reservation [AttachmentUploadValidationService] made
+  /// for [file] when its upload was allowed, now that it has actually
+  /// settled (or will never start).
+  void _releaseReservedBytesForFile(FileInfo file) {
+    attachmentUploadValidationService.releaseReservedBytes(
+      allAttachmentBytes: file.fileSize,
+      regularAttachmentBytes: file.isInline == true ? 0 : file.fileSize,
+    );
   }
 
   void deleteAttachmentUploaded(UploadTaskId uploadId) {

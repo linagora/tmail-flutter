@@ -14,7 +14,7 @@ final class AttachmentValidationFeedbackImpl implements AttachmentValidationFeed
   @override
   Future<void> showFailure(AttachmentUploadFailure failure) async {
     if (!_context.mounted) return;
-    AttachmentValidationFailurePresenter.present(_context, failure);
+    await AttachmentValidationFailurePresenter.present(_context, failure);
   }
 
   @override

@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 import 'package:model/email/attachment.dart';
@@ -26,11 +27,22 @@ class AttachmentUploadValidationService {
   final AttachmentUploadGate _gate;
   final AttachmentValidationFeedbackBuilder _feedbackBuilder;
 
+  /// Reads [_stateSource] with [_reservedAllAttachmentBytes] /
+  /// [_reservedRegularAttachmentBytes] added on top, so a validation request
+  /// built while a previously allowed upload is still in flight (bytes not
+  /// yet reflected by [_stateSource], e.g. real network upload not finished)
+  /// still sees those bytes as already committed.
+  late final AttachmentUploadStateSource _effectiveStateSource =
+      _ReservingStateSource(source: _stateSource, service: this);
+
   /// Serializes [_validate] calls so a second concurrent upload request is
-  /// only built/validated once the previous one's [onAllowed] has run,
+  /// only built/validated once the previous one's gate check has resolved,
   /// preventing two overlapping validations from both passing and jointly
   /// exceeding the hard cap.
   Future<void> _lock = Future.value();
+
+  int _reservedAllAttachmentBytes = 0;
+  int _reservedRegularAttachmentBytes = 0;
 
   AttachmentUploadValidationService({
     required AttachmentUploadStateSource stateSource,
@@ -51,7 +63,7 @@ class AttachmentUploadValidationService {
       context: context,
       requestBuilder: () => _requestFactory.fromProposedFiles(
         files: files,
-        state: _stateSource,
+        state: _effectiveStateSource,
       ),
       onAllowed: onAllowed,
     );
@@ -72,7 +84,7 @@ class AttachmentUploadValidationService {
       requestBuilder: () => _requestFactory.fromProposedBytes(
         proposedAllAttachmentBytes: attachmentBytes,
         proposedRegularAttachmentBytes: isRegularAttachment ? attachmentBytes : 0,
-        state: _stateSource,
+        state: _effectiveStateSource,
       ),
       onAllowed: onAllowed,
     );
@@ -82,9 +94,22 @@ class AttachmentUploadValidationService {
   /// showing any dialog.
   bool isExceededMaxSizeAttachmentsPerEmail() {
     return AttachmentSizeLimitPolicy.isExceededMaxSizeAttachmentsPerEmail(
-      allAttachmentBytes: _stateSource.currentAllAttachmentBytes,
-      hardLimitBytes: _stateSource.hardLimitBytes,
+      allAttachmentBytes: _effectiveStateSource.currentAllAttachmentBytes,
+      hardLimitBytes: _effectiveStateSource.hardLimitBytes,
     );
+  }
+
+  /// Releases bytes reserved by a previously allowed request once its upload
+  /// has actually settled (succeeded or failed) and [_stateSource] reflects
+  /// it. Callers must release exactly the bytes reserved for that request.
+  void releaseReservedBytes({
+    required int allAttachmentBytes,
+    required int regularAttachmentBytes,
+  }) {
+    _reservedAllAttachmentBytes =
+        math.max(0, _reservedAllAttachmentBytes - allAttachmentBytes);
+    _reservedRegularAttachmentBytes =
+        math.max(0, _reservedRegularAttachmentBytes - regularAttachmentBytes);
   }
 
   Future<void> _validate({
@@ -97,17 +122,47 @@ class AttachmentUploadValidationService {
     _lock = completer.future;
     return previous.then((_) async {
       try {
+        final request = requestBuilder();
         final allowed = await _gate.permits(
-          request: requestBuilder(),
+          request: request,
           feedbackFactory: () {
             final resolvedContext = context ?? currentContext;
             return resolvedContext == null ? null : _feedbackBuilder(resolvedContext);
           },
         );
-        if (allowed) onAllowed();
+        if (allowed) {
+          _reservedAllAttachmentBytes += request.sizes.proposedAllAttachmentBytes;
+          _reservedRegularAttachmentBytes += request.sizes.proposedRegularAttachmentBytes;
+          onAllowed();
+        }
       } finally {
         completer.complete();
       }
     });
   }
+}
+
+/// Adds a [AttachmentUploadValidationService]'s in-flight reservation on top
+/// of the real [AttachmentUploadStateSource] byte totals.
+final class _ReservingStateSource implements AttachmentUploadStateSource {
+  const _ReservingStateSource({required AttachmentUploadStateSource source, required AttachmentUploadValidationService service})
+      : _source = source,
+        _service = service;
+
+  final AttachmentUploadStateSource _source;
+  final AttachmentUploadValidationService _service;
+
+  @override
+  int get currentAllAttachmentBytes =>
+      _source.currentAllAttachmentBytes + _service._reservedAllAttachmentBytes;
+
+  @override
+  int get currentRegularAttachmentBytes =>
+      _source.currentRegularAttachmentBytes + _service._reservedRegularAttachmentBytes;
+
+  @override
+  int get warningLimitBytes => _source.warningLimitBytes;
+
+  @override
+  int? get hardLimitBytes => _source.hardLimitBytes;
 }

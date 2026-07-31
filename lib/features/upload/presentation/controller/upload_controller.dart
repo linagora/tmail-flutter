@@ -216,22 +216,35 @@ class UploadController extends BaseController {
   Future<void> justUploadAttachmentsAction({
     required List<FileInfo> uploadFiles,
     required Uri uploadUri,
+    void Function(FileInfo uploadFile)? onFileSettled,
   }) {
     return Future.forEach<FileInfo>(uploadFiles, (uploadFile) async {
-      await uploadFileAction(uploadFile: uploadFile, uploadUri: uploadUri);
+      await uploadFileAction(
+        uploadFile: uploadFile,
+        uploadUri: uploadUri,
+        onSettled: onFileSettled == null ? null : () => onFileSettled(uploadFile),
+      );
     });
   }
 
+  /// [onSettled] fires once this file's upload stream truly completes
+  /// (success or failure), unlike the returned [Future] which resolves
+  /// immediately since the stream is only fired off via [consumeState].
   Future<void> uploadFileAction({
     required FileInfo uploadFile,
     required Uri uploadUri,
+    VoidCallback? onSettled,
   }) {
     log('UploadController::_uploadFile():fileName: ${uploadFile.fileName} | mimeType: ${uploadFile.mimeType} | isInline: ${uploadFile.isInline} | fromFileShared: ${uploadFile.isShared}');
-    consumeState(_uploadAttachmentInteractor.execute(
+    final uploadStateStream = _uploadAttachmentInteractor.execute(
       uploadFile,
       uploadUri,
       cancelToken: CancelToken(),
-    ));
+    ).asBroadcastStream();
+    consumeState(uploadStateStream);
+    if (onSettled != null) {
+      uploadStateStream.listen(null, onDone: onSettled);
+    }
     return Future.value();
   }
 

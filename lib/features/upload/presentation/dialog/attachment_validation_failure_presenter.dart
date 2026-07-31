@@ -5,10 +5,10 @@ import 'package:tmail_ui_user/features/upload/presentation/dialog/max_size_attac
 class AttachmentValidationFailurePresenter {
   const AttachmentValidationFailurePresenter._();
 
-  static void present(BuildContext context, AttachmentUploadFailure failure) {
+  static Future<void> present(BuildContext context, AttachmentUploadFailure failure) {
     switch (failure) {
       case MaxEmailAttachmentSizeExceeded(:final maximumBytes):
-        MaxSizeAttachmentsDialogPresenter.show(
+        return MaxSizeAttachmentsDialogPresenter.show(
           context: context,
           maxSizeAttachmentsPerEmail: maximumBytes);
     }
