@@ -12,27 +12,29 @@ class ComposerAttachmentUploadStateSource implements AttachmentUploadStateSource
 
   @override
   final int warningLimitBytes;
-  @override
-  final int? hardLimitBytes;
+  final num? Function() maxSizeAttachmentsPerEmailProvider;
 
   const ComposerAttachmentUploadStateSource({
     required this.uploadController,
     required this.warningLimitBytes,
-    required this.hardLimitBytes,
+    required this.maxSizeAttachmentsPerEmailProvider,
   });
 
   /// Resolves the limits from the raw server capability value.
   factory ComposerAttachmentUploadStateSource.fromServerCapability({
     required UploadController uploadController,
-    required num? maxSizeAttachmentsPerEmail,
+    required num? Function() maxSizeAttachmentsPerEmail,
   }) {
     return ComposerAttachmentUploadStateSource(
       uploadController: uploadController,
       warningLimitBytes: AppConfig.warningAttachmentFileSizeInMegabytes * 1024 * 1024,
-      hardLimitBytes: AttachmentUploadRequestFactory.normalizeServerLimitBytes(
-          maxSizeAttachmentsPerEmail),
+      maxSizeAttachmentsPerEmailProvider: maxSizeAttachmentsPerEmail,
     );
   }
+
+  @override
+  int? get hardLimitBytes => AttachmentUploadRequestFactory
+      .normalizeServerLimitBytes(maxSizeAttachmentsPerEmailProvider());
 
   @override
   int get currentAllAttachmentBytes =>

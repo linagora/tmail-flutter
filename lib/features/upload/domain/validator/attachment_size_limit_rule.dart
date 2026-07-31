@@ -17,9 +17,10 @@ final class AttachmentSizeLimitRule implements AttachmentUploadRule {
       return ValidationRejected(MaxEmailAttachmentSizeExceeded(hardLimit!));
     }
 
-    if (AttachmentSizeLimitPolicy.isExceededWarningAttachmentFileSizeInComposer(
-        regularAttachmentBytes: request.sizes.regularAttachmentBytes,
-        warningLimitBytes: request.limits.warningLimitBytes)) {
+    if (request.sizes.proposedRegularAttachmentBytes > 0 &&
+        AttachmentSizeLimitPolicy.isExceededWarningAttachmentFileSizeInComposer(
+            regularAttachmentBytes: request.sizes.regularAttachmentBytes,
+            warningLimitBytes: request.limits.warningLimitBytes)) {
       return ValidationConfirmationRequired(const [LargeRegularAttachmentWarning()]);
     }
 

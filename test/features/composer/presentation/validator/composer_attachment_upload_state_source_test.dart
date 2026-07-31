@@ -19,7 +19,7 @@ void main() {
       final stateSource = ComposerAttachmentUploadStateSource(
         uploadController: mockUploadController,
         warningLimitBytes: 1000,
-        hardLimitBytes: null,
+        maxSizeAttachmentsPerEmailProvider: () => null,
       );
 
       expect(stateSource.currentAllAttachmentBytes, 0);
@@ -37,7 +37,7 @@ void main() {
     test('Should normalize a server capability value to an int hard limit', () {
       final stateSource = ComposerAttachmentUploadStateSource.fromServerCapability(
         uploadController: mockUploadController,
-        maxSizeAttachmentsPerEmail: 20971520,
+        maxSizeAttachmentsPerEmail: () => 20971520,
       );
 
       expect(stateSource.hardLimitBytes, 20971520);
@@ -46,7 +46,7 @@ void main() {
     test('Should yield a null hard limit when the server advertises no capability', () {
       final stateSource = ComposerAttachmentUploadStateSource.fromServerCapability(
         uploadController: mockUploadController,
-        maxSizeAttachmentsPerEmail: null,
+        maxSizeAttachmentsPerEmail: () => null,
       );
 
       expect(stateSource.hardLimitBytes, isNull);
@@ -55,13 +55,27 @@ void main() {
     test('Should resolve the warning limit from AppConfig', () {
       final stateSource = ComposerAttachmentUploadStateSource.fromServerCapability(
         uploadController: mockUploadController,
-        maxSizeAttachmentsPerEmail: null,
+        maxSizeAttachmentsPerEmail: () => null,
       );
 
       expect(
         stateSource.warningLimitBytes,
         AppConfig.warningAttachmentFileSizeInMegabytes * 1024 * 1024,
       );
+    });
+
+    test('Should read the hard limit live on every access', () {
+      num? currentCapability = 1000;
+      final stateSource = ComposerAttachmentUploadStateSource.fromServerCapability(
+        uploadController: mockUploadController,
+        maxSizeAttachmentsPerEmail: () => currentCapability,
+      );
+
+      expect(stateSource.hardLimitBytes, 1000);
+
+      currentCapability = 5000;
+
+      expect(stateSource.hardLimitBytes, 5000);
     });
   });
 }

@@ -28,6 +28,25 @@ class _FakeStateSource implements AttachmentUploadStateSource {
   });
 }
 
+class _MutableStateSource implements AttachmentUploadStateSource {
+  @override
+  int currentAllAttachmentBytes = 0;
+
+  @override
+  int currentRegularAttachmentBytes = 0;
+
+  @override
+  final int warningLimitBytes;
+
+  @override
+  final int? hardLimitBytes;
+
+  _MutableStateSource({
+    this.warningLimitBytes = 10000,
+    this.hardLimitBytes,
+  });
+}
+
 class _RecordingFeedback implements AttachmentValidationFeedback {
   final bool confirmed;
 
@@ -281,6 +300,40 @@ void main() {
       );
 
       expect(service.isExceededMaxSizeAttachmentsPerEmail(), isFalse);
+    });
+  });
+
+  group('AttachmentUploadValidationService concurrency', () {
+    test('Should not allow concurrent uploads to exceed the hard limit', () async {
+      final stateSource = _MutableStateSource(
+        warningLimitBytes: 10000,
+        hardLimitBytes: 1000,
+      );
+      final service = buildService(
+        stateSource: stateSource,
+        feedback: _RecordingFeedback(),
+      );
+      var allowedUploads = 0;
+
+      void registerUpload() {
+        allowedUploads++;
+        stateSource.currentAllAttachmentBytes += 600;
+        stateSource.currentRegularAttachmentBytes += 600;
+      }
+
+      final firstValidation = service.validateFiles(
+        files: [_file(fileSize: 600)],
+        onAllowed: registerUpload,
+      );
+      final secondValidation = service.validateFiles(
+        files: [_file(fileSize: 600)],
+        onAllowed: registerUpload,
+      );
+
+      await Future.wait([firstValidation, secondValidation]);
+
+      expect(allowedUploads, 1);
+      expect(stateSource.currentAllAttachmentBytes, 600);
     });
   });
 }

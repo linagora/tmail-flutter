@@ -192,7 +192,7 @@ class ComposerController extends BaseController
       AttachmentUploadValidationService(
         stateSource: ComposerAttachmentUploadStateSource.fromServerCapability(
           uploadController: uploadController,
-          maxSizeAttachmentsPerEmail: mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value,
+          maxSizeAttachmentsPerEmail: () => mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value,
         ),
       );
 

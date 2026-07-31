@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/validation_decision.dart';
 
 AttachmentUploadRequest _request({
+  int currentRegularAttachmentBytes = 0,
   int proposedAllAttachmentBytes = 0,
   int proposedRegularAttachmentBytes = 0,
   int? hardLimitBytes,
@@ -16,7 +17,7 @@ AttachmentUploadRequest _request({
     sizes: AttachmentUploadSizeSnapshot(
       currentAllAttachmentBytes: 0,
       proposedAllAttachmentBytes: proposedAllAttachmentBytes,
-      currentRegularAttachmentBytes: 0,
+      currentRegularAttachmentBytes: currentRegularAttachmentBytes,
       proposedRegularAttachmentBytes: proposedRegularAttachmentBytes,
     ),
     limits: AttachmentUploadLimits(warningLimitBytes: warningLimitBytes, hardLimitBytes: hardLimitBytes),
@@ -58,6 +59,19 @@ void main() {
 
     test('inline-only proposals never trigger the regular-attachment warning', () {
       final request = _request(
+        proposedAllAttachmentBytes: 20000000,
+        proposedRegularAttachmentBytes: 0,
+        hardLimitBytes: 100000000,
+        warningLimitBytes: 1000000);
+
+      final result = rule.validate(request);
+
+      expect(result, isA<ValidationAllowed>());
+    });
+
+    test('should not re-trigger the warning for an inline-only proposal when existing regular attachments already exceed it', () {
+      final request = _request(
+        currentRegularAttachmentBytes: 2000000,
         proposedAllAttachmentBytes: 20000000,
         proposedRegularAttachmentBytes: 0,
         hardLimitBytes: 100000000,

@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
@@ -24,6 +26,12 @@ class AttachmentUploadValidationService {
   final AttachmentUploadGate _gate;
   final AttachmentValidationFeedbackBuilder _feedbackBuilder;
 
+  /// Serializes [_validate] calls so a second concurrent upload request is
+  /// only built/validated once the previous one's [onAllowed] has run,
+  /// preventing two overlapping validations from both passing and jointly
+  /// exceeding the hard cap.
+  Future<void> _lock = Future.value();
+
   AttachmentUploadValidationService({
     required AttachmentUploadStateSource stateSource,
     AttachmentUploadValidator? validator,
@@ -41,7 +49,7 @@ class AttachmentUploadValidationService {
   }) {
     return _validate(
       context: context,
-      request: _requestFactory.fromProposedFiles(
+      requestBuilder: () => _requestFactory.fromProposedFiles(
         files: files,
         state: _stateSource,
       ),
@@ -61,7 +69,7 @@ class AttachmentUploadValidationService {
 
     return _validate(
       context: context,
-      request: _requestFactory.fromProposedBytes(
+      requestBuilder: () => _requestFactory.fromProposedBytes(
         proposedAllAttachmentBytes: attachmentBytes,
         proposedRegularAttachmentBytes: isRegularAttachment ? attachmentBytes : 0,
         state: _stateSource,
@@ -81,16 +89,25 @@ class AttachmentUploadValidationService {
 
   Future<void> _validate({
     BuildContext? context,
-    required AttachmentUploadRequest request,
+    required AttachmentUploadRequest Function() requestBuilder,
     required VoidCallback onAllowed,
-  }) async {
-    final allowed = await _gate.permits(
-      request: request,
-      feedbackFactory: () {
-        final resolvedContext = context ?? currentContext;
-        return resolvedContext == null ? null : _feedbackBuilder(resolvedContext);
-      },
-    );
-    if (allowed) onAllowed();
+  }) {
+    final previous = _lock;
+    final completer = Completer<void>();
+    _lock = completer.future;
+    return previous.then((_) async {
+      try {
+        final allowed = await _gate.permits(
+          request: requestBuilder(),
+          feedbackFactory: () {
+            final resolvedContext = context ?? currentContext;
+            return resolvedContext == null ? null : _feedbackBuilder(resolvedContext);
+          },
+        );
+        if (allowed) onAllowed();
+      } finally {
+        completer.complete();
+      }
+    });
   }
 }
