@@ -35,29 +35,43 @@ A stager yields a sealed result — `FileBackedStagedFile` (IO temp file), `Opfs
 
 **End-to-end flow for `DriveAttachmentHandler`:** partition (sharingLink vs downloadLink) → validate total size of the downloadable set *before any download starts* (declared-size gate, below) → bounded-concurrency per-file pipeline (stage → upload) → chip updated to terminal state.
 
-**Validation — minimal, condition-agnostic abstraction:**
+**Validation — pure rules, dialogs only at the edge:** every "may the user attach this?" question runs through one small kernel (`domain/validator/`). A rule sees a request and gives one of three answers:
+
 ```dart
-abstract class AttachmentUploadValidator {
-  FutureOr<bool> validate();
-}
+sealed class ValidationDecision<Failure, Prompt> {}
+final class ValidationAllowed<…> extends ValidationDecision<…> {}
+final class ValidationRejected<…> extends ValidationDecision<…> { final Failure failure; }
+final class ValidationConfirmationRequired<…> extends ValidationDecision<…> { final List<Prompt> prompts; }
 
-class CompositeAttachmentUploadValidator implements AttachmentUploadValidator {
-  final List<AttachmentUploadValidator> validators;
-  const CompositeAttachmentUploadValidator(this.validators);
-
-  @override
-  Future<bool> validate() async {
-    if (validators.isEmpty) return true;
-    for (final v in validators) {
-      if (!await v.validate()) return false;
-    }
-    return true;
-  }
+abstract interface class ValidationRule<Request, Failure, Prompt> {
+  ValidationDecision<Failure, Prompt> validate(Request request);
 }
 ```
-No size (or other condition-specific data) in the interface. Each concrete validator captures what it needs via its own constructor and is self-contained, including showing its own dialog. Today's only concrete validator, `SizeLimitAttachmentUploadValidator`, wraps the existing size-limit/warning-dialog check (`UploadController.validateTotalSizeAttachmentsBeforeUpload`, whose body moves into it with `UploadController` keeping a thin wrapper). Every attachment entry point (composer local-file/paste/drop, `DriveAttachmentHandler`) constructs the validators it needs and calls `.validate()`. A new, unrelated condition later = one new class + one line in a `CompositeAttachmentUploadValidator([...])` list.
 
-**Declared vs. actual size:** the pre-download gate sums `DriveDocument.size` — backend-reported metadata, unreliable for export-on-demand documents (e.g. Cozy, which may report `0` up front). A running actual-byte guard runs alongside the declared-size gate: a shared counter updated with each file's progress *delta* — `onDownloadProgress`/`onReceiveProgress` reports bytes received *cumulatively per file*, so each stager tracks its own previous callback value and adds only the difference to the shared counter (summing raw cumulative values would double-count and cancel valid downloads early). The shared counter is checked against budget on every update and cancels that file's transfer once exceeded, caught as a per-file failure. The declared-size gate still fails fast before wasting a download; the hard cap comes from the server `maxSizeAttachmentsPerEmail` capability. When that capability is absent, the guard's budget falls back to a fixed client-side constant — this fallback is local to the actual-byte guard; the pre-existing size-limit dialog check (`validateTotalSizeAttachmentsBeforeUpload`, wrapped by `SizeLimitAttachmentUploadValidator`) is unchanged and keeps treating an absent capability as unlimited for every attachment source, not only drive.
+`ValidationPipeline` runs its rules in order: the first rejection wins and stops everything, otherwise all collected prompts are asked together. Rules are pure and synchronous — no `BuildContext`, no localization, no dialogs — so they unit-test with a plain `test()`. The kernel is generic over `Request`/`Failure`/`Prompt`; attachments are one instantiation of it, and today there is exactly one rule, `AttachmentSizeLimitRule`.
+
+**Two totals, two limits.** A request carries byte totals split two ways, because the thresholds don't measure the same thing:
+
+| Total | Includes inline images? | Limit |
+|---|---|---|
+| all attachments | yes | server `maxSizeAttachmentsPerEmail` → hard reject |
+| regular attachments | no | `AppConfig` warning threshold → ask before continuing |
+
+So pasting an inline image never raises the "large attachment" warning, but can still hit the server cap. `AttachmentUploadRequestFactory` does the split from `FileInfo.isInline`, or straight from byte counts when a call site has no `FileInfo` (re-attaching an already-uploaded attachment).
+
+**The gate is where a decision becomes UI** — one type, every call site goes through it:
+
+```dart
+switch (_validator.validate(request)) {
+  case ValidationAllowed(): return true;
+  case ValidationRejected(:final failure): await feedback.showFailure(failure); return false;
+  case ValidationConfirmationRequired(:final prompts): return feedback.confirmAll(prompts);
+}
+```
+
+**Numbers.** `ComposerAttachmentUploadStateSource` adapts `UploadController` totals + limits to the `AttachmentUploadStateSource` port — all getters, so the server cap is re-read per check. Totals prefer `attachment.size`, so forwarded and draft attachments count. Intended.
+
+**Declared vs. actual size:** the pre-download gate sums `DriveDocument.size` — backend-reported metadata, unreliable for export-on-demand documents (e.g. Cozy, which may report `0` up front). A running actual-byte guard runs alongside the declared-size gate: a shared counter updated with each file's progress *delta* — `onDownloadProgress`/`onReceiveProgress` reports bytes received *cumulatively per file*, so each stager tracks its own previous callback value and adds only the difference to the shared counter (summing raw cumulative values would double-count and cancel valid downloads early). The shared counter is checked against budget on every update and cancels that file's transfer once exceeded, caught as a per-file failure. The declared-size gate still fails fast before wasting a download; the hard cap comes from the server `maxSizeAttachmentsPerEmail` capability. When that capability is absent, the guard's budget falls back to a fixed client-side constant — this fallback is local to the actual-byte guard; the size-limit dialog check (`AttachmentSizeLimitPolicy`, driven by `AttachmentSizeLimitRule`) is unchanged and keeps treating an absent capability as unlimited for every attachment source, not only drive.
 
 The counter's check-then-increment runs synchronously inside each `onDownloadProgress` callback with no `await` in between, so on Dart's single-threaded event loop it cannot interleave across concurrent files — the only possible overshoot is one in-flight progress-chunk per file at the moment the guard fires, not an unbounded race. No chunk-reservation mechanism is needed.
 

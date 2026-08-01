@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -213,6 +214,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
+  MockSpec<AttachmentUploadValidationService>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -1196,6 +1198,74 @@ void main() {
           () => composerController?.tearDownMobileAutoSave(),
           returnsNormally,
         );
+      });
+    });
+
+    group('attachment size validation is injectable:', () {
+      ComposerController buildController({
+        required AttachmentUploadValidationService validationService,
+      }) {
+        return ComposerController(
+          mockLocalFilePickerInteractor,
+          mockLocalImagePickerInteractor,
+          mockGetEmailContentInteractor,
+          mockGetAllIdentitiesInteractor,
+          mockUploadController,
+          mockRemoveComposerCacheByIdInteractor,
+          mockSaveComposerCacheInteractor,
+          mockDownloadImageAsBase64Interactor,
+          mockTransformHtmlEmailContentInteractor,
+          mockGetServerSettingInteractor,
+          mockCreateNewAndSendEmailInteractor,
+          mockCreateNewAndSaveEmailToDraftsInteractor,
+          mockPrintEmailInteractor,
+          mockComposerRepository,
+          mockSaveTemplateEmailInteractor,
+        )..attachmentUploadValidationService = validationService;
+      }
+
+      MockAttachmentUploadValidationService buildValidationService({required bool allowed}) {
+        final validationService = MockAttachmentUploadValidationService();
+        when(validationService.validateAttachment(
+          context: anyNamed('context'),
+          attachment: anyNamed('attachment'),
+          onAllowed: anyNamed('onAllowed'),
+        )).thenAnswer((invocation) async {
+          if (allowed) {
+            (invocation.namedArguments[#onAllowed] as VoidCallback).call();
+          }
+        });
+        return validationService;
+      }
+
+      testWidgets(
+          'Should call uploadController.initializeUploadAttachments\n'
+          'When the injected validation service allows the upload', (tester) async {
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+        await tester.pump();
+        final context = tester.element(find.byType(SizedBox));
+
+        final ctrl = buildController(validationService: buildValidationService(allowed: true));
+        final attachment = Attachment(blobId: Id('allowed-attachment'));
+
+        await ctrl.onAttachmentDropZoneListener(context, attachment);
+
+        verify(mockUploadController.initializeUploadAttachments([attachment])).called(1);
+      });
+
+      testWidgets(
+          'Should NOT call uploadController.initializeUploadAttachments\n'
+          'When the injected validation service rejects the upload', (tester) async {
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+        await tester.pump();
+        final context = tester.element(find.byType(SizedBox));
+
+        final ctrl = buildController(validationService: buildValidationService(allowed: false));
+        final attachment = Attachment(blobId: Id('rejected-attachment'));
+
+        await ctrl.onAttachmentDropZoneListener(context, attachment);
+
+        verifyNever(mockUploadController.initializeUploadAttachments([attachment]));
       });
     });
 

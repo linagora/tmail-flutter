@@ -7,7 +7,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -16,12 +15,9 @@ import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
@@ -30,11 +26,8 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class UploadController extends BaseController {
-
-  final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final UploadAttachmentInteractor _uploadAttachmentInteractor;
 
@@ -268,6 +261,13 @@ class UploadController extends BaseController {
       .toList();
   }
 
+  /// Bytes of every regular (non-inline) attachment, whether newly picked or
+  /// already attached (e.g. restored from a draft), unlike [attachmentsPicked]
+  /// which only sees entries that still carry a [FileInfo].
+  int get regularAttachmentsTotalBytes => listUploadAttachments
+      .fold<num>(0, (total, fileState) => total + fileState.fileSize)
+      .toInt();
+
   UploadFileState? getUploadFileId(UploadTaskId id) {
     return listUploadAttachments
         .firstWhereOrNull((fileState) => fileState.uploadTaskId == id);
@@ -300,104 +300,6 @@ class UploadController extends BaseController {
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
     }
-  }
-
-  bool isExceededMaxSizeAttachmentsPerEmail({num totalSizePreparedFiles = 0}) {
-    final currentTotalSize = attachmentsPicked.totalSize + inlineAttachmentsPicked.totalSize + totalSizePreparedFiles;
-    final maxSizeAttachmentsPerEmail = _mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
-    log('UploadController::isExceededMaxSizeAttachmentsPerEmail(): currentTotalSize = $currentTotalSize | maxSizeAttachmentsPerEmail = $maxSizeAttachmentsPerEmail');
-    if (maxSizeAttachmentsPerEmail != null) {
-      return currentTotalSize > maxSizeAttachmentsPerEmail;
-    } else {
-      return false;
-    }
-  }
-
-  bool isExceededWarningAttachmentFileSizeInComposer({num totalSizePreparedFiles = 0}) {
-    final currentTotalSizeAttachments = attachmentsPicked.totalSize + totalSizePreparedFiles;
-    const maximumBytesSizeFileAttachedInComposer = AppConfig.warningAttachmentFileSizeInMegabytes * 1024 * 1024;
-    log('UploadController::isExceededMaxSizeFilesAttachedInComposer(): currentTotalSizeAttachments = $currentTotalSizeAttachments | maximumBytesSizeFileAttachedInComposer = $maximumBytesSizeFileAttachedInComposer');
-    return currentTotalSizeAttachments > maximumBytesSizeFileAttachedInComposer;
-  }
-
-  void validateTotalSizeAttachmentsBeforeUpload({
-    required num totalSizePreparedFiles,
-    num? totalSizePreparedFilesWithDispositionAttachment,
-    VoidCallback? onValidationSuccess
-  }) {
-    log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: totalSizePreparedFiles = $totalSizePreparedFiles');
-    if (isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: totalSizePreparedFiles)) {
-      if (currentContext == null) {
-        log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
-        return;
-      }
-
-      _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail(context: currentContext!);
-      return;
-    }
-
-    if (isExceededWarningAttachmentFileSizeInComposer(totalSizePreparedFiles: totalSizePreparedFilesWithDispositionAttachment ?? totalSizePreparedFiles)) {
-      if (currentContext == null) {
-        log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
-        return;
-      }
-
-      _showWarningDialogWhenExceededMaxSizeFilesAttachedInComposer(
-        context: currentContext!,
-        confirmAction: () async {
-          await Future.delayed(
-            const Duration(milliseconds: 100),
-            onValidationSuccess
-          );
-        }
-      );
-      return;
-    }
-
-    onValidationSuccess?.call();
-  }
-
-  void validateTotalSizeInlineAttachmentsBeforeUpload({
-    required num totalSizePreparedFiles,
-    VoidCallback? onValidationSuccess
-  }) {
-    if (isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: totalSizePreparedFiles)) {
-      if (currentContext == null) {
-        log('UploadController::validateTotalSizeInlineAttachmentsBeforeUpload: CONTEXT IS NULL');
-        return;
-      }
-
-      _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail(context: currentContext!);
-      return;
-    }
-
-    onValidationSuccess?.call();
-  }
-
-  void _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail({required BuildContext context}) {
-    final maxSizeAttachmentsPerEmail = filesize(_mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0);
-    MessageDialogActionManager().showConfirmDialogAction(
-      context,
-      AppLocalizations.of(context).message_dialog_upload_attachments_exceeds_maximum_size(maxSizeAttachmentsPerEmail),
-      AppLocalizations.of(context).got_it,
-      title: AppLocalizations.of(context).maximum_files_size,
-      hasCancelButton: false);
-  }
-
-  void _showWarningDialogWhenExceededMaxSizeFilesAttachedInComposer({
-    required BuildContext context,
-    VoidCallback? confirmAction,
-  }) {
-    final appLocalizations = AppLocalizations.of(context);
-    MessageDialogActionManager().showConfirmDialogAction(
-      context,
-      title: '',
-      appLocalizations.warningMessageWhenExceedGenerallySizeInComposer,
-      appLocalizations.continueAction,
-      cancelTitle: appLocalizations.cancel,
-      alignCenter: true,
-      onConfirmAction: confirmAction,
-    );
   }
 
   bool get allUploadAttachmentsCompleted {
@@ -448,6 +350,14 @@ class UploadController extends BaseController {
       },
     );
   }
+
+  /// Bytes of every inline attachment, whether newly picked or already
+  /// attached, unlike [inlineAttachmentsPicked] which only sees entries that
+  /// still carry a [FileInfo].
+  int get inlineAttachmentsTotalBytes => _uploadingStateInlineFiles.uploadingStateFiles
+      .nonNulls
+      .fold<num>(0, (total, fileState) => total + fileState.fileSize)
+      .toInt();
 
   Map<String, Attachment> get mapInlineAttachments {
     if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {

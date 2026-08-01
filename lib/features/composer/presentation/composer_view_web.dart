@@ -312,7 +312,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: PointerInterceptor(
                                   child: AttachmentDropZoneWidget(
                                     imagePaths: controller.imagePaths,
-                                    onAttachmentDropZoneListener: controller.onAttachmentDropZoneListener,
+                                    onAttachmentDropZoneListener: (attachment) =>
+                                        controller.onAttachmentDropZoneListener(context, attachment),
                                   )
                                 ),
                               );
@@ -587,8 +588,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               child: PointerInterceptor(
                                 child: AttachmentDropZoneWidget(
                                   imagePaths: controller.imagePaths,
-                                  onAttachmentDropZoneListener:
-                                      controller.onAttachmentDropZoneListener,
+                                  onAttachmentDropZoneListener: (attachment) =>
+                                      controller.onAttachmentDropZoneListener(context, attachment),
                                 )
                               ),
                             );
@@ -865,7 +866,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               child: PointerInterceptor(
                                 child: AttachmentDropZoneWidget(
                                   imagePaths: controller.imagePaths,
-                                  onAttachmentDropZoneListener: controller.onAttachmentDropZoneListener,
+                                  onAttachmentDropZoneListener: (attachment) =>
+                                      controller.onAttachmentDropZoneListener(context, attachment),
                                 )
                               ),
                             );
