@@ -39,7 +39,7 @@ class TreeBuilder {
   Future<MailboxCollection> generateMailboxTreeInUI({
     required List<PresentationMailbox> allMailboxes,
     required MailboxCollection currentCollection,
-    MailboxId? mailboxIdSelected,
+    MailboxKey? mailboxKeySelected,
     MailboxId? mailboxIdExpanded,
     AccountId? primaryAccountId,
   }) async {
@@ -56,7 +56,7 @@ class TreeBuilder {
     for (var mailbox in allMailboxes) {
       final currentMailboxNode = nodeLookup[mailbox.key];
 
-      final isDeactivated = mailbox.id == mailboxIdSelected;
+      final isDeactivated = mailbox.key == mailboxKeySelected;
       final newMailboxNode = MailboxNode(
         isDeactivated ? mailbox.withMailboxSate(MailboxState.deactivated) : mailbox,
         nodeState: isDeactivated ? MailboxState.deactivated : MailboxState.activated,

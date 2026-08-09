@@ -460,7 +460,7 @@ void main() {
         final result = await TreeBuilder().generateMailboxTreeInUI(
           allMailboxes: [inbox, sent],
           currentCollection: MailboxCollection.empty(),
-          mailboxIdSelected: inbox.id,
+          mailboxKeySelected: inbox.key,
         );
 
         final selectedInResult = result.allMailboxes.firstWhere((m) => m.id == inbox.id);
@@ -811,7 +811,7 @@ void main() {
       final result = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: mailboxes,
         currentCollection: MailboxCollection.empty(),
-        mailboxIdSelected: parentId,
+        mailboxKeySelected: mailboxes.first.key,
       );
 
       final parentNode = result.defaultTree.root.childrenItems?.first;

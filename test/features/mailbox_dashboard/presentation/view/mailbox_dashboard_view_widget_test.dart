@@ -825,7 +825,7 @@ void main() {
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
               currentCollection: anyNamed('currentCollection'),
-              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
               primaryAccountId: anyNamed('primaryAccountId'),
             ),
@@ -873,7 +873,7 @@ void main() {
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
               currentCollection: anyNamed('currentCollection'),
-              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
               primaryAccountId: anyNamed('primaryAccountId'),
             ),
@@ -965,7 +965,7 @@ void main() {
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
               currentCollection: anyNamed('currentCollection'),
-              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
               primaryAccountId: anyNamed('primaryAccountId'),
             ),
@@ -1014,7 +1014,7 @@ void main() {
             treeBuilder.generateMailboxTreeInUI(
               allMailboxes: anyNamed('allMailboxes'),
               currentCollection: anyNamed('currentCollection'),
-              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
               primaryAccountId: anyNamed('primaryAccountId'),
             ),

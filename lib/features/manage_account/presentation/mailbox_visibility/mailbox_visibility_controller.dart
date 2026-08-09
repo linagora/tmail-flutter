@@ -285,8 +285,9 @@ class MailboxVisibilityController extends BaseMailboxController
     final owningAccountId = _accountIdOfMailboxId(anchorMailboxId);
     final subscribed = subscribeAction == MailboxSubscribeAction.subscribe;
 
-    final delegated = _otherUserAccounts[owningAccountId];
-    if (delegated != null) {
+    final delegated =
+        owningAccountId != null ? _otherUserAccounts[owningAccountId] : null;
+    if (owningAccountId != null && delegated != null) {
       _otherUserAccounts[owningAccountId] = delegated.copyWith(
         mailboxes:
             _flipSubscribed(delegated.mailboxes, affectedMailboxIds, subscribed),
@@ -318,14 +319,18 @@ class MailboxVisibilityController extends BaseMailboxController
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
-        onActionClick: () => _subscribeMailboxAction(
-          SubscribeMailboxRequest(
-            mailboxIdSubscribed,
-            MailboxSubscribeState.enabled,
-            MailboxSubscribeAction.subscribe
-          ),
-          _accountIdOfMailboxId(mailboxIdSubscribed),
-        ),
+        onActionClick: () {
+          final owningAccountId = _accountIdOfMailboxId(mailboxIdSubscribed);
+          if (owningAccountId == null) return;
+          _subscribeMailboxAction(
+            SubscribeMailboxRequest(
+              mailboxIdSubscribed,
+              MailboxSubscribeState.enabled,
+              MailboxSubscribeAction.subscribe
+            ),
+            owningAccountId,
+          );
+        },
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icFolderMailbox,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -336,15 +341,17 @@ class MailboxVisibilityController extends BaseMailboxController
   }
 
   /// Resolves the owning account of a mailbox placed in a tree, by id, falling
-  /// back to the primary account.
-  AccountId _accountIdOfMailboxId(MailboxId mailboxId) {
+  /// back to the primary account. Returns null when even the primary account is
+  /// unavailable (e.g. a toast-undo callback firing after the account cleared),
+  /// so callers skip the action instead of throwing.
+  AccountId? _accountIdOfMailboxId(MailboxId mailboxId) {
     for (final mailboxTree in allMailboxTrees) {
       final node =
           mailboxTree.value.findNode((node) => node.item.id == mailboxId);
       final accountId = node?.item.accountId;
       if (accountId != null) return accountId;
     }
-    return _accountDashBoardController.accountId.value!;
+    return _accountDashBoardController.accountId.value;
   }
 
   @override

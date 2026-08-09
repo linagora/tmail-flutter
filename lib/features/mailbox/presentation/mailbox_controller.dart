@@ -345,6 +345,10 @@ class MailboxController extends BaseMailboxController
         _otherUserAccounts.containsKey(accountId)) {
       return;
     }
+    // Capture the primary account this load belongs to. If the user switches
+    // primary account before the stream emits, the result is stale and must be
+    // dropped, otherwise the previous account's delegates reappear.
+    final loadingForPrimary = _lastPrimaryAccountId;
     _otherUserAccountsInFlight.add(accountId);
 
     try {
@@ -364,6 +368,10 @@ class MailboxController extends BaseMailboxController
           (success) => success is GetAllMailboxSuccess ? success : null,
         );
         if (success == null) continue;
+
+        // The primary account changed while this load was in flight: drop the
+        // result so a former account's delegates do not reappear.
+        if (_lastPrimaryAccountId != loadingForPrimary) return;
 
         // Ghost account: the JMAP session lists it but the user has no readable
         // mailbox in it. Skip it so it never appears in the sidebar.

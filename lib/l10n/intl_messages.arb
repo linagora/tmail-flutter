@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-07-15T18:21:15.082129",
+  "@@last_modified": "2026-08-10T00:49:38.555626",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1480,6 +1480,18 @@
   },
   "moveFolder": "Move folder",
   "@moveFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMailboxAcrossAccountsNotSupported": "Moving a folder to another account is not supported",
+  "@moveMailboxAcrossAccountsNotSupported": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveEmailAcrossAccountsNotSupported": "Moving emails to another account is not supported",
+  "@moveEmailAcrossAccountsNotSupported": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

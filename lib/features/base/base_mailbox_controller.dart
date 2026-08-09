@@ -133,7 +133,7 @@ abstract class BaseMailboxController extends BaseController
         await _treeBuilder.generateMailboxTreeInUI(
       allMailboxes: allMailbox,
       currentCollection: currentMailboxCollection,
-      mailboxIdSelected: mailboxIdSelected,
+      mailboxKeySelected: primaryMailboxKey(mailboxIdSelected),
       primaryAccountId: primaryAccountId,
     );
 
@@ -282,38 +282,29 @@ abstract class BaseMailboxController extends BaseController
   MailboxNode get teamMailboxesRootNode => teamMailboxesTree.value.root;
 
   List<String> getListMailboxNameInParentMailbox(PresentationMailbox parentMailbox) {
-    if (parentMailbox.parentId == null) {
-      // Scoped to the target account: a folder named "Projects" in the primary
-      // account must not block creating "Projects" in another user's account.
+    final siblings = _siblingNodesOf(parentMailbox);
+    return siblings
+      .where((mailboxNode) => mailboxNode.nameNotEmpty)
+      .map((mailboxNode) => mailboxNode.mailboxNameAsString)
+      .toList();
+  }
+
+  /// The nodes that share [parentMailbox]'s location, scoped to its account: a
+  /// folder named "Projects" in the primary account must not block creating
+  /// "Projects" in another user's account. Top-level folders are the account's
+  /// root children across every tree; nested folders are the parent's children.
+  List<MailboxNode> _siblingNodesOf(PresentationMailbox parentMailbox) {
+    final parentId = parentMailbox.parentId;
+    if (parentId == null) {
       final accountId = parentMailbox.key.accountId;
-      final allChildrenAtMailboxLocation = allMailboxTrees
+      return allMailboxTrees
         .expand((tree) => tree.value.root.childrenItems ?? <MailboxNode>[])
         .where((mailboxNode) => mailboxNode.item.key.accountId == accountId)
         .toList();
-      if (allChildrenAtMailboxLocation.isNotEmpty) {
-        final listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-          .where((mailboxNode) => mailboxNode.nameNotEmpty)
-          .map((mailboxNode) => mailboxNode.mailboxNameAsString)
-          .toList();
-        return listMailboxNameAsStringExist;
-      } else {
-        return [];
-      }
-    } else {
-      final mailboxNodeLocation = findMailboxNodeByKey(
-        MailboxKey(parentMailbox.key.accountId, parentMailbox.parentId!),
-      );
-      if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
-        final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
-        final listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-          .where((mailboxNode) => mailboxNode.nameNotEmpty)
-          .map((mailboxNode) => mailboxNode.mailboxNameAsString)
-          .toList();
-        return listMailboxNameAsStringExist;
-      } else {
-        return [];
-      }
     }
+    final parentNode =
+        findMailboxNodeByKey(MailboxKey(parentMailbox.key.accountId, parentId));
+    return parentNode?.childrenItems ?? <MailboxNode>[];
   }
 
   String? verifyMailboxNameAction(
