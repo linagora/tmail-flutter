@@ -56,6 +56,9 @@ class DestinationPickerController extends BaseMailboxController {
   DestinationPickerArguments? arguments;
   Session? _session;
   AccountId? accountId;
+
+  @override
+  AccountId? get primaryAccountId => accountId;
   MailboxId? mailboxIdSelected;
 
   List<String> listMailboxNameAsStringExist = <String>[];
@@ -222,7 +225,7 @@ class DestinationPickerController extends BaseMailboxController {
         listMailboxNameAsStringExist = [];
       }
     } else {
-      final mailboxNodeLocation = findMailboxNodeById(mailboxDestination.value!.id);
+      final mailboxNodeLocation = findMailboxNodeByKey(mailboxDestination.value!.key);
       if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
         final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
@@ -255,7 +258,11 @@ class DestinationPickerController extends BaseMailboxController {
         mailboxAction.value == MailboxActions.moveEmail ||
                 mailboxAction.value == MailboxActions.moveFolderContent
             ? allMailboxes
-            : allMailboxes.listPersonalMailboxes;
+            // Not listPersonalMailboxes: when the picker is opened for a
+            // delegated account, its mailboxes are not isPersonal, so that
+            // filter would return nothing. listSelectableMailboxes keeps them
+            // and drops the synthetic roots and virtual folders.
+            : allMailboxes.listSelectableMailboxes;
 
     final mailboxListWithDisplayName = searchableMailboxList
       .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))
@@ -340,7 +347,7 @@ class DestinationPickerController extends BaseMailboxController {
         unAllSelectedMailboxNode();
         selectMailboxNode(mailboxNode);
       } else {
-        final matchedMailboxNode = findMailboxNodeById(presentationMailbox.id);
+        final matchedMailboxNode = findMailboxNodeByKey(presentationMailbox.key);
         if (matchedMailboxNode != null) {
           unAllSelectedMailboxNode();
           selectMailboxNode(matchedMailboxNode);

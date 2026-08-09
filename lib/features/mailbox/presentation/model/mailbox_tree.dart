@@ -5,7 +5,9 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -52,14 +54,22 @@ class MailboxTree with EquatableMixin {
     return listResult;
   }
 
+  /// Finds the node identified by [mailboxKey].
+  ///
+  /// Always prefer this over a raw [findNode] on `item.id`: the same
+  /// [MailboxId] can legitimately exist in several accounts, so matching on the
+  /// id alone can return another user's mailbox.
+  MailboxNode? findNodeByKey(MailboxKey mailboxKey) =>
+      findNode((node) => node.item.key == mailboxKey);
+
   MailboxNode? updateExpandedNode(MailboxNode selectedNode, ExpandMode newExpandMode) {
-    var matchedNode = findNode((node) => node.item.id == selectedNode.item.id);
+    var matchedNode = findNodeByKey(selectedNode.item.key);
     matchedNode?.expandMode = newExpandMode;
     return matchedNode;
   }
 
   MailboxNode? updateSelectedNode(MailboxNode selectedNode, SelectMode newSelectMode) {
-    var matchedNode = findNode((node) => node.item.id == selectedNode.item.id);
+    var matchedNode = findNodeByKey(selectedNode.item.key);
     matchedNode?.selectMode = newSelectMode;
     return matchedNode;
   }
@@ -84,8 +94,8 @@ class MailboxTree with EquatableMixin {
     }
   }
 
-  bool updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
-    final matchedNode = findNode((node) => node.item.id == mailboxId);
+  bool updateMailboxNameByKey(MailboxKey mailboxKey, MailboxName mailboxName) {
+    final matchedNode = findNodeByKey(mailboxKey);
     if (matchedNode != null) {
       matchedNode.item = matchedNode.item.copyWith(name: mailboxName);
       return true;
@@ -93,8 +103,8 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
-  bool updateMailboxUnreadCountById(MailboxId mailboxId, int unreadCount) {
-    final matchedNode = findNode((node) => node.item.id == mailboxId);
+  bool updateMailboxUnreadCountByKey(MailboxKey mailboxKey, int unreadCount) {
+    final matchedNode = findNodeByKey(mailboxKey);
     if (matchedNode != null) {
       final currentUnreadCount = matchedNode.item.unreadEmails?.value.value ?? 0;
       final updatedUnreadCount = currentUnreadCount + unreadCount;
@@ -107,8 +117,8 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
-  bool updateMailboxTotalEmailsCountById(MailboxId mailboxId, int totalEmailsCount) {
-    final matchedNode = findNode((node) => node.item.id == mailboxId);
+  bool updateMailboxTotalEmailsCountByKey(MailboxKey mailboxKey, int totalEmailsCount) {
+    final matchedNode = findNodeByKey(mailboxKey);
     if (matchedNode != null) {
       final currentTotalEmailsCount = matchedNode.item.totalEmails?.value.value ?? 0;
       final updatedTotalEmailsCount = currentTotalEmailsCount + totalEmailsCount;
@@ -121,8 +131,8 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
-  String? getNodePath(MailboxId mailboxId, String pathSeparator) {
-    final matchedNode = findNode((node) => node.item.id == mailboxId);
+  String? getNodePath(MailboxKey mailboxKey, String pathSeparator) {
+    final matchedNode = findNodeByKey(mailboxKey);
     if (matchedNode == null) {
       return null;
     }
@@ -133,10 +143,14 @@ class MailboxTree with EquatableMixin {
       path = '${matchedNode.item.name?.name}';
     }
 
+    // A mailbox's parent always belongs to the same account, so the walk stays
+    // inside the starting node's account. Resolving the parent by id alone
+    // would let the path cross into another user's identically numbered folder.
+    final accountId = mailboxKey.accountId;
     var parentId = matchedNode.item.parentId;
 
     while(parentId != null) {
-      var parentNode = findNode((node) => node.item.id == parentId);
+      var parentNode = findNodeByKey(MailboxKey(accountId, parentId));
       if (parentNode == null) {
         break;
       }
@@ -151,10 +165,12 @@ class MailboxTree with EquatableMixin {
   }
 
   List<MailboxNode>? getAncestorList(MailboxNode mailboxNode) {
+    // Same account-scoping reasoning as getNodePath.
+    final accountId = mailboxNode.item.key.accountId;
     var parentId = mailboxNode.item.parentId;
     List<MailboxNode> ancestor = <MailboxNode>[];
     while(parentId != null) {
-      final parentNode = findNode((node) => node.item.id == parentId);
+      final parentNode = findNodeByKey(MailboxKey(accountId, parentId));
       if (parentNode == null) {
         break;
       }

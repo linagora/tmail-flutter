@@ -329,6 +329,11 @@ void main() {
     setUp(() {
       Get.testMode = true;
 
+      // Reset recorded interactions on shared mocks so a call from a previous
+      // test (e.g. an async mailbox load that resolves after Get.deleteAll)
+      // cannot be counted against this test's verify().
+      clearInteractions(treeBuilder);
+
       Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
       Get.put<EmailReceiveManager>(emailReceiveManager);
       Get.put<DownloadController>(downloadController);
@@ -822,6 +827,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+              primaryAccountId: anyNamed('primaryAccountId'),
             ),
           ).thenAnswer(
             (_) async => MailboxCollection(
@@ -869,6 +875,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+              primaryAccountId: anyNamed('primaryAccountId'),
             ),
           ).called(1);
 
@@ -960,6 +967,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+              primaryAccountId: anyNamed('primaryAccountId'),
             ),
           ).thenAnswer(
             (_) async => MailboxCollection(
@@ -1008,6 +1016,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxIdSelected: anyNamed('mailboxIdSelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+              primaryAccountId: anyNamed('primaryAccountId'),
             ),
           ).called(1);
 

@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
@@ -22,9 +23,15 @@ extension MailboxExtension on Mailbox {
 
   bool get pushNotificationDeactivated => isOutbox || isSent || isDrafts || isTrash || isSpam;
 
-  PresentationMailbox toPresentationMailbox() {
+  /// Converts a JMAP [Mailbox] to its presentation form.
+  ///
+  /// [accountId] is the account the mailbox was fetched from. It defaults to
+  /// null for the primary account, where the tree builder stamps it in during
+  /// normalization. Callers fetching from another user's account must pass it.
+  PresentationMailbox toPresentationMailbox({AccountId? accountId}) {
     return PresentationMailbox(
       id!,
+      accountId: accountId,
       name: name,
       parentId: parentId,
       role: role,

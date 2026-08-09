@@ -1481,6 +1481,22 @@ class MailboxDashBoardController extends ReloadableController
     List<PresentationEmail> listEmails,
     PresentationMailbox destinationMailbox,
   ) {
+    // A JMAP move is an Email/set within one account; moving to another user's
+    // account would need Email/copy plus destroy, which is not implemented.
+    final sourceAccountId =
+        selectedMailbox.value?.accountId ?? accountId.value;
+    final destinationAccountId = destinationMailbox.accountId ?? accountId.value;
+    if (!destinationMailbox.isFavorite &&
+        sourceAccountId != destinationAccountId) {
+      if (currentContext != null && currentOverlayContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moveEmailAcrossAccountsNotSupported,
+        );
+      }
+      return;
+    }
+
     final emailIdsWithReadStatus = Map.fromEntries(listEmails
       .where((email) => email.id != null)
       .map((e) => MapEntry(e.id!, e.hasRead))
@@ -2139,6 +2155,11 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    // Reflect any subscription changes made in the Mailbox visibility screen on
+    // the sidebar. This refreshes the primary account and the delegated
+    // accounts, whose subscription state is otherwise only picked up on a
+    // primary websocket push.
+    dispatchMailboxUIAction(RefreshAllMailboxAction());
     if (isLabelCapabilitySupported &&
         accountId.value != null &&
         sessionCurrent != null) {

@@ -18,11 +18,12 @@ extension HandleMailboxActionExtension on MailboxController {
     BuildContext context,
     PresentationMailbox mailbox,
   ) {
+    final mailboxAccountId = accountIdOf(mailbox);
     final deletedMessageVaultSupported =
-      MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
+      MailboxUtils.isDeletedMessageVaultSupported(session, mailboxAccountId);
 
     final isSubAddressingSupported =
-      session?.isSubAddressingSupported(accountId) ?? false;
+      session?.isSubAddressingSupported(mailboxAccountId) ?? false;
 
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
@@ -55,7 +56,7 @@ extension HandleMailboxActionExtension on MailboxController {
     List<PresentationEmail> listEmails,
     PresentationMailbox presentationMailbox,
   ) {
-    final mailboxPath = findNodePath(presentationMailbox.id)
+    final mailboxPath = findNodePath(presentationMailbox.key)
         ?? presentationMailbox.name?.name;
     log('HandleMailboxActionExtension::handleDragItemAccepted():mailboxPath = $mailboxPath');
     final newMailbox = mailboxPath != null
@@ -73,11 +74,12 @@ extension HandleMailboxActionExtension on MailboxController {
     RelativeRect position,
     PresentationMailbox mailbox,
   ) {
+    final mailboxAccountId = accountIdOf(mailbox);
     final deletedMessageVaultSupported =
-      MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
+      MailboxUtils.isDeletedMessageVaultSupported(session, mailboxAccountId);
 
     final isSubAddressingSupported =
-      session?.isSubAddressingSupported(accountId) ?? false;
+      session?.isSubAddressingSupported(mailboxAccountId) ?? false;
 
     final popupMenuActions = getListPopupMenuItemAction(
       AppLocalizations.of(context),

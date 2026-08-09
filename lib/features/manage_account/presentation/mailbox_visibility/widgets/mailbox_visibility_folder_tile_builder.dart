@@ -66,7 +66,10 @@ class _MailBoxVisibilityFolderTileBuilderState
                     widget.onClickExpandMailboxNodeAction,
               ),
             ),
-            if (!_mailbox.isDefault)
+            // The Show/Hide button is hidden for the user's own system folders
+            // (their Inbox is always visible), but a delegated account's system
+            // folders ARE subscription-controlled, so they keep the button.
+            if (!_mailbox.isDefault || _mailbox.isSharedAccount)
               MailboxSubscribeButton(
                 imagePaths: _imagePaths,
                 mailboxNode: widget.mailboxNode,
@@ -85,8 +88,7 @@ class _MailBoxVisibilityFolderTileBuilderState
 
   String get _iconMailbox => _mailbox.getMailboxIcon(_imagePaths);
 
-  Color get _iconMailboxColor =>
-      _mailbox.isSubscribedMailbox || _mailbox.isDefault
-          ? AppColor.steelGrayA540
-          : AppColor.steelGray200;
+  Color get _iconMailboxColor => _mailbox.isDisplayedInSidebar
+      ? AppColor.steelGrayA540
+      : AppColor.steelGray200;
 }

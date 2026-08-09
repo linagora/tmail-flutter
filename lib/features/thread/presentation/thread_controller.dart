@@ -109,7 +109,9 @@ class ThreadController extends BaseController with EmailActionController {
 
   bool canLoadMore = true;
   bool canSearchMore = true;
-  MailboxId? _currentMemoryMailboxId;
+  // Account-scoped: switching between same-id mailboxes in different accounts
+  // must still trigger a reload.
+  MailboxKey? _currentMemoryMailboxKey;
   int _peakEmailCount = 0;
   final ScrollController listEmailController = ScrollController();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
@@ -172,7 +174,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   @override
   void onClose() {
-    _currentMemoryMailboxId = null;
+    _currentMemoryMailboxKey = null;
     listEmailController.dispose();
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
@@ -285,10 +287,10 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
-      log('ThreadController::_registerObxStreamListener:SelectedMailbox: ${mailbox?.id} - ${mailbox?.name} | CurrentMemoryMailboxId: $_currentMemoryMailboxId');
+      log('ThreadController::_registerObxStreamListener:SelectedMailbox: ${mailbox?.id} - ${mailbox?.name} | CurrentMemoryMailboxKey: $_currentMemoryMailboxKey');
       if (mailbox is PresentationMailbox
-          && mailbox.mailboxId != _currentMemoryMailboxId) {
-        _currentMemoryMailboxId = mailbox.id;
+          && mailbox.key != _currentMemoryMailboxKey) {
+        _currentMemoryMailboxKey = mailbox.key;
         consumeState(Stream.value(Right(GetAllEmailLoading())));
         resetToOriginalValue();
         getAllEmailAction(
@@ -297,7 +299,7 @@ class ThreadController extends BaseController with EmailActionController {
         );
         mailboxDashBoardController.setIsFirstSessionLoad(false);
       } else if (mailbox == null) { // disable current mailbox when search active
-        _currentMemoryMailboxId = null;
+        _currentMemoryMailboxKey = null;
         resetToOriginalValue();
       }
     });

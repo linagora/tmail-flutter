@@ -1498,6 +1498,20 @@ class AppLocalizations {
     );
   }
 
+  String get moveMailboxAcrossAccountsNotSupported {
+    return Intl.message(
+      'Moving a folder to another account is not supported',
+      name: 'moveMailboxAcrossAccountsNotSupported',
+    );
+  }
+
+  String get moveEmailAcrossAccountsNotSupported {
+    return Intl.message(
+      'Moving emails to another account is not supported',
+      name: 'moveEmailAcrossAccountsNotSupported',
+    );
+  }
+
   String get deleteFolder {
     return Intl.message(
         'Delete folder',

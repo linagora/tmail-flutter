@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_name_action.dart';
@@ -87,6 +88,33 @@ abstract class BaseMailboxController extends BaseController
   final defaultMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final teamMailboxesTree =  MailboxTree(MailboxNode.root()).obs;
 
+  /// Every tree this controller owns.
+  ///
+  /// Operations that are not specific to one section iterate this instead of
+  /// naming each tree.
+  List<Rx<MailboxTree>> get allMailboxTrees => [
+    defaultMailboxTree,
+    personalMailboxTree,
+    teamMailboxesTree,
+  ];
+
+  /// The account this controller is signed in as.
+  ///
+  /// Used to resolve a bare [MailboxId] that arrives without account context,
+  /// such as an id carried by a state-change event on the primary account's
+  /// push channel.
+  AccountId? get primaryAccountId;
+
+  /// Resolves a bare [MailboxId] known to belong to the primary account.
+  ///
+  /// Returns null when there is no id or no signed-in account, so callers can
+  /// bail out with a single check.
+  MailboxKey? primaryMailboxKey(MailboxId? mailboxId) {
+    final accountId = primaryAccountId;
+    if (mailboxId == null || accountId == null) return null;
+    return MailboxKey(accountId, mailboxId);
+  }
+
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
   MailboxCollection get currentMailboxCollection => MailboxCollection(
@@ -106,6 +134,7 @@ abstract class BaseMailboxController extends BaseController
       allMailboxes: allMailbox,
       currentCollection: currentMailboxCollection,
       mailboxIdSelected: mailboxIdSelected,
+      primaryAccountId: primaryAccountId,
     );
 
     if (onUpdateMailboxCollectionCallback != null) {
@@ -123,6 +152,7 @@ abstract class BaseMailboxController extends BaseController
         await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
       allMailboxes: allMailbox,
       currentCollection: currentMailboxCollection,
+      primaryAccountId: primaryAccountId,
     );
 
     if (onUpdateMailboxCollectionCallback != null) {
@@ -161,29 +191,11 @@ abstract class BaseMailboxController extends BaseController
   ) {
     final newExpandMode = selectedMailboxNode.expandMode.toggle();
 
-    if (defaultMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh defaultMailboxTree');
-      defaultMailboxTree.refresh();
-      triggerScrollWhenExpandFolder(
-        selectedMailboxNode.expandMode,
-        itemKey,
-        scrollController,
-      );
-    }
-
-    if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh folderMailboxTree');
-      personalMailboxTree.refresh();
-      triggerScrollWhenExpandFolder(
-        selectedMailboxNode.expandMode,
-        itemKey,
-        scrollController,
-      );
-    }
-
-    if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh teamMailboxesTree');
-      teamMailboxesTree.refresh();
+    for (final mailboxTree in allMailboxTrees) {
+      if (mailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) == null) {
+        continue;
+      }
+      mailboxTree.refresh();
       triggerScrollWhenExpandFolder(
         selectedMailboxNode.expandMode,
         itemKey,
@@ -197,54 +209,41 @@ abstract class BaseMailboxController extends BaseController
         ? SelectMode.ACTIVE
         : SelectMode.INACTIVE;
 
-    if (defaultMailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
-      log('selectMailboxNode() refresh defaultMailboxTree');
-      defaultMailboxTree.refresh();
-    }
-
-    if (personalMailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
-      log('selectMailboxNode() refresh folderMailboxTree');
-      personalMailboxTree.refresh();
-    }
-
-    if (teamMailboxesTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
-      log('selectMailboxNode() refresh folderMailboxTree');
-      teamMailboxesTree.refresh();
+    for (final mailboxTree in allMailboxTrees) {
+      if (mailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
+        mailboxTree.refresh();
+      }
     }
   }
 
   void unAllSelectedMailboxNode() {
-    defaultMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
-    personalMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
-    teamMailboxesTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
-    defaultMailboxTree.refresh();
-    personalMailboxTree.refresh();
-    teamMailboxesTree.refresh();
-  }
-
-  MailboxNode? findMailboxNodeById(MailboxId mailboxId) {
-    final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId);
-    if (mailboxNode != null) {
-      return mailboxNode;
+    for (final mailboxTree in allMailboxTrees) {
+      mailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+      mailboxTree.refresh();
     }
+  }
 
-    final mailboxPersonal = personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
-    if (mailboxPersonal != null) {
-      return mailboxPersonal;
+  MailboxNode? findMailboxNodeByKey(MailboxKey mailboxKey) {
+    for (final mailboxTree in allMailboxTrees) {
+      final mailboxNode = mailboxTree.value.findNodeByKey(mailboxKey);
+      if (mailboxNode != null) return mailboxNode;
     }
-    return teamMailboxesTree.value.findNode((node) => node.item.id == mailboxId);
+    return null;
   }
 
-  String? findNodePathWithSeparator(MailboxId mailboxId, String pathSeparator) {
-    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId, pathSeparator)
-      ?? personalMailboxTree.value.getNodePath(mailboxId, pathSeparator)
-      ?? teamMailboxesTree.value.getNodePath(mailboxId, pathSeparator);
-    log('BaseMailboxController::findNodePath():mailboxNodePath: $mailboxNodePath');
-    return mailboxNodePath;
+  String? findNodePathWithSeparator(MailboxKey mailboxKey, String pathSeparator) {
+    for (final mailboxTree in allMailboxTrees) {
+      final mailboxNodePath = mailboxTree.value.getNodePath(mailboxKey, pathSeparator);
+      if (mailboxNodePath != null) {
+        log('BaseMailboxController::findNodePath():mailboxNodePath: $mailboxNodePath');
+        return mailboxNodePath;
+      }
+    }
+    return null;
   }
 
-  String? findNodePath(MailboxId mailboxId) {
-    return findNodePathWithSeparator(mailboxId, '/');
+  String? findNodePath(MailboxKey mailboxKey) {
+    return findNodePathWithSeparator(mailboxKey, '/');
   }
 
   MailboxNode? findMailboxNodeByRole(Role role) {
@@ -257,7 +256,7 @@ abstract class BaseMailboxController extends BaseController
       if (!presentationMailbox.hasParentId()) {
         return presentationMailbox;
       } else {
-        final mailboxNodePath = findNodePath(presentationMailbox.id);
+        final mailboxNodePath = findNodePath(presentationMailbox.key);
         if (mailboxNodePath != null) {
           return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxNodePath);
         } else {
@@ -284,9 +283,13 @@ abstract class BaseMailboxController extends BaseController
 
   List<String> getListMailboxNameInParentMailbox(PresentationMailbox parentMailbox) {
     if (parentMailbox.parentId == null) {
-      final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[])
-        + (personalMailboxTree.value.root.childrenItems ?? <MailboxNode>[])
-        + (teamMailboxesTree.value.root.childrenItems ?? <MailboxNode>[]);
+      // Scoped to the target account: a folder named "Projects" in the primary
+      // account must not block creating "Projects" in another user's account.
+      final accountId = parentMailbox.key.accountId;
+      final allChildrenAtMailboxLocation = allMailboxTrees
+        .expand((tree) => tree.value.root.childrenItems ?? <MailboxNode>[])
+        .where((mailboxNode) => mailboxNode.item.key.accountId == accountId)
+        .toList();
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         final listMailboxNameAsStringExist = allChildrenAtMailboxLocation
           .where((mailboxNode) => mailboxNode.nameNotEmpty)
@@ -297,7 +300,9 @@ abstract class BaseMailboxController extends BaseController
         return [];
       }
     } else {
-      final mailboxNodeLocation = findMailboxNodeById(parentMailbox.parentId!);
+      final mailboxNodeLocation = findMailboxNodeByKey(
+        MailboxKey(parentMailbox.key.accountId, parentMailbox.parentId!),
+      );
       if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
         final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
         final listMailboxNameAsStringExist = allChildrenAtMailboxLocation
@@ -401,7 +406,10 @@ abstract class BaseMailboxController extends BaseController
     MailboxDashBoardController dashBoardController, {
     required MovingMailboxActionCallback onMovingMailboxAction
   }) async {
-    final accountId = dashBoardController.accountId.value;
+    // The picker shows destinations in the moved mailbox's own account, since a
+    // move never crosses accounts.
+    final accountId =
+        mailboxSelected.accountId ?? dashBoardController.accountId.value;
     final session = dashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
 
@@ -455,30 +463,32 @@ abstract class BaseMailboxController extends BaseController
   }
 
   List<MailboxNode> getAncestorOfMailboxNode(MailboxNode mailboxNode) {
-    final listAncestor = defaultMailboxTree.value.getAncestorList(mailboxNode)
-      ?? personalMailboxTree.value.getAncestorList(mailboxNode)
-      ?? teamMailboxesTree.value.getAncestorList(mailboxNode);
-    return listAncestor ?? [];
+    for (final mailboxTree in allMailboxTrees) {
+      final listAncestor = mailboxTree.value.getAncestorList(mailboxNode);
+      if (listAncestor != null) return listAncestor;
+    }
+    return [];
   }
 
   SubscribeRequest? generateSubscribeRequest(
-    MailboxId mailboxId,
+    MailboxKey mailboxKey,
     MailboxSubscribeState subscribeState,
     MailboxSubscribeAction subscribeAction
   ) {
     switch(subscribeState) {
       case MailboxSubscribeState.enabled:
-        return _generateSubscribeRequestWhenSubscribeEnabled(mailboxId, subscribeAction);
+        return _generateSubscribeRequestWhenSubscribeEnabled(mailboxKey, subscribeAction);
       case MailboxSubscribeState.disabled:
-        return _generateSubscribeRequestWhenSubscribeDisabled(mailboxId, subscribeAction);
+        return _generateSubscribeRequestWhenSubscribeDisabled(mailboxKey, subscribeAction);
     }
   }
 
   SubscribeRequest? _generateSubscribeRequestWhenSubscribeDisabled(
-    MailboxId mailboxId,
+    MailboxKey mailboxKey,
     MailboxSubscribeAction subscribeAction
   ) {
-    final mailboxNode = findMailboxNodeById(mailboxId);
+    final mailboxId = mailboxKey.mailboxId;
+    final mailboxNode = findMailboxNodeByKey(mailboxKey);
 
     if (mailboxNode == null) return null;
 
@@ -501,10 +511,11 @@ abstract class BaseMailboxController extends BaseController
   }
 
   SubscribeRequest? _generateSubscribeRequestWhenSubscribeEnabled(
-    MailboxId mailboxId,
+    MailboxKey mailboxKey,
     MailboxSubscribeAction subscribeAction
   ) {
-    final mailboxNode = findMailboxNodeById(mailboxId);
+    final mailboxId = mailboxKey.mailboxId;
+    final mailboxNode = findMailboxNodeByKey(mailboxKey);
 
     if (mailboxNode == null) return null;
 
@@ -567,48 +578,44 @@ abstract class BaseMailboxController extends BaseController
     return mailboxNode;
   }
 
-  void updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
+  void updateMailboxNameByKey(MailboxKey mailboxKey, MailboxName mailboxName) {
     UpdateMailboxNameAction(
-      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
-      mailboxId: mailboxId,
+      mailboxTrees: allMailboxTrees,
+      mailboxKey: mailboxKey,
       mailboxName: mailboxName,
     ).execute();
   }
 
-  void updateUnreadCountOfMailboxById(
-    MailboxId mailboxId, {
+  void updateUnreadCountOfMailboxByKey(
+    MailboxKey mailboxKey, {
     required int unreadChanges,
   }) {
     UpdateMailboxUnreadCountAction(
-      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
-      mailboxId: mailboxId,
+      mailboxTrees: allMailboxTrees,
+      mailboxKey: mailboxKey,
       unreadChanges: unreadChanges,
     ).execute();
   }
 
-  void clearUnreadCount(MailboxId mailboxId) {
-    final mailboxTrees = [
-      defaultMailboxTree,
-      personalMailboxTree,
-      teamMailboxesTree,
-    ];
-
-    for (var mailboxTree in mailboxTrees) {
-      final selectedNode = mailboxTree.value.findNode((node) => node.item.id == mailboxId);
+  void clearUnreadCount(MailboxKey mailboxKey) {
+    // No early exit once a tree matches: the same mailbox can be present in
+    // more than one tree, and stopping at the first would leave the others
+    // showing a stale count.
+    for (var mailboxTree in allMailboxTrees) {
+      final selectedNode = mailboxTree.value.findNodeByKey(mailboxKey);
       if (selectedNode == null) continue;
       final currentUnreadCount = selectedNode.item.unreadEmails?.value.value.toInt();
-      mailboxTree.value.updateMailboxUnreadCountById(
-        mailboxId,
+      mailboxTree.value.updateMailboxUnreadCountByKey(
+        mailboxKey,
         -(currentUnreadCount ?? 0));
       mailboxTree.refresh();
-      break;
     }
   }
 
-  void updateMailboxTotalEmailsCountById(MailboxId mailboxId, int totalEmails) {
+  void updateMailboxTotalEmailsCountByKey(MailboxKey mailboxKey, int totalEmails) {
     UpdateMailboxTotalEmailsCountAction(
-      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
-      mailboxId: mailboxId,
+      mailboxTrees: allMailboxTrees,
+      mailboxKey: mailboxKey,
       totalEmailsCountChanged: totalEmails,
     ).execute();
   }
@@ -674,8 +681,10 @@ abstract class BaseMailboxController extends BaseController
     required PresentationMailbox mailboxSelected,
     required OnMoveFolderContentActionCallback onMoveFolderContentAction,
   }) async {
+    // The picker shows destinations in the source folder's own account.
+    final destinationAccountId = mailboxSelected.accountId ?? accountId;
     final arguments = DestinationPickerArguments(
-      accountId,
+      destinationAccountId,
       MailboxActions.moveFolderContent,
       session,
       mailboxIdSelected: mailboxSelected.id,

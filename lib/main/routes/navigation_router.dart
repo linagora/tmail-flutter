@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -15,6 +16,9 @@ enum DashboardType {
 class NavigationRouter with EquatableMixin {
   final EmailId? emailId;
   final MailboxId? mailboxId;
+  /// The account that owns [mailboxId], omitted for the primary account so
+  /// existing primary-account URLs stay byte-identical.
+  final AccountId? mailboxAccountId;
   final Id? labelId;
   final DashboardType dashboardType;
   final SearchQuery? searchQuery;
@@ -29,6 +33,7 @@ class NavigationRouter with EquatableMixin {
   NavigationRouter({
     this.emailId,
     this.mailboxId,
+    this.mailboxAccountId,
     this.searchQuery,
     this.dashboardType = DashboardType.normal,
     this.routeName,
@@ -50,6 +55,7 @@ class NavigationRouter with EquatableMixin {
   List<Object?> get props => [
     emailId,
     mailboxId,
+    mailboxAccountId,
     searchQuery,
     dashboardType,
     routeName,

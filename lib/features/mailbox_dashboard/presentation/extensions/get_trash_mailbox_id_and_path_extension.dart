@@ -19,16 +19,16 @@ extension GetTrashMailboxIdAndPathExtension on MailboxDashBoardController {
     final namespace = emailMailbox.namespace;
     if (namespace == null) return defaultResult;
 
-    final trashId = findDefaultMailboxIdInTeamMailbox(
+    final trashMailbox = findDefaultMailboxInTeamMailbox(
       namespace: namespace,
       mailboxName: PresentationMailbox.trashRole,
     );
-    if (trashId == null) return defaultResult;
+    if (trashMailbox == null) return defaultResult;
 
     final trashPath = getTeamMailboxNodePathWithSeparator(
-      mailboxId: trashId,
+      mailboxKey: trashMailbox.key,
     );
-    return (trashId: trashId, trashPath: trashPath);
+    return (trashId: trashMailbox.id, trashPath: trashPath);
   }
 
   void emitMoveToTrashFailure(Exception exception) {

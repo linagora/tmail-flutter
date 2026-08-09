@@ -48,8 +48,7 @@ class LabelMailboxVisibilityItemWidget extends StatelessWidget {
             itemKey: itemKey,
             mailboxNode: mailboxNode,
             imagePaths: imagePaths,
-            color: mailboxNode.item.isSubscribedMailbox ||
-                    mailboxNode.item.isDefault
+            color: mailboxNode.item.isDisplayedInSidebar
                 ? AppColor.m3SurfaceBackground
                 : AppColor.steelGray400,
             onExpandFolderActionClick: onClickExpandMailboxNodeAction,
@@ -79,11 +78,9 @@ class LabelMailboxVisibilityItemWidget extends StatelessWidget {
     }
   }
 
-  bool get _isSubscribedMailbox => mailboxNode.item.isSubscribedMailbox;
-
   TextStyle get _displayNameTextStyle {
     return ThemeUtils.textStyleBodyBody3(
-      color: _isSubscribedMailbox || mailboxNode.item.isDefault
+      color: mailboxNode.item.isDisplayedInSidebar
           ? Colors.black
           : AppColor.steelGray400,
     );

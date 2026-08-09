@@ -29,16 +29,21 @@ class RefreshAllMailboxInteractor {
 
       yield* _mailboxRepository
         .refresh(session, accountId, currentState, properties: properties)
-        .map(_toGetMailboxState)
+        .map((response) => _toGetMailboxState(response, accountId))
         .mapErrorToLeft((error, _) => RefreshChangesAllMailboxFailure(error));
     } catch (e) {
       yield Left<Failure, Success>(RefreshChangesAllMailboxFailure(e));
     }
   }
 
-  Either<Failure, Success> _toGetMailboxState(MailboxResponse mailboxResponse) {
+  Either<Failure, Success> _toGetMailboxState(
+    MailboxResponse mailboxResponse,
+    AccountId accountId,
+  ) {
+    // Stamp the account the mailboxes were fetched from. See
+    // GetAllMailboxInteractor for why.
     final mailboxList = mailboxResponse.mailboxes
-      .map((mailbox) => mailbox.toPresentationMailbox())
+      .map((mailbox) => mailbox.toPresentationMailbox(accountId: accountId))
       .toList();
 
     return Right<Failure, Success>(RefreshChangesAllMailboxSuccess(

@@ -560,7 +560,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
   void _handleOpenMailboxNodeClick(MailboxNode mailboxNode) {
     PresentationMailbox presentationMailbox;
-    final path = controller.findNodePath(mailboxNode.item.id)
+    final path = controller.findNodePath(mailboxNode.item.key)
         ?? mailboxNode.item.name?.name;
     if (path != null) {
       presentationMailbox = mailboxNode.item
@@ -580,7 +580,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       newPresentationMailbox = presentationMailbox
           .toPresentationMailboxWithMailboxPath(AppLocalizations.of(context).allFolders);
     } else {
-      final path = controller.findNodePath(presentationMailbox.id)
+      final path = controller.findNodePath(presentationMailbox.key)
           ?? presentationMailbox.name?.name;
       if (path != null) {
         newPresentationMailbox = presentationMailbox.toPresentationMailboxWithMailboxPath(path);

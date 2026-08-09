@@ -17,6 +17,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_mailbox_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
@@ -105,6 +107,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   AccountId? get accountId => dashboardController.accountId.value;
 
+  @override
+  AccountId? get primaryAccountId => accountId;
+
   Session? get session => dashboardController.sessionCurrent;
 
   SearchMailboxController(
@@ -185,7 +190,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     } else if (success is SearchMailboxSuccess) {
       _handleSearchMailboxSuccess(success);
     } else if (success is RenameMailboxSuccess) {
-      updateMailboxNameById(success.request.mailboxId, success.request.newName);
+      final renamedKey = primaryMailboxKey(success.request.mailboxId);
+      if (renamedKey != null) {
+        updateMailboxNameByKey(renamedKey, success.request.newName);
+      }
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is DeleteMultipleMailboxAllSuccess) {
@@ -253,12 +261,16 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     ever(dashboardController.viewState, (viewState) {
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MarkAsMailboxReadAllSuccess) {
-        clearUnreadCount(reactionState.mailboxId);
+        final mailboxKey = primaryMailboxKey(reactionState.mailboxId);
+        if (mailboxKey != null) clearUnreadCount(mailboxKey);
       } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
-        updateUnreadCountOfMailboxById(
-          reactionState.mailboxId,
-          unreadChanges: -reactionState.countEmailsRead,
-        );
+        final mailboxKey = primaryMailboxKey(reactionState.mailboxId);
+        if (mailboxKey != null) {
+          updateUnreadCountOfMailboxByKey(
+            mailboxKey,
+            unreadChanges: -reactionState.countEmailsRead,
+          );
+        }
       }
     });
   }
@@ -425,7 +437,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         try {
           final subAddress = getSubAddress(
             dashboardController.ownEmailAddress.value,
-            findNodePathWithSeparator(mailbox.id, '.')!,
+            findNodePathWithSeparator(mailbox.key, '.')!,
           );
           copySubAddressAction(context, subAddress);
         } catch (error) {
@@ -439,7 +451,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         try{
           final subAddress = getSubAddress(
             dashboardController.ownEmailAddress.value,
-            findNodePathWithSeparator(mailbox.id, '.')!,
+            findNodePathWithSeparator(mailbox.key, '.')!,
           );
           openConfirmationDialogSubAddressingAction(
             context,
@@ -626,7 +638,11 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     MailboxSubscribeAction subscribeAction
   ) {
     if (session != null && accountId != null) {
-      final subscribeRequest = generateSubscribeRequest(mailboxId, subscribeState, subscribeAction);
+      final subscribeRequest = generateSubscribeRequest(
+        MailboxKey(accountId!, mailboxId),
+        subscribeState,
+        subscribeAction,
+      );
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
         consumeState(_subscribeMultipleMailboxInteractor.execute(

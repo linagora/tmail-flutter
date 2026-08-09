@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 class UpdateMailboxNameAction extends UpdateMailboxPropertiesAction {
   const UpdateMailboxNameAction({
     required super.mailboxTrees,
-    required super.mailboxId,
+    required super.mailboxKey,
     required this.mailboxName,
   });
 
@@ -13,6 +13,6 @@ class UpdateMailboxNameAction extends UpdateMailboxPropertiesAction {
   
   @override
   bool updateProperty(MailboxTree mailboxTree) {
-    return mailboxTree.updateMailboxNameById(mailboxId, mailboxName);
+    return mailboxTree.updateMailboxNameByKey(mailboxKey, mailboxName);
   }
 }

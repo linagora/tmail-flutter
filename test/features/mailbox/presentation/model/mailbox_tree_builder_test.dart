@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
@@ -820,6 +821,192 @@ void main() {
       expect(parentNode?.nodeState, equals(MailboxState.deactivated));
       expect(childNode?.nodeState, equals(MailboxState.deactivated));
       expect(grandChildNode?.nodeState, equals(MailboxState.deactivated));
+    });
+  });
+
+  group('account-scoped identity', () {
+    final primaryAccountId = AccountId(Id('primary'));
+    final otherAccountId = AccountId(Id('otherUser'));
+
+    MailboxNode? findByName(MailboxNode root, String name) {
+      for (final child in root.childrenItems ?? <MailboxNode>[]) {
+        if (child.item.name?.name == name) return child;
+        final nested = findByName(child, name);
+        if (nested != null) return nested;
+      }
+      return null;
+    }
+
+    test(
+      'a primary and an other-user mailbox that share a MailboxId both survive',
+      () async {
+        final primaryFolder = PresentationMailbox(
+          MailboxId(Id('5')),
+          name: MailboxName('PrimaryProjects'),
+          isSubscribed: IsSubscribed(true),
+        );
+        final sharedFolder = PresentationMailbox(
+          MailboxId(Id('5')),
+          accountId: otherAccountId,
+          isSharedAccount: true,
+          name: MailboxName('SharedProjects'),
+          myRights: MailboxRights(true, false, false, false, false, false, false, false, false),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUI(
+          allMailboxes: [primaryFolder, sharedFolder],
+          currentCollection: MailboxCollection.empty(),
+          primaryAccountId: primaryAccountId,
+        );
+
+        expect(findByName(result.personalTree.root, 'PrimaryProjects'), isNotNull);
+        // Delegated mailboxes fold into the team-mailbox tree.
+        expect(findByName(result.teamMailboxTree.root, 'SharedProjects'), isNotNull);
+      },
+    );
+
+    test(
+      'an other-user child attaches to its own account parent, not a primary '
+      'mailbox with the same id',
+      () async {
+        final primaryParent = PresentationMailbox(
+          MailboxId(Id('1')),
+          name: MailboxName('PrimaryParent'),
+          isSubscribed: IsSubscribed(true),
+        );
+        final sharedParent = PresentationMailbox(
+          MailboxId(Id('1')),
+          accountId: otherAccountId,
+          isSharedAccount: true,
+          name: MailboxName('SharedParent'),
+        );
+        final sharedChild = PresentationMailbox(
+          MailboxId(Id('2')),
+          accountId: otherAccountId,
+          isSharedAccount: true,
+          parentId: MailboxId(Id('1')),
+          name: MailboxName('SharedChild'),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUI(
+          allMailboxes: [primaryParent, sharedParent, sharedChild],
+          currentCollection: MailboxCollection.empty(),
+          primaryAccountId: primaryAccountId,
+        );
+
+        final sharedParentNode =
+            findByName(result.teamMailboxTree.root, 'SharedParent');
+        final primaryParentNode =
+            findByName(result.personalTree.root, 'PrimaryParent');
+
+        expect(
+          findByName(sharedParentNode!, 'SharedChild'),
+          isNotNull,
+          reason: 'child must attach to its own account parent',
+        );
+        expect(
+          primaryParentNode?.childrenItems ?? const [],
+          isEmpty,
+          reason: 'the primary parent must not steal the other-user child',
+        );
+      },
+    );
+
+    test('a null-account mailbox is normalized to the primary account', () async {
+      final folder = PresentationMailbox(
+        MailboxId(Id('9')),
+        name: MailboxName('Folder'),
+        isSubscribed: IsSubscribed(true),
+      );
+
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [folder],
+        currentCollection: MailboxCollection.empty(),
+        primaryAccountId: primaryAccountId,
+      );
+
+      expect(result.allMailboxes.single.accountId, equals(primaryAccountId));
+    });
+  });
+
+  group('other users tree', () {
+    final primaryAccountId = AccountId(Id('primary'));
+    final accountJohn = AccountId(Id('john'));
+    final accountMary = AccountId(Id('mary'));
+
+    List<PresentationMailbox> sharedMailboxesFor(AccountId accountId) => [
+          PresentationMailbox(
+            MailboxId(Id('inbox-${accountId.id.value}')),
+            accountId: accountId,
+            isSharedAccount: true,
+            role: Role('inbox'),
+            name: MailboxName('Inbox'),
+          ),
+          PresentationMailbox(
+            MailboxId(Id('folder-${accountId.id.value}')),
+            accountId: accountId,
+            isSharedAccount: true,
+            name: MailboxName('AProjects'),
+          ),
+        ];
+
+    test('delegated mailboxes from all accounts fold flat into the team tree, '
+        'with no synthetic account roots', () async {
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          ...sharedMailboxesFor(accountJohn),
+          ...sharedMailboxesFor(accountMary),
+        ],
+        currentCollection: MailboxCollection.empty(),
+        primaryAccountId: primaryAccountId,
+      );
+
+      // No synthetic per-account grouping node any more.
+      final teamNodes = result.teamMailboxTree.root.childrenItems ?? [];
+      expect(teamNodes.any((node) => node.item.isSharedAccountRoot), isFalse);
+
+      final names = <String?>[];
+      void collect(MailboxNode node) {
+        for (final child in node.childrenItems ?? <MailboxNode>[]) {
+          names.add(child.item.name?.name);
+          collect(child);
+        }
+      }
+
+      collect(result.teamMailboxTree.root);
+      // Both accounts' Inbox and AProjects are present, side by side.
+      expect(names.where((name) => name == 'Inbox').length, 2);
+      expect(names.where((name) => name == 'AProjects').length, 2);
+    });
+
+    test('delegated mailboxes sort alphabetically at the team-tree top level, '
+        'exactly like James team mailboxes', () async {
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: sharedMailboxesFor(accountJohn),
+        currentCollection: MailboxCollection.empty(),
+        primaryAccountId: primaryAccountId,
+      );
+
+      // Each delegated mailbox is its own top-level team row (the system-first
+      // rule only orders children within a team mailbox), so they sort by name.
+      final childNames = result.teamMailboxTree.root.childrenItems!
+          .map((node) => node.item.name?.name)
+          .toList();
+      expect(childNames, ['AProjects', 'Inbox']);
+    });
+
+    test('an other-user mailbox keeps a null namespace and is not personal', () async {
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: sharedMailboxesFor(accountJohn),
+        currentCollection: MailboxCollection.empty(),
+        primaryAccountId: primaryAccountId,
+      );
+
+      final shared = result.allMailboxes
+          .firstWhere((mailbox) => mailbox.name?.name == 'AProjects');
+      expect(shared.namespace, isNull);
+      expect(shared.isPersonal, isFalse);
+      expect(shared.isSharedAccount, isTrue);
     });
   });
 }

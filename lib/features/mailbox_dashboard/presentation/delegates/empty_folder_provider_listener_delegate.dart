@@ -76,7 +76,8 @@ class EmptyFolderProviderListenerDelegate
     MailboxDashBoardController dashboardController,
   ) {
     final session = dashboardController.sessionCurrent;
-    final accountId = dashboardController.accountId.value;
+    // Empty-folder runs against the account that owns the mailbox.
+    final accountId = mailbox.accountId ?? dashboardController.accountId.value;
     if (session == null || accountId == null) {
       _showEmptyFolderFailureToast(context, ref);
       return;

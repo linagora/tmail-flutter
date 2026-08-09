@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 class UpdateMailboxUnreadCountAction extends UpdateMailboxPropertiesAction {
   const UpdateMailboxUnreadCountAction({
     required super.mailboxTrees,
-    required super.mailboxId,
+    required super.mailboxKey,
     required this.unreadChanges,
   });
 
@@ -12,6 +12,6 @@ class UpdateMailboxUnreadCountAction extends UpdateMailboxPropertiesAction {
 
   @override
   bool updateProperty(MailboxTree mailboxTree) {
-    return mailboxTree.updateMailboxUnreadCountById(mailboxId, unreadChanges);
+    return mailboxTree.updateMailboxUnreadCountByKey(mailboxKey, unreadChanges);
   }
 }

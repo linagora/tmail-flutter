@@ -1405,6 +1405,18 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "moveMailboxAcrossAccountsNotSupported": "Moving a folder to another account is not supported",
+  "@moveMailboxAcrossAccountsNotSupported": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveEmailAcrossAccountsNotSupported": "Moving emails to another account is not supported",
+  "@moveEmailAcrossAccountsNotSupported": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "deleteFolder": "Delete folder",
   "@deleteFolder": {
     "type": "text",

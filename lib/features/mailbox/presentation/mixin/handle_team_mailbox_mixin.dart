@@ -1,5 +1,5 @@
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -35,21 +35,20 @@ mixin HandleTeamMailboxMixin {
     return mailboxNode.item;
   }
 
-  MailboxId? findDefaultMailboxIdInTeamMailbox({
+  PresentationMailbox? findDefaultMailboxInTeamMailbox({
     required Namespace namespace,
     required String mailboxName,
   }) {
-    final teamMailbox = _findDefaultMailboxInTeamMailbox(
+    return _findDefaultMailboxInTeamMailbox(
       namespace: namespace,
       mailboxName: mailboxName,
     );
-    return teamMailbox?.id;
   }
 
   String? getTeamMailboxNodePathWithSeparator({
-    required MailboxId mailboxId,
+    required MailboxKey mailboxKey,
     String pathSeparator = '/',
   }) {
-    return _teamMailboxesTree?.getNodePath(mailboxId, pathSeparator);
+    return _teamMailboxesTree?.getNodePath(mailboxKey, pathSeparator);
   }
 }

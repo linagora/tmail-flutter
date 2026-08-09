@@ -89,11 +89,12 @@ mixin MailboxWidgetMixin {
         MailboxActions.openInNewTab,
       if (mailbox.myRights?.mayCreateChild == true)
         MailboxActions.newSubfolder,
-      if (mailbox.countUnReadEmailsAsString.isNotEmpty)
+      if (mailbox.countUnReadEmailsAsString.isNotEmpty &&
+          mailbox.myRights?.mayReadItems != false)
         MailboxActions.markAsRead,
       if (mailbox.myRights?.mayRename == true)
         MailboxActions.rename,
-      if (mailbox.isTeamMailboxes)
+      if (mailbox.isTeamMailboxes || mailbox.isSharedAccount)
         if (mailbox.isSubscribedMailbox)
           MailboxActions.disableMailbox
         else
@@ -111,6 +112,15 @@ mixin MailboxWidgetMixin {
     bool deletedMessageVaultSupported,
     bool isSubAddressingSupported,
   ) {
+    // Every mailbox in another user's account is myRights-gated like a team
+    // mailbox, regardless of whether it carries a role (a shared Inbox would
+    // otherwise fall into the un-gated default-mailbox action list). Move and
+    // createFilter are absent here: cross-account move is unsupported and
+    // filters are a primary-account concept.
+    if (mailbox.isSharedAccount) {
+      return _listActionForTeamMailbox(mailbox);
+    }
+
     if (mailbox.isDefault) {
       return _listActionForDefaultMailbox(
         mailbox,

@@ -320,8 +320,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
     }
   }
 
+  // Compared by account-scoped key: selecting the primary Inbox must not
+  // highlight an identically numbered folder in another user's account.
   bool get _isSelected =>
-      widget.mailboxNodeSelected?.id == widget.mailboxNode.item.id;
+      widget.mailboxNodeSelected?.key == widget.mailboxNode.item.key;
 
   Color get backgroundColorItem {
     // Non-mailbox views are always white

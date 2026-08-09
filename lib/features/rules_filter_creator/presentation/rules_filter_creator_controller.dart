@@ -76,6 +76,9 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   RulesFilterCreatorArguments? arguments;
   AccountId? _accountId;
+
+  @override
+  AccountId? get primaryAccountId => _accountId;
   Session? _session;
   TMailRule? _currentTMailRule;
   EmailAddress? _emailAddress;
@@ -263,8 +266,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void _setUpRuleFilterActions() {
     if (_currentTMailRule?.action.appendIn.mailboxIds.isNotEmpty != true) return;
 
-    final mailboxNode = findMailboxNodeById(
+    final mailboxKey = primaryMailboxKey(
       _currentTMailRule!.action.appendIn.mailboxIds.first);
+    final mailboxNode =
+        mailboxKey != null ? findMailboxNodeByKey(mailboxKey) : null;
 
     if (mailboxNode == null) {
       mailboxSelected.value = PresentationMailbox.unifiedMailbox;

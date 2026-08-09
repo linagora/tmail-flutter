@@ -37,7 +37,9 @@ mixin MailboxActionHandlerMixin {
     }
   ) {
     final session = dashboardController.sessionCurrent;
-    final accountId = dashboardController.accountId.value;
+    // Mark-as-read runs against the account that owns the mailbox.
+    final accountId =
+        presentationMailbox.accountId ?? dashboardController.accountId.value;
     final mailboxId = presentationMailbox.id;
     final countEmailsUnread = presentationMailbox.unreadEmails?.value.value ?? 0;
     if (session != null && accountId != null) {

@@ -24,7 +24,7 @@ class GetAllMailboxInteractor {
           session,
           accountId,
           properties: properties)
-        .map(_toGetMailboxState)
+        .map((response) => _toGetMailboxState(response, accountId))
         .mapErrorToLeft((error, _) => GetAllMailboxFailure(
           error,
           onRetry: execute(session, accountId, properties: properties),
@@ -32,14 +32,20 @@ class GetAllMailboxInteractor {
     } catch (e) {
       yield Left<Failure, Success>(GetAllMailboxFailure(
         e,
-        onRetry: execute(session, accountId, properties: properties),  
+        onRetry: execute(session, accountId, properties: properties),
       ));
     }
   }
 
-  Either<Failure, Success> _toGetMailboxState(MailboxResponse mailboxResponse) {
+  Either<Failure, Success> _toGetMailboxState(
+    MailboxResponse mailboxResponse,
+    AccountId accountId,
+  ) {
+    // Stamp the account the mailboxes were fetched from. JMAP ids are only
+    // unique within an account (RFC 8620), so a mailbox is not identifiable
+    // without it once other users' accounts are also loaded.
     final mailboxList = mailboxResponse.mailboxes
-      .map((mailbox) => mailbox.toPresentationMailbox())
+      .map((mailbox) => mailbox.toPresentationMailbox(accountId: accountId))
       .toList();
 
     return Right<Failure, Success>(GetAllMailboxSuccess(

@@ -67,6 +67,7 @@ export 'extensions/oidc_user_info_extension.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
 export 'mailbox/expand_mode.dart';
+export 'mailbox/mailbox_key.dart';
 export 'mailbox/mailbox_property.dart';
 export 'mailbox/mailbox_state.dart';
 // Mailbox

@@ -1,11 +1,21 @@
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 extension PresentationMailboxExtension on PresentationMailbox {
+
+  /// The account-scoped identity of this mailbox.
+  ///
+  /// Every mailbox that came from the server carries the account it was fetched
+  /// from, stamped on by the interactor that fetched it. The only mailboxes
+  /// with a null [accountId] are app-local pseudo-mailboxes (the virtual
+  /// folders and the tree root sentinel), which fall back to
+  /// [MailboxKey.localAccount], so this never throws.
+  MailboxKey get key => MailboxKey(accountId ?? MailboxKey.localAccount, id);
 
   bool get isActivated => state == MailboxState.activated;
 
@@ -15,15 +25,24 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isDefault => hasRole();
 
+  /// Mailboxes owned by the signed-in user.
+  ///
+  /// [namespace] is a James Team-Mailboxes extension field, not RFC 8621, so it
+  /// only ever distinguishes team mailboxes within a single account. Mailboxes
+  /// belonging to another user's account are identified by [isSharedAccount],
+  /// which is set from the JMAP account they were fetched from.
   bool get isPersonal =>
       !isSharedAccount &&
-      ( namespace == null || namespace == Namespace('Personal'));
+      (namespace == null || namespace == Namespace('Personal'));
 
-  bool get isTeamMailboxes => !isSharedAccount && !isPersonal && !hasParentId();
+  /// Team mailboxes and other users' (delegated) mailboxes share the same
+  /// rendering: a top-level row labelled with the owner via [emailTeamMailBoxes].
+  /// A Cyrus delegated account is folded in here too, carrying a synthesized
+  /// `Delegated[owner]` namespace so it looks exactly like a James delegation,
+  /// while [accountId] still routes its write actions to the owning account.
+  bool get isTeamMailboxes => !isPersonal && !hasParentId();
 
-  bool get isChildOfTeamMailboxes =>
-      (isSharedAccount && !isSharedAccountRoot) ||
-      ( !isPersonal && hasParentId());
+  bool get isChildOfTeamMailboxes => !isPersonal && hasParentId();
 
   String get countUnReadEmailsAsString {
     if (countUnreadEmails <= 0) return '';
@@ -106,6 +125,15 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
 
+  /// Whether this mailbox is currently shown in the sidebar, mirroring the
+  /// per-account sidebar filters: the primary account shows subscribed
+  /// mailboxes plus its system (role) folders, while a delegated account shows
+  /// only subscribed mailboxes with no isDefault override. Used to reflect the
+  /// hidden/shown state in the Mailbox visibility settings, so a delegated
+  /// system folder greys out when unsubscribed.
+  bool get isDisplayedInSidebar =>
+    isSubscribedMailbox || (isDefault && !isSharedAccount);
+
   bool get isSubaddressingAllowed => rights != null && rights?[anyoneIdentifier]?.contains(postingRight) == true;
 
   bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;
@@ -132,8 +160,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
     return name;
   }
 
-  bool get allowedToDisplay =>
-      isSharedAccountRoot || isSubscribedMailbox || isDefault;
+  bool get allowedToDisplay => isSubscribedMailbox || isDefault;
 
   MailboxId? get mailboxId {
     if (id == PresentationMailbox.unifiedMailbox.id) {

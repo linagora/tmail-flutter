@@ -174,6 +174,7 @@ void main() {
 
       final spamMailbox = PresentationMailbox(
         MailboxId(Id('SpamId')),
+        accountId: accountId,
         name: MailboxName('Spam'),
         role: PresentationMailbox.roleJunk,
         isSubscribed: IsSubscribed(true),
@@ -213,6 +214,7 @@ void main() {
       when(mockTreeBuilder.generateMailboxTreeInUI(
         allMailboxes: [spamMailbox],
         currentCollection: MailboxCollection.empty(),
+        primaryAccountId: accountId,
       )).thenAnswer((_) async {
         return MailboxCollection(
           allMailboxes: [spamMailbox],
@@ -254,6 +256,7 @@ void main() {
 
       final mailboxA = PresentationMailbox(
         MailboxId(Id('MailboxA')),
+        accountId: accountId,
         name: MailboxName('MailboxA'),
         isSubscribed: IsSubscribed(true),
         namespace: Namespace('Personal'));
@@ -292,6 +295,7 @@ void main() {
       when(mockTreeBuilder.generateMailboxTreeInUI(
         allMailboxes: [mailboxA],
         currentCollection: MailboxCollection.empty(),
+        primaryAccountId: accountId,
       )).thenAnswer((_) async {
         return MailboxCollection(
           allMailboxes: [mailboxA],

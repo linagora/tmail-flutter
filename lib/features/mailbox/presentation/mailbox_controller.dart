@@ -14,7 +14,6 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
@@ -77,6 +76,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/other_user_account_mailboxes.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
@@ -98,6 +99,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/base/mixin/mailbox_account_resolver_mixin.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -110,9 +112,13 @@ class MailboxController extends BaseMailboxController
     with MailboxActionHandlerMixin,
         ContactSupportMixin,
         LauncherApplicationMixin,
+        MailboxAccountResolverMixin,
         MailboxWidgetMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+
+  @override
+  AccountId? get primaryAccountId => mailboxDashBoardController.accountId.value;
   final isMailboxListScrollable = false.obs;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
@@ -125,9 +131,23 @@ class MailboxController extends BaseMailboxController
   final MoveFolderContentInteractor _moveFolderContentInteractor;
   final GetAllMailboxInteractor _sharedMailboxGetAllMailboxInteractor;
 
-  final Map<AccountId, List<PresentationMailbox>> _sharedMailboxesByAccount = {};
+  /// Loaded mailboxes for each other user's (delegated) account.
+  final Map<AccountId, OtherUserAccountMailboxes> _otherUserAccounts = {};
 
-  bool _didLoadSharedMailboxes = false;
+  /// Accounts whose mailboxes are being fetched right now. Tracked separately
+  /// from [_otherUserAccounts] so a failed or in-progress load never marks an
+  /// account as loaded, leaving it free to retry.
+  final Set<AccountId> _otherUserAccountsInFlight = {};
+
+  /// The primary account the other-user caches were populated for, so they can
+  /// be cleared when the user switches accounts.
+  AccountId? _lastPrimaryAccountId;
+
+  /// Last known primary-account mailboxes, already filtered (subscribed and
+  /// default, virtual folders removed). The single source of truth for every
+  /// tree rebuild, so a primary refresh never drops the cached other-user
+  /// subtrees.
+  List<PresentationMailbox> _primaryMailboxes = const [];
 
   IOSSharingManager? _iosSharingManager;
   late MailboxActionReactor mailboxActionReactor;
@@ -151,6 +171,7 @@ class MailboxController extends BaseMailboxController
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
+  @override
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
   MailboxController(
@@ -207,6 +228,7 @@ class MailboxController extends BaseMailboxController
     _webSocketQueueHandler?.dispose();
     isLabelsLoadedWorker?.dispose();
     isLabelsLoadedWorker = null;
+    _resetOtherUserAccounts();
     super.onClose();
   }
 
@@ -263,10 +285,7 @@ class MailboxController extends BaseMailboxController
         toastManager: toastManager,
       );
     } else if (failure is CreateDefaultMailboxFailure) {
-      updateMailboxTree(
-        mailboxCollection: updateMailboxCollection(currentMailboxCollection),
-        isRefreshTrigger: false,
-      );
+      _applyVirtualFoldersOnly();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -278,10 +297,7 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
-          updateMailboxTree(
-            mailboxCollection: updateMailboxCollection(currentMailboxCollection,),
-            isRefreshTrigger: false,
-          );
+          _applyVirtualFoldersOnly();
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()),);
           showRetryToast(failure);
         }
@@ -300,92 +316,195 @@ class MailboxController extends BaseMailboxController
     );
   }
 
-  Future<void> _loadSharedMailboxes(
-    Session currentSession,
-    AccountId primaryAccountId,
+  /// Clears every other-user cache, e.g. when the primary account changes.
+  void _resetOtherUserAccounts() {
+    _otherUserAccounts.clear();
+    _otherUserAccountsInFlight.clear();
+    _lastPrimaryAccountId = null;
+  }
+
+  /// Loads each delegated account's mailboxes concurrently, rebuilding the
+  /// sidebar as each one arrives so the section fills in progressively.
+  Future<void> _loadOtherUserMailboxes(
+    Session session,
+    AccountId primary,
   ) async {
+    final accountIds =
+        MailboxUtils.resolveOtherUserAccountIds(session, primary);
 
-    for (final sharedAccountId in currentSession.accounts.keys) {
-      if (sharedAccountId.asString == primaryAccountId.asString) {
-        continue;
-      }
+    await Future.wait(
+      accountIds.map((accountId) => _loadOtherUserAccount(session, accountId)),
+    );
+  }
 
+  Future<void> _loadOtherUserAccount(
+    Session session,
+    AccountId accountId,
+  ) async {
+    if (_otherUserAccountsInFlight.contains(accountId) ||
+        _otherUserAccounts.containsKey(accountId)) {
+      return;
+    }
+    _otherUserAccountsInFlight.add(accountId);
 
-      await for (final result in _sharedMailboxGetAllMailboxInteractor.execute(
-        currentSession,
-        sharedAccountId,
-      )) {
-        result.fold(
+    try {
+      // Run the interactor directly rather than through consumeState:
+      // handleSuccessViewState would route its GetAllMailboxSuccess into
+      // _handleGetAllMailboxSuccess and clobber the primary tree.
+      await for (final result
+          in _sharedMailboxGetAllMailboxInteractor.execute(session, accountId)) {
+        final success = result.fold<GetAllMailboxSuccess?>(
           (failure) {
             logWarning(
-              'MailboxController::_loadSharedMailboxes: failure '
-              'account=${sharedAccountId.asString} '
-              'failure=$failure',
+              'MailboxController::_loadOtherUserAccount: failure '
+              'account=${accountId.id.value} failure=$failure',
             );
+            return null;
           },
-          (success) {
-            if (success is! GetAllMailboxSuccess) {
-              return;
-            }
-
-            final accountMailboxes = success.mailboxList
-                .map(
-                  (mailbox) => mailbox.copyWith(
-                    accountId: sharedAccountId,
-                    isSharedAccount: true,
-                    namespace: mailbox.namespace ??
-                        Namespace('Shared[${sharedAccountId.asString}]'),
-                  ),
-                )
-                .toList();
-
-            _sharedMailboxesByAccount[sharedAccountId] = accountMailboxes;
-
-
-          },
+          (success) => success is GetAllMailboxSuccess ? success : null,
         );
+        if (success == null) continue;
+
+        // Ghost account: the JMAP session lists it but the user has no readable
+        // mailbox in it. Skip it so it never appears in the sidebar.
+        final readableMailboxes = success.mailboxList.listReadableMailboxes;
+        if (readableMailboxes.isEmpty) continue;
+
+        // Delegated accounts are filtered strictly by subscription (no isDefault
+        // override), so the user curates exactly which of another user's folders
+        // appear by (un)subscribing to them. Stamp the James-style
+        // `Delegated[owner]` namespace so they fold into Team-mailboxes with the
+        // owner shown as a subtitle; accountId still routes their write actions.
+        final ownerName =
+            session.accounts[accountId]?.name.value ?? accountId.id.value;
+        final mailboxes = readableMailboxes
+            .listSubscribedMailboxes
+            .map((mailbox) => mailbox.copyWith(
+                  accountId: accountId,
+                  isSharedAccount: true,
+                  namespace: MailboxUtils.delegatedNamespace(ownerName),
+                ))
+            .toList();
+
+        _otherUserAccounts[accountId] = OtherUserAccountMailboxes(
+          accountId: accountId,
+          displayName: MailboxName(ownerName),
+          mailboxes: mailboxes,
+          mailboxState: success.currentMailboxState,
+        );
+
+        await _rebuildAllTrees(selectDefaultMailbox: false);
       }
+    } finally {
+      _otherUserAccountsInFlight.remove(accountId);
+    }
+  }
+
+  /// Refreshes the already-loaded delegated accounts off the primary account's
+  /// change signal. The primary Mailbox/changes push says nothing about a
+  /// delegated account's state, so this is a pragmatic approximation until each
+  /// account has its own push subscription.
+  Future<void> _refreshOtherUserMailboxes(Session session) async {
+    var changed = false;
+    for (final account in _otherUserAccounts.values.toList()) {
+      final state = account.mailboxState;
+      if (state == null) continue;
+
+      final refreshViewState = await refreshAllMailboxInteractor!
+          .execute(
+            session,
+            account.accountId,
+            state,
+            properties: MailboxConstants.propertiesDefault,
+          )
+          .last;
+      final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllMailboxSuccess>();
+      if (refreshState is! RefreshChangesAllMailboxSuccess) continue;
+
+      // Delegated accounts are filtered strictly by subscription so an IMAP
+      // unsubscribe hides the folder on the next refresh (see
+      // _loadOtherUserAccount). Unreadable mailboxes are excluded too.
+      final mailboxes = refreshState.mailboxList
+          .listReadableMailboxes
+          .listSubscribedMailboxes
+          .map((mailbox) => mailbox.copyWith(
+                accountId: account.accountId,
+                isSharedAccount: true,
+                namespace:
+                    MailboxUtils.delegatedNamespace(account.displayName.name),
+              ))
+          .toList();
+      _otherUserAccounts[account.accountId] = account.copyWith(
+        mailboxes: mailboxes,
+        mailboxState: refreshState.currentMailboxState,
+      );
+      changed = true;
     }
 
-    final personalMailboxesForUi = allMailboxes
-        .where(
-          (mailbox) => !mailbox.isSharedAccount && !mailbox.isVirtualFolder,
-        )
-        .toList();
+    if (changed) {
+      await _rebuildAllTrees(refreshOnly: true);
+    }
+  }
 
-    final sharedMailboxesForUi = _sharedMailboxesByAccount.values
-        .expand((mailboxes) => mailboxes)
-        .toList();
+  /// Re-fetches every already-loaded delegated account in full and rebuilds.
+  ///
+  /// A subscription toggle does not advance the mailbox modseq that
+  /// Mailbox/changes relies on (IMAP subscriptions are a separate per-user
+  /// list), so [_refreshOtherUserMailboxes] cannot observe an (un)subscribe.
+  /// Only a full Mailbox/get reflects it, so this is used on the manual refresh
+  /// and when returning from the Mailbox visibility settings, where the sidebar
+  /// was otherwise stale until a page reload.
+  Future<void> _reloadOtherUserMailboxesInFull(Session session) async {
+    final accountIds = _otherUserAccounts.keys.toList();
+    if (accountIds.isEmpty) return;
 
-    await buildTree([
-      ...personalMailboxesForUi,
-      ...sharedMailboxesForUi,
-    ], onUpdateMailboxCollectionCallback: updateMailboxCollection);
+    await Future.wait(accountIds.map((accountId) async {
+      final existing = _otherUserAccounts[accountId];
+      if (existing == null) return;
 
+      await for (final result
+          in _sharedMailboxGetAllMailboxInteractor.execute(session, accountId)) {
+        final success = result.fold<GetAllMailboxSuccess?>(
+          (_) => null,
+          (s) => s is GetAllMailboxSuccess ? s : null,
+        );
+        if (success == null) continue;
 
+        final mailboxes = success.mailboxList.listReadableMailboxes
+            .listSubscribedMailboxes
+            .map((mailbox) => mailbox.copyWith(
+                  accountId: accountId,
+                  isSharedAccount: true,
+                  namespace: MailboxUtils.delegatedNamespace(
+                      existing.displayName.name),
+                ))
+            .toList();
+        _otherUserAccounts[accountId] = existing.copyWith(
+          mailboxes: mailboxes,
+          mailboxState: success.currentMailboxState,
+        );
+      }
+    }));
+
+    await _rebuildAllTrees(refreshOnly: true);
   }
 
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
       final currentSession = session;
-      final currentAccountId =accountId;
+      final currentAccountId = accountId;
 
       if (currentAccountId != null && currentSession != null) {
-        getAllMailbox(currentSession, currentAccountId);
-
-        if (!_didLoadSharedMailboxes) {
-          _didLoadSharedMailboxes = true;
-
-          unawaited(
-            Future<void>.delayed(
-              const Duration(seconds: 2),
-              () => _loadSharedMailboxes(
-                currentSession,
-                currentAccountId,
-              ),
-            ),
-          );
+        if (currentAccountId != _lastPrimaryAccountId) {
+          _resetOtherUserAccounts();
+          _lastPrimaryAccountId = currentAccountId;
         }
+
+        getAllMailbox(currentSession, currentAccountId);
+        unawaited(
+          _loadOtherUserMailboxes(currentSession, currentAccountId),
+        );
       }
     });
 
@@ -568,10 +687,11 @@ class MailboxController extends BaseMailboxController
     int? readCount,
     int? unreadCount,
   }) {
-    if (affectedMailboxId == null) return;
+    final mailboxKey = primaryMailboxKey(affectedMailboxId);
+    if (mailboxKey == null) return;
 
-    updateUnreadCountOfMailboxById(
-      affectedMailboxId,
+    updateUnreadCountOfMailboxByKey(
+      mailboxKey,
       unreadChanges: (unreadCount ?? 0) - (readCount ?? 0),
     );
   }
@@ -579,19 +699,21 @@ class MailboxController extends BaseMailboxController
   void _handleMarkMailboxAsRead({
     required MailboxId? affectedMailboxId
   }) {
-    if (affectedMailboxId == null) return;
+    final mailboxKey = primaryMailboxKey(affectedMailboxId);
+    if (mailboxKey == null) return;
 
-    clearUnreadCount(affectedMailboxId);
+    clearUnreadCount(mailboxKey);
   }
 
   void _handleDraftSaved({
     required MailboxId? affectedMailboxId,
     required int totalEmailsChanged,
   }) {
-    if (affectedMailboxId == null) return;
+    final mailboxKey = primaryMailboxKey(affectedMailboxId);
+    if (mailboxKey == null) return;
 
-    updateMailboxTotalEmailsCountById(
-      affectedMailboxId,
+    updateMailboxTotalEmailsCountByKey(
+      mailboxKey,
       totalEmailsChanged
     );
   }
@@ -600,10 +722,11 @@ class MailboxController extends BaseMailboxController
     required MailboxId? affectedMailboxId,
     required int totalEmailsChanged,
   }) {
-    if (affectedMailboxId == null) return;
+    final mailboxKey = primaryMailboxKey(affectedMailboxId);
+    if (mailboxKey == null) return;
 
-    updateMailboxTotalEmailsCountById(
-      affectedMailboxId,
+    updateMailboxTotalEmailsCountByKey(
+      mailboxKey,
       totalEmailsChanged
     );
   }
@@ -620,26 +743,30 @@ class MailboxController extends BaseMailboxController
       final unreadEmailMovedCount = originalMailboxIdWithEmailIds.value
           .where((emailId) => emailIdsWithReadStatus[emailId] == false)
           .length;
-      updateMailboxTotalEmailsCountById(
-        originalMailboxId,
+      final originalMailboxKey = primaryMailboxKey(originalMailboxId);
+      if (originalMailboxKey == null) continue;
+      updateMailboxTotalEmailsCountByKey(
+        originalMailboxKey,
         -emailsMovedCount
       );
-      updateUnreadCountOfMailboxById(
-        originalMailboxId,
+      updateUnreadCountOfMailboxByKey(
+        originalMailboxKey,
         unreadChanges: -unreadEmailMovedCount,
       );
     }
 
     // Update changes in destination mailbox
-    updateMailboxTotalEmailsCountById(
-      destinationMailboxId,
+    final destinationMailboxKey = primaryMailboxKey(destinationMailboxId);
+    if (destinationMailboxKey == null) return;
+    updateMailboxTotalEmailsCountByKey(
+      destinationMailboxKey,
       originalMailboxIdsWithEmailIds.entries.fold(
         0,
         (sum, entry) => sum + entry.value.length,
       ),
     );
-    updateUnreadCountOfMailboxById(
-      destinationMailboxId,
+    updateUnreadCountOfMailboxByKey(
+      destinationMailboxKey,
       unreadChanges: originalMailboxIdsWithEmailIds
         .values
         .fold(
@@ -671,6 +798,11 @@ class MailboxController extends BaseMailboxController
   Future<void> refreshAllMailbox() async {
     if (session != null && accountId != null) {
       consumeState(getAllMailboxInteractor!.execute(session!, accountId!));
+      // Full re-fetch the delegated accounts so an (un)subscribe on another
+      // user's mailbox is reflected. A subscription change does not advance the
+      // mailbox modseq, so the Mailbox/changes based _refreshOtherUserMailboxes
+      // would miss it.
+      unawaited(_reloadOtherUserMailboxesInFull(session!));
     } else {
       consumeState(Stream.value(Left(GetAllMailboxFailure(NotFoundSessionException()))),);
     }
@@ -703,6 +835,9 @@ class MailboxController extends BaseMailboxController
 
       if (refreshState is RefreshChangesAllMailboxSuccess) {
         await _handleRefreshChangeMailboxSuccess(refreshState);
+        // The primary change signal is the only push this app subscribes to, so
+        // opportunistically refresh the delegated accounts alongside it.
+        await _refreshOtherUserMailboxes(session!);
       } else {
         _clearNewFolderId();
         if (refreshState != null) {
@@ -721,22 +856,12 @@ class MailboxController extends BaseMailboxController
   Future<void> _handleRefreshChangeMailboxSuccess(RefreshChangesAllMailboxSuccess success,) async {
     currentMailboxState = success.currentMailboxState;
     log('MailboxController::_handleRefreshChangeMailboxSuccess:currentMailboxState: $currentMailboxState',);
-    final listMailboxDisplayed = success
+    _primaryMailboxes = success
         .mailboxList
-        .listSubscribedMailboxesAndDefaultMailboxes;
+        .listSubscribedMailboxesAndDefaultMailboxes
+        .withoutVirtualMailbox;
 
-    await refreshTree(
-      listMailboxDisplayed.withoutVirtualMailbox,
-      onUpdateMailboxCollectionCallback: updateMailboxCollection,
-    );
-
-    if (currentContext != null) {
-      syncAllMailboxWithDisplayName(currentContext!);
-    }
-    _setMapMailbox();
-    _setOutboxMailbox();
-    _selectSelectedMailboxDefault();
-    mailboxDashBoardController.refreshSpamReportBanner();
+    await _rebuildAllTrees(refreshOnly: true);
 
     if (_newFolderId != null) {
       _redirectToNewFolder();
@@ -747,15 +872,80 @@ class MailboxController extends BaseMailboxController
   bool get isAINeedsActionEnabled =>
       mailboxDashBoardController.isAINeedsActionEnabled;
 
+  /// The one place trees are rebuilt in this controller.
+  ///
+  /// Always composes the primary mailboxes with the cached other-user
+  /// mailboxes, so neither a primary refresh nor a delayed shared load can
+  /// wipe the other section. Every rebuild is followed by the same
+  /// reconciliation, so the dashboard's mailbox maps and the default selection
+  /// stay consistent.
+  Future<void> _rebuildAllTrees({
+    MailboxId? mailboxIdSelected,
+    bool refreshOnly = false,
+    bool selectDefaultMailbox = true,
+  }) async {
+    final sharedMailboxes = _otherUserAccounts.values
+        .expand((account) => account.mailboxes)
+        .toList();
+    final composed = [..._primaryMailboxes, ...sharedMailboxes];
+
+    if (refreshOnly) {
+      await refreshTree(
+        composed,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
+    } else {
+      await buildTree(
+        composed,
+        mailboxIdSelected: mailboxIdSelected,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
+    }
+
+    _reconcileAfterTreeBuild(selectDefaultMailbox: selectDefaultMailbox);
+  }
+
+  /// Reapplies the virtual folders onto the current collection without a full
+  /// rebuild, for the paths that only need to refresh those synthetic entries.
+  void _applyVirtualFoldersOnly() {
+    updateMailboxTree(
+      mailboxCollection: updateMailboxCollection(currentMailboxCollection),
+      isRefreshTrigger: false,
+    );
+  }
+
+  /// Post-build reconciliation run after every [_rebuildAllTrees].
+  void _reconcileAfterTreeBuild({bool selectDefaultMailbox = true}) {
+    if (currentContext != null) {
+      syncAllMailboxWithDisplayName(currentContext!);
+    }
+    _setMapMailbox();
+    _setOutboxMailbox();
+    if (selectDefaultMailbox) {
+      _selectSelectedMailboxDefault();
+    }
+    mailboxDashBoardController.refreshSpamReportBanner();
+  }
+
   void _setMapMailbox() {
     final mapDefaultMailboxIdByRole = {
       for (var mailboxNode in defaultMailboxTree.value.root.childrenItems ?? List<MailboxNode>.empty())
         mailboxNode.item.role!: mailboxNode.item.id,
     };
 
+    // Scoped to the primary account (plus the account-less virtual folders).
+    // JMAP ids collide across accounts, so including other users' mailboxes
+    // here would let one silently overwrite a primary entry and corrupt every
+    // consumer that resolves a mailbox by bare id: spam/trash lookup, the
+    // outbox, and email-to-mailbox resolution. Cross-account lookups use the
+    // account-scoped tree instead.
+    final primary = primaryAccountId;
     final mapMailboxById = {
       for (var presentationMailbox in allMailboxes)
-        presentationMailbox.id: presentationMailbox,
+        if (primary == null ||
+            presentationMailbox.accountId == null ||
+            presentationMailbox.accountId == primary)
+          presentationMailbox.id: presentationMailbox,
     };
 
     mailboxDashBoardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole,);
@@ -821,10 +1011,7 @@ class MailboxController extends BaseMailboxController
       .toList();
 
     if (listRoleMissing.isEmpty || accountId == null || session == null) {
-      updateMailboxTree(
-        mailboxCollection: updateMailboxCollection(currentMailboxCollection),
-        isRefreshTrigger: false,
-      );
+      _applyVirtualFoldersOnly();
       return;
     }
 
@@ -833,6 +1020,8 @@ class MailboxController extends BaseMailboxController
         Id(uuid.v1()) : role
     };
     log('MailboxController::_handleCreateDefaultFolderIfMissing():mapRoles: $mapRoles',);
+    // Intentionally the primary account: default system folders are only ever
+    // created for the signed-in user, never in a delegated account.
     consumeState(_createDefaultMailboxInteractor.execute(
       session!,
       accountId!,
@@ -841,46 +1030,24 @@ class MailboxController extends BaseMailboxController
 
   Future<void> _handleCreateDefaultFolderIfMissingSuccess(CreateDefaultMailboxAllSuccess success,) async {
     if (success.listMailbox.isEmpty) {
-      updateMailboxTree(
-        mailboxCollection: updateMailboxCollection(currentMailboxCollection),
-        isRefreshTrigger: false,
-      );
+      _applyVirtualFoldersOnly();
       return;
     }
 
     Set<Role?> existingRoles = {};
     Set<MailboxName> existingNamesWithoutParent = {};
 
+    final createdMailboxes = <PresentationMailbox>[];
     for (var mailbox in success.listMailbox) {
       if (mailbox.role != null && !existingRoles.add(mailbox.role)) continue;
 
       if (mailbox.parentId == null && mailbox.name != null && !existingNamesWithoutParent.add(mailbox.name!)) continue;
 
-      allMailboxes.add(mailbox.toPresentationMailbox());
+      createdMailboxes.add(mailbox.toPresentationMailbox(accountId: accountId));
     }
+    _primaryMailboxes = [..._primaryMailboxes, ...createdMailboxes];
 
-    await buildTree(
-      allMailboxes.withoutVirtualMailbox,
-      onUpdateMailboxCollectionCallback: updateMailboxCollection,
-    );
-    if (currentContext != null) {
-      syncAllMailboxWithDisplayName(currentContext!);
-    }
-    _setMapMailbox();
-    _setOutboxMailbox();
-
-    final currentSession = session;
-    final primaryAccountId = accountId;
-
-    if (!_didLoadSharedMailboxes &&
-        currentSession != null &&
-        primaryAccountId != null) {
-      _didLoadSharedMailboxes = true;
-
-      unawaited(
-        _loadSharedMailboxes(currentSession, primaryAccountId),
-      );
-    }
+    await _rebuildAllTrees(selectDefaultMailbox: false);
   }
 
   void _handleDataFromNavigationRouter() {
@@ -922,7 +1089,18 @@ class MailboxController extends BaseMailboxController
         if (_navigationRouter!.labelId != null) {
           handleLabelNavigation(_navigationRouter!, _navigationRouter!.labelId!,);
         } else if (_navigationRouter!.mailboxId != null) {
-          final matchedMailboxNode = findMailboxNodeById(_navigationRouter!.mailboxId!,);
+          // A delegated-account URL carries its account; a legacy bare-id URL
+          // resolves against the primary account.
+          final routerMailboxId = _navigationRouter!.mailboxId;
+          final routerAccountId =
+              _navigationRouter!.mailboxAccountId ?? primaryAccountId;
+          final matchedMailboxKey =
+              (routerMailboxId != null && routerAccountId != null)
+                  ? MailboxKey(routerAccountId, routerMailboxId)
+                  : null;
+          final matchedMailboxNode = matchedMailboxKey != null
+              ? findMailboxNodeByKey(matchedMailboxKey)
+              : null;
           if (matchedMailboxNode != null) {
             if (_navigationRouter!.emailId != null) {
               _openEmailInsideMailboxFromLocationBar(
@@ -1020,16 +1198,6 @@ class MailboxController extends BaseMailboxController
     BuildContext context,
     PresentationMailbox presentationMailboxSelected,
   ) {
-    if (presentationMailboxSelected.isSharedAccountRoot
-  ) {
-    log(
-        'MailboxController::_handleOpenMailbox: '
-        'ignored synthetic shared account root '
-        '${presentationMailboxSelected.accountId?.asString}',
-      );
-      return;
-    }
-
     log('MailboxController::_handleOpenMailbox():MAILBOX_ID = ${presentationMailboxSelected.id.asString} | MAILBOX_NAME: ${presentationMailboxSelected.name?.name}',);
     KeyboardUtils.hideKeyboard(context);
     mailboxDashBoardController.clearSelectedEmail();
@@ -1056,7 +1224,12 @@ class MailboxController extends BaseMailboxController
   }
 
   void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox,}) async {
-    if (session != null && accountId != null) {
+    // A subfolder is created in its parent's account; a top-level folder in the
+    // primary account.
+    final currentSession = session;
+    final targetAccountId =
+        parentMailbox != null ? accountIdOf(parentMailbox) : primaryAccountId;
+    if (currentSession != null && targetAccountId != null) {
       final arguments = MailboxCreatorArguments(
         allMailboxes.withoutVirtualMailbox,
         parentMailbox,
@@ -1068,8 +1241,8 @@ class MailboxController extends BaseMailboxController
 
       if (result != null && result is NewMailboxArguments) {
         _createNewMailboxAction(
-          session!,
-          accountId!,
+          currentSession,
+          targetAccountId,
           CreateNewMailboxRequest(
             result.newName,
             parentId: result.mailboxLocation?.id,
@@ -1107,7 +1280,9 @@ class MailboxController extends BaseMailboxController
   }
 
   void _renameMailboxSuccess(RenameMailboxSuccess success) {
-    updateMailboxNameById(success.request.mailboxId, success.request.newName);
+    final mailboxKey = primaryMailboxKey(success.request.mailboxId);
+    if (mailboxKey == null) return;
+    updateMailboxNameByKey(mailboxKey, success.request.newName);
   }
 
   void _renameMailboxFailure(RenameMailboxFailure failure) {
@@ -1168,17 +1343,22 @@ class MailboxController extends BaseMailboxController
     final teamMailboxesSelected = teamMailboxesTree.value
       .findNodes((node) => node.selectMode == SelectMode.ACTIVE,);
 
-    return [defaultMailboxSelected, folderMailboxSelected, teamMailboxesSelected,]
+    return [
+      defaultMailboxSelected,
+      folderMailboxSelected,
+      teamMailboxesSelected,
+    ]
       .expand((node) => node)
       .map((node) => node.item)
       .toList();
   }
 
   void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
-    if (session != null && accountId != null) {
+    final ctx = requestContextOf(presentationMailbox);
+    if (ctx != null) {
       consumeState(_deleteMultipleMailboxInteractor.execute(
-        session!,
-        accountId!,
+        ctx.session,
+        ctx.accountId,
         [presentationMailbox.id,]),);
     } else {
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
@@ -1221,10 +1401,11 @@ class MailboxController extends BaseMailboxController
   }
 
   void _renameMailboxAction(PresentationMailbox presentationMailbox, MailboxName newMailboxName,) {
-    if (session != null && accountId != null) {
+    final ctx = requestContextOf(presentationMailbox);
+    if (ctx != null) {
       consumeState(_renameMailboxInteractor.execute(
-        session!,
-        accountId!,
+        ctx.session,
+        ctx.accountId,
         RenameMailboxRequest(presentationMailbox.id, newMailboxName),
         ),
       );
@@ -1278,12 +1459,27 @@ class MailboxController extends BaseMailboxController
   }
 
   void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
-    if (session != null && accountId != null) {
+    // A move never crosses accounts, so the undo runs against the same account
+    // that owns the moved mailbox.
+    final currentSession = session;
+    final owningAccountId =
+        _accountIdOfMailboxId(newMoveRequest.mailboxId) ?? primaryAccountId;
+    if (currentSession != null && owningAccountId != null) {
       consumeState(_moveMailboxInteractor.execute(
-        session!,
-        accountId!,
+        currentSession,
+        owningAccountId,
         newMoveRequest),);
     }
+  }
+
+  /// Resolves the owning account of a mailbox already placed in a tree, by id.
+  AccountId? _accountIdOfMailboxId(MailboxId mailboxId) {
+    for (final mailboxTree in allMailboxTrees) {
+      final node =
+          mailboxTree.value.findNode((node) => node.item.id == mailboxId);
+      if (node != null) return node.item.accountId ?? primaryAccountId;
+    }
+    return null;
   }
 
   void _handleNavigationRouteParameters(Map<String, dynamic>? parameters) {
@@ -1343,7 +1539,7 @@ class MailboxController extends BaseMailboxController
         try{
           final subaddress = getSubAddress(
             mailboxDashBoardController.ownEmailAddress.value,
-            findNodePathWithSeparator(mailbox.id, '.')!,
+            findNodePathWithSeparator(mailbox.key, '.')!,
           );
           copySubAddressAction(context, subaddress);
         } catch (error) {
@@ -1355,13 +1551,13 @@ class MailboxController extends BaseMailboxController
         mailboxDashBoardController.storeSpamReportStateAction();
         break;
       case MailboxActions.disableMailbox:
-        _unsubscribeMailboxAction(mailbox.id);
+        _unsubscribeMailboxAction(mailbox.key);
         break;
       case MailboxActions.allowSubaddressing:
         try{
           final subAddress = getSubAddress(
             mailboxDashBoardController.ownEmailAddress.value,
-            findNodePathWithSeparator(mailbox.id, '.')!,
+            findNodePathWithSeparator(mailbox.key, '.')!,
           );
           openConfirmationDialogSubAddressingAction(
               context,
@@ -1415,16 +1611,31 @@ class MailboxController extends BaseMailboxController
     PresentationMailbox mailboxSelected,
     PresentationMailbox? destinationMailbox,
   ) {
-    if (session != null && accountId != null) {
-      _handleMovingMailbox(
-        context,
-        session!,
-        accountId!,
-        MoveAction.moving,
-        mailboxSelected,
-        destinationMailbox: destinationMailbox,
-      );
+    final ctx = requestContextOf(mailboxSelected);
+    if (ctx == null) return;
+
+    // A cross-account move would need Email/copy plus destroy, which this app
+    // does not implement, so reject it rather than silently move within the
+    // wrong account.
+    if (destinationMailbox != null &&
+        accountIdOf(destinationMailbox) != ctx.accountId) {
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moveMailboxAcrossAccountsNotSupported,
+        );
+      }
+      return;
     }
+
+    _handleMovingMailbox(
+      context,
+      ctx.session,
+      ctx.accountId,
+      MoveAction.moving,
+      mailboxSelected,
+      destinationMailbox: destinationMailbox,
+    );
   }
 
   void _replaceBrowserHistory() {
@@ -1435,6 +1646,12 @@ class MailboxController extends BaseMailboxController
         AppRoutes.dashboard,
         router: NavigationRouter(
           mailboxId: currentMailbox?.browserRouteMailboxId,
+          // Carry the account only for a delegated mailbox, so primary-account
+          // URLs stay unchanged.
+          mailboxAccountId:
+              currentMailbox != null && isOtherUserMailbox(currentMailbox)
+                  ? currentMailbox.accountId
+                  : null,
           labelId: currentMailbox?.labelId,
           searchQuery: mailboxDashBoardController.searchController.isSearchEmailRunning
             ? mailboxDashBoardController.searchController.searchQuery
@@ -1479,19 +1696,19 @@ class MailboxController extends BaseMailboxController
   Future<void> _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
     currentMailboxState = success.currentMailboxState;
     log('MailboxController::_handleGetAllMailboxSuccess:currentMailboxState: $currentMailboxState',);
-    final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
-    await buildTree(
-      listMailboxDisplayed.withoutVirtualMailbox,
-      onUpdateMailboxCollectionCallback: updateMailboxCollection,
-    );
-    if (currentContext != null) {
-      syncAllMailboxWithDisplayName(currentContext!);
-    }
-    _setMapMailbox();
-    _setOutboxMailbox();
+    _primaryMailboxes = success
+        .mailboxList
+        .listSubscribedMailboxesAndDefaultMailboxes
+        .withoutVirtualMailbox;
+    // onDone -> _handleDataFromNavigationRouter owns the selection here, so this
+    // path must not pick the default itself or it flashes Inbox before the
+    // location-bar mailbox is selected.
+    await _rebuildAllTrees(selectDefaultMailbox: false);
   }
 
   Future<void> _updateMailboxIdsBlockNotificationToKeychain(List<PresentationMailbox> mailboxes,) async {
+    // Intentionally the primary account: the iOS keychain is keyed on the
+    // signed-in account, so only its mailboxes are stored.
     _iosSharingManager = getBinding<IOSSharingManager>();
     if (accountId == null || _iosSharingManager == null || mailboxes.isEmpty) {
       logWarning('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $accountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}',);
@@ -1512,24 +1729,28 @@ class MailboxController extends BaseMailboxController
       mailboxIds: mailboxIdsBlockNotification,);
   }
 
-  void _unsubscribeMailboxAction(MailboxId mailboxId) {
-    if (session != null && accountId != null) {
+  void _unsubscribeMailboxAction(MailboxKey mailboxKey) {
+    final currentSession = session;
+    // The key already carries the owning account, so unsubscribe runs against
+    // the account that owns the mailbox.
+    final owningAccountId = mailboxKey.accountId;
+    if (currentSession != null) {
       final subscribeRequest = generateSubscribeRequest(
-        mailboxId,
+        mailboxKey,
         MailboxSubscribeState.disabled,
         MailboxSubscribeAction.unSubscribe,
       );
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
         consumeState(_subscribeMultipleMailboxInteractor.execute(
-          session!,
-          accountId!,
+          currentSession,
+          owningAccountId,
           subscribeRequest,
         ),);
       } else if (subscribeRequest is SubscribeMailboxRequest) {
         consumeState(_subscribeMailboxInteractor.execute(
-          session!,
-          accountId!,
+          currentSession,
+          owningAccountId,
           subscribeRequest,
         ),);
       }
@@ -1612,7 +1833,11 @@ class MailboxController extends BaseMailboxController
     MailboxId mailboxIdSubscribed,
     {List<MailboxId>? listDescendantMailboxIds,}
   ) {
-    if (session != null && accountId != null) {
+    final currentSession = session;
+    // Re-subscribe runs against the account that owns the mailbox.
+    final owningAccountId =
+        _accountIdOfMailboxId(mailboxIdSubscribed) ?? primaryAccountId;
+    if (currentSession != null && owningAccountId != null) {
       SubscribeRequest? subscribeRequest;
 
       if (listDescendantMailboxIds != null) {
@@ -1632,14 +1857,14 @@ class MailboxController extends BaseMailboxController
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
         consumeState(_subscribeMultipleMailboxInteractor.execute(
-          session!,
-          accountId!,
+          currentSession,
+          owningAccountId,
           subscribeRequest,
         ),);
       } else if (subscribeRequest is SubscribeMailboxRequest) {
         consumeState(_subscribeMailboxInteractor.execute(
-          session!,
-          accountId!,
+          currentSession,
+          owningAccountId,
           subscribeRequest,
         ),);
       }
@@ -1647,17 +1872,20 @@ class MailboxController extends BaseMailboxController
   }
 
   void _handleSubaddressingAction(MailboxId mailboxId, Map<String, List<String>?>? currentRights, MailboxActions subaddressingAction,) {
-    final accountId = mailboxDashBoardController.accountId.value;
+    // Sub-addressing runs against the account that owns the mailbox, not the
+    // signed-in account.
+    final owningAccountId =
+        _accountIdOfMailboxId(mailboxId) ?? primaryAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
-    if (session != null && accountId != null) {
+    if (session != null && owningAccountId != null) {
       final allowSubaddressingRequest = MailboxRightRequest(
           mailboxId,
           currentRights,
           subaddressingAction == MailboxActions.allowSubaddressing ? MailboxSubaddressingAction.allow : MailboxSubaddressingAction.disallow,
       );
 
-      consumeState(_subaddressingInteractor.execute(session, accountId, allowSubaddressingRequest,
+      consumeState(_subaddressingInteractor.execute(session, owningAccountId, allowSubaddressingRequest,
         ),);
     } else {
       handleSubAddressingFailure(
@@ -1712,7 +1940,9 @@ class MailboxController extends BaseMailboxController
   }
 
   void _redirectToNewFolder() {
-    final newMailboxNode = findMailboxNodeById(_newFolderId!);
+    final newFolderKey = primaryMailboxKey(_newFolderId);
+    final newMailboxNode =
+        newFolderKey != null ? findMailboxNodeByKey(newFolderKey) : null;
     log('MailboxController::_redirectToNewFolder:newMailboxNode: $newMailboxNode',);
     if (newMailboxNode != null && currentContext != null) {
       _handleOpenMailbox(currentContext!, newMailboxNode.item);

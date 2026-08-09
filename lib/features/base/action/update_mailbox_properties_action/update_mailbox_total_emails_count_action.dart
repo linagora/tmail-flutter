@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 class UpdateMailboxTotalEmailsCountAction extends UpdateMailboxPropertiesAction {
   const UpdateMailboxTotalEmailsCountAction({
     required super.mailboxTrees,
-    required super.mailboxId,
+    required super.mailboxKey,
     required this.totalEmailsCountChanged,
   });
 
@@ -12,8 +12,8 @@ class UpdateMailboxTotalEmailsCountAction extends UpdateMailboxPropertiesAction 
 
   @override
   bool updateProperty(MailboxTree mailboxTree) {
-    return mailboxTree.updateMailboxTotalEmailsCountById(
-      mailboxId,
+    return mailboxTree.updateMailboxTotalEmailsCountByKey(
+      mailboxKey,
       totalEmailsCountChanged,
     );
   }

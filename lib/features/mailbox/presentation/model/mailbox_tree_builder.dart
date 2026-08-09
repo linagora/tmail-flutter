@@ -2,11 +2,11 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/mailbox_name_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/mailbox_key.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -16,56 +16,24 @@ import 'mailbox_node.dart';
 import 'mailbox_tree.dart';
 
 class TreeBuilder {
-  String _mailboxKey(PresentationMailbox mailbox) =>
-      '${mailbox.accountId?.id.value ?? 'primary'}:${mailbox.id.id.value}';
-
-  String _parentMailboxKey(PresentationMailbox mailbox, MailboxId parentId) =>
-      '${mailbox.accountId?.id.value ?? 'primary'}:${parentId.id.value}';
-
-  String _sharedAccountKey(AccountId accountId) => accountId.id.value;
-
-  PresentationMailbox _createSharedAccountRoot(AccountId accountId) {
-    return PresentationMailbox(
-      MailboxId(Id(accountId.id.value)),
-      accountId: accountId,
-      isSharedAccount: true,
-      isSharedAccountRoot: true,
-      name: MailboxName(accountId.id.value),
-    );
-  }
-
-  Map<String, MailboxNode> _createSharedAccountNodes({
-    required List<PresentationMailbox> mailboxes,
-    required Map<String, MailboxNode> nodeLookup,
-  }) {
-    final sharedAccountNodes = <String, MailboxNode>{};
-
-    for (final mailbox in mailboxes) {
-      final accountId = mailbox.accountId;
-      if (!mailbox.isSharedAccount || accountId == null) continue;
-
-      sharedAccountNodes.putIfAbsent(_sharedAccountKey(accountId), () {
-        final accountRoot = _createSharedAccountRoot(accountId);
-        final existingNode = nodeLookup[_mailboxKey(accountRoot)];
-
-        return MailboxNode(
-          accountRoot,
-          expandMode: existingNode?.expandMode ?? ExpandMode.COLLAPSE,
-          selectMode: SelectMode.INACTIVE,
-        );
-      });
-    }
-
-    return sharedAccountNodes;
-  }
-
-  void _attachSharedAccountNodes({
-    required Map<String, MailboxNode> accountNodes,
-    required MailboxTree teamMailboxTree,
-  }) {
-    for (final accountNode in accountNodes.values) {
-      teamMailboxTree.root.addChildNode(accountNode);
-    }
+  /// Guarantees every mailbox carries an owning account before it enters a tree.
+  ///
+  /// Mailboxes fetched from the server are already stamped by the interactor
+  /// that fetched them. This is the safety net for the paths that are not, so
+  /// that a lookup resolving a bare id against the primary account cannot miss
+  /// a node that silently landed under [MailboxKey.localAccount]. Genuinely
+  /// account-less pseudo-mailboxes (the virtual folders) keep a null accountId
+  /// and fall back to that sentinel.
+  List<PresentationMailbox> _normalizeAccounts(
+    List<PresentationMailbox> mailboxes,
+    AccountId? primaryAccountId,
+  ) {
+    if (primaryAccountId == null) return mailboxes;
+    return mailboxes
+        .map((mailbox) => mailbox.accountId != null || mailbox.isVirtualFolder
+            ? mailbox
+            : mailbox.copyWith(accountId: primaryAccountId))
+        .toList();
   }
 
   Future<MailboxCollection> generateMailboxTreeInUI({
@@ -73,22 +41,20 @@ class TreeBuilder {
     required MailboxCollection currentCollection,
     MailboxId? mailboxIdSelected,
     MailboxId? mailboxIdExpanded,
+    AccountId? primaryAccountId,
   }) async {
-    final Map<String, MailboxNode> mailboxDictionary = HashMap();
+    final Map<MailboxKey, MailboxNode> mailboxDictionary = HashMap();
+    allMailboxes = _normalizeAccounts(allMailboxes, primaryAccountId);
 
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newPersonalTree = MailboxTree(MailboxNode.root());
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
-  
+
     final List<PresentationMailbox> newAllMailboxes = <PresentationMailbox>[];
     final nodeLookup = _buildNodeLookup(currentCollection);
-    final sharedAccountNodes = _createSharedAccountNodes(
-      mailboxes: allMailboxes,
-      nodeLookup: nodeLookup,
-    );
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = nodeLookup[_mailboxKey(mailbox)];
+      final currentMailboxNode = nodeLookup[mailbox.key];
 
       final isDeactivated = mailbox.id == mailboxIdSelected;
       final newMailboxNode = MailboxNode(
@@ -98,18 +64,17 @@ class TreeBuilder {
         selectMode: currentMailboxNode?.selectMode ?? SelectMode.INACTIVE,
       );
 
-      mailboxDictionary[_mailboxKey(mailbox)] = newMailboxNode;
+      mailboxDictionary[mailbox.key] = newMailboxNode;
     }
 
     for (var mailbox in allMailboxes) {
-      final currentNode = mailboxDictionary[_mailboxKey(mailbox)];
+      final currentNode = mailboxDictionary[mailbox.key];
       if (currentNode == null) continue;
 
       _placeNodeInTree(
         mailbox: mailbox,
         currentNode: currentNode,
         mailboxDictionary: mailboxDictionary,
-        sharedAccountNodes: sharedAccountNodes,
         defaultTree: newDefaultTree,
         personalTree: newPersonalTree,
         teamMailboxTree: newTeamMailboxTree,
@@ -119,10 +84,6 @@ class TreeBuilder {
       newAllMailboxes.add(currentNode.item);
     }
 
-    _attachSharedAccountNodes(
-      accountNodes: sharedAccountNodes,
-      teamMailboxTree: newTeamMailboxTree,
-    );
     _finalizeTrees(newDefaultTree, newPersonalTree, newTeamMailboxTree);
 
     return MailboxCollection(
@@ -136,20 +97,18 @@ class TreeBuilder {
   Future<MailboxCollection> generateMailboxTreeInUIAfterRefreshChanges({
     required List<PresentationMailbox> allMailboxes,
     required MailboxCollection currentCollection,
+    AccountId? primaryAccountId,
   }) async {
-    final Map<String, MailboxNode> mailboxDictionary = HashMap();
+    final Map<MailboxKey, MailboxNode> mailboxDictionary = HashMap();
+    allMailboxes = _normalizeAccounts(allMailboxes, primaryAccountId);
 
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newPersonalTree = MailboxTree(MailboxNode.root());
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
     final nodeLookup = _buildNodeLookup(currentCollection);
-    final sharedAccountNodes = _createSharedAccountNodes(
-      mailboxes: allMailboxes,
-      nodeLookup: nodeLookup,
-    );
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = nodeLookup[_mailboxKey(mailbox)];
+      final currentMailboxNode = nodeLookup[mailbox.key];
 
       final newMailboxNode = MailboxNode(
         mailbox,
@@ -157,28 +116,23 @@ class TreeBuilder {
         selectMode: currentMailboxNode?.selectMode ?? SelectMode.INACTIVE,
       );
 
-      mailboxDictionary[_mailboxKey(mailbox)] = newMailboxNode;
+      mailboxDictionary[mailbox.key] = newMailboxNode;
     }
 
     for (var mailbox in allMailboxes) {
-      final currentNode = mailboxDictionary[_mailboxKey(mailbox)];
+      final currentNode = mailboxDictionary[mailbox.key];
       if (currentNode == null) continue;
 
       _placeNodeInTree(
         mailbox: mailbox,
         currentNode: currentNode,
         mailboxDictionary: mailboxDictionary,
-        sharedAccountNodes: sharedAccountNodes,
         defaultTree: newDefaultTree,
         personalTree: newPersonalTree,
         teamMailboxTree: newTeamMailboxTree,
       );
     }
 
-    _attachSharedAccountNodes(
-      accountNodes: sharedAccountNodes,
-      teamMailboxTree: newTeamMailboxTree,
-    );
     _finalizeTrees(newDefaultTree, newPersonalTree, newTeamMailboxTree);
 
     return MailboxCollection(
@@ -192,38 +146,35 @@ class TreeBuilder {
   void _placeNodeInTree({
     required PresentationMailbox mailbox,
     required MailboxNode currentNode,
-    required Map<String, MailboxNode> mailboxDictionary,
-    required Map<String, MailboxNode> sharedAccountNodes,
+    required Map<MailboxKey, MailboxNode> mailboxDictionary,
     required MailboxTree defaultTree,
     required MailboxTree personalTree,
     required MailboxTree teamMailboxTree,
     void Function(MailboxNode parent, MailboxNode child)? onBeforeAddToParent,
   }) {
     final parentId = mailbox.parentId;
+    // The parent is resolved within the mailbox's own account. Looking it up by
+    // id alone would let a mailbox be adopted by an identically numbered folder
+    // belonging to a different account.
     final parentNode = parentId != null
-        ? mailboxDictionary[_parentMailboxKey(mailbox, parentId)]
+        ? mailboxDictionary[MailboxKey(mailbox.key.accountId, parentId)]
         : null;
 
     if (parentNode != null) {
       onBeforeAddToParent?.call(parentNode, currentNode);
       parentNode.addChildNode(currentNode);
-    } else if (mailbox.isSharedAccount && mailbox.accountId != null) {
-      final accountRoot =
-          sharedAccountNodes[_sharedAccountKey(mailbox.accountId!)];
-
-      if (accountRoot != null) {
-        accountRoot.addChildNode(currentNode);
-      } else {
-        teamMailboxTree.root.addChildNode(currentNode);
-      }
     } else {
-      final targetTree =
-          _resolveTargetTree(mailbox, defaultTree, personalTree, teamMailboxTree);
+      final targetTree = _resolveTargetTree(
+        mailbox, defaultTree, personalTree, teamMailboxTree);
       targetTree.root.addChildNode(currentNode);
     }
   }
 
-  void _finalizeTrees(MailboxTree defaultTree, MailboxTree personalTree, MailboxTree teamMailboxTree) {
+  void _finalizeTrees(
+    MailboxTree defaultTree,
+    MailboxTree personalTree,
+    MailboxTree teamMailboxTree,
+  ) {
     sortNodeChildren(defaultTree.root);
     defaultTree.root.childrenItems?.forEach(_sortChildrenAlphabetically);
     _sortChildrenAlphabetically(personalTree.root);
@@ -295,7 +246,7 @@ class TreeBuilder {
 
   // Traversal strategy by depth:
   //   virtual root (isPersonal=true)  → alphabetical — orders team account roots
-  //   shared account root (isSharedAccountRoot=true, depth=1) → system folders first, then alphabetical
+  //   other user account root (isSharedAccountRoot=true, depth=1) → system folders first, then alphabetical
   //   children/grandchildren (hasParentId=true) → alphabetical
   void _applyTeamMailboxSorting(MailboxNode node) {
     final children = node.childrenItems;
@@ -310,10 +261,10 @@ class TreeBuilder {
     }
   }
 
-  // Flattens all three trees into a single O(1) lookup map.
+  // Flattens all trees into a single O(1) lookup map.
   // Avoids repeated O(n) DFS calls when resolving existing nodes for each mailbox.
-  Map<String, MailboxNode> _buildNodeLookup(MailboxCollection collection) {
-    final lookup = HashMap<String, MailboxNode>();
+  Map<MailboxKey, MailboxNode> _buildNodeLookup(MailboxCollection collection) {
+    final lookup = HashMap<MailboxKey, MailboxNode>();
     final stack = <MailboxNode>[
       ...?collection.defaultTree.root.childrenItems,
       ...?collection.personalTree.root.childrenItems,
@@ -321,7 +272,7 @@ class TreeBuilder {
     ];
     while (stack.isNotEmpty) {
       final node = stack.removeLast();
-      lookup[_mailboxKey(node.item)] = node;
+      lookup[node.item.key] = node;
       final children = node.childrenItems;
       if (children != null) stack.addAll(children);
     }
@@ -334,9 +285,11 @@ class TreeBuilder {
     MailboxTree personalTree,
     MailboxTree teamMailboxTree,
   ) {
-    if (mailbox.isSharedAccount) return teamMailboxTree;
-    if (mailbox.hasRole()) return defaultTree;
-    return mailbox.isPersonal ? personalTree : teamMailboxTree;
+    // Team mailboxes and delegated (other users') mailboxes both live here,
+    // rendered identically. Only the signed-in user's own role mailboxes go to
+    // the top default section, so a delegated Inbox is never mixed into it.
+    if (!mailbox.isPersonal) return teamMailboxTree;
+    return mailbox.hasRole() ? defaultTree : personalTree;
   }
 
   void _propagateDeactivationIfNeeded(MailboxNode parentNode, MailboxNode currentNode) {
