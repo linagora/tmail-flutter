@@ -75,72 +75,57 @@ Future<Attachment> _transfer(_FakeStrategy strategy) =>
       cancelToken: CancelToken(),
     ));
 
-void main() {
-  test('disposes the staged file after a successful upload', () async {
-    final recorder = _RecordingStagedFile();
-    final strategy = _FakeStrategy(staged: recorder.build());
-
-    final attachment = await _transfer(strategy);
-
-    expect(attachment, same(strategy.attachment));
-    expect(recorder.deleted, ['/tmp/file.bin']);
-  });
-
-  test('disposes the staged file when the upload throws, and rethrows',
-      () async {
-    final recorder = _RecordingStagedFile();
-    final error = StateError('upload failed');
-    final strategy = _FakeStrategy(staged: recorder.build(), uploadError: error);
-
-    await expectLater(_transfer(strategy), throwsA(same(error)));
-
-    expect(recorder.deleted, ['/tmp/file.bin']);
-  });
-
-  test('disposes the staged file when the upload is cancelled', () async {
+/// Every path where `transfer()` must dispose the staged file exactly once:
+/// the upload outcome ([uploadError] null means success) is independent of
+/// whether disposal itself fails ([throwOnDelete]).
+void _disposesStagedFileTest(
+  String description, {
+  Object? throwOnDelete,
+  Object? uploadError,
+}) {
+  test(description, () async {
     final recorder = _RecordingStagedFile();
     final strategy = _FakeStrategy(
-      staged: recorder.build(),
-      uploadError: DioException(
-        requestOptions: RequestOptions(path: _uploadUri.toString()),
-        type: DioExceptionType.cancel,
-      ),
-    );
-
-    await expectLater(
-      _transfer(strategy),
-      throwsA(isA<DioException>()
-          .having((e) => e.type, 'type', DioExceptionType.cancel)),
-    );
-
-    expect(recorder.deleted, ['/tmp/file.bin']);
-  });
-
-  test('a failing dispose does not fail an otherwise successful transfer',
-      () async {
-    final recorder = _RecordingStagedFile();
-    final strategy = _FakeStrategy(
-      staged: recorder.build(throwOnDelete: StateError('delete failed')),
-    );
-
-    final attachment = await _transfer(strategy);
-
-    expect(attachment, same(strategy.attachment));
-    expect(recorder.deleted, ['/tmp/file.bin']);
-  });
-
-  test('a failing dispose does not replace the upload error', () async {
-    final recorder = _RecordingStagedFile();
-    final uploadError = StateError('upload failed');
-    final strategy = _FakeStrategy(
-      staged: recorder.build(throwOnDelete: StateError('delete failed')),
+      staged: recorder.build(throwOnDelete: throwOnDelete),
       uploadError: uploadError,
     );
 
-    await expectLater(_transfer(strategy), throwsA(same(uploadError)));
+    if (uploadError == null) {
+      expect(await _transfer(strategy), same(strategy.attachment));
+    } else {
+      await expectLater(_transfer(strategy), throwsA(same(uploadError)));
+    }
 
     expect(recorder.deleted, ['/tmp/file.bin']);
   });
+}
+
+void main() {
+  _disposesStagedFileTest('disposes the staged file after a successful upload');
+
+  _disposesStagedFileTest(
+    'disposes the staged file when the upload throws, and rethrows',
+    uploadError: StateError('upload failed'),
+  );
+
+  _disposesStagedFileTest(
+    'disposes the staged file when the upload is cancelled',
+    uploadError: DioException(
+      requestOptions: RequestOptions(path: _uploadUri.toString()),
+      type: DioExceptionType.cancel,
+    ),
+  );
+
+  _disposesStagedFileTest(
+    'a failing dispose does not fail an otherwise successful transfer',
+    throwOnDelete: StateError('delete failed'),
+  );
+
+  _disposesStagedFileTest(
+    'a failing dispose does not replace the upload error',
+    throwOnDelete: StateError('delete failed'),
+    uploadError: StateError('upload failed'),
+  );
 
   test('does not upload or dispose when staging fails', () async {
     final recorder = _RecordingStagedFile();
