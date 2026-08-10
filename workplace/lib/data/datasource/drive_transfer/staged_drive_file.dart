@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
+import 'package:workplace/data/model/workplace_type_defs.dart';
 
 /// Result of staging a drive document into platform-appropriate temp storage,
 /// ready to be uploaded. One variant per platform capability.
@@ -26,7 +27,7 @@ sealed class StagedDriveFile extends Equatable {
 /// IO temp file (mobile/desktop).
 final class FileBackedStagedFile extends StagedDriveFile {
   final String filePath;
-  final Future<void> Function(String filePath) deleteFile;
+  final OnDeleteIOFile deleteFile;
 
   const FileBackedStagedFile({
     required this.filePath,
@@ -48,7 +49,7 @@ final class OpfsStagedFile extends StagedDriveFile {
   /// Opaque `web.FileSystemFileHandle` — typed [Object] so this file never
   /// imports `package:web`; the web-only uploader casts it back.
   final Object fileHandle;
-  final Future<void> Function(Object handle) removeEntry;
+  final OnDeleteOPFSFile removeEntry;
 
   const OpfsStagedFile({
     required this.fileHandle,
