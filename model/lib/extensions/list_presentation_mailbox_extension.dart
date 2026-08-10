@@ -37,10 +37,13 @@ extension ListPresentationMailboxExtension on List<PresentationMailbox> {
   /// Mailboxes a user can pick as a destination or open from search.
   ///
   /// Unlike [listPersonalMailboxes] this keeps mailboxes from other users'
-  /// accounts, which are never `isPersonal`.
+  /// accounts, which are never `isPersonal`. A synthetic account root is a
+  /// UI-only grouping node with no server-side mailbox, so it is never a valid
+  /// pick even though it satisfies the shared-account condition.
   List<PresentationMailbox> get listSelectableMailboxes =>
     where((mailbox) =>
       !mailbox.isVirtualFolder &&
+      !mailbox.isSharedAccountRoot &&
       (mailbox.isPersonal || mailbox.isSharedAccount)).toList();
 
   bool get isAllPersonalMailboxes => every((mailbox) => mailbox.isPersonal && !mailbox.isDefault);
