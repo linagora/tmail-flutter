@@ -15,9 +15,11 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:model/email/email_action_type.dart';
@@ -678,6 +680,84 @@ void main() {
       );
       expect(searchController.sortOrderFiltered, EmailSortOrderType.subjectAscending);
     });
+
+    test(
+      'WHEN dragging emails from a delegated mailbox to another folder in the '
+      'same delegated account\n'
+      'SHOULD route the move through the owning delegated account, not the primary',
+      () {
+        final delegatedAccountId = AccountId(Id('delegated-1'));
+        final delegatedSource = PresentationMailbox(
+          MailboxId(Id('99')),
+          accountId: delegatedAccountId,
+          isSharedAccount: true,
+        );
+        final delegatedDestination = PresentationMailbox(
+          MailboxId(Id('100')),
+          accountId: delegatedAccountId,
+          isSharedAccount: true,
+        );
+        final email = PresentationEmail(
+          id: EmailId(Id('e1')),
+          mailboxIds: {delegatedSource.id: true},
+        );
+
+        mailboxDashboardController.selectedMailbox.value = delegatedSource;
+
+        mailboxDashboardController.dragSelectedMultipleEmailToMailboxAction(
+          [email],
+          delegatedDestination,
+        );
+
+        final captured = verify(moveToMailboxInteractor.execute(
+          captureAny,
+          captureAny,
+          any,
+          any,
+        )).captured;
+        expect(captured[0], testSession);
+        expect(captured[1], delegatedAccountId);
+        expect(captured[1], isNot(testAccountId));
+      },
+    );
+
+    test(
+      'WHEN dragging emails from a delegated mailbox to Favorite\n'
+      'SHOULD star them through the owning delegated account, not the primary',
+      () {
+        final delegatedAccountId = AccountId(Id('delegated-1'));
+        final delegatedSource = PresentationMailbox(
+          MailboxId(Id('99')),
+          accountId: delegatedAccountId,
+          isSharedAccount: true,
+        );
+        final favoriteDestination = PresentationMailbox(
+          MailboxId(Id('favorite')),
+          role: PresentationMailbox.roleFavorite,
+        );
+        final email = PresentationEmail(
+          id: EmailId(Id('e1')),
+          mailboxIds: {delegatedSource.id: true},
+        );
+
+        mailboxDashboardController.selectedMailbox.value = delegatedSource;
+
+        mailboxDashboardController.dragSelectedMultipleEmailToMailboxAction(
+          [email],
+          favoriteDestination,
+        );
+
+        final captured = verify(markAsStarMultipleEmailInteractor.execute(
+          captureAny,
+          captureAny,
+          any,
+          any,
+        )).captured;
+        expect(captured[0], testSession);
+        expect(captured[1], delegatedAccountId);
+        expect(captured[1], isNot(testAccountId));
+      },
+    );
 
     tearDown(Get.deleteAll);
   });

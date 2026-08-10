@@ -1506,7 +1506,7 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     if (destinationMailbox.isFavorite) {
-      _handleDragSelectedMultipleEmailToFavoriteFolder(listEmails);
+      _handleDragSelectedMultipleEmailToFavoriteFolder(listEmails, sourceAccountId);
     } else {
       if (searchController.isSearchEmailRunning ||
           selectedMailbox.value?.isVirtualFolder == true) {
@@ -1525,12 +1525,14 @@ class MailboxDashBoardController extends ReloadableController
           mapListEmailSelectedByMailBoxId,
           destinationMailbox,
           emailIdsWithReadStatus,
+          sourceAccountId,
         );
       } else if (selectedMailbox.value != null) {
         _handleDragSelectedMultipleEmailToMailboxAction(
           {selectedMailbox.value!.id: listEmails.listEmailIds},
           destinationMailbox,
           emailIdsWithReadStatus,
+          sourceAccountId,
         );
       }
     }
@@ -1538,8 +1540,9 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleDragSelectedMultipleEmailToFavoriteFolder(
     List<PresentationEmail> listPresentationEmail,
+    AccountId? sourceAccountId,
   ) async {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (sourceAccountId != null && sessionCurrent != null) {
       final listEmailIds = listPresentationEmail
         .where((email) => !email.hasStarred)
         .toList()
@@ -1548,7 +1551,7 @@ class MailboxDashBoardController extends ReloadableController
       consumeState(
         _markAsStarMultipleEmailInteractor.execute(
           sessionCurrent!,
-          accountId.value!,
+          sourceAccountId,
           listEmailIds,
           MarkStarAction.markStar,
         ),
@@ -1571,12 +1574,13 @@ class MailboxDashBoardController extends ReloadableController
     Map<MailboxId, List<EmailId>> mapListEmails,
     PresentationMailbox destinationMailbox,
     Map<EmailId, bool> emailIdsWithReadStatus,
+    AccountId? sourceAccountId,
   ) async {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (sourceAccountId != null && sessionCurrent != null) {
       if (destinationMailbox.isTrash) {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          sourceAccountId,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
@@ -1588,7 +1592,7 @@ class MailboxDashBoardController extends ReloadableController
       } else if (destinationMailbox.isSpam) {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          sourceAccountId,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
@@ -1600,7 +1604,7 @@ class MailboxDashBoardController extends ReloadableController
       } else {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          sourceAccountId,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
