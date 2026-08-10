@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:model/email/attachment.dart';
+import 'package:workplace/data/model/workplace_type_defs.dart';
 
 /// Uploads an OPFS-staged file via a raw-XHR POST that streams straight from
 /// the OPFS-backed file without materializing it in the JS heap — the only
@@ -18,7 +19,7 @@ abstract class OpfsDriveFileUploader {
     required String? mimeType,
     required Uri uploadUri,
     required String authHeader,
-    required void Function(int sent, int total) onUploadProgress,
+    required OnFileProcessedProgress onUploadProgress,
     required CancelToken cancelToken,
   });
 }

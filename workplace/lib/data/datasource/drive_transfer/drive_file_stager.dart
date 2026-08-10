@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
+import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 
 /// Shared receive timeout for the Dio-backed download legs (IO, web-buffered)
@@ -15,7 +16,7 @@ const driveTransferReceiveTimeout = Duration(seconds: 60);
 abstract class DriveFileStager {
   Future<StagedDriveFile> stage({
     required DriveDocument doc,
-    required void Function(int received, int total) onDownloadProgress,
+    required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,
   });
 }

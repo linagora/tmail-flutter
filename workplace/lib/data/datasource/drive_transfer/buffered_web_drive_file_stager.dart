@@ -6,6 +6,7 @@ import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart'
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
+import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
@@ -24,7 +25,7 @@ class BufferedWebDriveFileStager implements DriveFileStager {
   @override
   Future<StagedDriveFile> stage({
     required DriveDocument doc,
-    required void Function(int received, int total) onDownloadProgress,
+    required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,
   }) async {
     final downloadLink = doc.downloadLink;

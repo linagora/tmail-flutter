@@ -1,0 +1,1 @@
+typedef OnFileProcessedProgress = void Function(int processed, int total);
