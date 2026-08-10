@@ -1483,8 +1483,15 @@ class MailboxDashBoardController extends ReloadableController
   ) {
     // A JMAP move is an Email/set within one account; moving to another user's
     // account would need Email/copy plus destroy, which is not implemented.
-    final sourceAccountId =
-        selectedMailbox.value?.accountId ?? accountId.value;
+    // In search or a virtual folder there is no selected source mailbox, so the
+    // source account is derived from the dragged emails themselves rather than
+    // defaulting to the primary account, which would let a delegated email pass
+    // the guard and then be moved (and silently dropped) against the wrong
+    // account. A null result means the source is unresolved or spans accounts.
+    final selectedSource = selectedMailbox.value;
+    final sourceAccountId = selectedSource != null
+        ? (selectedSource.accountId ?? accountId.value)
+        : _sourceAccountIdOfDraggedEmails(listEmails);
     final destinationAccountId = destinationMailbox.accountId ?? accountId.value;
     if (!destinationMailbox.isFavorite &&
         sourceAccountId != destinationAccountId) {
@@ -1531,6 +1538,23 @@ class MailboxDashBoardController extends ReloadableController
         );
       }
     }
+  }
+
+  /// Resolves the single account the dragged emails belong to, for the cross-
+  /// account move guard when no source mailbox is selected. Each email's account
+  /// is taken from its containing mailbox. Returns null when any email cannot be
+  /// resolved or the emails span more than one account, which the caller treats
+  /// as "not a same-account move" and blocks.
+  AccountId? _sourceAccountIdOfDraggedEmails(List<PresentationEmail> listEmails) {
+    final sourceMailboxes = listEmails
+        .map((email) => email.findMailboxContain(mapMailboxById))
+        .toList();
+    if (sourceMailboxes.any((mailbox) => mailbox == null)) return null;
+
+    final sourceAccountIds = sourceMailboxes
+        .map((mailbox) => mailbox!.accountId ?? accountId.value)
+        .toSet();
+    return sourceAccountIds.length == 1 ? sourceAccountIds.single : null;
   }
 
   void _handleDragSelectedMultipleEmailToFavoriteFolder(

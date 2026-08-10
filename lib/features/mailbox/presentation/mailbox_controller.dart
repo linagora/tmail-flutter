@@ -466,6 +466,11 @@ class MailboxController extends BaseMailboxController
   Future<void> _reloadOtherUserMailboxesInFull(Session session) async {
     final accountIds = _otherUserAccounts.keys.toList();
     if (accountIds.isEmpty) return;
+    // Capture the primary account this reload belongs to. A primary-account
+    // switch clears the caches via _resetOtherUserAccounts; without this guard
+    // the captured `existing` would be written back into the cleared map and the
+    // former account's delegates would reappear in the new account's sidebar.
+    final loadingForPrimary = _lastPrimaryAccountId;
 
     await Future.wait(accountIds.map((accountId) async {
       final existing = _otherUserAccounts[accountId];
@@ -478,6 +483,10 @@ class MailboxController extends BaseMailboxController
           (s) => s is GetAllMailboxSuccess ? s : null,
         );
         if (success == null) continue;
+
+        // The primary account changed while this reload was in flight: drop the
+        // stale result rather than resurrecting a former account's delegates.
+        if (_lastPrimaryAccountId != loadingForPrimary) return;
 
         final mailboxes = success.mailboxList.listReadableMailboxes
             .listSubscribedMailboxes
@@ -495,6 +504,9 @@ class MailboxController extends BaseMailboxController
       }
     }));
 
+    // Primary switched while reloading: the caches were reset, so skip the
+    // rebuild to avoid re-populating the new account's sidebar with stale nodes.
+    if (_lastPrimaryAccountId != loadingForPrimary) return;
     await _rebuildAllTrees(refreshOnly: true);
   }
 
@@ -880,6 +892,16 @@ class MailboxController extends BaseMailboxController
   bool get isAINeedsActionEnabled =>
       mailboxDashBoardController.isAINeedsActionEnabled;
 
+  // Serializes tree rebuilds. Delegated accounts load concurrently and each one
+  // rebuilds the sidebar as it arrives; without serialization an older rebuild
+  // could snapshot the cache first yet finish last, overwriting a newer rebuild
+  // and dropping an account until the next refresh.
+  bool _isRebuilding = false;
+  bool _rebuildRequested = false;
+  MailboxId? _pendingRebuildMailboxIdSelected;
+  bool _pendingRebuildRefreshOnly = false;
+  bool _pendingRebuildSelectDefault = true;
+
   /// The one place trees are rebuilt in this controller.
   ///
   /// Always composes the primary mailboxes with the cached other-user
@@ -887,7 +909,39 @@ class MailboxController extends BaseMailboxController
   /// wipe the other section. Every rebuild is followed by the same
   /// reconciliation, so the dashboard's mailbox maps and the default selection
   /// stay consistent.
+  ///
+  /// Only one rebuild runs at a time. A call made while one is already running
+  /// coalesces onto the latest params and re-runs the loop once the current
+  /// rebuild finishes, so the last cache write always gets a rebuild. When no
+  /// rebuild is in flight the first iteration runs synchronously up to the
+  /// TreeBuilder call, rather than deferring through a Future chain.
   Future<void> _rebuildAllTrees({
+    MailboxId? mailboxIdSelected,
+    bool refreshOnly = false,
+    bool selectDefaultMailbox = true,
+  }) async {
+    _pendingRebuildMailboxIdSelected = mailboxIdSelected;
+    _pendingRebuildRefreshOnly = refreshOnly;
+    _pendingRebuildSelectDefault = selectDefaultMailbox;
+    _rebuildRequested = true;
+
+    if (_isRebuilding) return;
+    _isRebuilding = true;
+    try {
+      while (_rebuildRequested) {
+        _rebuildRequested = false;
+        await _rebuildAllTreesNow(
+          mailboxIdSelected: _pendingRebuildMailboxIdSelected,
+          refreshOnly: _pendingRebuildRefreshOnly,
+          selectDefaultMailbox: _pendingRebuildSelectDefault,
+        );
+      }
+    } finally {
+      _isRebuilding = false;
+    }
+  }
+
+  Future<void> _rebuildAllTreesNow({
     MailboxId? mailboxIdSelected,
     bool refreshOnly = false,
     bool selectDefaultMailbox = true,
@@ -1451,12 +1505,15 @@ class MailboxController extends BaseMailboxController
               success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allFolders,),
           actionName: AppLocalizations.of(currentContext!).undo,
           onActionClick: () {
-            _undoMovingMailbox(MoveMailboxRequest(
+            _undoMovingMailbox(
+              MoveMailboxRequest(
                 success.mailboxIdSelected,
                 MoveAction.undo,
                 destinationMailboxId: success.parentId,
                 parentId: success.destinationMailboxId,
-            ),);
+              ),
+              success.accountId,
+            );
           },
           leadingSVGIcon: imagePaths.icFolderMailbox,
           leadingSVGIconColor: Colors.white,
@@ -1466,28 +1523,20 @@ class MailboxController extends BaseMailboxController
     }
   }
 
-  void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
+  void _undoMovingMailbox(
+    MoveMailboxRequest newMoveRequest,
+    AccountId owningAccountId,
+  ) {
     // A move never crosses accounts, so the undo runs against the same account
-    // that owns the moved mailbox.
+    // the move ran against, carried on MoveMailboxSuccess. Resolving it from the
+    // mailbox id would be wrong: JMAP ids collide across accounts.
     final currentSession = session;
-    final owningAccountId =
-        _accountIdOfMailboxId(newMoveRequest.mailboxId) ?? primaryAccountId;
-    if (currentSession != null && owningAccountId != null) {
+    if (currentSession != null) {
       consumeState(_moveMailboxInteractor.execute(
         currentSession,
         owningAccountId,
         newMoveRequest),);
     }
-  }
-
-  /// Resolves the owning account of a mailbox already placed in a tree, by id.
-  AccountId? _accountIdOfMailboxId(MailboxId mailboxId) {
-    for (final mailboxTree in allMailboxTrees) {
-      final node =
-          mailboxTree.value.findNode((node) => node.item.id == mailboxId);
-      if (node != null) return node.item.accountId ?? primaryAccountId;
-    }
-    return null;
   }
 
   void _handleNavigationRouteParameters(Map<String, dynamic>? parameters) {
@@ -1573,14 +1622,17 @@ class MailboxController extends BaseMailboxController
               mailbox.getDisplayName(context),
               subAddress,
               mailbox.rights,
-              onAllowSubAddressingAction: _handleSubaddressingAction,
+              onAllowSubAddressingAction: (mailboxId, rights, action) =>
+                  _handleSubaddressingAction(
+                      mailboxId, rights, action, accountIdOf(mailbox)),
           );
         } catch (error) {
           appToast.showToastErrorMessage(context, AppLocalizations.of(context).errorWhileFetchingSubaddress,);
         }
         break;
       case MailboxActions.disallowSubaddressing:
-        _handleSubaddressingAction(mailbox.id, mailbox.rights, actions);
+        _handleSubaddressingAction(
+            mailbox.id, mailbox.rights, actions, accountIdOf(mailbox));
         break;
       case MailboxActions.emptyTrash:
         emptyTrashAction(context, mailbox, mailboxDashBoardController);
@@ -1767,7 +1819,7 @@ class MailboxController extends BaseMailboxController
 
   void _handleUnsubscribeMailboxSuccess(SubscribeMailboxSuccess success) {
     if (success.subscribeAction == MailboxSubscribeAction.unSubscribe) {
-      _showToastSubscribeMailboxSuccess(success.mailboxId);
+      _showToastSubscribeMailboxSuccess(success.mailboxId, success.accountId);
 
       if (success.mailboxId == selectedMailbox?.id) {
         _switchBackToMailboxDefault();
@@ -1780,6 +1832,7 @@ class MailboxController extends BaseMailboxController
     if(success.subscribeAction == MailboxSubscribeAction.unSubscribe) {
       _showToastSubscribeMailboxSuccess(
         success.parentMailboxId,
+        success.accountId,
         listDescendantMailboxIds: success.mailboxIdsSubscribe,
       );
 
@@ -1794,6 +1847,7 @@ class MailboxController extends BaseMailboxController
     if(success.subscribeAction == MailboxSubscribeAction.unSubscribe) {
       _showToastSubscribeMailboxSuccess(
         success.parentMailboxId,
+        success.accountId,
         listDescendantMailboxIds: success.mailboxIdsSubscribe,
       );
 
@@ -1818,6 +1872,7 @@ class MailboxController extends BaseMailboxController
 
   void _showToastSubscribeMailboxSuccess(
       MailboxId mailboxIdSubscribed,
+      AccountId owningAccountId,
       {List<MailboxId>? listDescendantMailboxIds,}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
@@ -1827,6 +1882,7 @@ class MailboxController extends BaseMailboxController
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () => _undoUnsubscribeMailboxAction(
           mailboxIdSubscribed,
+          owningAccountId,
           listDescendantMailboxIds: listDescendantMailboxIds,
         ),
         leadingSVGIcon: imagePaths.icFolderMailbox,
@@ -1839,13 +1895,14 @@ class MailboxController extends BaseMailboxController
 
   void _undoUnsubscribeMailboxAction(
     MailboxId mailboxIdSubscribed,
+    AccountId owningAccountId,
     {List<MailboxId>? listDescendantMailboxIds,}
   ) {
     final currentSession = session;
-    // Re-subscribe runs against the account that owns the mailbox.
-    final owningAccountId =
-        _accountIdOfMailboxId(mailboxIdSubscribed) ?? primaryAccountId;
-    if (currentSession != null && owningAccountId != null) {
+    // Re-subscribe runs against the account the unsubscribe ran against, carried
+    // on the success state. Resolving it from the mailbox id would be wrong:
+    // JMAP ids collide across accounts.
+    if (currentSession != null) {
       SubscribeRequest? subscribeRequest;
 
       if (listDescendantMailboxIds != null) {
@@ -1879,11 +1936,10 @@ class MailboxController extends BaseMailboxController
     }
   }
 
-  void _handleSubaddressingAction(MailboxId mailboxId, Map<String, List<String>?>? currentRights, MailboxActions subaddressingAction,) {
+  void _handleSubaddressingAction(MailboxId mailboxId, Map<String, List<String>?>? currentRights, MailboxActions subaddressingAction, AccountId? owningAccountId,) {
     // Sub-addressing runs against the account that owns the mailbox, not the
-    // signed-in account.
-    final owningAccountId =
-        _accountIdOfMailboxId(mailboxId) ?? primaryAccountId;
+    // signed-in account. The owning account is passed from the call site, which
+    // holds the mailbox: resolving it from the id would be account-ambiguous.
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (session != null && owningAccountId != null) {

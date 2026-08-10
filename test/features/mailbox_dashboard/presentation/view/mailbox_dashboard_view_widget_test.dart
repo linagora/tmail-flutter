@@ -282,7 +282,7 @@ void main() {
   final subaddressingInteractor = MockSubaddressingInteractor();
   final createDefaultMailboxInteractor = MockCreateDefaultMailboxInteractor();
   final moveFolderContentInteractor = MockMoveFolderContentInteractor();
-  final treeBuilder = MockTreeBuilder();
+  late MockTreeBuilder treeBuilder;
   final verifyNameInteractor = MockVerifyNameInteractor();
   final getAllMailboxInteractor = MockGetAllMailboxInteractor();
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
@@ -329,10 +329,11 @@ void main() {
     setUp(() {
       Get.testMode = true;
 
-      // Reset recorded interactions on shared mocks so a call from a previous
-      // test (e.g. an async mailbox load that resolves after Get.deleteAll)
-      // cannot be counted against this test's verify().
-      clearInteractions(treeBuilder);
+      // A fresh mock per test so a call from a previous test (e.g. an async
+      // mailbox load that resolves after Get.deleteAll) cannot be counted
+      // against this test's verify(). clearInteractions only drops calls made
+      // before setUp, not ones that arrive later on the shared instance.
+      treeBuilder = MockTreeBuilder();
 
       Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
       Get.put<EmailReceiveManager>(emailReceiveManager);
@@ -827,7 +828,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
-              primaryAccountId: anyNamed('primaryAccountId'),
+              primaryAccountId: argThat(equals(AccountFixtures.aliceAccountId), named: 'primaryAccountId'),
             ),
           ).thenAnswer(
             (_) async => MailboxCollection(
@@ -875,7 +876,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
-              primaryAccountId: anyNamed('primaryAccountId'),
+              primaryAccountId: argThat(equals(AccountFixtures.aliceAccountId), named: 'primaryAccountId'),
             ),
           ).called(1);
 
@@ -967,7 +968,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
-              primaryAccountId: anyNamed('primaryAccountId'),
+              primaryAccountId: argThat(equals(AccountFixtures.aliceAccountId), named: 'primaryAccountId'),
             ),
           ).thenAnswer(
             (_) async => MailboxCollection(
@@ -1016,7 +1017,7 @@ void main() {
               currentCollection: anyNamed('currentCollection'),
               mailboxKeySelected: anyNamed('mailboxKeySelected'),
               mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
-              primaryAccountId: anyNamed('primaryAccountId'),
+              primaryAccountId: argThat(equals(AccountFixtures.aliceAccountId), named: 'primaryAccountId'),
             ),
           ).called(1);
 

@@ -99,8 +99,10 @@ void main() {
           .single;
 
       expect(success.mailboxList, [
-        MailboxFixtures.inboxMailbox.toPresentationMailbox(),
-        MailboxFixtures.sentMailbox.toPresentationMailbox(),
+        MailboxFixtures.inboxMailbox
+            .toPresentationMailbox(accountId: AccountFixtures.aliceAccountId),
+        MailboxFixtures.sentMailbox
+            .toPresentationMailbox(accountId: AccountFixtures.aliceAccountId),
       ]);
 
       verify(mailboxRepository.getAllMailbox(

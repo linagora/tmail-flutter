@@ -20,6 +20,7 @@ class MoveMailboxInteractor {
         yield Right<Failure, Success>(MoveMailboxSuccess(
             request.mailboxId,
             request.moveAction,
+            accountId,
             parentId: request.parentId,
             destinationMailboxId: request.destinationMailboxId,
             destinationMailboxDisplayName: request.destinationMailboxDisplayName,

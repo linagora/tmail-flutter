@@ -224,11 +224,14 @@ class MailboxVisibilityController extends BaseMailboxController
     if (subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe
         && currentOverlayContext != null
         && currentContext != null) {
-        _showToastSubscribeMailboxSuccess(subscribeMailboxSuccess.mailboxId);
+        _showToastSubscribeMailboxSuccess(
+          subscribeMailboxSuccess.mailboxId,
+          subscribeMailboxSuccess.accountId,
+        );
     }
 
     _reflectSubscribeChange(
-      anchorMailboxId: subscribeMailboxSuccess.mailboxId,
+      owningAccountId: subscribeMailboxSuccess.accountId,
       affectedMailboxIds: {subscribeMailboxSuccess.mailboxId},
       subscribeAction: subscribeMailboxSuccess.subscribeAction,
     );
@@ -238,12 +241,13 @@ class MailboxVisibilityController extends BaseMailboxController
     if(subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe) {
       _showToastSubscribeMailboxSuccess(
         subscribeMailboxSuccess.parentMailboxId,
+        subscribeMailboxSuccess.accountId,
         listDescendantMailboxIds: subscribeMailboxSuccess.mailboxIdsSubscribe
       );
     }
 
     _reflectSubscribeChange(
-      anchorMailboxId: subscribeMailboxSuccess.parentMailboxId,
+      owningAccountId: subscribeMailboxSuccess.accountId,
       affectedMailboxIds: {
         subscribeMailboxSuccess.parentMailboxId,
         ...subscribeMailboxSuccess.mailboxIdsSubscribe,
@@ -256,12 +260,13 @@ class MailboxVisibilityController extends BaseMailboxController
     if(subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe) {
       _showToastSubscribeMailboxSuccess(
           subscribeMailboxSuccess.parentMailboxId,
+          subscribeMailboxSuccess.accountId,
           listDescendantMailboxIds: subscribeMailboxSuccess.mailboxIdsSubscribe
       );
     }
 
     _reflectSubscribeChange(
-      anchorMailboxId: subscribeMailboxSuccess.parentMailboxId,
+      owningAccountId: subscribeMailboxSuccess.accountId,
       affectedMailboxIds: {
         subscribeMailboxSuccess.parentMailboxId,
         ...subscribeMailboxSuccess.mailboxIdsSubscribe,
@@ -277,17 +282,17 @@ class MailboxVisibilityController extends BaseMailboxController
   /// does not advance the mailbox modseq that Mailbox/changes is based on, so a
   /// server refresh cannot observe it. Flipping isSubscribed in the cached list
   /// keeps Personal Folders and Other Users behaving identically on show/hide.
+  /// The owning account is carried on the success state, not resolved from the
+  /// mailbox id, since JMAP ids collide across accounts.
   void _reflectSubscribeChange({
-    required MailboxId anchorMailboxId,
+    required AccountId owningAccountId,
     required Set<MailboxId> affectedMailboxIds,
     required MailboxSubscribeAction subscribeAction,
   }) async {
-    final owningAccountId = _accountIdOfMailboxId(anchorMailboxId);
     final subscribed = subscribeAction == MailboxSubscribeAction.subscribe;
 
-    final delegated =
-        owningAccountId != null ? _otherUserAccounts[owningAccountId] : null;
-    if (owningAccountId != null && delegated != null) {
+    final delegated = _otherUserAccounts[owningAccountId];
+    if (delegated != null) {
       _otherUserAccounts[owningAccountId] = delegated.copyWith(
         mailboxes:
             _flipSubscribed(delegated.mailboxes, affectedMailboxIds, subscribed),
@@ -312,6 +317,7 @@ class MailboxVisibilityController extends BaseMailboxController
 
   void _showToastSubscribeMailboxSuccess(
       MailboxId mailboxIdSubscribed,
+      AccountId owningAccountId,
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
@@ -320,8 +326,6 @@ class MailboxVisibilityController extends BaseMailboxController
         AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
-          final owningAccountId = _accountIdOfMailboxId(mailboxIdSubscribed);
-          if (owningAccountId == null) return;
           _subscribeMailboxAction(
             SubscribeMailboxRequest(
               mailboxIdSubscribed,
@@ -338,20 +342,6 @@ class MailboxVisibilityController extends BaseMailboxController
         actionIcon: SvgPicture.asset(imagePaths.icUndo),
       );
     }
-  }
-
-  /// Resolves the owning account of a mailbox placed in a tree, by id, falling
-  /// back to the primary account. Returns null when even the primary account is
-  /// unavailable (e.g. a toast-undo callback firing after the account cleared),
-  /// so callers skip the action instead of throwing.
-  AccountId? _accountIdOfMailboxId(MailboxId mailboxId) {
-    for (final mailboxTree in allMailboxTrees) {
-      final node =
-          mailboxTree.value.findNode((node) => node.item.id == mailboxId);
-      final accountId = node?.item.accountId;
-      if (accountId != null) return accountId;
-    }
-    return _accountDashBoardController.accountId.value;
   }
 
   @override

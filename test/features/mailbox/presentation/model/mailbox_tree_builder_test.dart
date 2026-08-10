@@ -927,6 +927,48 @@ void main() {
 
       expect(result.allMailboxes.single.accountId, equals(primaryAccountId));
     });
+
+    test(
+      'selecting an other-user mailbox deactivates only its node, not a primary '
+      'mailbox sharing the same id',
+      () async {
+        final primaryFolder = PresentationMailbox(
+          MailboxId(Id('5')),
+          name: MailboxName('PrimaryProjects'),
+          isSubscribed: IsSubscribed(true),
+        );
+        final sharedFolder = PresentationMailbox(
+          MailboxId(Id('5')),
+          accountId: otherAccountId,
+          isSharedAccount: true,
+          name: MailboxName('SharedProjects'),
+          myRights: MailboxRights(true, false, false, false, false, false, false, false, false),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUI(
+          allMailboxes: [primaryFolder, sharedFolder],
+          currentCollection: MailboxCollection.empty(),
+          mailboxKeySelected: sharedFolder.key,
+          primaryAccountId: primaryAccountId,
+        );
+
+        final sharedNode =
+            findByName(result.teamMailboxTree.root, 'SharedProjects');
+        final primaryNode =
+            findByName(result.personalTree.root, 'PrimaryProjects');
+
+        expect(
+          sharedNode?.nodeState,
+          equals(MailboxState.deactivated),
+          reason: 'the selected other-user mailbox is deactivated',
+        );
+        expect(
+          primaryNode?.nodeState,
+          equals(MailboxState.activated),
+          reason: 'the same-id primary mailbox must stay activated',
+        );
+      },
+    );
   });
 
   group('other users tree', () {

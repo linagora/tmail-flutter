@@ -32,6 +32,7 @@ class SubscribeMultipleMailboxInteractor {
           subscribeRequest.parentMailboxId,
           listResult,
           subscribeRequest.subscribeAction,
+          accountId,
           currentMailboxState: currentMailboxState
         ));
       } else if (listResult.isEmpty) {
@@ -41,6 +42,7 @@ class SubscribeMultipleMailboxInteractor {
           subscribeRequest.parentMailboxId,
           listResult,
           subscribeRequest.subscribeAction,
+          accountId,
           currentMailboxState: currentMailboxState
         ));
       }
