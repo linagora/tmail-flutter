@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
-import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/data/workplace_dio.dart';
@@ -98,7 +97,7 @@ void main() {
     );
 
     expect(staged, isA<BytesStagedFile>());
-    expect((staged as BytesStagedFile).bytes, bytes);
+    expect(staged.bytes, bytes);
     expect(progress, isNotEmpty);
     expect(progress.last.first, bytes.length);
 
@@ -113,7 +112,7 @@ void main() {
       doc: _buildDoc(downloadLink: _defaultDownloadLink, mimeType: 'image/png'),
       onDownloadProgress: (_, __) {},
       cancelToken: CancelToken(),
-    ) as BytesStagedFile;
+    );
 
     expect(staged.fileName, 'file.bin');
     expect(staged.mimeType, 'image/png');
@@ -127,7 +126,7 @@ void main() {
       doc: _buildDoc(downloadLink: _defaultDownloadLink),
       onDownloadProgress: (_, __) {},
       cancelToken: CancelToken(),
-    ) as BytesStagedFile;
+    );
 
     expect(staged.bytes, isEmpty);
     expect(staged.fileSize, 0);
@@ -227,69 +226,57 @@ void main() {
   });
 
   group('BufferedWebDriveTransferStrategy', () {
-    test('stage() delegates to the injected stager, passing args through',
+    test('transfer() stages then uploads, passing args through to both',
         () async {
       final stager = _RecordingDriveFileStager();
-      final strategy = BufferedWebDriveTransferStrategy(
-        uploader: _unreachableUploader,
-        stager: stager,
-      );
-      final doc = _buildDoc(downloadLink: _defaultDownloadLink);
-      final cancelToken = CancelToken();
-      void onProgress(int r, int t) {}
-
-      final staged = await strategy.stage(
-        doc: doc,
-        onDownloadProgress: onProgress,
-        cancelToken: cancelToken,
-      );
-
-      expect(staged, same(stager.result));
-      expect(stager.doc, same(doc));
-      expect(stager.onDownloadProgress, same(onProgress));
-      expect(stager.cancelToken, same(cancelToken));
-    });
-
-    test('stage() defaults to a BufferedWebDriveFileStager', () async {
-      WorkplaceDio.setInstance(
-          Dio()..httpClientAdapter = _FakeHttpClientAdapter([1, 2, 3]));
-
-      final staged =
-          await BufferedWebDriveTransferStrategy(uploader: _unreachableUploader)
-              .stage(
-        doc: _buildDoc(downloadLink: _defaultDownloadLink),
-        onDownloadProgress: (_, __) {},
-        cancelToken: CancelToken(),
-      );
-
-      expect(staged, isA<BytesStagedFile>());
-    });
-
-    test('upload() delegates to the injected uploader, ignoring authHeader',
-        () async {
       final uploader = _RecordingStagedFileUploader();
       final strategy = BufferedWebDriveTransferStrategy(
         uploader: uploader.call,
-        stager: _RecordingDriveFileStager(),
+        stager: stager,
       );
-      final staged = _bytesStagedFile();
+      final doc = _buildDoc(downloadLink: _defaultDownloadLink);
       final uploadUri = Uri.parse('https://jmap.example/upload');
       final cancelToken = CancelToken();
-      void onProgress(int r, int t) {}
+      void onDownloadProgress(int r, int t) {}
+      void onUploadProgress(int r, int t) {}
 
-      final attachment = await strategy.upload(DriveUploadRequest(
-        staged: staged,
+      final attachment = await strategy.transfer(
+        doc: doc,
         uploadUri: uploadUri,
         authHeader: 'Bearer token',
-        onUploadProgress: onProgress,
+        onDownloadProgress: onDownloadProgress,
+        onUploadProgress: onUploadProgress,
         cancelToken: cancelToken,
-      ));
+      );
 
+      expect(stager.doc, same(doc));
+      expect(stager.onDownloadProgress, same(onDownloadProgress));
+      expect(stager.cancelToken, same(cancelToken));
+
+      // `authHeader` is deliberately dropped: the shared uploader
+      // authenticates through the app's Dio interceptors.
       expect(attachment, same(uploader.result));
-      expect(uploader.staged, same(staged));
+      expect(uploader.staged, same(stager.result));
       expect(uploader.uploadUri, uploadUri);
-      expect(uploader.onUploadProgress, same(onProgress));
+      expect(uploader.onUploadProgress, same(onUploadProgress));
       expect(uploader.cancelToken, same(cancelToken));
+    });
+
+    test('transfer() defaults to a BufferedWebDriveFileStager', () async {
+      WorkplaceDio.setInstance(
+          Dio()..httpClientAdapter = _FakeHttpClientAdapter([1, 2, 3]));
+      final uploader = _RecordingStagedFileUploader();
+
+      await BufferedWebDriveTransferStrategy(uploader: uploader.call).transfer(
+        doc: _buildDoc(downloadLink: _defaultDownloadLink),
+        uploadUri: Uri.parse('https://jmap.example/upload'),
+        authHeader: 'Bearer token',
+        onDownloadProgress: (_, __) {},
+        onUploadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      expect(uploader.staged, isA<BytesStagedFile>());
     });
   });
 }
@@ -300,23 +287,15 @@ BytesStagedFile _bytesStagedFile() => BytesStagedFile(
       fileSize: 3,
     );
 
-Future<Attachment> _unreachableUploader({
-  required StagedDriveFile staged,
-  required Uri uploadUri,
-  required OnFileProcessedProgress onUploadProgress,
-  required CancelToken cancelToken,
-}) =>
-    throw UnimplementedError();
-
-class _RecordingDriveFileStager implements DriveFileStager {
-  final StagedDriveFile result = _bytesStagedFile();
+class _RecordingDriveFileStager implements DriveFileStager<BytesStagedFile> {
+  final BytesStagedFile result = _bytesStagedFile();
 
   DriveDocument? doc;
   OnFileProcessedProgress? onDownloadProgress;
   CancelToken? cancelToken;
 
   @override
-  Future<StagedDriveFile> stage({
+  Future<BytesStagedFile> stage({
     required DriveDocument doc,
     required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,

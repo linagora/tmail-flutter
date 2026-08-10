@@ -13,8 +13,11 @@ const driveTransferReceiveTimeout = Duration(seconds: 60);
 /// yields a [StagedDriveFile] ready for upload. One implementation per
 /// platform capability (IO, web+OPFS, web-buffered); orchestration is
 /// written once against this interface and never branches on platform.
-abstract class DriveFileStager {
-  Future<StagedDriveFile> stage({
+///
+/// [T] pins the staged variant an implementation produces, so a stager can
+/// only ever be paired with a strategy that can consume its output.
+abstract class DriveFileStager<T extends StagedDriveFile> {
+  Future<T> stage({
     required DriveDocument doc,
     required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,
