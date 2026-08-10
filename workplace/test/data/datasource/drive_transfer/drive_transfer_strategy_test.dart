@@ -20,9 +20,12 @@ final _uploadUri = Uri.parse('https://jmap.example/upload');
 class _RecordingStagedFile {
   final List<String> deleted = [];
 
-  FileBackedStagedFile build() => FileBackedStagedFile(
+  FileBackedStagedFile build({Object? throwOnDelete}) => FileBackedStagedFile(
         filePath: '/tmp/file.bin',
-        deleteFile: (path) async => deleted.add(path),
+        deleteFile: (path) async {
+          deleted.add(path);
+          if (throwOnDelete != null) throw throwOnDelete;
+        },
         fileName: 'file.bin',
         fileSize: 16,
       );
@@ -62,14 +65,15 @@ class _FakeStrategy extends DriveTransferStrategy<FileBackedStagedFile> {
   }
 }
 
-Future<Attachment> _transfer(_FakeStrategy strategy) => strategy.transfer(
+Future<Attachment> _transfer(_FakeStrategy strategy) =>
+    strategy.transfer(DriveTransferRequest(
       doc: _doc,
       uploadUri: _uploadUri,
       authHeader: 'Bearer token',
       onDownloadProgress: (_, __) {},
       onUploadProgress: (_, __) {},
       cancelToken: CancelToken(),
-    );
+    ));
 
 void main() {
   test('disposes the staged file after a successful upload', () async {
@@ -108,6 +112,32 @@ void main() {
       throwsA(isA<DioException>()
           .having((e) => e.type, 'type', DioExceptionType.cancel)),
     );
+
+    expect(recorder.deleted, ['/tmp/file.bin']);
+  });
+
+  test('a failing dispose does not fail an otherwise successful transfer',
+      () async {
+    final recorder = _RecordingStagedFile();
+    final strategy = _FakeStrategy(
+      staged: recorder.build(throwOnDelete: StateError('delete failed')),
+    );
+
+    final attachment = await _transfer(strategy);
+
+    expect(attachment, same(strategy.attachment));
+    expect(recorder.deleted, ['/tmp/file.bin']);
+  });
+
+  test('a failing dispose does not replace the upload error', () async {
+    final recorder = _RecordingStagedFile();
+    final uploadError = StateError('upload failed');
+    final strategy = _FakeStrategy(
+      staged: recorder.build(throwOnDelete: StateError('delete failed')),
+      uploadError: uploadError,
+    );
+
+    await expectLater(_transfer(strategy), throwsA(same(uploadError)));
 
     expect(recorder.deleted, ['/tmp/file.bin']);
   });

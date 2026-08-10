@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
+import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/data/workplace_dio.dart';
@@ -240,14 +241,14 @@ void main() {
       void onDownloadProgress(int r, int t) {}
       void onUploadProgress(int r, int t) {}
 
-      final attachment = await strategy.transfer(
+      final attachment = await strategy.transfer(DriveTransferRequest(
         doc: doc,
         uploadUri: uploadUri,
         authHeader: 'Bearer token',
         onDownloadProgress: onDownloadProgress,
         onUploadProgress: onUploadProgress,
         cancelToken: cancelToken,
-      );
+      ));
 
       expect(stager.doc, same(doc));
       expect(stager.onDownloadProgress, same(onDownloadProgress));
@@ -267,14 +268,15 @@ void main() {
           Dio()..httpClientAdapter = _FakeHttpClientAdapter([1, 2, 3]));
       final uploader = _RecordingStagedFileUploader();
 
-      await BufferedWebDriveTransferStrategy(uploader: uploader.call).transfer(
+      await BufferedWebDriveTransferStrategy(uploader: uploader.call)
+          .transfer(DriveTransferRequest(
         doc: _buildDoc(downloadLink: _defaultDownloadLink),
         uploadUri: Uri.parse('https://jmap.example/upload'),
         authHeader: 'Bearer token',
         onDownloadProgress: (_, __) {},
         onUploadProgress: (_, __) {},
         cancelToken: CancelToken(),
-      );
+      ));
 
       expect(uploader.staged, isA<BytesStagedFile>());
     });
