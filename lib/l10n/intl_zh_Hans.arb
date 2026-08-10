@@ -5706,5 +5706,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "添加为附件的功能仍在开发中。",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "没有有效的附件",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
