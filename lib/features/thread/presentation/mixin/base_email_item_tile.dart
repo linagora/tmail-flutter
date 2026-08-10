@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -45,7 +44,6 @@ mixin BaseEmailItemTile {
           child: TextOverflowBuilder(
             email.mailboxContain?.getDisplayName(context) ?? '',
             style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-              fontFamily: ConstantsUI.fontApp,
               fontSize: 10,
               color: AppColor.emailMailboxContainColor,
               height: 24 / 10,

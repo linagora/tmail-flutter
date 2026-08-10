@@ -2,6 +2,7 @@ import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:linagora_design_flutter/style/linagora_text_theme.dart';
 
 class ThemeUtils {
   ThemeUtils._();
@@ -9,10 +10,11 @@ class ThemeUtils {
   static ThemeData buildAppTheme(BuildContext context) {
     return ThemeData(
       scaffoldBackgroundColor: Colors.white,
-      fontFamily: ConstantsUI.fontApp,
+      fontFamily: _designSystemFontFamily,
       fontFamilyFallback: ConstantsUI.fontFamilyFallback,
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
+      extensions: [_textThemeExtension],
       hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.08),
       textSelectionTheme: _textSelectionTheme,
       dividerTheme: _dividerTheme,
@@ -24,74 +26,88 @@ class ThemeUtils {
     );
   }
 
-  static const TextTheme _textTheme = TextTheme(
-    bodyLarge: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: -0.15,
-      fontSize: 17,
-      height: 24 / 17,
-    ),
-    bodyMedium: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.25,
-    ),
-    bodySmall: TextStyle(
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.0,
-      fontSize: 13,
-      height: 16 / 13
-    ),
-    labelLarge: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.1,
-    ),
-    labelSmall: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.5,
-    ),
-    displayLarge: TextStyle(
-      fontWeight: FontWeight.w700,
-    ),
-    displayMedium: TextStyle(
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.4,
-    ),
-    displaySmall: TextStyle(
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.4,
-    ),
-    headlineMedium: TextStyle(
-      fontWeight: FontWeight.w600,
-    ),
-    headlineSmall: TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 24,
-      height: 32 / 24,
-      letterSpacing: 0.0,
-    ),
-    headlineLarge: TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 32,
-    ),
-    titleLarge: TextStyle(
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.0,
-      fontSize: 22,
-      height: 28 / 22,
-    ),
-    titleMedium: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.15,
-      fontSize: 16,
-      height: 24 / 16,
-    ),
-    titleSmall: TextStyle(
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0.1,
-      fontSize: 14,
-      height: 20 / 14,
-    ),
-  );
+  /// Resolved from the design system rather than named here, so that changing
+  /// the font in `linagora_design_flutter` is enough to change it in the app.
+  static final String? _designSystemFontFamily =
+      LinagoraTextTheme.material().bodyMedium?.fontFamily;
+
+  static final TextTheme _textTheme = _buildTextTheme();
+
+  static final LinagoraTextThemeExtension _textThemeExtension =
+      _buildTextThemeExtension();
+
+  /// Design system styles are built with `package: linagora_design_flutter`,
+  /// and [TextStyle.fontFamilyFallback] prefixes every entry it returns with
+  /// `packages/<package>/`. Passing our fallback list straight to a design
+  /// system style would therefore point it at families the design system does
+  /// not ship, silently disabling the whole fallback chain (emoji, Arabic,
+  /// CJK...). Rebuilding the style without a package keeps the chain intact.
+  ///
+  /// Drop this once the design system accepts a `fontFamilyFallback`:
+  /// https://github.com/linagora/linagora-design-flutter/issues/78
+  static TextStyle? _withFallback(TextStyle? style) {
+    if (style == null) return null;
+    return TextStyle(
+      inherit: style.inherit,
+      fontFamily: style.fontFamily,
+      fontFamilyFallback: ConstantsUI.fontFamilyFallback,
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      fontStyle: style.fontStyle,
+      letterSpacing: style.letterSpacing,
+      wordSpacing: style.wordSpacing,
+      textBaseline: style.textBaseline,
+      height: style.height,
+      leadingDistribution: style.leadingDistribution,
+      locale: style.locale,
+      color: style.color,
+      backgroundColor: style.backgroundColor,
+      foreground: style.foreground,
+      background: style.background,
+      shadows: style.shadows,
+      fontFeatures: style.fontFeatures,
+      fontVariations: style.fontVariations,
+      decoration: style.decoration,
+      decorationColor: style.decorationColor,
+      decorationStyle: style.decorationStyle,
+      decorationThickness: style.decorationThickness,
+      overflow: style.overflow,
+    );
+  }
+
+  static TextTheme _buildTextTheme() {
+    final textTheme = LinagoraTextTheme.material();
+    return TextTheme(
+      displayLarge: _withFallback(textTheme.displayLarge),
+      displayMedium: _withFallback(textTheme.displayMedium),
+      displaySmall: _withFallback(textTheme.displaySmall),
+      headlineLarge: _withFallback(textTheme.headlineLarge),
+      headlineMedium: _withFallback(textTheme.headlineMedium),
+      headlineSmall: _withFallback(textTheme.headlineSmall),
+      titleLarge: _withFallback(textTheme.titleLarge),
+      titleMedium: _withFallback(textTheme.titleMedium),
+      titleSmall: _withFallback(textTheme.titleSmall),
+      labelLarge: _withFallback(textTheme.labelLarge),
+      labelMedium: _withFallback(textTheme.labelMedium),
+      labelSmall: _withFallback(textTheme.labelSmall),
+      bodyLarge: _withFallback(textTheme.bodyLarge),
+      bodyMedium: _withFallback(textTheme.bodyMedium),
+      bodySmall: _withFallback(textTheme.bodySmall),
+    );
+  }
+
+  static LinagoraTextThemeExtension _buildTextThemeExtension() {
+    final extension = LinagoraTextThemeExtension.material();
+    return LinagoraTextThemeExtension(
+      titleSemibold: _withFallback(extension.titleSemibold)!,
+      bodyLargeBold: _withFallback(extension.bodyLargeBold)!,
+      bodyLarge1: _withFallback(extension.bodyLarge1)!,
+      bodyLarge2: _withFallback(extension.bodyLarge2)!,
+      bodyMedium1: _withFallback(extension.bodyMedium1)!,
+      bodyMedium2: _withFallback(extension.bodyMedium2)!,
+      bodyMedium3: _withFallback(extension.bodyMedium3)!,
+    );
+  }
 
   static TextStyle textStyleBodyBody1({
     Color? color,
@@ -254,7 +270,6 @@ class ThemeUtils {
   );
 
   static TextStyle get textStyleM3TitleMedium => defaultTextStyleInterFont.copyWith(
-    fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.15,
     fontSize: 16,
@@ -318,8 +333,11 @@ class ThemeUtils {
     color: AppColor.gray424244.withValues(alpha: 0.9),
   );
 
+  /// Carries only the design system font, so the legacy `textStyle*` helpers
+  /// below keep their own metrics while following the design system font.
+  /// Each helper should eventually read from [_textTheme] instead.
   static TextStyle defaultTextStyleInterFont = TextStyle(
-    fontFamily: ConstantsUI.fontApp,
+    fontFamily: _designSystemFontFamily,
     fontFamilyFallback: ConstantsUI.fontFamilyFallback,
   );
 

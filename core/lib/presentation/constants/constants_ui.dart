@@ -1,7 +1,6 @@
 import 'package:core/utils/platform_info.dart';
 
 class ConstantsUI {
-  static const String fontApp = 'Inter';
   static final List<String>? fontFamilyFallback = PlatformInfo.isMobile
       ? null
       : webFontFamilyFallback;

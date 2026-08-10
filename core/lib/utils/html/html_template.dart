@@ -7,7 +7,7 @@ class HtmlTemplate {
       $fontFaceStyle 
       
       body,td,div,p,a,input {
-        font-family: 'Inter', sans-serif;
+        font-family: '$fontFamilyApp', sans-serif;
       }
     
       body, td {
@@ -48,37 +48,45 @@ class HtmlTemplate {
      </style>
   ''';
 
+  /// HTML content is rendered outside Flutter, so the font can only be reached
+  /// by URL and the design system asset path has to be spelled out here. Keep
+  /// it aligned with the family resolved by `ThemeUtils`.
+  static const String _fontAssetDirectory =
+      '/assets/packages/linagora_design_flutter/assets/fonts';
+
+  static const String fontFamilyApp = 'TwakeInter';
+
   static const String fontFaceStyle = '''
     @font-face {
-      font-family: 'Inter';
-      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");
+      font-family: '$fontFamilyApp';
+      src: url("$_fontAssetDirectory/TwakeInter-Regular.ttf") format("truetype");
       font-weight: 400;
       font-style: normal;
     }
     
     @font-face {
-      font-family: 'Inter';
-      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");
+      font-family: '$fontFamilyApp';
+      src: url("$_fontAssetDirectory/TwakeInter-Medium.ttf") format("truetype");
       font-weight: 500;
-      font-style: medium;
+      font-style: normal;
     }
     
     @font-face {
-      font-family: 'Inter';
-      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");
+      font-family: '$fontFamilyApp';
+      src: url("$_fontAssetDirectory/TwakeInter-SemiBold.ttf") format("truetype");
       font-weight: 600;
-      font-style: semi-bold;
+      font-style: normal;
     }
     
     @font-face {
-      font-family: 'Inter';
-      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");
+      font-family: '$fontFamilyApp';
+      src: url("$_fontAssetDirectory/TwakeInter-Bold.ttf") format("truetype");
       font-weight: 700;
-      font-style: bold;
+      font-style: normal;
     }
     
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: '$fontFamilyApp', sans-serif;
     }
   ''';
 

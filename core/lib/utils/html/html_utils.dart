@@ -539,7 +539,7 @@ class HtmlUtils {
     return '''
       <style>
         .note-frame, .note-tooltip-content, .note-popover {
-          font-family: 'Inter', sans-serif;
+          font-family: '${HtmlTemplate.fontFamilyApp}', sans-serif;
           color: #222222;
         }
         

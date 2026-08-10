@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ class RecipientComposerWidgetStyle {
   static const EdgeInsetsGeometry enableRecipientButtonMargin = EdgeInsetsDirectional.only(top: 10);
 
   static TextStyle prefixButtonTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
-    fontFamily: ConstantsUI.fontApp,
     fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 24 / 15,
