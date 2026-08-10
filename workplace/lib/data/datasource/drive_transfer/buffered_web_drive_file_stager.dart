@@ -80,21 +80,15 @@ class BufferedWebDriveTransferStrategy implements DriveTransferStrategy {
     );
   }
 
-  /// [authHeader] is unused: the shared uploader authenticates through the
-  /// app's Dio interceptors. Only the OPFS raw-XHR path needs it.
+  /// `request.authHeader` is unused: the shared uploader authenticates
+  /// through the app's Dio interceptors. Only the OPFS raw-XHR path needs it.
   @override
-  Future<Attachment> upload({
-    required StagedDriveFile staged,
-    required Uri uploadUri,
-    required String authHeader,
-    required OnFileProcessedProgress onUploadProgress,
-    required CancelToken cancelToken,
-  }) {
+  Future<Attachment> upload(DriveUploadRequest request) {
     return _uploader(
-      staged: staged,
-      uploadUri: uploadUri,
-      onUploadProgress: onUploadProgress,
-      cancelToken: cancelToken,
+      staged: request.staged,
+      uploadUri: request.uploadUri,
+      onUploadProgress: request.onUploadProgress,
+      cancelToken: request.cancelToken,
     );
   }
 }

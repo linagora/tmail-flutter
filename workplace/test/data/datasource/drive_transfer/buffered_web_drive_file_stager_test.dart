@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
+import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/data/workplace_dio.dart';
@@ -276,13 +277,13 @@ void main() {
       final cancelToken = CancelToken();
       void onProgress(int r, int t) {}
 
-      final attachment = await strategy.upload(
+      final attachment = await strategy.upload(DriveUploadRequest(
         staged: staged,
         uploadUri: uploadUri,
         authHeader: 'Bearer token',
         onUploadProgress: onProgress,
         cancelToken: cancelToken,
-      );
+      ));
 
       expect(attachment, same(uploader.result));
       expect(uploader.staged, same(staged));

@@ -14,13 +14,27 @@ abstract class DriveTransferStrategy {
     required CancelToken cancelToken,
   });
 
-  /// [authHeader] is only used by the OPFS raw-XHR path; the others
-  /// authenticate through the app's Dio interceptors.
-  Future<Attachment> upload({
-    required StagedDriveFile staged,
-    required Uri uploadUri,
-    required String authHeader,
-    required OnFileProcessedProgress onUploadProgress,
-    required CancelToken cancelToken,
+  Future<Attachment> upload(DriveUploadRequest request);
+}
+
+/// Bundles [DriveTransferStrategy.upload]'s parameters to keep its argument
+/// count low.
+class DriveUploadRequest {
+  final StagedDriveFile staged;
+  final Uri uploadUri;
+
+  /// Only used by the OPFS raw-XHR path; the other strategies authenticate
+  /// through the app's Dio interceptors.
+  final String authHeader;
+
+  final OnFileProcessedProgress onUploadProgress;
+  final CancelToken cancelToken;
+
+  const DriveUploadRequest({
+    required this.staged,
+    required this.uploadUri,
+    required this.authHeader,
+    required this.onUploadProgress,
+    required this.cancelToken,
   });
 }
