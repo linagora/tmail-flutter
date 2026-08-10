@@ -2,13 +2,14 @@ import 'dart:typed_data';
 
 import 'package:core/utils/build_utils.dart';
 import 'package:dio/dio.dart';
+import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/entity/drive_document_extension.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 
 /// Buffers a drive document fully into memory. Explicit, feature-detected
@@ -28,13 +29,8 @@ class BufferedWebDriveFileStager implements DriveFileStager {
     required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,
   }) async {
-    final downloadLink = doc.downloadLink;
-    if (downloadLink == null) {
-      throw DriveDownloadNullAttachmentException();
-    }
-    if (_isReleaseMode && !downloadLink.isScheme('https')) {
-      throw DriveDownloadInsecureLinkException();
-    }
+    final downloadLink =
+        doc.resolveDownloadLinkForStaging(isReleaseMode: _isReleaseMode);
     final response = await _dio.getUri<List<int>>(
       downloadLink,
       options: Options(
@@ -59,15 +55,46 @@ class BufferedWebDriveFileStager implements DriveFileStager {
   }
 }
 
-/// Web-buffered strategy: no OPFS-only uploader, `FileUploader` handles the
-/// bytes-backed upload leg.
+/// Web-buffered strategy: buffers the download in memory, then uploads the
+/// bytes-backed staged file through the injected uploader.
 class BufferedWebDriveTransferStrategy implements DriveTransferStrategy {
-  @override
-  final DriveFileStager stager;
+  BufferedWebDriveTransferStrategy({
+    required StagedFileUploader uploader,
+    DriveFileStager? stager,
+  })  : _uploader = uploader,
+        _stager = stager ?? BufferedWebDriveFileStager();
+
+  final StagedFileUploader _uploader;
+  final DriveFileStager _stager;
 
   @override
-  OpfsDriveFileUploader? get opfsUploader => null;
+  Future<StagedDriveFile> stage({
+    required DriveDocument doc,
+    required OnFileProcessedProgress onDownloadProgress,
+    required CancelToken cancelToken,
+  }) {
+    return _stager.stage(
+      doc: doc,
+      onDownloadProgress: onDownloadProgress,
+      cancelToken: cancelToken,
+    );
+  }
 
-  BufferedWebDriveTransferStrategy({DriveFileStager? stager})
-      : stager = stager ?? BufferedWebDriveFileStager();
+  /// [authHeader] is unused: the shared uploader authenticates through the
+  /// app's Dio interceptors. Only the OPFS raw-XHR path needs it.
+  @override
+  Future<Attachment> upload({
+    required StagedDriveFile staged,
+    required Uri uploadUri,
+    required String authHeader,
+    required OnFileProcessedProgress onUploadProgress,
+    required CancelToken cancelToken,
+  }) {
+    return _uploader(
+      staged: staged,
+      uploadUri: uploadUri,
+      onUploadProgress: onUploadProgress,
+      cancelToken: cancelToken,
+    );
+  }
 }

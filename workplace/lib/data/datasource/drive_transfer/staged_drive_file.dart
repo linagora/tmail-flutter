@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
 /// Result of staging a drive document into platform-appropriate temp storage,
@@ -46,9 +47,7 @@ final class FileBackedStagedFile extends StagedDriveFile {
 
 /// Web, Origin Private File System temp file handle.
 final class OpfsStagedFile extends StagedDriveFile {
-  /// Opaque `web.FileSystemFileHandle` — typed [Object] so this file never
-  /// imports `package:web`; the web-only uploader casts it back.
-  final Object fileHandle;
+  final OpfsFileHandle fileHandle;
   final OnDeleteOPFSFile removeEntry;
 
   const OpfsStagedFile({

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:model/email/attachment.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
 /// Uploads an OPFS-staged file via a raw-XHR POST that streams straight from
@@ -7,14 +8,11 @@ import 'package:workplace/data/model/workplace_type_defs.dart';
 /// upload path `FileUploader` can't do. Not refresh-and-retry safe: the
 /// bearer token is read once, up front.
 ///
-/// Declared without any `dart:js_interop`/`package:web` reference so this
-/// file stays part of the platform-agnostic `DriveTransferStrategy` surface;
-/// [fileHandle] is an opaque `web.FileSystemFileHandle`. The concrete
-/// `BrowserOpfsDriveFileUploader` (web-only, `opfs_drive_file_uploader_web.dart`)
-/// is the only place that casts it back.
+/// Held privately by the OPFS strategy, not exposed on
+/// `DriveTransferStrategy`.
 abstract class OpfsDriveFileUploader {
   Future<Attachment> upload({
-    required Object fileHandle,
+    required OpfsFileHandle fileHandle,
     required String fileName,
     required String? mimeType,
     required Uri uploadUri,

@@ -1,12 +1,26 @@
-import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
+import 'package:dio/dio.dart';
+import 'package:model/email/attachment.dart';
+import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
+import 'package:workplace/data/model/workplace_type_defs.dart';
+import 'package:workplace/domain/entity/drive_document.dart';
 
-/// Bundles the stager for a platform capability plus, for web+OPFS, the
-/// raw-XHR uploader — the only upload path that can't reuse `FileUploader`.
-/// Selected once per batch via `DriveTransferStrategyFactory.create()`.
+/// Both legs of a drive transfer for one platform capability, selected once
+/// per batch via `DriveTransferStrategyFactory.create()`. Orchestration —
+/// stage, upload, dispose — never branches on platform.
 abstract class DriveTransferStrategy {
-  DriveFileStager get stager;
+  Future<StagedDriveFile> stage({
+    required DriveDocument doc,
+    required OnFileProcessedProgress onDownloadProgress,
+    required CancelToken cancelToken,
+  });
 
-  /// Non-null only for the OPFS strategy.
-  OpfsDriveFileUploader? get opfsUploader;
+  /// [authHeader] is only used by the OPFS raw-XHR path; the others
+  /// authenticate through the app's Dio interceptors.
+  Future<Attachment> upload({
+    required StagedDriveFile staged,
+    required Uri uploadUri,
+    required String authHeader,
+    required OnFileProcessedProgress onUploadProgress,
+    required CancelToken cancelToken,
+  });
 }

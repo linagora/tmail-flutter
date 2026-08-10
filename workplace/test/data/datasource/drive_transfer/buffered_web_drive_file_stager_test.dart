@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
@@ -225,29 +226,125 @@ void main() {
   });
 
   group('BufferedWebDriveTransferStrategy', () {
-    test('defaults to a BufferedWebDriveFileStager', () {
-      final strategy = BufferedWebDriveTransferStrategy();
-      expect(strategy.stager, isA<BufferedWebDriveFileStager>());
+    test('stage() delegates to the injected stager, passing args through',
+        () async {
+      final stager = _RecordingDriveFileStager();
+      final strategy = BufferedWebDriveTransferStrategy(
+        uploader: _unreachableUploader,
+        stager: stager,
+      );
+      final doc = _buildDoc(downloadLink: _defaultDownloadLink);
+      final cancelToken = CancelToken();
+      void onProgress(int r, int t) {}
+
+      final staged = await strategy.stage(
+        doc: doc,
+        onDownloadProgress: onProgress,
+        cancelToken: cancelToken,
+      );
+
+      expect(staged, same(stager.result));
+      expect(stager.doc, same(doc));
+      expect(stager.onDownloadProgress, same(onProgress));
+      expect(stager.cancelToken, same(cancelToken));
     });
 
-    test('uses the injected stager when provided', () {
-      final customStager = _NoopDriveFileStager();
-      final strategy = BufferedWebDriveTransferStrategy(stager: customStager);
-      expect(strategy.stager, same(customStager));
+    test('stage() defaults to a BufferedWebDriveFileStager', () async {
+      WorkplaceDio.setInstance(
+          Dio()..httpClientAdapter = _FakeHttpClientAdapter([1, 2, 3]));
+
+      final staged =
+          await BufferedWebDriveTransferStrategy(uploader: _unreachableUploader)
+              .stage(
+        doc: _buildDoc(downloadLink: _defaultDownloadLink),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      expect(staged, isA<BytesStagedFile>());
     });
 
-    test('opfsUploader is always null', () {
-      expect(BufferedWebDriveTransferStrategy().opfsUploader, isNull);
+    test('upload() delegates to the injected uploader, ignoring authHeader',
+        () async {
+      final uploader = _RecordingStagedFileUploader();
+      final strategy = BufferedWebDriveTransferStrategy(
+        uploader: uploader.call,
+        stager: _RecordingDriveFileStager(),
+      );
+      final staged = _bytesStagedFile();
+      final uploadUri = Uri.parse('https://jmap.example/upload');
+      final cancelToken = CancelToken();
+      void onProgress(int r, int t) {}
+
+      final attachment = await strategy.upload(
+        staged: staged,
+        uploadUri: uploadUri,
+        authHeader: 'Bearer token',
+        onUploadProgress: onProgress,
+        cancelToken: cancelToken,
+      );
+
+      expect(attachment, same(uploader.result));
+      expect(uploader.staged, same(staged));
+      expect(uploader.uploadUri, uploadUri);
+      expect(uploader.onUploadProgress, same(onProgress));
+      expect(uploader.cancelToken, same(cancelToken));
     });
   });
 }
 
-class _NoopDriveFileStager implements DriveFileStager {
+BytesStagedFile _bytesStagedFile() => BytesStagedFile(
+      bytes: Uint8List.fromList([1, 2, 3]),
+      fileName: 'file.bin',
+      fileSize: 3,
+    );
+
+Future<Attachment> _unreachableUploader({
+  required StagedDriveFile staged,
+  required Uri uploadUri,
+  required OnFileProcessedProgress onUploadProgress,
+  required CancelToken cancelToken,
+}) =>
+    throw UnimplementedError();
+
+class _RecordingDriveFileStager implements DriveFileStager {
+  final StagedDriveFile result = _bytesStagedFile();
+
+  DriveDocument? doc;
+  OnFileProcessedProgress? onDownloadProgress;
+  CancelToken? cancelToken;
+
   @override
   Future<StagedDriveFile> stage({
     required DriveDocument doc,
     required OnFileProcessedProgress onDownloadProgress,
     required CancelToken cancelToken,
-  }) =>
-      throw UnimplementedError();
+  }) async {
+    this.doc = doc;
+    this.onDownloadProgress = onDownloadProgress;
+    this.cancelToken = cancelToken;
+    return result;
+  }
+}
+
+class _RecordingStagedFileUploader {
+  final Attachment result = Attachment(name: 'file.bin');
+
+  StagedDriveFile? staged;
+  Uri? uploadUri;
+  OnFileProcessedProgress? onUploadProgress;
+  CancelToken? cancelToken;
+
+  Future<Attachment> call({
+    required StagedDriveFile staged,
+    required Uri uploadUri,
+    required OnFileProcessedProgress onUploadProgress,
+    required CancelToken cancelToken,
+  }) async {
+    this.staged = staged;
+    this.uploadUri = uploadUri;
+    this.onUploadProgress = onUploadProgress;
+    this.cancelToken = cancelToken;
+    return result;
+  }
 }
