@@ -12,7 +12,7 @@ extension type _StorageManagerFeatureProbe(JSObject _) implements JSObject {
 /// where `web.Navigator.storage` hands back `undefined` and blows up on the
 /// next property read.
 extension type _NavigatorStorageProbe(JSObject _) implements JSObject {
-  external JSObject? get storage;
+  external _StorageManagerFeatureProbe? get storage;
 }
 
 /// Nullable: reading an undefined property off `globalThis` yields null
@@ -41,9 +41,7 @@ mixin OpfsFeatureDetection {
     final storage =
         (web.window.navigator as _NavigatorStorageProbe).storage;
     if (storage == null) return false;
-    if ((storage as _StorageManagerFeatureProbe).getDirectory == null) {
-      return false;
-    }
+    if (storage.getDirectory == null) return false;
     return _fileSystemFileHandleCtor?.prototype?.createWritable != null;
   }
 }

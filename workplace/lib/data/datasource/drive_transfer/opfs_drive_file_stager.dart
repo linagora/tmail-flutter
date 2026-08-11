@@ -98,15 +98,46 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
     return received;
   }
 
+  /// Pumps the response body into the OPFS temp file one chunk at a time.
+  ///
+  /// **Why chunk-at-a-time.** This stager exists so a drive document never has
+  /// to fit in the JS heap. `BufferedWebDriveFileStager` — the fallback for
+  /// browsers without OPFS — holds the whole body as bytes before it uploads,
+  /// and that is what caps the document size a transfer survives. Here the
+  /// bytes go fetch → OPFS entry incrementally, so peak memory is one chunk
+  /// whatever the document weighs, and the upload leg streams that entry back
+  /// out through XHR. Anything that materialises the body whole (reading the
+  /// response into one `Uint8List`) hands the old memory profile back.
+  ///
+  /// **Why nothing bounds the loop up front.** The chunk count is not knowable.
+  /// `content-length` is a total byte count — absent on chunked responses, -1
+  /// here — and says nothing about how the browser slices the body; chunk sizes
+  /// vary with the network and the browser's own buffering. The stream
+  /// announces its end itself, and the only way to observe that is
+  /// `reader.read()` resolving `done: true`, which [OpfsFetchStreaming.readChunk]
+  /// maps to null. So the value that ends the loop is produced by an operation
+  /// that has to run inside it.
+  ///
+  /// **Why `while (true)`.** With the exit condition only available after a
+  /// read, every header-test shape costs something. Assigning in the condition,
+  /// `while ((chunk = await readChunk(reader)) != null)`, does not promote
+  /// `chunk` in the body — the assignment is also reachable from the loop's
+  /// back edge — so every use needs `chunk!`. A three-clause
+  /// `for (var chunk = await readChunk(reader); chunk != null; chunk = await readChunk(reader))`
+  /// does promote, but writes the read twice and performs its seeding read
+  /// before the cancel check below. `while (true)` with one read and an
+  /// explicit `break` on the sentinel keeps a single read, no `!`, and the
+  /// cancel check first.
+  ///
+  /// JS `for await...of` over the `ReadableStream` is not reachable:
+  /// `dart:js_interop` has no async-iterator bridge, the same reason
+  /// [OpfsFileOps.sweepStaleTempFiles] drives `keys()` by hand. The one
+  /// genuinely loop-free option is handing the pump to the browser —
+  /// `body.pipeTo(writable)` with a `TransformStream` counting progress —
+  /// which would replace this file's read/write bindings wholesale.
   Future<int> _readAndWriteAll(_StreamToFileRequest request) async {
     final reader = request.fetchStream.reader;
     var received = 0;
-    // What ends this loop is only knowable after a read — `readChunk` returns
-    // null once the body is exhausted — so there is no condition to test up
-    // front. Of the shapes that express "read until the sentinel", this is the
-    // only one needing neither a `chunk!` (Dart won't promote a variable
-    // assigned in a loop condition, so `while ((chunk = await ...) != null)`
-    // doesn't compile) nor a second `readChunk` call to seed a `for`.
     while (true) {
       // Bails out at the iteration boundary. `cancelReader` is async, so
       // without this the loop would keep reading and writing chunks until the
