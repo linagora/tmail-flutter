@@ -42,11 +42,11 @@ void main() {
       final pathInsidePackage = url.split('/').skip(4).join('/');
       final file = File.fromUri(packageRoot.resolve(pathInsidePackage));
       expect(file.existsSync(), isTrue, reason: '$url points at a missing file');
-      // A file that is not declared under `flutter: assets:` is not bundled.
+      // A file that is not declared under `flutter: fonts:` is not bundled.
       expect(
-        _isDeclaredAsFlutterAsset(packagePubspec, pathInsidePackage),
+        _isDeclaredAsFlutterFont(packagePubspec, pathInsidePackage),
         isTrue,
-        reason: '$pathInsidePackage is not declared as an asset',
+        reason: '$pathInsidePackage is not declared as a font',
       );
     }
   });
@@ -61,8 +61,8 @@ void main() {
 }
 
 /// True when [pathInsidePackage] (or a parent directory) is declared under
-/// `flutter: assets:` — Flutter only bundles declared assets.
-bool _isDeclaredAsFlutterAsset(String packagePubspec, String pathInsidePackage) {
+/// `flutter: fonts:` — Flutter only bundles declared fonts.
+bool _isDeclaredAsFlutterFont(String packagePubspec, String pathInsidePackage) {
   final candidates = <String>[pathInsidePackage];
   var remaining = pathInsidePackage;
   while (remaining.contains('/')) {
