@@ -38,7 +38,9 @@ void main() {
     );
 
     final progress = <int>[];
-    final staged = await OpfsDriveFileStager().stage(
+    final bindings = _NameRecordingBindings();
+    addTearDown(() => _removeEntries(bindings.createdNames));
+    final staged = await OpfsDriveFileStager(bindings: bindings).stage(
       doc: doc,
       onDownloadProgress: (received, total) => progress.add(received),
       cancelToken: CancelToken(),
@@ -58,10 +60,11 @@ void main() {
         await OpfsJsBindings.instance.getFile(opfsStaged.fileHandle);
     expect((await stagedFile.text().toDart).toDart, content);
 
-    // dispose() must remove the OPFS temp entry on every exit path; a
-    // real `FileSystemDirectoryHandle.removeEntry` call throwing would
-    // surface here.
+    // dispose() must remove the OPFS temp entry on every exit path; asserted
+    // against a fresh OPFS root, so this answers whether the bytes are gone
+    // rather than whether dispose() merely returned.
     await opfsStaged.dispose();
+    expect(await _opfsEntryExists(bindings.createdNames.single), isFalse);
   });
 
   test('rethrows when the download fails before the temp entry is created',
@@ -223,6 +226,70 @@ void main() {
     cancelToken.cancel();
 
     await expectLater(staging, throwsA(isA<DioException>()));
+  });
+
+  test('reports a cancel when the aborted fetch rejects an in-flight read',
+      () async {
+    // The abort controller `fetchStream` opened stays live after the headers,
+    // so a cancellation can reach the loop as a browser error on the read
+    // rather than through `cancelReader`. It still has to come out as a
+    // cancellation, not as whatever the browser threw.
+    final bindings = _ControllableStreamBindings(
+      contentLength: 16,
+      errorStreamOnCancelSignal: true,
+    );
+    final cancelToken = CancelToken();
+
+    final doc = DriveDocument(
+      id: 'doc-opfs-7c',
+      name: 'aborted-mid-read.txt',
+      size: 16,
+      mimeType: 'text/plain',
+      downloadLink: Uri.parse('https://drive.example/aborted-mid-read.txt'),
+    );
+
+    final staging = OpfsDriveFileStager(bindings: bindings).stage(
+      doc: doc,
+      onDownloadProgress: (_, __) {},
+      cancelToken: cancelToken,
+    );
+
+    await bindings.secondReadStarted;
+    cancelToken.cancel();
+
+    await expectLater(
+      staging,
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.cancel)),
+    );
+  });
+
+  test('reports a connection error when the body fails mid-stream', () async {
+    // The same rejection with no cancellation behind it — a dropped
+    // connection — has to surface as a DioException too, not as the raw
+    // browser error.
+    final bindings = _ControllableStreamBindings(
+      contentLength: 16,
+      errorStreamOnSecondRead: true,
+    );
+
+    final doc = DriveDocument(
+      id: 'doc-opfs-7d',
+      name: 'dropped-mid-read.txt',
+      size: 16,
+      mimeType: 'text/plain',
+      downloadLink: Uri.parse('https://drive.example/dropped-mid-read.txt'),
+    );
+
+    await expectLater(
+      OpfsDriveFileStager(bindings: bindings).stage(
+        doc: doc,
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      ),
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.connectionError)),
+    );
   });
 
   test('stops reading immediately when cancelled between chunk reads',
@@ -566,17 +633,36 @@ class _FailingFetchOpfsJsBindings extends OpfsJsBindings {
 /// against the browser, so the streams semantics under test are Chrome's,
 /// not the fake's.
 ///
-/// [cancelSignal] is deliberately ignored so the fetch-abort path can't race
-/// the reader-cancel path — these tests isolate the latter.
+/// [cancelSignal] is ignored unless [errorStreamOnCancelSignal] is set, so by
+/// default the fetch-abort path can't race the reader-cancel path — most cases
+/// here isolate the latter.
 class _ControllableStreamBindings extends OpfsJsBindings {
   _ControllableStreamBindings({
     required this.contentLength,
     this.closeAfterFirstChunk = false,
     this.onFirstChunkWritten,
+    this.errorStreamOnCancelSignal = false,
+    this.errorStreamOnSecondRead = false,
   });
 
   final int contentLength;
   final bool closeAfterFirstChunk;
+
+  /// Errors the body stream when the cancel signal resolves — what the real
+  /// `fetch` abort controller, still live after the headers, does to a read
+  /// already in flight.
+  final bool errorStreamOnCancelSignal;
+
+  /// Errors the body stream mid-read with no cancellation involved: a
+  /// connection dropping partway through the download.
+  final bool errorStreamOnSecondRead;
+
+  web.ReadableStreamDefaultController? _controller;
+
+  /// The rejection a browser produces for an aborted body, not a Dart error,
+  /// so the mapping under test is the one production hits.
+  void _errorStream() =>
+      _controller?.error(web.DOMException('aborted', 'AbortError'));
 
   /// Called synchronously at the end of the first `writeChunk`, i.e. before
   /// the stager's `await` on it resumes. Cancelling from here is the only way
@@ -608,7 +694,11 @@ class _ControllableStreamBindings extends OpfsJsBindings {
     if (++_readCount == 2 && !_secondReadStarted.isCompleted) {
       _secondReadStarted.complete();
     }
-    return super.readChunk(reader);
+    final chunk = super.readChunk(reader);
+    // After `super.readChunk` has started, so the read this rejects is one
+    // already in flight.
+    if (_readCount == 2 && errorStreamOnSecondRead) _errorStream();
+    return chunk;
   }
 
   @override
@@ -618,11 +708,15 @@ class _ControllableStreamBindings extends OpfsJsBindings {
     source.setProperty(
       'start'.toJS,
       ((web.ReadableStreamDefaultController controller) {
+        _controller = controller;
         controller.enqueue(Uint8List.fromList([1, 2, 3]).toJS);
         if (closeAfterFirstChunk) controller.close();
       }).toJS,
     );
     final stream = web.ReadableStream(source);
+    if (cancelSignal != null && errorStreamOnCancelSignal) {
+      unawaited(cancelSignal.then((_) => _errorStream()));
+    }
     return OpfsFetchStream(
       reader: stream.getReader() as web.ReadableStreamDefaultReader,
       contentLength: contentLength,

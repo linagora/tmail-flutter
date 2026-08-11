@@ -18,6 +18,7 @@ env:
     workplace/test/data/datasource/drive_transfer/drive_transfer_strategy_factory_web_test.dart
     workplace/test/data/datasource/drive_transfer/opfs_drive_file_stager_test.dart
     workplace/test/data/datasource/drive_transfer/opfs_drive_file_uploader_test.dart
+    workplace/test/data/datasource/drive_transfer/opfs_js_bindings_test.dart
 
 jobs:
   analyze-test:

@@ -109,8 +109,27 @@ mixin OpfsFetchStreaming {
   }
 
   /// Returns the next chunk, or null once the stream is exhausted.
+  ///
+  /// A read can still fail after the headers [fetchStream] mapped: the abort
+  /// controller stays live for the body, and the connection can drop
+  /// mid-stream. Both reject with a browser error, so they are re-shaped here
+  /// to keep this mixin's every-failure-is-a-[DioException] contract. Only the
+  /// caller holds the [CancelToken], so telling a cancellation from a
+  /// transport failure is its job.
   Future<Uint8List?> readChunk(web.ReadableStreamDefaultReader reader) async {
-    final result = await reader.read().toDart;
+    final web.ReadableStreamReadResult result;
+    try {
+      result = await reader.read().toDart;
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      throw DioException(
+        type: DioExceptionType.connectionError,
+        requestOptions: RequestOptions(path: ''),
+        error: e,
+        message: 'The connection errored: reading the download body failed',
+      );
+    }
     if (result.done) return null;
     final value = result.value;
     if (value == null) return Uint8List(0);
@@ -119,4 +138,9 @@ mixin OpfsFetchStreaming {
 
   Future<void> cancelReader(web.ReadableStreamDefaultReader reader) =>
       reader.cancel().toDart;
+
+  /// Best-effort: the lock a `getReader()` took stays held until this is
+  /// called, and it is a no-op on a reader that no longer holds one.
+  void releaseReaderLock(web.ReadableStreamDefaultReader reader) =>
+      reader.releaseLock();
 }

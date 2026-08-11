@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
+import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
@@ -48,10 +50,20 @@ mixin OpfsXhrUpload {
   /// Failures come out as [DioException], like `fetchStream`'s.
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     final requestOptions = RequestOptions(path: request.uploadUri.toString());
-    final xhr = web.XMLHttpRequest();
-    xhr.open('POST', request.uploadUri.toString());
-    _applyHeaders(xhr, request);
     final completer = Completer<Map<String, dynamic>>();
+    final xhr = createXhr();
+
+    // `open`, `setRequestHeader` and `send` throw synchronously (a malformed
+    // URL, a forbidden header, a detached file). Routing those into the
+    // completer keeps every failure on the one path the doc comment promises,
+    // so callers never have to guard the call itself.
+    try {
+      xhr.open('POST', request.uploadUri.toString());
+      _applyHeaders(xhr, request);
+    } catch (e) {
+      _completeTransportError(completer, requestOptions, e);
+      return XhrUploadHandle(response: completer.future, abort: () {});
+    }
 
     // `total` is 0 when the length is unknown, but the download leg reports an
     // unknown total as -1. Normalized here so one progress consumer doesn't
@@ -82,7 +94,11 @@ mixin OpfsXhrUpload {
       ));
     }).toJS;
 
-    xhr.send(request.file);
+    try {
+      xhr.send(request.file);
+    } catch (e) {
+      _completeTransportError(completer, requestOptions, e);
+    }
 
     return XhrUploadHandle(
       response: completer.future,
@@ -90,8 +106,16 @@ mixin OpfsXhrUpload {
     );
   }
 
+  /// The seam tests swap for a scripted XHR; production always gets the real
+  /// one.
+  @visibleForTesting
+  web.XMLHttpRequest createXhr() => web.XMLHttpRequest();
+
   void _applyHeaders(web.XMLHttpRequest xhr, XhrUploadFileRequest request) {
     xhr.setRequestHeader('Authorization', request.authHeader);
+    // Dio adds this to every JMAP call (`DioClient.jmapHeader`); the raw-XHR
+    // leg bypasses Dio, so it has to be set by hand.
+    xhr.setRequestHeader('Accept', DioClient.jmapHeader);
     // An OPFS-created `File` carries an empty type, so without this the
     // request would go out with no usable content type.
     final mimeType = request.mimeType;
@@ -134,6 +158,25 @@ mixin OpfsXhrUpload {
         ),
       ));
     }
+  }
+
+  /// Spelled out rather than via `DioException.connectionError`, which
+  /// hardcodes `error: null` and would drop the browser's own failure — the
+  /// same reason `OpfsFetchStreaming.fetchStream` builds this by hand.
+  void _completeTransportError(
+    Completer<Map<String, dynamic>> completer,
+    RequestOptions requestOptions,
+    Object error,
+  ) {
+    _completeError(
+      completer,
+      DioException(
+        type: DioExceptionType.connectionError,
+        requestOptions: requestOptions,
+        error: error,
+        message: 'The connection errored: the upload request failed',
+      ),
+    );
   }
 
   void _completeError(

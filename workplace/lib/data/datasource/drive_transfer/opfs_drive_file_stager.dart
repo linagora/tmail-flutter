@@ -48,10 +48,6 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       tempFileName: tempFileName,
     );
     Future<void>? cancelSubscription;
-    // Guards the listener below from firing on a stale reader once stage()
-    // has already returned or thrown — a bare `whenCancel.then(...)` has no
-    // unsubscribe, so it otherwise stays registered for the token's lifetime.
-    var completed = false;
 
     try {
       final fetchStream = scope.fetchStream = await _bindings.fetchStream(
@@ -61,9 +57,14 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       final handle = scope.handle = await _bindings.createTempFile(tempFileName);
       final writable = scope.writable = await _bindings.openWritable(handle);
 
-      final reader = fetchStream.reader;
+      // Reads the reader off the scope rather than capturing it: a bare
+      // `whenCancel.then(...)` has no unsubscribe, so this listener outlives
+      // stage() for as long as the token does. `scope.release()` below empties
+      // what it can still reach, which both stops it acting on a finished
+      // transfer and drops its hold on the reader.
       cancelSubscription = cancelToken.whenCancel.then((_) async {
-        if (!completed) await _bindings.cancelReader(reader);
+        final activeReader = scope.fetchStream?.reader;
+        if (activeReader != null) await _bindings.cancelReader(activeReader);
       }).catchError((error) {
         logWarning('OpfsDriveFileStager: failed to cancel reader for $tempFileName: $error');
       });
@@ -75,7 +76,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
         onDownloadProgress: onDownloadProgress,
       ));
       await _bindings.closeWritable(writable);
-      completed = true;
+      scope.releaseReaderLock();
       return OpfsStagedFile(
         fileHandle: handle,
         removeEntry: (_) => _bindings.removeTempFile(tempFileName),
@@ -84,10 +85,10 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
         mimeType: doc.mimeType,
       );
     } catch (e) {
-      completed = true;
       await scope.cleanupAfterFailure();
       rethrow;
     } finally {
+      scope.release();
       if (cancelSubscription != null) unawaited(cancelSubscription);
     }
   }
@@ -143,7 +144,17 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       // without this the loop would keep reading and writing chunks until the
       // cancellation propagated through the JS reader.
       _throwIfCancelled(request.cancelToken);
-      final chunk = await _bindings.readChunk(reader);
+      final Uint8List? chunk;
+      try {
+        chunk = await _bindings.readChunk(reader);
+      } catch (_) {
+        // The fetch abort controller stays live after the headers, so a
+        // cancellation landing mid-read surfaces as a transport failure. The
+        // token is the only thing that can tell the two apart, and callers
+        // branch on `DioExceptionType.cancel`.
+        _throwIfCancelled(request.cancelToken);
+        rethrow;
+      }
       if (chunk == null) break;
       await _bindings.writeChunk(request.writable, chunk);
       received += chunk.length;
@@ -230,12 +241,34 @@ class _OpfsStagingScope {
 
   _OpfsStagingScope({required this.bindings, required this.tempFileName});
 
+  /// Drops the references `stage()` no longer needs, so the `whenCancel`
+  /// listener it can never unsubscribe holds nothing once the transfer ends.
+  void release() {
+    fetchStream = null;
+    writable = null;
+    handle = null;
+  }
+
+  /// Hands the stream's lock back once nothing will read from it again. Safe
+  /// on an already-unlocked reader, and never worth failing a finished
+  /// transfer over.
+  void releaseReaderLock() {
+    final stream = fetchStream;
+    if (stream == null) return;
+    try {
+      bindings.releaseReaderLock(stream.reader);
+    } catch (e) {
+      logWarning('OpfsDriveFileStager: failed to release the reader lock for $tempFileName: $e');
+    }
+  }
+
   /// Best-effort: every step runs regardless of the ones before it, and a
   /// failure here is logged rather than replacing the error that caused it.
   Future<void> cleanupAfterFailure() async {
     final stream = fetchStream;
     if (stream != null) {
       await _attempt('cancel reader', () => bindings.cancelReader(stream.reader));
+      releaseReaderLock();
     }
     final openWritable = writable;
     if (openWritable != null) {

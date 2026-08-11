@@ -42,6 +42,14 @@ mixin OpfsFileOps {
   Future<web.File> getFile(OpfsFileHandle fileHandle) =>
       (fileHandle as web.FileSystemFileHandle).getFile().toDart;
 
+  /// The first [maxBytes] of [file], for charset detection. Sliced rather than
+  /// read whole: the staged document is only ever meant to reach the JS heap
+  /// one chunk at a time.
+  Future<Uint8List> readFilePrefix(web.File file, int maxBytes) async {
+    final buffer = await file.slice(0, maxBytes).arrayBuffer().toDart;
+    return buffer.toDart.asUint8List();
+  }
+
   Future<web.FileSystemWritableFileStream> openWritable(
       web.FileSystemFileHandle handle) =>
       handle.createWritable().toDart;
