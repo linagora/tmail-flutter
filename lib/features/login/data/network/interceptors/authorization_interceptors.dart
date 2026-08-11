@@ -422,11 +422,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         handler,
       );
     } catch (e, st) {
-      // On web, flutter_appauth_web throws ArgumentError (and similar non-Dio
-      // errors) for token-endpoint failures. Catching here routes them directly
-      // to _handleRefreshError — preventing the outer catch in onError() from
-      // firing and producing a duplicate Sentry event.
-      if (PlatformInfo.isWeb) {
+      // Failures the platform handler already classifies are routed straight to
+      // it, so the outer catch in onError() does not fire and log a second,
+      // generic Sentry event for the same refresh failure. On web that is every
+      // non-Dio error flutter_appauth_web throws (ArgumentError and friends); on
+      // mobile it is the native token-endpoint rejection.
+      //
+      // Anything still unclassified is rethrown on purpose: the generic event in
+      // onError() is then the only trace of it, and losing it would leave those
+      // failures invisible.
+      if (PlatformInfo.isWeb || _isRefreshRejectedByTokenEndpoint(e)) {
         return _handleRefreshError(e, st, err, handler);
       }
       rethrow;

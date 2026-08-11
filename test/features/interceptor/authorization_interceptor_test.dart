@@ -3690,6 +3690,95 @@ void main() {
       },
     );
   });
+
+  // ============================================================
+  // onError: MOBILE refresh failure emits EXACTLY ONE Sentry event
+  // Same dedup guarantee as web: a rejection is routed to the mobile handler
+  // from inside _refreshTokenThenRetry, so the outer catch in onError() never
+  // adds its own generic event. Failures the handler does NOT classify keep
+  // that generic event — it is their only trace.
+  // ============================================================
+  group('onError: mobile refresh failure emits a single Sentry event', () {
+    late _CapturingLogHandler logHandler;
+
+    setUp(() {
+      logHandler = _CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN mobile refresh is rejected by the token endpoint (invalid_grant)\n'
+      'THEN exactly ONE error-level event is emitted (will_logout=true)\n'
+      'AND the duplicate generic onError:Exception event is NOT logged',
+      () async {
+        stubWebRefresh401ThenThrow(const OAuthAuthorizationError(
+          error: 'invalid_grant',
+          errorDescription: 'The refresh token has been revoked',
+        ));
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>(
+            (e) => e.error is RefreshTokenFailedException,
+          )),
+        );
+
+        final errorRecords = logHandler.errorRecords;
+        expect(
+          errorRecords.length,
+          1,
+          reason: 'mobile refresh rejection must emit exactly one error event',
+        );
+        expect(errorRecords.single.rawMessage, contains('will_logout=true'));
+        expect(
+          errorRecords.single.extras,
+          containsPair('auth_error_type', 'token_endpoint_oauth_rejected'),
+        );
+        expect(
+          errorRecords.single.extras,
+          containsPair('oauth_error_code', 'invalid_grant'),
+        );
+        expect(
+          errorRecords.any((r) => r.rawMessage.contains('onError:Exception')),
+          isFalse,
+          reason: 'the outer-catch duplicate event must not fire on mobile',
+        );
+      },
+    );
+
+    test(
+      'WHEN mobile refresh fails with an error the handler does NOT classify\n'
+      'THEN the generic onError:Exception event is still emitted\n'
+      'AND the session is kept',
+      () async {
+        stubWebRefresh401ThenThrow(const ServerError());
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(predicate<DioException>(
+            (e) => e.error is OAuthAuthorizationError,
+          )),
+        );
+
+        expect(
+          logHandler.errorRecords
+              .where((r) => r.rawMessage.contains('onError:Exception'))
+              .length,
+          1,
+          reason: 'unclassified mobile failures must keep their only trace',
+        );
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+  });
+
   tearDown(() {
     reset(authenticationClient);
     reset(tokenOidcCacheManager);
