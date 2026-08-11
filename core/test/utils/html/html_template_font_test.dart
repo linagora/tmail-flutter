@@ -34,12 +34,20 @@ void main() {
 
   test('every referenced font file is actually shipped', () {
     final packageRoot = _resolvePackageRoot('linagora_design_flutter');
+    final packagePubspec =
+        File.fromUri(packageRoot.resolve('pubspec.yaml')).readAsStringSync();
 
     for (final url in fontUrls) {
       // /assets/packages/<package>/<pathInsidePackage>
       final pathInsidePackage = url.split('/').skip(4).join('/');
       final file = File.fromUri(packageRoot.resolve(pathInsidePackage));
       expect(file.existsSync(), isTrue, reason: '$url points at a missing file');
+      // A file that is not declared under `flutter: assets:` is not bundled.
+      expect(
+        _isDeclaredAsFlutterAsset(packagePubspec, pathInsidePackage),
+        isTrue,
+        reason: '$pathInsidePackage is not declared as an asset',
+      );
     }
   });
 
@@ -50,6 +58,20 @@ void main() {
           reason: '$url expects a font the app no longer bundles');
     }
   });
+}
+
+/// True when [pathInsidePackage] (or a parent directory) is declared under
+/// `flutter: assets:` — Flutter only bundles declared assets.
+bool _isDeclaredAsFlutterAsset(String packagePubspec, String pathInsidePackage) {
+  final candidates = <String>[pathInsidePackage];
+  var remaining = pathInsidePackage;
+  while (remaining.contains('/')) {
+    remaining = remaining.substring(0, remaining.lastIndexOf('/'));
+    candidates
+      ..add('$remaining/')
+      ..add(remaining);
+  }
+  return candidates.any(packagePubspec.contains);
 }
 
 Uri _resolvePackageRoot(String packageName) {

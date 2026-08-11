@@ -6,61 +6,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:linagora_design_flutter/style/linagora_text_theme.dart';
 
 void main() {
-  // ConstantsUI.fontFamilyFallback is null on mobile and the test binding
-  // reports Android, so the fallback chain would never be exercised. The
-  // override has to be undone inside the test body, otherwise the widget
-  // tester fails the run for leaving a foundation debug variable set.
-  Future<void> onDesktop(Future<void> Function() body) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-    try {
-      await body();
-    } finally {
-      debugDefaultTargetPlatformOverride = null;
-    }
-  }
-
-  Future<ThemeData> buildTheme(WidgetTester tester) async {
-    late ThemeData theme;
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Builder(
-          builder: (context) {
-            theme = ThemeUtils.buildAppTheme(context);
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    );
-    return theme;
-  }
-
-  void expectSameMetrics(String slot, TextStyle? actual, TextStyle? expected) {
-    expect(actual, isNotNull, reason: '$slot is missing from the app theme');
-    expect(expected, isNotNull, reason: '$slot is missing from the design system');
-    expect(actual!.fontFamily, expected!.fontFamily, reason: '$slot fontFamily');
-    expect(actual.fontSize, expected.fontSize, reason: '$slot fontSize');
-    expect(actual.fontWeight, expected.fontWeight, reason: '$slot fontWeight');
-    expect(actual.height, expected.height, reason: '$slot height');
-    expect(actual.letterSpacing, expected.letterSpacing, reason: '$slot letterSpacing');
-  }
-
-  void expectUsableFallback(String slot, TextStyle? style) {
-    expect(style?.fontFamilyFallback, ConstantsUI.webFontFamilyFallback,
-        reason: '$slot lost the fallback chain');
-    // A design system style keeps its `package`, which would rewrite every
-    // fallback entry to `packages/linagora_design_flutter/<family>` — families
-    // the design system does not ship, silently killing the chain.
-    expect(
-      style?.fontFamilyFallback?.where((family) => family.startsWith('packages/')),
-      isEmpty,
-      reason: '$slot fallback was rewritten with a package prefix',
-    );
-  }
-
   group('ThemeUtils.buildAppTheme', () {
-    testWidgets('inherits every text theme slot from the design system',
-        (tester) async => onDesktop(() async {
-      final theme = await buildTheme(tester);
+    testWidgets(
+      'inherits every text theme slot from the design system',
+      _inheritsEveryTextThemeSlot,
+    );
+    testWidgets(
+      'registers the design system typography extension',
+      _registersTypographyExtension,
+    );
+    testWidgets(
+      'legacy text style helpers follow the design system font',
+      _legacyHelpersFollowDesignSystemFont,
+    );
+  });
+}
+
+Future<void> _inheritsEveryTextThemeSlot(WidgetTester tester) =>
+    _onDesktop(() async {
+      final theme = await _buildTheme(tester);
       final designSystem = LinagoraTextTheme.material();
       final slots = <String, List<TextStyle?>>{
         'displayLarge': [theme.textTheme.displayLarge, designSystem.displayLarge],
@@ -81,14 +45,14 @@ void main() {
       };
 
       slots.forEach((slot, styles) {
-        expectSameMetrics(slot, styles.first, styles.last);
-        expectUsableFallback(slot, styles.first);
+        _expectSameMetrics(slot, styles.first, styles.last);
+        _expectUsableFallback(slot, styles.first);
       });
-    }));
+    });
 
-    testWidgets('registers the design system typography extension',
-        (tester) async => onDesktop(() async {
-      final theme = await buildTheme(tester);
+Future<void> _registersTypographyExtension(WidgetTester tester) =>
+    _onDesktop(() async {
+      final theme = await _buildTheme(tester);
       final extension = theme.extension<LinagoraTextThemeExtension>();
       expect(extension, isNotNull);
 
@@ -104,24 +68,73 @@ void main() {
       };
 
       slots.forEach((slot, styles) {
-        expectSameMetrics(slot, styles.first, styles.last);
-        expectUsableFallback(slot, styles.first);
+        _expectSameMetrics(slot, styles.first, styles.last);
+        _expectUsableFallback(slot, styles.first);
       });
-    }));
+    });
 
-    testWidgets('legacy text style helpers follow the design system font',
-        (tester) async => onDesktop(() async {
-      await buildTheme(tester);
+Future<void> _legacyHelpersFollowDesignSystemFont(WidgetTester tester) =>
+    _onDesktop(() async {
+      await _buildTheme(tester);
       final designSystemFont = LinagoraTextTheme.material().bodyMedium?.fontFamily;
 
       expect(designSystemFont, isNotNull);
       expect(ThemeUtils.defaultTextStyleInterFont.fontFamily, designSystemFont);
       expect(ThemeUtils.textStyleBodyBody1().fontFamily, designSystemFont);
       expect(ThemeUtils.textStyleInter400.fontFamily, designSystemFont);
-      expectUsableFallback(
+      _expectUsableFallback(
         'defaultTextStyleInterFont',
         ThemeUtils.defaultTextStyleInterFont,
       );
-    }));
-  });
+    });
+
+// ConstantsUI.fontFamilyFallback is null on mobile and the test binding
+// reports Android, so the fallback chain would never be exercised. The
+// override has to be undone inside the test body, otherwise the widget
+// tester fails the run for leaving a foundation debug variable set.
+Future<void> _onDesktop(Future<void> Function() body) async {
+  debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+  try {
+    await body();
+  } finally {
+    debugDefaultTargetPlatformOverride = null;
+  }
+}
+
+Future<ThemeData> _buildTheme(WidgetTester tester) async {
+  late ThemeData theme;
+  await tester.pumpWidget(
+    MaterialApp(
+      home: Builder(
+        builder: (context) {
+          theme = ThemeUtils.buildAppTheme(context);
+          return const SizedBox.shrink();
+        },
+      ),
+    ),
+  );
+  return theme;
+}
+
+void _expectSameMetrics(String slot, TextStyle? actual, TextStyle? expected) {
+  expect(actual, isNotNull, reason: '$slot is missing from the app theme');
+  expect(expected, isNotNull, reason: '$slot is missing from the design system');
+  expect(actual!.fontFamily, expected!.fontFamily, reason: '$slot fontFamily');
+  expect(actual.fontSize, expected.fontSize, reason: '$slot fontSize');
+  expect(actual.fontWeight, expected.fontWeight, reason: '$slot fontWeight');
+  expect(actual.height, expected.height, reason: '$slot height');
+  expect(actual.letterSpacing, expected.letterSpacing, reason: '$slot letterSpacing');
+}
+
+void _expectUsableFallback(String slot, TextStyle? style) {
+  expect(style?.fontFamilyFallback, ConstantsUI.webFontFamilyFallback,
+      reason: '$slot lost the fallback chain');
+  // A design system style keeps its `package`, which would rewrite every
+  // fallback entry to `packages/linagora_design_flutter/<family>` — families
+  // the design system does not ship, silently killing the chain.
+  expect(
+    style?.fontFamilyFallback?.where((family) => family.startsWith('packages/')),
+    isEmpty,
+    reason: '$slot fallback was rewritten with a package prefix',
+  );
 }

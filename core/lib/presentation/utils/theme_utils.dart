@@ -47,6 +47,10 @@ class ThemeUtils {
   /// https://github.com/linagora/linagora-design-flutter/issues/78
   static TextStyle? _withFallback(TextStyle? style) {
     if (style == null) return null;
+    return _withFallbackRequired(style);
+  }
+
+  static TextStyle _withFallbackRequired(TextStyle style) {
     return TextStyle(
       inherit: style.inherit,
       fontFamily: style.fontFamily,
@@ -99,13 +103,13 @@ class ThemeUtils {
   static LinagoraTextThemeExtension _buildTextThemeExtension() {
     final extension = LinagoraTextThemeExtension.material();
     return LinagoraTextThemeExtension(
-      titleSemibold: _withFallback(extension.titleSemibold)!,
-      bodyLargeBold: _withFallback(extension.bodyLargeBold)!,
-      bodyLarge1: _withFallback(extension.bodyLarge1)!,
-      bodyLarge2: _withFallback(extension.bodyLarge2)!,
-      bodyMedium1: _withFallback(extension.bodyMedium1)!,
-      bodyMedium2: _withFallback(extension.bodyMedium2)!,
-      bodyMedium3: _withFallback(extension.bodyMedium3)!,
+      titleSemibold: _withFallbackRequired(extension.titleSemibold),
+      bodyLargeBold: _withFallbackRequired(extension.bodyLargeBold),
+      bodyLarge1: _withFallbackRequired(extension.bodyLarge1),
+      bodyLarge2: _withFallbackRequired(extension.bodyLarge2),
+      bodyMedium1: _withFallbackRequired(extension.bodyMedium1),
+      bodyMedium2: _withFallbackRequired(extension.bodyMedium2),
+      bodyMedium3: _withFallbackRequired(extension.bodyMedium3),
     );
   }
 
