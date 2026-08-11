@@ -46,12 +46,21 @@ class DriveTransferStrategyFactory {
   /// Reclaims OPFS entries orphaned by a tab that died mid-transfer. Fire and
   /// forget: it only touches entries hours older than anything this session
   /// creates, so no transfer waits on it — or fails with it.
+  ///
+  /// Both failure shapes are swallowed: `catchError` for a rejected future, and
+  /// the try/catch for a binding that throws before it returns one. Strategy
+  /// selection must not fail over a best-effort cleanup.
   static void _sweepStaleTempFilesOnce() {
     if (_swept) return;
     _swept = true;
-    unawaited(OpfsJsBindings.instance.sweepStaleTempFiles().catchError((error) {
+    try {
+      unawaited(
+          OpfsJsBindings.instance.sweepStaleTempFiles().catchError((error) {
+        logWarning('DriveTransferStrategyFactory: OPFS sweep failed: $error');
+      }));
+    } catch (error) {
       logWarning('DriveTransferStrategyFactory: OPFS sweep failed: $error');
-    }));
+    }
   }
 
   @visibleForTesting

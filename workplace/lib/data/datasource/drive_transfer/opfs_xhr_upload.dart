@@ -47,7 +47,7 @@ mixin OpfsXhrUpload {
   /// catch a stall — it would only kill transfers making progress. Cancelling
   /// is the caller's job, through [XhrUploadHandle.abort].
   ///
-  /// Failures come out as [DioException], like `fetchStream`'s.
+  /// Failures come out as [DioException], like `openDownload`'s.
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     final requestOptions = RequestOptions(path: request.uploadUri.toString());
     final completer = Completer<Map<String, dynamic>>();
@@ -162,7 +162,7 @@ mixin OpfsXhrUpload {
 
   /// Spelled out rather than via `DioException.connectionError`, which
   /// hardcodes `error: null` and would drop the browser's own failure — the
-  /// same reason `OpfsFetchStreaming.fetchStream` builds this by hand.
+  /// same reason `OpfsFetchDownload.openDownload` builds this by hand.
   void _completeTransportError(
     Completer<Map<String, dynamic>> completer,
     RequestOptions requestOptions,

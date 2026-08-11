@@ -10,7 +10,7 @@ import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart'
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader_web.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_streaming.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_download.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
@@ -50,7 +50,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
     Future<void>? cancelSubscription;
 
     try {
-      final fetchStream = scope.fetchStream = await _bindings.fetchStream(
+      final downloadHandle = scope.downloadHandle = await _bindings.openDownload(
         downloadLink,
         cancelSignal: cancelToken.whenCancel,
       );
@@ -63,14 +63,14 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       // what it can still reach, which both stops it acting on a finished
       // transfer and drops its hold on the reader.
       cancelSubscription = cancelToken.whenCancel.then((_) async {
-        final activeReader = scope.fetchStream?.reader;
+        final activeReader = scope.downloadHandle?.reader;
         if (activeReader != null) await _bindings.cancelReader(activeReader);
       }).catchError((error) {
         logWarning('OpfsDriveFileStager: failed to cancel reader for $tempFileName: $error');
       });
 
       final received = await _streamToFile(_StreamToFileRequest(
-        fetchStream: fetchStream,
+        downloadHandle: downloadHandle,
         writable: writable,
         cancelToken: cancelToken,
         onDownloadProgress: onDownloadProgress,
@@ -115,7 +115,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// here — and says nothing about how the browser slices the body; chunk sizes
   /// vary with the network and the browser's own buffering. The stream
   /// announces its end itself, and the only way to observe that is
-  /// `reader.read()` resolving `done: true`, which [OpfsFetchStreaming.readChunk]
+  /// `reader.read()` resolving `done: true`, which [OpfsFetchDownload.readChunk]
   /// maps to null. So the value that ends the loop is produced by an operation
   /// that has to run inside it.
   ///
@@ -137,7 +137,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// `body.pipeTo(writable)` with a `TransformStream` counting progress —
   /// which would replace this file's read/write bindings wholesale.
   Future<int> _readAndWriteAll(_StreamToFileRequest request) async {
-    final reader = request.fetchStream.reader;
+    final reader = request.downloadHandle.reader;
     var received = 0;
     while (true) {
       // Bails out at the iteration boundary. `cancelReader` is async, so
@@ -158,7 +158,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       if (chunk == null) break;
       await _bindings.writeChunk(request.writable, chunk);
       received += chunk.length;
-      request.onDownloadProgress(received, request.fetchStream.contentLength);
+      request.onDownloadProgress(received, request.downloadHandle.contentLength);
     }
     return received;
   }
@@ -168,7 +168,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// the re-check here the truncated file would pass as a successful staging.
   void _verifyComplete(_StreamToFileRequest request, int received) {
     _throwIfCancelled(request.cancelToken);
-    final expected = request.fetchStream.contentLength;
+    final expected = request.downloadHandle.contentLength;
     if (expected >= 0 && received != expected) {
       throw DriveDownloadIncompleteException(
         received: received,
@@ -209,7 +209,7 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
 /// Bundles [OpfsDriveFileStager._streamToFile]'s parameters to keep its
 /// argument count low, the same way [XhrUploadFileRequest] does.
 class _StreamToFileRequest {
-  final OpfsFetchStream fetchStream;
+  final FetchDownloadHandle downloadHandle;
 
   /// `dynamic`, not `web.FileSystemWritableFileStream`: naming that type here
   /// would pull `package:web` into a file the non-web build still analyses.
@@ -220,7 +220,7 @@ class _StreamToFileRequest {
   final OnFileProcessedProgress onDownloadProgress;
 
   const _StreamToFileRequest({
-    required this.fetchStream,
+    required this.downloadHandle,
     required this.writable,
     required this.cancelToken,
     required this.onDownloadProgress,
@@ -233,7 +233,7 @@ class _OpfsStagingScope {
   final OpfsJsBindings bindings;
   final String tempFileName;
 
-  OpfsFetchStream? fetchStream;
+  FetchDownloadHandle? downloadHandle;
   OpfsFileHandle? handle;
 
   /// See [_StreamToFileRequest.writable] for why this stays untyped.
@@ -244,7 +244,7 @@ class _OpfsStagingScope {
   /// Drops the references `stage()` no longer needs, so the `whenCancel`
   /// listener it can never unsubscribe holds nothing once the transfer ends.
   void release() {
-    fetchStream = null;
+    downloadHandle = null;
     writable = null;
     handle = null;
   }
@@ -253,7 +253,7 @@ class _OpfsStagingScope {
   /// on an already-unlocked reader, and never worth failing a finished
   /// transfer over.
   void releaseReaderLock() {
-    final stream = fetchStream;
+    final stream = downloadHandle;
     if (stream == null) return;
     try {
       bindings.releaseReaderLock(stream.reader);
@@ -265,7 +265,7 @@ class _OpfsStagingScope {
   /// Best-effort: every step runs regardless of the ones before it, and a
   /// failure here is logged rather than replacing the error that caused it.
   Future<void> cleanupAfterFailure() async {
-    final stream = fetchStream;
+    final stream = downloadHandle;
     if (stream != null) {
       await _attempt('cancel reader', () => bindings.cancelReader(stream.reader));
       releaseReaderLock();

@@ -123,6 +123,41 @@ XhrUploadFileRequest _request({
 Matcher _isDioException(DioExceptionType type) =>
     isA<DioException>().having((e) => e.type, 'type', type);
 
+/// Runs an upload with a progress collector and fires one `upload.onprogress`,
+/// returning the `[loaded, total]` pairs the request saw.
+List<List<int>> _progressFromEvent({
+  required bool lengthComputable,
+  required int loaded,
+  required int total,
+}) {
+  final fake = _FakeXhr();
+  final progress = <List<int>>[];
+
+  _TestOpfsXhrUpload(fake)
+      .uploadFile(_request(onUploadProgress: (a, b) => progress.add([a, b])));
+  fake.fireUploadProgress(
+    lengthComputable: lengthComputable,
+    loaded: loaded,
+    total: total,
+  );
+
+  return progress;
+}
+
+/// Runs an upload and fires `onload` with [status]/[responseText], returning
+/// the handle's future so the caller can assert on how it settles.
+Future<Map<String, dynamic>> _responseAfterLoad({
+  required int status,
+  required String responseText,
+}) {
+  final fake = _FakeXhr();
+
+  final handle = _TestOpfsXhrUpload(fake).uploadFile(_request());
+  fake.fireLoad(status: status, responseText: responseText);
+
+  return handle.response;
+}
+
 void main() {
   group('OpfsXhrUpload.uploadFile headers', () {
     test('sends the auth, JMAP accept and content-type headers', () {
@@ -157,52 +192,40 @@ void main() {
 
   group('OpfsXhrUpload.uploadFile progress', () {
     test('forwards the total when the length is computable', () {
-      final fake = _FakeXhr();
-      final progress = <List<int>>[];
-
-      _TestOpfsXhrUpload(fake)
-          .uploadFile(_request(onUploadProgress: (a, b) => progress.add([a, b])));
-      fake.fireUploadProgress(lengthComputable: true, loaded: 5, total: 10);
-
-      expect(progress, [
-        [5, 10]
-      ]);
+      expect(
+        _progressFromEvent(lengthComputable: true, loaded: 5, total: 10),
+        [
+          [5, 10]
+        ],
+      );
     });
 
     // -1, not the 0 the browser reports: the download leg's unknown-total
     // sentinel, so one consumer serves both legs.
     test('reports an unknown total as -1', () {
-      final fake = _FakeXhr();
-      final progress = <List<int>>[];
-
-      _TestOpfsXhrUpload(fake)
-          .uploadFile(_request(onUploadProgress: (a, b) => progress.add([a, b])));
-      fake.fireUploadProgress(lengthComputable: false, loaded: 5, total: 0);
-
-      expect(progress, [
-        [5, -1]
-      ]);
+      expect(
+        _progressFromEvent(lengthComputable: false, loaded: 5, total: 0),
+        [
+          [5, -1]
+        ],
+      );
     });
   });
 
   group('OpfsXhrUpload.uploadFile response', () {
     test('resolves with the parsed body on a 2xx', () async {
-      final fake = _FakeXhr();
+      final response = _responseAfterLoad(
+          status: 201, responseText: '{"blobId":"blob-1","size":42}');
 
-      final handle = _TestOpfsXhrUpload(fake).uploadFile(_request());
-      fake.fireLoad(status: 201, responseText: '{"blobId":"blob-1","size":42}');
-
-      expect(await handle.response, {'blobId': 'blob-1', 'size': 42});
+      expect(await response, {'blobId': 'blob-1', 'size': 42});
     });
 
     test('fails with badResponse when a 2xx body is not JSON', () async {
-      final fake = _FakeXhr();
-
-      final handle = _TestOpfsXhrUpload(fake).uploadFile(_request());
-      fake.fireLoad(status: 200, responseText: '<html>nope</html>');
+      final response = _responseAfterLoad(
+          status: 200, responseText: '<html>nope</html>');
 
       await expectLater(
-        handle.response,
+        response,
         throwsA(isA<DioException>()
             .having((e) => e.type, 'type', DioExceptionType.badResponse)
             .having((e) => e.message, 'message',
@@ -211,13 +234,10 @@ void main() {
     });
 
     test('fails with badResponse and the status on a non-2xx', () async {
-      final fake = _FakeXhr();
-
-      final handle = _TestOpfsXhrUpload(fake).uploadFile(_request());
-      fake.fireLoad(status: 413, responseText: '');
+      final response = _responseAfterLoad(status: 413, responseText: '');
 
       await expectLater(
-        handle.response,
+        response,
         throwsA(isA<DioException>()
             .having((e) => e.type, 'type', DioExceptionType.badResponse)
             .having((e) => e.response?.statusCode, 'statusCode', 413)),

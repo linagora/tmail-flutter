@@ -15,7 +15,7 @@ import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart'
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_streaming.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_download.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
@@ -230,7 +230,7 @@ void main() {
 
   test('reports a cancel when the aborted fetch rejects an in-flight read',
       () async {
-    // The abort controller `fetchStream` opened stays live after the headers,
+    // The abort controller `openDownload` opened stays live after the headers,
     // so a cancellation can reach the loop as a browser error on the read
     // rather than through `cancelReader`. It still has to come out as a
     // cancellation, not as whatever the browser threw.
@@ -617,12 +617,12 @@ class _FailingAbortOpfsJsBindings extends OpfsJsBindings {
   }
 }
 
-/// Fails before any OPFS entry is created — `stage` calls `fetchStream`
+/// Fails before any OPFS entry is created — `stage` calls `openDownload`
 /// first, so this exercises the pre-staging failure path deterministically,
 /// without depending on browser networking.
 class _FailingFetchOpfsJsBindings extends OpfsJsBindings {
   @override
-  Future<OpfsFetchStream> fetchStream(Uri url, {Future<void>? cancelSignal}) {
+  Future<FetchDownloadHandle> openDownload(Uri url, {Future<void>? cancelSignal}) {
     throw StateError('fetch failed');
   }
 }
@@ -702,7 +702,7 @@ class _ControllableStreamBindings extends OpfsJsBindings {
   }
 
   @override
-  Future<OpfsFetchStream> fetchStream(Uri url,
+  Future<FetchDownloadHandle> openDownload(Uri url,
       {Future<void>? cancelSignal}) async {
     final source = JSObject();
     source.setProperty(
@@ -717,7 +717,7 @@ class _ControllableStreamBindings extends OpfsJsBindings {
     if (cancelSignal != null && errorStreamOnCancelSignal) {
       unawaited(cancelSignal.then((_) => _errorStream()));
     }
-    return OpfsFetchStream(
+    return FetchDownloadHandle(
       reader: stream.getReader() as web.ReadableStreamDefaultReader,
       contentLength: contentLength,
     );
