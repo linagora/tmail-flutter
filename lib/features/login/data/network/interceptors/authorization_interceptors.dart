@@ -16,6 +16,8 @@ import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/mobile_refresh_token_error_classifier.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/refresh_token_error_classifier.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/web_refresh_token_error_classifier.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
@@ -36,7 +38,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   TokenOIDC? _token;
   String? _authorization;
 
-  final WebRefreshTokenErrorClassifier _webErrorClassifier;
+  final RefreshTokenErrorClassifier? _injectedErrorClassifier;
+
+  late final RefreshTokenErrorClassifier _errorClassifier =
+      _injectedErrorClassifier ??
+          (PlatformInfo.isWeb
+              ? WebRefreshTokenErrorClassifier()
+              : MobileRefreshTokenErrorClassifier());
 
   late final void Function(
     Object error,
@@ -52,8 +60,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     this._tokenOidcCacheManager,
     this._accountCacheManager,
     this._iosSharingManager, {
-    WebRefreshTokenErrorClassifier? webErrorClassifier,
-  }) : _webErrorClassifier = webErrorClassifier ?? WebRefreshTokenErrorClassifier();
+    RefreshTokenErrorClassifier? errorClassifier,
+  }) : _injectedErrorClassifier = errorClassifier;
 
   void setBasicAuthorization(UserName userName, Password password) {
     _authorization = base64Encode(utf8.encode('${userName.value}:${password.value}'));
@@ -193,7 +201,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
   /// a flaky connection does not log the web user out.
   ///
-  /// Error routing delegates RFC 6749 classification to [WebRefreshTokenErrorClassifier]:
+  /// Error routing delegates RFC 6749 classification to [RefreshTokenErrorClassifier]:
   /// - Server rejection (400/401 or RFC 6749 bad-grant code) → logout.
   /// - [ArgumentError] with unknown OAuth2 code → Sentry trace, keep session.
   /// - Network/transport failure → keep session silently.
@@ -203,7 +211,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
-    final isRejected = _webErrorClassifier.isServerRejection(error);
+    final isRejected = _errorClassifier.isServerRejection(error);
 
     if (isRejected) {
       logError(
@@ -211,7 +219,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'will_logout=true — error=$error',
         exception: error,
         stackTrace: stackTrace,
-        extras: _webErrorClassifier.buildSentryExtras(error),
+        extras: _errorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
       clear();
@@ -229,7 +237,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'will_logout=false — error=$error',
         exception: error,
         stackTrace: stackTrace,
-        extras: _webErrorClassifier.buildSentryExtras(error),
+        extras: _errorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
       return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
