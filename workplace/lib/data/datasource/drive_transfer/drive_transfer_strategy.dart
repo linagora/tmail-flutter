@@ -41,7 +41,7 @@ abstract class DriveTransferStrategy<T extends StagedDriveFile> {
       await staged.dispose();
     } catch (error) {
       logWarning(
-          'DriveTransferStrategy::_disposeQuietly: failed to dispose ${staged.fileName}: $error');
+          'DriveTransferStrategy::_disposeQuietly: failed to dispose staged file: $error');
     }
   }
 

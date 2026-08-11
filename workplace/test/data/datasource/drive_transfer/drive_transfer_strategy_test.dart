@@ -45,6 +45,7 @@ class _FakeStrategy extends DriveTransferStrategy<FileBackedStagedFile> {
 
   final attachment = Attachment(name: 'file.bin');
   bool uploadCalled = false;
+  DriveUploadRequest<FileBackedStagedFile>? uploadRequest;
 
   @override
   Future<FileBackedStagedFile> stage({
@@ -60,6 +61,7 @@ class _FakeStrategy extends DriveTransferStrategy<FileBackedStagedFile> {
   Future<Attachment> upload(
       DriveUploadRequest<FileBackedStagedFile> request) async {
     uploadCalled = true;
+    uploadRequest = request;
     if (uploadError != null) throw uploadError!;
     return attachment;
   }
@@ -126,6 +128,31 @@ void main() {
     throwOnDelete: StateError('delete failed'),
     uploadError: StateError('upload failed'),
   );
+
+  test('transfer() carries every request field onto the upload leg', () async {
+    final recorder = _RecordingStagedFile();
+    final staged = recorder.build();
+    final strategy = _FakeStrategy(staged: staged);
+    // Distinct closure instances, so `same()` also catches the two progress
+    // callbacks being swapped.
+    final request = DriveTransferRequest(
+      doc: _doc,
+      uploadUri: _uploadUri,
+      authHeader: 'Bearer token',
+      onDownloadProgress: (_, __) {},
+      onUploadProgress: (_, __) {},
+      cancelToken: CancelToken(),
+    );
+
+    await strategy.transfer(request);
+
+    final uploaded = strategy.uploadRequest!;
+    expect(uploaded.staged, same(staged));
+    expect(uploaded.uploadUri, same(request.uploadUri));
+    expect(uploaded.authHeader, request.authHeader);
+    expect(uploaded.onUploadProgress, same(request.onUploadProgress));
+    expect(uploaded.cancelToken, same(request.cancelToken));
+  });
 
   test('does not upload or dispose when staging fails', () async {
     final recorder = _RecordingStagedFile();
