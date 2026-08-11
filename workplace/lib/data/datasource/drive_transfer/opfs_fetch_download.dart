@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:web/web.dart' as web;
 
@@ -32,6 +33,15 @@ mixin OpfsFetchDownload {
   /// action — and any other transport failure (CORS, DNS, TLS, offline, which
   /// reject with a browser `TypeError` rather than anything Dio-shaped) as
   /// `connectionError` carrying the original error.
+  ///
+  /// **What an abort does.** `AbortController.abort()` never throws; it rejects
+  /// whatever the signal is attached to with an `AbortError` `DOMException`,
+  /// and where that lands depends on when it fires. Before the headers arrive
+  /// it rejects the `fetch` itself, caught below and mapped to `cancel`. After
+  /// they arrive this method has already returned, so it instead errors the
+  /// body stream and surfaces from [readChunk] as `connectionError` — a
+  /// dropped connection is indistinguishable from an abort at that level, so
+  /// only the caller's [CancelToken] can tell the two apart.
   Future<FetchDownloadHandle> openDownload(Uri url,
       {Future<void>? cancelSignal}) async {
     final requestOptions = RequestOptions(path: url.toString());
@@ -41,9 +51,15 @@ mixin OpfsFetchDownload {
     // rejects.
     var cancelled = false;
     if (cancelSignal != null) {
+      // `catchError` because nothing awaits this listener: a throwing `abort()`
+      // would otherwise escape as an unhandled async error rather than through
+      // any of the mapping below. Same guard as `OpfsDriveFileStager.stage`'s
+      // `whenCancel` listener.
       unawaited(cancelSignal.then((_) {
         cancelled = true;
         controller.abort();
+      }).catchError((error) {
+        logWarning('OpfsFetchDownload: failed to abort the download fetch: $error');
       }));
     }
     final web.Response response;
