@@ -3293,6 +3293,44 @@ void main() {
       );
     }
 
+    // The web handler delegates its non-rejection paths to
+    // _handleRefreshErrorOnMobile, whose leading branch force-logs-out on an
+    // OAuthAuthorizationError the classifier confirms. On web that branch must
+    // stay dead: the web classifier reads ArgumentError, never this type, so a
+    // native-shaped error arriving on web keeps the session. Without this test,
+    // moving that branch ahead of the isRejected check would silently start
+    // logging web users out on a failure web had already ruled transient.
+    for (final nativeShapedError in const <OAuthAuthorizationError>[
+      OAuthAuthorizationError(
+        error: 'invalid_grant',
+        errorDescription: 'The refresh token has been revoked',
+      ),
+      OAuthAuthorizationError(error: 'unsupported_grant_type'),
+    ]) {
+      test(
+        'WHEN web refresh throws OAuthAuthorizationError(${nativeShapedError.error}) '
+        '— the mobile error shape\n'
+        'THEN session is KEPT: the mobile force-logout branch must not fire on web',
+        () async {
+          stubWebRefresh401ThenThrow(nativeShapedError);
+          stubAccountCache();
+
+          await expectLater(
+            () => dio.post(baseUrl),
+            throwsA(predicate<DioException>((e) {
+              return e.error is OAuthAuthorizationError &&
+                  e.error is! RefreshTokenFailedException;
+            })),
+          );
+
+          expect(
+            authorizationInterceptors.authenticationType,
+            AuthenticationType.oidc,
+          );
+        },
+      );
+    }
+
     // ---- DioException from token endpoint: only 400/401 → logout ----
 
     test(

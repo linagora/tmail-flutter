@@ -241,7 +241,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         extras: _errorClassifier.buildSentryExtras(error),
         webConsoleEnabled: true,
       );
-      return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
+      return _propagateKeepingSession(error, originalError, handler);
     }
 
     logWarning(
@@ -249,7 +249,23 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       'web refresh network/transient failure, keeping session — error=$error',
       webConsoleEnabled: true,
     );
-    return _handleRefreshErrorOnMobile(error, stackTrace, originalError, handler);
+    return _propagateKeepingSession(error, originalError, handler);
+  }
+
+  /// Propagates [error] downstream WITHOUT touching the session, normalising it
+  /// to a [DioException] first so callers below the interceptor see one type.
+  void _propagateKeepingSession(
+    Object error,
+    DioException originalError,
+    ErrorInterceptorHandler handler,
+  ) {
+    if (error is DioException) {
+      return super.onError(error, handler);
+    }
+    return super.onError(
+      error.toDioException(requestOptions: originalError.requestOptions),
+      handler,
+    );
   }
 
   /// On mobile the refresh runs through flutter_appauth (native), so a rejected
@@ -290,13 +306,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       ));
     }
 
-    if (error is DioException) {
-      return super.onError(error, handler);
-    }
-    return super.onError(
-      error.toDioException(requestOptions: originalError.requestOptions),
-      handler,
-    );
+    return _propagateKeepingSession(error, originalError, handler);
   }
 
   /// A retry that comes back 401 then surfaces downstream as
