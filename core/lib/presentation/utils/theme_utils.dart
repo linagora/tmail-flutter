@@ -50,6 +50,10 @@ class ThemeUtils {
     return _withFallbackRequired(style);
   }
 
+  @visibleForTesting
+  static TextStyle withFallbackForTesting(TextStyle style) =>
+      _withFallbackRequired(style);
+
   static TextStyle _withFallbackRequired(TextStyle style) {
     return TextStyle(
       inherit: style.inherit,

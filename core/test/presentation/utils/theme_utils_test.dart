@@ -20,6 +20,13 @@ void main() {
       _legacyHelpersFollowDesignSystemFont,
     );
   });
+
+  group('ThemeUtils.withFallbackForTesting', () {
+    testWidgets(
+      'rebuilding a style only replaces its font family fallback',
+      _rebuildingAStyleOnlyReplacesItsFallback,
+    );
+  });
 }
 
 Future<void> _inheritsEveryTextThemeSlot(WidgetTester tester) =>
@@ -85,6 +92,37 @@ Future<void> _legacyHelpersFollowDesignSystemFont(WidgetTester tester) =>
       _expectUsableFallback(
         'defaultTextStyleInterFont',
         ThemeUtils.defaultTextStyleInterFont,
+      );
+    });
+
+// Every field a TextStyle can carry, populated, so a future SDK field that
+// _withFallbackRequired forgets to copy shows up as a mismatch here instead
+// of silently vanishing from every design-system-derived style.
+Future<void> _rebuildingAStyleOnlyReplacesItsFallback(WidgetTester tester) =>
+    _onDesktop(() async {
+      const original = TextStyle(
+        inherit: false,
+        fontFamily: 'SomeFont',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        fontStyle: FontStyle.italic,
+        letterSpacing: 1,
+        wordSpacing: 2,
+        textBaseline: TextBaseline.alphabetic,
+        height: 1.5,
+        locale: Locale('en', 'US'),
+        color: Colors.red,
+        backgroundColor: Colors.blue,
+        decoration: TextDecoration.underline,
+        decorationColor: Colors.green,
+        decorationStyle: TextDecorationStyle.dashed,
+        decorationThickness: 2,
+        overflow: TextOverflow.ellipsis,
+      );
+
+      expect(
+        ThemeUtils.withFallbackForTesting(original),
+        original.copyWith(fontFamilyFallback: ConstantsUI.fontFamilyFallback),
       );
     });
 
