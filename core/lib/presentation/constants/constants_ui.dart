@@ -1,6 +1,12 @@
 import 'package:core/utils/platform_info.dart';
 
 class ConstantsUI {
+  static const String fontApp = 'TwakeInter';
+  static const String fontFileRegular = '$fontApp-Regular';
+  static const String fontFileMedium = '$fontApp-Medium';
+  static const String fontFileSemiBold = '$fontApp-SemiBold';
+  static const String fontFileBold = '$fontApp-Bold';
+
   static final List<String>? fontFamilyFallback = PlatformInfo.isMobile
       ? null
       : webFontFamilyFallback;

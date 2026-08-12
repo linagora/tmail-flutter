@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:flutter/material.dart';
 
 class HtmlTemplate {
@@ -62,37 +63,37 @@ class HtmlTemplate {
   static const String _fontAssetDirectory =
       'assets/packages/linagora_design_flutter/assets/fonts';
 
-  static const String fontFamilyApp = 'TwakeInter';
+  static const String fontFamilyApp = ConstantsUI.fontApp;
 
   static const String fontFaceStyle = '''
     @font-face {
       font-family: '$fontFamilyApp';
-      src: url("$_fontAssetDirectory/TwakeInter-Regular.ttf") format("truetype");
+      src: url("$_fontAssetDirectory/${ConstantsUI.fontFileRegular}.ttf") format("truetype");
       font-weight: 400;
       font-style: normal;
     }
-    
+
     @font-face {
       font-family: '$fontFamilyApp';
-      src: url("$_fontAssetDirectory/TwakeInter-Medium.ttf") format("truetype");
+      src: url("$_fontAssetDirectory/${ConstantsUI.fontFileMedium}.ttf") format("truetype");
       font-weight: 500;
       font-style: normal;
     }
-    
+
     @font-face {
       font-family: '$fontFamilyApp';
-      src: url("$_fontAssetDirectory/TwakeInter-SemiBold.ttf") format("truetype");
+      src: url("$_fontAssetDirectory/${ConstantsUI.fontFileSemiBold}.ttf") format("truetype");
       font-weight: 600;
       font-style: normal;
     }
-    
+
     @font-face {
       font-family: '$fontFamilyApp';
-      src: url("$_fontAssetDirectory/TwakeInter-Bold.ttf") format("truetype");
+      src: url("$_fontAssetDirectory/${ConstantsUI.fontFileBold}.ttf") format("truetype");
       font-weight: 700;
       font-style: normal;
     }
-    
+
     body {
       font-family: '$fontFamilyApp', sans-serif;
     }
