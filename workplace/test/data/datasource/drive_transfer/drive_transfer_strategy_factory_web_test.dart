@@ -35,32 +35,32 @@ Future<Attachment> _unusedUploader({
     throw UnimplementedError();
 
 void main() {
-  setUp(DriveTransferStrategyFactory.resetCache);
-
   group('DriveTransferStrategyFactory (web)', () {
     test('returns the OPFS strategy when OPFS is detected', () {
-      DriveTransferStrategyFactory.capability = _FakeOpfsCapability(true);
+      final factory =
+          DriveTransferStrategyFactory(capability: _FakeOpfsCapability(true));
 
-      final strategy = DriveTransferStrategyFactory.create(uploader: _unusedUploader);
+      final strategy = factory.create(uploader: _unusedUploader);
 
       expect(strategy, isA<OpfsDriveTransferStrategy>());
     });
 
     test('returns the buffered strategy when OPFS is unavailable', () {
-      DriveTransferStrategyFactory.capability = _FakeOpfsCapability(false);
+      final factory =
+          DriveTransferStrategyFactory(capability: _FakeOpfsCapability(false));
 
-      final strategy = DriveTransferStrategyFactory.create(uploader: _unusedUploader);
+      final strategy = factory.create(uploader: _unusedUploader);
 
       expect(strategy, isA<BufferedWebDriveTransferStrategy>());
     });
 
     test('caches detection across multiple create() calls', () {
       final fake = _FakeOpfsCapability(true);
-      DriveTransferStrategyFactory.capability = fake;
+      final factory = DriveTransferStrategyFactory(capability: fake);
 
-      DriveTransferStrategyFactory.create(uploader: _unusedUploader);
-      DriveTransferStrategyFactory.create(uploader: _unusedUploader);
-      DriveTransferStrategyFactory.create(uploader: _unusedUploader);
+      factory.create(uploader: _unusedUploader);
+      factory.create(uploader: _unusedUploader);
+      factory.create(uploader: _unusedUploader);
 
       expect(fake.probeCount, 1);
     });

@@ -134,14 +134,14 @@ class OpfsFileOps implements OpfsStore {
       }
     }
   }
+}
 
-  /// Names are `<prefix><microsSinceEpoch>_...`. A name that doesn't parse is
-  /// left alone.
-  static bool _isStaleTempFile(String name, DateTime cutoff) {
-    if (!name.startsWith(opfsTempFilePrefix)) return false;
-    final micros = int.tryParse(
-        name.substring(opfsTempFilePrefix.length).split('_').first);
-    if (micros == null) return false;
-    return DateTime.fromMicrosecondsSinceEpoch(micros).isBefore(cutoff);
-  }
+/// Names are `<prefix><microsSinceEpoch>_...`. A name that doesn't parse is
+/// left alone.
+bool _isStaleTempFile(String name, DateTime cutoff) {
+  if (!name.startsWith(opfsTempFilePrefix)) return false;
+  final micros = int.tryParse(
+      name.substring(opfsTempFilePrefix.length).split('_').first);
+  if (micros == null) return false;
+  return DateTime.fromMicrosecondsSinceEpoch(micros).isBefore(cutoff);
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_transfer_strategy.dart';
@@ -11,27 +10,25 @@ import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart'
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
 /// Web branch of the conditional export in
-/// `drive_transfer_strategy_factory.dart`: OPFS detection runs once per
-/// session and is cached (module-level field), so repeated `create()` calls
-/// across a batch never re-probe.
+/// `drive_transfer_strategy_factory.dart`. Detection and the stale-file sweep
+/// are cached per instance, so callers hold one long-lived factory.
 class DriveTransferStrategyFactory {
-  const DriveTransferStrategyFactory._();
+  /// The two seams this factory reaches JS through.
+  DriveTransferStrategyFactory({
+    OpfsCapability? capability,
+    OpfsStore? store,
+  })  : _capability = capability ?? OpfsFeatureDetection(),
+        _store = store ?? OpfsFileOps();
 
-  static bool? _opfsSupported;
-  static bool _swept = false;
+  final OpfsCapability _capability;
+  final OpfsStore _store;
 
-  /// The two seams this factory reaches JS through. Fields rather than
-  /// constructor parameters because `create()` is static, and tests swap them
-  /// the way `OpfsJsBindings.setInstance` used to be swapped.
-  @visibleForTesting
-  static OpfsCapability capability = OpfsFeatureDetection();
-
-  @visibleForTesting
-  static OpfsStore store = OpfsFileOps();
+  bool? _opfsSupported;
+  bool _swept = false;
 
   /// [uploader] backs the buffered fallback only; the OPFS strategy uploads
   /// through its own raw-XHR path.
-  static DriveTransferStrategy<StagedDriveFile> create(
+  DriveTransferStrategy<StagedDriveFile> create(
       {required StagedFileUploader uploader}) {
     _opfsSupported ??= _detectOpfsSupport();
     if (!_opfsSupported!) {
@@ -42,11 +39,10 @@ class DriveTransferStrategyFactory {
   }
 
   /// Detection crosses JS interop, so an unexpected browser environment can
-  /// throw rather than answer. That is treated as "not supported" — and cached
-  /// as such, so a failure doesn't re-probe and re-throw on every later call.
-  static bool _detectOpfsSupport() {
+  /// throw rather than answer. Treated — and cached — as "not supported".
+  bool _detectOpfsSupport() {
     try {
-      return capability.isOpfsSupported();
+      return _capability.isOpfsSupported();
     } catch (error) {
       logWarning('DriveTransferStrategyFactory: OPFS detection failed: $error');
       return false;
@@ -54,29 +50,17 @@ class DriveTransferStrategyFactory {
   }
 
   /// Reclaims OPFS entries orphaned by a tab that died mid-transfer. Fire and
-  /// forget: it only touches entries hours older than anything this session
-  /// creates, so no transfer waits on it — or fails with it.
-  ///
-  /// Both failure shapes are swallowed: `catchError` for a rejected future, and
-  /// the try/catch for a binding that throws before it returns one. Strategy
-  /// selection must not fail over a best-effort cleanup.
-  static void _sweepStaleTempFilesOnce() {
+  /// forget, and both failure shapes are swallowed: strategy selection must not
+  /// fail over a best-effort cleanup.
+  void _sweepStaleTempFilesOnce() {
     if (_swept) return;
     _swept = true;
     try {
-      unawaited(store.sweepStaleTempFiles().catchError((error) {
+      unawaited(_store.sweepStaleTempFiles().catchError((error) {
         logWarning('DriveTransferStrategyFactory: OPFS sweep failed: $error');
       }));
     } catch (error) {
       logWarning('DriveTransferStrategyFactory: OPFS sweep failed: $error');
     }
-  }
-
-  @visibleForTesting
-  static void resetCache() {
-    _opfsSupported = null;
-    _swept = false;
-    capability = OpfsFeatureDetection();
-    store = OpfsFileOps();
   }
 }
