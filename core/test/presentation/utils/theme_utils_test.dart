@@ -66,12 +66,14 @@ Future<void> _registersTypographyExtension(WidgetTester tester) =>
       final designSystem = LinagoraTextThemeExtension.material();
       final slots = <String, List<TextStyle>>{
         'titleSemibold': [extension!.titleSemibold, designSystem.titleSemibold],
+        'titleSmall2': [extension.titleSmall2, designSystem.titleSmall2],
         'bodyLargeBold': [extension.bodyLargeBold, designSystem.bodyLargeBold],
         'bodyLarge1': [extension.bodyLarge1, designSystem.bodyLarge1],
         'bodyLarge2': [extension.bodyLarge2, designSystem.bodyLarge2],
         'bodyMedium1': [extension.bodyMedium1, designSystem.bodyMedium1],
         'bodyMedium2': [extension.bodyMedium2, designSystem.bodyMedium2],
         'bodyMedium3': [extension.bodyMedium3, designSystem.bodyMedium3],
+        'bodyMedium4': [extension.bodyMedium4, designSystem.bodyMedium4],
       };
 
       slots.forEach((slot, styles) {

@@ -108,12 +108,14 @@ class ThemeUtils {
     final extension = LinagoraTextThemeExtension.material();
     return LinagoraTextThemeExtension(
       titleSemibold: _withFallbackRequired(extension.titleSemibold),
+      titleSmall2: _withFallbackRequired(extension.titleSmall2),
       bodyLargeBold: _withFallbackRequired(extension.bodyLargeBold),
       bodyLarge1: _withFallbackRequired(extension.bodyLarge1),
       bodyLarge2: _withFallbackRequired(extension.bodyLarge2),
       bodyMedium1: _withFallbackRequired(extension.bodyMedium1),
       bodyMedium2: _withFallbackRequired(extension.bodyMedium2),
       bodyMedium3: _withFallbackRequired(extension.bodyMedium3),
+      bodyMedium4: _withFallbackRequired(extension.bodyMedium4),
     );
   }
 
