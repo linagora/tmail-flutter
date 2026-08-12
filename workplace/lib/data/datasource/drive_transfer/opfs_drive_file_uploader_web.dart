@@ -95,7 +95,7 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
   /// than in [_asDioFailure] so that catch-all doesn't have to guess a type it
   /// cannot know — a `TypeError` off the decode and a `DOMException` off the
   /// OPFS read arrive there indistinguishable.
-  static UploadResponse _parseUploadResponse(
+  UploadResponse _parseUploadResponse(
     Map<String, dynamic> body,
     Uri uploadUri,
   ) {
