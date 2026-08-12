@@ -5712,5 +5712,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "driveAttachmentInDevelopment": "Tá an ghné 'cuir leis mar cheangaltán' fós á forbairt.",
+  "@driveAttachmentInDevelopment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveNoValidAttachment": "Gan aon cheangaltán bailí",
+  "@driveNoValidAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
