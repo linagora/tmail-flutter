@@ -47,8 +47,11 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
     try {
       final file = await _store.getFile(request.fileHandle);
       _throwIfCancelled(request.cancelToken);
-      final charset = await _resolveCharset(file, request.mimeType);
-      _throwIfCancelled(request.cancelToken);
+
+      // Runs alongside the transfer: nothing the upload sends depends on the
+      // charset. Not `Future.wait`, whose `ParallelWaitError` would hide the
+      // [DioException] callers branch on.
+      final charsetFuture = _resolveCharset(file, request.mimeType);
 
       activeUpload = _transport.uploadFile(XhrUploadFileRequest(
         file: file,
@@ -69,7 +72,7 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
 
       final uploadResponse = UploadResponse.fromJson(await response);
       return uploadResponse.toAttachment(
-          nameFile: request.fileName, charset: charset);
+          nameFile: request.fileName, charset: await charsetFuture);
     } catch (e) {
       // A cancelled token means the user pressed ✕, whatever the abort
       // surfaced as. Makes cancelling after the XHR exists indistinguishable
