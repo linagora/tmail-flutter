@@ -95,9 +95,12 @@ Future<void> _legacyHelpersFollowDesignSystemFont(WidgetTester tester) =>
       );
     });
 
-// Every field a TextStyle can carry, populated, so a future SDK field that
-// _withFallbackRequired forgets to copy shows up as a mismatch here instead
-// of silently vanishing from every design-system-derived style.
+// Every const-constructible TextStyle field populated (Paint/List-typed
+// fields — foreground, background, shadows, fontFeatures, fontVariations —
+// are left at their defaults since they can't appear in a const literal),
+// so a future SDK field that _withFallbackRequired forgets to copy shows up
+// as a mismatch here instead of silently vanishing from every
+// design-system-derived style.
 Future<void> _rebuildingAStyleOnlyReplacesItsFallback(WidgetTester tester) =>
     _onDesktop(() async {
       const original = TextStyle(
@@ -110,6 +113,7 @@ Future<void> _rebuildingAStyleOnlyReplacesItsFallback(WidgetTester tester) =>
         wordSpacing: 2,
         textBaseline: TextBaseline.alphabetic,
         height: 1.5,
+        leadingDistribution: TextLeadingDistribution.even,
         locale: Locale('en', 'US'),
         color: Colors.red,
         backgroundColor: Colors.blue,
