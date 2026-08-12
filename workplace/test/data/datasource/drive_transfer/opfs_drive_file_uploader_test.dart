@@ -77,6 +77,25 @@ void main() {
     expect(attachment.size?.value, 42);
   });
 
+  test('hands the staged file and request details to the transport unchanged',
+      () async {
+    // The uploader owns none of these values; anything it rewrites on the way
+    // through would upload the right bytes to the wrong place, or drop the
+    // caller's progress reporting.
+    final store = _FakeStore()..fileContent = 'hello opfs';
+    final transport = _SuccessfulTransport();
+    final request = _uploadRequest();
+
+    await _uploader(store: store, transport: transport).upload(request);
+
+    final sent = transport.request!;
+    expect(sent.file, same(store.lastFile));
+    expect(sent.uploadUri, request.uploadUri);
+    expect(sent.authHeader, request.authHeader);
+    expect(sent.mimeType, request.mimeType);
+    expect(sent.onUploadProgress, same(request.onUploadProgress));
+  });
+
   test('detects the charset of a text/plain document from a prefix', () async {
     final fileUtils = _FakeFileUtils('ISO-8859-1');
 
@@ -120,7 +139,10 @@ void main() {
   test('maps an upload transport failure to a DioException', () async {
     await expectLater(
       _uploader(transport: _FailingTransport()).upload(_uploadRequest()),
+      // `unknown`, not `badResponse`: the transport failed before any server
+      // answer, so blaming the response would point callers at the wrong half.
       throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.unknown)
           .having((e) => e.error, 'error', isA<StateError>())),
     );
   });
@@ -145,7 +167,10 @@ void main() {
     await expectLater(
       _uploader(store: _FailingGetFileStore(), transport: transport)
           .upload(_uploadRequest()),
+      // A browser error off the OPFS read has no HTTP meaning, so it comes out
+      // as `unknown` carrying the original failure.
       throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.unknown)
           .having((e) => e.error, 'error', isA<StateError>())),
     );
     expect(transport.uploadFileCalled, isFalse);
@@ -171,6 +196,37 @@ void main() {
           .having((e) => e.type, 'type', DioExceptionType.cancel)),
     );
     expect(transport.aborted, isTrue);
+  });
+
+  test('does not abort an upload that already completed', () async {
+    // `whenCancel` cannot be unsubscribed and the token outlives the transfer,
+    // so a cancel arriving later must find nothing to abort — otherwise the
+    // listener would poke an XHR belonging to a finished upload.
+    final transport = _AbortableTransport(completeImmediately: true);
+    final cancelToken = CancelToken();
+
+    await _uploader(transport: transport)
+        .upload(_uploadRequest(cancelToken: cancelToken));
+
+    cancelToken.cancel();
+    // Lets the `whenCancel` listener run before the assertion.
+    await Future<void>.delayed(Duration.zero);
+
+    expect(transport.aborted, isFalse);
+  });
+
+  test('sniffs at most 64KB of a large text document', () async {
+    // Reading the document whole would hand back exactly the memory profile
+    // this upload path exists to avoid.
+    final fileUtils = _FakeFileUtils('utf-8');
+
+    await _uploader(
+      store: _FakeStore()..fileContent = 'x' * (128 * 1024),
+      transport: _SuccessfulTransport(),
+      fileUtils: fileUtils,
+    ).upload(_uploadRequest());
+
+    expect(fileUtils.sniffedByteCounts, [64 * 1024]);
   });
 
   test('does not create the XHR when cancelled while getFile is pending',
@@ -205,9 +261,13 @@ class _FakeStore extends OpfsFileOps {
   /// an empty one.
   String fileContent = '';
 
+  /// The snapshot handed to the uploader, so a test can assert the very same
+  /// file reached the transport.
+  web.File? lastFile;
+
   @override
   Future<web.File> getFile(OpfsFileHandle fileHandle) async =>
-      _fakeFile(fileContent);
+      lastFile = _fakeFile(fileContent);
 }
 
 class _FailingGetFileStore extends _FakeStore {
@@ -237,9 +297,14 @@ class _ThrowingFileUtils extends FileUtils {
 class _SuccessfulTransport implements DriveUploadTransport {
   bool uploadFileCalled = false;
 
+  /// What the uploader actually sent, for the case asserting it forwards the
+  /// request untouched.
+  XhrUploadFileRequest? request;
+
   @override
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     uploadFileCalled = true;
+    this.request = request;
     return XhrUploadHandle(
       response: Future.value({
         'accountId': 'account-1',
@@ -275,6 +340,12 @@ class _MalformedBodyTransport implements DriveUploadTransport {
 }
 
 class _AbortableTransport implements DriveUploadTransport {
+  _AbortableTransport({this.completeImmediately = false});
+
+  /// Ends the upload as soon as it starts, for the case where the cancel
+  /// arrives after the transfer is already over.
+  final bool completeImmediately;
+
   bool aborted = false;
   final _uploadFileStarted = Completer<void>();
 
@@ -286,6 +357,14 @@ class _AbortableTransport implements DriveUploadTransport {
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     if (!_uploadFileStarted.isCompleted) _uploadFileStarted.complete();
     final completer = Completer<Map<String, dynamic>>();
+    if (completeImmediately) {
+      completer.complete({
+        'accountId': 'account-1',
+        'blobId': 'blob-1',
+        'type': 'text/plain',
+        'size': 42,
+      });
+    }
     return XhrUploadHandle(
       response: completer.future,
       abort: () {
