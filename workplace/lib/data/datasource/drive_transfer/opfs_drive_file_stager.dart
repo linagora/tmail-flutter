@@ -177,9 +177,14 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// A server that closes early ends the stream normally, so without this the
   /// truncated file would pass as a successful staging. Only checkable when the
   /// response declared a length.
+  ///
+  /// Short reads only: `content-length` is not always the delivered byte count.
+  /// A `content-encoding` response declares the compressed size while `fetch`
+  /// hands over the decompressed body, so a complete transfer legitimately
+  /// overruns it. (A length hidden by CORS parses to -1 and skips the check.)
   void _verifyComplete(_StreamToFileRequest request, int received) {
     final expected = request.downloadHandle.contentLength;
-    if (expected >= 0 && received != expected) {
+    if (expected >= 0 && received < expected) {
       throw DriveDownloadIncompleteException(
         received: received,
         expected: expected,
