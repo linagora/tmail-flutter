@@ -32,10 +32,13 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
         _fileUtils = fileUtils ?? FileUtils();
 
   /// Everything from opening the staged entry to parsing the response sits
-  /// inside the one `try`: `getFile` throws a bare `DOMException` when the
-  /// entry has gone, and `UploadResponse.fromJson` a `TypeError` on a body
-  /// that parsed but doesn't match — neither of which a caller branching on
-  /// [DioExceptionType] can classify.
+  /// inside the one `try`, because each leg throws something a caller
+  /// branching on [DioExceptionType] cannot classify — `getFile` a bare
+  /// `DOMException` when the entry has gone, the decode a `TypeError` on a
+  /// body that parsed but doesn't match. They are classified apart, though:
+  /// only the decode is the server's fault, so it shapes its own
+  /// [DioExceptionType.badResponse] in [_parseUploadResponse] and the rest
+  /// falls through to [_asDioFailure].
   @override
   Future<Attachment> upload(OpfsUploadRequest request) async {
     _throwIfCancelled(request.cancelToken);
@@ -71,7 +74,8 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
         },
       );
 
-      final uploadResponse = UploadResponse.fromJson(await response);
+      final uploadResponse =
+          _parseUploadResponse(await response, request.uploadUri);
       return uploadResponse.toAttachment(
           nameFile: request.fileName, charset: await charsetFuture);
     } catch (e) {
@@ -86,12 +90,37 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
     }
   }
 
-  /// [OpfsXhrUpload] already shapes every transport failure; this only covers
-  /// what runs outside it — the OPFS read and the response decoding.
+  /// The one failure on this path that really is the response's: a 2xx whose
+  /// JSON parsed but doesn't match the upload schema. Classified here rather
+  /// than in [_asDioFailure] so that catch-all doesn't have to guess a type it
+  /// cannot know — a `TypeError` off the decode and a `DOMException` off the
+  /// OPFS read arrive there indistinguishable.
+  static UploadResponse _parseUploadResponse(
+    Map<String, dynamic> body,
+    Uri uploadUri,
+  ) {
+    try {
+      return UploadResponse.fromJson(body);
+    } catch (e) {
+      throw DioException(
+        type: DioExceptionType.badResponse,
+        requestOptions: RequestOptions(path: uploadUri.toString()),
+        error: e,
+        message: 'the drive upload response could not be parsed',
+      );
+    }
+  }
+
+  /// [OpfsXhrUpload] already shapes every transport failure and
+  /// [_parseUploadResponse] the decode, so what reaches here is the OPFS read
+  /// and anything else unforeseen — browser errors with no HTTP meaning.
+  /// [DioExceptionType.unknown] is what that is, the same call
+  /// `OpfsDriveFileStager._asDioFailure` makes for its own OPFS leg; claiming
+  /// `badResponse` would point callers at a server that answered fine.
   static Object _asDioFailure(Object error, Uri uploadUri) {
     if (error is DioException) return error;
     return DioException(
-      type: DioExceptionType.badResponse,
+      type: DioExceptionType.unknown,
       requestOptions: RequestOptions(path: uploadUri.toString()),
       error: error,
       message: 'the drive upload could not be completed',
