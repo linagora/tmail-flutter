@@ -8,6 +8,7 @@ import 'package:web/web.dart' as web;
 import 'package:model/upload/upload_response.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_store.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_xhr_upload.dart';
 
 /// Web-only implementation of [OpfsDriveFileUploader]. Only ever constructed

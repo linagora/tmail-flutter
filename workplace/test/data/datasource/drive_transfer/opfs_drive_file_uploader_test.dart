@@ -13,6 +13,7 @@ import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploade
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader_web.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_store.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_xhr_upload.dart';
 
 web.File _fakeFile([String content = '']) =>

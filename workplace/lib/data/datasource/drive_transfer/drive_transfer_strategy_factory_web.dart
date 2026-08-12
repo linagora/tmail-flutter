@@ -6,6 +6,7 @@ import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_feature_detection.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_store.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
