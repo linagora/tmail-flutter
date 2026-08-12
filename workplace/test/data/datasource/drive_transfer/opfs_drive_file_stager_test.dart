@@ -358,7 +358,7 @@ void main() {
       () async {
     final download = _ScriptedDownload(
       contentLength: 16,
-      closeAfterFirstChunk: true,
+      closeAfterChunks: true,
     );
 
     final doc = DriveDocument(
@@ -377,8 +377,184 @@ void main() {
       ),
       // Passed through rather than flattened into a DioException: it carries
       // the received/expected counts callers report.
-      throwsA(isA<DriveDownloadIncompleteException>()),
+      throwsA(isA<DriveDownloadIncompleteException>()
+          .having((e) => e.received, 'received', 3)
+          .having((e) => e.expected, 'expected', 16)),
     );
+  });
+
+  group('chunked download', () {
+    // Three chunks of different sizes: the loop has to iterate, and a single
+    // buffered write would show up as one write of nine bytes.
+    const chunks = [
+      [1, 2, 3],
+      [4, 5],
+      [6, 7, 8, 9]
+    ];
+    const totalBytes = 9;
+
+    DriveDocument chunkedDoc(String id) => DriveDocument(
+          id: id,
+          name: 'chunked.bin',
+          size: totalBytes,
+          mimeType: 'application/octet-stream',
+          downloadLink: Uri.parse('https://drive.example/chunked.bin'),
+        );
+
+    _ScriptedDownload chunkedDownload() => _ScriptedDownload(
+          contentLength: totalBytes,
+          chunks: chunks,
+          closeAfterChunks: true,
+        );
+
+    test('accumulates progress across chunks', () async {
+      final progress = <int>[];
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      await OpfsDriveFileStager(download: chunkedDownload(), store: store).stage(
+        doc: chunkedDoc('doc-opfs-chunked-progress'),
+        onDownloadProgress: (received, _) => progress.add(received),
+        cancelToken: CancelToken(),
+      );
+
+      // A running total, not the size of each chunk on its own.
+      expect(progress, [3, 5, 9]);
+    });
+
+    test('writes each chunk as it arrives rather than buffering the body',
+        () async {
+      final store = _ChunkRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      await OpfsDriveFileStager(download: chunkedDownload(), store: store).stage(
+        doc: chunkedDoc('doc-opfs-chunked-writes'),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      // One write per chunk: materialising the body first — the memory profile
+      // this stager exists to avoid — would be a single 9-byte write.
+      expect(store.writtenChunkLengths, [3, 2, 4]);
+    });
+
+    test('stages the concatenation of every chunk, in order', () async {
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      final staged =
+          await OpfsDriveFileStager(download: chunkedDownload(), store: store)
+              .stage(
+        doc: chunkedDoc('doc-opfs-chunked-bytes'),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      expect(await _stagedBytes(staged), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      await staged.dispose();
+    });
+
+    test('returns the total received byte count as the staged file size',
+        () async {
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      final staged =
+          await OpfsDriveFileStager(download: chunkedDownload(), store: store)
+              .stage(
+        doc: chunkedDoc('doc-opfs-chunked-size'),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      // What arrived, not what the document claimed or the header declared.
+      expect(staged.fileSize, totalBytes);
+      await staged.dispose();
+    });
+  });
+
+  group('content-length', () {
+    test('succeeds when the body overruns content-length', () async {
+      // What a `content-encoding` response looks like: the header declares the
+      // compressed size while `fetch` hands over the decompressed body.
+      final download = _ScriptedDownload(
+        contentLength: 2,
+        chunks: const [
+          [1, 2, 3],
+          [4, 5, 6]
+        ],
+        closeAfterChunks: true,
+      );
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      final staged =
+          await OpfsDriveFileStager(download: download, store: store).stage(
+        doc: DriveDocument(
+          id: 'doc-opfs-overrun',
+          name: 'compressed.bin',
+          size: 2,
+          mimeType: 'application/octet-stream',
+          downloadLink: Uri.parse('https://drive.example/compressed.bin'),
+        ),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      expect(staged.fileSize, 6);
+      await staged.dispose();
+    });
+
+    test('skips the completeness check when the response declares no length',
+        () async {
+      // -1 is what an absent (or CORS-hidden) content-length parses to, and
+      // there is then nothing to compare a short body against.
+      final download = _ScriptedDownload(contentLength: -1, closeAfterChunks: true);
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      final staged =
+          await OpfsDriveFileStager(download: download, store: store).stage(
+        doc: DriveDocument(
+          id: 'doc-opfs-no-length',
+          name: 'chunked-response.bin',
+          size: 0,
+          mimeType: 'application/octet-stream',
+          downloadLink: Uri.parse('https://drive.example/chunked-response.bin'),
+        ),
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      );
+
+      expect(staged.fileSize, 3);
+      await staged.dispose();
+    });
+
+    test('removes the truncated temp entry when the body ends short', () async {
+      final download = _ScriptedDownload(contentLength: 16, closeAfterChunks: true);
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
+
+      await expectLater(
+        OpfsDriveFileStager(download: download, store: store).stage(
+          doc: DriveDocument(
+            id: 'doc-opfs-truncated-cleanup',
+            name: 'truncated.bin',
+            size: 16,
+            mimeType: 'application/octet-stream',
+            downloadLink: Uri.parse('https://drive.example/truncated.bin'),
+          ),
+          onDownloadProgress: (_, __) {},
+          cancelToken: CancelToken(),
+        ),
+        throwsA(isA<DriveDownloadIncompleteException>()),
+      );
+
+      // The partial bytes were written before the check failed, so the entry
+      // exists and cleanup has to reclaim it — nothing else ever will.
+      expect(store.createdNames, hasLength(1));
+      expect(await _opfsEntryExists(store.createdNames.single), isFalse);
+    });
   });
 
   group('orphaned temp entries', () {
@@ -544,6 +720,14 @@ Future<bool> _opfsEntryExists(String name) async {
   }
 }
 
+/// The bytes actually on disk, read back through the same store the uploader
+/// would use.
+Future<Uint8List> _stagedBytes(OpfsStagedFile staged) async {
+  final file = await OpfsFileOps().getFile(staged.fileHandle);
+  final buffer = await file.arrayBuffer().toDart;
+  return buffer.toDart.asUint8List();
+}
+
 Future<void> _removeEntries(Iterable<String> names) async {
   final root = await web.window.navigator.storage.getDirectory().toDart;
   for (final name in names) {
@@ -564,6 +748,19 @@ class _NameRecordingStore extends OpfsFileOps {
   Future<web.FileSystemFileHandle> createTempFile(String fileName) {
     createdNames.add(fileName);
     return super.createTempFile(fileName);
+  }
+}
+
+/// Records the size of every chunk handed to OPFS, so a test can tell a
+/// chunk-at-a-time pump from one that buffered the body and wrote it once.
+class _ChunkRecordingStore extends _NameRecordingStore {
+  final writtenChunkLengths = <int>[];
+
+  @override
+  Future<void> writeChunk(
+      web.FileSystemWritableFileStream stream, Uint8List chunk) async {
+    await super.writeChunk(stream, chunk);
+    writtenChunkLengths.add(chunk.length);
   }
 }
 
@@ -689,8 +886,8 @@ class _WriteHookStore extends OpfsFileOps {
   }
 }
 
-/// Serves the body from a real `ReadableStream` that emits one 3-byte chunk
-/// and then either stalls or closes. Only the *source* of the bytes is
+/// Serves the body from a real `ReadableStream` that emits [chunks] and then
+/// either stalls or closes. Only the *source* of the bytes is
 /// substituted: `read`, `cancel`, and every OPFS write below them run
 /// against the browser, so the streams semantics under test are Chrome's,
 /// not the fake's.
@@ -701,12 +898,20 @@ class _WriteHookStore extends OpfsFileOps {
 class _ScriptedDownload extends OpfsFetchDownload {
   _ScriptedDownload({
     required this.contentLength,
-    this.closeAfterFirstChunk = false,
+    this.chunks = const [
+      [1, 2, 3]
+    ],
+    this.closeAfterChunks = false,
     this.errorStreamOnSecondRead = false,
   });
 
   final int contentLength;
-  final bool closeAfterFirstChunk;
+
+  /// The body, sliced the way the browser would hand it over. More than one
+  /// entry is what makes the read loop iterate.
+  final List<List<int>> chunks;
+
+  final bool closeAfterChunks;
 
   /// Errors the body stream mid-read with no cancellation involved: a
   /// connection dropping partway through the download.
@@ -752,8 +957,10 @@ class _ScriptedDownload extends OpfsFetchDownload {
       'start'.toJS,
       ((web.ReadableStreamDefaultController controller) {
         _controller = controller;
-        controller.enqueue(Uint8List.fromList([1, 2, 3]).toJS);
-        if (closeAfterFirstChunk) controller.close();
+        for (final chunk in chunks) {
+          controller.enqueue(Uint8List.fromList(chunk).toJS);
+        }
+        if (closeAfterChunks) controller.close();
       }).toJS,
     );
     final stream = web.ReadableStream(source);
