@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 import 'package:workplace/data/datasource/drive_transfer/drive_download_source.dart';
 
@@ -75,13 +75,18 @@ class OpfsFetchDownload implements DriveDownloadSource {
         message: 'The connection errored: the download request failed',
       );
     }
-    return _handleFromResponse(response, requestOptions);
+    return handleFromResponse(response, requestOptions);
   }
 
   /// Validates the headers [openDownload] received and locks the body for
   /// reading. A response that arrived is not yet a usable download: the status
   /// can be an error, and a body can be absent entirely.
-  FetchDownloadHandle _handleFromResponse(
+  ///
+  /// Visible for tests: a null body (204/304) and an absent `content-length`
+  /// (a chunked response) are shapes no fixture the test server can serve
+  /// produces, so they are driven through a constructed `web.Response`.
+  @visibleForTesting
+  FetchDownloadHandle handleFromResponse(
       web.Response response, RequestOptions requestOptions) {
     if (!response.ok) {
       throw DioException.badResponse(
