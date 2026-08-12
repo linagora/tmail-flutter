@@ -29,14 +29,21 @@ extension type _FileSystemFileHandleProtoProbe(JSObject _) implements JSObject {
   external JSAny? get createWritable;
 }
 
+/// Whether this browser can run the OPFS transfer strategy at all. The seam
+/// `DriveTransferStrategyFactory` probes, and the one tests swap.
+abstract interface class OpfsCapability {
+  bool isOpfsSupported();
+}
+
 /// Decides whether the OPFS transfer strategy can run at all.
-mixin OpfsFeatureDetection {
+class OpfsFeatureDetection implements OpfsCapability {
   /// True when both halves of the write path are present. Safari shipped
   /// `getDirectory` several releases before `createWritable` (Baseline only
   /// with Safari 26.0), so checking the former alone lets those versions
   /// through and then fails at `openWritable`, fallback never selected.
   ///
   /// Property reads only, so callers can cache this once per session.
+  @override
   bool isOpfsSupported() {
     final storage =
         (web.window.navigator as _NavigatorStorageProbe).storage;

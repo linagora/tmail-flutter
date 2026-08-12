@@ -16,9 +16,22 @@ class FetchDownloadHandle {
   const FetchDownloadHandle({required this.reader, required this.contentLength});
 }
 
+/// Reading a drive document off the network one chunk at a time. No OPFS in
+/// it — the stager pairs this with an `OpfsStore` to decide where the bytes
+/// land.
+abstract interface class DriveDownloadSource {
+  Future<FetchDownloadHandle> openDownload(Uri url, {Future<void>? cancelSignal});
+
+  Future<Uint8List?> readChunk(web.ReadableStreamDefaultReader reader);
+
+  Future<void> cancelReader(web.ReadableStreamDefaultReader reader);
+
+  void releaseReaderLock(web.ReadableStreamDefaultReader reader);
+}
+
 /// The download leg: `fetch` driven one chunk at a time, so a document never
 /// has to fit in the JS heap.
-mixin OpfsFetchDownload {
+class OpfsFetchDownload implements DriveDownloadSource {
   /// Opens [url]'s response body for reading. Caller drives it via [readChunk]
   /// and must eventually call [cancelReader] or read to completion.
   ///
@@ -42,6 +55,7 @@ mixin OpfsFetchDownload {
   /// body stream and surfaces from [readChunk] as `connectionError` — a
   /// dropped connection is indistinguishable from an abort at that level, so
   /// only the caller's [CancelToken] can tell the two apart.
+  @override
   Future<FetchDownloadHandle> openDownload(Uri url,
       {Future<void>? cancelSignal}) async {
     final requestOptions = RequestOptions(path: url.toString());
@@ -122,6 +136,7 @@ mixin OpfsFetchDownload {
   /// to keep this mixin's every-failure-is-a-[DioException] contract. Only the
   /// caller holds the [CancelToken], so telling a cancellation from a
   /// transport failure is its job.
+  @override
   Future<Uint8List?> readChunk(web.ReadableStreamDefaultReader reader) async {
     final web.ReadableStreamReadResult result;
     try {
@@ -142,11 +157,13 @@ mixin OpfsFetchDownload {
     return (value as JSUint8Array).toDart;
   }
 
+  @override
   Future<void> cancelReader(web.ReadableStreamDefaultReader reader) =>
       reader.cancel().toDart;
 
   /// Best-effort: the lock a `getReader()` took stays held until this is
   /// called, and it is a no-op on a reader that no longer holds one.
+  @override
   void releaseReaderLock(web.ReadableStreamDefaultReader reader) =>
       reader.releaseLock();
 }

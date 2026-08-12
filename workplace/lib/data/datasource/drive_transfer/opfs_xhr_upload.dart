@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:core/data/network/dio_client.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
@@ -35,9 +36,15 @@ class XhrUploadFileRequest {
   });
 }
 
+/// Sends a staged file to the upload endpoint. The seam
+/// `BrowserOpfsDriveFileUploader` depends on, so it never sees XHR itself.
+abstract interface class DriveUploadTransport {
+  XhrUploadHandle uploadFile(XhrUploadFileRequest request);
+}
+
 /// The upload leg. Raw XHR rather than Dio because only XHR can stream an
 /// OPFS-backed `File` straight off disk.
-mixin OpfsXhrUpload {
+class OpfsXhrUpload implements DriveUploadTransport {
   /// POSTs [XhrUploadFileRequest.file] to its `uploadUri`, streaming straight
   /// off disk so it never materializes in the JS heap. Not refresh-and-retry
   /// safe: the auth header is read once, up front.
@@ -48,6 +55,7 @@ mixin OpfsXhrUpload {
   /// is the caller's job, through [XhrUploadHandle.abort].
   ///
   /// Failures come out as [DioException], like `openDownload`'s.
+  @override
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     final requestOptions = RequestOptions(path: request.uploadUri.toString());
     final completer = Completer<Map<String, dynamic>>();
@@ -68,11 +76,19 @@ mixin OpfsXhrUpload {
     // `total` is 0 when the length is unknown, but the download leg reports an
     // unknown total as -1. Normalized here so one progress consumer doesn't
     // have to know two sentinels — and doesn't divide by zero.
+    //
+    // Guarded because this runs inside a JS event handler: a throwing consumer
+    // callback would escape into JS rather than fail the upload, and a progress
+    // report is never worth losing a transfer over.
     xhr.upload.onprogress = ((web.ProgressEvent event) {
-      request.onUploadProgress(
-        event.loaded,
-        event.lengthComputable ? event.total : -1,
-      );
+      try {
+        request.onUploadProgress(
+          event.loaded,
+          event.lengthComputable ? event.total : -1,
+        );
+      } catch (e) {
+        logWarning('OpfsXhrUpload: upload progress callback failed: $e');
+      }
     }).toJS;
 
     xhr.onload = ((web.Event _) {

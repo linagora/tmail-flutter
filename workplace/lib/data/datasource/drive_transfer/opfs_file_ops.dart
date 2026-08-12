@@ -25,11 +25,37 @@ extension type _AsyncIterationResult(JSObject _) implements JSObject {
   external String? get value;
 }
 
+/// The staging storage the transfer needs: create an entry, stream bytes into
+/// it, read it back for upload, and clean up. The seam both the stager and the
+/// uploader depend on, so neither names an OPFS API itself.
+abstract interface class OpfsStore {
+  Future<web.FileSystemFileHandle> createTempFile(String fileName);
+
+  Future<web.File> getFile(OpfsFileHandle fileHandle);
+
+  Future<Uint8List> readFilePrefix(web.File file, int maxBytes);
+
+  Future<web.FileSystemWritableFileStream> openWritable(
+      web.FileSystemFileHandle handle);
+
+  Future<void> writeChunk(
+      web.FileSystemWritableFileStream stream, Uint8List chunk);
+
+  Future<void> closeWritable(web.FileSystemWritableFileStream stream);
+
+  Future<void> abortWritable(web.FileSystemWritableFileStream stream);
+
+  Future<void> removeTempFile(String fileName);
+
+  Future<void> sweepStaleTempFiles({Duration olderThan});
+}
+
 /// Creating, writing, reading back and removing OPFS staging entries.
-mixin OpfsFileOps {
+class OpfsFileOps implements OpfsStore {
   Future<web.FileSystemDirectoryHandle> _opfsRoot() =>
       web.window.navigator.storage.getDirectory().toDart;
 
+  @override
   Future<web.FileSystemFileHandle> createTempFile(String fileName) async {
     final root = await _opfsRoot();
     return root
@@ -39,31 +65,38 @@ mixin OpfsFileOps {
 
   /// The `web.File` snapshot the uploader sends. Kept here so narrowing
   /// [OpfsFileHandle] to its web type is the bindings' job alone.
+  @override
   Future<web.File> getFile(OpfsFileHandle fileHandle) =>
       (fileHandle as web.FileSystemFileHandle).getFile().toDart;
 
   /// The first [maxBytes] of [file], for charset detection. Sliced rather than
   /// read whole: the staged document is only ever meant to reach the JS heap
   /// one chunk at a time.
+  @override
   Future<Uint8List> readFilePrefix(web.File file, int maxBytes) async {
     final buffer = await file.slice(0, maxBytes).arrayBuffer().toDart;
     return buffer.toDart.asUint8List();
   }
 
+  @override
   Future<web.FileSystemWritableFileStream> openWritable(
       web.FileSystemFileHandle handle) =>
       handle.createWritable().toDart;
 
+  @override
   Future<void> writeChunk(
       web.FileSystemWritableFileStream stream, Uint8List chunk) =>
       stream.write(chunk.toJS).toDart;
 
+  @override
   Future<void> closeWritable(web.FileSystemWritableFileStream stream) =>
       stream.close().toDart;
 
+  @override
   Future<void> abortWritable(web.FileSystemWritableFileStream stream) =>
       stream.abort().toDart;
 
+  @override
   Future<void> removeTempFile(String fileName) async {
     final root = await _opfsRoot();
     await root.removeEntry(fileName).toDart;
@@ -74,10 +107,11 @@ mixin OpfsFileOps {
   /// stager's failure cleanup runs on a crash.
   ///
   /// [olderThan] keeps the sweep safe while another tab of the same origin is
-  /// mid-transfer — its entries are minutes old, far inside the window.
-  /// Per-entry failures are logged, never rethrown.
+  /// mid-transfer — its entries are minutes old, orders of magnitude inside the
+  /// window even at four hours. Per-entry failures are logged, never rethrown.
+  @override
   Future<void> sweepStaleTempFiles({
-    Duration olderThan = const Duration(hours: 24),
+    Duration olderThan = const Duration(hours: 4),
   }) async {
     final root = await _opfsRoot();
     final cutoff = DateTime.now().subtract(olderThan);

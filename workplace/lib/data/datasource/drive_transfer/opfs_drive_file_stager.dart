@@ -1,19 +1,12 @@
-import 'dart:async';
 import 'dart:math' show Random;
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:model/email/attachment.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart';
-import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader_web.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_download.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -21,17 +14,28 @@ import 'package:workplace/domain/entity/drive_document_extension.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 
 /// Streams a drive document into an Origin Private File System temp file.
-/// Web-only: this file (and its `package:web`-touching [OpfsJsBindings]
-/// dependency) is only ever imported by the web branch of
-/// `DriveTransferStrategyFactory`.
+/// Web-only: this file (and the `package:web`-touching implementations behind
+/// [DriveDownloadSource] and [OpfsStore]) is only ever imported by the web
+/// branch of `DriveTransferStrategyFactory`.
 class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
-  final OpfsJsBindings _bindings;
+  final DriveDownloadSource _download;
+  final OpfsStore _store;
   final bool _isReleaseMode;
 
-  OpfsDriveFileStager({OpfsJsBindings? bindings, bool? isReleaseMode})
-      : _bindings = bindings ?? OpfsJsBindings.instance,
+  OpfsDriveFileStager({
+    DriveDownloadSource? download,
+    OpfsStore? store,
+    bool? isReleaseMode,
+  })  : _download = download ?? OpfsFetchDownload(),
+        _store = store ?? OpfsFileOps(),
         _isReleaseMode = isReleaseMode ?? BuildUtils.isReleaseMode;
 
+  /// Cancellation runs entirely through [DriveDownloadSource.openDownload]'s
+  /// abort signal: it rejects the `fetch` before the headers land and errors
+  /// the body stream after, so a cancelled transfer always leaves here by
+  /// throwing. Nothing else listens on the token — a second listener that
+  /// closed the reader quietly would let a truncated download read as a
+  /// complete one on a response with no content-length.
   @override
   Future<OpfsStagedFile> stage({
     required DriveDocument doc,
@@ -44,53 +48,71 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
     final tempFileName = _tempFileName(doc);
 
     final scope = _OpfsStagingScope(
-      bindings: _bindings,
+      download: _download,
+      store: _store,
       tempFileName: tempFileName,
     );
-    Future<void>? cancelSubscription;
 
     try {
-      final downloadHandle = scope.downloadHandle = await _bindings.openDownload(
+      final downloadHandle = scope.downloadHandle = await _download.openDownload(
         downloadLink,
         cancelSignal: cancelToken.whenCancel,
       );
-      final handle = scope.handle = await _bindings.createTempFile(tempFileName);
-      final writable = scope.writable = await _bindings.openWritable(handle);
-
-      // Reads the reader off the scope rather than capturing it: a bare
-      // `whenCancel.then(...)` has no unsubscribe, so this listener outlives
-      // stage() for as long as the token does. `scope.release()` below empties
-      // what it can still reach, which both stops it acting on a finished
-      // transfer and drops its hold on the reader.
-      cancelSubscription = cancelToken.whenCancel.then((_) async {
-        final activeReader = scope.downloadHandle?.reader;
-        if (activeReader != null) await _bindings.cancelReader(activeReader);
-      }).catchError((error) {
-        logWarning('OpfsDriveFileStager: failed to cancel reader for $tempFileName: $error');
-      });
+      final handle = scope.handle = await _store.createTempFile(tempFileName);
+      final writable = scope.writable = await _store.openWritable(handle);
 
       final received = await _streamToFile(_StreamToFileRequest(
         downloadHandle: downloadHandle,
         writable: writable,
-        cancelToken: cancelToken,
         onDownloadProgress: onDownloadProgress,
       ));
-      await _bindings.closeWritable(writable);
+      await _store.closeWritable(writable);
       scope.releaseReaderLock();
       return OpfsStagedFile(
         fileHandle: handle,
-        removeEntry: (_) => _bindings.removeTempFile(tempFileName),
+        removeEntry: (_) => _store.removeTempFile(tempFileName),
         fileName: doc.name,
         fileSize: received,
         mimeType: doc.mimeType,
       );
     } catch (e) {
       await scope.cleanupAfterFailure();
-      rethrow;
+      throw _asDioFailure(e, cancelToken, downloadLink);
     } finally {
       scope.release();
-      if (cancelSubscription != null) unawaited(cancelSubscription);
     }
+  }
+
+  /// The one place a staging failure is shaped, so callers only ever branch on
+  /// [DioExceptionType]. Without it the OPFS half of the pipeline —
+  /// `createTempFile`, `openWritable`, `writeChunk`, `closeWritable` — would
+  /// surface raw browser errors (`QuotaExceededError` on a full disk, a bare
+  /// `DOMException`) that no caller can classify. The download half already
+  /// arrives Dio-shaped and passes through untouched.
+  static Object _asDioFailure(Object error, CancelToken cancelToken, Uri url) {
+    final requestOptions = RequestOptions(path: url.toString());
+    // Checked first: a cancellation reaches here as whatever the browser threw
+    // when the abort landed, and only the token can identify it. Callers show
+    // an error for anything else, so misreading this shows a toast on a
+    // transfer the user cancelled themselves.
+    if (cancelToken.isCancelled) {
+      return DioException.requestCancelled(
+        requestOptions: requestOptions,
+        reason: 'drive staging was cancelled',
+      );
+    }
+    // Carries its own received/expected counts; flattening it would lose them.
+    if (error is DriveDownloadIncompleteException) return error;
+    if (error is DioException) return error;
+    // Spelled out rather than via a `DioException` factory, which hardcodes
+    // `error: null` and would drop the browser's own failure — the same reason
+    // `OpfsFetchDownload.openDownload` builds its own.
+    return DioException(
+      type: DioExceptionType.unknown,
+      requestOptions: requestOptions,
+      error: error,
+      message: 'drive staging failed',
+    );
   }
 
   Future<int> _streamToFile(_StreamToFileRequest request) async {
@@ -125,10 +147,8 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// `chunk` in the body — the assignment is also reachable from the loop's
   /// back edge — so every use needs `chunk!`. A three-clause
   /// `for (var chunk = await readChunk(reader); chunk != null; chunk = await readChunk(reader))`
-  /// does promote, but writes the read twice and performs its seeding read
-  /// before the cancel check below. `while (true)` with one read and an
-  /// explicit `break` on the sentinel keeps a single read, no `!`, and the
-  /// cancel check first.
+  /// does promote, but writes the read twice. `while (true)` with one read and
+  /// an explicit `break` on the sentinel keeps a single read and no `!`.
   ///
   /// JS `for await...of` over the `ReadableStream` is not reachable:
   /// `dart:js_interop` has no async-iterator bridge, the same reason
@@ -136,38 +156,26 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// genuinely loop-free option is handing the pump to the browser —
   /// `body.pipeTo(writable)` with a `TransformStream` counting progress —
   /// which would replace this file's read/write bindings wholesale.
+  ///
+  /// Nothing here guards a step: every failure, on either side of the pump, is
+  /// shaped once by [_asDioFailure] on the way out of [stage].
   Future<int> _readAndWriteAll(_StreamToFileRequest request) async {
     final reader = request.downloadHandle.reader;
     var received = 0;
     while (true) {
-      // Bails out at the iteration boundary. `cancelReader` is async, so
-      // without this the loop would keep reading and writing chunks until the
-      // cancellation propagated through the JS reader.
-      _throwIfCancelled(request.cancelToken);
-      final Uint8List? chunk;
-      try {
-        chunk = await _bindings.readChunk(reader);
-      } catch (_) {
-        // The fetch abort controller stays live after the headers, so a
-        // cancellation landing mid-read surfaces as a transport failure. The
-        // token is the only thing that can tell the two apart, and callers
-        // branch on `DioExceptionType.cancel`.
-        _throwIfCancelled(request.cancelToken);
-        rethrow;
-      }
+      final chunk = await _download.readChunk(reader);
       if (chunk == null) break;
-      await _bindings.writeChunk(request.writable, chunk);
+      await _store.writeChunk(request.writable, chunk);
       received += chunk.length;
       request.onDownloadProgress(received, request.downloadHandle.contentLength);
     }
     return received;
   }
 
-  /// `cancelReader` resolves an in-flight `read()` with done:true rather than
-  /// rejecting, so a mid-read cancellation exits the loop normally — without
-  /// the re-check here the truncated file would pass as a successful staging.
+  /// A server that closes early ends the stream normally, so without this the
+  /// truncated file would pass as a successful staging. Only checkable when the
+  /// response declared a length.
   void _verifyComplete(_StreamToFileRequest request, int received) {
-    _throwIfCancelled(request.cancelToken);
     final expected = request.downloadHandle.contentLength;
     if (expected >= 0 && received != expected) {
       throw DriveDownloadIncompleteException(
@@ -175,18 +183,6 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
         expected: expected,
       );
     }
-  }
-
-  /// The `??` fallback is unreachable in practice — Dio defines `isCancelled`
-  /// as `cancelError != null` — and only keeps a cancelled transfer from being
-  /// reported as a success should that ever stop holding.
-  static void _throwIfCancelled(CancelToken cancelToken) {
-    if (!cancelToken.isCancelled) return;
-    throw cancelToken.cancelError ??
-        DioException.requestCancelled(
-          requestOptions: RequestOptions(path: ''),
-          reason: 'drive staging was cancelled',
-        );
   }
 
   /// `<opfsTempFilePrefix><micros>_<random>_<id>_<name>`: the timestamp ages
@@ -207,22 +203,20 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
 }
 
 /// Bundles [OpfsDriveFileStager._streamToFile]'s parameters to keep its
-/// argument count low, the same way [XhrUploadFileRequest] does.
+/// argument count low, the same way `XhrUploadFileRequest` does.
 class _StreamToFileRequest {
   final FetchDownloadHandle downloadHandle;
 
   /// `dynamic`, not `web.FileSystemWritableFileStream`: naming that type here
   /// would pull `package:web` into a file the non-web build still analyses.
-  /// Only the bindings touch it.
+  /// Only [OpfsStore] touches it.
   final dynamic writable;
 
-  final CancelToken cancelToken;
   final OnFileProcessedProgress onDownloadProgress;
 
   const _StreamToFileRequest({
     required this.downloadHandle,
     required this.writable,
-    required this.cancelToken,
     required this.onDownloadProgress,
   });
 }
@@ -230,7 +224,8 @@ class _StreamToFileRequest {
 /// The resources one `stage()` call has acquired so far. Owning the cleanup
 /// keeps `stage` from carrying three mutable locals just to hand them over.
 class _OpfsStagingScope {
-  final OpfsJsBindings bindings;
+  final DriveDownloadSource download;
+  final OpfsStore store;
   final String tempFileName;
 
   FetchDownloadHandle? downloadHandle;
@@ -239,10 +234,13 @@ class _OpfsStagingScope {
   /// See [_StreamToFileRequest.writable] for why this stays untyped.
   dynamic writable;
 
-  _OpfsStagingScope({required this.bindings, required this.tempFileName});
+  _OpfsStagingScope({
+    required this.download,
+    required this.store,
+    required this.tempFileName,
+  });
 
-  /// Drops the references `stage()` no longer needs, so the `whenCancel`
-  /// listener it can never unsubscribe holds nothing once the transfer ends.
+  /// Drops the references `stage()` no longer needs once the transfer ends.
   void release() {
     downloadHandle = null;
     writable = null;
@@ -256,7 +254,7 @@ class _OpfsStagingScope {
     final stream = downloadHandle;
     if (stream == null) return;
     try {
-      bindings.releaseReaderLock(stream.reader);
+      download.releaseReaderLock(stream.reader);
     } catch (e) {
       logWarning('OpfsDriveFileStager: failed to release the reader lock for $tempFileName: $e');
     }
@@ -267,13 +265,13 @@ class _OpfsStagingScope {
   Future<void> cleanupAfterFailure() async {
     final stream = downloadHandle;
     if (stream != null) {
-      await _attempt('cancel reader', () => bindings.cancelReader(stream.reader));
+      await _attempt('cancel reader', () => download.cancelReader(stream.reader));
       releaseReaderLock();
     }
     final openWritable = writable;
     if (openWritable != null) {
       final aborted = await _attempt(
-          'abort writable', () => bindings.abortWritable(openWritable));
+          'abort writable', () => store.abortWritable(openWritable));
       // A still-open writable holds a lock on the entry, and `removeEntry` on
       // a locked entry fails — so the half-written file the abort was meant to
       // discard would survive instead. `close()` commits the partial bytes,
@@ -281,13 +279,12 @@ class _OpfsStagingScope {
       // release the lock.
       if (!aborted) {
         await _attempt('close writable after failed abort',
-            () => bindings.closeWritable(openWritable));
+            () => store.closeWritable(openWritable));
       }
     }
-    if (handle != null) {
-      await _attempt(
-          'remove temp file', () => bindings.removeTempFile(tempFileName));
-    }
+    // Unconditional: removing an entry that was never created just fails, and
+    // `_attempt` already logs and swallows that.
+    await _attempt('remove temp file', () => store.removeTempFile(tempFileName));
   }
 
   /// Returns whether [action] succeeded, so a step can react to the one before
@@ -300,47 +297,5 @@ class _OpfsStagingScope {
       logWarning('OpfsDriveFileStager: failed to $step for $tempFileName: $cleanupError');
       return false;
     }
-  }
-}
-
-/// Web+OPFS strategy: flat memory on both legs (streamed download to OPFS,
-/// streamed upload from OPFS via raw XHR).
-class OpfsDriveTransferStrategy extends DriveTransferStrategy<OpfsStagedFile> {
-  OpfsDriveTransferStrategy({
-    DriveFileStager<OpfsStagedFile>? stager,
-    OpfsDriveFileUploader? uploader,
-  })  : _stager = stager ?? OpfsDriveFileStager(),
-        _uploader = uploader ?? BrowserOpfsDriveFileUploader();
-
-  final DriveFileStager<OpfsStagedFile> _stager;
-  final OpfsDriveFileUploader _uploader;
-
-  @protected
-  @override
-  Future<OpfsStagedFile> stage({
-    required DriveDocument doc,
-    required OnFileProcessedProgress onDownloadProgress,
-    required CancelToken cancelToken,
-  }) {
-    return _stager.stage(
-      doc: doc,
-      onDownloadProgress: onDownloadProgress,
-      cancelToken: cancelToken,
-    );
-  }
-
-  @protected
-  @override
-  Future<Attachment> upload(DriveUploadRequest<OpfsStagedFile> request) {
-    final staged = request.staged;
-    return _uploader.upload(OpfsUploadRequest(
-      fileHandle: staged.fileHandle,
-      fileName: staged.fileName,
-      uploadUri: request.uploadUri,
-      authHeader: request.authHeader,
-      mimeType: staged.mimeType,
-      onUploadProgress: request.onUploadProgress,
-      cancelToken: request.cancelToken,
-    ));
   }
 }

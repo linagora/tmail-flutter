@@ -4,8 +4,9 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:workplace/data/datasource/drive_transfer/buffered_web_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_stager.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_drive_transfer_strategy.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_feature_detection.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 
@@ -18,6 +19,15 @@ class DriveTransferStrategyFactory {
 
   static bool? _opfsSupported;
   static bool _swept = false;
+
+  /// The two seams this factory reaches JS through. Fields rather than
+  /// constructor parameters because `create()` is static, and tests swap them
+  /// the way `OpfsJsBindings.setInstance` used to be swapped.
+  @visibleForTesting
+  static OpfsCapability capability = OpfsFeatureDetection();
+
+  @visibleForTesting
+  static OpfsStore store = OpfsFileOps();
 
   /// [uploader] backs the buffered fallback only; the OPFS strategy uploads
   /// through its own raw-XHR path.
@@ -36,7 +46,7 @@ class DriveTransferStrategyFactory {
   /// as such, so a failure doesn't re-probe and re-throw on every later call.
   static bool _detectOpfsSupport() {
     try {
-      return OpfsJsBindings.instance.isOpfsSupported();
+      return capability.isOpfsSupported();
     } catch (error) {
       logWarning('DriveTransferStrategyFactory: OPFS detection failed: $error');
       return false;
@@ -54,8 +64,7 @@ class DriveTransferStrategyFactory {
     if (_swept) return;
     _swept = true;
     try {
-      unawaited(
-          OpfsJsBindings.instance.sweepStaleTempFiles().catchError((error) {
+      unawaited(store.sweepStaleTempFiles().catchError((error) {
         logWarning('DriveTransferStrategyFactory: OPFS sweep failed: $error');
       }));
     } catch (error) {
@@ -67,5 +76,7 @@ class DriveTransferStrategyFactory {
   static void resetCache() {
     _opfsSupported = null;
     _swept = false;
+    capability = OpfsFeatureDetection();
+    store = OpfsFileOps();
   }
 }

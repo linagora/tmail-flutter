@@ -11,7 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:web/web.dart' as web;
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader_web.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_xhr_upload.dart';
 
 web.File _fakeFile([String content = '']) =>
@@ -32,8 +33,8 @@ class _FakeFileUtils extends FileUtils {
   }
 }
 
-/// The fake bindings below stub `getFile`, so the handle is never
-/// dereferenced — a bare JS object standing in for the type is enough.
+/// The fakes below stub `getFile`, so the handle is never dereferenced — a
+/// bare JS object standing in for the type is enough.
 web.FileSystemFileHandle _fakeFileHandle() =>
     JSObject() as web.FileSystemFileHandle;
 
@@ -55,27 +56,34 @@ OpfsUploadRequest _uploadRequest({
 
 /// Charset detection is a platform channel with nothing behind it in a browser
 /// test, so every case that isn't about the charset gets a fake detector.
-BrowserOpfsDriveFileUploader _uploader() =>
-    BrowserOpfsDriveFileUploader(fileUtils: _FakeFileUtils('utf-8'));
+BrowserOpfsDriveFileUploader _uploader({
+  OpfsStore? store,
+  required DriveUploadTransport transport,
+  FileUtils? fileUtils,
+}) =>
+    BrowserOpfsDriveFileUploader(
+      store: store ?? _FakeStore(),
+      transport: transport,
+      fileUtils: fileUtils ?? _FakeFileUtils('utf-8'),
+    );
 
 void main() {
   test('resolves with an Attachment when the upload succeeds', () async {
-    OpfsJsBindings.setInstance(_FakeSuccessfulOpfsJsBindings());
-
     final attachment =
-        await _uploader().upload(_uploadRequest());
+        await _uploader(transport: _SuccessfulTransport()).upload(_uploadRequest());
 
     expect(attachment.name, 'hello.txt');
     expect(attachment.size?.value, 42);
   });
 
   test('detects the charset of a text/plain document from a prefix', () async {
-    OpfsJsBindings.setInstance(
-        _FakeSuccessfulOpfsJsBindings()..fileContent = 'hello opfs');
     final fileUtils = _FakeFileUtils('ISO-8859-1');
 
-    final attachment = await BrowserOpfsDriveFileUploader(fileUtils: fileUtils)
-        .upload(_uploadRequest());
+    final attachment = await _uploader(
+      store: _FakeStore()..fileContent = 'hello opfs',
+      transport: _SuccessfulTransport(),
+      fileUtils: fileUtils,
+    ).upload(_uploadRequest());
 
     // Lowercased, the way `FileUploader` stores it.
     expect(attachment.charset, 'iso-8859-1');
@@ -83,39 +91,76 @@ void main() {
   });
 
   test('leaves the charset unset for a non-text document', () async {
-    OpfsJsBindings.setInstance(
-        _FakeSuccessfulOpfsJsBindings()..fileContent = 'hello opfs');
     final fileUtils = _FakeFileUtils('ISO-8859-1');
 
-    final attachment = await BrowserOpfsDriveFileUploader(fileUtils: fileUtils)
-        .upload(_uploadRequest(mimeType: 'application/pdf'));
+    final attachment = await _uploader(
+      store: _FakeStore()..fileContent = 'hello opfs',
+      transport: _SuccessfulTransport(),
+      fileUtils: fileUtils,
+    ).upload(_uploadRequest(mimeType: 'application/pdf'));
 
     expect(attachment.charset, isNull);
     expect(fileUtils.sniffedByteCounts, isEmpty);
   });
 
-  // The fake fails with a bare StateError, so this also pins that a failure on
-  // a live token passes through untouched — only a cancelled token is rewritten.
-  test('propagates an error when the upload fails', () async {
-    OpfsJsBindings.setInstance(_FakeFailingOpfsJsBindings());
+  test('uploads without a charset when detection fails', () async {
+    // A sniff failure is not worth losing the upload over: the server can
+    // infer the encoding, so this ends the same way a non-text file does.
+    final attachment = await _uploader(
+      store: _FakeStore()..fileContent = 'hello opfs',
+      transport: _SuccessfulTransport(),
+      fileUtils: _ThrowingFileUtils(),
+    ).upload(_uploadRequest());
 
+    expect(attachment.charset, isNull);
+    expect(attachment.name, 'hello.txt');
+  });
+
+  test('maps an upload transport failure to a DioException', () async {
     await expectLater(
-      _uploader().upload(_uploadRequest()),
-      throwsA(isA<StateError>()),
+      _uploader(transport: _FailingTransport()).upload(_uploadRequest()),
+      throwsA(isA<DioException>()
+          .having((e) => e.error, 'error', isA<StateError>())),
     );
   });
 
+  test('maps an unparseable success response to a DioException', () async {
+    // A 2xx whose JSON parsed but doesn't match the upload schema makes
+    // `UploadResponse.fromJson` throw a `TypeError`, which no caller can
+    // classify on its own.
+    await expectLater(
+      _uploader(transport: _MalformedBodyTransport()).upload(_uploadRequest()),
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.badResponse)),
+    );
+  });
+
+  test('maps a failure to open the staged entry to a DioException', () async {
+    // The entry can be gone by upload time — swept by another tab, or removed
+    // when a transfer was cancelled — and `getFile` then rejects with a bare
+    // browser error.
+    final transport = _SuccessfulTransport();
+
+    await expectLater(
+      _uploader(store: _FailingGetFileStore(), transport: transport)
+          .upload(_uploadRequest()),
+      throwsA(isA<DioException>()
+          .having((e) => e.error, 'error', isA<StateError>())),
+    );
+    expect(transport.uploadFileCalled, isFalse);
+  });
+
   test('calling cancel aborts the in-flight upload', () async {
-    final bindings = _FakeAbortableOpfsJsBindings();
-    OpfsJsBindings.setInstance(bindings);
+    final transport = _AbortableTransport();
     final cancelToken = CancelToken();
 
-    final upload = _uploader().upload(_uploadRequest(cancelToken: cancelToken));
+    final upload = _uploader(transport: transport)
+        .upload(_uploadRequest(cancelToken: cancelToken));
 
     // Waits for the XHR to actually exist rather than for a fixed number of
     // microtasks, so this keeps exercising the whenCancel -> abort wiring —
     // and not the pre-XHR guard — however many awaits precede the upload.
-    await bindings.uploadFileStarted;
+    await transport.uploadFileStarted;
     cancelToken.cancel();
 
     // The same error a cancel before the XHR existed produces.
@@ -124,43 +169,76 @@ void main() {
       throwsA(isA<DioException>()
           .having((e) => e.type, 'type', DioExceptionType.cancel)),
     );
-    expect(bindings.aborted, isTrue);
+    expect(transport.aborted, isTrue);
   });
 
   test('does not create the XHR when cancelled while getFile is pending',
       () async {
-    final bindings = _FakeDeferredGetFileOpfsJsBindings();
-    OpfsJsBindings.setInstance(bindings);
+    final store = _DeferredGetFileStore();
+    final transport = _SuccessfulTransport();
     final cancelToken = CancelToken();
 
-    final upload = _uploader().upload(_uploadRequest(cancelToken: cancelToken));
+    final upload = _uploader(store: store, transport: transport)
+        .upload(_uploadRequest(cancelToken: cancelToken));
 
     // getFile has started (and is pending) by the time this runs; cancel
     // here exercises the *second* guard, after getFile resolves, not the
     // pre-getFile one.
     await Future<void>.delayed(Duration.zero);
     cancelToken.cancel();
-    bindings.completeGetFile();
+    store.completeGetFile();
 
-    await expectLater(upload, throwsA(isA<DioException>()));
-    expect(bindings.uploadFileCalled, isFalse);
+    await expectLater(
+      upload,
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.cancel)),
+    );
+    expect(transport.uploadFileCalled, isFalse);
   });
 }
 
-/// The file is never read, only handed to `uploadFile`, so every fake stubs
-/// `getFile` the same way and varies only the upload half.
-abstract class _FakeOpfsJsBindings extends OpfsJsBindings {
+/// The file is never read past its prefix, only handed to `uploadFile`, so
+/// every case stubs `getFile` the same way and varies only the upload half.
+class _FakeStore extends OpfsFileOps {
   /// Only the charset cases care what is in the file; everything else uploads
   /// an empty one.
   String fileContent = '';
 
   @override
-  Future<web.File> getFile(Object fileHandle) async => _fakeFile(fileContent);
+  Future<web.File> getFile(OpfsFileHandle fileHandle) async =>
+      _fakeFile(fileContent);
 }
 
-class _FakeSuccessfulOpfsJsBindings extends _FakeOpfsJsBindings {
+class _FailingGetFileStore extends _FakeStore {
+  @override
+  Future<web.File> getFile(OpfsFileHandle fileHandle) async {
+    throw StateError('the staged entry is gone');
+  }
+}
+
+class _DeferredGetFileStore extends _FakeStore {
+  final _getFileCompleter = Completer<web.File>();
+
+  void completeGetFile() => _getFileCompleter.complete(_fakeFile());
+
+  @override
+  Future<web.File> getFile(OpfsFileHandle fileHandle) =>
+      _getFileCompleter.future;
+}
+
+class _ThrowingFileUtils extends FileUtils {
+  @override
+  Future<String> getCharsetFromBytes(Uint8List bytes) async {
+    throw StateError('charset detection unavailable');
+  }
+}
+
+class _SuccessfulTransport implements DriveUploadTransport {
+  bool uploadFileCalled = false;
+
   @override
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
+    uploadFileCalled = true;
     return XhrUploadHandle(
       response: Future.value({
         'accountId': 'account-1',
@@ -173,7 +251,7 @@ class _FakeSuccessfulOpfsJsBindings extends _FakeOpfsJsBindings {
   }
 }
 
-class _FakeFailingOpfsJsBindings extends _FakeOpfsJsBindings {
+class _FailingTransport implements DriveUploadTransport {
   @override
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
     return XhrUploadHandle(
@@ -183,26 +261,19 @@ class _FakeFailingOpfsJsBindings extends _FakeOpfsJsBindings {
   }
 }
 
-class _FakeDeferredGetFileOpfsJsBindings extends _FakeOpfsJsBindings {
-  bool uploadFileCalled = false;
-  final _getFileCompleter = Completer<web.File>();
-
-  void completeGetFile() => _getFileCompleter.complete(_fakeFile());
-
-  @override
-  Future<web.File> getFile(Object fileHandle) => _getFileCompleter.future;
-
+/// A 2xx body that parsed as JSON but carries none of the fields
+/// `UploadResponse` requires.
+class _MalformedBodyTransport implements DriveUploadTransport {
   @override
   XhrUploadHandle uploadFile(XhrUploadFileRequest request) {
-    uploadFileCalled = true;
     return XhrUploadHandle(
-      response: Future.value(<String, dynamic>{}),
+      response: Future.value(<String, dynamic>{'unexpected': 'shape'}),
       abort: () {},
     );
   }
 }
 
-class _FakeAbortableOpfsJsBindings extends _FakeOpfsJsBindings {
+class _AbortableTransport implements DriveUploadTransport {
   bool aborted = false;
   final _uploadFileStarted = Completer<void>();
 

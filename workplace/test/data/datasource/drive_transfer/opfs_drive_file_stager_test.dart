@@ -15,9 +15,10 @@ import 'package:workplace/data/datasource/drive_transfer/drive_file_stager.dart'
 import 'package:workplace/data/datasource/drive_transfer/drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_stager.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_drive_file_uploader.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_drive_transfer_strategy.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_fetch_download.dart';
 import 'package:workplace/data/datasource/drive_transfer/opfs_file_handle.dart';
-import 'package:workplace/data/datasource/drive_transfer/opfs_js_bindings.dart';
+import 'package:workplace/data/datasource/drive_transfer/opfs_file_ops.dart';
 import 'package:workplace/data/datasource/drive_transfer/staged_drive_file.dart';
 import 'package:workplace/data/model/workplace_type_defs.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -38,9 +39,9 @@ void main() {
     );
 
     final progress = <int>[];
-    final bindings = _NameRecordingBindings();
-    addTearDown(() => _removeEntries(bindings.createdNames));
-    final staged = await OpfsDriveFileStager(bindings: bindings).stage(
+    final store = _NameRecordingStore();
+    addTearDown(() => _removeEntries(store.createdNames));
+    final staged = await OpfsDriveFileStager(store: store).stage(
       doc: doc,
       onDownloadProgress: (received, total) => progress.add(received),
       cancelToken: CancelToken(),
@@ -56,18 +57,17 @@ void main() {
     expect(progress, orderedEquals(List.of(progress)..sort()));
 
     // The staged entry must hold the fetched bytes, not just the right size.
-    final stagedFile =
-        await OpfsJsBindings.instance.getFile(opfsStaged.fileHandle);
+    final stagedFile = await OpfsFileOps().getFile(opfsStaged.fileHandle);
     expect((await stagedFile.text().toDart).toDart, content);
 
     // dispose() must remove the OPFS temp entry on every exit path; asserted
     // against a fresh OPFS root, so this answers whether the bytes are gone
     // rather than whether dispose() merely returned.
     await opfsStaged.dispose();
-    expect(await _opfsEntryExists(bindings.createdNames.single), isFalse);
+    expect(await _opfsEntryExists(store.createdNames.single), isFalse);
   });
 
-  test('rethrows when the download fails before the temp entry is created',
+  test('maps a download failure before the temp entry exists to a DioException',
       () async {
     final doc = DriveDocument(
       id: 'doc-opfs-2',
@@ -78,18 +78,48 @@ void main() {
     );
 
     await expectLater(
-      OpfsDriveFileStager(bindings: _FailingFetchOpfsJsBindings()).stage(
+      OpfsDriveFileStager(download: _FailingOpenDownload()).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
       ),
-      throwsA(isA<StateError>()),
+      // Shaped on the way out, with the original failure preserved, so callers
+      // never have to classify a raw browser error.
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.unknown)
+          .having((e) => e.error, 'error', isA<StateError>())),
+    );
+  });
+
+  test('maps a raw OPFS write failure to a DioException', () async {
+    // `writeChunk` is the step most likely to fail for a reason the user can
+    // act on — a full disk raises `QuotaExceededError` — and nothing in the
+    // pump guards it, so this is what proves the single outer mapping covers
+    // the storage half too.
+    const content = 'hello opfs world';
+    final doc = DriveDocument(
+      id: 'doc-opfs-2b',
+      name: 'write-fails.txt',
+      size: content.length,
+      mimeType: 'text/plain',
+      downloadLink: Uri.dataFromString(content, mimeType: 'text/plain'),
+    );
+
+    await expectLater(
+      OpfsDriveFileStager(store: _FailingWriteStore()).stage(
+        doc: doc,
+        onDownloadProgress: (_, __) {},
+        cancelToken: CancelToken(),
+      ),
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.unknown)
+          .having((e) => e.error, 'error', isA<StateError>())),
     );
   });
 
   test('removes the OPFS temp entry when the transfer fails mid-stream',
       () async {
-    final bindings = _FailingReadOpfsJsBindings();
+    final store = _CountingRemoveStore();
     const content = 'hello opfs world';
 
     final doc = DriveDocument(
@@ -101,21 +131,21 @@ void main() {
     );
 
     await expectLater(
-      OpfsDriveFileStager(bindings: bindings).stage(
+      OpfsDriveFileStager(download: _FailingReadDownload(), store: store).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
       ),
-      throwsA(isA<StateError>()),
+      throwsA(isA<DioException>()),
     );
 
     // The temp entry was created before the failure, so cleanup must remove it.
-    expect(bindings.removeTempFileCount, 1);
+    expect(store.removeTempFileCount, 1);
   });
 
   test('removes the OPFS temp entry even when aborting the writable fails',
       () async {
-    final bindings = _FailingAbortOpfsJsBindings();
+    final store = _FailingAbortStore();
     const content = 'hello opfs world';
 
     final doc = DriveDocument(
@@ -127,18 +157,18 @@ void main() {
     );
 
     await expectLater(
-      OpfsDriveFileStager(bindings: bindings).stage(
+      OpfsDriveFileStager(download: _FailingReadDownload(), store: store).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
       ),
-      throwsA(isA<StateError>()),
+      throwsA(isA<DioException>()),
     );
 
     // The writable is still open, which locks the entry against `removeEntry`
     // — cleanup has to close it before the removal can land.
-    expect(bindings.createdNames, hasLength(1));
-    expect(await _opfsEntryExists(bindings.createdNames.single), isFalse);
+    expect(store.createdNames, hasLength(1));
+    expect(await _opfsEntryExists(store.createdNames.single), isFalse);
   });
 
   test('stages a document whose name contains a path separator', () async {
@@ -201,9 +231,9 @@ void main() {
     );
   });
 
-  test('fails the transfer when cancelled while a chunk read is in flight',
+  test('reports a cancel when cancelled while a chunk read is in flight',
       () async {
-    final bindings = _ControllableStreamBindings(contentLength: 16);
+    final download = _ScriptedDownload(contentLength: 16);
     final cancelToken = CancelToken();
 
     final doc = DriveDocument(
@@ -214,7 +244,7 @@ void main() {
       downloadLink: Uri.parse('https://drive.example/cancelled-mid-read.txt'),
     );
 
-    final staging = OpfsDriveFileStager(bindings: bindings).stage(
+    final staging = OpfsDriveFileStager(download: download).stage(
       doc: doc,
       onDownloadProgress: (_, __) {},
       cancelToken: cancelToken,
@@ -222,41 +252,44 @@ void main() {
 
     // Cancel only once the second `read()` is actually in flight, so this
     // exercises cancellation arriving mid-read rather than between iterations.
-    await bindings.secondReadStarted;
+    await download.secondReadStarted;
     cancelToken.cancel();
 
-    await expectLater(staging, throwsA(isA<DioException>()));
+    // The abort reaches the loop as a browser error on the read; only the
+    // token identifies it, and it still has to come out as a cancellation
+    // rather than as whatever the browser threw.
+    await expectLater(
+      staging,
+      throwsA(isA<DioException>()
+          .having((e) => e.type, 'type', DioExceptionType.cancel)),
+    );
   });
 
-  test('reports a cancel when the aborted fetch rejects an in-flight read',
-      () async {
-    // The abort controller `openDownload` opened stays live after the headers,
-    // so a cancellation can reach the loop as a browser error on the read
-    // rather than through `cancelReader`. It still has to come out as a
-    // cancellation, not as whatever the browser threw.
-    final bindings = _ControllableStreamBindings(
-      contentLength: 16,
-      errorStreamOnCancelSignal: true,
-    );
+  test('reports a cancel when cancelled between chunk reads', () async {
     final cancelToken = CancelToken();
+    final store = _WriteHookStore(onFirstChunkWritten: () => cancelToken.cancel());
+    final download = _ScriptedDownload(contentLength: 16);
 
     final doc = DriveDocument(
-      id: 'doc-opfs-7c',
-      name: 'aborted-mid-read.txt',
+      id: 'doc-opfs-7b',
+      name: 'cancelled-between-reads.txt',
       size: 16,
       mimeType: 'text/plain',
-      downloadLink: Uri.parse('https://drive.example/aborted-mid-read.txt'),
+      downloadLink:
+          Uri.parse('https://drive.example/cancelled-between-reads.txt'),
     );
 
-    final staging = OpfsDriveFileStager(bindings: bindings).stage(
+    final staging =
+        OpfsDriveFileStager(download: download, store: store).stage(
       doc: doc,
       onDownloadProgress: (_, __) {},
       cancelToken: cancelToken,
     );
 
-    await bindings.secondReadStarted;
-    cancelToken.cancel();
-
+    // The cancel fires from inside `writeChunk` (see [onFirstChunkWritten]),
+    // so it lands *between* iterations rather than mid-read. Cancellation runs
+    // through one mechanism now — the abort signal errors the body stream — so
+    // the next read rejects and the outcome is the same either way.
     await expectLater(
       staging,
       throwsA(isA<DioException>()
@@ -268,7 +301,7 @@ void main() {
     // The same rejection with no cancellation behind it — a dropped
     // connection — has to surface as a DioException too, not as the raw
     // browser error.
-    final bindings = _ControllableStreamBindings(
+    final download = _ScriptedDownload(
       contentLength: 16,
       errorStreamOnSecondRead: true,
     );
@@ -282,7 +315,7 @@ void main() {
     );
 
     await expectLater(
-      OpfsDriveFileStager(bindings: bindings).stage(
+      OpfsDriveFileStager(download: download).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
@@ -292,42 +325,9 @@ void main() {
     );
   });
 
-  test('stops reading immediately when cancelled between chunk reads',
-      () async {
-    final cancelToken = CancelToken();
-    final bindings = _ControllableStreamBindings(
-      contentLength: 16,
-      onFirstChunkWritten: () => cancelToken.cancel(),
-    );
-
-    final doc = DriveDocument(
-      id: 'doc-opfs-7b',
-      name: 'cancelled-between-reads.txt',
-      size: 16,
-      mimeType: 'text/plain',
-      downloadLink:
-          Uri.parse('https://drive.example/cancelled-between-reads.txt'),
-    );
-
-    final staging = OpfsDriveFileStager(bindings: bindings).stage(
-      doc: doc,
-      onDownloadProgress: (_, __) {},
-      cancelToken: cancelToken,
-    );
-
-    // The cancel fires from inside `writeChunk` (see [onFirstChunkWritten]),
-    // so it lands *between* iterations — the case the loop-top guard exists
-    // for, as opposed to the mid-read case covered above.
-    await expectLater(staging, throwsA(isA<DioException>()));
-    // The guard has to bail out before the next `read()`: `cancelReader` is
-    // async, so without it the loop would issue a second read and keep going
-    // until the cancellation propagated through the JS reader.
-    expect(bindings.readCount, 1);
-  });
-
   test('fails the transfer when the body ends short of content-length',
       () async {
-    final bindings = _ControllableStreamBindings(
+    final download = _ScriptedDownload(
       contentLength: 16,
       closeAfterFirstChunk: true,
     );
@@ -341,11 +341,13 @@ void main() {
     );
 
     await expectLater(
-      OpfsDriveFileStager(bindings: bindings).stage(
+      OpfsDriveFileStager(download: download).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
       ),
+      // Passed through rather than flattened into a DioException: it carries
+      // the received/expected counts callers report.
       throwsA(isA<DriveDownloadIncompleteException>()),
     );
   });
@@ -353,8 +355,8 @@ void main() {
   group('orphaned temp entries', () {
     test('every transfer takes its own OPFS entry, so they stack up', () async {
       const content = 'orphan me';
-      final bindings = _NameRecordingBindings();
-      addTearDown(() => _removeEntries(bindings.createdNames));
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
 
       final doc = DriveDocument(
         id: 'doc-opfs-orphan',
@@ -367,7 +369,7 @@ void main() {
       // Three transfers of one document, none disposed — the shape of a tab
       // closed or crashed after staging.
       for (var i = 0; i < 3; i++) {
-        await OpfsDriveFileStager(bindings: bindings).stage(
+        await OpfsDriveFileStager(store: store).stage(
           doc: doc,
           onDownloadProgress: (_, __) {},
           cancelToken: CancelToken(),
@@ -375,8 +377,8 @@ void main() {
       }
 
       // Distinct names, so they accumulate rather than overwrite each other.
-      expect(bindings.createdNames.toSet(), hasLength(3));
-      for (final name in bindings.createdNames) {
+      expect(store.createdNames.toSet(), hasLength(3));
+      for (final name in store.createdNames) {
         expect(await _opfsEntryExists(name), isTrue,
             reason: '$name should still be in OPFS');
       }
@@ -384,8 +386,8 @@ void main() {
 
     test('sweepStaleTempFiles reclaims them', () async {
       const content = 'sweep me';
-      final bindings = _NameRecordingBindings();
-      addTearDown(() => _removeEntries(bindings.createdNames));
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
 
       final doc = DriveDocument(
         id: 'doc-opfs-sweep',
@@ -395,21 +397,21 @@ void main() {
         downloadLink: Uri.dataFromString(content, mimeType: 'text/plain'),
       );
 
-      await OpfsDriveFileStager(bindings: bindings).stage(
+      await OpfsDriveFileStager(store: store).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
       );
-      final orphan = bindings.createdNames.single;
+      final orphan = store.createdNames.single;
 
       // No staging prefix, so it stands in for whatever else the origin keeps
       // in the OPFS root — the sweep must not touch it.
       const bystander = 'unrelated-origin-data.txt';
-      await bindings.createTempFile(bystander);
+      await store.createTempFile(bystander);
       addTearDown(() => _removeEntries([bystander]));
 
       // Zero age: everything staged before this call is past the cutoff.
-      await bindings.sweepStaleTempFiles(olderThan: Duration.zero);
+      await store.sweepStaleTempFiles(olderThan: Duration.zero);
 
       expect(await _opfsEntryExists(orphan), isFalse);
       expect(await _opfsEntryExists(bystander), isTrue);
@@ -418,8 +420,8 @@ void main() {
     test('sweepStaleTempFiles spares entries younger than the cutoff',
         () async {
       const content = 'still in flight';
-      final bindings = _NameRecordingBindings();
-      addTearDown(() => _removeEntries(bindings.createdNames));
+      final store = _NameRecordingStore();
+      addTearDown(() => _removeEntries(store.createdNames));
 
       final doc = DriveDocument(
         id: 'doc-opfs-inflight',
@@ -429,7 +431,7 @@ void main() {
         downloadLink: Uri.dataFromString(content, mimeType: 'text/plain'),
       );
 
-      await OpfsDriveFileStager(bindings: bindings).stage(
+      await OpfsDriveFileStager(store: store).stage(
         doc: doc,
         onDownloadProgress: (_, __) {},
         cancelToken: CancelToken(),
@@ -437,9 +439,9 @@ void main() {
 
       // A second tab mid-transfer looks exactly like this entry, and must
       // survive another tab's sweep.
-      await bindings.sweepStaleTempFiles();
+      await store.sweepStaleTempFiles();
 
-      expect(await _opfsEntryExists(bindings.createdNames.single), isTrue);
+      expect(await _opfsEntryExists(store.createdNames.single), isTrue);
     });
   });
 
@@ -526,7 +528,7 @@ Future<void> _removeEntries(Iterable<String> names) async {
 
 /// Captures the generated temp-entry names, otherwise private to the stager,
 /// so a test can look them up after the fact.
-class _NameRecordingBindings extends OpfsJsBindings {
+class _NameRecordingStore extends OpfsFileOps {
   final createdNames = <String>[];
 
   @override
@@ -577,15 +579,30 @@ class _RecordingOpfsDriveFileUploader implements OpfsDriveFileUploader {
   }
 }
 
-/// Creates the OPFS entry for real, then fails on the first chunk read — the
-/// only way to reach the cleanup path that removes an already-created entry.
-class _FailingReadOpfsJsBindings extends OpfsJsBindings {
-  int removeTempFileCount = 0;
-
+/// Fails on the first chunk read, so the OPFS entry is created for real before
+/// the failure — the only way to reach the cleanup path that removes an
+/// already-created entry.
+class _FailingReadDownload extends OpfsFetchDownload {
   @override
   Future<Uint8List?> readChunk(web.ReadableStreamDefaultReader reader) async {
     throw StateError('read failed');
   }
+}
+
+/// Fails before any OPFS entry is created — `stage` calls `openDownload`
+/// first, so this exercises the pre-staging failure path deterministically,
+/// without depending on browser networking.
+class _FailingOpenDownload extends OpfsFetchDownload {
+  @override
+  Future<FetchDownloadHandle> openDownload(Uri url, {Future<void>? cancelSignal}) {
+    throw StateError('fetch failed');
+  }
+}
+
+/// Counts the cleanup removal, so a test can assert the entry was reclaimed
+/// rather than merely that `stage` threw.
+class _CountingRemoveStore extends OpfsFileOps {
+  int removeTempFileCount = 0;
 
   @override
   Future<void> removeTempFile(String fileName) async {
@@ -594,10 +611,9 @@ class _FailingReadOpfsJsBindings extends OpfsJsBindings {
   }
 }
 
-/// Creates the OPFS entry for real, fails on the first chunk read, and then
-/// fails the abort that cleanup relies on — leaving the writable genuinely
-/// open, so the entry is locked against `removeEntry` unless cleanup closes it.
-class _FailingAbortOpfsJsBindings extends OpfsJsBindings {
+/// Fails the abort cleanup relies on, leaving the writable genuinely open —
+/// so the entry is locked against `removeEntry` unless cleanup closes it.
+class _FailingAbortStore extends OpfsFileOps {
   final createdNames = <String>[];
 
   @override
@@ -607,23 +623,40 @@ class _FailingAbortOpfsJsBindings extends OpfsJsBindings {
   }
 
   @override
-  Future<Uint8List?> readChunk(web.ReadableStreamDefaultReader reader) async {
-    throw StateError('read failed');
-  }
-
-  @override
   Future<void> abortWritable(web.FileSystemWritableFileStream stream) async {
     throw StateError('abort failed');
   }
 }
 
-/// Fails before any OPFS entry is created — `stage` calls `openDownload`
-/// first, so this exercises the pre-staging failure path deterministically,
-/// without depending on browser networking.
-class _FailingFetchOpfsJsBindings extends OpfsJsBindings {
+/// Stands in for a full disk: the storage half of the pipeline rejecting with
+/// something that is not Dio-shaped.
+class _FailingWriteStore extends OpfsFileOps {
   @override
-  Future<FetchDownloadHandle> openDownload(Uri url, {Future<void>? cancelSignal}) {
-    throw StateError('fetch failed');
+  Future<void> writeChunk(
+      web.FileSystemWritableFileStream stream, Uint8List chunk) async {
+    throw StateError('write failed');
+  }
+}
+
+/// Runs [onFirstChunkWritten] synchronously at the end of the first
+/// `writeChunk`, i.e. before the stager's `await` on it resumes. Cancelling
+/// from there is the only way to land *between* iterations: completing a
+/// future the test awaits is not enough, since the stager wins that race and
+/// issues its next `read()`.
+class _WriteHookStore extends OpfsFileOps {
+  _WriteHookStore({required this.onFirstChunkWritten});
+
+  final void Function() onFirstChunkWritten;
+  var _fired = false;
+
+  @override
+  Future<void> writeChunk(
+      web.FileSystemWritableFileStream stream, Uint8List chunk) async {
+    await super.writeChunk(stream, chunk);
+    if (!_fired) {
+      _fired = true;
+      onFirstChunkWritten();
+    }
   }
 }
 
@@ -633,25 +666,18 @@ class _FailingFetchOpfsJsBindings extends OpfsJsBindings {
 /// against the browser, so the streams semantics under test are Chrome's,
 /// not the fake's.
 ///
-/// [cancelSignal] is ignored unless [errorStreamOnCancelSignal] is set, so by
-/// default the fetch-abort path can't race the reader-cancel path — most cases
-/// here isolate the latter.
-class _ControllableStreamBindings extends OpfsJsBindings {
-  _ControllableStreamBindings({
+/// The cancel signal errors the stream, which is what the real `fetch` abort
+/// controller — still live after the headers — does to a read already in
+/// flight, and the only route a cancellation takes now.
+class _ScriptedDownload extends OpfsFetchDownload {
+  _ScriptedDownload({
     required this.contentLength,
     this.closeAfterFirstChunk = false,
-    this.onFirstChunkWritten,
-    this.errorStreamOnCancelSignal = false,
     this.errorStreamOnSecondRead = false,
   });
 
   final int contentLength;
   final bool closeAfterFirstChunk;
-
-  /// Errors the body stream when the cancel signal resolves — what the real
-  /// `fetch` abort controller, still live after the headers, does to a read
-  /// already in flight.
-  final bool errorStreamOnCancelSignal;
 
   /// Errors the body stream mid-read with no cancellation involved: a
   /// connection dropping partway through the download.
@@ -664,25 +690,13 @@ class _ControllableStreamBindings extends OpfsJsBindings {
   void _errorStream() =>
       _controller?.error(web.DOMException('aborted', 'AbortError'));
 
-  /// Called synchronously at the end of the first `writeChunk`, i.e. before
-  /// the stager's `await` on it resumes. Cancelling from here is the only way
-  /// to land *between* iterations: completing a future the test awaits is not
-  /// enough, since the stager wins that race and issues its next `read()`.
-  final void Function()? onFirstChunkWritten;
-
-  final _firstChunkWritten = Completer<void>();
   final _secondReadStarted = Completer<void>();
   var _readCount = 0;
-
-  /// Resolves once the first chunk has been written to the OPFS temp file.
-  Future<void> get firstChunkWritten => _firstChunkWritten.future;
 
   /// How many `read()` calls the loop has issued.
   int get readCount => _readCount;
 
   /// Resolves once the read loop is parked inside its second `read()`.
-  /// [firstChunkWritten] is not a substitute: it completes before the stager
-  /// resumes, so waiting on it lands *between* iterations.
   Future<void> get secondReadStarted => _secondReadStarted.future;
 
   /// Deliberately not `async`: the synchronous body starts `super.readChunk`
@@ -714,22 +728,12 @@ class _ControllableStreamBindings extends OpfsJsBindings {
       }).toJS,
     );
     final stream = web.ReadableStream(source);
-    if (cancelSignal != null && errorStreamOnCancelSignal) {
+    if (cancelSignal != null) {
       unawaited(cancelSignal.then((_) => _errorStream()));
     }
     return FetchDownloadHandle(
       reader: stream.getReader() as web.ReadableStreamDefaultReader,
       contentLength: contentLength,
     );
-  }
-
-  @override
-  Future<void> writeChunk(
-      web.FileSystemWritableFileStream stream, Uint8List chunk) async {
-    await super.writeChunk(stream, chunk);
-    if (!_firstChunkWritten.isCompleted) {
-      _firstChunkWritten.complete();
-      onFirstChunkWritten?.call();
-    }
   }
 }

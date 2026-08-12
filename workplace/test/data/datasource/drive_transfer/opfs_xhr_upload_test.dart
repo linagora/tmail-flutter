@@ -95,9 +95,9 @@ class _FakeXhr {
   }
 }
 
-/// The mixin is only ever reached through `OpfsJsBindings`; this exposes it on
-/// its own so the XHR seam can be overridden.
-class _TestOpfsXhrUpload with OpfsXhrUpload {
+/// Overrides the XHR seam so every case here scripts the request rather than
+/// reaching the network.
+class _TestOpfsXhrUpload extends OpfsXhrUpload {
   _TestOpfsXhrUpload(this.fake);
 
   final _FakeXhr fake;
