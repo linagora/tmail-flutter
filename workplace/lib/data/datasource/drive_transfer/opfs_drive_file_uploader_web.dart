@@ -117,7 +117,7 @@ class BrowserOpfsDriveFileUploader implements OpfsDriveFileUploader {
   /// [DioExceptionType.unknown] is what that is, the same call
   /// `OpfsDriveFileStager._asDioFailure` makes for its own OPFS leg; claiming
   /// `badResponse` would point callers at a server that answered fine.
-  static Object _asDioFailure(Object error, Uri uploadUri) {
+  Object _asDioFailure(Object error, Uri uploadUri) {
     if (error is DioException) return error;
     return DioException(
       type: DioExceptionType.unknown,
