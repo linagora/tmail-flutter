@@ -27,7 +27,7 @@ void main() {
 
     final package = themeFamily!.split('/')[1];
     for (final url in fontUrls) {
-      expect(url, startsWith('/assets/packages/$package/'),
+      expect(url, startsWith('assets/packages/$package/'),
           reason: '$url does not come from the design system package');
     }
   });
@@ -38,8 +38,8 @@ void main() {
         File.fromUri(packageRoot.resolve('pubspec.yaml')).readAsStringSync();
 
     for (final url in fontUrls) {
-      // /assets/packages/<package>/<pathInsidePackage>
-      final pathInsidePackage = url.split('/').skip(4).join('/');
+      // assets/packages/<package>/<pathInsidePackage>
+      final pathInsidePackage = url.split('/').skip(3).join('/');
       final file = File.fromUri(packageRoot.resolve(pathInsidePackage));
       expect(file.existsSync(), isTrue, reason: '$url points at a missing file');
       // A file that is not declared under `flutter: fonts:` is not bundled.
@@ -54,7 +54,7 @@ void main() {
   test('does not point at app-local font assets', () {
     // The app no longer ships its own font files; the design system does.
     for (final url in fontUrls) {
-      expect(url, isNot(startsWith('/assets/fonts/')),
+      expect(url, isNot(startsWith('assets/fonts/')),
           reason: '$url expects a font the app no longer bundles');
     }
   });

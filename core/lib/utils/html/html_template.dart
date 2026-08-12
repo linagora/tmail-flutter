@@ -51,8 +51,16 @@ class HtmlTemplate {
   /// HTML content is rendered outside Flutter, so the font can only be reached
   /// by URL and the design system asset path has to be spelled out here. Keep
   /// it aligned with the family resolved by `ThemeUtils`.
+  ///
+  /// Relative (no leading `/`) so it resolves against `<base href>` on web,
+  /// including non-root preview deploys. On mobile this alone is not enough:
+  /// `InAppWebView.loadData()` has no base URL by default (resolves against
+  /// `about:blank`), so a relative path still 404s there. Fixing that needs
+  /// wiring a base URL into `HtmlContentViewer` / `IosHtmlContentViewerWidget`
+  /// (`WebViewAssetLoader` on Android, `allowingReadAccessTo` on iOS) — not
+  /// done yet, tracked as a follow-up.
   static const String _fontAssetDirectory =
-      '/assets/packages/linagora_design_flutter/assets/fonts';
+      'assets/packages/linagora_design_flutter/assets/fonts';
 
   static const String fontFamilyApp = 'TwakeInter';
 
