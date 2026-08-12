@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:web/web.dart' as web;
 
 /// Reads `getDirectory` without invoking it, so detection stays synchronous
@@ -43,12 +44,20 @@ class OpfsFeatureDetection implements OpfsCapability {
   /// through and then fails at `openWritable`, fallback never selected.
   ///
   /// Property reads only, so callers can cache this once per session.
+  ///
+  /// Guarded: an unsupported browser must select the buffered fallback, never
+  /// fail the transfer, so anything unexpected out of the probe reads as false.
   @override
   bool isOpfsSupported() {
-    final storage =
-        (web.window.navigator as _NavigatorStorageProbe).storage;
-    if (storage == null) return false;
-    if (storage.getDirectory == null) return false;
-    return _fileSystemFileHandleCtor?.prototype?.createWritable != null;
+    try {
+      final storage =
+          (web.window.navigator as _NavigatorStorageProbe).storage;
+      if (storage == null) return false;
+      if (storage.getDirectory == null) return false;
+      return _fileSystemFileHandleCtor?.prototype?.createWritable != null;
+    } catch (e) {
+      logWarning('OpfsFeatureDetection::isOpfsSupported: probe failed: $e');
+      return false;
+    }
   }
 }
