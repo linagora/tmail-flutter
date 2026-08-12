@@ -159,8 +159,9 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
   /// `body.pipeTo(writable)` with a `TransformStream` counting progress —
   /// which would replace this file's read/write bindings wholesale.
   ///
-  /// Nothing here guards a step: every failure, on either side of the pump, is
-  /// shaped once by [_asDioFailure] on the way out of [stage].
+  /// Nothing guards a step of the pump itself: every failure on either side of
+  /// it is shaped once by [_asDioFailure] on the way out of [stage]. The
+  /// progress callback is the exception, being no part of the transfer.
   Future<int> _readAndWriteAll(_StreamToFileRequest request) async {
     final reader = request.downloadHandle.reader;
     var received = 0;
@@ -169,7 +170,15 @@ class OpfsDriveFileStager implements DriveFileStager<OpfsStagedFile> {
       if (chunk == null) break;
       await _store.writeChunk(request.writable, chunk);
       received += chunk.length;
-      request.onDownloadProgress(received, request.downloadHandle.contentLength);
+      // Guarded for the same reason `OpfsXhrUpload` guards its upload
+      // counterpart: the callback belongs to the caller, and a throw from it
+      // would unwind the pump and bin a transfer that is otherwise healthy —
+      // never worth losing one over a progress report.
+      try {
+        request.onDownloadProgress(received, request.downloadHandle.contentLength);
+      } catch (e) {
+        logWarning('OpfsDriveFileStager: download progress callback failed: $e');
+      }
     }
     return received;
   }

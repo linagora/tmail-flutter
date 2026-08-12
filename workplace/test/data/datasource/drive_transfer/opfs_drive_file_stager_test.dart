@@ -68,6 +68,34 @@ void main() {
     expect(await _opfsEntryExists(store.createdNames.single), isFalse);
   });
 
+  test('stages the whole file even when the progress callback throws',
+      () async {
+    // The callback is the caller's; a throw from it must not unwind the pump
+    // and fail a transfer whose bytes are arriving fine.
+    const content = 'progress callbacks are not the transfer';
+    final doc = DriveDocument(
+      id: 'doc-opfs-throwing-progress',
+      name: 'hello.txt',
+      size: content.length,
+      mimeType: 'text/plain',
+      downloadLink: Uri.dataFromString(content, mimeType: 'text/plain'),
+    );
+
+    final store = _NameRecordingStore();
+    addTearDown(() => _removeEntries(store.createdNames));
+    final staged = await OpfsDriveFileStager(store: store).stage(
+      doc: doc,
+      onDownloadProgress: (_, __) => throw StateError('progress consumer blew up'),
+      cancelToken: CancelToken(),
+    );
+
+    expect(staged.fileSize, content.length);
+    final stagedFile = await OpfsFileOps().getFile(staged.fileHandle);
+    expect((await stagedFile.text().toDart).toDart, content);
+
+    await staged.dispose();
+  });
+
   test('maps a download failure before the temp entry exists to a DioException',
       () async {
     final doc = DriveDocument(
