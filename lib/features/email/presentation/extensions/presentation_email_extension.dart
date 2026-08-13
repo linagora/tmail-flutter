@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/model/hex_color.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -186,7 +187,14 @@ extension PresentationEmailExtension on PresentationEmail {
     for (final keyword in enabledKeywords) {
       if (keyword.isSystemKeyword) continue;
       if (registeredKeywords.contains(keyword.value)) continue;
-      orphanLabels.add(Label(keyword: keyword, displayName: keyword.value));
+      orphanLabels.add(Label(
+        keyword: keyword,
+        displayName: keyword.value,
+        // Deterministic hash-based color from the tmail palette so each
+        // orphan keyword renders in a distinct, stable color across
+        // sessions and devices without any server-side storage.
+        color: HexColor(keyword.deterministicHexColor),
+      ));
     }
 
     return [...registered, ...orphanLabels];

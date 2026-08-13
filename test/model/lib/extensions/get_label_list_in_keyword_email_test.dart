@@ -113,7 +113,20 @@ void main() {
       expect(result.first.keyword, newsletter);
       expect(result.first.displayName, 'newsletter');
       expect(result.first.id, isNull);
-      expect(result.first.color, isNull);
+      // Orphan labels get a deterministic hash-based color from the tmail
+      // palette (see KeyWordIdentifierExtension.deterministicHexColor).
+      expect(result.first.color, isNotNull);
+      expect(result.first.color!.value, matches(RegExp(r'^#[0-9A-Fa-f]{6}$')));
+    });
+
+    test('orphan color is deterministic — same keyword always same color', () {
+      final urgent = KeyWordIdentifier('urgent');
+      final email = PresentationEmail(keywords: {urgent: true});
+
+      final r1 = email.getLabelList([]);
+      final r2 = email.getLabelList([]);
+
+      expect(r1.first.color!.value, equals(r2.first.color!.value));
     });
 
     test('filters out system keywords ($seen, $flagged, $draft, $junk, …)',
