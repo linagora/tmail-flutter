@@ -8,6 +8,33 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   static final needsActionMail = KeyWordIdentifier('needs-action');
   static final eventsMail = KeyWordIdentifier('event');
 
+  /// Keywords that carry dedicated UI treatment (star, read/unread badge,
+  /// draft badge, junk folder auto-move, etc.) and therefore MUST NOT
+  /// surface as user-visible label chips.
+  ///
+  /// The set combines the RFC 8621 §2.1.4 system keywords with the three
+  /// UI-mapped custom keywords defined above. Any keyword not listed here
+  /// is treated as a user-visible label — including custom keywords set
+  /// by external JMAP-compliant tools (e.g. mail sentinels, filters).
+  static final systemKeywords = <String>{
+    KeyWordIdentifier.emailDraft.value,
+    KeyWordIdentifier.emailSeen.value,
+    KeyWordIdentifier.emailFlagged.value,
+    KeyWordIdentifier.emailAnswered.value,
+    KeyWordIdentifier.emailForwarded.value,
+    KeyWordIdentifier.emailPhishing.value,
+    KeyWordIdentifier.emailJunk.value,
+    KeyWordIdentifier.emailNotJunk.value,
+    KeyWordIdentifier.mdnSent.value,
+    unsubscribeMail.value,
+    needsActionMail.value,
+    eventsMail.value,
+  };
+
+  /// True when this keyword should NOT be rendered as a label chip
+  /// (RFC 8621 system keywords + tmail's UI-mapped custom keywords).
+  bool get isSystemKeyword => systemKeywords.contains(value);
+
   String generatePath() => '${PatchObject.keywordsProperty}/$value';
 
   /// General helper to generate a boolean patch.

@@ -24,7 +24,7 @@ void main() {
       expect(result, isEmpty);
     });
 
-    test('returns empty when labels is empty', () {
+    test('returns empty when labels is empty AND keywords are system-only', () {
       final email = PresentationEmail(keywords: {
         KeyWordIdentifier.emailFlagged: true,
       });
@@ -94,6 +94,95 @@ void main() {
 
       expect(result.length, 1);
       expect(result.first.keyword, KeyWordIdentifier.emailFlagged);
+    });
+  });
+
+  group('getLabelList — JMAP standard keywords (RFC 8621)', () {
+    // Ensures keywords set via `Email/set keywords` by any JMAP-compliant
+    // tool (mail sentinel, filter, IMAP client) surface as visual chips,
+    // even without a registered server-side `Label` object.
+
+    test('surfaces custom keyword as orphan label when no matching Label exists',
+        () {
+      final newsletter = KeyWordIdentifier('newsletter');
+      final email = PresentationEmail(keywords: {newsletter: true});
+
+      final result = email.getLabelList([]);
+
+      expect(result.length, 1);
+      expect(result.first.keyword, newsletter);
+      expect(result.first.displayName, 'newsletter');
+      expect(result.first.id, isNull);
+      expect(result.first.color, isNull);
+    });
+
+    test('filters out system keywords ($seen, $flagged, $draft, $junk, …)',
+        () {
+      final email = PresentationEmail(keywords: {
+        KeyWordIdentifier.emailSeen: true,
+        KeyWordIdentifier.emailFlagged: true,
+        KeyWordIdentifier.emailDraft: true,
+        KeyWordIdentifier.emailAnswered: true,
+        KeyWordIdentifier.emailForwarded: true,
+        KeyWordIdentifier.emailPhishing: true,
+        KeyWordIdentifier.emailJunk: true,
+        KeyWordIdentifier.emailNotJunk: true,
+        KeyWordIdentifier.mdnSent: true,
+      });
+
+      final result = email.getLabelList([]);
+
+      expect(result, isEmpty);
+    });
+
+    test('registered label wins over orphan synthesis for same keyword', () {
+      final newsletter = KeyWordIdentifier('newsletter');
+      final email = PresentationEmail(keywords: {newsletter: true});
+      final registered = Label(
+        keyword: newsletter,
+        displayName: 'My Newsletter',
+      );
+
+      final result = email.getLabelList([registered]);
+
+      expect(result.length, 1);
+      expect(result.first.displayName, 'My Newsletter'); // not "newsletter"
+    });
+
+    test('mixes registered + orphan + system-filtered', () {
+      final github = KeyWordIdentifier('github');
+      final invoice = KeyWordIdentifier('invoice');
+      final email = PresentationEmail(keywords: {
+        github: true,
+        invoice: true,
+        KeyWordIdentifier.emailFlagged: true, // system, filtered out
+        KeyWordIdentifier.emailSeen: true, // system, filtered out
+      });
+      final registered = Label(keyword: github, displayName: 'GitHub');
+
+      final result = email.getLabelList([registered]);
+
+      // github (registered) + invoice (orphan) = 2
+      expect(result.length, 2);
+      final registeredLabel =
+          result.firstWhere((l) => l.keyword?.value == 'github');
+      expect(registeredLabel.displayName, 'GitHub');
+      final orphanLabel =
+          result.firstWhere((l) => l.keyword?.value == 'invoice');
+      expect(orphanLabel.displayName, 'invoice');
+      expect(orphanLabel.id, isNull);
+    });
+
+    test('orphan labels ignore disabled keywords', () {
+      final email = PresentationEmail(keywords: {
+        KeyWordIdentifier('active-label'): true,
+        KeyWordIdentifier('disabled-label'): false,
+      });
+
+      final result = email.getLabelList([]);
+
+      expect(result.length, 1);
+      expect(result.first.keyword?.value, 'active-label');
     });
   });
 }
