@@ -129,7 +129,7 @@ void main() {
       expect(r1.first.color!.value, equals(r2.first.color!.value));
     });
 
-    test('filters out system keywords ($seen, $flagged, $draft, $junk, …)',
+    test(r'filters out system keywords ($seen, $flagged, $draft, $junk, …)',
         () {
       final email = PresentationEmail(keywords: {
         KeyWordIdentifier.emailSeen: true,
