@@ -1440,7 +1440,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "bump-v0.2.7"
+      ref: "v0.2.7"
       resolved-ref: fa5d88132c57cbcb1dd717b0ab7028d053839b48
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
