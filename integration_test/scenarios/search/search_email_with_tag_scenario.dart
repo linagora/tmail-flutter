@@ -50,8 +50,6 @@ class SearchEmailWithTagScenario extends BaseTestScenario
 
       await commonRobot.selectContextMenuItemByName(labelDisplayName);
       await searchRobot.expectEmailListCountAtLeast(emailCount);
-
-      await $.pumpAndSettle(duration: const Duration(seconds: 1));
     }
   }
 
