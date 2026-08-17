@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -146,6 +147,89 @@ void main() {
         final secondLoadSetting = await manager.loadPreferences();
 
         expect(firstLoadSetting, equals(secondLoadSetting));
+      },
+    );
+  });
+
+  // Drive attachment shipped disabled-by-default behind a 7-tap reveal, so the
+  // only installs holding a stored value are those that used that reveal.
+  // These cover what an upgrade sees, without any cache migration.
+  group('loadPreferences drive attachment upgrade path', () {
+    test(
+      'WHEN an old install stored other configs but never revealed the drive toggle\n'
+      'THEN drive attachment comes back enabled',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(ThreadDetailConfig.keySuffix),
+          jsonEncode(ThreadDetailConfig(isEnabled: true).toJson()),
+        );
+
+        final result = await manager.loadPreferences();
+
+        expect(result.configs.whereType<DriveAttachmentConfig>(), isEmpty);
+        expect(result.driveAttachmentConfig.isEnabled, isTrue);
+      },
+    );
+
+    test(
+      'WHEN an old install explicitly turned drive attachment off\n'
+      'THEN that opt-out survives the upgrade',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(DriveAttachmentConfig.keySuffix),
+          jsonEncode(DriveAttachmentConfig(isEnabled: false).toJson()),
+        );
+
+        final result = await manager.loadPreferences();
+
+        expect(result.driveAttachmentConfig.isEnabled, isFalse);
+      },
+    );
+
+    test(
+      'WHEN an old install that opted out toggles drive attachment back on\n'
+      'THEN the new value is persisted and reloaded',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(DriveAttachmentConfig.keySuffix),
+          jsonEncode(DriveAttachmentConfig(isEnabled: false).toJson()),
+        );
+
+        await manager.savePreferences(DriveAttachmentConfig(isEnabled: true));
+        final result = await manager.loadPreferences();
+
+        expect(result.driveAttachmentConfig.isEnabled, isTrue);
+      },
+    );
+
+    test(
+      'WHEN the stored drive config is malformed JSON\n'
+      'THEN it is dropped and drive attachment falls back to enabled',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(DriveAttachmentConfig.keySuffix),
+          'not-valid-json',
+        );
+
+        final result = await manager.loadPreferences();
+
+        expect(result.configs.whereType<DriveAttachmentConfig>(), isEmpty);
+        expect(result.driveAttachmentConfig.isEnabled, isTrue);
+      },
+    );
+
+    test(
+      'WHEN the stored drive config json lost its isEnabled key\n'
+      'THEN drive attachment falls back to enabled',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(DriveAttachmentConfig.keySuffix),
+          jsonEncode(<String, dynamic>{}),
+        );
+
+        final result = await manager.loadPreferences();
+
+        expect(result.driveAttachmentConfig.isEnabled, isTrue);
       },
     );
   });
