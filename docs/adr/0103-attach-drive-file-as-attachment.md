@@ -4,7 +4,7 @@ Date: 2026-07-07
 
 ## Status
 
-Rejected — superseded by [ADR-0104](0104-attach-drive-file-via-jmap-mediated-upload.md). The
+Rejected — superseded by [ADR-0105](0105-attach-drive-file-via-jmap-mediated-upload.md). The
 backend now owns the drive-to-attachment transfer; the client no longer downloads or uploads
 bytes for this path, which voids this ADR's staging/upload architecture.
 
