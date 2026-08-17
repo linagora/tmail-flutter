@@ -10,7 +10,7 @@ class DriveAttachmentConfig extends PreferencesConfig {
   final bool isEnabled;
 
   DriveAttachmentConfig({
-    this.isEnabled = false,
+    this.isEnabled = true,
   });
 
   @override

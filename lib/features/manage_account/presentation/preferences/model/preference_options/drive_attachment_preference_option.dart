@@ -13,9 +13,6 @@ class DriveAttachmentPreferenceOption extends LocalPreferenceOption {
   String get id => 'drive-attachment';
 
   @override
-  bool get isExperimental => true;
-
-  @override
   String title(AppLocalizations l) => l.driveAttachment;
 
   @override
