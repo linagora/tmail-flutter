@@ -66,10 +66,16 @@ import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
+import 'package:tmail_ui_user/features/upload/data/datasource/upload_from_url_datasource.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
+import 'package:tmail_ui_user/features/upload/data/datasource_impl/upload_from_url_datasource_impl.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_from_url_api.dart';
+import 'package:tmail_ui_user/features/upload/data/repository/upload_from_url_repository_impl.dart';
+import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_repository.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/upload_drive_document_from_url_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
@@ -116,6 +122,10 @@ abstract class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => AttachmentUploadDataSourceImpl(
       Get.find<FileUploader>(),
       Get.find<Uuid>(),
+      Get.find<RemoteExceptionThrower>(),
+    ), tag: composerId);
+    Get.lazyPut(() => UploadFromUrlDataSourceImpl(
+      Get.find<UploadFromUrlApi>(),
       Get.find<RemoteExceptionThrower>(),
     ), tag: composerId);
     Get.lazyPut(() => ComposerDataSourceImpl(
@@ -180,6 +190,10 @@ abstract class ComposerBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<AttachmentUploadDataSource>(
       () => Get.find<AttachmentUploadDataSourceImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<UploadFromUrlDataSource>(
+      () => Get.find<UploadFromUrlDataSourceImpl>(tag: composerId),
       tag: composerId,
     );
     Get.lazyPut<ComposerDataSource>(
@@ -247,6 +261,10 @@ abstract class ComposerBindings extends BaseBindings {
       Get.find<StateDataSource>(tag: composerId),
       Get.find<PrintFileDataSource>(tag: composerId),
     ), tag: composerId);
+    Get.lazyPut(
+      () => UploadFromUrlRepositoryImpl(Get.find<UploadFromUrlDataSource>(tag: composerId)),
+      tag: composerId,
+    );
   }
 
   @override
@@ -271,6 +289,10 @@ abstract class ComposerBindings extends BaseBindings {
       () => Get.find<EmailRepositoryImpl>(tag: composerId),
       tag: composerId,
     );
+    Get.lazyPut<UploadFromUrlRepository>(
+      () => Get.find<UploadFromUrlRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
   }
 
   @override
@@ -285,6 +307,12 @@ abstract class ComposerBindings extends BaseBindings {
     );
     Get.lazyPut(
       () => UploadAttachmentInteractor(Get.find<ComposerRepository>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => UploadDriveDocumentFromUrlInteractor(
+        Get.find<UploadFromUrlRepository>(tag: composerId),
+      ),
       tag: composerId,
     );
     Get.lazyPut(
@@ -376,6 +404,7 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<ComposerController>(tag: composerId);
 
     Get.delete<AttachmentUploadDataSourceImpl>(tag: composerId);
+    Get.delete<UploadFromUrlDataSourceImpl>(tag: composerId);
     Get.delete<ComposerDataSourceImpl>(tag: composerId);
     Get.delete<ContactDataSourceImpl>(tag: composerId);
     Get.delete<MailboxDataSourceImpl>(tag: composerId);
@@ -390,6 +419,7 @@ abstract class ComposerBindings extends BaseBindings {
     disposePlatformCacheImpl();
 
     Get.delete<AttachmentUploadDataSource>(tag: composerId);
+    Get.delete<UploadFromUrlDataSource>(tag: composerId);
     Get.delete<ComposerDataSource>(tag: composerId);
     Get.delete<ContactDataSource>(tag: composerId);
     Get.delete<MailboxDataSource>(tag: composerId);
@@ -404,16 +434,19 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<ContactRepositoryImpl>(tag: composerId);
     Get.delete<MailboxRepositoryImpl>(tag: composerId);
     Get.delete<EmailRepositoryImpl>(tag: composerId);
+    Get.delete<UploadFromUrlRepositoryImpl>(tag: composerId);
 
     Get.delete<ComposerRepository>(tag: composerId);
     Get.delete<ComposerCacheRepository>(tag: composerId);
     Get.delete<ContactRepository>(tag: composerId);
     Get.delete<MailboxRepository>(tag: composerId);
     Get.delete<EmailRepository>(tag: composerId);
+    Get.delete<UploadFromUrlRepository>(tag: composerId);
 
     Get.delete<LocalFilePickerInteractor>(tag: composerId);
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
+    Get.delete<UploadDriveDocumentFromUrlInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
     Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
     Get.delete<SaveComposerCacheInteractor>(tag: composerId);
