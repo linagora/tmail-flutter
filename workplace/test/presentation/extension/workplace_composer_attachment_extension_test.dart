@@ -53,6 +53,36 @@ class _SequentialAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
+// Returns queued responses like _SequentialAdapter, but also records each
+// request body so a test can assert on the outgoing JSON shape.
+class _CapturingAdapter implements HttpClientAdapter {
+  final List<dynamic> _queue;
+  final List<dynamic> capturedBodies = [];
+  int _index = 0;
+
+  _CapturingAdapter(this._queue);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future? cancelFuture,
+  ) async {
+    capturedBodies.add(options.data);
+    final item = _queue[_index++];
+    return ResponseBody.fromString(
+      jsonEncode(item),
+      200,
+      headers: {
+        Headers.contentTypeHeader: ['application/json; charset=utf-8'],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
 // Always throws DioException to simulate a network failure.
 class _ErrorAdapter implements HttpClientAdapter {
   @override
@@ -93,11 +123,13 @@ final _intentResponse = {
 WorkplaceComposerAttachmentExtension _makeExtension(
   ValueListenable<Uri?> notifier, {
   String? oidcToken = 'oidc-token',
+  num? maxAttachmentSizeBytes,
   OnDrivePickStateChanged? onPickState,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
       oidcTokenGetter: () => oidcToken,
+      maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
       onPickState: onPickState,
     );
 
@@ -499,6 +531,38 @@ void main() {
       expect(result, isNotNull);
       expect(result!.intentId, equals('intent-xyz'));
       expect(result.intentUrl, equals(Uri.parse('https://drive.example.com/pick')));
+    });
+
+    testWidgets('forwards downloadLink maxFileSize/availableSize from filePickerConfig into the request', (tester) async {
+      final adapter = _CapturingAdapter([_tokenResponse, _intentResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(notifier, maxAttachmentSizeBytes: 5000);
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(
+              label: 'Attachment',
+              maxFileSize: 5000,
+              availableSize: 5000,
+            ),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+          ),
+        ),
+      );
+
+      // `_buildIntentRequest` doesn't fully explicitToJson-serialize nested
+      // request objects (only WorkplaceFilePickerConfigRequest does), so the
+      // captured body still holds the typed request graph at this depth.
+      final intentBody = adapter.capturedBodies[1] as Map<String, dynamic>;
+      final requestData = intentBody['data'] as WorkplaceIntentDataRequest;
+      final downloadLink = requestData.attributes.data.downloadLink;
+      expect(downloadLink!.maxFileSize, equals(5000));
+      expect(downloadLink.availableSize, equals(5000));
     });
   });
 }

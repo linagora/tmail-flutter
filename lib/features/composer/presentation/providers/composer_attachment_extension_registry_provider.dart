@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -18,6 +19,8 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
     WorkplaceComposerAttachmentExtension(
       workplaceUri: uriNotifier,
       oidcTokenGetter: () => getBinding<AuthorizationInterceptors>()?.currentOidcIdToken,
+      maxAttachmentSizeBytesGetter: () =>
+          getBinding<MailboxDashBoardController>()?.maxSizeAttachmentsPerEmail?.value,
       onPickState: (composerId, state) async {
         if (state is DrivePickResult) {
           try {

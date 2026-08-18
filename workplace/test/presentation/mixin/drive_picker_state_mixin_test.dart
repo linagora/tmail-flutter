@@ -27,6 +27,7 @@ class _TestState extends State<_TestWidget>
   final List<DrivePickState> pickStates = [];
   final List<WorkplaceFilePickerConfigRequest> openCalls = [];
   _ModalStub modalStub = () => Future.value();
+  num? maxAttachmentSizeBytesStub;
 
   @override
   FetchDriveIntentCallback get pickerFetchIntent =>
@@ -41,6 +42,9 @@ class _TestState extends State<_TestWidget>
   @override
   DriveIntentImageAssets get driveIntentImageAssets =>
       const DriveIntentImageAssets(driveLogo: '', closeIcon: '', searchIcon: '');
+
+  @override
+  num? get maxAttachmentSizeBytes => maxAttachmentSizeBytesStub;
 
   @override
   Future<DrivePickOutcome?> openDrivePickerModal(
@@ -126,6 +130,22 @@ void main() {
         expect(state.pickStates, hasLength(1));
         final failure = state.pickStates.single as DrivePickFailure;
         expect(failure.error, same(error));
+      });
+    });
+
+    group('maxAttachmentSizeBytes', () {
+      testWidgets('exposes the value returned by the mixer override', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.maxAttachmentSizeBytesStub = 5000;
+
+        expect(state.maxAttachmentSizeBytes, equals(5000));
+      });
+
+      testWidgets('is null when the mixer override returns null', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.maxAttachmentSizeBytesStub = null;
+
+        expect(state.maxAttachmentSizeBytes, isNull);
       });
     });
 

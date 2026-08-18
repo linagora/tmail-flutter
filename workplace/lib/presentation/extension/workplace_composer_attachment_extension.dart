@@ -26,6 +26,7 @@ typedef OnDrivePickStateChanged =
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
   final String? Function() oidcTokenGetter;
+  final num? Function() maxAttachmentSizeBytesGetter;
   final OnDrivePickStateChanged? onPickState;
 
   late final _dataSource = WorkplaceDataSourceImpl();
@@ -38,6 +39,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
     required this.oidcTokenGetter,
+    required this.maxAttachmentSizeBytesGetter,
     this.onPickState,
   });
 
@@ -94,7 +96,11 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
       addAsAttachment: filePickerConfig.downloadLink == null
           ? null
-          : WorkplaceActionConfig(label: filePickerConfig.downloadLink!.label),
+          : WorkplaceActionConfig(
+              label: filePickerConfig.downloadLink!.label,
+              maxFileSize: filePickerConfig.downloadLink!.maxFileSize,
+              availableSize: filePickerConfig.downloadLink!.availableSize,
+            ),
       theme: switch (filePickerConfig.theme.type) {
         WorkplaceThemeType.light => WorkplaceTheme.light,
         WorkplaceThemeType.dark => WorkplaceTheme.dark,
@@ -138,6 +144,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
             uri,
             filePickerConfig: filePickerConfig,
           ),
+          maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
         );
       },
     );
@@ -162,6 +169,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
             uri,
             filePickerConfig: filePickerConfig,
           ),
+          maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
         );
       },
     );

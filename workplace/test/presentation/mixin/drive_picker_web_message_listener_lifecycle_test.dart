@@ -284,6 +284,9 @@ class _MenuTileUnderTestState extends State<_MenuTileUnderTest>
       const DriveIntentImageAssets(driveLogo: '', closeIcon: '', searchIcon: '');
 
   @override
+  num? get maxAttachmentSizeBytes => null;
+
+  @override
   Future<DrivePickOutcome?> openDrivePickerModal(
     WorkplaceFilePickerConfigRequest filePickerConfig,
   ) {

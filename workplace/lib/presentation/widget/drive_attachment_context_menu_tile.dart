@@ -12,12 +12,14 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final Uri workplaceUri;
   final OnPickDriveCallback? onPickCallback;
   final FetchDriveIntentCallback onFetchIntent;
+  final num? Function() maxAttachmentSizeBytesGetter;
 
   const DriveAttachmentContextMenuTile({
     super.key,
     required this.imagePaths,
     required this.workplaceUri,
     required this.onFetchIntent,
+    required this.maxAttachmentSizeBytesGetter,
     this.onPickCallback,
   });
 
@@ -34,6 +36,9 @@ class _DriveAttachmentContextMenuTileState
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
+
+  @override
+  num? get maxAttachmentSizeBytes => widget.maxAttachmentSizeBytesGetter();
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(

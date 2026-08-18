@@ -12,6 +12,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
   final ComposerToolbarButtonStyle style;
   final OnPickDriveCallback? onPickCallback;
   final FetchDriveIntentCallback onFetchIntent;
+  final num? Function() maxAttachmentSizeBytesGetter;
 
   const DriveAttachmentPickerButton({
     super.key,
@@ -19,6 +20,7 @@ class DriveAttachmentPickerButton extends StatefulWidget {
     required this.imagePaths,
     required this.workplaceUri,
     required this.onFetchIntent,
+    required this.maxAttachmentSizeBytesGetter,
     this.style = const ComposerToolbarButtonStyle(),
     this.onPickCallback,
   });
@@ -36,6 +38,9 @@ class _DriveAttachmentPickerButtonState
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
+
+  @override
+  num? get maxAttachmentSizeBytes => widget.maxAttachmentSizeBytesGetter();
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(

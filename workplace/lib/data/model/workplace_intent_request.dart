@@ -8,12 +8,22 @@ part 'workplace_intent_request.g.dart';
 @JsonSerializable(createFactory: false, includeIfNull: false)
 class WorkplaceActionConfigRequest {
   final String? label;
+  final num? maxFileSize;
+  final num? availableSize;
 
-  const WorkplaceActionConfigRequest({this.label});
+  const WorkplaceActionConfigRequest({
+    this.label,
+    this.maxFileSize,
+    this.availableSize,
+  });
 
   factory WorkplaceActionConfigRequest.fromEntity(
     WorkplaceActionConfig config,
-  ) => WorkplaceActionConfigRequest(label: config.label);
+  ) => WorkplaceActionConfigRequest(
+    label: config.label,
+    maxFileSize: config.maxFileSize,
+    availableSize: config.availableSize,
+  );
 
   Map<String, dynamic> toJson() => _$WorkplaceActionConfigRequestToJson(this);
 }

@@ -25,6 +25,8 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
 
   DriveIntentImageAssets get driveIntentImageAssets;
 
+  num? get maxAttachmentSizeBytes;
+
   OnPickDriveCallback? get pickerOnCallback => null;
 
   bool _modalOpen = false;
@@ -48,7 +50,11 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         sharingLink: WorkplaceActionConfigRequest(label: l10n.addAsLink),
         downloadLink: addAsAttachmentTitle == null
             ? null
-            : const WorkplaceActionConfigRequest(label: addAsAttachmentTitle),
+            : WorkplaceActionConfigRequest(
+                label: addAsAttachmentTitle,
+                maxFileSize: maxAttachmentSizeBytes,
+                availableSize: maxAttachmentSizeBytes,
+              ),
         theme: WorkplaceThemeConfigRequest.fromEntity(theme),
       );
       DrivePickOutcome? outcome;
