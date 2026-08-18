@@ -18,11 +18,6 @@ env:
     workplace/test/presentation/mixin/web_window_message_mixin_web_test.dart
     workplace/test/presentation/view/drive_intent_web_view_modal_web_test.dart
     core/test/utils/html/editor_script/quoted_reply_enter_handler_script_browser_test.dart
-    workplace/test/data/datasource/drive_transfer/drive_transfer_strategy_factory_web_test.dart
-    workplace/test/data/datasource/drive_transfer/opfs_drive_file_stager_test.dart
-    workplace/test/data/datasource/drive_transfer/opfs_drive_file_uploader_test.dart
-    workplace/test/data/datasource/drive_transfer/opfs_fetch_download_test.dart
-    workplace/test/data/datasource/drive_transfer/opfs_xhr_upload_test.dart
 
 jobs:
   analyze-test:
