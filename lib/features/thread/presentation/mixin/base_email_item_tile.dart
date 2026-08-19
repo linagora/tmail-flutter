@@ -14,6 +14,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -206,7 +207,7 @@ mixin BaseEmailItemTile {
 
   Widget buildIconUnreadStatus() {
     return SvgPicture.asset(
-      key: const Key('unread_status_icon'),
+      key: const Key(UiKeys.unreadStatusIcon),
       imagePaths.icUnreadStatus,
       width: 9,
       height: 9,

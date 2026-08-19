@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/mobile_app_bar_thread_widget_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
@@ -64,7 +65,7 @@ class SelectionMobileAppBarThreadWidget extends StatelessWidget {
         ),
         ...emailSelectionActionTypes.map(
           (type) => TMailButtonWidget.fromIcon(
-            key: Key('${type.name}_selected_email_button'),
+            key: Key('${type.name}${UiKeys.selectedEmailActionButtonSuffix}'),
             icon: type.getIcon(imagePaths),
             iconColor: type.getIconColor(),
             iconSize: type.getIconSize(),

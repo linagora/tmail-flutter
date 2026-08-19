@@ -15,6 +15,10 @@ class UiKeys {
   static const String emptyThreadView = 'empty_thread_view';
   static const String emptySearchEmailView = 'empty_search_email_view';
   static const String searchFilterListView = 'search_filter_list_view';
+  static const String unreadStatusIcon = 'unread_status_icon';
+  static const String selectedEmailActionButtonSuffix = '_selected_email_button';
+  static const String tabletEmailSelectionAvatar =
+      'tablet_email_selection_avatar';
   // Suggestion-overlay chips; compose with the filter name. Distinct from the result-bar keys.
   static const String quickSearchFilterButtonPrefix = 'quick_search_filter_button_';
 

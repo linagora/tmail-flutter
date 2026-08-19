@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
+import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../../extensions/patrol_finder_extension.dart';
@@ -14,15 +16,31 @@ import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
+import 'web_search_email_action_robot.dart';
 import 'web_search_suggestion_robot.dart';
+import 'web_search_viewport_robot.dart';
 
 class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
-  // Web suggestion sub-robot; assertions reuse the base (hit-test-independent).
+  // Web-specific sub-robots cover responsive selection and browser resizing.
   WebSearchRobot(PatrolIntegrationTester $)
-      : super($, suggestionRobot: WebSearchSuggestionRobot($));
+      : super(
+          $,
+          suggestionRobot: WebSearchSuggestionRobot($),
+          actionRobot: WebSearchEmailActionRobot($),
+          viewportRobot: WebSearchViewportRobot($),
+        );
 
   @override
   Future<void> tapOnSearchField() async {
+    if ($(SearchBarView).evaluate().isNotEmpty) {
+      // Responsive web uses the mobile search entry point below 1200px.
+      await super.tapOnSearchField();
+      await waitForCondition(
+        () async => $(SearchEmailView).evaluate().isNotEmpty,
+        timeout: TestTimeouts.short,
+      );
+      return;
+    }
     await $(SearchInputFormWidget).$(TextField).tap();
     // Tap the search icon button so isSearchEmailRunning becomes true and filter
     // buttons appear in the dashboard bar before any keyword is entered.
@@ -35,6 +53,12 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> enterKeyword(String keyword) async {
+    if ($(SearchEmailView).evaluate().isNotEmpty) {
+      // Responsive web renders the dedicated mobile/tablet SearchEmailView.
+      final finder = $(SearchEmailView).$(TextField);
+      await finder.tap();
+      return finder.enterTextWithoutTapAction(keyword);
+    }
     final finder = $(SearchInputFormWidget).$(TextField);
     await finder.tap();
     await finder.enterTextWithoutTapAction(keyword);
@@ -53,6 +77,15 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> tapOnShowAllResultsText() async {
+    if ($(SearchEmailView).evaluate().isNotEmpty) {
+      // Responsive web renders suggestions in the page, so its action remains
+      // hit-testable unlike the desktop overlay.
+      await super.tapOnShowAllResultsText();
+      return waitForCondition(
+        () async => $(EmailTileBuilder).evaluate().isNotEmpty,
+        timeout: TestTimeouts.medium,
+      );
+    }
     // On web the suggestion overlay wraps content in PointerInterceptor, making
     // the "Showing results for:" InkWell unreliable to tap. Pressing Enter on the
     // focused search field triggers onSubmitted → _invokeSearchEmailAction which
@@ -165,7 +198,10 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     final email = $(EmailTileBuilder).which<EmailTileBuilder>(
       (view) => view.presentationEmail.subject?.contains(subject) == true,
     );
-    await $.waitUntilVisible(email);
+    await waitForCondition(
+      () async => email.evaluate().isNotEmpty,
+      timeout: TestTimeouts.medium,
+    );
   }
 
   @override

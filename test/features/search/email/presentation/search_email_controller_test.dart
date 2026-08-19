@@ -22,6 +22,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -457,12 +458,18 @@ void main() {
 
   test('archives selected search emails through the archive folder action', () {
     final archiveAction = arrangeArchiveAction();
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setResultSearches([archiveAction.selectedEmail]);
+    controller.selectEmail(archiveAction.selectedEmail);
+    expect(controller.selectionMode, SelectMode.ACTIVE);
 
     controller.handleSelectionEmailAction(
       EmailActionType.archiveMessage,
-      [archiveAction.selectedEmail],
+      controller.listResultSearch,
     );
 
+    expect(controller.selectionMode, SelectMode.INACTIVE);
     verifyArchiveMove(archiveAction.archiveMailboxId);
   });
 

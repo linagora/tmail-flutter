@@ -10,6 +10,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -92,6 +93,7 @@ class _WebTabletBodyEmailItemWidgetState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   MouseRegion(
+                    key: const Key(UiKeys.tabletEmailSelectionAvatar),
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                         onTap: () => widget.emailActionClick?.call(

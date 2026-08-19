@@ -22,8 +22,12 @@ import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_search_result_assertion_robot.dart';
 import 'abstract/abstract_search_robot.dart';
 import 'abstract/abstract_search_suggestion_robot.dart';
+import 'abstract/abstract_search_email_action_robot.dart';
+import 'abstract/abstract_search_viewport_robot.dart';
+import 'search_email_action_robot.dart';
 import 'search_result_assertion_robot.dart';
 import 'search_suggestion_robot.dart';
+import 'search_viewport_robot.dart';
 
 class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   @override
@@ -32,12 +36,22 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   @override
   final AbstractSearchResultAssertionRobot assertion;
 
+  @override
+  final AbstractSearchEmailActionRobot action;
+
+  @override
+  final AbstractSearchViewportRobot viewport;
+
   SearchRobot(
     PatrolIntegrationTester $, {
     AbstractSearchSuggestionRobot? suggestionRobot,
     AbstractSearchResultAssertionRobot? assertionRobot,
+    AbstractSearchEmailActionRobot? actionRobot,
+    AbstractSearchViewportRobot? viewportRobot,
   })  : suggestion = suggestionRobot ?? SearchSuggestionRobot($),
         assertion = assertionRobot ?? SearchResultAssertionRobot($),
+        action = actionRobot ?? SearchEmailActionRobot($),
+        viewport = viewportRobot ?? SearchViewportRobot($),
         super($);
 
   @override
