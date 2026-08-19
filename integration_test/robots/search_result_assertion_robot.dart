@@ -55,8 +55,9 @@ class SearchResultAssertionRobot extends CoreRobot
 
     await waitForCondition(() async {
       await $.pump();
-      return unreadIcon.evaluate().isEmpty;
+      return email.evaluate().isNotEmpty && unreadIcon.evaluate().isEmpty;
     });
+    expect(email.exists, isTrue);
     expect(unreadIcon.exists, isFalse);
   }
 

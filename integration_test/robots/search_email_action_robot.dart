@@ -13,16 +13,30 @@ class SearchEmailActionRobot extends CoreRobot
   SearchEmailActionRobot(super.$);
 
   @override
-  Future<void> selectEmailWithSubject(String subject) async {
-    final email = $(EmailTileBuilder).which<EmailTileBuilder>(
-      (view) => view.presentationEmail.subject == subject,
-    );
+  Future<void> selectEmailWithSubject(String subject) =>
+      _selectEmail(emailWithSubject(subject));
+
+  @override
+  Future<void> selectUnreadEmailWithSubject(String subject) =>
+      _selectEmail(emailWithSubject(subject, unreadOnly: true));
+
+  Future<void> _selectEmail(PatrolFinder email) async {
     await $.waitUntilVisible(email);
     await email.longPress();
     await $.waitUntilVisible(
       selectedEmailActionButton(EmailSelectionActionType.moreAction),
     );
   }
+
+  PatrolFinder emailWithSubject(
+    String subject, {
+    bool unreadOnly = false,
+  }) =>
+      $(EmailTileBuilder).which<EmailTileBuilder>(
+        (view) =>
+            view.presentationEmail.subject == subject &&
+            (!unreadOnly || !view.presentationEmail.hasRead),
+      );
 
   @override
   Future<void> markSelectedEmailsAsRead() async {

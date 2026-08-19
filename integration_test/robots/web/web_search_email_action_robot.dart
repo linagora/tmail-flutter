@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/web_tablet_body_email_item_widget.dart';
 
 import '../../utils/wait_for_condition.dart';
@@ -20,15 +19,25 @@ class WebSearchEmailActionRobot extends SearchEmailActionRobot {
       _triggerSelectedEmailAction(EmailSelectionActionType.archiveMessage);
 
   @override
-  Future<void> selectEmailWithSubject(String subject) async {
-    final email = $(EmailTileBuilder).which<EmailTileBuilder>(
-      (view) => view.presentationEmail.subject == subject,
-    );
+  Future<void> selectEmailWithSubject(String subject) =>
+      _selectEmailWithSubject(subject);
+
+  @override
+  Future<void> selectUnreadEmailWithSubject(String subject) =>
+      _selectEmailWithSubject(subject, unreadOnly: true);
+
+  Future<void> _selectEmailWithSubject(
+    String subject, {
+    bool unreadOnly = false,
+  }) async {
+    final email = emailWithSubject(subject, unreadOnly: unreadOnly);
     await waitForCondition(() async => email.evaluate().isNotEmpty);
 
     final tabletEmail = $(WebTabletBodyEmailItemWidget)
         .which<WebTabletBodyEmailItemWidget>(
-      (view) => view.presentationEmail.subject == subject,
+      (view) =>
+          view.presentationEmail.subject == subject &&
+          (!unreadOnly || !view.presentationEmail.hasRead),
     );
     if (tabletEmail.evaluate().isNotEmpty) {
       // Tablet web selects through the avatar; its tile has no long-press handler.

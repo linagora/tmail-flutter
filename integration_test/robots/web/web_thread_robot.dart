@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import '../abstract/abstract_thread_robot.dart';
 import '../thread_empty_trash_robot.dart';
 import '../thread_robot.dart';
+import '../../utils/wait_for_condition.dart';
 import 'web_fire_on_tap.dart';
 
 /// Web-specific empty-trash robot: tapping the banner requires firing the
@@ -95,7 +96,12 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   }
 
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
-    await $.waitUntilVisible(emailFinder);
+    // Web XHR callbacks need an event-loop yield, which waitUntilVisible's
+    // frame-only retry loop does not provide.
+    await waitForCondition(() async {
+      await $.pump();
+      return emailFinder.evaluate().isNotEmpty;
+    });
     await emailFinder.tap();
     await $.pump(_emailOpenPumpDuration);
   }

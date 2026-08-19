@@ -29,7 +29,7 @@ class MobileSearchActionStateSyncScenario extends BaseTestScenario {
     await searchRobot.expectEmailWithSubjectVisible(_subject);
     await searchRobot.assertion.expectEmailWithSubjectMarkedUnread(_subject);
 
-    await searchRobot.action.selectEmailWithSubject(_subject);
+    await searchRobot.action.selectUnreadEmailWithSubject(_subject);
     await searchRobot.action.markSelectedEmailsAsRead();
     await searchRobot.assertion.expectEmailWithSubjectMarkedRead(_subject);
 

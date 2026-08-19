@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -85,7 +86,9 @@ abstract class AbstractCommonRobot extends CoreRobot {
 
     // Refresh view after provisioning emails
     if (refreshEmailView) {
-      await threadController.refreshAllEmail();
+      await threadController.refreshAllEmail(
+        shouldClearCache: PlatformInfo.isWeb,
+      );
     }
 
     ComposerBindings().dispose();

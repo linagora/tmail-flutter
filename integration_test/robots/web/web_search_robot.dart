@@ -81,20 +81,14 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
       // Responsive web renders suggestions in the page, so its action remains
       // hit-testable unlike the desktop overlay.
       await super.tapOnShowAllResultsText();
-      return waitForCondition(
-        () async => $(EmailTileBuilder).evaluate().isNotEmpty,
-        timeout: TestTimeouts.medium,
-      );
+      return _waitForSearchResults();
     }
     // On web the suggestion overlay wraps content in PointerInterceptor, making
     // the "Showing results for:" InkWell unreliable to tap. Pressing Enter on the
     // focused search field triggers onSubmitted → _invokeSearchEmailAction which
     // commits the search and sets isSearchEmailRunning = true.
     await $.platformAutomator.web.pressKeyCombo(keys: ['Enter']);
-    await waitForCondition(
-      () async => $(EmailTileBuilder).evaluate().isNotEmpty,
-      timeout: TestTimeouts.medium,
-    );
+    await _waitForSearchResults();
   }
 
   @override
@@ -199,10 +193,21 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
       (view) => view.presentationEmail.subject?.contains(subject) == true,
     );
     await waitForCondition(
-      () async => email.evaluate().isNotEmpty,
+      () async {
+        await $.pump();
+        return email.evaluate().isNotEmpty;
+      },
       timeout: TestTimeouts.medium,
     );
   }
+
+  Future<void> _waitForSearchResults() => waitForCondition(
+        () async {
+          await $.pump();
+          return $(EmailTileBuilder).evaluate().isNotEmpty;
+        },
+        timeout: TestTimeouts.medium,
+      );
 
   @override
   Future<void> expectEmailListCountAtLeast(int count) async {
