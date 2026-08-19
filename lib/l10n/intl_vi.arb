@@ -5924,8 +5924,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "driveAttachmentInDevelopment": "Tính năng thêm dưới dạng tệp đính kèm vẫn đang được phát triển.",
-  "@driveAttachmentInDevelopment": {
+  "driveAttachmentTransferFailed": "Không thể đính kèm tệp từ Drive.",
+  "@driveAttachmentTransferFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

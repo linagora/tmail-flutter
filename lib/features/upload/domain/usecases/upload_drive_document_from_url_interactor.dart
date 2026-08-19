@@ -10,12 +10,12 @@ class UploadDriveDocumentFromUrlInteractor {
 
   UploadDriveDocumentFromUrlInteractor(this._uploadFromUrlRepository);
 
-  Stream<Either<Failure, Success>> execute(UploadFromUrlRequest request) async* {
+  Future<Either<Failure, Success>> execute(UploadFromUrlRequest request) async {
     try {
       final attachment = await _uploadFromUrlRepository.uploadFromUrl(request);
-      yield Right<Failure, Success>(UploadDriveDocumentFromUrlSuccess(attachment));
+      return Right<Failure, Success>(UploadDriveDocumentFromUrlSuccess(attachment));
     } catch (e) {
-      yield Left<Failure, Success>(
+      return Left<Failure, Success>(
         request.cancelToken?.isCancelled == true
           ? UploadDriveDocumentFromUrlCancelled()
           : UploadDriveDocumentFromUrlFailure(e),

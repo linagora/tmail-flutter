@@ -158,6 +158,17 @@ void main() {
 
         expect(result, isNull);
       });
+
+      test('should return state added as a non-null value via addNullableForTest', () {
+        uploadFileStateList.addNullableForTest(UploadFileState(
+          const UploadTaskId('task-3'),
+          uploadStatus: UploadFileStatus.succeed,
+        ));
+
+        final result = uploadFileStateList.getUploadFileStateById(const UploadTaskId('task-3'));
+
+        expect(result?.uploadTaskId, const UploadTaskId('task-3'));
+      });
     });
   });
 }

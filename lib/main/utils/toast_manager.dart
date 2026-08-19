@@ -331,6 +331,8 @@ class ToastManager {
       message = appLocalizations.addListLabelToListEmailHasSomeFailureMessage;
     } else if (success is AddListLabelsToListEmailsSuccess) {
       message = appLocalizations.addListLabelToListEmailSuccessfullyMessage;
+    } else if (success is DrivePickSuccess) {
+      message = success.message ?? appLocalizations.driveAttachmentAddedSuccessfully;
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

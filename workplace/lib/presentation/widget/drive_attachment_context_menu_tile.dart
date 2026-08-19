@@ -6,20 +6,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 
 class DriveAttachmentContextMenuTile extends StatefulWidget {
   final ImagePaths imagePaths;
-  final Uri workplaceUri;
+  final DrivePickerSession session;
   final OnPickDriveCallback? onPickCallback;
-  final FetchDriveIntentCallback onFetchIntent;
-  final num? Function() maxAttachmentSizeBytesGetter;
 
   const DriveAttachmentContextMenuTile({
     super.key,
     required this.imagePaths,
-    required this.workplaceUri,
-    required this.onFetchIntent,
-    required this.maxAttachmentSizeBytesGetter,
+    required this.session,
     this.onPickCallback,
   });
 
@@ -32,13 +29,10 @@ class _DriveAttachmentContextMenuTileState
     extends State<DriveAttachmentContextMenuTile>
     with DrivePickerStateMixin<DriveAttachmentContextMenuTile> {
   @override
-  FetchDriveIntentCallback get pickerFetchIntent => widget.onFetchIntent;
+  DrivePickerSession get session => widget.session;
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
-
-  @override
-  num? get maxAttachmentSizeBytes => widget.maxAttachmentSizeBytesGetter();
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(

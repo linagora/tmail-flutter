@@ -124,12 +124,16 @@ WorkplaceComposerAttachmentExtension _makeExtension(
   ValueListenable<Uri?> notifier, {
   String? oidcToken = 'oidc-token',
   num? maxAttachmentSizeBytes,
+  num? remainingAttachmentCapacityBytes,
   OnDrivePickStateChanged? onPickState,
+  ValueGetter<bool>? uploadFromUrlSupported,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
+      uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
       oidcTokenGetter: () => oidcToken,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
+      remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
       onPickState: onPickState,
     );
 
@@ -442,6 +446,7 @@ void main() {
           .widget<DriveAttachmentPickerButton>(
             find.byType(DriveAttachmentPickerButton),
           )
+          .session
           .onFetchIntent;
     }
 

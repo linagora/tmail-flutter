@@ -5531,8 +5531,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "driveAttachmentInDevelopment": "Хавсралт болгон нэмэх боломж хараахан хөгжүүлэлтийн шатанд байна.",
-  "@driveAttachmentInDevelopment": {
+  "driveAttachmentTransferFailed": "Драйваас файл хавсаргахад алдаа гарлаа.",
+  "@driveAttachmentTransferFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

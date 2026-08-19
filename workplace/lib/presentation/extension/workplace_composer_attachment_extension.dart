@@ -14,6 +14,7 @@ import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
@@ -25,8 +26,14 @@ typedef OnDrivePickStateChanged =
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
+
+  /// Read when the picker opens, so the JMAP capability is always current.
+  final ValueGetter<bool> uploadFromUrlSupported;
   final String? Function() oidcTokenGetter;
   final num? Function() maxAttachmentSizeBytesGetter;
+
+  /// Per-composer: the remainder depends on what that composer already holds.
+  final num? Function(String? composerId) remainingAttachmentCapacityBytesGetter;
   final OnDrivePickStateChanged? onPickState;
 
   late final _dataSource = WorkplaceDataSourceImpl();
@@ -38,8 +45,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
+    required this.uploadFromUrlSupported,
     required this.oidcTokenGetter,
     required this.maxAttachmentSizeBytesGetter,
+    required this.remainingAttachmentCapacityBytesGetter,
     this.onPickState,
   });
 
@@ -135,16 +144,11 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         return DriveAttachmentPickerButton(
           composerId: composerId,
           imagePaths: imagePaths,
-          workplaceUri: uri,
           style: style,
+          session: _sessionFor(uri, composerId),
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(composerId, state),
-          onFetchIntent: ({required filePickerConfig}) => _fetchIntent(
-            uri,
-            filePickerConfig: filePickerConfig,
-          ),
-          maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
         );
       },
     );
@@ -161,17 +165,23 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         if (uri == null) return const SizedBox.shrink();
         return DriveAttachmentContextMenuTile(
           imagePaths: imagePaths,
-          workplaceUri: uri,
+          session: _sessionFor(uri, null),
           onPickCallback: onPickState == null
               ? null
               : (state) => onPickState!(null, state),
-          onFetchIntent: ({required filePickerConfig}) => _fetchIntent(
-            uri,
-            filePickerConfig: filePickerConfig,
-          ),
-          maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
         );
       },
     );
   }
+
+  DrivePickerSession _sessionFor(Uri uri, String? composerId) => DrivePickerSession(
+        uploadFromUrlSupported: uploadFromUrlSupported,
+        maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
+        remainingAttachmentCapacityBytesGetter: () =>
+            remainingAttachmentCapacityBytesGetter(composerId),
+        onFetchIntent: ({required filePickerConfig}) => _fetchIntent(
+          uri,
+          filePickerConfig: filePickerConfig,
+        ),
+      );
 }

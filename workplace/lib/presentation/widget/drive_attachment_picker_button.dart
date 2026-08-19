@@ -4,23 +4,20 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 
 class DriveAttachmentPickerButton extends StatefulWidget {
   final String composerId;
   final ImagePaths imagePaths;
-  final Uri workplaceUri;
   final ComposerToolbarButtonStyle style;
+  final DrivePickerSession session;
   final OnPickDriveCallback? onPickCallback;
-  final FetchDriveIntentCallback onFetchIntent;
-  final num? Function() maxAttachmentSizeBytesGetter;
 
   const DriveAttachmentPickerButton({
     super.key,
     required this.composerId,
     required this.imagePaths,
-    required this.workplaceUri,
-    required this.onFetchIntent,
-    required this.maxAttachmentSizeBytesGetter,
+    required this.session,
     this.style = const ComposerToolbarButtonStyle(),
     this.onPickCallback,
   });
@@ -34,13 +31,10 @@ class _DriveAttachmentPickerButtonState
     extends State<DriveAttachmentPickerButton>
     with DrivePickerStateMixin<DriveAttachmentPickerButton> {
   @override
-  FetchDriveIntentCallback get pickerFetchIntent => widget.onFetchIntent;
+  DrivePickerSession get session => widget.session;
 
   @override
   OnPickDriveCallback? get pickerOnCallback => widget.onPickCallback;
-
-  @override
-  num? get maxAttachmentSizeBytes => widget.maxAttachmentSizeBytesGetter();
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets => DriveIntentImageAssets(

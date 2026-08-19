@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-07-15T18:21:15.082129",
+  "@@last_modified": "2026-08-24T15:11:50.161826",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5290,8 +5290,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "driveAttachmentInDevelopment": "The add-as-attachment feature is still in development.",
-  "@driveAttachmentInDevelopment": {
+  "driveAttachmentAddedSuccessfully": "Files attached from Drive.",
+  "@driveAttachmentAddedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentTransferFailed": "Failed to attach files from Drive.",
+  "@driveAttachmentTransferFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

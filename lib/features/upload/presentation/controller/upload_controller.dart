@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachmen
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/drive_transfer_placeholder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state_list.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
@@ -56,8 +57,8 @@ class UploadController extends BaseController {
   @override
   void onClose() {
     listUploadAttachments.clear();
-    _uploadingStateFiles.clear();
-    _uploadingStateInlineFiles.clear();
+    _uploadingStateFiles.cancelAll();
+    _uploadingStateInlineFiles.cancelAll();
     uploadInlineViewState.value = Right(UIClosedState());
     dispatchState(Right(UIClosedState()));
     _progressUploadStateStreamGroup.close();
@@ -213,6 +214,44 @@ class UploadController extends BaseController {
     _refreshListUploadAttachmentState();
   }
 
+  /// Shows a chip for every picked drive file up front, before any transfer starts.
+  void addDownloadingPlaceholders(List<DriveTransferPlaceholder> placeholders) {
+    if (placeholders.isEmpty) return;
+    _uploadingStateFiles.addAll(placeholders.map((placeholder) => UploadFileState(
+      placeholder.taskId,
+      file: FileInfo(
+        fileName: placeholder.fileName,
+        fileSize: placeholder.fileSize,
+        type: placeholder.mimeType,
+      ),
+      uploadStatus: UploadFileStatus.waiting,
+      cancelToken: placeholder.cancelToken,
+    )));
+    _refreshListUploadAttachmentState();
+  }
+
+  /// Resolves a drive-transfer chip to succeed with its attachment.
+  void resolveDriveTransferSuccess(UploadTaskId taskId, Attachment attachment) {
+    _uploadingStateFiles.updateElementByUploadTaskId(
+      taskId,
+      (state) => state?.copyWith(
+        uploadingProgress: 100,
+        uploadStatus: UploadFileStatus.succeed,
+        attachment: attachment,
+      ),
+    );
+    _refreshListUploadAttachmentState();
+  }
+
+  /// Resolves a drive-transfer chip to failed by removing it, matching the
+  /// plain-upload failure path.
+  void resolveDriveTransferFailure(UploadTaskId taskId) {
+    deleteFileUploaded(taskId);
+    _showToastMessageWhenUploadAttachmentsFailure(
+      ErrorAttachmentUploadState(uploadId: taskId),
+    );
+  }
+
   Future<void> justUploadAttachmentsAction({
     required List<FileInfo> uploadFiles,
     required Uri uploadUri,
@@ -289,6 +328,9 @@ class UploadController extends BaseController {
         AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
+    } else {
+      // The chip is already gone, so an unshowable toast loses the reason entirely.
+      logError('UploadController::_showToastMessageWhenUploadAttachmentsFailure: no context to show failure for ${failure.uploadId}');
     }
   }
 

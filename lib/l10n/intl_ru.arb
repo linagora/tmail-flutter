@@ -5936,8 +5936,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "driveAttachmentInDevelopment": "Функция добавления в качестве вложения ещё находится в разработке.",
-  "@driveAttachmentInDevelopment": {
+  "driveAttachmentTransferFailed": "Не удалось прикрепить файлы из Drive.",
+  "@driveAttachmentTransferFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

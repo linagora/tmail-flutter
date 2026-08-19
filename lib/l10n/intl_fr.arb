@@ -5918,8 +5918,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "driveAttachmentInDevelopment": "La fonctionnalité d'ajout en pièce jointe est encore en cours de développement.",
-  "@driveAttachmentInDevelopment": {
+  "driveAttachmentTransferFailed": "Échec de l'ajout des fichiers depuis Drive.",
+  "@driveAttachmentTransferFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

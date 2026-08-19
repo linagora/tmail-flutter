@@ -22,3 +22,11 @@ const noLinkDoc = DriveDocument(
   size: 0,
   mimeType: 'application/octet-stream',
 );
+
+final emptyDownloadLinkDoc = DriveDocument(
+  id: '4',
+  name: 'Empty',
+  size: 0,
+  mimeType: 'application/octet-stream',
+  downloadLink: Uri.parse(''),
+);

@@ -11,6 +11,7 @@ import 'package:workplace/presentation/mixin/drive_picker_state_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 
 typedef _ModalStub = Future<DrivePickOutcome?> Function();
 
@@ -28,13 +29,20 @@ class _TestState extends State<_TestWidget>
   final List<WorkplaceFilePickerConfigRequest> openCalls = [];
   _ModalStub modalStub = () => Future.value();
   num? maxAttachmentSizeBytesStub;
+  num? remainingAttachmentCapacityBytesStub;
+  bool uploadFromUrlSupportedOverride = true;
 
   @override
-  FetchDriveIntentCallback get pickerFetchIntent =>
-      ({required filePickerConfig}) async => WorkplaceIntent(
-            intentId: 'intent-1',
-            intentUrl: Uri.parse('https://drive.example.com/pick'),
-          );
+  DrivePickerSession get session => DrivePickerSession(
+        uploadFromUrlSupported: () => uploadFromUrlSupportedOverride,
+        maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytesStub,
+        remainingAttachmentCapacityBytesGetter: () =>
+            remainingAttachmentCapacityBytesStub,
+        onFetchIntent: ({required filePickerConfig}) async => WorkplaceIntent(
+          intentId: 'intent-1',
+          intentUrl: Uri.parse('https://drive.example.com/pick'),
+        ),
+      );
 
   @override
   OnPickDriveCallback? get pickerOnCallback => pickStates.add;
@@ -42,9 +50,6 @@ class _TestState extends State<_TestWidget>
   @override
   DriveIntentImageAssets get driveIntentImageAssets =>
       const DriveIntentImageAssets(driveLogo: '', closeIcon: '', searchIcon: '');
-
-  @override
-  num? get maxAttachmentSizeBytes => maxAttachmentSizeBytesStub;
 
   @override
   Future<DrivePickOutcome?> openDrivePickerModal(
@@ -138,14 +143,61 @@ void main() {
         final state = await _pumpPicker(tester);
         state.maxAttachmentSizeBytesStub = 5000;
 
-        expect(state.maxAttachmentSizeBytes, equals(5000));
+        expect(state.session.maxAttachmentSizeBytesGetter(), equals(5000));
       });
 
       testWidgets('is null when the mixer override returns null', (tester) async {
         final state = await _pumpPicker(tester);
         state.maxAttachmentSizeBytesStub = null;
 
-        expect(state.maxAttachmentSizeBytes, isNull);
+        expect(state.session.maxAttachmentSizeBytesGetter(), isNull);
+      });
+    });
+
+    group('availableSize', () {
+      testWidgets('advertises the remaining capacity, not the full limit', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.maxAttachmentSizeBytesStub = 100 * 1024 * 1024;
+        state.remainingAttachmentCapacityBytesStub = 20 * 1024 * 1024;
+
+        await state.onPickerTap();
+
+        final downloadLink = state.openCalls.single.downloadLink!;
+        expect(downloadLink.availableSize, equals(20 * 1024 * 1024));
+        expect(downloadLink.maxFileSize, equals(100 * 1024 * 1024));
+      });
+
+      testWidgets('falls back to the full limit when no remainder is known', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.maxAttachmentSizeBytesStub = 100 * 1024 * 1024;
+        state.remainingAttachmentCapacityBytesStub = null;
+
+        await state.onPickerTap();
+
+        final downloadLink = state.openCalls.single.downloadLink!;
+        expect(downloadLink.availableSize, equals(100 * 1024 * 1024));
+      });
+    });
+
+    group('capability gating', () {
+      testWidgets('downloadLink is set when uploadFromUrlSupported is true', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.uploadFromUrlSupportedOverride = true;
+        state.modalStub = () => Future.value(const DrivePickOutcomeCancelled());
+
+        await state.onPickerTap();
+
+        expect(state.openCalls.single.downloadLink, isNotNull);
+      });
+
+      testWidgets('downloadLink is null when uploadFromUrlSupported is false', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.uploadFromUrlSupportedOverride = false;
+        state.modalStub = () => Future.value(const DrivePickOutcomeCancelled());
+
+        await state.onPickerTap();
+
+        expect(state.openCalls.single.downloadLink, isNull);
       });
     });
 
@@ -207,14 +259,16 @@ void main() {
         expect(state.openCalls, hasLength(2));
       });
 
-      testWidgets('tap after state disposed → no modal, no callback, no crash', (tester) async {
+      testWidgets('tap after state disposed → no modal, failure callback, no crash', (tester) async {
         final state = await _pumpPicker(tester);
         await tester.pumpWidget(const SizedBox.shrink());
 
         await state.onPickerTap();
 
         expect(state.openCalls, isEmpty);
-        expect(state.pickStates, isEmpty);
+        // Reported rather than dropped: the user tapped and must learn nothing opened.
+        final failure = state.pickStates.single as DrivePickFailure;
+        expect(failure.message, isNull, reason: 'no live context to localize with');
       });
 
       testWidgets('pick delivered even though the opener was disposed mid-flight', (tester) async {

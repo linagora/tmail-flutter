@@ -7,6 +7,7 @@ import 'package:workplace/l10n/workplace_localizations.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
 typedef OnPickDriveCallback = void Function(DrivePickState state);
@@ -21,11 +22,9 @@ typedef FetchDriveIntentCallback =
 /// Consumers must provide [pickerFetchIntent] and [pickerOnCallback], then
 /// call [onPickerTap] from their tap handler.
 mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
-  FetchDriveIntentCallback get pickerFetchIntent;
+  DrivePickerSession get session;
 
   DriveIntentImageAssets get driveIntentImageAssets;
-
-  num? get maxAttachmentSizeBytes;
 
   OnPickDriveCallback? get pickerOnCallback => null;
 
@@ -36,15 +35,21 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     _modalOpen = true;
     try {
       if (!mounted) {
-        // Tap raced state disposal — nothing to show a modal or toast on.
+        // Message needs the disposed context, so dispatch without one and let
+        // the toast fall back to its generic failure text.
         logError('DrivePickerStateMixin::onPickerTap: state disposed before opening modal');
+        pickerOnCallback?.call(
+          DrivePickFailure(StateError('drive picker state disposed before modal')),
+        );
         return;
       }
       final l10n = AppLocalizations.of(context)!;
       // Captured up front: the caller may pop this context (e.g. a context
       // menu tile) before the intent future settles, disposing this state.
+      final snapshot = DrivePickerSessionResolver(session).resolve();
       final failingMessage = l10n.attachFromDriveFailingMessage;
-      const addAsAttachmentTitle = null; // TODO: Add attachment title here after implement 103. Attach Drive File as Attachment
+      final addAsAttachmentTitle =
+          snapshot.uploadFromUrlSupported ? l10n.addAsAttachment : null;
       final theme = _resolveWorkplaceTheme(context);
       final filePickerConfig = WorkplaceFilePickerConfigRequest(
         sharingLink: WorkplaceActionConfigRequest(label: l10n.addAsLink),
@@ -52,8 +57,11 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
             ? null
             : WorkplaceActionConfigRequest(
                 label: addAsAttachmentTitle,
-                maxFileSize: maxAttachmentSizeBytes,
-                availableSize: maxAttachmentSizeBytes,
+                maxFileSize: snapshot.maxAttachmentSizeBytes,
+                // What is left after the composer's existing attachments, so
+                // the picker can't offer bytes the send guard would reject.
+                availableSize: snapshot.remainingAttachmentCapacityBytes ??
+                    snapshot.maxAttachmentSizeBytes,
               ),
         theme: WorkplaceThemeConfigRequest.fromEntity(theme),
       );
@@ -87,7 +95,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       builder: (_) => DriveIntentWebViewModal(
         // Must stay lazy so the modal subscribes to failures before the
         // token exchange or intent request starts.
-        intentLoader: () => pickerFetchIntent(
+        intentLoader: () => session.onFetchIntent(
           filePickerConfig: filePickerConfig,
         ),
         filePickerConfig: filePickerConfig,

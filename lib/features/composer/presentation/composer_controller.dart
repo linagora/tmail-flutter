@@ -104,6 +104,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interac
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
@@ -128,14 +129,20 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_st
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
+import 'package:tmail_ui_user/features/upload/presentation/providers/upload_from_url_providers.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/concurrency_gate.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 class ComposerController extends BaseController
     with
@@ -1018,18 +1025,72 @@ class ComposerController extends BaseController
         result,
         insertHtml: (html) async {
           if (PlatformInfo.isWeb) {
-            richTextWebController?.editorController.insertHtml(html);
-          } else {
-            await richTextMobileTabletController?.restoreMobileEditorFocus();
-            await htmlEditorApi?.insertHtml(html);
-            await SchedulerBinding.instance.endOfFrame;
+            final editorController = richTextWebController?.editorController;
+            if (editorController == null) return false;
+            editorController.insertHtml(html);
+            return true;
           }
+          final editorApi = htmlEditorApi;
+          if (editorApi == null) return false;
+          await richTextMobileTabletController?.restoreMobileEditorFocus();
+          await editorApi.insertHtml(html);
+          await SchedulerBinding.instance.endOfFrame;
+          return true;
         },
+        transferDriveDocuments: (docs) => _transferDriveDocuments(docs),
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
       );
     } catch (e) {
       logWarning('ComposerController::handleDrivePickResult:Exception = $e');
+      // A throw here can strand waiting chips, so the failure must be visible.
+      getBinding<ToastManager>()?.showMessageFailure(DrivePickFailure(
+        e,
+        message: currentContext != null
+            ? AppLocalizations.of(currentContext!).driveAttachmentTransferFailed
+            : null,
+      ));
     }
+  }
+
+  static const _maxConcurrentDriveTransfers = 3;
+
+  /// One gate per composer: reopening the picker mid-transfer queues the new
+  /// batch behind the running one instead of multiplying in-flight requests.
+  late final ConcurrencyGate _driveTransferGate =
+      ConcurrencyGate(_maxConcurrentDriveTransfers);
+
+  Future<DriveTransferOutcome> _transferDriveDocuments(List<DriveDocument> docs) async {
+    final jmapUrl = dynamicUrlInterceptors.jmapUrl;
+    if (jmapUrl == null || jmapUrl.isEmpty) {
+      logWarning('ComposerController::_transferDriveDocuments: jmapUrl is unavailable');
+      return DriveAttachmentTransferRunner.notStartedOutcome;
+    }
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final uploadUri = session?.getUploadFromUrlUri(
+      accountId,
+      jmapUrl: jmapUrl,
+    );
+    if (uploadUri == null || accountId == null) {
+      logWarning('ComposerController::_transferDriveDocuments: upload-from-url endpoint is unavailable');
+      return DriveAttachmentTransferRunner.notStartedOutcome;
+    }
+
+    // Resolved once per batch: each read rebuilds interactor -> repo -> datasource -> dio.
+    final interactor =
+        appProviderContainer.read(uploadDriveDocumentFromUrlInteractorProvider);
+    final runner = DriveAttachmentTransferRunner(
+      uploadFromUrl: (request) => interactor.execute(request),
+      gate: _driveTransferGate,
+    );
+    return runner.transfer((
+      docs: docs,
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: uploadController.addDownloadingPlaceholders,
+      onSuccess: uploadController.resolveDriveTransferSuccess,
+      onFailure: uploadController.resolveDriveTransferFailure,
+    ));
   }
 
   Future<dynamic> _showSendingMessageDialog({

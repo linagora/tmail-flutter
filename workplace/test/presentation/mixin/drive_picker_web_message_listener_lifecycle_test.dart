@@ -13,6 +13,7 @@ import 'package:workplace/presentation/mixin/web_window_message_mixin.dart';
 import 'package:workplace/presentation/model/drive_intent_image_assets.dart';
 import 'package:workplace/presentation/model/drive_origin_validator.dart';
 import 'package:workplace/presentation/model/drive_pick_outcome.dart';
+import 'package:workplace/presentation/model/drive_picker_session.dart';
 
 // Exercises the real `window.postMessage` transport (other tests call
 // onMessage directly). Contract: the modal owns its listener for its own
@@ -277,14 +278,16 @@ class _MenuTileUnderTest extends StatefulWidget {
 class _MenuTileUnderTestState extends State<_MenuTileUnderTest>
     with DrivePickerStateMixin<_MenuTileUnderTest> {
   @override
-  FetchDriveIntentCallback get pickerFetchIntent => _fetchIntentStub;
+  DrivePickerSession get session => DrivePickerSession(
+        uploadFromUrlSupported: () => false,
+        maxAttachmentSizeBytesGetter: () => null,
+        remainingAttachmentCapacityBytesGetter: () => null,
+        onFetchIntent: _fetchIntentStub,
+      );
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets =>
       const DriveIntentImageAssets(driveLogo: '', closeIcon: '', searchIcon: '');
-
-  @override
-  num? get maxAttachmentSizeBytes => null;
 
   @override
   Future<DrivePickOutcome?> openDrivePickerModal(

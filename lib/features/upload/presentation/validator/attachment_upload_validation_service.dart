@@ -39,6 +39,14 @@ class AttachmentUploadValidationService {
             validator ?? AttachmentUploadValidator([const AttachmentSizeLimitRule()])),
         _feedbackBuilder = feedbackBuilder ?? AttachmentValidationFeedbackImpl.new;
 
+  /// Bytes still attachable under the server cap, `null` when it advertises none.
+  int? get remainingCapacityBytes {
+    final hardLimit = _stateSource.hardLimitBytes;
+    if (hardLimit == null) return null;
+    final remaining = hardLimit - _stateSource.currentAllAttachmentBytes;
+    return remaining < 0 ? 0 : remaining;
+  }
+
   /// Validates the picked [files] then runs [onAllowed] when the upload may proceed.
   Future<void> validateFiles({
     BuildContext? context,

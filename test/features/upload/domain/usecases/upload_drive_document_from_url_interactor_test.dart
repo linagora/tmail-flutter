@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -37,48 +36,34 @@ void main() {
       interactor = UploadDriveDocumentFromUrlInteractor(uploadFromUrlRepository);
     });
 
-    test('should yield Right(UploadDriveDocumentFromUrlSuccess) with the repository\'s Attachment', () async {
+    test('should return Right(UploadDriveDocumentFromUrlSuccess) with the repository\'s Attachment', () async {
       final attachment = Attachment(blobId: Id('blob-id-123'), name: documentName);
       when(uploadFromUrlRepository.uploadFromUrl(request))
           .thenAnswer((_) async => attachment);
 
-      final stream = interactor.execute(request);
+      final result = await interactor.execute(request);
 
-      await expectLater(
-        stream,
-        emitsInOrder([
-          predicate<Either>((either) =>
-              either.isRight() &&
-              either.fold((l) => null, (r) => r) is UploadDriveDocumentFromUrlSuccess &&
-              (either.fold((l) => null, (r) => r) as UploadDriveDocumentFromUrlSuccess)
-                      .attachment ==
-                  attachment),
-          emitsDone,
-        ]),
-      );
+      expect(result.isRight(), isTrue);
+      final success = result.fold((l) => null, (r) => r);
+      expect(success, isA<UploadDriveDocumentFromUrlSuccess>());
+      expect((success as UploadDriveDocumentFromUrlSuccess).attachment, attachment);
     });
 
-    test('should yield Left(UploadDriveDocumentFromUrlFailure) when the repository throws', () async {
+    test('should return Left(UploadDriveDocumentFromUrlFailure) when the repository throws', () async {
       final exception = Exception('upload-from-url failed');
       when(uploadFromUrlRepository.uploadFromUrl(request)).thenThrow(exception);
 
-      final stream = interactor.execute(request);
+      final result = await interactor.execute(request);
 
-      await expectLater(
-        stream,
-        emitsInOrder([
-          predicate<Either>((either) => either.fold(
-            (failure) =>
-                failure is UploadDriveDocumentFromUrlFailure &&
-                identical(failure.exception, exception),
-            (_) => false,
-          )),
-          emitsDone,
-        ]),
+      final failure = result.fold((l) => l, (r) => r);
+      expect(failure, isA<UploadDriveDocumentFromUrlFailure>());
+      expect(
+        identical((failure as UploadDriveDocumentFromUrlFailure).exception, exception),
+        isTrue,
       );
     });
 
-    test('should yield Cancelled, not Failure, when the cancelToken was cancelled', () async {
+    test('should return Cancelled, not Failure, when the cancelToken was cancelled', () async {
       final cancelToken = CancelToken();
       final cancellableRequest = UploadFromUrlRequest(
         accountId: AccountFixtures.aliceAccountId,
@@ -96,13 +81,11 @@ void main() {
           reason: null);
       });
 
-      await expectLater(
-        interactor.execute(cancellableRequest),
-        emitsInOrder([
-          predicate<Either>((either) =>
-              either.fold((l) => l, (r) => r) is UploadDriveDocumentFromUrlCancelled),
-          emitsDone,
-        ]),
+      final result = await interactor.execute(cancellableRequest);
+
+      expect(
+        result.fold((l) => l, (r) => r),
+        isA<UploadDriveDocumentFromUrlCancelled>(),
       );
     });
   });

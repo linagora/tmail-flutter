@@ -28,3 +28,11 @@ final class DrivePickFailure extends DrivePickState implements FeatureFailure {
   @override
   Stream<Either<Failure, Success>>? get onRetry => null;
 }
+
+final class DrivePickSuccess extends DrivePickState implements Success {
+  final String? message;
+  DrivePickSuccess({this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

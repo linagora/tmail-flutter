@@ -12,15 +12,23 @@ class UploadFileStateList {
 
   final List<UploadFileState?> _uploadingStateFiles = <UploadFileState?>[];
 
+  /// Keeps by-id access O(1): a batch of N drive transfers resolves one chip at
+  /// a time, so a linear scan per resolution would make the batch O(N²).
+  /// Holds the first index for a taskId, matching the old scan semantics.
+  final Map<UploadTaskId, int> _indexByTaskId = <UploadTaskId, int>{};
+
   List<UploadFileState?> get uploadingStateFiles => _uploadingStateFiles.toList(growable: false);
 
   UploadFileStateList add(UploadFileState element) {
+    _indexByTaskId.putIfAbsent(element.uploadTaskId, () => _uploadingStateFiles.length);
     _uploadingStateFiles.add(element);
     return this;
   }
 
   UploadFileStateList addAll(Iterable<UploadFileState> elements) {
-    _uploadingStateFiles.addAll(elements);
+    for (final element in elements) {
+      add(element);
+    }
     return this;
   }
 
@@ -30,7 +38,7 @@ class UploadFileStateList {
   ) {
     final matchIndex = _uploadingStateFiles.indexWhere((element) => matchedState(element));
     if (matchIndex >= 0) {
-      _uploadingStateFiles[matchIndex] = updateFileUploadingState(_uploadingStateFiles[matchIndex]);
+      _replaceAt(matchIndex, updateFileUploadingState(_uploadingStateFiles[matchIndex]));
     }
     return this;
   }
@@ -39,10 +47,11 @@ class UploadFileStateList {
     UploadTaskId uploadTaskId,
     UpdateFileUploadingState updateFileUploadingState,
   ) {
-    return updateElementBy(
-      (state) => state?.uploadTaskId == uploadTaskId,
-      updateFileUploadingState
-    );
+    final matchIndex = _indexByTaskId[uploadTaskId];
+    if (matchIndex != null) {
+      _replaceAt(matchIndex, updateFileUploadingState(_uploadingStateFiles[matchIndex]));
+    }
+    return this;
   }
 
   bool get allSuccess {
@@ -55,24 +64,57 @@ class UploadFileStateList {
 
   void clear() {
     _uploadingStateFiles.clear();
+    _indexByTaskId.clear();
+  }
+
+  /// Cancels every pending upload/drive-transfer token before dropping them,
+  /// so in-flight requests don't keep running after the list is torn down.
+  void cancelAll() {
+    for (final fileState in _uploadingStateFiles) {
+      fileState?.cancelToken?.cancel();
+    }
+    clear();
   }
 
   void deleteElementByUploadTaskId(UploadTaskId uploadTaskId) {
-    final fileState = _uploadingStateFiles
-        .firstWhereOrNull((fileState) => fileState?.uploadTaskId == uploadTaskId);
+    final matchIndex = _indexByTaskId[uploadTaskId];
+    if (matchIndex == null) return;
 
-    if (fileState != null) {
-      fileState.cancelToken?.cancel();
-      _uploadingStateFiles.remove(fileState);
-    }
+    _uploadingStateFiles[matchIndex]?.cancelToken?.cancel();
+    _uploadingStateFiles.removeAt(matchIndex);
+    _reindex();
   }
 
   UploadFileState? getUploadFileStateById(UploadTaskId uploadTaskId) {
-    return _uploadingStateFiles.firstWhereOrNull((fileState) => fileState?.uploadTaskId == uploadTaskId);
+    final matchIndex = _indexByTaskId[uploadTaskId];
+    return matchIndex == null ? null : _uploadingStateFiles[matchIndex];
+  }
+
+  /// Swaps in [newState], reindexing only when the swap changes which taskId
+  /// sits at [index].
+  void _replaceAt(int index, UploadFileState? newState) {
+    final previousTaskId = _uploadingStateFiles[index]?.uploadTaskId;
+    _uploadingStateFiles[index] = newState;
+    if (newState?.uploadTaskId != previousTaskId) {
+      _reindex();
+    }
+  }
+
+  void _reindex() {
+    _indexByTaskId.clear();
+    _uploadingStateFiles.forEachIndexed((index, fileState) {
+      if (fileState != null) {
+        _indexByTaskId.putIfAbsent(fileState.uploadTaskId, () => index);
+      }
+    });
   }
 
   @visibleForTesting
   void addNullableForTest(UploadFileState? state) {
-    _uploadingStateFiles.add(state);
+    if (state == null) {
+      _uploadingStateFiles.add(null);
+    } else {
+      add(state);
+    }
   }
 }

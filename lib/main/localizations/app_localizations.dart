@@ -5618,10 +5618,17 @@ class AppLocalizations {
     );
   }
 
-  String get driveAttachmentInDevelopment {
+  String get driveAttachmentAddedSuccessfully {
     return Intl.message(
-      'The add-as-attachment feature is still in development.',
-      name: 'driveAttachmentInDevelopment',
+      'Files attached from Drive.',
+      name: 'driveAttachmentAddedSuccessfully',
+    );
+  }
+
+  String get driveAttachmentTransferFailed {
+    return Intl.message(
+      'Failed to attach files from Drive.',
+      name: 'driveAttachmentTransferFailed',
     );
   }
 
