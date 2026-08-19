@@ -341,6 +341,32 @@ void main() {
       expect(theme['type'], equals('dark'));
     });
 
+    test('Should serialize attachment size limits in intent request', () async {
+      final adapter = _MockAdapter(intentResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await datasource.createIntent(
+        platformUrl: Uri.parse('https://platform.example.com'),
+        accessToken: 'test-token',
+        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
+        addAsAttachment: const WorkplaceActionConfig(
+          label: 'https://attach.url',
+          maxFileSize: 5000,
+          availableSize: 4500,
+        ),
+        theme: WorkplaceTheme.light,
+      );
+
+      final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
+      final attributes = (body['data'] as Map<String, dynamic>)['attributes'] as Map<String, dynamic>;
+      final config = attributes['data'] as Map<String, dynamic>;
+      final downloadLink = config['downloadLink'] as Map<String, dynamic>;
+
+      expect(downloadLink['label'], equals('https://attach.url'));
+      expect(downloadLink['maxFileSize'], equals(5000));
+      expect(downloadLink['availableSize'], equals(4500));
+    });
+
     test('Should send explicit null downloadLink to hide the attachment button when addAsAttachment is omitted', () async {
       final adapter = _MockAdapter(intentResponse);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
