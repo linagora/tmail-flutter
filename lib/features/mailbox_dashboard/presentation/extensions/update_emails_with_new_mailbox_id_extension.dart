@@ -2,30 +2,43 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/search_email_presentation_owner_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension UpdateEmailsWithNewMailboxIdExtension on MailboxDashBoardController {
-  handleUpdateEmailsWithNewMailboxId({
+  void handleUpdateEmailsWithNewMailboxId({
     required Map<MailboxId,List<EmailId>> originalMailboxIdsWithEmailIds,
     required MailboxId destinationMailboxId,
   }) {
-    final currentEmails = List<PresentationEmail>.from(
-      emailsInCurrentMailbox,
-    );
     final movedEmailIds = originalMailboxIdsWithEmailIds.entries.fold(
       <EmailId>{},
       (emailIds, entry) {
         emailIds.addAll(entry.value);
         return emailIds;
       },
-    ).toList();
-    for (int i = 0; i < currentEmails.length; i++) {
-      if (!movedEmailIds.contains(currentEmails[i].id)) continue;
+    );
+    if (movedEmailIds.isEmpty) return;
 
-      currentEmails[i] = currentEmails[i].copyWith(
-        mailboxIds: {destinationMailboxId: true},
-        mailboxContain: mapMailboxById[destinationMailboxId],
-      );
+    List<PresentationEmail> updateEmails(List<PresentationEmail> emails) =>
+        emails.map((email) {
+          if (!movedEmailIds.contains(email.id)) return email;
+
+          return email.copyWith(
+            mailboxIds: {destinationMailboxId: true},
+            mailboxContain: mapMailboxById[destinationMailboxId],
+          );
+        }).toList();
+
+    if (isSearchEmailPresentationOwner) {
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
+          .updateResultSearches(updateEmails);
+      return;
     }
-    updateEmailList(currentEmails);
+
+    updateEmailList(updateEmails(List<PresentationEmail>.from(
+      emailsInCurrentMailbox,
+    )));
   }
 }

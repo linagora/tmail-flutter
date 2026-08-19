@@ -1,3 +1,6 @@
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -163,6 +166,9 @@ void main() {
       when(searchController.isSearchEmailRunning).thenReturn(true);
       appProviderContainer
           .read(searchEmailPresentationProvider.notifier)
+          .setSearchIsRunning(true);
+      appProviderContainer
+          .read(searchEmailPresentationProvider.notifier)
           .setResultSearches(
             emailIds
                 .map((emailId) => PresentationEmail(id: emailId, keywords: {}))
@@ -174,7 +180,7 @@ void main() {
         appProviderContainer.invalidate(searchEmailPresentationProvider));
 
     test(
-      'writes the flag change back into searchEmailPresentationProvider',
+      'writes the flag change back into searchEmailPresentationProvider for a responsive search layout',
       () {
         // act
         mailboxDashBoardController.updateEmailFlagByEmailIds(
@@ -189,6 +195,53 @@ void main() {
         expect(result[0].hasRead, false);
         expect(result[1].hasRead, true);
         expect(result[2].hasRead, true);
+      },
+    );
+
+    test(
+      'creates keyword state for a keyword-less search result without mutating the original email',
+      () {
+        final keywordLessEmail = PresentationEmail(id: emailIds.first);
+        appProviderContainer
+            .read(searchEmailPresentationProvider.notifier)
+            .setResultSearches([keywordLessEmail]);
+
+        mailboxDashBoardController.updateEmailFlagByEmailIds(
+          [emailIds.first],
+          markStarAction: MarkStarAction.markStar,
+          markAsAnswered: true,
+        );
+
+        final result = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch
+            .single;
+        expect(result.hasStarred, true);
+        expect(result.isAnswered, true);
+        expect(keywordLessEmail.keywords, isNull);
+      },
+    );
+
+    testWidgets(
+      'writes flags to Riverpod on a web mobile-width search layout',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.binding.setSurfaceSize(const Size(375, 800));
+        when(mailboxDashBoardController.responsiveUtils)
+            .thenReturn(ResponsiveUtils());
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox()));
+
+        mailboxDashBoardController.updateEmailFlagByEmailIds(
+          [emailIds.first],
+          readAction: ReadActions.markAsRead,
+        );
+
+        final result = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch;
+        expect(result.first.hasRead, true);
       },
     );
   });

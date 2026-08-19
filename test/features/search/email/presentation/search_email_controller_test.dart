@@ -19,12 +19,14 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -122,7 +124,43 @@ void main() {
     return ref;
   }
 
-  PresentationEmail email(String id) => PresentationEmail(id: EmailId(Id(id)));
+  PresentationEmail email(String id, {MailboxId? mailboxId}) => PresentationEmail(
+        id: EmailId(Id(id)),
+        mailboxIds: mailboxId == null ? null : {mailboxId: true},
+      );
+
+  ({PresentationEmail selectedEmail, MailboxId archiveMailboxId})
+      arrangeArchiveAction() {
+    final sourceMailboxId = MailboxId(Id('source'));
+    final archiveMailboxId = MailboxId(Id('archive'));
+    when(
+      mailboxDashBoardController.getMailboxIdByRole(
+        PresentationMailbox.roleArchive,
+      ),
+    ).thenReturn(archiveMailboxId);
+
+    return (
+      selectedEmail: email('email-to-archive', mailboxId: sourceMailboxId),
+      archiveMailboxId: archiveMailboxId,
+    );
+  }
+
+  void verifyArchiveMove(MailboxId archiveMailboxId) {
+    verify(
+      mailboxDashBoardController.moveSelectedEmailMultipleToMailboxAction(
+        any,
+        any,
+        argThat(
+          predicate<MoveToMailboxRequest>(
+            (request) =>
+                request.destinationMailboxId == archiveMailboxId &&
+                request.emailActionType == EmailActionType.archiveMessage,
+          ),
+        ),
+        any,
+      ),
+    ).called(1);
+  }
 
   List<String?> resultIds() =>
       controller.listResultSearch.map((email) => email.id?.id.value).toList();
@@ -415,6 +453,29 @@ void main() {
 
     expect(controller.textInputSearchController.text, isEmpty);
     expect(controller.currentSearchText, isEmpty);
+  });
+
+  test('archives selected search emails through the archive folder action', () {
+    final archiveAction = arrangeArchiveAction();
+
+    controller.handleSelectionEmailAction(
+      EmailActionType.archiveMessage,
+      [archiveAction.selectedEmail],
+    );
+
+    verifyArchiveMove(archiveAction.archiveMailboxId);
+  });
+
+  test('archives an individual search email through the archive folder action', () {
+    final archiveAction = arrangeArchiveAction();
+
+    controller.pressEmailAction(
+      EmailActionType.archiveMessage,
+      archiveAction.selectedEmail,
+      null,
+    );
+
+    verifyArchiveMove(archiveAction.archiveMailboxId);
   });
 
   test(

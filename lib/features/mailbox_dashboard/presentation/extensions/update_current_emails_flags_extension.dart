@@ -1,10 +1,11 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/search_email_presentation_owner_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -27,51 +28,27 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       return;
     }
 
-    // Mobile search results may be active under Thread Detail.
-    final isSearchEmailRoute =
-        searchController.isSearchEmailRunning && PlatformInfo.isMobile;
+    final isSearchEmailRoute = isSearchEmailPresentationOwner;
     final currentEmails = isSearchEmailRoute
       ? [...appProviderContainer.read(searchEmailPresentationProvider).listResultSearch]
       : emailsInCurrentMailbox;
 
     if (currentEmails.isEmpty) return;
 
-    for (var email in currentEmails) {
-      if (!emailIds.contains(email.id)) continue;
+    final emailIdsSet = emailIds.toSet();
+    for (var index = 0; index < currentEmails.length; index++) {
+      final email = currentEmails[index];
+      if (!emailIdsSet.contains(email.id)) continue;
 
-      switch (readAction) {
-        case ReadActions.markAsRead:
-          _updateKeyword(email, KeyWordIdentifier.emailSeen, true);
-          break;
-        case ReadActions.markAsUnread:
-          _updateKeyword(email, KeyWordIdentifier.emailSeen, false);
-          break;
-        default:
-          break;
-      }
-
-      switch (markStarAction) {
-        case MarkStarAction.markStar:
-          _updateKeyword(email, KeyWordIdentifier.emailFlagged, true);
-          break;
-        case MarkStarAction.unMarkStar:
-          _updateKeyword(email, KeyWordIdentifier.emailFlagged, false);
-          break;
-        default:
-          break;
-      }
-
-      if (markAsAnswered) {
-        _updateKeyword(email, KeyWordIdentifier.emailAnswered, true);
-      }
-
-      if (markAsForwarded) {
-        _updateKeyword(email, KeyWordIdentifier.emailForwarded, true);
-      }
-
-      if (labelKeywords?.isNotEmpty == true) {
-        _updateListKeywords(email, labelKeywords!, isLabelAdded);
-      }
+      currentEmails[index] = _updateEmailKeywords(
+        email,
+        readAction: readAction,
+        markStarAction: markStarAction,
+        markAsAnswered: markAsAnswered,
+        markAsForwarded: markAsForwarded,
+        isLabelAdded: isLabelAdded,
+        labelKeywords: labelKeywords,
+      );
     }
 
     if (isSearchEmailRoute) {
@@ -83,26 +60,35 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     }
   }
 
-  void _updateKeyword(
-    PresentationEmail presentationEmail,
-    KeyWordIdentifier keyword,
-    bool value,
-  ) {
-    if (value) {
-      presentationEmail.keywords?[keyword] = true;
-    } else {
-      presentationEmail.keywords?.remove(keyword);
-    }
-  }
+  PresentationEmail _updateEmailKeywords(
+    PresentationEmail presentationEmail, {
+    ReadActions? readAction,
+    MarkStarAction? markStarAction,
+    required bool markAsAnswered,
+    required bool markAsForwarded,
+    required bool isLabelAdded,
+    List<KeyWordIdentifier>? labelKeywords,
+  }) {
+    final keywordUpdates = <KeyWordIdentifier, bool>{
+      if (readAction == ReadActions.markAsRead)
+        KeyWordIdentifier.emailSeen: true,
+      if (readAction == ReadActions.markAsUnread)
+        KeyWordIdentifier.emailSeen: false,
+      if (markStarAction == MarkStarAction.markStar)
+        KeyWordIdentifier.emailFlagged: true,
+      if (markStarAction == MarkStarAction.unMarkStar)
+        KeyWordIdentifier.emailFlagged: false,
+      if (markAsAnswered) KeyWordIdentifier.emailAnswered: true,
+      if (markAsForwarded) KeyWordIdentifier.emailForwarded: true,
+      for (final keyword in labelKeywords ?? <KeyWordIdentifier>[])
+        keyword: isLabelAdded,
+    };
 
-  void _updateListKeywords(
-    PresentationEmail presentationEmail,
-    List<KeyWordIdentifier> keywords,
-    bool value,
-  ) {
-    for (var keyword in keywords) {
-      _updateKeyword(presentationEmail, keyword, value);
+    if (keywordUpdates.isEmpty) {
+      return presentationEmail;
     }
+
+    return presentationEmail.updateKeywords(keywordUpdates);
   }
 
   void updateEmailAnswered(EmailId emailId) {
