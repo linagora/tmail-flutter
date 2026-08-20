@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/service/search_
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_executor_service.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_presentation_owner_utils.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';

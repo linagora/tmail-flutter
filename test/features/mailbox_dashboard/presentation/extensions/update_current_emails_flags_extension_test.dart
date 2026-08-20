@@ -36,6 +36,10 @@ void main() {
     );
     when(mailboxDashBoardController.searchController).thenReturn(searchController);
     when(searchController.isSearchEmailRunning).thenReturn(false);
+    when(mailboxDashBoardController.updateEmailList(any)).thenAnswer(
+      (invocation) => mailboxDashBoardController.emailsInCurrentMailbox.value =
+          invocation.positionalArguments.first as List<PresentationEmail>,
+    );
   });
 
   group('updateEmailFlagByEmailIds test:', () {

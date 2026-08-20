@@ -77,6 +77,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/model/search_mo
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/state/search_email_presentation_state.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_presentation_owner_utils.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
@@ -190,10 +191,10 @@ class SearchEmailController extends BaseController
   // the thread list renders them inline (ThreadSearchExecutionObserver owns them).
   // Without this guard a desktop search would still populate this view's result
   // list, which then leaks into a later mobile/tablet search after a resize.
-  bool get _ownsSearchResults {
-    final context = currentContext;
-    return context == null || !responsiveUtils.isWebDesktop(context);
-  }
+  bool get _ownsSearchResults => isSearchEmailPresentationLayoutOwner(
+    context: currentContext,
+    responsiveUtils: responsiveUtils,
+  );
 
   SearchEmailController(
       this._quickSearchEmailInteractor,

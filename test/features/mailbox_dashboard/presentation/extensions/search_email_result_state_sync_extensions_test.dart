@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/apply_to_visible_email_list_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_emails_with_new_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
@@ -70,6 +71,52 @@ void main() {
 
   tearDown(() {
     appProviderContainer.invalidate(searchEmailPresentationProvider);
+  });
+
+  group('visible email list reconciliation', () {
+    test('publishes a transformed Search result list without changing the mailbox list', () {
+      setSearchResults(mailboxEmails);
+
+      mailboxDashBoardController.applyToVisibleEmailList(
+        (emails) => emails.where((email) => email.id != emailIds.first).toList(),
+      );
+
+      final results = appProviderContainer
+          .read(searchEmailPresentationProvider)
+          .listResultSearch;
+      expect(results.map((email) => email.id), emailIds.sublist(1));
+      expect(mailboxDashBoardController.emailsInCurrentMailbox.length, 3);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
+
+    test('publishes a transformed mailbox list when Search is inactive', () {
+      when(searchController.isSearchEmailRunning).thenReturn(false);
+
+      mailboxDashBoardController.applyToVisibleEmailList(
+        (emails) => emails.where((email) => email.id != emailIds.first).toList(),
+      );
+
+      final updatedEmails = verify(
+        mailboxDashBoardController.updateEmailList(captureAny),
+      ).captured.single as List<PresentationEmail>;
+      expect(updatedEmails.map((email) => email.id), emailIds.sublist(1));
+    });
+
+    test('does not transform the mailbox list when its action guard rejects it', () {
+      when(searchController.isSearchEmailRunning).thenReturn(false);
+      var wasTransformed = false;
+
+      mailboxDashBoardController.applyToVisibleEmailList(
+        (emails) {
+          wasTransformed = true;
+          return emails;
+        },
+        shouldApplyToMailboxList: () => false,
+      );
+
+      expect(wasTransformed, isFalse);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
   });
 
   group('search result mailbox move reconciliation', () {

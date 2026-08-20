@@ -5,10 +5,8 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/search_email_presentation_owner_extension.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/apply_to_visible_email_list_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
   void updateEmailFlagByEmailIds(
@@ -28,36 +26,22 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       return;
     }
 
-    final isSearchEmailRoute = isSearchEmailPresentationOwner;
-    final currentEmails = isSearchEmailRoute
-      ? [...appProviderContainer.read(searchEmailPresentationProvider).listResultSearch]
-      : emailsInCurrentMailbox;
-
-    if (currentEmails.isEmpty) return;
-
     final emailIdsSet = emailIds.toSet();
-    for (var index = 0; index < currentEmails.length; index++) {
-      final email = currentEmails[index];
-      if (!emailIdsSet.contains(email.id)) continue;
+    applyToVisibleEmailList(
+      (currentEmails) => currentEmails.map((email) {
+        if (!emailIdsSet.contains(email.id)) return email;
 
-      currentEmails[index] = _updateEmailKeywords(
-        email,
-        readAction: readAction,
-        markStarAction: markStarAction,
-        markAsAnswered: markAsAnswered,
-        markAsForwarded: markAsForwarded,
-        isLabelAdded: isLabelAdded,
-        labelKeywords: labelKeywords,
-      );
-    }
-
-    if (isSearchEmailRoute) {
-      appProviderContainer
-          .read(searchEmailPresentationProvider.notifier)
-          .setResultSearches(currentEmails);
-    } else {
-      emailsInCurrentMailbox.refresh();
-    }
+        return _updateEmailKeywords(
+          email,
+          readAction: readAction,
+          markStarAction: markStarAction,
+          markAsAnswered: markAsAnswered,
+          markAsForwarded: markAsForwarded,
+          isLabelAdded: isLabelAdded,
+          labelKeywords: labelKeywords,
+        );
+      }).toList(),
+    );
   }
 
   PresentationEmail _updateEmailKeywords(

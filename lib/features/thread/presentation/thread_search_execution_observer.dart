@@ -11,10 +11,10 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
   // ignore executor events dispatched by SearchEmailController to avoid mutating
   // the off-screen mailbox list and emitting duplicate toasts. This mirrors the
   // layout's own ownership predicate (see MailboxDashBoardView web build).
-  bool get _ownsSearchResults {
-    final context = currentContext;
-    return context != null && _controller.responsiveUtils.isWebDesktop(context);
-  }
+  bool get _ownsSearchResults => !isSearchEmailPresentationLayoutOwner(
+    context: currentContext,
+    responsiveUtils: _controller.responsiveUtils,
+  );
 
   @override
   void onNewSearchStarted() {

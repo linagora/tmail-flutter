@@ -2,9 +2,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/search_email_presentation_owner_extension.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/apply_to_visible_email_list_extension.dart';
 
 extension UpdateEmailsWithNewMailboxIdExtension on MailboxDashBoardController {
   void handleUpdateEmailsWithNewMailboxId({
@@ -30,15 +28,6 @@ extension UpdateEmailsWithNewMailboxIdExtension on MailboxDashBoardController {
           );
         }).toList();
 
-    if (isSearchEmailPresentationOwner) {
-      appProviderContainer
-          .read(searchEmailPresentationProvider.notifier)
-          .updateResultSearches(updateEmails);
-      return;
-    }
-
-    updateEmailList(updateEmails(List<PresentationEmail>.from(
-      emailsInCurrentMailbox,
-    )));
+    applyToVisibleEmailList(updateEmails);
   }
 }
