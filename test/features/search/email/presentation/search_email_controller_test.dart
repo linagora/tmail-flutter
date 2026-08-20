@@ -27,7 +27,9 @@ import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -483,6 +485,43 @@ void main() {
     );
 
     verifyArchiveMove(archiveAction.archiveMailboxId);
+  });
+
+  test('patches search results after a move-to-mailbox success', () {
+    final archiveAction = arrangeArchiveAction();
+    when(mailboxDashBoardController.mapMailboxById).thenReturn({
+      archiveAction.archiveMailboxId: PresentationMailbox(
+        archiveAction.archiveMailboxId,
+      ),
+    });
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setSearchIsRunning(true);
+    appProviderContainer
+        .read(searchEmailPresentationProvider.notifier)
+        .setResultSearches([archiveAction.selectedEmail]);
+
+    mailboxDashBoardController.viewState.value = Right(
+      MoveToMailboxSuccess(
+        archiveAction.selectedEmail.id!,
+        archiveAction.selectedEmail.mailboxIds!.keys.first,
+        archiveAction.archiveMailboxId,
+        MoveAction.moving,
+        EmailActionType.archiveMessage,
+        originalMailboxIdsWithEmailIds: {
+          archiveAction.selectedEmail.mailboxIds!.keys.first: [
+            archiveAction.selectedEmail.id!,
+          ],
+        },
+        emailIdsWithReadStatus: {archiveAction.selectedEmail.id!: false},
+      ),
+    );
+
+    final results = appProviderContainer
+        .read(searchEmailPresentationProvider)
+        .listResultSearch;
+    expect(results.single.mailboxIds, {archiveAction.archiveMailboxId: true});
+    expect(results.single.mailboxContain?.id, archiveAction.archiveMailboxId);
   });
 
   test(
