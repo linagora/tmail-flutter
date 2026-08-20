@@ -19,6 +19,11 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 import 'update_current_emails_flags_extension_test.mocks.dart';
 
+class _DesktopResponsiveUtils extends ResponsiveUtils {
+  @override
+  bool isWebDesktop(BuildContext context) => true;
+}
+
 @GenerateNiceMocks([
   MockSpec<MailboxDashBoardController>(),
   MockSpec<SearchController>(),
@@ -246,6 +251,45 @@ void main() {
             .read(searchEmailPresentationProvider)
             .listResultSearch;
         expect(result.first.hasRead, true);
+      },
+    );
+
+    testWidgets(
+      'writes flags to the mailbox list on a web desktop search layout',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.binding.setSurfaceSize(const Size(1200, 800));
+        when(mailboxDashBoardController.responsiveUtils)
+            .thenReturn(_DesktopResponsiveUtils());
+        when(mailboxDashBoardController.emailsInCurrentMailbox).thenReturn(
+          emailIds
+              .map((emailId) => PresentationEmail(id: emailId, keywords: {}))
+              .toList()
+              .obs,
+        );
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox()));
+
+        mailboxDashBoardController.updateEmailFlagByEmailIds(
+          [emailIds.first],
+          readAction: ReadActions.markAsRead,
+        );
+
+        final searchResults = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch;
+        expect(searchResults.every((email) => !email.hasRead), isTrue);
+        expect(
+          mailboxDashBoardController.emailsInCurrentMailbox.first.hasRead,
+          isTrue,
+        );
+        expect(
+          mailboxDashBoardController.emailsInCurrentMailbox
+              .skip(1)
+              .every((email) => !email.hasRead),
+          isTrue,
+        );
       },
     );
   });
