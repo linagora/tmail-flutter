@@ -17,10 +17,14 @@ import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
 import '../search_robot.dart';
 import 'web_search_email_action_robot.dart';
+import 'web_responsive_search_robot.dart';
 import 'web_search_suggestion_robot.dart';
 import 'web_search_viewport_robot.dart';
 
 class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
+  late final WebResponsiveSearchRobot _responsiveSearchRobot =
+      WebResponsiveSearchRobot($);
+
   // Web-specific sub-robots cover responsive selection and browser resizing.
   WebSearchRobot(PatrolIntegrationTester $)
       : super(
@@ -31,16 +35,12 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         );
 
   @override
-  Future<void> tapOnSearchField() async {
-    if ($(SearchBarView).evaluate().isNotEmpty) {
-      // Responsive web uses the mobile search entry point below 1200px.
-      await super.tapOnSearchField();
-      await waitForCondition(
-        () async => $(SearchEmailView).evaluate().isNotEmpty,
-        timeout: TestTimeouts.short,
+  Future<void> tapOnSearchField() => _runForCurrentSearchLayout(
+        responsiveAction: _responsiveSearchRobot.tapOnSearchField,
+        desktopAction: _tapOnDesktopSearchField,
       );
-      return;
-    }
+
+  Future<void> _tapOnDesktopSearchField() async {
     await $(SearchInputFormWidget).$(TextField).tap();
     // Tap the search icon button so isSearchEmailRunning becomes true and filter
     // buttons appear in the dashboard bar before any keyword is entered.
@@ -52,16 +52,15 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   }
 
   @override
-  Future<void> enterKeyword(String keyword) async {
-    if ($(SearchEmailView).evaluate().isNotEmpty) {
-      // Responsive web renders the dedicated mobile/tablet SearchEmailView.
-      final finder = $(SearchEmailView).$(TextField);
-      await finder.tap();
-      return finder.enterTextWithoutTapAction(keyword);
-    }
+  Future<void> enterKeyword(String keyword) => _runForCurrentSearchLayout(
+        responsiveAction: () => _responsiveSearchRobot.enterKeyword(keyword),
+        desktopAction: () => _enterDesktopKeyword(keyword),
+      );
+
+  Future<void> _enterDesktopKeyword(String keyword) async {
     final finder = $(SearchInputFormWidget).$(TextField);
     await finder.tap();
-    await finder.enterTextWithoutTapAction(keyword);
+    return finder.enterTextWithoutTapAction(keyword);
   }
 
   @override
@@ -77,19 +76,29 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> tapOnShowAllResultsText() async {
-    if ($(SearchEmailView).evaluate().isNotEmpty) {
-      // Responsive web renders suggestions in the page, so its action remains
-      // hit-testable unlike the desktop overlay.
-      await super.tapOnShowAllResultsText();
-      return _waitForSearchResults();
-    }
+    await _runForCurrentSearchLayout(
+      responsiveAction: _responsiveSearchRobot.tapOnShowAllResultsText,
+      desktopAction: _submitDesktopSearch,
+    );
+    return _waitForSearchResults();
+  }
+
+  Future<void> _submitDesktopSearch() async {
     // On web the suggestion overlay wraps content in PointerInterceptor, making
     // the "Showing results for:" InkWell unreliable to tap. Pressing Enter on the
     // focused search field triggers onSubmitted → _invokeSearchEmailAction which
     // commits the search and sets isSearchEmailRunning = true.
     await $.platformAutomator.web.pressKeyCombo(keys: ['Enter']);
-    await _waitForSearchResults();
   }
+
+  bool get _isResponsiveSearchLayout =>
+      $(SearchBarView).evaluate().isNotEmpty ||
+      $(SearchEmailView).evaluate().isNotEmpty;
+
+  Future<void> _runForCurrentSearchLayout({
+    required Future<void> Function() responsiveAction,
+    required Future<void> Function() desktopAction,
+  }) => _isResponsiveSearchLayout ? responsiveAction() : desktopAction();
 
   @override
   Future<void> scrollToEndListSearchFilter() async {

@@ -84,7 +84,9 @@ abstract class AbstractCommonRobot extends CoreRobot {
           .last;
     }));
 
-    // Refresh view after provisioning emails
+    // Web e2e browser storage can retain mailbox data from a preceding test.
+    // A normal refresh may return that cache while the server-side provisioning
+    // change is still being reconciled, so force a fresh query on web only.
     if (refreshEmailView) {
       await threadController.refreshAllEmail(
         shouldClearCache: PlatformInfo.isWeb,
