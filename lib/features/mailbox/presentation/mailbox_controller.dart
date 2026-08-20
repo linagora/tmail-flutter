@@ -127,8 +127,6 @@ class MailboxController extends BaseMailboxController
   IOSSharingManager? _iosSharingManager;
   late MailboxActionReactor mailboxActionReactor;
 
-  final _activeScrollTop = RxBool(false);
-  final _activeScrollBottom = RxBool(true);
   final foldersExpandMode = Rx(ExpandMode.EXPAND);
 
   MailboxId? _newFolderId;
@@ -189,7 +187,6 @@ class MailboxController extends BaseMailboxController
         _handleOpenMailbox(event.buildContext, event.presentationMailbox);
       });
     _initCollapseMailboxCategories();
-    mailboxListScrollController.addListener(_mailboxListScrollControllerListener);
     super.onReady();
   }
 
@@ -1213,8 +1210,6 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.delete:
         openConfirmationDialogDeleteMailboxAction(
           context,
-          responsiveUtils,
-          imagePaths,
           mailbox,
           onDeleteMailboxAction: _deleteMailboxAction
         );
@@ -1229,7 +1224,6 @@ class MailboxController extends BaseMailboxController
         break;
       case MailboxActions.move:
         moveMailboxAction(
-          context,
           mailbox,
           mailboxDashBoardController,
           onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
@@ -1361,27 +1355,6 @@ class MailboxController extends BaseMailboxController
 
   void closeMailboxScreen(BuildContext context) {
     mailboxDashBoardController.closeMailboxMenuDrawer();
-  }
-
-  void autoScrollTop() {
-    mailboxListScrollController.animateTo(
-      mailboxListScrollController.position.minScrollExtent,
-      duration: const Duration(seconds: 1),
-      curve: Curves.easeInToLinear);
-  }
-
-  void autoScrollBottom() {
-    mailboxListScrollController.animateTo(
-      mailboxListScrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 1),
-      curve: Curves.easeInToLinear);
-  }
-
-  void stopAutoScroll() {
-    mailboxListScrollController.animateTo(
-      mailboxListScrollController.offset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.fastOutSlowIn);
   }
 
   Future<void> _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
@@ -1574,35 +1547,6 @@ class MailboxController extends BaseMailboxController
 
     popBack();
   }
-
-  void _mailboxListScrollControllerListener() {
-    _handleScrollTop();
-    _handleScrollBottom();
-  }
-
-  void _handleScrollTop() {
-    if (mailboxListScrollController.position.pixels == 0) {
-      _activeScrollTop.value = false;
-    }
-
-    if (mailboxListScrollController.position.pixels > 40) {
-      _activeScrollTop.value = true;
-    }
-  }
-
-  void _handleScrollBottom() {
-    if (mailboxListScrollController.position.pixels - mailboxListScrollController.position.maxScrollExtent == 0) {
-      _activeScrollBottom.value = false;
-    }
-
-    if (mailboxListScrollController.position.maxScrollExtent - mailboxListScrollController.position.pixels > 40) {
-      _activeScrollBottom.value = true;
-    }
-  }
-
-  bool get activeScrollTop => _activeScrollTop.value;
-
-  bool get activeScrollBottom => _activeScrollBottom.value;
 
   void openSendingQueueViewAction(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);

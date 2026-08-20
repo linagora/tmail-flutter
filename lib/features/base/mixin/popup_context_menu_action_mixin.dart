@@ -12,10 +12,15 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 /// Optional presentation tweaks for [PopupContextMenuActionMixin.openPopupMenuAction].
 class PopupMenuActionOptions {
-  const PopupMenuActionOptions({this.maxHeight, this.requestFocus});
+  const PopupMenuActionOptions({
+    this.maxHeight,
+    this.requestFocus,
+    this.useRootNavigator = false,
+  });
 
   final double? maxHeight;
   final bool? requestFocus;
+  final bool useRootNavigator;
 }
 
 mixin PopupContextMenuActionMixin {
@@ -94,6 +99,7 @@ mixin PopupContextMenuActionMixin {
         maxHeight: options.maxHeight ?? double.infinity,
       ),
       requestFocus: options.requestFocus,
+      useRootNavigator: options.useRootNavigator,
       items: popupMenuItems,
     );
   }

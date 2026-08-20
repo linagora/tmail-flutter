@@ -103,6 +103,7 @@ class ImagePaths {
   String get icSelectedSB => _getImagePath('ic_selected_sb.svg');
   String get icUserSB => _getImagePath('ic_user_sb.svg');
   String get icComposeWeb => _getImagePath('ic_compose_web.svg');
+  String get icPenNoBorder => _getImagePath('ic_pen_noborder.svg');
   String get icFileDoc => _getImagePath('ic_file_doc.svg');
   String get icFileZip => _getImagePath('ic_file_zip.svg');
   String get icFileExcel => _getImagePath('ic_file_excel.svg');

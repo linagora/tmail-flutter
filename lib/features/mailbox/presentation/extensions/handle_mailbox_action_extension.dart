@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -107,6 +108,7 @@ extension HandleMailboxActionExtension on MailboxController {
       context,
       position,
       popupMenuItems,
+      options: const PopupMenuActionOptions(useRootNavigator: true),
     );
   }
 }

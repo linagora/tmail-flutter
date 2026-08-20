@@ -136,7 +136,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                 controller.openComposer(ComposerArguments()),
                             ),
                             Expanded(child: SizedBox(
-                              width: ResponsiveUtils.defaultSizeMenu,
+                              width: ResponsiveUtils.sidebarMenuWidth,
                               child: Obx(() {
                                 if (controller.searchMailboxActivated.isTrue) {
                                   return const SearchMailboxView(

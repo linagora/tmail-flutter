@@ -44,4 +44,21 @@ extension MailboxCategoriessExtension on MailboxCategories {
         return categoriesExpandMode.teamMailboxes;
     }
   }
+
+  void updateExpandMode(
+    MailboxCategoriesExpandMode categoriesExpandMode,
+    ExpandMode expandMode,
+  ) {
+    switch(this) {
+      case MailboxCategories.exchange:
+        categoriesExpandMode.defaultMailbox = expandMode;
+        break;
+      case MailboxCategories.personalFolders:
+        categoriesExpandMode.personalFolders = expandMode;
+        break;
+      case MailboxCategories.teamMailboxes:
+        categoriesExpandMode.teamMailboxes = expandMode;
+        break;
+    }
+  }
 }

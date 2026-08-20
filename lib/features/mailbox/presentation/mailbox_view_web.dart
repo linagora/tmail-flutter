@@ -1,17 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/premium/increase_space_button_widget.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
-import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/mailbox_sidebar_footer.dart';
 
 class MailboxView extends BaseMailboxView {
 
@@ -22,120 +17,55 @@ class MailboxView extends BaseMailboxView {
     final isDesktop = controller.responsiveUtils.isDesktop(context);
 
     return Drawer(
-        backgroundColor: isDesktop ? AppColor.colorBgDesktop : Colors.white,
-        shape: InputBorder.none,
-        shadowColor: AppColor.blackAlpha20,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!isDesktop) buildMailboxAppBar(),
-            Expanded(
-              child: isDesktop
-                ? Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16),
-                    child: _buildListMailbox(context),
-                  )
-                : _buildListMailbox(context),
-            ),
-            const QuotasView(),
-            Obx(() {
-              final isPremiumAvailable = controller
-                .mailboxDashBoardController
-                .validatePremiumIsAvailable();
-
-              final octetQuota = controller
-                  .mailboxDashBoardController
-                  .octetsQuota
-                  .value;
-
-              final isDesktop = controller.responsiveUtils.isDesktop(context);
-
-              if (isPremiumAvailable && octetQuota?.storageAvailable == true) {
-                return IncreaseSpaceButtonWidget(
-                  imagePaths: controller.imagePaths,
-                  margin: EdgeInsetsDirectional.only(
-                    start: isDesktop ? 26 : 24,
-                    bottom: 8,
-                    end: isDesktop ? 0 : 24,
-                  ),
-                  isDesktop: isDesktop,
-                  onTapAction: () => controller
-                      .mailboxDashBoardController
-                      .paywallController
-                      ?.navigateToPaywall(),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Container(
-              alignment: isDesktop
-                ? AlignmentDirectional.center
-                : AlignmentDirectional.centerStart,
-              padding: const EdgeInsetsDirectional.only(
-                bottom: 16,
-                start: 24,
-                end: 24,
-              ),
-              child: ApplicationVersionWidget(
-                title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                textStyle: isDesktop
-                  ? ThemeUtils.textStyleContentCaption()
-                  : null,
-              ),
-            ),
-          ],
-        ),
+      backgroundColor: isDesktop ? AppColor.colorBgDesktop : Colors.white,
+      shape: InputBorder.none,
+      shadowColor: AppColor.blackAlpha20,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isDesktop) buildMailboxAppBar(),
+          Expanded(child: _buildSidebarMenu(context, isDesktop)),
+        ],
+      ),
     );
   }
 
-  Widget _buildListMailbox(BuildContext context) {
-    final mailboxListWidget = buildListMailbox(context);
+  Widget _buildSidebarMenu(BuildContext context, bool isDesktop) {
+    final sidebarMenu = buildSidebarMenu(
+      context,
+      footerItems: [
+        MailboxSidebarFooter(
+          isDesktop: isDesktop,
+          showIncreaseSpaceButton: true,
+        ),
+      ],
+      bodyOverlay: Obx(() => LinagoraSidebarAutoScrollOverlay(
+        isDragging: controller.mailboxDashBoardController.isDraggingMailbox,
+      )),
+    );
 
-    return Stack(
-      children: [
-        if (!PlatformInfo.isCanvasKit)
-          ScrollbarListView(
-            scrollController: controller.mailboxListScrollController,
-            scrollBehavior: ScrollConfiguration.of(context).copyWith(
+    final isCanvasKit = PlatformInfo.isCanvasKit;
+
+    return ScrollbarListView(
+      scrollController: controller.mailboxListScrollController,
+      scrollBehavior: isCanvasKit
+          ? null
+          : ScrollConfiguration.of(context).copyWith(
               physics: const BouncingScrollPhysics(),
               dragDevices: {
                 PointerDeviceKind.touch,
                 PointerDeviceKind.mouse,
-                PointerDeviceKind.trackpad
+                PointerDeviceKind.trackpad,
               },
-              scrollbars: false
+              scrollbars: false,
             ),
-            child: RefreshIndicator(
+      child: isCanvasKit
+          ? sidebarMenu
+          : RefreshIndicator(
               color: AppColor.primaryColor,
               onRefresh: controller.refreshAllMailbox,
-              child: mailboxListWidget,
+              child: sidebarMenu,
             ),
-          )
-        else
-          ScrollbarListView(
-            scrollController: controller.mailboxListScrollController,
-            child: mailboxListWidget
-          ),
-        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox && controller.activeScrollTop
-            ? Align(
-                alignment: Alignment.topCenter,
-                child: InkWell(
-                  onTap: () {},
-                  onHover: (value) => value ? controller.autoScrollTop() : controller.stopAutoScroll(),
-                  child: Container(
-                    height: 40)))
-            : const SizedBox.shrink()),
-        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox && controller.activeScrollBottom
-            ? Align(
-                alignment: Alignment.bottomCenter,
-                child: InkWell(
-                  onTap: () {},
-                  onHover: (value) => value ? controller.autoScrollBottom() : controller.stopAutoScroll(),
-                  child: Container(
-                    height: 40)))
-            : const SizedBox.shrink()),
-      ],
     );
   }
 }

@@ -1,18 +1,20 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
@@ -22,22 +24,27 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/labels_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 abstract class BaseMailboxView extends GetWidget<MailboxController>
     with AppLoaderMixin {
+
+  static const _sidebarTreeMaxIndent = 96.0;
+  static final _mailboxTreeAdapter = LinagoraSidebarTreeAdapter<MailboxNode>(
+    childrenOf: (node) => node.childrenItems,
+    idOf: (node) => node.item.id,
+    isExpanded: (node) =>
+        node.hasChildren() && node.expandMode == ExpandMode.EXPAND,
+  );
 
   BaseMailboxView({Key? key}) : super(key: key);
 
@@ -73,143 +80,77 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     });
   }
 
-  Widget buildFolders(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+  Widget buildSidebarMenu(
+    BuildContext context, {
+    Widget? primaryAction,
+    List<Widget> footerItems = const [],
+    Widget? bodyOverlay,
+  }) {
+    // Resolved below the caller: the ScrollConfiguration a view installs around
+    // the sidebar (ScrollbarListView) is not visible from the outer context.
+    return Builder(builder: (context) {
+      final scrollPhysics = const AlwaysScrollableScrollPhysics().applyTo(
+        ScrollConfiguration.of(context).getScrollPhysics(context),
+      );
+
+      return Obx(() => LinagoraSidebarMenu(
+        controller: controller.mailboxListScrollController,
+        physics: scrollPhysics,
+        primaryAction: primaryAction,
+        sections: _buildSections(context),
+        footerItems: footerItems,
+        bodyOverlay: bodyOverlay,
+      ));
+    });
+  }
+
+  List<LinagoraSidebarMenuSection> _buildSections(BuildContext context) {
+    return [
+      _buildDefaultMailboxSection(),
+      if (_isSendingQueueDisplayed) _buildSendingQueueSection(context),
+      _buildFoldersSection(context),
+      ..._buildLabelsSections(context),
+    ];
+  }
+
+  LinagoraSidebarMenuSection _buildDefaultMailboxSection() {
+    return LinagoraSidebarMenuSection(
       children: [
-        Obx(() {
-          if (controller.personalMailboxIsNotEmpty) {
-            return buildMailboxCategory(
-              context,
-              MailboxCategories.personalFolders,
-              controller.personalRootNode,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          if (controller.teamMailboxesIsNotEmpty) {
-            return buildMailboxCategory(
-              context,
-              MailboxCategories.teamMailboxes,
-              controller.teamMailboxesRootNode,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+        MailboxLoadingBarWidget(viewState: controller.viewState.value),
       ],
+      sliver: controller.defaultMailboxIsNotEmpty
+        ? _buildMailboxTreeList(controller.defaultRootNode)
+        : null,
     );
   }
 
-  Widget buildMailboxCategory(
+  Widget _buildMailboxTreeList(MailboxNode rootNode) {
+    final entries = LinagoraSidebarTreeFlattener.flatten(
+      roots: rootNode.childrenItems ?? const <MailboxNode>[],
+      adapter: _mailboxTreeAdapter,
+    );
+
+    return LinagoraSidebarSliverTreeList<MailboxNode>(
+      entries: entries,
+      itemBuilder: (context, entry) => _buildMailboxItem(context, entry.data),
+      maxIndent: _sidebarTreeMaxIndent,
+    );
+  }
+
+  Widget _buildMailboxItem(
     BuildContext context,
-    MailboxCategories categories,
     MailboxNode mailboxNode,
   ) {
-    final isDesktop = controller.responsiveUtils.isDesktop(context);
+    return Consumer(builder: (context, ref, child) {
+      final isSearchByStarredOnly = _isSearchByStarredOnly(ref);
 
-    switch (categories) {
-      case MailboxCategories.exchange:
-        return _buildBodyMailboxCategory(
-          context: context,
-          categories: categories,
-          mailboxNode: mailboxNode,
-          padding: isDesktop ? null : const EdgeInsets.symmetric(horizontal: 12),
-        );
-      default:
-        return Column(
-          children: [
-            Obx(() => MailboxCategoryWidget(
-              categories: categories,
-              expandMode: categories.getExpandMode(
-                controller.mailboxCategoriesExpandMode.value,
-              ),
-              onToggleMailboxCategories: (categories, itemKey) =>
-                  controller.toggleMailboxCategories(
-                    categories,
-                    controller.mailboxListScrollController,
-                    itemKey,
-                  ),
-              isArrangeLTR: false,
-              showIcon: true,
-              padding: isDesktop
-                  ? const EdgeInsets.symmetric(
-                      horizontal: MailboxItemWidgetStyles.itemPadding,
-                    )
-                  : const EdgeInsets.symmetric(
-                      horizontal: MailboxItemWidgetStyles.mobileItemPadding * 2,
-                    ),
-              height: isDesktop
-                  ? MailboxItemWidgetStyles.height
-                  : MailboxItemWidgetStyles.mobileHeight,
-              iconSpace: isDesktop
-                  ? null
-                  : MailboxItemWidgetStyles.mobileLabelIconSpace,
-              labelTextStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
-            )),
-            Obx(() {
-              final categoriesExpandMode = controller
-                  .mailboxCategoriesExpandMode
-                  .value;
-
-              bool isExpand = categories.getExpandMode(categoriesExpandMode) ==
-                  ExpandMode.EXPAND;
-
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                child: isExpand
-                  ? _buildBodyMailboxCategory(
-                      context: context,
-                      categories: categories,
-                      mailboxNode: mailboxNode,
-                      padding: isDesktop
-                        ? const EdgeInsetsDirectional.only(start: 10)
-                        : const EdgeInsetsDirectional.only(start: 24, end: 12),
-                    )
-                  : const Offstage(),
-              );
-            }),
-          ],
-        );
-    }
-  }
-
-  Widget _buildBodyMailboxCategory({
-    required BuildContext context,
-    required MailboxCategories categories,
-    required MailboxNode mailboxNode,
-    EdgeInsetsGeometry? padding,
-  }) {
-    final treeView = TreeView(
-      key: Key('${categories.keyValue}_mailbox_list'),
-      children: _buildListChildTileWidget(context, mailboxNode),
-    );
-
-    if (padding != null) {
-      return Padding(padding: padding, child: treeView);
-    } else {
-      return treeView;
-    }
-  }
-
-  List<Widget> _buildListChildTileWidget(
-    BuildContext context,
-    MailboxNode parentNode,
-  ) {
-    if (parentNode.childrenItems == null) {
-      return [];
-    }
-
-    return parentNode.childrenItems!.map((mailboxNode) {
-      final mailboxItemWidget = Consumer(builder: (context, ref, child) {
-        final isSearchByStarredOnly = _isSearchByStarredOnly(ref);
-        return Obx(() => MailboxItemWidget(
+      return Obx(() => SidebarMailboxItem(
         mailboxNode: mailboxNode,
+        imagePaths: controller.imagePaths,
+        isWebDesktop: controller.responsiveUtils.isWebDesktop(context),
         mailboxNodeSelected: controller
-          .mailboxDashBoardController
-          .selectedMailboxForDisplay,
+            .mailboxDashBoardController
+            .selectedMailboxForDisplay,
         isDraggingMailbox: controller
             .mailboxDashBoardController
             .isDraggingMailbox,
@@ -218,46 +159,256 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
             mailboxNode != null
                 ? controller.openMailbox(context, mailboxNode.item)
                 : null,
-        onExpandFolderActionClick: mailboxNode.hasChildren()
-          ? (mailboxNode, itemKey) => controller.toggleMailboxFolder(
-              mailboxNode,
-              controller.mailboxListScrollController,
-              itemKey,
+        onExpandFolderActionClick: (mailboxNode) =>
+            controller.toggleMailboxFolder(mailboxNode),
+        onLongPressMailboxNodeAction: (mailboxNode) =>
+            controller.handleLongPressMailboxNodeAction(
+              context,
+              mailboxNode.item,
+            ),
+        onDragItemAccepted: controller.handleDragItemAccepted,
+        onMenuActionClick: (position, mailboxNode) =>
+            controller.openMailboxContextMenuAction(
+              context,
+              position,
+              mailboxNode.item,
+            ),
+        onEmptyMailboxActionCallback: (mailboxNode) =>
+            controller.emptyMailboxAction(context, mailboxNode.item),
+      ));
+    });
+  }
+
+  LinagoraSidebarMenuSection _buildSendingQueueSection(BuildContext context) {
+    final isSendingQueueSelected = controller
+        .mailboxDashBoardController
+        .dashboardRoute
+        .value == DashboardRoutes.sendingQueue;
+
+    return LinagoraSidebarMenuSection(
+      children: [
+        SendingQueueMailboxWidget(
+          imagePaths: controller.imagePaths,
+          responsiveUtils: controller.responsiveUtils,
+          listSendingEmails: controller
+            .mailboxDashBoardController
+            .listSendingEmails,
+          onOpenSendingQueueAction: () =>
+              controller.openSendingQueueViewAction(context),
+          isSelected: isSendingQueueSelected,
+        ),
+      ],
+    );
+  }
+
+  LinagoraSidebarMenuSection _buildFoldersSection(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    final isExpanded = controller.foldersExpandMode.value.isExpanded;
+    final groups = isExpanded
+      ? _buildFolderGroups(context)
+      : <LinagoraSidebarTreeGroup<MailboxNode>>[];
+
+    return LinagoraSidebarMenuSection(
+      header: LinagoraSidebarSectionHeader(
+        label: appLocalizations.folders,
+        expanded: isExpanded,
+        onExpandTogglePressed: (_) => controller.toggleExpandFolders(),
+        expandToggleLabel: controller.foldersExpandMode.value
+            .getTooltipMessage(appLocalizations),
+        actions: [
+          _buildSectionHeaderAction(
+            context,
+            key: const Key(UiKeys.mailboxSearchButton),
+            icon: controller.imagePaths.icSearchBar,
+            semanticLabel: appLocalizations.searchForFolders,
+            onTap: () => controller.openSearchViewAction(context),
+          ),
+          _buildSectionHeaderAction(
+            context,
+            key: const Key(UiKeys.addNewFolderButton),
+            icon: controller.imagePaths.icAddNewFolder,
+            semanticLabel: appLocalizations.newFolder,
+            onTap: () => controller.goToCreateNewMailboxView(context),
+          ),
+        ],
+      ),
+      headerSpacing: LinagoraSpacing.base * 2,
+      sliver: groups.isNotEmpty
+          ? LinagoraSidebarSliverGroupedTreeList<MailboxNode>(
+              groups: groups,
+              adapter: _mailboxTreeAdapter,
+              itemBuilder: (context, entry) =>
+                  _buildMailboxItem(context, entry.data),
+              maxIndent: _sidebarTreeMaxIndent,
             )
           : null,
-        onSelectMailboxFolderClick: controller.selectMailboxNode,
-        onLongPressMailboxNodeAction: (mailboxNode) => controller.handleLongPressMailboxNodeAction(
-          context,
-          mailboxNode.item,
-        ),
-        onDragItemAccepted: controller.handleDragItemAccepted,
-        onMenuActionClick: (position, mailboxNode) {
-          return controller.openMailboxContextMenuAction(
-            context,
-            position,
-            mailboxNode.item,
-          );
-        },
-        onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(
-            context,
-            mailboxNode.item,
-          ),
-      ));
-      });
-
-      if (mailboxNode.hasChildren()) {
-        return TreeViewChild(
-          key: const Key('children_tree_mailbox_child'),
-          isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-          paddingChild: const EdgeInsetsDirectional.only(start: 12),
-          parent: mailboxItemWidget,
-          children: _buildListChildTileWidget(context, mailboxNode),
-        ).build();
-      } else {
-        return mailboxItemWidget;
-      }
-    }).toList();
+    );
   }
+
+  Widget _buildSectionHeaderAction(
+    BuildContext context, {
+    Key? key,
+    required String icon,
+    required String semanticLabel,
+    required VoidCallback onTap,
+  }) {
+    final style = LinagoraSidebarStyle.of(context);
+
+    return LinagoraSidebarSectionHeaderAction(
+      key: key,
+      semanticLabel: semanticLabel,
+      onTap: onTap,
+      iconWidget: SvgPicture.asset(
+        icon,
+        width: style.itemIconSize,
+        height: style.itemIconSize,
+        colorFilter: style.resolvedSectionHeaderForeground.asFilter(),
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  List<LinagoraSidebarTreeGroup<MailboxNode>> _buildFolderGroups(
+    BuildContext context,
+  ) => [
+    if (controller.personalMailboxIsNotEmpty)
+      _buildFolderCategoryGroup(
+        context,
+        MailboxCategories.personalFolders,
+        controller.personalRootNode,
+      ),
+    if (controller.teamMailboxesIsNotEmpty)
+      _buildFolderCategoryGroup(
+        context,
+        MailboxCategories.teamMailboxes,
+        controller.teamMailboxesRootNode,
+      ),
+  ];
+
+  LinagoraSidebarTreeGroup<MailboxNode> _buildFolderCategoryGroup(
+    BuildContext context,
+    MailboxCategories categories,
+    MailboxNode rootNode,
+  ) {
+    final expandMode = categories.getExpandMode(
+      controller.mailboxCategoriesExpandMode.value,
+    );
+
+    return LinagoraSidebarTreeGroup(
+      id: categories.keyValue,
+      header: _buildMailboxCategoryItem(context, categories),
+      roots: rootNode.childrenItems ?? const <MailboxNode>[],
+      expanded: expandMode.isExpanded,
+    );
+  }
+
+  Widget _buildMailboxCategoryItem(
+    BuildContext context,
+    MailboxCategories category,
+  ) {
+    final expandMode = category.getExpandMode(
+      controller.mailboxCategoriesExpandMode.value,
+    );
+    final style = LinagoraSidebarStyle.of(context);
+
+    return LinagoraSidebarItem(
+      label: category.getTitle(context),
+      leading: SvgPicture.asset(
+        controller.imagePaths.icFolderMailbox,
+        width: style.itemIconSize,
+        height: style.itemIconSize,
+        colorFilter: style.foreground.asFilter(),
+        fit: BoxFit.contain,
+      ),
+      expanded: expandMode.isExpanded,
+      onExpandTogglePressed: (_) => controller.toggleMailboxCategories(category),
+      expandToggleLabel: expandMode.getTooltipMessage(
+        AppLocalizations.of(context),
+      ),
+      scrollIntoViewOnExpand: true,
+      onTap: () => controller.toggleMailboxCategories(category),
+    );
+  }
+
+  List<LinagoraSidebarMenuSection> _buildLabelsSections(BuildContext context) {
+    final dashboardController = controller.mailboxDashBoardController;
+    if (!dashboardController.isLabelAvailable) return const [];
+
+    final labelController = dashboardController.labelController;
+    final labels = labelController.labels;
+    final expandMode = labelController.labelListExpandMode.value;
+    final appLocalizations = AppLocalizations.of(context);
+
+    return [
+      LinagoraSidebarMenuSection(
+        header: LinagoraSidebarSectionHeader(
+          key: labelController.labelAppBarKey,
+          label: appLocalizations.labels,
+          expanded: labels.isNotEmpty ? expandMode.isExpanded : null,
+          onExpandTogglePressed: labels.isNotEmpty
+            ? (_) => labelController.toggleLabelListState()
+            : null,
+          expandToggleLabel: labels.isNotEmpty
+            ? expandMode.getTooltipMessage(appLocalizations)
+            : null,
+          actions: [
+            _buildSectionHeaderAction(
+              context,
+              key: const Key(UiKeys.addNewLabelButton),
+              icon: controller.imagePaths.icAddNewFolder,
+              semanticLabel: appLocalizations.newLabel,
+              onTap: () => labelController.handleLabelActionType(
+                actionType: LabelActionType.create,
+                accountId: controller.accountId,
+              ),
+            ),
+          ],
+        ),
+        children: expandMode.isExpanded ? _buildLabelItems(context) : const [],
+      ),
+    ];
+  }
+
+  List<Widget> _buildLabelItems(BuildContext context) {
+    final dashboardController = controller.mailboxDashBoardController;
+    final labelController = dashboardController.labelController;
+    final selectedMailbox = dashboardController.selectedMailboxForDisplay;
+    final labelIdSelected = selectedMailbox?.isLabelMailbox == true
+      ? selectedMailbox?.labelId
+      : null;
+
+    return labelController.labels
+        .map((label) => SidebarLabelItem(
+              key: ValueKey<Id?>(label.id),
+              label: label,
+              imagePaths: controller.imagePaths,
+              isSelected: labelIdSelected != null &&
+                  label.id == labelIdSelected,
+              shouldAskReadOnly: labelController.shouldAskReadOnly,
+              onOpenLabelCallback: (label) => controller.openMailbox(
+                context,
+                PresentationLabelMailbox.initial(label),
+              ),
+              onOpenContextMenu: (label, position) =>
+                  dashboardController.openLabelPopupMenuAction(
+                    context,
+                    controller.imagePaths,
+                    label,
+                    position,
+                  ),
+              onLongPressLabelItemAction: (label) =>
+                  dashboardController.openLabelContextMenuAction(
+                    context,
+                    controller.imagePaths,
+                    label,
+                  ),
+            ))
+        .toList();
+  }
+
+  bool get _isSendingQueueDisplayed =>
+      controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
+      PlatformInfo.isMobile;
 
   bool _isSearchByStarredOnly(WidgetRef ref) {
     final isSearchEmailRunning = ref.watch(
@@ -269,192 +420,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     return isSearchEmailRunning && isOnlyStarredApplied;
   }
 
-  bool isFolderHighlighted(MailboxNode mailboxNode, bool isSearchByStarredOnly) =>
-      mailboxNode.item.isFavorite && isSearchByStarredOnly;
-
-  Widget buildListMailbox(BuildContext context) {
-    final isDesktop = controller.responsiveUtils.isDesktop(context);
-    final isMobileResponsive = controller
-        .responsiveUtils
-        .isScreenWithShortestSide(context);
-
-    return SingleChildScrollView(
-      controller: controller.mailboxListScrollController,
-      key: const PageStorageKey('mailbox_list'),
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: isDesktop
-        ? const EdgeInsetsDirectional.only(end: 16)
-        : const EdgeInsets.only(bottom: 16, top: 16),
-      child: Column(children: [
-        Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-        Obx(() {
-          if (controller.defaultMailboxIsNotEmpty) {
-            return buildMailboxCategory(
-              context,
-              MailboxCategories.exchange,
-              controller.defaultRootNode,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          final sendingEmails = controller
-              .mailboxDashBoardController
-              .listSendingEmails;
-
-          final isSendingQueueSelected =
-              controller.mailboxDashBoardController.dashboardRoute.value == DashboardRoutes.sendingQueue;
-
-          if (sendingEmails.isNotEmpty && PlatformInfo.isMobile) {
-            return SendingQueueMailboxWidget(
-              imagePaths: controller.imagePaths,
-              responsiveUtils: controller.responsiveUtils,
-              listSendingEmails: sendingEmails,
-              onOpenSendingQueueAction: () =>
-                  controller.openSendingQueueViewAction(context),
-              isSelected: isSendingQueueSelected,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          final sendingEmails = controller
-              .mailboxDashBoardController
-              .listSendingEmails;
-
-          if (controller.defaultMailboxIsNotEmpty ||
-              (sendingEmails.isNotEmpty && PlatformInfo.isMobile)) {
-            return const Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Divider(color: AppColor.folderDivider, height: 1),
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          return FoldersBarWidget(
-            onOpenSearchFolder: () => controller.openSearchViewAction(context),
-            onAddNewFolder: () => controller.goToCreateNewMailboxView(context),
-            imagePaths: controller.imagePaths,
-            responsiveUtils: controller.responsiveUtils,
-            height: isDesktop ? 48 : 40,
-            padding: isDesktop
-              ? null
-              : const EdgeInsetsDirectional.only(start: 24, end: 12),
-            labelStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
-            expandMode: controller.foldersExpandMode.value,
-            onToggleExpandFolder: controller.toggleExpandFolders,
-          );
-        }),
-        Obx(() => AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          child: controller.foldersExpandMode.value == ExpandMode.EXPAND
-              ? buildFolders(context)
-              : const Offstage(),
-        )),
-        buildLabelsBar(context, isDesktop),
-        buildLabelsList(context, isDesktop, isMobileResponsive),
-      ]),
-    );
-  }
-
-  Widget buildLabelsBar(BuildContext context, bool isDesktop) {
-    return Obx(() {
-      final isLabelAvailable = controller
-          .mailboxDashBoardController
-          .isLabelAvailable;
-
-      final labelController =
-          controller.mailboxDashBoardController.labelController;
-
-      if (isLabelAvailable) {
-        final accountId = controller.accountId;
-        final labelListExpandMode = labelController.labelListExpandMode.value;
-        final countLabels = labelController.labels.length;
-
-        return LabelsBarWidget(
-          key: labelController.labelAppBarKey,
-          imagePaths: controller.imagePaths,
-          isDesktop: isDesktop,
-          height: isDesktop ? 48 : 40,
-          padding: isDesktop
-              ? null
-              : const EdgeInsetsDirectional.only(start: 24, end: 12),
-          labelStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
-          expandMode: labelListExpandMode,
-          countLabels: countLabels,
-          onToggleLabelListState: labelController.toggleLabelListState,
-          onAddNewLabel: () =>
-              labelController.handleLabelActionType(
-                actionType: LabelActionType.create,
-                accountId: accountId,
-              ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
-
-  Widget buildLabelsList(
-    BuildContext context,
-    bool isDesktop,
-    bool isMobileResponsive,
-  ) {
-    return Obx(() {
-      final dashboardController = controller.mailboxDashBoardController;
-
-      final isLabelAvailable = dashboardController.isLabelAvailable;
-
-      final labelController = dashboardController.labelController;
-
-      final selectedMailbox = dashboardController.selectedMailboxForDisplay;
-      Id? labelIdSelected;
-      if (selectedMailbox?.isLabelMailbox == true) {
-        labelIdSelected = selectedMailbox?.labelId;
-      }
-
-      if (isLabelAvailable) {
-        final labelListExpandMode = labelController.labelListExpandMode.value;
-        final labels = labelController.labels;
-        final shouldAskReadOnly = labelController.shouldAskReadOnly;
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          child: labelListExpandMode == ExpandMode.EXPAND && labels.isNotEmpty
-              ? LabelListView(
-                  labels: labels,
-                  imagePaths: controller.imagePaths,
-                  isDesktop: isDesktop,
-                  shouldAskReadOnly: shouldAskReadOnly,
-                  labelIdSelected: labelIdSelected,
-                  isMobileResponsive: isMobileResponsive,
-                  onOpenLabelCallback: (label) => controller.openMailbox(
-                    context,
-                    PresentationLabelMailbox.initial(label),
-                  ),
-                  onOpenContextMenu: (label, position) =>
-                    dashboardController.openLabelPopupMenuAction(
-                      context,
-                      controller.imagePaths,
-                      label,
-                      position,
-                    ),
-                  onLongPressLabelItemAction: (label) =>
-                    dashboardController.openLabelContextMenuAction(
-                      context,
-                      controller.imagePaths,
-                      label,
-                    ),
-                )
-              : const Offstage(),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
+  bool isFolderHighlighted(
+    MailboxNode mailboxNode,
+    bool isSearchByStarredOnly,
+  ) => mailboxNode.item.isFavorite && isSearchByStarredOnly;
 }

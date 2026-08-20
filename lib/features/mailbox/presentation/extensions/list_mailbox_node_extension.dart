@@ -5,6 +5,10 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 extension ListMailboxNodeExtension on List<MailboxNode> {
   List<MailboxId> get mailboxIds => map((node) => node.item.id).toList();
 
+  List<String> get mailboxNames => where((node) => node.nameNotEmpty)
+    .map((node) => node.mailboxNameAsString)
+    .toList();
+
   /// Insert [newNode] after Inbox if present, otherwise at the beginning.
   void insertAfterInbox(MailboxNode newNode) {
     insertAfterByPriority(

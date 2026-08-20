@@ -1,10 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/mailbox_sidebar_footer.dart';
 
 class MailboxView extends BaseMailboxView {
 
@@ -32,19 +30,10 @@ class MailboxView extends BaseMailboxView {
               child: RefreshIndicator(
                 color: AppColor.primaryColor,
                 onRefresh: controller.refreshAllMailbox,
-                child: buildListMailbox(context),
-              ),
-            ),
-            const QuotasView(),
-            Container(
-              alignment: AlignmentDirectional.centerStart,
-              padding: const EdgeInsetsDirectional.only(
-                bottom: 16,
-                start: 24,
-                end: 24,
-              ),
-              child: ApplicationVersionWidget(
-                title: '${AppLocalizations.of(context).version.toLowerCase()} ',
+                child: buildSidebarMenu(
+                  context,
+                  footerItems: const [MailboxSidebarFooter()],
+                ),
               ),
             ),
           ],

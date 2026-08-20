@@ -5,6 +5,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:tmail_ui_user/features/base/extensions/toggle_mailbox_expand_with_scroll_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -208,7 +209,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
                   controller.mailboxCategoriesExpandMode.value,
                 ),
                 onToggleMailboxCategories: (categories, itemKey) =>
-                    controller.toggleMailboxCategories(
+                    controller.toggleMailboxCategoriesWithScroll(
                         categories,
                         controller.mailboxListScrollController,
                         itemKey,
@@ -278,7 +279,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             parent: MailBoxVisibilityFolderTileBuilder(
               mailboxNode: mailboxNode,
               onClickExpandMailboxNodeAction: (mailboxNode, itemKey) {
-                controller.toggleMailboxFolder(
+                controller.toggleMailboxFolderWithScroll(
                   mailboxNode,
                   controller.mailboxListScrollController,
                   itemKey,
@@ -290,7 +291,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         : MailBoxVisibilityFolderTileBuilder(
             mailboxNode: mailboxNode,
             onClickExpandMailboxNodeAction: (mailboxNode, itemKey) {
-              controller.toggleMailboxFolder(
+              controller.toggleMailboxFolderWithScroll(
                 mailboxNode,
                 controller.mailboxListScrollController,
                 itemKey,

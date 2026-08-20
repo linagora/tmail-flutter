@@ -375,7 +375,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         break;
       case MailboxActions.move:
         moveMailboxAction(
-          context,
           mailbox,
           dashboardController,
           onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
@@ -384,8 +383,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.delete:
         openConfirmationDialogDeleteMailboxAction(
           context,
-          responsiveUtils,
-          imagePaths,
           mailbox,
           onDeleteMailboxAction: _deleteMailboxAction
         );

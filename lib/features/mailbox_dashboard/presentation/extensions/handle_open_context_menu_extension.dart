@@ -1,5 +1,6 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -32,6 +33,7 @@ extension HandleOpenContextMenuExtension on MailboxDashBoardController {
     BuildContext context,
     RelativeRect position,
     List<PopupMenuEntry> popupMenuItems,
+    {PopupMenuActionOptions options = const PopupMenuActionOptions()}
   ) {
     if (PlatformInfo.isWeb) {
       isPopupMenuOpened.value = true;
@@ -40,6 +42,7 @@ extension HandleOpenContextMenuExtension on MailboxDashBoardController {
       context,
       position,
       popupMenuItems,
+      options: options,
     ).whenComplete(() {
       if (PlatformInfo.isWeb) {
         isPopupMenuOpened.value = false;

@@ -17,6 +17,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/extensions/toggle_mailbox_expand_with_scroll_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
@@ -365,7 +366,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               controller.mailboxCategoriesExpandMode.value,
             ),
             onToggleMailboxCategories: (categories, itemKey) =>
-                controller.toggleMailboxCategories(
+                controller.toggleMailboxCategoriesWithScroll(
                   categories,
                   controller.destinationListScrollController,
                   itemKey,
@@ -439,7 +440,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   ? _pickMailboxNode(context, node)
                   : null,
               onExpandFolderActionClick: (mailboxNode, itemKey) =>
-                  controller.toggleMailboxFolder(
+                  controller.toggleMailboxFolderWithScroll(
                       mailboxNode,
                       controller.destinationListScrollController,
                       itemKey,

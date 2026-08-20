@@ -35,6 +35,7 @@ mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
       context,
       position,
       popupMenuItems,
+      options: const PopupMenuActionOptions(useRootNavigator: true),
     );
   }
 
