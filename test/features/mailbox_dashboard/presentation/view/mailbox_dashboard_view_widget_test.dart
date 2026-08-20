@@ -10,13 +10,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/quotas/data_types.dart';
+import 'package:jmap_dart_client/jmap/quotas/quota.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/mailbox_extension.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -61,12 +67,15 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart'
+    as mobile_mailbox_view;
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
@@ -325,6 +334,19 @@ void main() {
         home: Scaffold(body: child),
       ),
     );
+  }
+
+  void arrangeSidebarMenu() {
+    when(
+      mailboxDashboardController
+          .appGridDashboardController.listLinagoraApp,
+    ).thenReturn(RxList([]));
+    when(
+      createDefaultMailboxInteractor.execute(any, any, any),
+    ).thenAnswer(
+      (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
+    );
+    when(uuid.v1()).thenReturn('dab123456789');
   }
 
   group('MailboxDashboardView', () {
@@ -882,16 +904,7 @@ void main() {
           final currentSession = SessionFixtures.aliceSessionWithAICapability;
 
           // Arrange
-          when(
-            mailboxDashboardController
-                .appGridDashboardController.listLinagoraApp,
-          ).thenReturn(RxList([]));
-
-          when(
-            createDefaultMailboxInteractor.execute(any, any, any),
-          ).thenAnswer(
-            (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
-          );
+          arrangeSidebarMenu();
 
           when(
             treeBuilder.generateMailboxTreeInUI(
@@ -909,12 +922,11 @@ void main() {
             ),
           );
 
-          when(uuid.v1()).thenReturn('dab123456789');
-
           mailboxDashboardController.isAINeedsActionSettingEnabled.value = true;
           mailboxDashboardController.sessionCurrent = currentSession;
 
           // Act
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
           await WidgetFixtures.pumpResponsiveWidget(
             tester,
             WidgetFixtures.makeTestableWidget(
@@ -954,12 +966,12 @@ void main() {
           ).called(1);
 
           expect(find.byType(MailboxView), findsOneWidget);
-          expect(find.byType(MailboxItemWidget), findsAtLeastNWidgets(1));
+          expect(find.byType(SidebarMailboxItem), findsAtLeastNWidgets(1));
 
           expect(
             find.byWidgetPredicate(
               (widget) =>
-                  widget is MailboxItemWidget &&
+                  widget is SidebarMailboxItem &&
                   widget.mailboxNode.item.id ==
                       PresentationMailbox.actionRequiredFolder.id,
             ),
@@ -1020,16 +1032,7 @@ void main() {
               SessionFixtures.aliceSessionWithoutAICapability;
 
           // Arrange
-          when(
-            mailboxDashboardController
-                .appGridDashboardController.listLinagoraApp,
-          ).thenReturn(RxList([]));
-
-          when(
-            createDefaultMailboxInteractor.execute(any, any, any),
-          ).thenAnswer(
-            (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
-          );
+          arrangeSidebarMenu();
 
           when(
             treeBuilder.generateMailboxTreeInUI(
@@ -1047,13 +1050,12 @@ void main() {
             ),
           );
 
-          when(uuid.v1()).thenReturn('dab123456789');
-
           mailboxDashboardController.isAINeedsActionSettingEnabled.value =
               false;
           mailboxDashboardController.sessionCurrent = currentSession;
 
           // Act
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
           await WidgetFixtures.pumpResponsiveWidget(
             tester,
             WidgetFixtures.makeTestableWidget(
@@ -1093,12 +1095,12 @@ void main() {
           ).called(1);
 
           expect(find.byType(MailboxView), findsOneWidget);
-          expect(find.byType(MailboxItemWidget), findsAtLeastNWidgets(1));
+          expect(find.byType(SidebarMailboxItem), findsAtLeastNWidgets(1));
 
           expect(
             find.byWidgetPredicate(
               (widget) =>
-                  widget is MailboxItemWidget &&
+                  widget is SidebarMailboxItem &&
                   widget.mailboxNode.item.id ==
                       PresentationMailbox.actionRequiredFolder.id,
             ),
@@ -1113,8 +1115,282 @@ void main() {
           WidgetFixtures.resetResponsive(tester);
         },
       );
+
+      testWidgets(
+        'GIVEN the sidebar is wrapped in a scroll behavior '
+        'WHEN the sidebar list is built '
+        'THEN it uses the bouncing physics of that behavior',
+        (tester) async {
+          // Arrange
+          arrangeSidebarMenu();
+
+          // Act: Android defaults to clamping physics, so bouncing can only
+          // come from the scroll behavior the view installs around the sidebar.
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(
+              child: MailboxView(),
+            ),
+            logicalSize: const Size(1920, 1080),
+            platform: TargetPlatform.android,
+          );
+
+          // Assert
+          final scrollable = tester.widget<Scrollable>(
+            find
+                .descendant(
+                  of: find.byType(MailboxView),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+          expect(scrollable.physics, isA<AlwaysScrollableScrollPhysics>());
+          expect(scrollable.physics?.parent, isA<BouncingScrollPhysics>());
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN personal folders are collapsed '
+        'WHEN the sidebar expand controls are pressed '
+        'THEN the visible tree follows the folder and category state',
+        (tester) async {
+          arrangeSidebarMenu();
+
+          final childMailbox = MailboxNode(
+            PresentationMailbox(
+              MailboxId(Id('personal-child')),
+              name: MailboxName('Personal child'),
+              parentId: MailboxId(Id('personal-parent')),
+            ),
+          );
+          final parentMailbox = MailboxNode(
+            PresentationMailbox(
+              MailboxId(Id('personal-parent')),
+              name: MailboxName('Personal parent'),
+            ),
+            childrenItems: [childMailbox],
+            expandMode: ExpandMode.COLLAPSE,
+          );
+          final personalRoot = MailboxNode.root()
+            ..addChildNode(parentMailbox);
+          mailboxController.updateMailboxTree(
+            mailboxCollection: MailboxCollection(
+              allMailboxes: [parentMailbox.item, childMailbox.item],
+              defaultTree: MailboxTree(MailboxNode.root()),
+              personalTree: MailboxTree(personalRoot),
+              teamMailboxTree: MailboxTree(MailboxNode.root()),
+            ),
+          );
+          mailboxController.toggleMailboxCategories(MailboxCategories.personalFolders);
+
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(child: MailboxView()),
+            logicalSize: const Size(1920, 1080),
+            platform: TargetPlatform.macOS,
+          );
+
+          Finder mailboxById(String id) => find.byWidgetPredicate(
+            (widget) =>
+                widget is SidebarMailboxItem && widget.mailboxNode.item.id == MailboxId(Id(id)),
+          );
+          final context = tester.element(find.byType(MailboxView));
+          final personalCategory = find.byWidgetPredicate(
+            (widget) =>
+                widget is LinagoraSidebarItem &&
+                widget.label == MailboxCategories.personalFolders.getTitle(context),
+          );
+
+          expect(find.byType(LinagoraSidebarMenu), findsOneWidget);
+          expect(find.byType(LinagoraSidebarFooter), findsOneWidget);
+          expect(mailboxById('personal-parent'), findsNothing);
+          expect(mailboxById('personal-child'), findsNothing);
+
+          await tester.tap(personalCategory);
+          await tester.pump();
+
+          expect(
+            mailboxController.mailboxCategoriesExpandMode.value.personalFolders,
+            ExpandMode.EXPAND,
+          );
+          expect(mailboxById('personal-parent'), findsOneWidget);
+          expect(mailboxById('personal-child'), findsNothing);
+
+          await tester.tap(
+            find.descendant(
+              of: mailboxById('personal-parent'),
+              matching: find.byType(LinagoraSidebarControl),
+            ),
+          );
+          await tester.pump();
+
+          expect(mailboxById('personal-child'), findsOneWidget);
+
+          final foldersHeader = find.byWidgetPredicate(
+            (widget) =>
+                widget is LinagoraSidebarSectionHeader &&
+                widget.label == AppLocalizations.of(context).folders,
+          );
+          await tester.tap(
+            find.descendant(
+              of: foldersHeader,
+              matching: find.byType(LinagoraSidebarControl),
+            ),
+          );
+          await tester.pump();
+
+          expect(mailboxController.foldersExpandMode.value, ExpandMode.COLLAPSE);
+          expect(mailboxById('personal-parent'), findsNothing);
+          expect(find.byType(LinagoraSidebarFooter), findsOneWidget);
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN the mobile drawer '
+        'WHEN the sidebar is built '
+        'THEN its footer is pinned outside the always-scrollable body',
+        (tester) async {
+          arrangeSidebarMenu();
+
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(
+              child: mobile_mailbox_view.MailboxView(),
+            ),
+            logicalSize: const Size(375, 720),
+            platform: TargetPlatform.android,
+          );
+
+          final sidebarScrollable = find.descendant(
+            of: find.byType(mobile_mailbox_view.MailboxView),
+            matching: find.byType(Scrollable),
+          ).first;
+
+          expect(find.byType(LinagoraSidebarMenu), findsOneWidget);
+          expect(find.byType(LinagoraSidebarFooter), findsOneWidget);
+          expect(
+            find.descendant(
+              of: sidebarScrollable,
+              matching: find.byType(LinagoraSidebarFooter),
+            ),
+            findsNothing,
+          );
+          expect(
+            tester.widget<Scrollable>(sidebarScrollable).physics,
+            isA<AlwaysScrollableScrollPhysics>(),
+          );
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN storage quotas cross display thresholds '
+        'WHEN the sidebar footer rebuilds '
+        'THEN it maps normal, warning and full states correctly',
+        (tester) async {
+          arrangeSidebarMenu();
+
+          mailboxDashboardController.octetsQuota.value = _storageQuota(
+            used: 80,
+            hardLimit: 100,
+            warnLimit: 90,
+          );
+
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(child: MailboxView()),
+            logicalSize: const Size(1920, 1080),
+            platform: TargetPlatform.macOS,
+          );
+
+          expect(find.byType(LinagoraSidebarStorage), findsNothing);
+
+          mailboxDashboardController.octetsQuota.value = _storageQuota(
+            used: 81,
+            hardLimit: 100,
+            warnLimit: 90,
+          );
+          await tester.pump();
+
+          var storage = tester.widget<LinagoraSidebarStorage>(
+            find.byType(LinagoraSidebarStorage),
+          );
+          expect(storage.progress, 0.81);
+          expect(
+            storage.progressState,
+            LinagoraSidebarStorageProgressState.normal,
+          );
+          expect(
+            storage.statusState,
+            LinagoraSidebarStorageStatusState.normal,
+          );
+
+          mailboxDashboardController.octetsQuota.value = _storageQuota(
+            used: 90,
+            hardLimit: 100,
+            warnLimit: 90,
+          );
+          await tester.pump();
+
+          storage = tester.widget<LinagoraSidebarStorage>(
+            find.byType(LinagoraSidebarStorage),
+          );
+          expect(
+            storage.progressState,
+            LinagoraSidebarStorageProgressState.warning,
+          );
+          expect(
+            storage.statusState,
+            LinagoraSidebarStorageStatusState.normal,
+          );
+
+          mailboxDashboardController.octetsQuota.value = _storageQuota(
+            used: 100,
+            hardLimit: 100,
+            warnLimit: 90,
+          );
+          await tester.pump();
+
+          storage = tester.widget<LinagoraSidebarStorage>(
+            find.byType(LinagoraSidebarStorage),
+          );
+          expect(
+            storage.progressState,
+            LinagoraSidebarStorageProgressState.full,
+          );
+          expect(
+            storage.statusState,
+            LinagoraSidebarStorageStatusState.error,
+          );
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
     });
 
     tearDown(Get.deleteAll);
   });
 }
+
+Quota _storageQuota({
+  required int used,
+  required int hardLimit,
+  required int warnLimit,
+}) => Quota(
+  Id('storage'),
+  ResourceType.octets,
+  Scope.account,
+  'Storage',
+  used: UnsignedInt(used),
+  hardLimit: UnsignedInt(hardLimit),
+  warnLimit: UnsignedInt(warnLimit),
+);
