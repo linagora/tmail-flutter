@@ -21,7 +21,7 @@ class CreateLabelFromNoLabelYetWidgetScenario extends BaseTestScenario {
     final chooseLabelModalRobot = ChooseLabelModalRobot($);
     final createLabelModalRobot = CreateLabelModalRobot($);
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       [
         ProvisioningEmail(
           toEmail: emailUser,

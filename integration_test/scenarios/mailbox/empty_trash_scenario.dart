@@ -4,8 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -26,7 +25,7 @@ class EmptyTrashScenario extends BaseTestScenario {
     final mailboxMenuRobot = MailboxMenuRobot($);
     final appLocalizations = AppLocalizations();
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       [
         ProvisioningEmail(
           toEmail: emailUser,
@@ -60,8 +59,7 @@ class EmptyTrashScenario extends BaseTestScenario {
   Future<void> _expectMailboxViewVisible() => expectViewVisible($(MailboxView));
 
   Future<void> _expectFolderVisible(String folderName) {
-    return expectViewVisible($(MailboxItemWidget)
-        .$(LabelMailboxItemWidget)
+    return expectViewVisible($(SidebarMailboxItem)
         .$(find.text(folderName)));
   }
 

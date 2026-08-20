@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -22,7 +22,7 @@ class LongPressEmptyAndRecoverTrashScenario extends BaseTestScenario {
     final mailboxMenuRobot = MailboxMenuRobot($);
     final appLocalizations = AppLocalizations();
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       [ProvisioningEmail(
         toEmail: toEmail,
         subject: subject,
@@ -33,14 +33,14 @@ class LongPressEmptyAndRecoverTrashScenario extends BaseTestScenario {
     await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
     await threadRobot.openMailbox();
     await $.pumpAndTrySettle();
-    _expectTrashUnreadCountVisible(
+    _expectTrashCountHidden(
       appLocalizations.trashMailboxDisplayName,
     );
     final trashFolder = mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName);
     await mailboxMenuRobot.navigation.longPressMailbox(trashFolder);
     await threadRobot.tapEmptyTrashAfterLongPress();
     await threadRobot.tapConfirmEmptyTrashAfterLongPress();
-    _expectTrashUnreadCountInvisible(
+    _expectTrashCountHidden(
       appLocalizations.trashMailboxDisplayName,
     );
     await mailboxMenuRobot.navigation.openFolder(trashFolder);
@@ -67,25 +67,10 @@ class LongPressEmptyAndRecoverTrashScenario extends BaseTestScenario {
     await expectViewVisible($(subject));
   }
 
-  void _expectTrashUnreadCountVisible(String name) {
-    expect(
-      $(TrailingMailboxItemWidget).which<TrailingMailboxItemWidget>((widget) {
-        final mailbox = widget.mailboxNode.item;
-        return mailbox.name?.name.toLowerCase() == name.toLowerCase() &&
-            mailbox.countTotalEmailsAsString.isNotEmpty;
-      }),
-      findsOneWidget,
-    );
-  }
+  void _expectTrashCountHidden(String name) {
+    final mailboxItem = $(SidebarMailboxItem).$(name);
 
-  void _expectTrashUnreadCountInvisible(String name) {
-    expect(
-      $(TrailingMailboxItemWidget).which<TrailingMailboxItemWidget>((widget) {
-        final mailbox = widget.mailboxNode.item;
-        return mailbox.name?.name.toLowerCase() == name.toLowerCase() &&
-            mailbox.countTotalEmailsAsString.isNotEmpty;
-      }),
-      findsNothing,
-    );
+    expect(mailboxItem, findsOneWidget);
+    expect(mailboxItem.$(LinagoraSidebarBadge), findsNothing);
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
+import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -19,7 +20,7 @@ class MarkMailboxAsReadScenario extends BaseTestScenario {
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
 
-    await provisionEmail([ProvisioningEmail(
+    await robots.commonRobot().provisionEmail([ProvisioningEmail(
       toEmail: email,
       subject: 'placeholder email',
       content: ''
@@ -39,26 +40,14 @@ class MarkMailboxAsReadScenario extends BaseTestScenario {
   }
 
   void _expectInboxUnreadCountVisible() {
-    expect(
-      $(TrailingMailboxItemWidget).which<TrailingMailboxItemWidget>((widget) {
-        final mailbox = widget.mailboxNode.item;
-        return mailbox.role == PresentationMailbox.roleInbox &&
-            mailbox.countUnReadEmailsAsString.isNotEmpty;
-      }),
-      findsOneWidget,
-    );
+    expect(_inboxItem.$(LinagoraSidebarBadge), findsOneWidget);
   }
 
   void _expectInboxUnreadCountInvisible() {
-    expect(
-      $(TrailingMailboxItemWidget)
-        .which<TrailingMailboxItemWidget>((widget) {
-          final mailbox = widget.mailboxNode.item;
-          return mailbox.role == PresentationMailbox.roleInbox
-            && mailbox.countUnReadEmailsAsString.isNotEmpty;
-        }
-      ),
-      findsNothing,
-    );
+    expect(_inboxItem.$(LinagoraSidebarBadge), findsNothing);
   }
+
+  PatrolFinder get _inboxItem => $(SidebarMailboxItem)
+      .which<SidebarMailboxItem>((widget) =>
+          widget.mailboxNode.item.role == PresentationMailbox.roleInbox);
 }

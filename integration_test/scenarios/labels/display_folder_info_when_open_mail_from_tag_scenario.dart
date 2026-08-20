@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -31,7 +31,7 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
     expect(labels, isNotEmpty, reason: 'Provisioning label "Tag 1" failed');
     final newLabel = labels.first;
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       buildEmailsForLabel(
         label: newLabel,
         toEmail: emailUser,
@@ -50,7 +50,7 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
   }
 
   Future<void> _expectLabelListViewVisible() =>
-      expectViewVisible($(LabelListView));
+      expectViewVisible($(SidebarLabelItem));
 
   Future<void> _expectFolderInfoDisplayed() async {
     await expectViewVisible($(AppLocalizations().trashMailboxDisplayName));

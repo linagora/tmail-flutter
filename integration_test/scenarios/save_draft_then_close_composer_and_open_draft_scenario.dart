@@ -4,8 +4,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -81,8 +80,7 @@ class SaveDraftThenCloseComposerAndOpenDraftScenario extends BaseTestScenario {
 
   Future<void> _expectDraftFolderVisible(AppLocalizations appLocalizations) =>
     expectViewVisible(
-      $(MailboxItemWidget)
-        .$(LabelMailboxItemWidget)
+      $(SidebarMailboxItem)
         .$(find.text(appLocalizations.draftsMailboxDisplayName))
     );
 

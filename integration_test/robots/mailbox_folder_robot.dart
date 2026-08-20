@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -14,7 +15,7 @@ class MailboxFolderRobot extends CoreRobot implements AbstractMailboxFolderRobot
 
   @override
   Future<void> tapAddNewFolderButton() async {
-    await $(#add_new_folder_button).tap();
+    await $(const ValueKey(UiKeys.addNewFolderButton)).tap();
   }
 
   @override

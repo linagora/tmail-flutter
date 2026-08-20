@@ -26,7 +26,7 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     final addLabelModalRobot = AddLabelModalRobot($);
     final createLabelModalRobot = CreateLabelModalRobot($);
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       [
         ProvisioningEmail(
           toEmail: emailUser,

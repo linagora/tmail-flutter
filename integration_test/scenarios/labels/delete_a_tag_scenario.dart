@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -47,6 +47,6 @@ class DeleteATagScenario extends BaseTestScenario
   }
 
   Future<void> _expectLabelDeletedByName(String name) async {
-    await expectViewInvisible($(LabelListView).$(name));
+    await expectViewInvisible($(SidebarLabelItem).$(name));
   }
 }

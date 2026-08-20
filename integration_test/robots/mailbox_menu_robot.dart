@@ -1,11 +1,8 @@
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -53,12 +50,12 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   //// Finds a mailbox item containing the given display name text.
   @override
   PatrolFinder mailboxItemByName(String name) =>
-      $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
+      $(SidebarMailboxItem).$(name);
 
   /// Finds a mailbox item whose name exactly matches the given value.
   @override
   PatrolFinder mailboxItemByExactName(String name) =>
-      $(MailboxItemWidget).which<MailboxItemWidget>((w) => w.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase());
+      $(SidebarMailboxItem).which<SidebarMailboxItem>((w) => w.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase());
 
   @override
   Future<void> openSetting() async {
@@ -66,11 +63,7 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   }
 
   Future<void> openMailboxSearch() async {
-    await $(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) {
-        return widget.icon == ImagePaths().icSearchBar;
-      })
-      .tap();
+    await $(const ValueKey(UiKeys.mailboxSearchButton)).tap();
   }
 
   Future<void> searchMailbox(String query) async {

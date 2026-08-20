@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -34,7 +34,7 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     final labelWithoutEmail = labels
         .firstWhere((label) => label.safeDisplayName == 'Tag without email');
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       buildEmailsForLabel(
         label: labelWithEmail,
         toEmail: emailUser,
@@ -63,7 +63,7 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
   }
 
   Future<void> _expectLabelListViewVisible() =>
-      expectViewVisible($(LabelListView));
+      expectViewVisible($(SidebarLabelItem));
 
   Future<void> _expectEmailListDisplayedCorrectByTag({
     required Label label,

@@ -19,7 +19,7 @@ class DisplayNoLabelYetWidgetWhenOpenChooseLabelModalScenario
     final threadRobot = ThreadRobot($);
     final chooseLabelModalRobot = ChooseLabelModalRobot($);
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       [
         ProvisioningEmail(
           toEmail: emailUser,

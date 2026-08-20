@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -29,8 +28,7 @@ class DisplayEmptyViewForFavoriteFolderScenario extends BaseTestScenario {
   }
 
   Future<void> _expectFolderVisible(String folderName) {
-    return expectViewVisible($(MailboxItemWidget)
-        .$(LabelMailboxItemWidget)
+    return expectViewVisible($(SidebarMailboxItem)
         .$(find.text(folderName)));
   }
 

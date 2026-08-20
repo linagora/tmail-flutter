@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/no_label_yet_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -30,7 +30,7 @@ class CreateLabelFromChooseLabelModalWithExistingLabelsScenario
 
     final existingLabel = labels.first;
 
-    await provisionEmail(
+    await robots.commonRobot().provisionEmail(
       buildEmailsForLabel(
         label: existingLabel,
         toEmail: emailUser,
@@ -41,7 +41,7 @@ class CreateLabelFromChooseLabelModalWithExistingLabelsScenario
     await $.pumpAndSettle(duration: const Duration(seconds: 2));
 
     await threadRobot.openMailbox();
-    await expectViewVisible($(LabelListView));
+    await expectViewVisible($(SidebarLabelItem));
     await mobileBack($);
 
     await threadRobot.longPressEmailWithSubject(

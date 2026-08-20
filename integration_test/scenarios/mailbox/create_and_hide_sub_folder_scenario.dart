@@ -1,4 +1,4 @@
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/default_mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -49,8 +49,8 @@ class CreateAndHideSubFolderScenario extends BaseTestScenario {
 
   Future<void> _expectMailboxWithNameHaveNoChildren(String name) async {
     await expectViewVisible(
-      $(MailboxItemWidget)
-        .which<MailboxItemWidget>((widget) {
+      $(SidebarMailboxItem)
+        .which<SidebarMailboxItem>((widget) {
           return widget.mailboxNode.item.name?.name.toLowerCase() ==
             name.toLowerCase() && !widget.mailboxNode.hasChildren();
         })

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -26,7 +26,7 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
 
     int emailCount = 3;
     for (final label in labels) {
-      await provisionEmail(
+      await robots.commonRobot().provisionEmail(
         buildEmailsForLabel(
           label: label,
           toEmail: emailUser,
@@ -50,7 +50,7 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
   }
 
   Future<void> _expectLabelListViewVisible() =>
-      expectViewVisible($(LabelListView));
+      expectViewVisible($(SidebarLabelItem));
 
   Future<void> _expectEmailListDisplayedCorrectByTag({
     required Label label,

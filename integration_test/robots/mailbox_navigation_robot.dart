@@ -1,4 +1,5 @@
 import 'package:patrol/patrol.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 
 import '../base/core_robot.dart';
 import 'abstract/abstract_mailbox_navigation_robot.dart';
@@ -27,7 +28,7 @@ class MailboxNavigationRobot extends CoreRobot implements AbstractMailboxNavigat
   @override
   Future<void> expandMailbox(PatrolFinder finder) async {
     await _ensureReady(finder);
-    final expandButton = finder.$(#expand_mailbox_button);
+    final expandButton = finder.$(LinagoraSidebarControl);
     await expandButton.waitUntilExists();
     await expandButton.tap();
   }

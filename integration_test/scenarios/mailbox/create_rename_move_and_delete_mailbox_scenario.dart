@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -59,7 +59,7 @@ class CreateRenameMoveAndDeleteMailboxScenario extends BaseTestScenario {
 
   Future<void> _expectMailboxWithNameHaveSubFolder(String name) async {
     await expectViewVisible(
-      $(MailboxItemWidget).which<MailboxItemWidget>((widget) {
+      $(SidebarMailboxItem).which<SidebarMailboxItem>((widget) {
         return widget.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase()
           && widget.mailboxNode.hasChildren();
       })
@@ -68,7 +68,7 @@ class CreateRenameMoveAndDeleteMailboxScenario extends BaseTestScenario {
   
   Future<void> _expectMailboxWithNameNotHaveSubFolder(String name) async {
     await expectViewVisible(
-      $(MailboxItemWidget).which<MailboxItemWidget>((widget) {
+      $(SidebarMailboxItem).which<SidebarMailboxItem>((widget) {
         return widget.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase()
           && !widget.mailboxNode.hasChildren();
       })
