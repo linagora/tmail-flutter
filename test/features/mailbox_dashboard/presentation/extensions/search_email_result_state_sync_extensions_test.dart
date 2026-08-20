@@ -255,4 +255,34 @@ void main() {
       expect(results.map((email) => email.id), [emailIds[1]]);
     });
   });
+
+  group('mailbox list delete reconciliation', () {
+    setUp(() {
+      when(searchController.isSearchEmailRunning).thenReturn(false);
+      when(mailboxDashBoardController.selectedMailbox)
+          .thenReturn(Rxn(PresentationMailbox(sourceMailboxId)));
+    });
+
+    test('does not change the mailbox list when the affected folder is not selected', () {
+      mailboxDashBoardController.handleDeleteEmailsInMailbox(
+        emailIds: [emailIds.first],
+        affectedMailboxId: MailboxId(Id('another-mailbox')),
+      );
+
+      expect(mailboxDashBoardController.emailsInCurrentMailbox.length, 3);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
+
+    test('removes deleted ids from the mailbox list when the affected folder is selected', () {
+      mailboxDashBoardController.handleDeleteEmailsInMailbox(
+        emailIds: [emailIds.first],
+        affectedMailboxId: sourceMailboxId,
+      );
+
+      final updatedEmails = verify(
+        mailboxDashBoardController.updateEmailList(captureAny),
+      ).captured.single as List<PresentationEmail>;
+      expect(updatedEmails.map((email) => email.id), emailIds.sublist(1));
+    });
+  });
 }
