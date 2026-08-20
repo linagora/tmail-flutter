@@ -117,6 +117,21 @@ void main() {
       expect(wasTransformed, isFalse);
       verifyNever(mailboxDashBoardController.updateEmailList(any));
     });
+
+    test('still transforms Search results when the mailbox action guard rejects it', () {
+      setSearchResults(mailboxEmails);
+
+      mailboxDashBoardController.applyToVisibleEmailList(
+        (emails) => emails.where((email) => email.id != emailIds.first).toList(),
+        shouldApplyToMailboxList: () => false,
+      );
+
+      final results = appProviderContainer
+          .read(searchEmailPresentationProvider)
+          .listResultSearch;
+      expect(results.map((email) => email.id), emailIds.sublist(1));
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
   });
 
   group('search result mailbox move reconciliation', () {
@@ -209,6 +224,19 @@ void main() {
       expect(results[0].mailboxIds, {sourceMailboxId: true});
       verify(mailboxDashBoardController.updateEmailList(any)).called(1);
     });
+
+    test('does not publish a move when no email ids were moved', () {
+      setSearchResults(mailboxEmails);
+      final initialState = appProviderContainer.read(searchEmailPresentationProvider);
+
+      mailboxDashBoardController.handleUpdateEmailsWithNewMailboxId(
+        originalMailboxIdsWithEmailIds: const <MailboxId, List<EmailId>>{},
+        destinationMailboxId: archiveMailboxId,
+      );
+
+      expect(appProviderContainer.read(searchEmailPresentationProvider), initialState);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
   });
 
   group('search result permanent-delete reconciliation', () {
@@ -254,6 +282,21 @@ void main() {
           .listResultSearch;
       expect(results.map((email) => email.id), [emailIds[1]]);
     });
+
+    test('still removes Search ids when the affected mailbox id is null', () {
+      setSearchResults(mailboxEmails);
+
+      mailboxDashBoardController.handleDeleteEmailsInMailbox(
+        emailIds: [emailIds.first],
+        affectedMailboxId: null,
+      );
+
+      final results = appProviderContainer
+          .read(searchEmailPresentationProvider)
+          .listResultSearch;
+      expect(results.map((email) => email.id), emailIds.sublist(1));
+      expect(mailboxDashBoardController.emailsInCurrentMailbox.length, 3);
+    });
   });
 
   group('mailbox list delete reconciliation', () {
@@ -284,5 +327,87 @@ void main() {
       ).captured.single as List<PresentationEmail>;
       expect(updatedEmails.map((email) => email.id), emailIds.sublist(1));
     });
+
+    test('does not change the mailbox list when the affected mailbox id is null', () {
+      mailboxDashBoardController.handleDeleteEmailsInMailbox(
+        emailIds: [emailIds.first],
+        affectedMailboxId: null,
+      );
+
+      expect(mailboxDashBoardController.emailsInCurrentMailbox.length, 3);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
+
+    test('clears the mailbox list when the emptied folder is selected', () {
+      mailboxDashBoardController.handleClearAllEmailsInMailbox(sourceMailboxId);
+
+      final updatedEmails = verify(
+        mailboxDashBoardController.updateEmailList(captureAny),
+      ).captured.single as List<PresentationEmail>;
+      expect(updatedEmails, isEmpty);
+    });
+
+    test('does not clear the mailbox list when emptying another folder', () {
+      mailboxDashBoardController.handleClearAllEmailsInMailbox(
+        MailboxId(Id('other')),
+      );
+
+      expect(mailboxDashBoardController.emailsInCurrentMailbox.length, 3);
+      verifyNever(mailboxDashBoardController.updateEmailList(any));
+    });
+  });
+
+  group('web desktop delete reconciliation', () {
+    Future<void> pumpDesktopSearch(WidgetTester tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+      when(mailboxDashBoardController.responsiveUtils)
+          .thenReturn(_DesktopResponsiveUtils());
+      when(mailboxDashBoardController.selectedMailbox)
+          .thenReturn(Rxn(PresentationMailbox(sourceMailboxId)));
+      await tester.pumpWidget(const GetMaterialApp(home: SizedBox()));
+      setSearchResults(mailboxEmails);
+    }
+
+    testWidgets(
+      'writes deleted ids to the thread list when the affected folder is selected',
+      (tester) async {
+        await pumpDesktopSearch(tester);
+
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: [emailIds.first],
+          affectedMailboxId: sourceMailboxId,
+        );
+
+        final searchResults = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch;
+        expect(searchResults.map((email) => email.id), emailIds);
+        final updatedEmails = verify(
+          mailboxDashBoardController.updateEmailList(captureAny),
+        ).captured.single as List<PresentationEmail>;
+        expect(updatedEmails.map((email) => email.id), emailIds.sublist(1));
+      },
+    );
+
+    testWidgets(
+      'does not change the thread list when the affected folder is not selected',
+      (tester) async {
+        await pumpDesktopSearch(tester);
+
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: [emailIds.first],
+          affectedMailboxId: MailboxId(Id('another-mailbox')),
+        );
+
+        final searchResults = appProviderContainer
+            .read(searchEmailPresentationProvider)
+            .listResultSearch;
+        expect(searchResults.map((email) => email.id), emailIds);
+        verifyNever(mailboxDashBoardController.updateEmailList(any));
+      },
+    );
   });
 }
