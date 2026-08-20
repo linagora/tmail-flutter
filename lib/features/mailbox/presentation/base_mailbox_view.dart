@@ -8,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -43,7 +42,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     childrenOf: (node) => node.childrenItems,
     idOf: (node) => node.item.id,
     isExpanded: (node) =>
-        node.hasChildren() && node.expandMode == ExpandMode.EXPAND,
+        node.hasChildren() && node.expandMode.isExpanded,
   );
 
   BaseMailboxView({Key? key}) : super(key: key);
