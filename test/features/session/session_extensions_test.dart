@@ -1,6 +1,8 @@
 import 'package:contact/contact_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -8,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/support/contact_support_capability.dart';
+import 'package:model/upload/upload_from_url_capability.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -424,6 +427,94 @@ void main() {
 
       // Assert
       expect(result, isNull);
+    });
+  });
+
+  group('uploadFromUrlCapability::test', () {
+    Session sessionWith(Map<CapabilityIdentifier, CapabilityProperties> accountCapabilities) => Session(
+      {},
+      {
+        AccountFixtures.aliceAccountId: Account(
+          AccountName('Alice'),
+          true,
+          false,
+          accountCapabilities,
+        )
+      },
+      {},
+      UserName(''),
+      Uri(),
+      Uri(),
+      Uri(),
+      Uri(),
+      State(''),
+    );
+
+    final capabilityWithTemplate = UploadFromUrlCapability(
+      uploadUrl: Uri.parse('https://mail.example.com/upload-from-url/{accountId}'),
+    );
+
+    test('SHOULD not be supported WHEN AccountId is null', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
+      });
+
+      expect(session.isUploadFromUrlSupported(null), isFalse);
+      expect(session.getUploadFromUrlUri(null), isNull);
+    });
+
+    test('SHOULD not be supported WHEN the capability is absent', () {
+      final session = sessionWith({});
+
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
+    });
+
+    test('SHOULD not be supported WHEN the capability advertises no uploadUrl', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(),
+      });
+
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
+    });
+
+    test('SHOULD be supported AND expand the accountId template WHEN the capability advertises an absolute url', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
+      });
+
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isTrue);
+      expect(
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        'https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
+
+    test('SHOULD qualify a relative advertised url against the jmapUrl', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('/upload-from-url/{accountId}'),
+        ),
+      });
+
+      expect(
+        session.getUploadFromUrlUri(
+          AccountFixtures.aliceAccountId,
+          jmapUrl: 'https://mail.example.com',
+        ).toString(),
+        'https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
+
+    test('SHOULD return null WHEN the advertised url is relative AND no jmapUrl is given', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('/upload-from-url/{accountId}'),
+        ),
+      });
+
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
     });
   });
 }

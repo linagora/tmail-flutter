@@ -10,7 +10,7 @@ class UploadFromUrlApi {
 
   Future<UploadResponse> uploadFromUrl(UploadFromUrlRequest request) async {
     final responseJson = await _dioClient.post(
-      request.uploadApiPath,
+      Uri.decodeFull(request.uploadUri.toString()),
       data: request.uploadPayload,
       cancelToken: request.cancelToken,
     );

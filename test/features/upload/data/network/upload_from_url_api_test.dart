@@ -16,12 +16,14 @@ void main() {
     late UploadFromUrlApi uploadFromUrlApi;
 
     final accountId = AccountFixtures.aliceAccountId;
+
+    final uploadUri = Uri.parse('https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}');
     final downloadLink = Uri.parse('https://drive.example.com/secret-token/file.pdf');
     const documentName = 'report.pdf';
     const mimeType = 'application/pdf';
     final request = UploadFromUrlRequest(
-      accountId: accountId,
-      downloadLink: downloadLink,
+      uploadUri: uploadUri,
+      attachmentUrl: downloadLink,
       name: documentName,
       mimeType: mimeType,
     );
@@ -50,7 +52,7 @@ void main() {
       expect(result.size, 2048);
     });
 
-    test('should call DioClient.post on the upload-from-url path for the given account', () async {
+    test('should call DioClient.post on the upload url advertised by the capability', () async {
       when(dioClient.post(
         any,
         data: anyNamed('data'),
@@ -65,7 +67,7 @@ void main() {
       await uploadFromUrlApi.uploadFromUrl(request);
 
       verify(dioClient.post(
-        '/upload-from-url/${accountId.id.value}',
+        uploadUri.toString(),
         data: anyNamed('data'),
         cancelToken: anyNamed('cancelToken'),
       )).called(1);
@@ -74,9 +76,9 @@ void main() {
     for (final statusCode in [400, 401, 403, 413, 429, 500, 502, 504]) {
       test('should propagate the unmapped DioException for status $statusCode', () async {
         final dioException = DioException(
-          requestOptions: RequestOptions(path: '/upload-from-url/${accountId.id.value}'),
+          requestOptions: RequestOptions(path: uploadUri.toString()),
           response: Response(
-            requestOptions: RequestOptions(path: '/upload-from-url/${accountId.id.value}'),
+            requestOptions: RequestOptions(path: uploadUri.toString()),
             statusCode: statusCode,
           ),
         );
@@ -96,8 +98,8 @@ void main() {
     test('should send the exact url/name/type payload and forward the cancelToken', () async {
       final cancelToken = CancelToken();
       final requestWithCancelToken = UploadFromUrlRequest(
-        accountId: accountId,
-        downloadLink: downloadLink,
+        uploadUri: uploadUri,
+        attachmentUrl: downloadLink,
         name: documentName,
         mimeType: mimeType,
         cancelToken: cancelToken,
@@ -116,7 +118,7 @@ void main() {
       await uploadFromUrlApi.uploadFromUrl(requestWithCancelToken);
 
       final captured = verify(dioClient.post(
-        '/upload-from-url/${accountId.id.value}',
+        uploadUri.toString(),
         data: captureAnyNamed('data'),
         cancelToken: captureAnyNamed('cancelToken'),
       )).captured;

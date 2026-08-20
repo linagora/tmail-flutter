@@ -19,12 +19,14 @@ void main() {
     late UploadFromUrlRepositoryImpl repository;
 
     final accountId = AccountFixtures.aliceAccountId;
+
+    final uploadUri = Uri.parse('https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}');
     final downloadLink = Uri.parse('https://drive.example.com/secret-token/file.pdf');
     const documentName = 'report.pdf';
     const mimeType = 'application/pdf';
     final request = UploadFromUrlRequest(
-      accountId: accountId,
-      downloadLink: downloadLink,
+      uploadUri: uploadUri,
+      attachmentUrl: downloadLink,
       name: documentName,
       mimeType: mimeType,
     );

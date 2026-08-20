@@ -27,9 +27,11 @@ void main() {
   );
 
   final accountId = AccountFixtures.aliceAccountId;
+
+  final uploadUri = Uri.parse('https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}');
   final request = UploadFromUrlRequest(
-    accountId: accountId,
-    downloadLink: Uri.parse('https://drive.example.com/secret-token/file.pdf'),
+    uploadUri: uploadUri,
+    attachmentUrl: Uri.parse('https://drive.example.com/secret-token/file.pdf'),
     name: 'report.pdf',
     mimeType: 'application/pdf',
   );
@@ -65,7 +67,7 @@ void main() {
       final dioException = DioException(
         requestOptions: RequestOptions(
           path: '/upload-from-url/${accountId.id.value}',
-          data: {'url': request.downloadLink.toString()},
+          data: {'url': request.attachmentUrl.toString()},
         ),
       );
       const sanitizedException = UnknownRemoteException();
