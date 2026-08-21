@@ -67,7 +67,10 @@ void main() {
       await expectLater(
         stream,
         emitsInOrder([
-          predicate<Either>((either) => either.isLeft()),
+          predicate<Either>((either) => either.fold(
+            (failure) => failure is UploadDriveDocumentFromUrlFailure,
+            (_) => false,
+          )),
           emitsDone,
         ]),
       );
