@@ -7,7 +7,6 @@ import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/focused_menu.dart';
 import 'package:focused_menu_custom/modals.dart';
 import 'package:get/get.dart';
@@ -16,6 +15,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 
 class MailboxSearchedItemBuilder extends StatefulWidget {
@@ -198,13 +198,11 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildMailboxIcon() {
-    return SvgPicture.asset(
-      widget.presentationMailbox.allowedToDisplay
-        ? widget.presentationMailbox.getMailboxIcon(_imagePaths)
-        : _imagePaths.icHideFolder,
-      width: 20,
-      height: 20,
-      fit: BoxFit.fill
+    return MailboxIconWidget(
+      icon: widget.presentationMailbox.allowedToDisplay
+          ? widget.presentationMailbox.getMailboxIcon(_imagePaths)
+          : _imagePaths.icHideFolder,
+      padding: EdgeInsets.zero,
     );
   }
 

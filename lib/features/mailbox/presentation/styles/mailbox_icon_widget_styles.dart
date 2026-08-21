@@ -1,4 +1,4 @@
 
 class MailboxIconWidgetStyles {
-  static const double iconSize = 20.0;
+  static const double iconSize = 16.0;
 }

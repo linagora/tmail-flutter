@@ -2,7 +2,7 @@ import 'package:core/presentation/resources/assets_paths.dart';
 
 class ImagePaths {
   String get icMailboxAllMail => _getImagePath('ic_mailbox_allmail.svg');
-  String get icMailboxTemplate => _getImagePath('ic_mailbox_template.svg');
+  String get icMailboxTemplate => _getImagePath('ic_templates_folder.svg');
   String get icExpandFolder => _getImagePath('ic_expand_folder.svg');
   String get icCollapseFolder => _getImagePath('ic_collapse_folder.svg');
   String get icBack => _getImagePath('ic_back.svg');
@@ -37,15 +37,15 @@ class ImagePaths {
   String get icUnreadEmail => _getImagePath('ic_unread_email.svg');
   String get icCircleClose => _getImagePath('ic_circle_close.svg');
   String get icAddNewFolder => _getImagePath('ic_add_new_folder.svg');
-  String get icFolderMailbox => _getImagePath('ic_folder_mailbox.svg');
-  String get icMailboxInbox => _getImagePath('ic_mailbox_inbox.svg');
-  String get icMailboxDrafts => _getImagePath('ic_mailbox_drafts.svg');
-  String get icMailboxSent => _getImagePath('ic_mailbox_sent.svg');
-  String get icMailboxArchived => _getImagePath('ic_mailbox_archived.svg');
-  String get icMailboxSpam => _getImagePath('ic_mailbox_spam.svg');
-  String get icMailboxTrash => _getImagePath('ic_mailbox_trash.svg');
-  String get icMailboxFavorite => _getImagePath('ic_mailbox_favorite.svg');
-  String get icMailboxActionRequired => _getImagePath('ic_mailbox_action_required.svg');
+  String get icFolderMailbox => _getImagePath('ic_default_folder.svg');
+  String get icMailboxInbox => _getImagePath('ic_inbox_folder.svg');
+  String get icMailboxDrafts => _getImagePath('ic_draft_folder.svg');
+  String get icMailboxSent => _getImagePath('ic_send_folder.svg');
+  String get icMailboxArchived => _getImagePath('ic_archives_folder.svg');
+  String get icMailboxSpam => _getImagePath('ic_spam_folder.svg');
+  String get icMailboxTrash => _getImagePath('ic_trash_folder.svg');
+  String get icMailboxFavorite => _getImagePath('ic_starred_folder.svg');
+  String get icMailboxActionRequired => _getImagePath('ic_action_required_folder.svg');
   String get icFilterSelected => _getImagePath('ic_filter_selected.svg');
   String get icFilterMessageAll => _getImagePath('ic_filter_message_all.svg');
   String get icFilterMessageAttachments => _getImagePath('ic_filter_message_attachments.svg');
@@ -185,7 +185,7 @@ class ImagePaths {
   String get icForwarded => _getImagePath('ic_forwarded.svg');
   String get icReplyAndForward => _getImagePath('ic_reply_and_forward.svg');
   String get icMailboxSendingQueue => _getImagePath('ic_mailbox_sending_queue.svg');
-  String get icMailboxOutbox => _getImagePath('ic_mailbox_outbox.svg');
+  String get icMailboxOutbox => _getImagePath('ic_outbox_folder.svg');
   String get icAvatarGroup => _getImagePath('ic_avatar_group.svg');
   String get icAvatarGroupDelivering => _getImagePath('ic_avatar_group_delivering.svg');
   String get icAvatarPersonal => _getImagePath('ic_avatar_personal.svg');

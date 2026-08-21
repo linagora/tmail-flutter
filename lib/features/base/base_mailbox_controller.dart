@@ -586,18 +586,13 @@ abstract class BaseMailboxController extends BaseController
     final categoriesExpandMode = mailboxCategoriesExpandMode.value;
     final newExpandMode = category.getExpandMode(categoriesExpandMode).toggle();
 
-    category.updateExpandMode(categoriesExpandMode, newExpandMode);
-    mailboxCategoriesExpandMode.refresh();
+    mailboxCategoriesExpandMode.value = category.withExpandMode(
+      categoriesExpandMode,
+      newExpandMode,
+    );
 
     return newExpandMode;
   }
-
-  MailboxNode rootNodeOfCategory(MailboxCategories category) =>
-    switch (category) {
-      MailboxCategories.exchange => defaultRootNode,
-      MailboxCategories.personalFolders => personalRootNode,
-      MailboxCategories.teamMailboxes => teamMailboxesRootNode,
-    };
 
   Future<void> moveFolderContentAction({
     required AccountId accountId,

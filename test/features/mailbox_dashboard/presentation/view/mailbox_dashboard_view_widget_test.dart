@@ -1138,12 +1138,7 @@ void main() {
 
           // Assert
           final scrollable = tester.widget<Scrollable>(
-            find
-                .descendant(
-                  of: find.byType(MailboxView),
-                  matching: find.byType(Scrollable),
-                )
-                .first,
+            _verticalScrollableIn(find.byType(MailboxView)),
           );
           expect(scrollable.physics, isA<AlwaysScrollableScrollPhysics>());
           expect(scrollable.physics?.parent, isA<BouncingScrollPhysics>());
@@ -1214,7 +1209,9 @@ void main() {
           await tester.pump();
 
           expect(
-            mailboxController.mailboxCategoriesExpandMode.value.personalFolders,
+            MailboxCategories.personalFolders.getExpandMode(
+              mailboxController.mailboxCategoriesExpandMode.value,
+            ),
             ExpandMode.EXPAND,
           );
           expect(mailboxById('personal-parent'), findsOneWidget);
@@ -1268,10 +1265,13 @@ void main() {
             platform: TargetPlatform.android,
           );
 
-          final sidebarScrollable = find.descendant(
-            of: find.byType(mobile_mailbox_view.MailboxView),
-            matching: find.byType(Scrollable),
-          ).first;
+          final sidebarScrollable = _verticalScrollableIn(
+            find.byType(mobile_mailbox_view.MailboxView),
+          );
+          final refreshIndicator = tester.widget<RefreshIndicator>(
+            find.byType(RefreshIndicator),
+          );
+          final refreshContext = tester.element(find.byType(RefreshIndicator));
 
           expect(find.byType(LinagoraSidebarMenu), findsOneWidget);
           expect(find.byType(LinagoraSidebarFooter), findsOneWidget);
@@ -1285,6 +1285,18 @@ void main() {
           expect(
             tester.widget<Scrollable>(sidebarScrollable).physics,
             isA<AlwaysScrollableScrollPhysics>(),
+          );
+          expect(
+            refreshIndicator.notificationPredicate(
+              _scrollNotification(refreshContext, AxisDirection.down),
+            ),
+            isTrue,
+          );
+          expect(
+            refreshIndicator.notificationPredicate(
+              _scrollNotification(refreshContext, AxisDirection.right),
+            ),
+            isFalse,
           );
 
           WidgetFixtures.resetResponsive(tester);
@@ -1380,6 +1392,30 @@ void main() {
     tearDown(Get.deleteAll);
   });
 }
+
+Finder _verticalScrollableIn(Finder parent) => find.descendant(
+  of: parent,
+  matching: find.byWidgetPredicate(
+    (widget) =>
+        widget is Scrollable && widget.axisDirection == AxisDirection.down,
+  ),
+).first;
+
+ScrollUpdateNotification _scrollNotification(
+  BuildContext context,
+  AxisDirection axisDirection,
+) => ScrollUpdateNotification(
+  context: context,
+  depth: 1,
+  metrics: FixedScrollMetrics(
+    axisDirection: axisDirection,
+    devicePixelRatio: 1,
+    maxScrollExtent: 48,
+    minScrollExtent: 0,
+    pixels: 0,
+    viewportDimension: 240,
+  ),
+);
 
 Quota _storageQuota({
   required int used,

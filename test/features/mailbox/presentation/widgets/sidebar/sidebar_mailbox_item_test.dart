@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -17,6 +17,7 @@ import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
@@ -25,6 +26,19 @@ import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 final _imagePaths = ImagePaths();
+final _folderIconsByRole = <Role, String>{
+  PresentationMailbox.roleInbox: _imagePaths.icMailboxInbox,
+  PresentationMailbox.roleFavorite: _imagePaths.icMailboxFavorite,
+  PresentationMailbox.roleActionRequired: _imagePaths.icMailboxActionRequired,
+  PresentationMailbox.roleDrafts: _imagePaths.icMailboxDrafts,
+  PresentationMailbox.roleOutbox: _imagePaths.icMailboxOutbox,
+  PresentationMailbox.roleArchive: _imagePaths.icMailboxArchived,
+  PresentationMailbox.roleSent: _imagePaths.icMailboxSent,
+  PresentationMailbox.roleTrash: _imagePaths.icMailboxTrash,
+  PresentationMailbox.roleSpam: _imagePaths.icMailboxSpam,
+  PresentationMailbox.roleJunk: _imagePaths.icMailboxSpam,
+  PresentationMailbox.roleTemplates: _imagePaths.icMailboxTemplate,
+};
 
 void main() {
   setUpAll(() async {
@@ -33,13 +47,15 @@ void main() {
 
   group('SidebarMailboxItem', () {
     _testMapsMailboxDataToRow();
+    _testMapsMailboxRolesToTheNewFolderIcons();
+    _testBundlesEveryMappedFolderIcon();
+    _testTintsFolderIconsForTheSidebarTheme();
     _testHidesBadgesForTrashAndSpam();
     _testMapsExpandToggleToMailboxAction();
     _testUsesReleaseDropTargetForDesktopWeb();
     _testKeepsActionRequiredMailboxOutOfDropTargets();
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
-    _testKeepsLongNestedFoldersScrollableWithinSidebarWidth();
     _testKeepsDotsTriggerActiveUntilMenuCloses();
     _testUsesConfirmPopoverForClean();
     _testCleanPopoverUsesPrimaryConfirmInDarkRtl();
@@ -49,6 +65,81 @@ void main() {
     _testOpensLabelAndForwardsContextMenuAnchor();
     _testHidesMenuForProtectedReadOnlyLabel();
     _testForwardsLabelLongPressOnMobile();
+  });
+}
+
+void _testMapsMailboxRolesToTheNewFolderIcons() {
+  test('maps mailbox roles and custom folders to the new folder icons', () {
+    for (final entry in _folderIconsByRole.entries) {
+      final mailbox = _mailboxNode(
+        id: entry.key.value,
+        role: entry.key,
+      ).item;
+
+      expect(mailbox.getMailboxIcon(_imagePaths), entry.value);
+    }
+
+    expect(
+      _mailboxNode(id: 'custom-folder').item.getMailboxIcon(_imagePaths),
+      _imagePaths.icFolderMailbox,
+    );
+  });
+}
+
+void _testBundlesEveryMappedFolderIcon() {
+  testWidgets('bundles every mapped folder icon as an SVG asset', (tester) async {
+    final iconPaths = {
+      ..._folderIconsByRole.values,
+      _imagePaths.icFolderMailbox,
+    };
+
+    for (final iconPath in iconPaths) {
+      final svg = await rootBundle.loadString(iconPath);
+      expect(svg, contains('<svg'));
+    }
+  });
+}
+
+void _testTintsFolderIconsForTheSidebarTheme() {
+  testWidgets('tints folder icons for active and inactive states in each theme',
+      (tester) async {
+    for (final brightness in Brightness.values) {
+      final sidebarStyle = brightness == Brightness.dark
+          ? LinagoraSidebarStyle.dark()
+          : LinagoraSidebarStyle.light();
+
+      for (final isActive in [false, true]) {
+        final mailboxNode = _mailboxNode(
+          id: 'inbox-${brightness.index}-${isActive ? 1 : 0}',
+          role: PresentationMailbox.roleInbox,
+        );
+
+        await _pump(
+          tester,
+          LinagoraSidebarTheme(
+            data: sidebarStyle,
+            child: SidebarMailboxItem(
+              mailboxNode: mailboxNode,
+              imagePaths: _imagePaths,
+              isWebDesktop: false,
+              mailboxNodeSelected: isActive ? mailboxNode.item : null,
+            ),
+          ),
+          brightness: brightness,
+        );
+
+        final icon = tester.widget<SvgPicture>(find.byType(SvgPicture));
+        expect(icon.width, 16);
+        expect(icon.height, 16);
+        expect(
+          icon.colorFilter,
+          ColorFilter.mode(
+            isActive ? sidebarStyle.activeForeground : sidebarStyle.foreground,
+            BlendMode.srcIn,
+          ),
+        );
+      }
+    }
   });
 }
 
@@ -263,56 +354,6 @@ void _testForwardsMailboxLongPressOnMobile() {
     );
 
     expect(longPressedMailbox, same(mailboxNode));
-  });
-}
-
-void _testKeepsLongNestedFoldersScrollableWithinSidebarWidth() {
-  testWidgets(
-      'keeps long nested folder labels and large badges within sidebar width',
-      (tester) async {
-    final mailboxes = List<MailboxNode>.generate(
-      12,
-      (index) => _mailboxNode(
-        id: 'nested-$index',
-        name: 'A folder name that is intentionally much longer than the sidebar $index',
-        unreadEmails: 999999,
-      ),
-    );
-
-    await _pump(
-      tester,
-      SizedBox(
-        width: ResponsiveUtils.sidebarMenuWidth,
-        height: 240,
-        child: LinagoraSidebarTreeList<MailboxNode>(
-          entries: [
-            for (var index = 0; index < mailboxes.length; index++)
-              LinagoraSidebarTreeListEntry(
-                id: mailboxes[index].item.id,
-                data: mailboxes[index],
-                depth: index,
-              ),
-          ],
-          maxIndent: 96,
-          itemBuilder: (context, entry) =>
-              SidebarMailboxItem(
-                mailboxNode: entry.data,
-                imagePaths: _imagePaths,
-                isWebDesktop: false,
-              ),
-        ),
-      ),
-    );
-
-    expect(tester.takeException(), isNull);
-
-    await tester.drag(
-      find.byType(LinagoraSidebarTreeList<MailboxNode>),
-      const Offset(0, -180),
-    );
-    await tester.pump();
-
-    expect(tester.takeException(), isNull);
   });
 }
 

@@ -48,6 +48,9 @@ class MailboxView extends BaseMailboxView {
 
     return ScrollbarListView(
       scrollController: controller.mailboxListScrollController,
+      notificationPredicate: ScrollbarListView.isVerticalScrollNotification,
+      thumbVisibility: !isDesktop,
+      trackVisibility: !isDesktop,
       scrollBehavior: isCanvasKit
           ? null
           : ScrollConfiguration.of(context).copyWith(
@@ -64,6 +67,8 @@ class MailboxView extends BaseMailboxView {
           : RefreshIndicator(
               color: AppColor.primaryColor,
               onRefresh: controller.refreshAllMailbox,
+              notificationPredicate:
+                  ScrollbarListView.isVerticalScrollNotification,
               child: sidebarMenu,
             ),
     );

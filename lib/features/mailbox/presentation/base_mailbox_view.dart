@@ -22,6 +22,10 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_ex
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_tree_adapter.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_visible_tree_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
@@ -37,13 +41,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 abstract class BaseMailboxView extends GetWidget<MailboxController>
     with AppLoaderMixin {
 
-  static const _sidebarTreeMaxIndent = 96.0;
-  static final _mailboxTreeAdapter = LinagoraSidebarTreeAdapter<MailboxNode>(
-    childrenOf: (node) => node.childrenItems,
-    idOf: (node) => node.item.id,
-    isExpanded: (node) =>
-        node.hasChildren() && node.expandMode.isExpanded,
-  );
+  static const _visibleTreeResolver = MailboxSidebarVisibleTreeResolver();
+  static const _categoryTreeSourceResolver =
+      MailboxSidebarCategoryTreeSourceResolver();
+  static const _mailboxListScrollViewKey =
+      PageStorageKey<String>('mailbox_list');
 
   BaseMailboxView({Key? key}) : super(key: key);
 
@@ -94,7 +96,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
       return Obx(() => LinagoraSidebarMenu(
         controller: controller.mailboxListScrollController,
+        scrollViewKey: _mailboxListScrollViewKey,
         physics: scrollPhysics,
+        treeHorizontalOverflow: _sidebarTreeHorizontalOverflow,
         primaryAction: primaryAction,
         sections: _buildSections(context),
         footerItems: footerItems,
@@ -112,6 +116,23 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     ];
   }
 
+  double get _sidebarTreeHorizontalOverflow {
+    return controller.mailboxSidebarTreeProjection.resolveHorizontalOverflow(
+      layoutRevision: controller.mailboxSidebarTreeLayoutRevision.value,
+      visibleTrees: () => _visibleMailboxTrees,
+    );
+  }
+
+  Iterable<LinagoraSidebarVisibleTree<MailboxNode>>
+      get _visibleMailboxTrees => _visibleTreeResolver.resolve(
+        foldersExpanded: controller.foldersExpandMode.value.isExpanded,
+        sources: _mailboxSidebarCategoryTreeSources,
+      );
+
+  List<MailboxSidebarCategoryTreeSource>
+      get _mailboxSidebarCategoryTreeSources =>
+          _categoryTreeSourceResolver.resolve(controller);
+
   LinagoraSidebarMenuSection _buildDefaultMailboxSection() {
     return LinagoraSidebarMenuSection(
       children: [
@@ -126,13 +147,13 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
   Widget _buildMailboxTreeList(MailboxNode rootNode) {
     final entries = LinagoraSidebarTreeFlattener.flatten(
       roots: rootNode.childrenItems ?? const <MailboxNode>[],
-      adapter: _mailboxTreeAdapter,
+      adapter: mailboxSidebarTreeAdapter,
     );
 
     return LinagoraSidebarSliverTreeList<MailboxNode>(
       entries: entries,
       itemBuilder: (context, entry) => _buildMailboxItem(context, entry.data),
-      maxIndent: _sidebarTreeMaxIndent,
+      maxIndent: double.infinity,
     );
   }
 
@@ -235,10 +256,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       sliver: groups.isNotEmpty
           ? LinagoraSidebarSliverGroupedTreeList<MailboxNode>(
               groups: groups,
-              adapter: _mailboxTreeAdapter,
+              adapter: mailboxSidebarTreeAdapter,
               itemBuilder: (context, entry) =>
                   _buildMailboxItem(context, entry.data),
-              maxIndent: _sidebarTreeMaxIndent,
+              maxIndent: double.infinity,
             )
           : null,
     );
@@ -269,35 +290,21 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   List<LinagoraSidebarTreeGroup<MailboxNode>> _buildFolderGroups(
     BuildContext context,
-  ) => [
-    if (controller.personalMailboxIsNotEmpty)
-      _buildFolderCategoryGroup(
-        context,
-        MailboxCategories.personalFolders,
-        controller.personalRootNode,
-      ),
-    if (controller.teamMailboxesIsNotEmpty)
-      _buildFolderCategoryGroup(
-        context,
-        MailboxCategories.teamMailboxes,
-        controller.teamMailboxesRootNode,
-      ),
-  ];
+  ) => _mailboxSidebarCategoryTreeSources
+      .where((source) => source.isFolderCategory && source.isAvailable)
+      .map((source) => _buildFolderCategoryGroup(context, source))
+      .toList(growable: false);
 
   LinagoraSidebarTreeGroup<MailboxNode> _buildFolderCategoryGroup(
     BuildContext context,
-    MailboxCategories categories,
-    MailboxNode rootNode,
+    MailboxSidebarCategoryTreeSource source,
   ) {
-    final expandMode = categories.getExpandMode(
-      controller.mailboxCategoriesExpandMode.value,
-    );
-
     return LinagoraSidebarTreeGroup(
-      id: categories.keyValue,
-      header: _buildMailboxCategoryItem(context, categories),
-      roots: rootNode.childrenItems ?? const <MailboxNode>[],
-      expanded: expandMode.isExpanded,
+      id: source.category.keyValue,
+      header: _buildMailboxCategoryItem(context, source.category),
+      roots: source.roots,
+      expanded: source.isExpanded,
+      initialDepth: source.initialDepth,
     );
   }
 

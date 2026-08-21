@@ -26,9 +26,16 @@ class MailboxIconWidget extends StatelessWidget {
         icon,
         width: MailboxIconWidgetStyles.iconSize,
         height: MailboxIconWidgetStyles.iconSize,
-        colorFilter: color?.asFilter(),
-        fit: BoxFit.fill,
+        colorFilter: (color ?? _defaultColor(context)).asFilter(),
+        fit: BoxFit.contain,
       ),
     );
+  }
+
+  Color _defaultColor(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.brightness == Brightness.dark
+        ? theme.colorScheme.onSurface
+        : AppColor.gray424244;
   }
 }

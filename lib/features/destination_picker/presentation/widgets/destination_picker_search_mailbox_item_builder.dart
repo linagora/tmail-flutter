@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -12,6 +11,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -84,11 +84,9 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
   }
 
   Widget _buildMailboxIcon() {
-    return SvgPicture.asset(
-      _presentationMailbox.getMailboxIcon(_imagePaths),
-      width: PlatformInfo.isWeb ? 20 : 24,
-      height: PlatformInfo.isWeb ? 20 : 24,
-      fit: BoxFit.fill
+    return MailboxIconWidget(
+      icon: _presentationMailbox.getMailboxIcon(_imagePaths),
+      padding: EdgeInsets.zero,
     );
   }
 

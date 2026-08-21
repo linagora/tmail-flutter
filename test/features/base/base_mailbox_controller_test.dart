@@ -22,8 +22,10 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_sidebar_tree_layout_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -37,13 +39,13 @@ import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
-class _TestMailboxController extends BaseMailboxController {
+class _TestMailboxController extends BaseMailboxController
+    with MailboxSidebarTreeLayoutMixin {
   _TestMailboxController() : super(TreeBuilder(), VerifyNameInteractor());
 
   PresentationMailbox? destinationMailbox;
   MailboxActions? destinationMailboxAction;
   MailboxId? destinationMailboxId;
-
   @override
   Future<PresentationMailbox?> pickDestinationMailbox({
     required AccountId accountId,
@@ -153,6 +155,14 @@ void main() {
   });
 
   group('BaseMailboxController::toggleMailboxCategories', () {
+    test('initializes every registered category as expanded', () {
+      final categoryExpandModes = controller.mailboxCategoriesExpandMode.value;
+
+      for (final category in MailboxCategories.values) {
+        expect(category.getExpandMode(categoryExpandModes), ExpandMode.EXPAND);
+      }
+    });
+
     test('should toggle only the given category', () {
       final newExpandMode = controller.toggleMailboxCategories(
         MailboxCategories.personalFolders,
@@ -160,9 +170,18 @@ void main() {
       final categoriesExpandMode = controller.mailboxCategoriesExpandMode.value;
 
       expect(newExpandMode, ExpandMode.COLLAPSE);
-      expect(categoriesExpandMode.personalFolders, ExpandMode.COLLAPSE);
-      expect(categoriesExpandMode.defaultMailbox, ExpandMode.EXPAND);
-      expect(categoriesExpandMode.teamMailboxes, ExpandMode.EXPAND);
+      expect(
+        MailboxCategories.personalFolders.getExpandMode(categoriesExpandMode),
+        ExpandMode.COLLAPSE,
+      );
+      expect(
+        MailboxCategories.exchange.getExpandMode(categoriesExpandMode),
+        ExpandMode.EXPAND,
+      );
+      expect(
+        MailboxCategories.teamMailboxes.getExpandMode(categoriesExpandMode),
+        ExpandMode.EXPAND,
+      );
     });
 
     test('should toggle the category back to its previous mode', () {
@@ -174,25 +193,84 @@ void main() {
 
       expect(newExpandMode, ExpandMode.EXPAND);
       expect(
-        controller.mailboxCategoriesExpandMode.value.teamMailboxes,
+        MailboxCategories.teamMailboxes.getExpandMode(
+          controller.mailboxCategoriesExpandMode.value,
+        ),
         ExpandMode.EXPAND,
       );
     });
   });
 
-  group('BaseMailboxController::rootNodeOfCategory', () {
-    test('should return the root node matching the category', () {
-      expect(
-        controller.rootNodeOfCategory(MailboxCategories.exchange),
-        controller.defaultRootNode,
+  group('MailboxSidebarTreeLayoutMixin', () {
+    test('invalidates when expanding a mailbox or category changes the layout', () {
+      final mailboxNode = _buildNodeWithChild(MailboxId(Id('mailbox')));
+      controller.defaultMailboxTree.value = _buildTreeWith(mailboxNode);
+
+      controller.toggleMailboxFolder(mailboxNode);
+      controller.toggleMailboxCategories(MailboxCategories.personalFolders);
+
+      expect(controller.mailboxSidebarTreeLayoutRevision.value, 2);
+    });
+
+    test('does not invalidate when no mailbox folder is updated', () {
+      controller.toggleMailboxFolder(
+        _buildNodeWithChild(MailboxId(Id('unknown'))),
       );
-      expect(
-        controller.rootNodeOfCategory(MailboxCategories.personalFolders),
-        controller.personalRootNode,
+
+      expect(controller.mailboxSidebarTreeLayoutRevision.value, 0);
+    });
+
+    test('invalidates when replacing mailbox trees', () {
+      controller.updateMailboxTree(
+        mailboxCollection: controller.currentMailboxCollection,
       );
+
+      expect(controller.mailboxSidebarTreeLayoutRevision.value, 1);
+    });
+  });
+
+  group('MailboxSidebarCategoryTreeSourceResolver', () {
+    const sourceResolver = MailboxSidebarCategoryTreeSourceResolver();
+
+    test('registers every category with its matching roots and tree depth', () {
+      final defaultNode = _buildNodeWithChild(MailboxId(Id('default')));
+      final personalNode = _buildNodeWithChild(MailboxId(Id('personal')));
+      final teamNode = _buildNodeWithChild(MailboxId(Id('team')));
+      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
+      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+      controller.teamMailboxesTree.value = _buildTreeWith(teamNode);
+
+      final sources = sourceResolver.resolve(controller);
+
       expect(
-        controller.rootNodeOfCategory(MailboxCategories.teamMailboxes),
-        controller.teamMailboxesRootNode,
+        sources.map((source) => source.category),
+        MailboxCategories.values,
+      );
+      expect(sources[0].roots, [defaultNode]);
+      expect(sources[0].isFolderCategory, isFalse);
+      expect(sources[0].initialDepth, 0);
+      expect(sources[1].roots, [personalNode]);
+      expect(sources[1].isFolderCategory, isTrue);
+      expect(sources[1].initialDepth, 1);
+      expect(sources[2].roots, [teamNode]);
+      expect(sources[2].isFolderCategory, isTrue);
+      expect(sources[2].initialDepth, 1);
+    });
+
+    test('reflects the category expansion state without mutating old state', () {
+      final previousExpandModes = controller.mailboxCategoriesExpandMode.value;
+
+      controller.toggleMailboxCategories(MailboxCategories.personalFolders);
+
+      final sources = sourceResolver.resolve(controller);
+      final personalSource = sources.firstWhere(
+        (source) => source.category == MailboxCategories.personalFolders,
+      );
+
+      expect(personalSource.isExpanded, isFalse);
+      expect(
+        MailboxCategories.personalFolders.getExpandMode(previousExpandModes),
+        ExpandMode.EXPAND,
       );
     });
   });
@@ -284,7 +362,9 @@ void main() {
       );
 
       expect(
-        controller.mailboxCategoriesExpandMode.value.personalFolders,
+        MailboxCategories.personalFolders.getExpandMode(
+          controller.mailboxCategoriesExpandMode.value,
+        ),
         ExpandMode.COLLAPSE,
       );
     });

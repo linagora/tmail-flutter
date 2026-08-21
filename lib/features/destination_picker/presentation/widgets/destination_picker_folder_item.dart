@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 
 class DestinationPickerFolderItem extends StatelessWidget {
   final bool isSelected;
@@ -27,12 +28,9 @@ class DestinationPickerFolderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final folderIconWidget = SvgPicture.asset(
-      folderIcon,
-      width: MailboxIconWidgetStyles.iconSize,
-      height: MailboxIconWidgetStyles.iconSize,
-      colorFilter: AppColor.primaryLinShare.asFilter(),
-      fit: BoxFit.fill,
+    final folderIconWidget = MailboxIconWidget(
+      icon: folderIcon,
+      padding: EdgeInsets.zero,
     );
 
     final displayNameWidget = Text(
