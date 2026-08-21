@@ -223,5 +223,29 @@ void main() {
       expect(sentHeaders[HttpHeaders.contentTypeHeader], mimeType);
       expect(sentHeaders[HttpHeaders.contentTypeHeader], isNot(Headers.jsonContentType));
     });
+
+    test('should POST with no body and keep Content-Location on the wire', () async {
+      final adapter = _CapturingHttpClientAdapter();
+      final realDioClient = DioClient(Dio()..httpClientAdapter = adapter);
+
+      await UploadFromUrlApi(realDioClient).uploadFromUrl(request);
+
+      final sent = adapter.capturedRequestOptions!;
+      expect(sent.data, isNull);
+      expect(
+        sent.headers[HttpHeaders.contentLocationHeader],
+        downloadLink.toString(),
+      );
+    });
+
+    test('should throw WHEN the upload response JSON is malformed', () async {
+      when(dioClient.post(
+        any,
+        options: anyNamed('options'),
+        cancelToken: anyNamed('cancelToken'),
+      )).thenAnswer((_) async => <String, dynamic>{});
+
+      expect(uploadFromUrlApi.uploadFromUrl(request), throwsA(isA<TypeError>()));
+    });
   });
 }

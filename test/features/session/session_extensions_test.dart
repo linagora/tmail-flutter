@@ -11,6 +11,8 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:model/upload/upload_from_url_capability.dart';
+import 'package:tmail_ui_user/features/home/data/extensions/session_hive_obj_extension.dart';
+import 'package:tmail_ui_user/features/home/domain/converter/capability_properties_converter.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -499,6 +501,13 @@ void main() {
       });
 
       expect(
+        session.isUploadFromUrlSupported(
+          AccountFixtures.aliceAccountId,
+          jmapUrl: 'https://mail.example.com',
+        ),
+        isTrue,
+      );
+      expect(
         session.getUploadFromUrlUri(
           AccountFixtures.aliceAccountId,
           jmapUrl: 'https://mail.example.com',
@@ -514,6 +523,7 @@ void main() {
         ),
       });
 
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
       expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
     });
 
@@ -573,6 +583,47 @@ void main() {
       expect(
         session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
         'https://mail.example.com/upload-from-url?account=${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
+
+    test('SHOULD keep uploadUrl after hive persist and restore', () {
+      final session = Session(
+        {
+          SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
+            },
+          )
+        },
+        {},
+        UserName('alice@example.com'),
+        Uri.parse('https://mail.example.com/jmap'),
+        Uri.parse('https://mail.example.com/download'),
+        Uri.parse('https://mail.example.com/upload'),
+        Uri.parse('https://mail.example.com/eventSource'),
+        State('1'),
+      );
+
+      final restored = session.toHiveObj().toSession();
+
+      expect(
+        restored.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        'https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
+
+    test('SHOULD serialize UploadFromUrlCapability uploadUrl', () {
+      expect(
+        CapabilityPropertiesConverter().toJson(capabilityWithTemplate),
+        {
+          'uploadUrl': 'https://mail.example.com/upload-from-url/%7BaccountId%7D',
+        },
       );
     });
   });

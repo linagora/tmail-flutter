@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_from_url_account_mismatch_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_repository.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/upload_drive_document_from_url_state.dart';
@@ -68,7 +69,27 @@ void main() {
         stream,
         emitsInOrder([
           predicate<Either>((either) => either.fold(
-            (failure) => failure is UploadDriveDocumentFromUrlFailure,
+            (failure) =>
+                failure is UploadDriveDocumentFromUrlFailure &&
+                identical(failure.exception, exception),
+            (_) => false,
+          )),
+          emitsDone,
+        ]),
+      );
+    });
+
+    test('should yield Failure WHEN the response accountId mismatches', () async {
+      final exception = UploadFromUrlAccountMismatchException();
+      when(uploadFromUrlRepository.uploadFromUrl(request)).thenThrow(exception);
+
+      await expectLater(
+        interactor.execute(request),
+        emitsInOrder([
+          predicate<Either>((either) => either.fold(
+            (failure) =>
+                failure is UploadDriveDocumentFromUrlFailure &&
+                identical(failure.exception, exception),
             (_) => false,
           )),
           emitsDone,
