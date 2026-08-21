@@ -18,41 +18,28 @@ import 'package:scribe/scribe/ai/presentation/model/ai_capability.dart';
 
 class CapabilityPropertiesConverter {
 
+  // Dispatch table keyed by runtime type keeps this out of an ever-growing if-else chain.
+  static final Map<Type, Map<String, dynamic>? Function(CapabilityProperties)> _converters = {
+    CoreCapability: (properties) => (properties as CoreCapability).toJson(),
+    MailCapability: (properties) => (properties as MailCapability).toJson(),
+    SubmissionCapability: (properties) => (properties as SubmissionCapability).toJson(),
+    VacationCapability: (properties) => (properties as VacationCapability).toJson(),
+    CalendarEventCapability: (properties) => (properties as CalendarEventCapability).toJson(),
+    WebSocketCapability: (properties) => (properties as WebSocketCapability).toJson(),
+    WebSocketTicketCapability: (properties) => (properties as WebSocketTicketCapability).toJson(),
+    MdnCapability: (properties) => (properties as MdnCapability).toJson(),
+    AutocompleteCapability: (properties) => (properties as AutocompleteCapability).toJson(),
+    ContactSupportCapability: (properties) => (properties as ContactSupportCapability).toJson(),
+    SaaSAccountCapability: (properties) => (properties as SaaSAccountCapability).toJson(),
+    AICapability: (properties) => (properties as AICapability).toJson(),
+    LabelsCapability: (properties) => (properties as LabelsCapability).toJson(),
+    UploadFromUrlCapability: (properties) => (properties as UploadFromUrlCapability).toJson(),
+    DefaultCapability: (properties) => (properties as DefaultCapability).properties,
+    EmptyCapability: (properties) => (properties as EmptyCapability).toJson(),
+  };
+
   Map<String, dynamic>? toJson(CapabilityProperties properties) {
-    if (properties is CoreCapability) {
-      return properties.toJson();
-    } else if (properties is MailCapability) {
-      return properties.toJson();
-    } else if (properties is SubmissionCapability) {
-      return properties.toJson();
-    } else if (properties is VacationCapability) {
-      return properties.toJson();
-    } else if (properties is CalendarEventCapability) {
-      return properties.toJson();
-    } else if (properties is WebSocketCapability) {
-      return properties.toJson();
-    } else if (properties is WebSocketTicketCapability) {
-      return properties.toJson();
-    } else if (properties is MdnCapability) {
-      return properties.toJson();
-    } else if (properties is AutocompleteCapability) {
-      return properties.toJson();
-    } else if (properties is ContactSupportCapability) {
-      return properties.toJson();
-    } else if (properties is SaaSAccountCapability) {
-      return properties.toJson();
-    } else if (properties is AICapability) {
-      return properties.toJson();
-    } else if (properties is LabelsCapability) {
-      return properties.toJson();
-    } else if (properties is UploadFromUrlCapability) {
-      return properties.toJson();
-    } else if (properties is DefaultCapability) {
-      return properties.properties;
-    } else if (properties is EmptyCapability) {
-      return properties.toJson();
-    } else {
-      return null;
-    }
+    final converter = _converters[properties.runtimeType];
+    return converter?.call(properties);
   }
 }
