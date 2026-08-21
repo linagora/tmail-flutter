@@ -173,8 +173,9 @@ extension SessionExtensions on Session {
       }
 
       final normalizedUrl = qualifiedUrl.normalizePathSlashes();
+      // Only unescape the {accountId} delimiters; decoding the whole URI would drop the query string.
       final uriTemplate = UriTemplate(
-        Uri.decodeFull('${normalizedUrl.origin}${normalizedUrl.path}'),
+        normalizedUrl.toString().replaceAll('%7B', '{').replaceAll('%7D', '}'),
       );
       return Uri.parse(uriTemplate.expand({'accountId': accountId.id.value}));
     } catch (e) {

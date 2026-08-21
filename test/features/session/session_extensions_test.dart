@@ -516,5 +516,18 @@ void main() {
 
       expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
     });
+
+    test('SHOULD preserve the query string AND an encoded path segment WHEN expanding the template', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('https://mail.example.com/upload-from-url%2Fv2/{accountId}?required=true'),
+        ),
+      });
+
+      expect(
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        'https://mail.example.com/upload-from-url%2Fv2/${AccountFixtures.aliceAccountId.id.value}?required=true',
+      );
+    });
   });
 }
