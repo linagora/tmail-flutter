@@ -133,8 +133,8 @@ extension SessionExtensions on Session {
         linagoraDownloadAllCapability,
       );
 
-  bool isUploadFromUrlSupported(AccountId? accountId) {
-    return getUploadFromUrlCapability(accountId)?.uploadUrl != null;
+  bool isUploadFromUrlSupported(AccountId? accountId, {String? jmapUrl}) {
+    return getUploadFromUrlUri(accountId, jmapUrl: jmapUrl) != null;
   }
 
   UploadFromUrlCapability? getUploadFromUrlCapability(AccountId? accountId) =>
