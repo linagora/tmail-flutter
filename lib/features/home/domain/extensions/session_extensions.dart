@@ -127,34 +127,34 @@ extension SessionExtensions on Session {
     return downloadAllCapability?.endpoint?.isNotEmpty ?? false;
   }
 
-  DownloadAllCapability? getDownloadAllCapability(AccountId? accountId) {
-    if (accountId == null) return null;
-
-    if (!linagoraDownloadAllCapability.isSupported(this, accountId)) {
-      return null;
-    }
-
-    return getCapabilityProperties<DownloadAllCapability>(
-      accountId,
-      linagoraDownloadAllCapability,
-    );
-  }
+  DownloadAllCapability? getDownloadAllCapability(AccountId? accountId) =>
+      _getSupportedCapability<DownloadAllCapability>(
+        accountId,
+        linagoraDownloadAllCapability,
+      );
 
   bool isUploadFromUrlSupported(AccountId? accountId) {
     return getUploadFromUrlCapability(accountId)?.uploadUrl != null;
   }
 
-  UploadFromUrlCapability? getUploadFromUrlCapability(AccountId? accountId) {
+  UploadFromUrlCapability? getUploadFromUrlCapability(AccountId? accountId) =>
+      _getSupportedCapability<UploadFromUrlCapability>(
+        accountId,
+        linagoraUploadFromUrlCapability,
+      );
+
+  // Shared by capability getters that gate on accountId + isSupported before reading properties.
+  T? _getSupportedCapability<T extends CapabilityProperties>(
+    AccountId? accountId,
+    CapabilityIdentifier identifier,
+  ) {
     if (accountId == null) return null;
 
-    if (!linagoraUploadFromUrlCapability.isSupported(this, accountId)) {
+    if (!identifier.isSupported(this, accountId)) {
       return null;
     }
 
-    return getCapabilityProperties<UploadFromUrlCapability>(
-      accountId,
-      linagoraUploadFromUrlCapability,
-    );
+    return getCapabilityProperties<T>(accountId, identifier);
   }
 
   /// Resolves the advertised upload-from-url endpoint for [accountId], or null when unavailable.
