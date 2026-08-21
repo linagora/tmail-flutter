@@ -159,8 +159,10 @@ extension SessionExtensions on Session {
 
   /// Resolves the advertised upload-from-url endpoint for [accountId], or null when unavailable.
   Uri? getUploadFromUrlUri(AccountId? accountId, {String? jmapUrl}) {
+    if (accountId == null) return null;
+
     final advertisedUrl = getUploadFromUrlCapability(accountId)?.uploadUrl;
-    if (advertisedUrl == null || accountId == null) return null;
+    if (advertisedUrl == null) return null;
 
     try {
       final Uri qualifiedUrl;
