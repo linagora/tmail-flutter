@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +39,7 @@ void main() {
     test('should return UploadResponse when DioClient returns the standard upload contract', () async {
       when(dioClient.post(
         any,
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async => {
         'accountId': accountId.id.value,
@@ -56,7 +58,7 @@ void main() {
     test('should call DioClient.post on the upload url advertised by the capability', () async {
       when(dioClient.post(
         any,
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async => {
         'accountId': accountId.id.value,
@@ -69,7 +71,7 @@ void main() {
 
       verify(dioClient.post(
         uploadUri.toString(),
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).called(1);
     });
@@ -85,7 +87,7 @@ void main() {
         );
         when(dioClient.post(
           any,
-          data: anyNamed('data'),
+          options: anyNamed('options'),
           cancelToken: anyNamed('cancelToken'),
         )).thenThrow(dioException);
 
@@ -96,7 +98,7 @@ void main() {
       });
     }
 
-    test('should send the exact url/name/type payload and forward the cancelToken', () async {
+    test('should send the url/type as headers with an empty body, and forward the cancelToken', () async {
       final cancelToken = CancelToken();
       final requestWithCancelToken = UploadFromUrlRequest(
         accountId: accountId,
@@ -108,7 +110,7 @@ void main() {
       );
       when(dioClient.post(
         any,
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async => {
         'accountId': accountId.id.value,
@@ -121,13 +123,13 @@ void main() {
 
       final captured = verify(dioClient.post(
         uploadUri.toString(),
-        data: captureAnyNamed('data'),
+        options: captureAnyNamed('options'),
         cancelToken: captureAnyNamed('cancelToken'),
       )).captured;
-      expect(captured[0], {
-        'url': downloadLink.toString(),
-        'name': documentName,
-        'type': mimeType,
+      final options = captured[0] as Options;
+      expect(options.headers, {
+        HttpHeaders.contentTypeHeader: mimeType,
+        HttpHeaders.contentLocationHeader: downloadLink.toString(),
       });
       expect(captured[1], same(cancelToken));
     });
@@ -135,7 +137,7 @@ void main() {
     test('should never include the downloadLink value as the POST path', () async {
       when(dioClient.post(
         any,
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).thenAnswer((_) async => {
         'accountId': accountId.id.value,
@@ -148,7 +150,7 @@ void main() {
 
       final capturedPath = verify(dioClient.post(
         captureAny,
-        data: anyNamed('data'),
+        options: anyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).captured.single as String;
       expect(capturedPath.contains(downloadLink.toString()), isFalse);
