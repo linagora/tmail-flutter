@@ -179,7 +179,7 @@ extension SessionExtensions on Session {
       );
       return Uri.parse(uriTemplate.expand({'accountId': accountId.id.value}));
     } catch (e) {
-      logWarning('SessionExtensions::getUploadFromUrlUri:Exception = $e');
+      logWarning('SessionExtensions::getUploadFromUrlUri: failed to build upload uri');
       return null;
     }
   }
