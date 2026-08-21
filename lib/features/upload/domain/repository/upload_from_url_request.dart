@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 
 class UploadFromUrlRequest {
+  final AccountId accountId;
   final Uri uploadUri;
   final Uri attachmentUrl;
   final String name;
@@ -8,6 +10,7 @@ class UploadFromUrlRequest {
   final CancelToken? cancelToken;
 
   const UploadFromUrlRequest({
+    required this.accountId,
     required this.uploadUri,
     required this.attachmentUrl,
     required this.name,

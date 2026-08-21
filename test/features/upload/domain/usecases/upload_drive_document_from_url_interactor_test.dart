@@ -25,6 +25,7 @@ void main() {
     const documentName = 'report.pdf';
     const mimeType = 'application/pdf';
     final request = UploadFromUrlRequest(
+      accountId: AccountFixtures.aliceAccountId,
       uploadUri: uploadUri,
       attachmentUrl: downloadLink,
       name: documentName,
@@ -75,6 +76,7 @@ void main() {
     test('should yield Cancelled, not Failure, when the cancelToken was cancelled', () async {
       final cancelToken = CancelToken();
       final cancellableRequest = UploadFromUrlRequest(
+        accountId: AccountFixtures.aliceAccountId,
         uploadUri: uploadUri,
         attachmentUrl: downloadLink,
         name: documentName,

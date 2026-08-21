@@ -30,6 +30,7 @@ void main() {
 
   final uploadUri = Uri.parse('https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}');
   final request = UploadFromUrlRequest(
+    accountId: accountId,
     uploadUri: uploadUri,
     attachmentUrl: Uri.parse('https://drive.example.com/secret-token/file.pdf'),
     name: 'report.pdf',

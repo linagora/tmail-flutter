@@ -22,6 +22,7 @@ void main() {
     const documentName = 'report.pdf';
     const mimeType = 'application/pdf';
     final request = UploadFromUrlRequest(
+      accountId: accountId,
       uploadUri: uploadUri,
       attachmentUrl: downloadLink,
       name: documentName,
@@ -98,6 +99,7 @@ void main() {
     test('should send the exact url/name/type payload and forward the cancelToken', () async {
       final cancelToken = CancelToken();
       final requestWithCancelToken = UploadFromUrlRequest(
+        accountId: accountId,
         uploadUri: uploadUri,
         attachmentUrl: downloadLink,
         name: documentName,
