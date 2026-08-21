@@ -164,6 +164,11 @@ extension SessionExtensions on Session {
     final advertisedUrl = getUploadFromUrlCapability(accountId)?.uploadUrl;
     if (advertisedUrl == null) return null;
 
+    if (!advertisedUrl.hasOrigin && advertisedUrl.host.isNotEmpty) {
+      // Scheme-relative URL ("//host/..."): reject instead of silently gluing it onto jmapUrl.
+      return null;
+    }
+
     try {
       final Uri qualifiedUrl;
       if (jmapUrl != null) {

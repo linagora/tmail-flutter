@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +11,32 @@ import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_
 
 import '../../../../fixtures/account_fixtures.dart';
 import 'upload_from_url_api_test.mocks.dart';
+
+// Captures the RequestOptions Dio actually builds, after merging per-request
+// Options with Dio()'s global defaults - unlike a mocked DioClient, which
+// only sees the Options passed into DioClient.post.
+class _CapturingHttpClientAdapter implements HttpClientAdapter {
+  RequestOptions? capturedRequestOptions;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    capturedRequestOptions = options;
+    return ResponseBody.fromString(
+      '{"accountId":"${AccountFixtures.aliceAccountId.id.value}","blobId":"blob-id-123","type":"application/pdf","size":2048}',
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
 
 @GenerateNiceMocks([MockSpec<DioClient>()])
 void main() {
@@ -154,6 +181,47 @@ void main() {
         cancelToken: anyNamed('cancelToken'),
       )).captured.single as String;
       expect(capturedPath.contains(downloadLink.toString()), isFalse);
+    });
+
+    test('should send the mimeType header as-is WHEN it is blank', () async {
+      final requestWithBlankMimeType = UploadFromUrlRequest(
+        accountId: accountId,
+        uploadUri: uploadUri,
+        attachmentUrl: downloadLink,
+        name: documentName,
+        mimeType: '',
+      );
+      when(dioClient.post(
+        any,
+        options: anyNamed('options'),
+        cancelToken: anyNamed('cancelToken'),
+      )).thenAnswer((_) async => {
+        'accountId': accountId.id.value,
+        'blobId': 'blob-id-123',
+        'type': mimeType,
+        'size': 2048,
+      });
+
+      await uploadFromUrlApi.uploadFromUrl(requestWithBlankMimeType);
+
+      final options = verify(dioClient.post(
+        any,
+        options: captureAnyNamed('options'),
+        cancelToken: anyNamed('cancelToken'),
+      )).captured.single as Options;
+      expect(options.headers?[HttpHeaders.contentTypeHeader], '');
+    });
+
+    test('should override the global JSON content-type on the actual outgoing request', () async {
+      final adapter = _CapturingHttpClientAdapter();
+      final realDioClient = DioClient(Dio()..httpClientAdapter = adapter);
+      final realUploadFromUrlApi = UploadFromUrlApi(realDioClient);
+
+      await realUploadFromUrlApi.uploadFromUrl(request);
+
+      final sentHeaders = adapter.capturedRequestOptions!.headers;
+      expect(sentHeaders[HttpHeaders.contentTypeHeader], mimeType);
+      expect(sentHeaders[HttpHeaders.contentTypeHeader], isNot(Headers.jsonContentType));
     });
   });
 }

@@ -529,5 +529,51 @@ void main() {
         'https://mail.example.com/upload-from-url%2Fv2/${AccountFixtures.aliceAccountId.id.value}?required=true',
       );
     });
+
+    test('SHOULD qualify a relative advertised url without a leading slash against a jmapUrl with a path', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('upload-from-url/{accountId}'),
+        ),
+      });
+
+      expect(
+        session.getUploadFromUrlUri(
+          AccountFixtures.aliceAccountId,
+          jmapUrl: 'https://host/jmap/api',
+        ).toString(),
+        'https://host/jmap/api/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
+
+    test('SHOULD return null WHEN the advertised url is scheme-relative', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('//mail.example.com/upload-from-url/{accountId}'),
+        ),
+      });
+
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
+      expect(
+        session.getUploadFromUrlUri(
+          AccountFixtures.aliceAccountId,
+          jmapUrl: 'https://mail.example.com',
+        ),
+        isNull,
+      );
+    });
+
+    test('SHOULD expand the accountId template WHEN it is located in the query string', () {
+      final session = sessionWith({
+        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
+          uploadUrl: Uri.parse('https://mail.example.com/upload-from-url?account={accountId}'),
+        ),
+      });
+
+      expect(
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        'https://mail.example.com/upload-from-url?account=${AccountFixtures.aliceAccountId.id.value}',
+      );
+    });
   });
 }
