@@ -1440,8 +1440,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/tf-4678-sidebar-menu-tree-horizontal-scroll"
-      resolved-ref: "411df3ee052d17d4dc165e335d91b77427eb4d25"
+      ref: "feature/tf-4678-sidebar-tree-indent-clipping"
+      resolved-ref: ce9290605498f5660d1e19e93c94198a2d4a7959
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.3.0"
