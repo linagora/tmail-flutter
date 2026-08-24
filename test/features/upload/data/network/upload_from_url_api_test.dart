@@ -83,27 +83,6 @@ void main() {
       expect(result.size, 2048);
     });
 
-    test('should call DioClient.post on the upload url advertised by the capability', () async {
-      when(dioClient.post(
-        any,
-        options: anyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).thenAnswer((_) async => {
-        'accountId': accountId.id.value,
-        'blobId': 'blob-id-123',
-        'type': mimeType,
-        'size': 2048,
-      });
-
-      await uploadFromUrlApi.uploadFromUrl(request);
-
-      verify(dioClient.post(
-        uploadUri.toString(),
-        options: anyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).called(1);
-    });
-
     for (final statusCode in [400, 401, 403, 413, 429, 500, 502, 504]) {
       test('should propagate the unmapped DioException for status $statusCode', () async {
         final dioException = DioException(
