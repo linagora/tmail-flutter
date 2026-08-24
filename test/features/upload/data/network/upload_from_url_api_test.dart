@@ -184,7 +184,7 @@ void main() {
       expect(capturedPath.contains(downloadLink.toString()), isFalse);
     });
 
-    test('should fall back to octet-stream mimeType header WHEN it is blank', () async {
+    test('should fall back to octet-stream mimeType header on the wire WHEN it is blank', () async {
       final requestWithBlankMimeType = UploadFromUrlRequest(
         accountId: accountId,
         uploadUri: uploadUri,
@@ -192,25 +192,16 @@ void main() {
         name: documentName,
         mimeType: '',
       );
-      when(dioClient.post(
-        any,
-        options: anyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).thenAnswer((_) async => {
-        'accountId': accountId.id.value,
-        'blobId': 'blob-id-123',
-        'type': mimeType,
-        'size': 2048,
-      });
+      final adapter = _CapturingHttpClientAdapter();
+      final realDioClient = DioClient(
+        Dio(BaseOptions(contentType: Headers.jsonContentType))
+          ..httpClientAdapter = adapter,
+      );
 
-      await uploadFromUrlApi.uploadFromUrl(requestWithBlankMimeType);
+      await UploadFromUrlApi(realDioClient).uploadFromUrl(requestWithBlankMimeType);
 
-      final options = verify(dioClient.post(
-        any,
-        options: captureAnyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).captured.single as Options;
-      expect(options.headers?[HttpHeaders.contentTypeHeader], Constant.octetStreamMimeType);
+      final sentHeaders = adapter.capturedRequestOptions!.headers;
+      expect(sentHeaders[HttpHeaders.contentTypeHeader], Constant.octetStreamMimeType);
     });
 
     test('should override the global JSON content-type on the actual outgoing request', () async {

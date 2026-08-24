@@ -7,7 +7,7 @@ extension UploadFromUrlRequestExtension on UploadFromUrlRequest {
   // BE reads the source URL and mime type from headers, not a JSON body.
   Map<String, dynamic> get uploadHeaders => {
         HttpHeaders.contentTypeHeader:
-            mimeType.isEmpty ? Constant.octetStreamMimeType : mimeType,
+            mimeType.trim().isEmpty ? Constant.octetStreamMimeType : mimeType.trim(),
         HttpHeaders.contentLocationHeader: attachmentUrl.toString(),
       };
 }
