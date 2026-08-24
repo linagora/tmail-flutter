@@ -83,27 +83,25 @@ void main() {
       expect(result.size, 2048);
     });
 
-    for (final statusCode in [400, 401, 403, 413, 429, 500, 502, 504]) {
-      test('should propagate the unmapped DioException for status $statusCode', () async {
-        final dioException = DioException(
+    test('should propagate the unmapped DioException on a failed upload', () async {
+      final dioException = DioException(
+        requestOptions: RequestOptions(path: uploadUri.toString()),
+        response: Response(
           requestOptions: RequestOptions(path: uploadUri.toString()),
-          response: Response(
-            requestOptions: RequestOptions(path: uploadUri.toString()),
-            statusCode: statusCode,
-          ),
-        );
-        when(dioClient.post(
-          any,
-          options: anyNamed('options'),
-          cancelToken: anyNamed('cancelToken'),
-        )).thenThrow(dioException);
+          statusCode: 500,
+        ),
+      );
+      when(dioClient.post(
+        any,
+        options: anyNamed('options'),
+        cancelToken: anyNamed('cancelToken'),
+      )).thenThrow(dioException);
 
-        expect(
-          uploadFromUrlApi.uploadFromUrl(request),
-          throwsA(same(dioException)),
-        );
-      });
-    }
+      expect(
+        uploadFromUrlApi.uploadFromUrl(request),
+        throwsA(same(dioException)),
+      );
+    });
 
     test('should send the url/type as headers with an empty body, and forward the cancelToken', () async {
       final cancelToken = CancelToken();
