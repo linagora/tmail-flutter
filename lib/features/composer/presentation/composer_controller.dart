@@ -1402,6 +1402,7 @@ class ComposerController extends BaseController
         await _showConfirmDialogWhenSaveMessageToDraftsFailure(
           context: context,
           failure: resultState,
+          shouldOfferCloseComposer: false,
           onConfirmAction: (needIncreaseMySpace) {
             _saveToDraftButtonState = ButtonState.enabled;
             popBack();
@@ -2396,6 +2397,7 @@ class ComposerController extends BaseController
   Future<void> _showConfirmDialogWhenSaveMessageToDraftsFailure({
     required BuildContext context,
     required FeatureFailure failure,
+    bool shouldOfferCloseComposer = true,
     Function(bool)? onConfirmAction,
     Function(bool)? onCancelAction,
   }) async {
@@ -2422,6 +2424,7 @@ class ComposerController extends BaseController
       cancelTitle: needIncreaseMySpace
         ? AppLocalizations.of(context).edit
         : AppLocalizations.of(context).closeAnyway,
+      hasCancelButton: shouldOfferCloseComposer || needIncreaseMySpace,
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
@@ -2445,7 +2448,7 @@ class ComposerController extends BaseController
         } else {
           _closeComposerButtonState = ButtonState.enabled;
 
-          if (needIncreaseMySpace) {
+          if (needIncreaseMySpace || !shouldOfferCloseComposer) {
             popBack();
             _autoFocusFieldWhenLauncher();
           } else {

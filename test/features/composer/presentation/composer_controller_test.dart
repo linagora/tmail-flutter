@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -133,6 +134,12 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   Rxn<AccountId> get accountId => Rxn(AccountFixtures.aliceAccountId);
   @override
   Session? get sessionCurrent => SessionFixtures.aliceSession;
+
+  @override
+  bool isPremiumAvailable({Session? session, AccountId? accountId}) => false;
+
+  @override
+  bool isAlreadyHighestSubscription({Session? session, AccountId? accountId}) => false;
 
   @override
   RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
@@ -568,6 +575,61 @@ void main() {
             );
 
             // tear down
+            PlatformInfo.isTestingForWeb = false;
+          });
+        });
+
+        testWidgets(
+          'Should not offer to close the composer\n'
+          'When save as draft fails',
+        (tester) async {
+          await tester.runAsync(() async {
+            PlatformInfo.isTestingForWeb = true;
+            InAppWebViewPlatform.instance = MockWebViewPlatform();
+
+            when(mockUploadController.uploadInlineViewState).thenReturn(
+              Rx(Right(UIState.idle)));
+            when(mockUploadController.listUploadAttachments).thenReturn(
+              RxList<UploadFileState>());
+
+            Get.put(composerController!);
+            composerController?.richTextWebController = mockRichTextWebController;
+
+            composerController?.setTextEditorWeb(emailContent);
+            composerController?.composerArguments.value = ComposerArguments();
+            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+              emailContent: anyNamed('emailContent'),
+            )).thenAnswer((_) async => emailContent);
+            when(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')))
+              .thenAnswer((_) => Stream.value(
+                Left(SaveEmailAsDraftsFailure(Exception()))));
+
+            await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+              child: const Stack(children: [ComposerView()])));
+            await tester.pump();
+
+            final saveAsDraftButton = find.ancestor(
+              of: find.byType(InkWell),
+              matching: find.byWidgetPredicate(
+                (widget) => widget is TMailButtonWidget
+                  && widget.icon == ImagePaths().icSaveToDraft));
+            await tester.tap(saveAsDraftButton);
+            await tester.pump();
+            await untilCalled(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')));
+            await tester.pumpAndSettle();
+
+            final appLocalizations = AppLocalizations.of(
+              tester.element(find.byType(ComposerView)));
+            expect(find.text(appLocalizations.closeAnyway), findsNothing);
+            expect(find.text(appLocalizations.edit), findsOneWidget);
+
             PlatformInfo.isTestingForWeb = false;
           });
         });
