@@ -32,7 +32,8 @@ class UploadFileStateList {
     return this;
   }
 
-  UploadFileStateList updateElementBy(
+  /// Returns whether a matching element was found and updated.
+  bool updateElementBy(
     MatchedState matchedState,
     UpdateFileUploadingState updateFileUploadingState,
   ) {
@@ -40,10 +41,11 @@ class UploadFileStateList {
     if (matchIndex >= 0) {
       _replaceAt(matchIndex, updateFileUploadingState(_uploadingStateFiles[matchIndex]));
     }
-    return this;
+    return matchIndex >= 0;
   }
 
-  UploadFileStateList updateElementByUploadTaskId(
+  /// Returns whether a matching element was found and updated.
+  bool updateElementByUploadTaskId(
     UploadTaskId uploadTaskId,
     UpdateFileUploadingState updateFileUploadingState,
   ) {
@@ -51,7 +53,7 @@ class UploadFileStateList {
     if (matchIndex != null) {
       _replaceAt(matchIndex, updateFileUploadingState(_uploadingStateFiles[matchIndex]));
     }
-    return this;
+    return matchIndex != null;
   }
 
   bool get allSuccess {
@@ -76,13 +78,15 @@ class UploadFileStateList {
     clear();
   }
 
-  void deleteElementByUploadTaskId(UploadTaskId uploadTaskId) {
+  /// Returns whether a matching element was found and removed.
+  bool deleteElementByUploadTaskId(UploadTaskId uploadTaskId) {
     final matchIndex = _indexByTaskId[uploadTaskId];
-    if (matchIndex == null) return;
+    if (matchIndex == null) return false;
 
     _uploadingStateFiles[matchIndex]?.cancelToken?.cancel();
     _uploadingStateFiles.removeAt(matchIndex);
     _reindex();
+    return true;
   }
 
   UploadFileState? getUploadFileStateById(UploadTaskId uploadTaskId) {

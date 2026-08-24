@@ -78,8 +78,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     )) {
       either.fold(
         (failure) {
-          logWarning(
-            'WorkplaceComposerAttachmentExtension::_exchangeAccessToken failed: $failure',
+          logError(
+            'WorkplaceComposerAttachmentExtension::_exchangeAccessToken failed',
+            exception: failure is FeatureFailure ? failure.exception : failure,
+            extras: {'platformUrl': platformUrl.toString()},
           );
           throw failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException();
         },
@@ -117,8 +119,14 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     )) {
       either.fold(
         (failure) {
-          logWarning(
-            'WorkplaceComposerAttachmentExtension::_createIntent failed: $failure',
+          logError(
+            'WorkplaceComposerAttachmentExtension::_createIntent failed',
+            exception: failure is FeatureFailure ? failure.exception : failure,
+            extras: {
+              'platformUrl': platformUrl.toString(),
+              'sharingLinkLabel': filePickerConfig.sharingLink.label,
+              'downloadLinkLabel': filePickerConfig.downloadLink?.label,
+            },
           );
           throw failure is FeatureFailure ? failure.exception : WorkplaceCreateIntentException();
         },

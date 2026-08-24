@@ -1040,8 +1040,13 @@ class ComposerController extends BaseController
         transferDriveDocuments: (docs) => _transferDriveDocuments(docs),
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
       );
-    } catch (e) {
-      logWarning('ComposerController::handleDrivePickResult:Exception = $e');
+    } catch (e, s) {
+      logError(
+        'ComposerController::handleDrivePickResult failed',
+        exception: e,
+        stackTrace: s,
+        extras: {'docCount': result.length},
+      );
       // A throw here can strand waiting chips, so the failure must be visible.
       getBinding<ToastManager>()?.showMessageFailure(DrivePickFailure(
         e,
@@ -1062,7 +1067,10 @@ class ComposerController extends BaseController
   Future<DriveTransferOutcome> _transferDriveDocuments(List<DriveDocument> docs) async {
     final jmapUrl = dynamicUrlInterceptors.jmapUrl;
     if (jmapUrl == null || jmapUrl.isEmpty) {
-      logWarning('ComposerController::_transferDriveDocuments: jmapUrl is unavailable');
+      logError(
+        'ComposerController::_transferDriveDocuments: jmapUrl is unavailable',
+        extras: {'docCount': docs.length},
+      );
       return DriveAttachmentTransferRunner.notStartedOutcome;
     }
     final session = mailboxDashBoardController.sessionCurrent;
@@ -1072,7 +1080,14 @@ class ComposerController extends BaseController
       jmapUrl: jmapUrl,
     );
     if (uploadUri == null || accountId == null) {
-      logWarning('ComposerController::_transferDriveDocuments: upload-from-url endpoint is unavailable');
+      logError(
+        'ComposerController::_transferDriveDocuments: upload-from-url endpoint is unavailable',
+        extras: {
+          'docCount': docs.length,
+          'accountId': accountId?.id.value,
+          'hasSession': session != null,
+        },
+      );
       return DriveAttachmentTransferRunner.notStartedOutcome;
     }
 

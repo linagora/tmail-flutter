@@ -232,7 +232,7 @@ class UploadController extends BaseController {
 
   /// Resolves a drive-transfer chip to succeed with its attachment.
   void resolveDriveTransferSuccess(UploadTaskId taskId, Attachment attachment) {
-    _uploadingStateFiles.updateElementByUploadTaskId(
+    final found = _uploadingStateFiles.updateElementByUploadTaskId(
       taskId,
       (state) => state?.copyWith(
         uploadingProgress: 100,
@@ -240,13 +240,28 @@ class UploadController extends BaseController {
         attachment: attachment,
       ),
     );
+    if (!found) {
+      // The chip is gone (composer disposed, list cleared) so the
+      // successful upload never reaches the screen - surface it.
+      logError(
+        'UploadController::resolveDriveTransferSuccess: taskId not found in state list',
+        extras: {'taskId': taskId.id, 'fileName': attachment.name},
+      );
+    }
     _refreshListUploadAttachmentState();
   }
 
   /// Resolves a drive-transfer chip to failed by removing it, matching the
   /// plain-upload failure path.
   void resolveDriveTransferFailure(UploadTaskId taskId) {
-    deleteFileUploaded(taskId);
+    final found = _uploadingStateFiles.deleteElementByUploadTaskId(taskId);
+    if (!found) {
+      logError(
+        'UploadController::resolveDriveTransferFailure: taskId not found in state list',
+        extras: {'taskId': taskId.id},
+      );
+    }
+    _refreshListUploadAttachmentState();
     _showToastMessageWhenUploadAttachmentsFailure(
       ErrorAttachmentUploadState(uploadId: taskId),
     );

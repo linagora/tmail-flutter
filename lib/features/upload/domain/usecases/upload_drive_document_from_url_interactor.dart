@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_repository.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_request.dart';
@@ -14,9 +15,25 @@ class UploadDriveDocumentFromUrlInteractor {
     try {
       final attachment = await _uploadFromUrlRepository.uploadFromUrl(request);
       return Right<Failure, Success>(UploadDriveDocumentFromUrlSuccess(attachment));
-    } catch (e) {
+    } catch (e, s) {
+      final isCancelled = request.cancelToken?.isCancelled == true;
+      // Single logging point for everything the repository/datasource/API
+      // layers throw (account mismatch, Dio errors, JSON parse errors).
+      if (!isCancelled) {
+        logError(
+          'UploadDriveDocumentFromUrlInteractor::execute failed',
+          exception: e,
+          stackTrace: s,
+          extras: {
+            'accountId': request.accountId.id.value,
+            'uploadUri': request.uploadUri.toString(),
+            'name': request.name,
+            'mimeType': request.mimeType,
+          },
+        );
+      }
       return Left<Failure, Success>(
-        request.cancelToken?.isCancelled == true
+        isCancelled
           ? UploadDriveDocumentFromUrlCancelled()
           : UploadDriveDocumentFromUrlFailure(e),
       );
