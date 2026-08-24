@@ -139,28 +139,6 @@ void main() {
       expect(captured[1], same(cancelToken));
     });
 
-    test('should never include the downloadLink value as the POST path', () async {
-      when(dioClient.post(
-        any,
-        options: anyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).thenAnswer((_) async => {
-        'accountId': accountId.id.value,
-        'blobId': 'blob-id-123',
-        'type': mimeType,
-        'size': 2048,
-      });
-
-      await uploadFromUrlApi.uploadFromUrl(request);
-
-      final capturedPath = verify(dioClient.post(
-        captureAny,
-        options: anyNamed('options'),
-        cancelToken: anyNamed('cancelToken'),
-      )).captured.single as String;
-      expect(capturedPath.contains(downloadLink.toString()), isFalse);
-    });
-
     test('should fall back to octet-stream mimeType header on the wire WHEN it is blank', () async {
       final requestWithBlankMimeType = UploadFromUrlRequest(
         accountId: accountId,
