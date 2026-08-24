@@ -133,7 +133,7 @@ extension SessionExtensions on Session {
         linagoraDownloadAllCapability,
       );
 
-  bool isUploadFromUrlSupported(AccountId? accountId, {String? jmapUrl}) {
+  bool isUploadFromUrlSupported(AccountId? accountId, {required String jmapUrl}) {
     return getUploadFromUrlUri(accountId, jmapUrl: jmapUrl) != null;
   }
 
@@ -158,7 +158,7 @@ extension SessionExtensions on Session {
   }
 
   /// Resolves the advertised upload-from-url endpoint for [accountId], or null when unavailable.
-  Uri? getUploadFromUrlUri(AccountId? accountId, {String? jmapUrl}) {
+  Uri? getUploadFromUrlUri(AccountId? accountId, {required String jmapUrl}) {
     if (accountId == null) return null;
 
     final advertisedUrl = getUploadFromUrlCapability(accountId)?.uploadUrl;
@@ -170,14 +170,7 @@ extension SessionExtensions on Session {
     }
 
     try {
-      final Uri qualifiedUrl;
-      if (jmapUrl != null) {
-        qualifiedUrl = advertisedUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl));
-      } else if (advertisedUrl.hasOrigin) {
-        qualifiedUrl = advertisedUrl;
-      } else {
-        return null;
-      }
+      final qualifiedUrl = advertisedUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl));
 
       final normalizedUrl = qualifiedUrl.normalizePathSlashes();
       // Only unescape the {accountId} delimiters; decoding the whole URI would drop the query string.

@@ -461,15 +461,15 @@ void main() {
         SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
       });
 
-      expect(session.isUploadFromUrlSupported(null), isFalse);
-      expect(session.getUploadFromUrlUri(null), isNull);
+      expect(session.isUploadFromUrlSupported(null, jmapUrl: 'https://mail.example.com'), isFalse);
+      expect(session.getUploadFromUrlUri(null, jmapUrl: 'https://mail.example.com'), isNull);
     });
 
     test('SHOULD not be supported WHEN the capability is absent', () {
       final session = sessionWith({});
 
-      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
-      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com'), isFalse);
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com'), isNull);
     });
 
     test('SHOULD not be supported WHEN the capability advertises no uploadUrl', () {
@@ -477,8 +477,8 @@ void main() {
         SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(),
       });
 
-      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
-      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com'), isFalse);
+      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com'), isNull);
     });
 
     test('SHOULD be supported AND expand the accountId template WHEN the capability advertises an absolute url', () {
@@ -486,9 +486,9 @@ void main() {
         SessionExtensions.linagoraUploadFromUrlCapability: capabilityWithTemplate,
       });
 
-      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isTrue);
+      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com'), isTrue);
       expect(
-        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com').toString(),
         'https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
       );
     });
@@ -516,17 +516,6 @@ void main() {
       );
     });
 
-    test('SHOULD return null WHEN the advertised url is relative AND no jmapUrl is given', () {
-      final session = sessionWith({
-        SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
-          uploadUrl: Uri.parse('/upload-from-url/{accountId}'),
-        ),
-      });
-
-      expect(session.isUploadFromUrlSupported(AccountFixtures.aliceAccountId), isFalse);
-      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
-    });
-
     test('SHOULD preserve the query string AND an encoded path segment WHEN expanding the template', () {
       final session = sessionWith({
         SessionExtensions.linagoraUploadFromUrlCapability: UploadFromUrlCapability(
@@ -535,7 +524,7 @@ void main() {
       });
 
       expect(
-        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com').toString(),
         'https://mail.example.com/upload-from-url%2Fv2/${AccountFixtures.aliceAccountId.id.value}?required=true',
       );
     });
@@ -563,7 +552,6 @@ void main() {
         ),
       });
 
-      expect(session.getUploadFromUrlUri(AccountFixtures.aliceAccountId), isNull);
       expect(
         session.getUploadFromUrlUri(
           AccountFixtures.aliceAccountId,
@@ -581,7 +569,7 @@ void main() {
       });
 
       expect(
-        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        session.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com').toString(),
         'https://mail.example.com/upload-from-url?account=${AccountFixtures.aliceAccountId.id.value}',
       );
     });
@@ -613,7 +601,7 @@ void main() {
       final restored = session.toHiveObj().toSession();
 
       expect(
-        restored.getUploadFromUrlUri(AccountFixtures.aliceAccountId).toString(),
+        restored.getUploadFromUrlUri(AccountFixtures.aliceAccountId, jmapUrl: 'https://mail.example.com').toString(),
         'https://mail.example.com/upload-from-url/${AccountFixtures.aliceAccountId.id.value}',
       );
     });
