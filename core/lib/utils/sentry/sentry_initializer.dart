@@ -20,6 +20,7 @@ class SentryInitializer {
     'session',
     'password',
     'token',
+    'content-location',
   ];
 
   /// Initializes Sentry.
