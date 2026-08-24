@@ -72,7 +72,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_ac
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_navigation_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_sidebar_tree_layout_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
@@ -111,8 +110,7 @@ class MailboxController extends BaseMailboxController
     with MailboxActionHandlerMixin,
         ContactSupportMixin,
         LauncherApplicationMixin,
-        MailboxWidgetMixin,
-        MailboxSidebarTreeLayoutMixin {
+        MailboxWidgetMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final isMailboxListScrollable = false.obs;
@@ -574,7 +572,6 @@ class MailboxController extends BaseMailboxController
     } else {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
     }
-    invalidateMailboxSidebarTreeLayout();
   }
 
   Future<void> refreshAllMailbox() async {

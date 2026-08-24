@@ -161,7 +161,7 @@ abstract class BaseMailboxController extends BaseController
     allMailboxes = syncedMailbox;
   }
 
-  /// Expands or collapses [selectedMailboxNode] in every tree holding it.
+  /// Expands or collapses [selectedMailboxNode] in the tree holding it.
   ///
   /// Returns the applied [ExpandMode], or `null` when the node belongs to no
   /// tree. Scrolling the node into view is a view concern, see
@@ -179,6 +179,7 @@ abstract class BaseMailboxController extends BaseController
 
       mailboxTree.refresh();
       isNodeUpdated = true;
+      break;
     }
 
     log('BaseMailboxController::toggleMailboxFolder(): isNodeUpdated: $isNodeUpdated');
@@ -198,6 +199,7 @@ abstract class BaseMailboxController extends BaseController
       if (updatedNode == null) continue;
 
       mailboxTree.refresh();
+      break;
     }
   }
 

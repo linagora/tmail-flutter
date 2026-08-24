@@ -10,6 +10,5 @@ extension ToggleExpandFoldersExtension on MailboxController {
     } else {
       foldersExpandMode.value = ExpandMode.COLLAPSE;
     }
-    invalidateMailboxSidebarTreeLayout();
   }
 }

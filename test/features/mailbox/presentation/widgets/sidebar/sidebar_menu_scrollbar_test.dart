@@ -44,7 +44,6 @@ Future<void> _verifyScrollbarVisibility(
           trackVisibility: scenario.trackVisibility,
           child: LinagoraSidebarMenu(
             controller: verticalController,
-            treeHorizontalOverflow: 48,
             navigationItems: List.generate(
               40,
               (index) => SizedBox(
@@ -59,6 +58,10 @@ Future<void> _verifyScrollbarVisibility(
   ));
   await tester.pump();
 
+  final sidebarBody = tester.widget<CustomScrollView>(
+    find.byType(CustomScrollView),
+  );
+  expect(sidebarBody.scrollDirection, Axis.vertical);
   final scrollbar = tester.widget<RawScrollbar>(
     find.byWidgetPredicate(
       (widget) =>

@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/extensions/toggle_mailbox_expand_with_scroll_extension.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -25,7 +26,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_sidebar_tree_layout_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -39,8 +39,7 @@ import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
-class _TestMailboxController extends BaseMailboxController
-    with MailboxSidebarTreeLayoutMixin {
+class _TestMailboxController extends BaseMailboxController {
   _TestMailboxController() : super(TreeBuilder(), VerifyNameInteractor());
 
   PresentationMailbox? destinationMailbox;
@@ -146,11 +145,99 @@ void main() {
       expect(node.expandMode, ExpandMode.EXPAND);
     });
 
+    test('should update only the first tree containing the mailbox', () {
+      final mailboxId = MailboxId(Id('1'));
+      final defaultNode = _buildNodeWithChild(mailboxId);
+      final personalNode = _buildNodeWithChild(mailboxId);
+      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
+      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+
+      expect(controller.toggleMailboxFolder(defaultNode), ExpandMode.EXPAND);
+      expect(defaultNode.expandMode, ExpandMode.EXPAND);
+      expect(personalNode.expandMode, ExpandMode.COLLAPSE);
+    });
+
     test('should return null when node belongs to no tree', () {
       final node = _buildNodeWithChild(MailboxId(Id('1')));
 
       expect(controller.toggleMailboxFolder(node), isNull);
       expect(node.expandMode, ExpandMode.COLLAPSE);
+    });
+  });
+
+  group('BaseMailboxController::selectMailboxNode', () {
+    test('should toggle the selected node mode', () {
+      final node = _buildNodeWithChild(MailboxId(Id('1')));
+      controller.personalMailboxTree.value = _buildTreeWith(node);
+
+      controller.selectMailboxNode(node);
+      expect(node.selectMode, SelectMode.ACTIVE);
+
+      controller.selectMailboxNode(node);
+      expect(node.selectMode, SelectMode.INACTIVE);
+    });
+
+    test('should select node belonging to the team mailboxes tree', () {
+      final node = _buildNodeWithChild(MailboxId(Id('1')));
+      controller.teamMailboxesTree.value = _buildTreeWith(node);
+
+      controller.selectMailboxNode(node);
+
+      expect(node.selectMode, SelectMode.ACTIVE);
+    });
+
+    test('should update only the first tree containing the mailbox', () {
+      final mailboxId = MailboxId(Id('1'));
+      final defaultNode = _buildNodeWithChild(mailboxId);
+      final personalNode = _buildNodeWithChild(mailboxId);
+      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
+      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+
+      controller.selectMailboxNode(defaultNode);
+
+      expect(defaultNode.selectMode, SelectMode.ACTIVE);
+      expect(personalNode.selectMode, SelectMode.INACTIVE);
+    });
+
+    test('should not mutate node when it belongs to no tree', () {
+      final node = _buildNodeWithChild(MailboxId(Id('1')));
+
+      controller.selectMailboxNode(node);
+
+      expect(node.selectMode, SelectMode.INACTIVE);
+    });
+  });
+
+  group('BaseMailboxController::unAllSelectedMailboxNode', () {
+    test('should clear selections in every mailbox tree', () {
+      final defaultNode = MailboxNode(
+        PresentationMailbox(MailboxId(Id('default'))),
+        selectMode: SelectMode.ACTIVE,
+      );
+      final personalNode = MailboxNode(
+        PresentationMailbox(MailboxId(Id('personal'))),
+        selectMode: SelectMode.ACTIVE,
+      );
+      final teamNode = MailboxNode(
+        PresentationMailbox(MailboxId(Id('team'))),
+        selectMode: SelectMode.ACTIVE,
+      );
+      final defaultChild = MailboxNode(
+        PresentationMailbox(MailboxId(Id('default-child'))),
+        selectMode: SelectMode.ACTIVE,
+      );
+      defaultNode.addChildNode(defaultChild);
+      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
+      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+      controller.teamMailboxesTree.value = _buildTreeWith(teamNode);
+
+      controller.unAllSelectedMailboxNode();
+
+      expect(
+        [defaultNode, defaultChild, personalNode, teamNode]
+            .map((node) => node.selectMode),
+        everyElement(SelectMode.INACTIVE),
+      );
     });
   });
 
@@ -169,18 +256,25 @@ void main() {
       );
       final categoriesExpandMode = controller.mailboxCategoriesExpandMode.value;
 
-      expect(newExpandMode, ExpandMode.COLLAPSE);
       expect(
-        MailboxCategories.personalFolders.getExpandMode(categoriesExpandMode),
-        ExpandMode.COLLAPSE,
-      );
-      expect(
-        MailboxCategories.exchange.getExpandMode(categoriesExpandMode),
-        ExpandMode.EXPAND,
-      );
-      expect(
-        MailboxCategories.teamMailboxes.getExpandMode(categoriesExpandMode),
-        ExpandMode.EXPAND,
+        (
+          newExpandMode: newExpandMode,
+          personalFolders: MailboxCategories.personalFolders.getExpandMode(
+            categoriesExpandMode,
+          ),
+          exchange: MailboxCategories.exchange.getExpandMode(
+            categoriesExpandMode,
+          ),
+          teamMailboxes: MailboxCategories.teamMailboxes.getExpandMode(
+            categoriesExpandMode,
+          ),
+        ),
+        (
+          newExpandMode: ExpandMode.COLLAPSE,
+          personalFolders: ExpandMode.COLLAPSE,
+          exchange: ExpandMode.EXPAND,
+          teamMailboxes: ExpandMode.EXPAND,
+        ),
       );
     });
 
@@ -201,34 +295,6 @@ void main() {
     });
   });
 
-  group('MailboxSidebarTreeLayoutMixin', () {
-    test('invalidates when expanding a mailbox or category changes the layout', () {
-      final mailboxNode = _buildNodeWithChild(MailboxId(Id('mailbox')));
-      controller.defaultMailboxTree.value = _buildTreeWith(mailboxNode);
-
-      controller.toggleMailboxFolder(mailboxNode);
-      controller.toggleMailboxCategories(MailboxCategories.personalFolders);
-
-      expect(controller.mailboxSidebarTreeLayoutRevision.value, 2);
-    });
-
-    test('does not invalidate when no mailbox folder is updated', () {
-      controller.toggleMailboxFolder(
-        _buildNodeWithChild(MailboxId(Id('unknown'))),
-      );
-
-      expect(controller.mailboxSidebarTreeLayoutRevision.value, 0);
-    });
-
-    test('invalidates when replacing mailbox trees', () {
-      controller.updateMailboxTree(
-        mailboxCollection: controller.currentMailboxCollection,
-      );
-
-      expect(controller.mailboxSidebarTreeLayoutRevision.value, 1);
-    });
-  });
-
   group('MailboxSidebarCategoryTreeSourceResolver', () {
     const sourceResolver = MailboxSidebarCategoryTreeSourceResolver();
 
@@ -243,18 +309,35 @@ void main() {
       final sources = sourceResolver.resolve(controller);
 
       expect(
-        sources.map((source) => source.category),
-        MailboxCategories.values,
+        sources
+            .map((source) => (
+              category: source.category,
+              root: source.roots.single,
+              isFolderCategory: source.isFolderCategory,
+              initialDepth: source.initialDepth,
+            ))
+            .toList(),
+        [
+          (
+            category: MailboxCategories.exchange,
+            root: defaultNode,
+            isFolderCategory: false,
+            initialDepth: 0,
+          ),
+          (
+            category: MailboxCategories.personalFolders,
+            root: personalNode,
+            isFolderCategory: true,
+            initialDepth: 1,
+          ),
+          (
+            category: MailboxCategories.teamMailboxes,
+            root: teamNode,
+            isFolderCategory: true,
+            initialDepth: 1,
+          ),
+        ],
       );
-      expect(sources[0].roots, [defaultNode]);
-      expect(sources[0].isFolderCategory, isFalse);
-      expect(sources[0].initialDepth, 0);
-      expect(sources[1].roots, [personalNode]);
-      expect(sources[1].isFolderCategory, isTrue);
-      expect(sources[1].initialDepth, 1);
-      expect(sources[2].roots, [teamNode]);
-      expect(sources[2].isFolderCategory, isTrue);
-      expect(sources[2].initialDepth, 1);
     });
 
     test('reflects the category expansion state without mutating old state', () {
@@ -477,10 +560,20 @@ void main() {
         },
       );
 
-      expect(controller.destinationMailboxAction, MailboxActions.moveFolderContent);
-      expect(controller.destinationMailboxId, sourceMailbox.id);
-      expect(currentMailbox, sourceMailbox);
-      expect(destinationMailbox, destination);
+      expect(
+        (
+          action: controller.destinationMailboxAction,
+          mailboxId: controller.destinationMailboxId,
+          currentMailbox: currentMailbox,
+          destinationMailbox: destinationMailbox,
+        ),
+        (
+          action: MailboxActions.moveFolderContent,
+          mailboxId: sourceMailbox.id,
+          currentMailbox: sourceMailbox,
+          destinationMailbox: destination,
+        ),
+      );
     });
 
     test('should not invoke the move callback when the picker is cancelled', () async {

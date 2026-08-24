@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_tree_adapter.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_visible_tree_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
@@ -41,7 +40,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 abstract class BaseMailboxView extends GetWidget<MailboxController>
     with AppLoaderMixin {
 
-  static const _visibleTreeResolver = MailboxSidebarVisibleTreeResolver();
   static const _categoryTreeSourceResolver =
       MailboxSidebarCategoryTreeSourceResolver();
   static const _mailboxListScrollViewKey =
@@ -98,7 +96,6 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         controller: controller.mailboxListScrollController,
         scrollViewKey: _mailboxListScrollViewKey,
         physics: scrollPhysics,
-        treeHorizontalOverflow: _sidebarTreeHorizontalOverflow,
         primaryAction: primaryAction,
         sections: _buildSections(context),
         footerItems: footerItems,
@@ -115,19 +112,6 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       ..._buildLabelsSections(context),
     ];
   }
-
-  double get _sidebarTreeHorizontalOverflow {
-    return controller.mailboxSidebarTreeProjection.resolveHorizontalOverflow(
-      layoutRevision: controller.mailboxSidebarTreeLayoutRevision.value,
-      visibleTrees: () => _visibleMailboxTrees,
-    );
-  }
-
-  Iterable<LinagoraSidebarVisibleTree<MailboxNode>>
-      get _visibleMailboxTrees => _visibleTreeResolver.resolve(
-        foldersExpanded: controller.foldersExpandMode.value.isExpanded,
-        sources: _mailboxSidebarCategoryTreeSources,
-      );
 
   List<MailboxSidebarCategoryTreeSource>
       get _mailboxSidebarCategoryTreeSources =>
