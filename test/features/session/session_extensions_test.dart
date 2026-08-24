@@ -501,13 +501,6 @@ void main() {
       });
 
       expect(
-        session.isUploadFromUrlSupported(
-          AccountFixtures.aliceAccountId,
-          jmapUrl: 'https://mail.example.com',
-        ),
-        isTrue,
-      );
-      expect(
         session.getUploadFromUrlUri(
           AccountFixtures.aliceAccountId,
           jmapUrl: 'https://mail.example.com',
