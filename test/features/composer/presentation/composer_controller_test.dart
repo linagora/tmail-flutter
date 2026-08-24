@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -32,6 +33,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -135,8 +137,10 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   Session? get sessionCurrent => SessionFixtures.aliceSession;
 
+  bool premiumAvailable = false;
+
   @override
-  bool isPremiumAvailable({Session? session, AccountId? accountId}) => false;
+  bool isPremiumAvailable({Session? session, AccountId? accountId}) => premiumAvailable;
 
   @override
   bool isAlreadyHighestSubscription({Session? session, AccountId? accountId}) => false;
@@ -317,6 +321,7 @@ void main() {
     // Mock Getx controllers
     // Reset the shared drag state so it does not leak between tests.
     mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+    mockMailboxDashBoardController.premiumAvailable = false;
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
@@ -629,6 +634,71 @@ void main() {
               tester.element(find.byType(ComposerView)));
             expect(find.text(appLocalizations.closeAnyway), findsNothing);
             expect(find.text(appLocalizations.edit), findsOneWidget);
+
+            PlatformInfo.isTestingForWeb = false;
+          });
+        });
+
+        testWidgets(
+          'Should still offer increase space and edit\n'
+          'When save as draft fails because of over quota',
+        (tester) async {
+          await tester.runAsync(() async {
+            PlatformInfo.isTestingForWeb = true;
+            InAppWebViewPlatform.instance = MockWebViewPlatform();
+            mockMailboxDashBoardController.premiumAvailable = true;
+
+            when(mockUploadController.uploadInlineViewState).thenReturn(
+              Rx(Right(UIState.idle)));
+            when(mockUploadController.listUploadAttachments).thenReturn(
+              RxList<UploadFileState>());
+
+            Get.put(composerController!);
+            composerController?.richTextWebController = mockRichTextWebController;
+
+            composerController?.setTextEditorWeb(emailContent);
+            composerController?.composerArguments.value = ComposerArguments();
+            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+              emailContent: anyNamed('emailContent'),
+            )).thenAnswer((_) async => emailContent);
+            when(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')))
+              .thenAnswer((_) => Stream.value(
+                Left(SaveEmailAsDraftsFailure(SetMethodException({
+                  Id('draft'): SetError(SetError.overQuota),
+                })))));
+
+            await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+              child: const Stack(children: [ComposerView()])));
+            await tester.pump();
+
+            final saveAsDraftButton = find.ancestor(
+              of: find.byType(InkWell),
+              matching: find.byWidgetPredicate(
+                (widget) => widget is TMailButtonWidget
+                  && widget.icon == ImagePaths().icSaveToDraft));
+            await tester.tap(saveAsDraftButton);
+            await tester.pump();
+            await untilCalled(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')));
+            await tester.pumpAndSettle();
+
+            final appLocalizations = AppLocalizations.of(
+              tester.element(find.byType(ComposerView)));
+            expect(find.text(appLocalizations.increaseYourSpace), findsOneWidget);
+            expect(find.text(appLocalizations.edit), findsOneWidget);
+            expect(find.text(appLocalizations.closeAnyway), findsNothing);
+
+            await tester.tap(find.text(appLocalizations.edit));
+            await tester.pumpAndSettle();
+
+            expect(find.byType(ComposerView), findsOneWidget);
+            expect(find.text(appLocalizations.increaseYourSpace), findsNothing);
 
             PlatformInfo.isTestingForWeb = false;
           });
