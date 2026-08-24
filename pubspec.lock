@@ -1441,7 +1441,7 @@ packages:
     description:
       path: "."
       ref: "feature/tf-4678-sidebar-tree-indent-clipping"
-      resolved-ref: ce9290605498f5660d1e19e93c94198a2d4a7959
+      resolved-ref: "6ef765a448bd4b453b7901b7717b4531c021fe86"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.3.0"
