@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -183,7 +184,7 @@ void main() {
       expect(capturedPath.contains(downloadLink.toString()), isFalse);
     });
 
-    test('should send the mimeType header as-is WHEN it is blank', () async {
+    test('should fall back to octet-stream mimeType header WHEN it is blank', () async {
       final requestWithBlankMimeType = UploadFromUrlRequest(
         accountId: accountId,
         uploadUri: uploadUri,
@@ -209,7 +210,7 @@ void main() {
         options: captureAnyNamed('options'),
         cancelToken: anyNamed('cancelToken'),
       )).captured.single as Options;
-      expect(options.headers?[HttpHeaders.contentTypeHeader], '');
+      expect(options.headers?[HttpHeaders.contentTypeHeader], Constant.octetStreamMimeType);
     });
 
     test('should override the global JSON content-type on the actual outgoing request', () async {
