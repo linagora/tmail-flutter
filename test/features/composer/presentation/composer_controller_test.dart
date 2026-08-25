@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -116,6 +117,9 @@ class MockRichTextWebController extends Mock implements RichTextWebController {
 
   @override
   bool get codeViewEnabled => false;
+
+  @override
+  Future<void> setEnableCodeView() async {}
 }
 
 class MockLabelController extends Mock implements LabelController {
@@ -699,6 +703,61 @@ void main() {
 
             expect(find.byType(ComposerView), findsOneWidget);
             expect(find.text(appLocalizations.increaseYourSpace), findsNothing);
+
+            PlatformInfo.isTestingForWeb = false;
+          });
+        });
+
+        testWidgets(
+          'Should still offer to close the composer\n'
+          'When save as draft fails after user closes the composer',
+        (tester) async {
+          await tester.runAsync(() async {
+            PlatformInfo.isTestingForWeb = true;
+            InAppWebViewPlatform.instance = MockWebViewPlatform();
+
+            when(mockUploadController.uploadInlineViewState).thenReturn(
+              Rx(Right(UIState.idle)));
+            when(mockUploadController.listUploadAttachments).thenReturn(
+              RxList<UploadFileState>());
+
+            Get.put(composerController!);
+            composerController?.richTextWebController = mockRichTextWebController;
+
+            composerController?.setTextEditorWeb(emailContent);
+            composerController?.composerArguments.value = ComposerArguments();
+            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+              emailContent: anyNamed('emailContent'),
+            )).thenAnswer((_) async => emailContent);
+            when(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')))
+              .thenAnswer((_) => Stream.value(
+                Left(SaveEmailAsDraftsFailure(Exception()))));
+
+            await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+              child: const Stack(children: [ComposerView()])));
+            await tester.pump();
+            composerController?.handleInitHtmlEditorWeb(emailContent);
+
+            await tester.tap(find.byKey(const Key(UiKeys.closeComposerButton)));
+            await tester.pumpAndSettle();
+
+            final appLocalizations = AppLocalizations.of(
+              tester.element(find.byType(ComposerView)));
+            await tester.tap(find.text(appLocalizations.save));
+            await tester.pump();
+            await untilCalled(
+              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
+                createEmailRequest: anyNamed('createEmailRequest'),
+                cancelToken: anyNamed('cancelToken')));
+            await tester.pumpAndSettle();
+
+            expect(find.text(appLocalizations.closeAnyway), findsOneWidget);
+            expect(find.text(appLocalizations.edit), findsOneWidget);
+            expect(find.byType(ComposerView), findsOneWidget);
 
             PlatformInfo.isTestingForWeb = false;
           });
