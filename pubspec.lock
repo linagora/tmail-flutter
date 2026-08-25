@@ -1440,11 +1440,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/tf-4678-sidebar-tree-indent-clipping"
-      resolved-ref: "645ececbc74d51bf46be83339a3ff12b5f751e6d"
+      ref: master
+      resolved-ref: "6d75bb18cd57740dfb55a4a4d73b15ca724905b1"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
-    version: "0.3.0"
+    version: "0.3.1"
   linkify:
     dependency: transitive
     description:
