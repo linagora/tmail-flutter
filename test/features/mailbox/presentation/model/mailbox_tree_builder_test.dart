@@ -65,6 +65,228 @@ void main() {
     });
   });
 
+  group('Namespace-aware mailbox IDs', () {
+    test('keeps mailboxes with the same server ID in separate namespace trees',
+        () async {
+      final sharedId = MailboxId(Id('same-server-id'));
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          PresentationMailbox(
+            sharedId,
+            name: MailboxName('Personal folder'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            sharedId,
+            name: MailboxName('Team folder'),
+            namespace: Namespace('Team'),
+          ),
+        ],
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      expect(
+        result.personalTree.root.childrenItems?.single.mailboxNameAsString,
+        equals('Personal folder'),
+      );
+      expect(
+        result.teamMailboxTree.root.childrenItems?.single.mailboxNameAsString,
+        equals('Team folder'),
+      );
+    });
+
+    test('keeps each namespace child under its matching parent', () async {
+      final sharedParentId = MailboxId(Id('same-parent-id'));
+      final sharedChildId = MailboxId(Id('same-child-id'));
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          PresentationMailbox(
+            sharedParentId,
+            name: MailboxName('Personal parent'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            sharedChildId,
+            parentId: sharedParentId,
+            name: MailboxName('Personal child'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            sharedParentId,
+            name: MailboxName('Team parent'),
+            namespace: Namespace('Team'),
+          ),
+          PresentationMailbox(
+            sharedChildId,
+            parentId: sharedParentId,
+            name: MailboxName('Team child'),
+            namespace: Namespace('Team'),
+          ),
+        ],
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      expect(
+        result.personalTree.root.childrenItems?.single.childrenItems?.single
+            .mailboxNameAsString,
+        equals('Personal child'),
+      );
+      expect(
+        result.teamMailboxTree.root.childrenItems?.single.childrenItems?.single
+            .mailboxNameAsString,
+        equals('Team child'),
+      );
+    });
+  });
+
+  group('Malformed mailbox trees', () {
+    test('keeps duplicate IDs in one namespace as distinct nodes', () async {
+      final duplicateId = MailboxId(Id('duplicate-id'));
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          PresentationMailbox(
+            duplicateId,
+            name: MailboxName('First folder'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            duplicateId,
+            name: MailboxName('Second folder'),
+            namespace: Namespace('Personal'),
+          ),
+        ],
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      final nodes = result.personalTree.root.childrenItems!;
+      expect(nodes, hasLength(2));
+      expect(nodes.map((node) => node.sidebarTreeEntryId).toSet(), hasLength(2));
+
+      final refreshedResult = await TreeBuilder()
+          .generateMailboxTreeInUIAfterRefreshChanges(
+        allMailboxes: [
+          PresentationMailbox(
+            duplicateId,
+            name: MailboxName('First folder'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            duplicateId,
+            name: MailboxName('Second folder'),
+            namespace: Namespace('Personal'),
+          ),
+        ],
+        currentCollection: result,
+      );
+      final refreshedNodes = refreshedResult.personalTree.root.childrenItems!;
+      expect(refreshedNodes, hasLength(2));
+      expect(
+        refreshedNodes.map((node) => node.sidebarTreeEntryId).toSet(),
+        hasLength(2),
+      );
+    });
+
+    test('breaks a multi-node parent cycle by keeping one node at the root', () async {
+      final firstId = MailboxId(Id('first'));
+      final secondId = MailboxId(Id('second'));
+      final thirdId = MailboxId(Id('third'));
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          PresentationMailbox(
+            firstId,
+            parentId: secondId,
+            name: MailboxName('First'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            secondId,
+            parentId: thirdId,
+            name: MailboxName('Second'),
+            namespace: Namespace('Personal'),
+          ),
+          PresentationMailbox(
+            thirdId,
+            parentId: firstId,
+            name: MailboxName('Third'),
+            namespace: Namespace('Personal'),
+          ),
+        ],
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      final rootNode = result.personalTree.root.childrenItems!.single;
+      expect(rootNode.item.id, equals(thirdId));
+      expect(rootNode.childrenItems?.single.item.id, equals(secondId));
+      expect(
+        rootNode.childrenItems?.single.childrenItems?.single.item.id,
+        equals(firstId),
+      );
+      expect(
+        rootNode.childrenItems?.single.childrenItems?.single.childrenItems,
+        isNull,
+      );
+    });
+
+    test('keeps a mailbox that is its own parent at the root', () async {
+      final mailboxId = MailboxId(Id('self-parent'));
+      final result = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: [
+          PresentationMailbox(
+            mailboxId,
+            parentId: mailboxId,
+            name: MailboxName('Self parent'),
+            namespace: Namespace('Personal'),
+          ),
+        ],
+        currentCollection: MailboxCollection.empty(),
+      );
+
+      final rootNode = result.personalTree.root.childrenItems!.single;
+      expect(rootNode.item.id, equals(mailboxId));
+      expect(rootNode.childrenItems, isNull);
+    });
+  });
+
+  group('Sidebar tree identity', () {
+    test('preserves a mailbox sidebar ID after refresh', () async {
+      final mailbox = PresentationMailbox(
+        MailboxId(Id('refresh-id')),
+        name: MailboxName('Folder'),
+        namespace: Namespace('Personal'),
+      );
+      final builder = TreeBuilder();
+      final initialCollection = await builder.generateMailboxTreeInUI(
+        allMailboxes: [mailbox],
+        currentCollection: MailboxCollection.empty(),
+      );
+      final initialNode = initialCollection.personalTree.root.childrenItems!.single
+        ..expandMode = ExpandMode.EXPAND
+        ..selectMode = SelectMode.ACTIVE;
+      final idBeforeRefresh = initialNode.sidebarTreeEntryId;
+
+      final rebuiltCollection = await builder.generateMailboxTreeInUI(
+        allMailboxes: [mailbox],
+        currentCollection: initialCollection,
+      );
+      final rebuiltNode = rebuiltCollection.personalTree.root.childrenItems!.single;
+      expect(rebuiltNode.sidebarTreeEntryId, equals(idBeforeRefresh));
+      expect(rebuiltNode.expandMode, equals(ExpandMode.EXPAND));
+      expect(rebuiltNode.selectMode, equals(SelectMode.ACTIVE));
+
+      final refreshedCollection = await builder
+          .generateMailboxTreeInUIAfterRefreshChanges(
+        allMailboxes: [mailbox],
+        currentCollection: rebuiltCollection,
+      );
+
+      expect(
+        refreshedCollection.personalTree.root.childrenItems!.single
+            .sidebarTreeEntryId,
+        equals(idBeforeRefresh),
+      );
+    });
+  });
+
   group('Virtual Folders Exclusion & Sorting Impact', () {
     late List<PresentationMailbox> filteredMailboxes;
     final virtualStarred = PresentationMailbox.favoriteFolder;

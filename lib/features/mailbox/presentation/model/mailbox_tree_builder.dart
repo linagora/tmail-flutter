@@ -20,17 +20,20 @@ class TreeBuilder {
     MailboxId? mailboxIdSelected,
     MailboxId? mailboxIdExpanded,
   }) async {
-    final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
+    final Map<(String?, MailboxId), MailboxNode> mailboxDictionary = HashMap();
 
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newPersonalTree = MailboxTree(MailboxNode.root());
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
   
     final List<PresentationMailbox> newAllMailboxes = <PresentationMailbox>[];
+    final List<MailboxNode> mailboxNodes = <MailboxNode>[];
+    final claimedSidebarTreeEntryIds = <Object>{};
+    final nodeConnections = _MailboxNodeDisjointSet();
     final nodeLookup = _buildNodeLookup(currentCollection);
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = nodeLookup[mailbox.id];
+      final currentMailboxNode = nodeLookup[_mailboxKey(mailbox)];
 
       final isDeactivated = mailbox.id == mailboxIdSelected;
       final newMailboxNode = MailboxNode(
@@ -38,19 +41,25 @@ class TreeBuilder {
         nodeState: isDeactivated ? MailboxState.deactivated : MailboxState.activated,
         expandMode: currentMailboxNode?.expandMode ?? ExpandMode.COLLAPSE,
         selectMode: currentMailboxNode?.selectMode ?? SelectMode.INACTIVE,
+        sidebarTreeEntryId: _claimSidebarTreeEntryId(
+          currentMailboxNode,
+          claimedSidebarTreeEntryIds,
+        ),
       );
 
-      mailboxDictionary[mailbox.id] = newMailboxNode;
+      mailboxNodes.add(newMailboxNode);
+      mailboxDictionary.putIfAbsent(_mailboxKey(mailbox), () => newMailboxNode);
     }
 
-    for (var mailbox in allMailboxes) {
-      final currentNode = mailboxDictionary[mailbox.id];
-      if (currentNode == null) continue;
+    for (var index = 0; index < allMailboxes.length; index++) {
+      final mailbox = allMailboxes[index];
+      final currentNode = mailboxNodes[index];
 
       _placeNodeInTree(
         mailbox: mailbox,
         currentNode: currentNode,
         mailboxDictionary: mailboxDictionary,
+        nodeConnections: nodeConnections,
         defaultTree: newDefaultTree,
         personalTree: newPersonalTree,
         teamMailboxTree: newTeamMailboxTree,
@@ -74,33 +83,42 @@ class TreeBuilder {
     required List<PresentationMailbox> allMailboxes,
     required MailboxCollection currentCollection,
   }) async {
-    final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
+    final Map<(String?, MailboxId), MailboxNode> mailboxDictionary = HashMap();
 
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newPersonalTree = MailboxTree(MailboxNode.root());
     final newTeamMailboxTree = MailboxTree(MailboxNode.root());
+    final List<MailboxNode> mailboxNodes = <MailboxNode>[];
+    final claimedSidebarTreeEntryIds = <Object>{};
+    final nodeConnections = _MailboxNodeDisjointSet();
     final nodeLookup = _buildNodeLookup(currentCollection);
 
     for (var mailbox in allMailboxes) {
-      final currentMailboxNode = nodeLookup[mailbox.id];
+      final currentMailboxNode = nodeLookup[_mailboxKey(mailbox)];
 
       final newMailboxNode = MailboxNode(
         mailbox,
         expandMode: currentMailboxNode?.expandMode ?? ExpandMode.COLLAPSE,
         selectMode: currentMailboxNode?.selectMode ?? SelectMode.INACTIVE,
+        sidebarTreeEntryId: _claimSidebarTreeEntryId(
+          currentMailboxNode,
+          claimedSidebarTreeEntryIds,
+        ),
       );
 
-      mailboxDictionary[mailbox.id] = newMailboxNode;
+      mailboxNodes.add(newMailboxNode);
+      mailboxDictionary.putIfAbsent(_mailboxKey(mailbox), () => newMailboxNode);
     }
 
-    for (var mailbox in allMailboxes) {
-      final currentNode = mailboxDictionary[mailbox.id];
-      if (currentNode == null) continue;
+    for (var index = 0; index < allMailboxes.length; index++) {
+      final mailbox = allMailboxes[index];
+      final currentNode = mailboxNodes[index];
 
       _placeNodeInTree(
         mailbox: mailbox,
         currentNode: currentNode,
         mailboxDictionary: mailboxDictionary,
+        nodeConnections: nodeConnections,
         defaultTree: newDefaultTree,
         personalTree: newPersonalTree,
         teamMailboxTree: newTeamMailboxTree,
@@ -120,16 +138,21 @@ class TreeBuilder {
   void _placeNodeInTree({
     required PresentationMailbox mailbox,
     required MailboxNode currentNode,
-    required Map<MailboxId, MailboxNode> mailboxDictionary,
+    required Map<(String?, MailboxId), MailboxNode> mailboxDictionary,
+    required _MailboxNodeDisjointSet nodeConnections,
     required MailboxTree defaultTree,
     required MailboxTree personalTree,
     required MailboxTree teamMailboxTree,
     void Function(MailboxNode parent, MailboxNode child)? onBeforeAddToParent,
   }) {
     final parentId = mailbox.parentId;
-    final parentNode = parentId != null ? mailboxDictionary[parentId] : null;
+    final parentNode = parentId != null ? mailboxDictionary[(mailbox.namespace?.value, parentId)] : null;
 
-    if (parentNode != null) {
+    if (parentNode != null &&
+        nodeConnections.tryConnect(
+          parentNode.sidebarTreeEntryId,
+          currentNode.sidebarTreeEntryId,
+        )) {
       onBeforeAddToParent?.call(parentNode, currentNode);
       parentNode.addChildNode(currentNode);
     } else {
@@ -227,8 +250,8 @@ class TreeBuilder {
 
   // Flattens all three trees into a single O(1) lookup map.
   // Avoids repeated O(n) DFS calls when resolving existing nodes for each mailbox.
-  Map<MailboxId, MailboxNode> _buildNodeLookup(MailboxCollection collection) {
-    final lookup = HashMap<MailboxId, MailboxNode>();
+  Map<(String?, MailboxId), MailboxNode> _buildNodeLookup(MailboxCollection collection) {
+    final lookup = HashMap<(String?, MailboxId), MailboxNode>();
     final stack = <MailboxNode>[
       ...?collection.defaultTree.root.childrenItems,
       ...?collection.personalTree.root.childrenItems,
@@ -236,11 +259,25 @@ class TreeBuilder {
     ];
     while (stack.isNotEmpty) {
       final node = stack.removeLast();
-      lookup[node.item.id] = node;
+      lookup[_mailboxKey(node.item)] = node;
       final children = node.childrenItems;
       if (children != null) stack.addAll(children);
     }
     return lookup;
+  }
+
+  (String?, MailboxId) _mailboxKey(PresentationMailbox mailbox) =>
+      (mailbox.namespace?.value, mailbox.id);
+
+  Object? _claimSidebarTreeEntryId(
+    MailboxNode? currentMailboxNode,
+    Set<Object> claimedSidebarTreeEntryIds,
+  ) {
+    final sidebarTreeEntryId = currentMailboxNode?.sidebarTreeEntryId;
+    return sidebarTreeEntryId != null &&
+            claimedSidebarTreeEntryIds.add(sidebarTreeEntryId)
+        ? sidebarTreeEntryId
+        : null;
   }
 
   MailboxTree _resolveTargetTree(
@@ -257,5 +294,49 @@ class TreeBuilder {
     if (parentNode.nodeState != MailboxState.deactivated) return;
     currentNode.updateItem(currentNode.item.withMailboxSate(MailboxState.deactivated));
     currentNode.updateNodeState(MailboxState.deactivated);
+  }
+}
+
+/// Tracks the current forest while a mailbox tree is built.
+///
+/// Every successful parent-child attachment merges two components. Joining
+/// nodes already in one component would form a cycle, so it is rejected.
+/// The instance is local to one build and is released with that build.
+class _MailboxNodeDisjointSet {
+  final Map<Object, Object> _parentByNodeId = <Object, Object>{};
+  final Map<Object, int> _rankByRootId = <Object, int>{};
+
+  bool tryConnect(Object firstNodeId, Object secondNodeId) {
+    final firstRootId = _findRoot(firstNodeId);
+    final secondRootId = _findRoot(secondNodeId);
+    if (firstRootId == secondRootId) return false;
+
+    final firstRank = _rankByRootId[firstRootId] ?? 0;
+    final secondRank = _rankByRootId[secondRootId] ?? 0;
+    if (firstRank < secondRank) {
+      _parentByNodeId[firstRootId] = secondRootId;
+    } else {
+      _parentByNodeId[secondRootId] = firstRootId;
+      if (firstRank == secondRank) {
+        _rankByRootId[firstRootId] = firstRank + 1;
+      }
+    }
+    return true;
+  }
+
+  Object _findRoot(Object nodeId) {
+    _parentByNodeId.putIfAbsent(nodeId, () => nodeId);
+    var rootId = nodeId;
+    while (_parentByNodeId[rootId] != rootId) {
+      rootId = _parentByNodeId[rootId]!;
+    }
+
+    var currentNodeId = nodeId;
+    while (currentNodeId != rootId) {
+      final nextNodeId = _parentByNodeId[currentNodeId]!;
+      _parentByNodeId[currentNodeId] = rootId;
+      currentNodeId = nextNodeId;
+    }
+    return rootId;
   }
 }

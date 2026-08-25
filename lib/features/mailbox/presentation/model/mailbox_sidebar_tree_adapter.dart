@@ -4,6 +4,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 
 final mailboxSidebarTreeAdapter = LinagoraSidebarTreeAdapter<MailboxNode>(
   childrenOf: (node) => node.childrenItems,
-  idOf: (node) => (node.item.namespace?.value, node.item.id),
+  idOf: (node) => (node.item.namespace?.value, node.item.id, node.sidebarTreeEntryId),
   isExpanded: (node) => node.hasChildren() && node.expandMode.isExpanded,
 );
