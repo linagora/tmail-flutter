@@ -163,15 +163,7 @@ class DriveAttachmentTransferRunner {
       (failure) {
         // a user-cancelled transfer is not a failure; the chip is already gone.
         if (failure is UploadDriveDocumentFromUrlCancelled) return;
-        logError(
-          'DriveAttachmentTransferRunner::_runOne: upload failed',
-          exception: failure is UploadDriveDocumentFromUrlFailure ? failure.exception : failure,
-          extras: {
-            'taskId': taskId.id,
-            'fileName': task.doc.name,
-            'mimeType': task.doc.mimeType,
-          },
-        );
+        // not reported here: the interactor is the single funnel for upload failures.
         request.onFailure(taskId);
       },
       (success) => success is UploadDriveDocumentFromUrlSuccess
