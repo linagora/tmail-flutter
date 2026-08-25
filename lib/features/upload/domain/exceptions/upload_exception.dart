@@ -6,3 +6,10 @@ class DataResponseIsNullException extends AppBaseException {
   @override
   String get exceptionName => 'DataResponseIsNullException';
 }
+
+class UploadFromUrlEndpointUnavailableException extends AppBaseException {
+  const UploadFromUrlEndpointUnavailableException([super.message]);
+
+  @override
+  String get exceptionName => 'UploadFromUrlEndpointUnavailableException';
+}

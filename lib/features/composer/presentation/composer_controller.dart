@@ -120,6 +120,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
@@ -1069,6 +1070,8 @@ class ComposerController extends BaseController
     if (jmapUrl == null || jmapUrl.isEmpty) {
       logError(
         'ComposerController::_transferDriveDocuments: jmapUrl is unavailable',
+        exception: const UploadFromUrlEndpointUnavailableException('jmapUrl is unavailable'),
+        stackTrace: StackTrace.current,
         extras: {'docCount': docs.length},
       );
       return DriveAttachmentTransferRunner.notStartedOutcome;
@@ -1082,6 +1085,8 @@ class ComposerController extends BaseController
     if (uploadUri == null || accountId == null) {
       logError(
         'ComposerController::_transferDriveDocuments: upload-from-url endpoint is unavailable',
+        exception: const UploadFromUrlEndpointUnavailableException('upload-from-url uri could not be resolved'),
+        stackTrace: StackTrace.current,
         extras: {
           'docCount': docs.length,
           'accountId': accountId?.id.value,
