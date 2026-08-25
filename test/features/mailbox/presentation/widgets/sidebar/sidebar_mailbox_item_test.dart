@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui' show PointerDeviceKind;
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -47,6 +49,7 @@ void main() {
 
   group('SidebarMailboxItem', () {
     _testMapsMailboxDataToRow();
+    _testInsetsNestedMailboxBackgroundAndReservesExpandControl();
     _testMapsMailboxRolesToTheNewFolderIcons();
     _testBundlesEveryMappedFolderIcon();
     _testTintsFolderIconsForTheSidebarTheme();
@@ -196,6 +199,81 @@ void _testMapsMailboxDataToRow() {
 
     expect(row.badgeLabel, '12');
     expect(row.active, isTrue);
+  });
+}
+
+void _testInsetsNestedMailboxBackgroundAndReservesExpandControl() {
+  testWidgets(
+      'insets a nested mailbox background and preserves its expand control on hover',
+      (tester) async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+    });
+    final previousTargetPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+
+    try {
+      const folderName = 'A folder name that must overflow before the expand control';
+      final mailboxNode = _mailboxNode(
+        id: 'nested-folder',
+        name: folderName,
+        children: [_mailboxNode(id: 'nested-child')],
+      );
+
+      await _pump(
+        tester,
+        Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 236,
+            child: LinagoraSidebarIndent(
+              indent: 24,
+              child: SidebarMailboxItem(
+                mailboxNode: mailboxNode,
+                imagePaths: _imagePaths,
+                isWebDesktop: true,
+                mailboxNodeSelected: mailboxNode.item,
+                onExpandFolderActionClick: (_) {},
+                onMenuActionClick: (_, __) async {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final itemFinder = find.byType(LinagoraSidebarItem);
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(tester.getCenter(itemFinder));
+      await tester.pump();
+
+      final style = LinagoraSidebarStyle.light();
+      final backgroundFinder = find.descendant(
+        of: itemFinder,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Material && widget.color == style.selectedBackground,
+        ),
+      );
+      final backgroundRect = tester.getRect(backgroundFinder);
+      final labelFinder = find.text(folderName);
+      final labelRect = tester.getRect(labelFinder);
+      final expandControlRect = tester.getRect(
+        find.byType(LinagoraSidebarControl),
+      );
+
+      expect(backgroundRect.left, 24);
+      expect(backgroundRect.right, 236);
+      expect(find.byType(LinagoraSidebarMenuAction), findsOneWidget);
+      expect(
+        tester.renderObject<RenderParagraph>(labelFinder).didExceedMaxLines,
+        isTrue,
+      );
+      expect(labelRect.right, lessThanOrEqualTo(expandControlRect.left));
+    } finally {
+      debugDefaultTargetPlatformOverride = previousTargetPlatform;
+    }
   });
 }
 

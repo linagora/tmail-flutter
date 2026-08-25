@@ -62,7 +62,7 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               _imagePaths.icFolderMailbox,
               width: MailboxIconWidgetStyles.iconSize,
               height: MailboxIconWidgetStyles.iconSize,
-              colorFilter: widget.iconColor?.asFilter(),
+              colorFilter: (widget.iconColor ?? AppColor.primaryLinShare).asFilter(),
               fit: BoxFit.fill,
             ),
             SizedBox(width: widget.iconSpace ?? MailboxItemWidgetStyles.labelIconSpace),

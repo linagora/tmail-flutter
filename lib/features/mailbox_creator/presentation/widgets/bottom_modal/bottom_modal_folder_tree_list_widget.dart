@@ -40,6 +40,7 @@ class BottomModalFolderTreeListWidget extends GetWidget<BottomModalFolderTreeLis
               folderName: AppLocalizations.of(context).personalFolders,
               imagePaths: controller.imagePaths,
               isSelected: controller.mailboxIdSelected.value == null,
+              iconColor: AppColor.gray424244.withValues(alpha: 0.72),
               iconSelected: controller.imagePaths.icChecked,
               textStyle: ThemeUtils.textStyleInter400.copyWith(
                 color: AppColor.gray424244.withValues(alpha: 0.9),

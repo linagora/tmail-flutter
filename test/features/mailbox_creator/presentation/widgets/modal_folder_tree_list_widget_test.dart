@@ -6,13 +6,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/modal_folder_tree_list_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 void main() {
-  testWidgets('uses the mailbox neutral color for Personal folders',
+  testWidgets('keeps the original folder color for Personal folders',
       (tester) async {
     final scrollController = ScrollController();
     addTearDown(scrollController.dispose);
@@ -41,10 +41,10 @@ void main() {
 
     expect(
       tester.widget<SvgPicture>(find.descendant(
-        of: find.byType(MailboxIconWidget),
+        of: find.byType(FolderItemWidget),
         matching: find.byType(SvgPicture),
-      )).colorFilter,
-      const ColorFilter.mode(AppColor.gray424244, BlendMode.srcIn),
+      ).first).colorFilter,
+      const ColorFilter.mode(AppColor.primaryLinShare, BlendMode.srcIn),
     );
   });
 }

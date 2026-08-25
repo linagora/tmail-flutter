@@ -182,7 +182,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         padding: const EdgeInsetsDirectional.only(
                           end: MailboxItemWidgetStyles.mobileLabelIconSpace,
                         ),
-                        color: widget.iconColor,
+                        color: widget.iconColor ?? AppColor.iconFolder,
                       ),
                     Expanded(
                       child: LabelMailboxItemWidget(
@@ -233,7 +233,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         padding: const EdgeInsetsDirectional.only(
                           end: MailboxItemWidgetStyles.mobileLabelIconSpace,
                         ),
-                        color: widget.iconColor,
+                        color: widget.iconColor ?? AppColor.iconFolder,
                       ),
                     Expanded(
                       child: LabelMailboxItemWidget(

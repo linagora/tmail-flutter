@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 
 class FolderItemWidget extends StatelessWidget {
   final ImagePaths imagePaths;
@@ -36,10 +35,13 @@ class FolderItemWidget extends StatelessWidget {
       height: MailboxItemWidgetStyles.height,
       child: Row(
         children: [
-          MailboxIconWidget(
-            icon: imagePaths.icFolderMailbox,
-            padding: EdgeInsets.zero,
-            color: iconColor,
+          SvgPicture.asset(
+            imagePaths.icFolderMailbox,
+            width: MailboxIconWidgetStyles.iconSize,
+            height: MailboxIconWidgetStyles.iconSize,
+            colorFilter:
+                iconColor?.asFilter() ?? AppColor.primaryLinShare.asFilter(),
+            fit: BoxFit.fill,
           ),
           const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
           Expanded(

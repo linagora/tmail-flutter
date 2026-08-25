@@ -8,35 +8,24 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon
 
 void main() {
   group('MailboxIconWidget', () {
-    testWidgets('renders every mailbox icon at 16px', (tester) async {
+    testWidgets('renders every mailbox icon at 20px', (tester) async {
       await _pumpIcon(tester, brightness: Brightness.light);
 
       final icon = tester.widget<SvgPicture>(find.byType(SvgPicture));
       expect(icon.width, MailboxIconWidgetStyles.iconSize);
       expect(icon.height, MailboxIconWidgetStyles.iconSize);
-      expect(MailboxIconWidgetStyles.iconSize, 16);
+      expect(MailboxIconWidgetStyles.iconSize, 20);
     });
 
-    testWidgets('uses a readable default color in each theme', (tester) async {
-      for (final brightness in Brightness.values) {
-        final theme = ThemeData(brightness: brightness);
+    testWidgets('uses the legacy blue color and fit by default', (tester) async {
+      await _pumpIcon(tester, brightness: Brightness.light);
 
-        await tester.pumpWidget(MaterialApp(
-          theme: theme,
-          home: Scaffold(
-            body: MailboxIconWidget(icon: ImagePaths().icMailboxInbox),
-          ),
-        ));
-        await tester.pumpAndSettle();
-
-        final expectedColor = brightness == Brightness.dark
-            ? theme.colorScheme.onSurface
-            : AppColor.gray424244;
-        expect(
-          tester.widget<SvgPicture>(find.byType(SvgPicture)).colorFilter,
-          ColorFilter.mode(expectedColor, BlendMode.srcIn),
-        );
-      }
+      final icon = tester.widget<SvgPicture>(find.byType(SvgPicture));
+      expect(
+        icon.colorFilter,
+        const ColorFilter.mode(AppColor.primaryLinShare, BlendMode.srcIn),
+      );
+      expect(icon.fit, BoxFit.fill);
     });
 
     testWidgets('keeps an explicit semantic color', (tester) async {

@@ -10,8 +10,6 @@ class MailboxSidebarCategoryTreeSourceResolver {
   List<MailboxSidebarCategoryTreeSource> resolve(
     BaseMailboxController controller,
   ) {
-    final categoryExpandModes = controller.mailboxCategoriesExpandMode.value;
-
     return [
       MailboxSidebarCategoryTreeSource(
         category: MailboxCategories.exchange,
@@ -21,6 +19,16 @@ class MailboxSidebarCategoryTreeSourceResolver {
         isFolderCategory: false,
         initialDepth: 0,
       ),
+      ...resolveFolderSources(controller),
+    ];
+  }
+
+  List<MailboxSidebarCategoryTreeSource> resolveFolderSources(
+    BaseMailboxController controller,
+  ) {
+    final categoryExpandModes = controller.mailboxCategoriesExpandMode.value;
+
+    return [
       MailboxSidebarCategoryTreeSource(
         category: MailboxCategories.personalFolders,
         roots: controller.personalRootNode.childrenItems ?? const <MailboxNode>[],

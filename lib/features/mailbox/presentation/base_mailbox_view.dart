@@ -92,39 +92,45 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         ScrollConfiguration.of(context).getScrollPhysics(context),
       );
 
-      return Obx(() => LinagoraSidebarMenu(
+      return LinagoraSidebarMenu(
         controller: controller.mailboxListScrollController,
         scrollViewKey: _mailboxListScrollViewKey,
         physics: scrollPhysics,
         primaryAction: primaryAction,
-        sections: _buildSections(context),
+        sections: [
+          LinagoraSidebarMenuSection(
+            sliver: SliverMainAxisGroup(
+              slivers: [
+                _buildDefaultMailboxSliver(),
+                _buildSendingQueueSliver(context),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: LinagoraSidebarMenu.sectionSpacing,
+                  ),
+                ),
+                _buildFoldersSliver(context),
+                _buildLabelsSliver(context),
+              ],
+            ),
+          ),
+        ],
         footerItems: footerItems,
         bodyOverlay: bodyOverlay,
-      ));
+      );
     });
   }
 
-  List<LinagoraSidebarMenuSection> _buildSections(BuildContext context) {
-    return [
-      _buildDefaultMailboxSection(),
-      if (_isSendingQueueDisplayed) _buildSendingQueueSection(context),
-      _buildFoldersSection(context),
-      ..._buildLabelsSections(context),
-    ];
-  }
-
-  List<MailboxSidebarCategoryTreeSource>
-      get _mailboxSidebarCategoryTreeSources =>
-          _categoryTreeSourceResolver.resolve(controller);
-
-  LinagoraSidebarMenuSection _buildDefaultMailboxSection() {
-    return LinagoraSidebarMenuSection(
-      children: [
-        MailboxLoadingBarWidget(viewState: controller.viewState.value),
+  Widget _buildDefaultMailboxSliver() {
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Obx(() =>
+              MailboxLoadingBarWidget(viewState: controller.viewState.value)),
+        ),
+        Obx(() => controller.defaultMailboxIsNotEmpty
+            ? _buildMailboxTreeList(controller.defaultRootNode)
+            : const SliverToBoxAdapter()),
       ],
-      sliver: controller.defaultMailboxIsNotEmpty
-        ? _buildMailboxTreeList(controller.defaultRootNode)
-        : null,
     );
   }
 
@@ -183,71 +189,95 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     });
   }
 
-  LinagoraSidebarMenuSection _buildSendingQueueSection(BuildContext context) {
-    final isSendingQueueSelected = controller
-        .mailboxDashBoardController
-        .dashboardRoute
-        .value == DashboardRoutes.sendingQueue;
+  Widget _buildSendingQueueSliver(BuildContext context) {
+    return Obx(() {
+      if (!_isSendingQueueDisplayed) return const SliverToBoxAdapter();
 
-    return LinagoraSidebarMenuSection(
-      children: [
-        SendingQueueMailboxWidget(
-          imagePaths: controller.imagePaths,
-          responsiveUtils: controller.responsiveUtils,
-          listSendingEmails: controller
-            .mailboxDashBoardController
-            .listSendingEmails,
-          onOpenSendingQueueAction: () =>
-              controller.openSendingQueueViewAction(context),
-          isSelected: isSendingQueueSelected,
-        ),
-      ],
-    );
-  }
+      final isSendingQueueSelected = controller
+          .mailboxDashBoardController
+          .dashboardRoute
+          .value == DashboardRoutes.sendingQueue;
 
-  LinagoraSidebarMenuSection _buildFoldersSection(BuildContext context) {
-    final appLocalizations = AppLocalizations.of(context);
-    final isExpanded = controller.foldersExpandMode.value.isExpanded;
-    final groups = isExpanded
-      ? _buildFolderGroups(context)
-      : <LinagoraSidebarTreeGroup<MailboxNode>>[];
-
-    return LinagoraSidebarMenuSection(
-      header: LinagoraSidebarSectionHeader(
-        label: appLocalizations.folders,
-        expanded: isExpanded,
-        onExpandTogglePressed: (_) => controller.toggleExpandFolders(),
-        expandToggleLabel: controller.foldersExpandMode.value
-            .getTooltipMessage(appLocalizations),
-        actions: [
-          _buildSectionHeaderAction(
-            context,
-            key: const Key(UiKeys.mailboxSearchButton),
-            icon: controller.imagePaths.icSearchBar,
-            semanticLabel: appLocalizations.searchForFolders,
-            onTap: () => controller.openSearchViewAction(context),
+      return SliverMainAxisGroup(
+        slivers: [
+          const SliverToBoxAdapter(
+            child: SizedBox(height: LinagoraSidebarMenu.sectionSpacing),
           ),
-          _buildSectionHeaderAction(
-            context,
-            key: const Key(UiKeys.addNewFolderButton),
-            icon: controller.imagePaths.icAddNewFolder,
-            semanticLabel: appLocalizations.newFolder,
-            onTap: () => controller.goToCreateNewMailboxView(context),
+          SliverToBoxAdapter(
+            child: SendingQueueMailboxWidget(
+              imagePaths: controller.imagePaths,
+              responsiveUtils: controller.responsiveUtils,
+              listSendingEmails: controller
+                .mailboxDashBoardController
+                .listSendingEmails,
+              onOpenSendingQueueAction: () =>
+                  controller.openSendingQueueViewAction(context),
+              isSelected: isSendingQueueSelected,
+            ),
           ),
         ],
-      ),
-      headerSpacing: LinagoraSpacing.base * 2,
-      sliver: groups.isNotEmpty
-          ? LinagoraSidebarSliverGroupedTreeList<MailboxNode>(
+      );
+    });
+  }
+
+  Widget _buildFoldersSliver(BuildContext context) {
+    return Obx(() {
+      final isExpanded = controller.foldersExpandMode.value.isExpanded;
+      final groups = isExpanded
+        ? _buildFolderGroups(context)
+        : <LinagoraSidebarTreeGroup<MailboxNode>>[];
+
+      return SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(child: _buildFoldersHeader(context)),
+          if (groups.isNotEmpty)
+            const SliverToBoxAdapter(
+              child: SizedBox(height: LinagoraSpacing.base * 2),
+            ),
+          if (groups.isNotEmpty)
+            LinagoraSidebarSliverGroupedTreeList<MailboxNode>(
               groups: groups,
               adapter: mailboxSidebarTreeAdapter,
               itemBuilder: (context, entry) =>
                   _buildMailboxItem(context, entry.data),
               maxIndent: double.infinity,
-            )
-          : null,
+            ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildFoldersHeader(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    final expandMode = controller.foldersExpandMode.value;
+
+    return LinagoraSidebarSectionHeader(
+      label: appLocalizations.folders,
+      expanded: expandMode.isExpanded,
+      onExpandTogglePressed: (_) => controller.toggleExpandFolders(),
+      expandToggleLabel: expandMode.getTooltipMessage(appLocalizations),
+      actions: [
+        _buildSectionHeaderAction(
+          context,
+          key: const Key(UiKeys.mailboxSearchButton),
+          icon: controller.imagePaths.icSearchBar,
+          semanticLabel: appLocalizations.searchForFolders,
+          onTap: () => controller.openSearchViewAction(context),
+        ),
+        _buildSectionHeaderAction(
+          context,
+          key: const Key(UiKeys.addNewFolderButton),
+          icon: controller.imagePaths.icAddNewFolder,
+          semanticLabel: appLocalizations.newFolder,
+          onTap: () => controller.goToCreateNewMailboxView(context),
+        ),
+      ],
     );
   }
+
+  List<MailboxSidebarCategoryTreeSource>
+      get _mailboxSidebarFolderTreeSources =>
+          _categoryTreeSourceResolver.resolveFolderSources(controller);
 
   Widget _buildSectionHeaderAction(
     BuildContext context, {
@@ -274,8 +304,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   List<LinagoraSidebarTreeGroup<MailboxNode>> _buildFolderGroups(
     BuildContext context,
-  ) => _mailboxSidebarCategoryTreeSources
-      .where((source) => source.isFolderCategory && source.isAvailable)
+  ) => _mailboxSidebarFolderTreeSources
+      .where((source) => source.isAvailable)
       .map((source) => _buildFolderCategoryGroup(context, source))
       .toList(growable: false);
 
@@ -320,43 +350,60 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     );
   }
 
-  List<LinagoraSidebarMenuSection> _buildLabelsSections(BuildContext context) {
-    final dashboardController = controller.mailboxDashBoardController;
-    if (!dashboardController.isLabelAvailable) return const [];
+  Widget _buildLabelsSliver(BuildContext context) {
+    return Obx(() {
+      final dashboardController = controller.mailboxDashBoardController;
+      if (!dashboardController.isLabelAvailable) {
+        return const SliverToBoxAdapter();
+      }
 
-    final labelController = dashboardController.labelController;
-    final labels = labelController.labels;
-    final expandMode = labelController.labelListExpandMode.value;
-    final appLocalizations = AppLocalizations.of(context);
+      final labelController = dashboardController.labelController;
+      final labels = labelController.labels;
+      final expandMode = labelController.labelListExpandMode.value;
+      final appLocalizations = AppLocalizations.of(context);
+      final isLabelListDisplayed = labels.isNotEmpty && expandMode.isExpanded;
 
-    return [
-      LinagoraSidebarMenuSection(
-        header: LinagoraSidebarSectionHeader(
-          key: labelController.labelAppBarKey,
-          label: appLocalizations.labels,
-          expanded: labels.isNotEmpty ? expandMode.isExpanded : null,
-          onExpandTogglePressed: labels.isNotEmpty
-            ? (_) => labelController.toggleLabelListState()
-            : null,
-          expandToggleLabel: labels.isNotEmpty
-            ? expandMode.getTooltipMessage(appLocalizations)
-            : null,
-          actions: [
-            _buildSectionHeaderAction(
-              context,
-              key: const Key(UiKeys.addNewLabelButton),
-              icon: controller.imagePaths.icAddNewFolder,
-              semanticLabel: appLocalizations.newLabel,
-              onTap: () => labelController.handleLabelActionType(
-                actionType: LabelActionType.create,
-                accountId: controller.accountId,
+      return SliverMainAxisGroup(
+        slivers: [
+          const SliverToBoxAdapter(
+            child: SizedBox(height: LinagoraSidebarMenu.sectionSpacing),
+          ),
+          SliverToBoxAdapter(
+            child: LinagoraSidebarSectionHeader(
+              key: labelController.labelAppBarKey,
+              label: appLocalizations.labels,
+              expanded: labels.isNotEmpty ? expandMode.isExpanded : null,
+              onExpandTogglePressed: labels.isNotEmpty
+                ? (_) => labelController.toggleLabelListState()
+                : null,
+              expandToggleLabel: labels.isNotEmpty
+                ? expandMode.getTooltipMessage(appLocalizations)
+                : null,
+              actions: [
+                _buildSectionHeaderAction(
+                  context,
+                  key: const Key(UiKeys.addNewLabelButton),
+                  icon: controller.imagePaths.icAddNewFolder,
+                  semanticLabel: appLocalizations.newLabel,
+                  onTap: () => labelController.handleLabelActionType(
+                    actionType: LabelActionType.create,
+                    accountId: controller.accountId,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isLabelListDisplayed)
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: LinagoraSidebarMenuSection.defaultHeaderSpacing,
               ),
             ),
-          ],
-        ),
-        children: expandMode.isExpanded ? _buildLabelItems(context) : const [],
-      ),
-    ];
+          if (isLabelListDisplayed)
+            SliverList.list(children: _buildLabelItems(context)),
+        ],
+      );
+    });
   }
 
   List<Widget> _buildLabelItems(BuildContext context) {

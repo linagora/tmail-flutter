@@ -737,7 +737,7 @@ class ThreadView extends GetWidget<ThreadController>
           CircleAvatar(
             backgroundColor: AppColor.colorSpamReportBannerBackground,
             radius: 24,
-            child: SvgPicture.asset(controller.imagePaths.icMailboxArchived, fit: BoxFit.fill),
+            child: SvgPicture.asset(controller.imagePaths.icMailboxArchived, colorFilter: AppColor.primaryLinShare.asFilter(), fit: BoxFit.fill),
           ),
           const SizedBox(width: 11),
           Text(

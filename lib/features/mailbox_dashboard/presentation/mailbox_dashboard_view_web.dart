@@ -106,6 +106,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           imagePaths: controller.imagePaths,
                           accountId: accountId,
                           ownEmailAddress: accountDisplayName,
+                          leadingWidth: ResponsiveUtils.sidebarMenuWidth,
                           contactSupportCapability: contactSupportCapability,
                           searchForm: SearchInputFormWidget(),
                           appGridController:

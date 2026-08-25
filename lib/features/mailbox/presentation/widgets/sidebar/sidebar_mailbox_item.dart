@@ -75,9 +75,12 @@ class SidebarMailboxItem extends StatelessWidget {
       onTap: () => onOpenMailboxFolderClick?.call(mailboxNode),
     );
 
-    return _withLongPress(
-      _withDropTarget(row, isWebDesktop),
-      isWebDesktop,
+    return _withTreeIndent(
+      context,
+      _withLongPress(
+        _withDropTarget(row, isWebDesktop),
+        isWebDesktop,
+      ),
     );
   }
 
@@ -121,6 +124,16 @@ class SidebarMailboxItem extends StatelessWidget {
     return GestureDetector(
       onLongPress: () => onLongPressMailboxNodeAction?.call(mailboxNode),
       child: child,
+    );
+  }
+
+  Widget _withTreeIndent(BuildContext context, Widget child) {
+    final indent = LinagoraSidebarIndent.of(context);
+    if (indent == 0) return child;
+
+    return Padding(
+      padding: EdgeInsetsDirectional.only(start: indent),
+      child: LinagoraSidebarIndent(indent: 0, child: child),
     );
   }
 

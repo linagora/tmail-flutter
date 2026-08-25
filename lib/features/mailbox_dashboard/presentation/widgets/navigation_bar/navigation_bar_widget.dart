@@ -31,6 +31,7 @@ class NavigationBarWidget extends StatelessWidget {
   final VoidCallback? onTapApplicationLogoAction;
   final OnTapContactSupportAction? onTapContactSupportAction;
   final OnProfileSettingActionTypeClick onProfileSettingActionTypeClick;
+  final double leadingWidth;
 
   const NavigationBarWidget({
     super.key,
@@ -44,6 +45,7 @@ class NavigationBarWidget extends StatelessWidget {
     this.settingActionTypes = const [],
     this.onTapApplicationLogoAction,
     this.onTapContactSupportAction,
+    this.leadingWidth = ResponsiveUtils.defaultSizeMenu,
   });
 
   @override
@@ -54,7 +56,7 @@ class NavigationBarWidget extends StatelessWidget {
       padding: const EdgeInsetsDirectional.symmetric(horizontal: NavigationBarStyle.horizontalMargin),
       child: Row(children: [
         SizedBox(
-          width: ResponsiveUtils.defaultSizeMenu - NavigationBarStyle.horizontalMargin,
+          width: leadingWidth - NavigationBarStyle.horizontalMargin,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_folder_item.dart';
 
 void main() {
-  testWidgets('uses the mailbox neutral color for All folders', (tester) async {
+  testWidgets('keeps the existing folder icon style for All folders', (tester) async {
     final imagePaths = ImagePaths();
 
     await tester.pumpWidget(MaterialApp(
@@ -24,7 +24,8 @@ void main() {
 
     expect(
       tester.widget<SvgPicture>(find.byType(SvgPicture)).colorFilter,
-      const ColorFilter.mode(AppColor.gray424244, BlendMode.srcIn),
+      const ColorFilter.mode(AppColor.primaryLinShare, BlendMode.srcIn),
     );
+    expect(tester.getSize(find.byType(SvgPicture)), const Size(20, 20));
   });
 }
