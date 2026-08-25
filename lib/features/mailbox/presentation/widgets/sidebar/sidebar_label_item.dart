@@ -35,7 +35,9 @@ class SidebarLabelItem extends StatelessWidget {
     final row = LinagoraSidebarItem(
       label: label.safeDisplayName,
       leading: _buildLeadingIcon(context, imagePaths),
-      hoverTrailing: _buildContextMenuAction(context, imagePaths),
+      hoverTrailing: _isHoverContextMenuAllowed
+          ? _buildContextMenuAction(context, imagePaths)
+          : null,
       active: isSelected,
       onTap: () => onOpenLabelCallback(label),
     );
@@ -93,6 +95,9 @@ class SidebarLabelItem extends StatelessWidget {
 
   bool get _isContextMenuAllowed =>
       onOpenContextMenu != null && _isActionAllowed;
+
+  bool get _isHoverContextMenuAllowed =>
+      !PlatformInfo.isMobile && !PlatformInfo.isWebTouchDevice;
 
   bool get _isLongPressActive {
     if (onLongPressLabelItemAction == null) return false;

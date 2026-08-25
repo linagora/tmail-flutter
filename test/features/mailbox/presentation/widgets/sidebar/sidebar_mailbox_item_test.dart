@@ -67,6 +67,7 @@ void main() {
   group('SidebarLabelItem', () {
     _testOpensLabelAndForwardsContextMenuAnchor();
     _testHidesMenuForProtectedReadOnlyLabel();
+    _testKeepsMaterialTapFeedbackForMobileLabels();
     _testForwardsLabelLongPressOnMobile();
   });
 }
@@ -608,6 +609,9 @@ void _testHidesMenuForProtectedReadOnlyLabel() {
 void _testOpensLabelAndForwardsContextMenuAnchor() {
   testWidgets('opens a writable label and forwards its context menu anchor',
       (tester) async {
+    final previousTargetPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+
     final label = Label(
       id: Id('label'),
       displayName: 'Projects',
@@ -628,6 +632,7 @@ void _testOpensLabelAndForwardsContextMenuAnchor() {
         },
       ),
     );
+    debugDefaultTargetPlatformOverride = previousTargetPlatform;
 
     await tester.tap(find.byType(LinagoraSidebarItem));
     await tester.pump();
@@ -650,6 +655,33 @@ void _testOpensLabelAndForwardsContextMenuAnchor() {
 
     expect(menuLabel, same(label));
     expect(menuPosition, const RelativeRect.fromLTRB(10, 60, 90, 140));
+  });
+}
+
+void _testKeepsMaterialTapFeedbackForMobileLabels() {
+  testWidgets('keeps material tap feedback for mobile labels', (tester) async {
+    final previousTargetPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+    await _pump(
+      tester,
+      SidebarLabelItem(
+        label: Label(id: Id('label'), displayName: 'Projects'),
+        imagePaths: _imagePaths,
+        onOpenLabelCallback: (_) {},
+        onOpenContextMenu: (_, __) async {},
+      ),
+    );
+    debugDefaultTargetPlatformOverride = previousTargetPlatform;
+
+    final row = tester.widget<LinagoraSidebarItem>(
+      find.byType(LinagoraSidebarItem),
+    );
+    final inkWell = tester.widget<InkWell>(find.byType(InkWell));
+
+    expect(row.hoverTrailing, isNull);
+    expect(inkWell.splashColor, isNull);
+    expect(inkWell.highlightColor, isNull);
   });
 }
 

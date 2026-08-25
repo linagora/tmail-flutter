@@ -200,13 +200,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
       return SliverMainAxisGroup(
         slivers: [
-          const SliverToBoxAdapter(
-            child: SizedBox(height: LinagoraSidebarMenu.sectionSpacing),
-          ),
           SliverToBoxAdapter(
             child: SendingQueueMailboxWidget(
               imagePaths: controller.imagePaths,
-              responsiveUtils: controller.responsiveUtils,
               listSendingEmails: controller
                 .mailboxDashBoardController
                 .listSendingEmails,
