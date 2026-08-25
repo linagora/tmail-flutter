@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
@@ -245,6 +246,8 @@ class UploadController extends BaseController {
       // successful upload never reaches the screen - surface it.
       logError(
         'UploadController::resolveDriveTransferSuccess: taskId not found in state list',
+        exception: const DriveTransferTaskNotFoundException('resolveDriveTransferSuccess'),
+        stackTrace: StackTrace.current,
         extras: {'taskId': taskId.id, 'fileName': attachment.name},
       );
     }
