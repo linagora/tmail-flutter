@@ -261,6 +261,8 @@ class UploadController extends BaseController {
     if (!found) {
       logError(
         'UploadController::resolveDriveTransferFailure: taskId not found in state list',
+        exception: const DriveTransferTaskNotFoundException('resolveDriveTransferFailure'),
+        stackTrace: StackTrace.current,
         extras: {'taskId': taskId.id},
       );
     }
