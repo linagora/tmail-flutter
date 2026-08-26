@@ -66,6 +66,65 @@ void main() {
     expect(failureCalls, expectedFailureCalls);
   }
 
+  Future<void> expectInFlightSiblingsContinueAfterCancel({
+    required List<String> names,
+    required String cancelledName,
+    required int maxConcurrent,
+  }) async {
+    final succeededNames = <String>[];
+    var failureCalls = 0;
+    final blockers = <String, Completer<void>>{};
+    final runner = makeRunner(
+      maxConcurrent: maxConcurrent,
+      uploadFromUrl: (request) async {
+        final blocker = Completer<void>();
+        blockers[request.name] = blocker;
+        await blocker.future;
+        return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
+      },
+    );
+
+    late final List<dynamic> placeholders;
+    final future = runner.transfer((
+      docs: [
+        for (var i = 0; i < names.length; i++)
+          doc(
+            downloadLink: 'https://drive.example.com/${i + 1}',
+            name: names[i],
+          ),
+      ],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (received) => placeholders = received,
+      onSuccess: (_, attachment) => succeededNames.add(attachment.name ?? ''),
+      onFailure: (_) => failureCalls++,
+    ));
+
+    await Future<void>.delayed(Duration.zero);
+    expect(blockers.keys, unorderedEquals(names));
+
+    placeholders
+        .firstWhere((placeholder) => placeholder.fileName == cancelledName)
+        .cancelToken
+        ?.cancel();
+    blockers[cancelledName]!.complete();
+    for (final name in names.where((name) => name != cancelledName)) {
+      blockers[name]!.complete();
+    }
+    final result = await future;
+
+    expect(succeededNames, names.where((name) => name != cancelledName).toList());
+    expect(failureCalls, 0);
+    expect(
+      result,
+      (
+        started: true,
+        succeeded: names.length - 1,
+        failed: 0,
+      ),
+    );
+  }
+
   // Shared by the invalid-downloadLink tests: neither shape may reach the gateway.
   Future<void> expectNoUploadForDownloadLink(String? downloadLink) async {
     var uploadCalls = 0;
@@ -549,5 +608,21 @@ void main() {
     expect(successCalls, 0);
     expect(failureCalls, 0);
     expect(result, (started: true, succeeded: 0, failed: 0));
+  });
+
+  test('Should keep a sibling in flight after another chip is cancelled', () async {
+    await expectInFlightSiblingsContinueAfterCancel(
+      names: ['keep.pdf', 'drop.pdf'],
+      cancelledName: 'drop.pdf',
+      maxConcurrent: 2,
+    );
+  });
+
+  test('Should keep every other in-flight sibling running when one chip is cancelled', () async {
+    await expectInFlightSiblingsContinueAfterCancel(
+      names: ['keep-a.pdf', 'drop.pdf', 'keep-b.pdf'],
+      cancelledName: 'drop.pdf',
+      maxConcurrent: 3,
+    );
   });
 }
