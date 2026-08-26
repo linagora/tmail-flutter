@@ -520,4 +520,34 @@ void main() {
     expect(failedTaskIds, hasLength(2));
     expect(result, (started: true, succeeded: 0, failed: 2));
   });
+
+  test('Should resolve neither callback when the chip is cancelled while the upload is in flight', () async {
+    var successCalls = 0;
+    var failureCalls = 0;
+    final uploadBlocker = Completer<void>();
+    final runner = makeRunner(uploadFromUrl: (request) async {
+      await uploadBlocker.future;
+      return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
+    });
+
+    CancelToken? token;
+    final future = runner.transfer((
+      docs: [doc(downloadLink: 'https://drive.example.com/1')],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (placeholders) => token = placeholders.single.cancelToken,
+      onSuccess: (_, __) => successCalls++,
+      onFailure: (_) => failureCalls++,
+    ));
+
+    await Future<void>.delayed(Duration.zero);
+    // The user removes the chip while the gateway response is still pending.
+    token?.cancel();
+    uploadBlocker.complete();
+    final result = await future;
+
+    expect(successCalls, 0);
+    expect(failureCalls, 0);
+    expect(result, (started: true, succeeded: 0, failed: 0));
+  });
 }

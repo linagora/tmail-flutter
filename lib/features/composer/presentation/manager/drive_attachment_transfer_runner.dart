@@ -132,6 +132,9 @@ class DriveAttachmentTransferRunner {
       request.onFailure(taskId);
       return;
     }
+    // Chip deleted while this upload was in flight: a late response must not
+    // resolve a task the user already dropped.
+    if (task.placeholder.cancelToken?.isCancelled == true) return;
     // fold runs outside the try so a throw from onSuccess/onFailure isn't
     // mistaken for an upload failure and double-reported; the callbacks are
     // guarded by _notify instead, so one bad chip can't abort its siblings.
