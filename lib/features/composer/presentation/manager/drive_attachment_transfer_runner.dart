@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -69,7 +70,17 @@ class DriveAttachmentTransferRunner {
             ))
         .toList();
 
-    request.onPlaceholdersReady(tasks.map((task) => task.placeholder).toList());
+    try {
+      request.onPlaceholdersReady(tasks.map((task) => task.placeholder).toList());
+    } catch (e, s) {
+      // Without chips nothing can resolve, so the batch never starts.
+      logError(
+        'DriveAttachmentTransferRunner::transfer: onPlaceholdersReady failed',
+        exception: e,
+        stackTrace: s,
+      );
+      return notStartedOutcome;
+    }
 
     // Counted here so the caller can tell a fully clean batch from a partial one.
     var succeeded = 0;
@@ -81,11 +92,11 @@ class DriveAttachmentTransferRunner {
       onPlaceholdersReady: request.onPlaceholdersReady,
       onSuccess: (UploadTaskId taskId, Attachment attachment) {
         succeeded++;
-        request.onSuccess(taskId, attachment);
+        _notify('onSuccess', () => request.onSuccess(taskId, attachment));
       },
       onFailure: (UploadTaskId taskId) {
         failed++;
-        request.onFailure(taskId);
+        _notify('onFailure', () => request.onFailure(taskId));
       },
     );
 
@@ -122,7 +133,8 @@ class DriveAttachmentTransferRunner {
       return;
     }
     // fold runs outside the try so a throw from onSuccess/onFailure isn't
-    // mistaken for an upload failure and double-reported.
+    // mistaken for an upload failure and double-reported; the callbacks are
+    // guarded by _notify instead, so one bad chip can't abort its siblings.
     either.fold(
       (failure) {
         // a user-cancelled transfer is not a failure; the chip is already gone.
@@ -133,5 +145,18 @@ class DriveAttachmentTransferRunner {
           ? request.onSuccess(taskId, success.attachment)
           : request.onFailure(taskId),
     );
+  }
+
+  /// Runs a caller callback; a throw is logged and contained to this task.
+  void _notify(String label, void Function() callback) {
+    try {
+      callback();
+    } catch (e, s) {
+      logError(
+        'DriveAttachmentTransferRunner::_notify: $label failed',
+        exception: e,
+        stackTrace: s,
+      );
+    }
   }
 }

@@ -259,7 +259,7 @@ void main() {
       return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
     });
 
-    final future = runner.transfer((
+    final result = await runner.transfer((
       docs: [doc(downloadLink: 'https://drive.example.com/1')],
       accountId: accountId,
       uploadUri: uploadUri,
@@ -268,8 +268,8 @@ void main() {
       onFailure: (_) => failureCalls++,
     ));
 
-    await expectLater(future, throwsA(isA<StateError>()));
     expect(failureCalls, 0);
+    expect(result, (started: true, succeeded: 1, failed: 0));
   });
 
   test('Should resolve failure when uploadFromUrl throws', () async {
@@ -451,5 +451,73 @@ void main() {
 
     expect(maxInFlight, 3);
     expect(blockers, hasLength(8));
+  });
+
+  test('Should not start the batch when onPlaceholdersReady throws', () async {
+    var uploadCalls = 0;
+    final runner = makeRunner(uploadFromUrl: (request) async {
+      uploadCalls++;
+      return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
+    });
+
+    final result = await runner.transfer((
+      docs: [doc(downloadLink: 'https://drive.example.com/1')],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (_) => throw StateError('chips unavailable'),
+      onSuccess: (_, __) {},
+      onFailure: (_) {},
+    ));
+
+    expect(result, DriveAttachmentTransferRunner.notStartedOutcome);
+    expect(uploadCalls, 0);
+  });
+
+  test('Should keep resolving siblings and reporting the outcome when onSuccess throws', () async {
+    final succeededNames = <String>[];
+    final runner = makeRunner(uploadFromUrl: (request) async {
+      return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
+    });
+
+    final result = await runner.transfer((
+      docs: [
+        doc(downloadLink: 'https://drive.example.com/1', name: 'first.pdf'),
+        doc(downloadLink: 'https://drive.example.com/2', name: 'second.pdf'),
+      ],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (_) {},
+      onSuccess: (_, attachment) {
+        succeededNames.add(attachment.name ?? '');
+        if (succeededNames.length == 1) throw StateError('chip update failed');
+      },
+      onFailure: (_) {},
+    ));
+
+    expect(succeededNames, ['first.pdf', 'second.pdf']);
+    expect(result, (started: true, succeeded: 2, failed: 0));
+  });
+
+  test('Should keep resolving siblings when onFailure throws', () async {
+    final failedTaskIds = <UploadTaskId>[];
+    final runner = makeRunner(uploadFromUrl: (request) async => Left(_StubFailure()));
+
+    final result = await runner.transfer((
+      docs: [
+        doc(downloadLink: 'https://drive.example.com/1'),
+        doc(downloadLink: 'https://drive.example.com/2'),
+      ],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (_) {},
+      onSuccess: (_, __) {},
+      onFailure: (taskId) {
+        failedTaskIds.add(taskId);
+        if (failedTaskIds.length == 1) throw StateError('chip removal failed');
+      },
+    ));
+
+    expect(failedTaskIds, hasLength(2));
+    expect(result, (started: true, succeeded: 0, failed: 2));
   });
 }
