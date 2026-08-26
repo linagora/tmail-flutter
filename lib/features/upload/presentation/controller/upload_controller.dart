@@ -322,6 +322,8 @@ class UploadController extends BaseController {
   }
 
   void _showToastMessageWhenUploadAttachmentsFailure(ErrorAttachmentUploadState failure) {
+    // The chip is removed on failure, so the log is the only durable trace.
+    logError('UploadController::_showToastMessageWhenUploadAttachmentsFailure: upload ${failure.uploadId} failed');
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -329,7 +331,6 @@ class UploadController extends BaseController {
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
     } else {
-      // The chip is already gone, so an unshowable toast loses the reason entirely.
       logError('UploadController::_showToastMessageWhenUploadAttachmentsFailure: no context to show failure for ${failure.uploadId}');
     }
   }
