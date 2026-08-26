@@ -33,17 +33,33 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   Future<void> onPickerTap() async {
     if (_modalOpen) return;
     _modalOpen = true;
+    final ({DrivePickOutcome? outcome, String? failingMessage}) pick;
+    try {
+      pick = await _openPicker();
+    } finally {
+      // Guard covers the modal only: the consumer callback can run long (uploads).
+      _modalOpen = false;
+    }
+    await _handleOutcome(pick.outcome, pick.failingMessage);
+  }
+
+  /// Runs the modal phase, never throwing: every failure comes back as an
+  /// outcome so the caller can release the guard before dispatching it.
+  Future<({DrivePickOutcome? outcome, String? failingMessage})>
+      _openPicker() async {
     // Kept outside the try so a failure after localization still toasts it.
     String? failingMessage;
     try {
       if (!mounted) {
-        // Message needs the disposed context, so dispatch without one and let
+        // Message needs the disposed context, so report without one and let
         // the toast fall back to its generic failure text.
         logError('DrivePickerStateMixin::onPickerTap: state disposed before opening modal');
-        await _dispatch(
-          DrivePickFailure(StateError('drive picker state disposed before modal')),
+        return (
+          outcome: DrivePickOutcomeFailed(
+            StateError('drive picker state disposed before modal'),
+          ),
+          failingMessage: null,
         );
-        return;
       }
       final l10n = AppLocalizations.of(context)!;
       // Captured up front: the caller may pop this context (e.g. a context
@@ -67,18 +83,22 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
               ),
         theme: WorkplaceThemeConfigRequest.fromEntity(theme),
       );
-      DrivePickOutcome? outcome;
       try {
-        outcome = await openDrivePickerModal(filePickerConfig);
+        return (
+          outcome: await openDrivePickerModal(filePickerConfig),
+          failingMessage: failingMessage,
+        );
       } catch (e, s) {
         logError(
           'DrivePickerStateMixin::onPickerTap: modal failed',
           exception: e,
           stackTrace: s,
         );
-        outcome = DrivePickOutcomeFailed(e);
+        return (
+          outcome: DrivePickOutcomeFailed(e),
+          failingMessage: failingMessage,
+        );
       }
-      await _handleOutcome(outcome, failingMessage);
     } catch (e, s) {
       // Configuring the picker runs outside the modal's error boundary, so a
       // throw here would leave the tap silently doing nothing.
@@ -87,9 +107,10 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         exception: e,
         stackTrace: s,
       );
-      await _dispatch(DrivePickFailure(e, message: failingMessage));
-    } finally {
-      _modalOpen = false;
+      return (
+        outcome: DrivePickOutcomeFailed(e),
+        failingMessage: failingMessage,
+      );
     }
   }
 
