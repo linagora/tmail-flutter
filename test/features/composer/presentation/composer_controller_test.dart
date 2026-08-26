@@ -89,6 +89,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -1451,6 +1452,52 @@ void main() {
         await resultFuture;
 
         expect(callOrder, ['restoreFocus', 'insertHtml']);
+      });
+
+      final attachmentDoc = DriveDocument(
+        id: 'drive-doc-2',
+        name: 'Report.pdf',
+        size: 100,
+        mimeType: 'application/pdf',
+        downloadLink: Uri.parse('https://drive.example.com/report/download'),
+      );
+
+      Future<void> expectTransferFailedWithoutUpload(WidgetTester tester) async {
+        final resultFuture =
+            composerController?.handleDrivePickResult([attachmentDoc]);
+        await tester.pumpAndSettle();
+        await resultFuture;
+
+        final captured =
+            verify(mockToastManager.showMessageFailure(captureAny)).captured;
+        expect(captured, hasLength(1));
+        final failure = captured.single as DrivePickFailure;
+        // The bare Exception marks the not-started outcome; a thrown error
+        // would have come through handleDrivePickResult's catch instead.
+        expect(failure.error.toString(), 'Exception');
+        // No placeholder means the transfer never reached the runner.
+        verifyNever(mockUploadController.addDownloadingPlaceholders(any));
+      }
+
+      testWidgets(
+        'Should show the transfer failure toast and never start an upload\n'
+        'When jmapUrl is unavailable',
+      (tester) async {
+        when(mockDynamicUrlInterceptors.jmapUrl).thenReturn('');
+
+        await expectTransferFailedWithoutUpload(tester);
+      });
+
+      testWidgets(
+        'Should show the transfer failure toast and never start an upload\n'
+        'When the session exposes no upload-from-url endpoint',
+      (tester) async {
+        // aliceSession carries no upload-from-url capability, so
+        // getUploadFromUrlUri returns null even with a usable jmapUrl.
+        when(mockDynamicUrlInterceptors.jmapUrl)
+            .thenReturn('https://jmap.example.com/jmap');
+
+        await expectTransferFailedWithoutUpload(tester);
       });
     });
 
