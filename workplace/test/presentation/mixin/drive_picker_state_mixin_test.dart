@@ -31,13 +31,17 @@ class _TestState extends State<_TestWidget>
   num? maxAttachmentSizeBytesStub;
   num? remainingAttachmentCapacityBytesStub;
   bool uploadFromUrlSupportedOverride = true;
+  bool sessionResolveThrows = false;
   bool pickCallbackThrows = false;
   Completer<void>? pickCallbackBlocker;
 
   @override
   DrivePickerSession get session => DrivePickerSession(
         uploadFromUrlSupported: () => uploadFromUrlSupportedOverride,
-        maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytesStub,
+        maxAttachmentSizeBytesGetter: () {
+          if (sessionResolveThrows) throw StateError('capability read blew up');
+          return maxAttachmentSizeBytesStub;
+        },
         remainingAttachmentCapacityBytesGetter: () =>
             remainingAttachmentCapacityBytesStub,
         onFetchIntent: ({required filePickerConfig}) async => WorkplaceIntent(
@@ -343,6 +347,34 @@ void main() {
         expect(state.pickStates, hasLength(1));
         final failure = state.pickStates.single as DrivePickFailure;
         expect(failure.message, isNotNull);
+      });
+    });
+
+    group('configuration failures', () {
+      testWidgets('resolver throw → failure callback, no modal, no unhandled error', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.sessionResolveThrows = true;
+
+        await state.onPickerTap();
+
+        expect(state.openCalls, isEmpty);
+        final failure = state.pickStates.single as DrivePickFailure;
+        expect(failure.message, isNotNull, reason: 'localized before the throw');
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('tap allowed again after a configuration failure', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.sessionResolveThrows = true;
+        await state.onPickerTap();
+
+        state.sessionResolveThrows = false;
+        state.modalStub = () => Future.value(DrivePickOutcomePicked([_doc()]));
+        await state.onPickerTap();
+
+        expect(state.openCalls, hasLength(1));
+        expect(state.pickStates.last, isA<DrivePickResult>());
+        expect(tester.takeException(), isNull);
       });
     });
   });

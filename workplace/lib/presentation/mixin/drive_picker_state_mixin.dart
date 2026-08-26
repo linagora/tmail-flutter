@@ -33,6 +33,8 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
   Future<void> onPickerTap() async {
     if (_modalOpen) return;
     _modalOpen = true;
+    // Kept outside the try so a failure after localization still toasts it.
+    String? failingMessage;
     try {
       if (!mounted) {
         // Message needs the disposed context, so dispatch without one and let
@@ -46,8 +48,8 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
       final l10n = AppLocalizations.of(context)!;
       // Captured up front: the caller may pop this context (e.g. a context
       // menu tile) before the intent future settles, disposing this state.
+      failingMessage = l10n.attachFromDriveFailingMessage;
       final snapshot = DrivePickerSessionResolver(session).resolve();
-      final failingMessage = l10n.attachFromDriveFailingMessage;
       final addAsAttachmentTitle =
           snapshot.uploadFromUrlSupported ? l10n.addAsAttachment : null;
       final theme = _resolveWorkplaceTheme(context);
@@ -77,6 +79,15 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         outcome = DrivePickOutcomeFailed(e);
       }
       await _handleOutcome(outcome, failingMessage);
+    } catch (e, s) {
+      // Configuring the picker runs outside the modal's error boundary, so a
+      // throw here would leave the tap silently doing nothing.
+      logError(
+        'DrivePickerStateMixin::onPickerTap: picker configuration failed',
+        exception: e,
+        stackTrace: s,
+      );
+      await _dispatch(DrivePickFailure(e, message: failingMessage));
     } finally {
       _modalOpen = false;
     }
