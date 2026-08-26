@@ -32,6 +32,7 @@ class _TestState extends State<_TestWidget>
   num? remainingAttachmentCapacityBytesStub;
   bool uploadFromUrlSupportedOverride = true;
   bool pickCallbackThrows = false;
+  Completer<void>? pickCallbackBlocker;
 
   @override
   DrivePickerSession get session => DrivePickerSession(
@@ -49,6 +50,7 @@ class _TestState extends State<_TestWidget>
   OnPickDriveCallback? get pickerOnCallback => (state) async {
         pickStates.add(state);
         if (pickCallbackThrows) throw StateError('consumer handler blew up');
+        if (pickCallbackBlocker != null) await pickCallbackBlocker!.future;
       };
 
   @override
@@ -252,6 +254,27 @@ void main() {
 
         completer.complete(const DrivePickOutcomeCancelled());
         await firstTap;
+      });
+
+      testWidgets('second tap while pick callback is in flight → opens another picker', (tester) async {
+        final state = await _pumpPicker(tester);
+        final callbackBlocker = Completer<void>();
+        state.pickCallbackBlocker = callbackBlocker;
+        state.modalStub = () => Future.value(DrivePickOutcomePicked([_doc()]));
+
+        final firstTap = state.onPickerTap();
+        await tester.pump();
+        expect(state.openCalls, hasLength(1));
+        expect(state.pickStates, hasLength(1));
+
+        final secondTap = state.onPickerTap();
+        await tester.pump();
+        expect(state.openCalls, hasLength(2));
+        expect(state.pickStates, hasLength(2));
+
+        callbackBlocker.complete();
+        await firstTap;
+        await secondTap;
       });
 
       testWidgets('tap allowed again after previous modal closed', (tester) async {
