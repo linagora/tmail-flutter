@@ -36,14 +36,13 @@ class DriveAttachmentHandler {
         _splitByAttachability(result);
 
     // A mixed pick inserts its links and transfers its downloadable docs.
-    var linkInserted = false;
-    if (linkDocs.isNotEmpty) {
-      linkInserted = await insertDriveLinkHtml(
-        linkDocs,
-        insertHtml: insertHtml,
-        appLocalizations: appLocalizations,
-      );
-    }
+    final linkInserted = linkDocs.isEmpty
+        ? false
+        : await insertDriveLinkHtml(
+            linkDocs,
+            insertHtml: insertHtml,
+            appLocalizations: appLocalizations,
+          );
 
     if (downloadableDocs.isNotEmpty) {
       await _transferDownloadableDocs(
@@ -52,19 +51,45 @@ class DriveAttachmentHandler {
         transferDriveDocuments: transferDriveDocuments,
         appLocalizations: appLocalizations,
       );
-    } else if (linkInserted) {
+    } else {
+      _showLinkOnlyOutcome(
+        linkInserted: linkInserted,
+        hasLinkDocs: linkDocs.isNotEmpty,
+        appLocalizations: appLocalizations,
+      );
+    }
+
+    _showDroppedDocsFailure(
+      droppedCount,
+      attachedAny: linkDocs.isNotEmpty || downloadableDocs.isNotEmpty,
+      appLocalizations: appLocalizations,
+    );
+  }
+
+  /// Toasts the outcome of a pick that carried no downloadable docs.
+  void _showLinkOnlyOutcome({
+    required bool linkInserted,
+    required bool hasLinkDocs,
+    AppLocalizations? appLocalizations,
+  }) {
+    if (linkInserted) {
       _showSuccessToast(appLocalizations?.driveAttachmentAddedSuccessfully);
-    } else if (linkDocs.isEmpty) {
+    } else if (!hasLinkDocs) {
       _showFailureToast(appLocalizations?.driveNoValidAttachment);
     } else {
       // Docs were linkable but the editor was unbound — nothing reached the body.
       _showFailureToast(appLocalizations?.driveAttachmentTransferFailed);
     }
+  }
 
-    // Dropped docs would otherwise vanish silently from a pick whose siblings worked.
-    if (droppedCount > 0 && (linkDocs.isNotEmpty || downloadableDocs.isNotEmpty)) {
-      _showFailureToast(appLocalizations?.driveNoValidAttachment);
-    }
+  /// Dropped docs would otherwise vanish silently from a pick whose siblings worked.
+  void _showDroppedDocsFailure(
+    int droppedCount, {
+    required bool attachedAny,
+    AppLocalizations? appLocalizations,
+  }) {
+    if (droppedCount == 0 || !attachedAny) return;
+    _showFailureToast(appLocalizations?.driveNoValidAttachment);
   }
 
   /// Splits [result] into (linkable docs, downloadable docs, dropped count).
