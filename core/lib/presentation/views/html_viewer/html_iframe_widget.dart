@@ -7,12 +7,14 @@ class HtmlIframeWidget extends StatelessWidget {
     this.onIframeCreated,
     this.width,
     this.height,
+    this.borderRadius,
     this.src,
     this.srcdoc,
   });
 
   final void Function(IFrameElement iframe)? onIframeCreated;
   final String? width, height, src, srcdoc;
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,11 @@ class HtmlIframeWidget extends StatelessWidget {
           ..style.overflow = 'hidden'
           ..style.width = '100%'
           ..style.height = '100%';
+
+        if (borderRadius != null) {
+          iframe.style.borderRadius = '${borderRadius}px';
+        }
+
         if (src != null) {
           iframe.src = src;
         } else if (srcdoc != null) {

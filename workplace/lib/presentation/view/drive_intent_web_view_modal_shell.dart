@@ -53,6 +53,7 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
         shape: shape,
         constraints: constraints,
         alignment: alignment,
+        clipBehavior: Clip.antiAlias,
         child: GestureDetector(
           onTap: () {},
           behavior: HitTestBehavior.opaque,

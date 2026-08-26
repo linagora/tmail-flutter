@@ -122,6 +122,7 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
           : null,
       child: HtmlIframeWidget(
         key: const ValueKey('drive-intent-webview'),
+        borderRadius: 6,
         onIframeCreated: (iframe) {
           final viewRecreated = _iframeElement != null &&
               !identical(_iframeElement, iframe);
