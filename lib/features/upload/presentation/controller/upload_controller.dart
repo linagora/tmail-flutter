@@ -433,15 +433,28 @@ class UploadController extends BaseController {
     final regularAttachments = attachments.getListAttachmentsDisplayedOutside(htmlBodyAttachments);
     final inlineAttachments = attachments.listAttachmentsDisplayedInContent;
 
+    // A still-running upload has no blob yet, so the server response cannot
+    // rebuild it; dropping it would strand the request and lose its chip.
+    final pendingRegularStates = _pendingStatesOf(_uploadingStateFiles);
+    final pendingInlineStates = _pendingStatesOf(_uploadingStateInlineFiles);
+
     _uploadingStateFiles.clear();
     _uploadingStateFiles.addAll(_toUploadFileStates(regularAttachments));
+    _uploadingStateFiles.addAll(pendingRegularStates);
 
     _uploadingStateInlineFiles.clear();
     _uploadingStateInlineFiles.addAll(_toUploadFileStates(inlineAttachments));
+    _uploadingStateInlineFiles.addAll(pendingInlineStates);
 
     _refreshListUploadAttachmentState();
     log('UploadController::refreshAllAttachments(): regular=${regularAttachments.length} | inline=${inlineAttachments.length}');
   }
+
+  List<UploadFileState> _pendingStatesOf(UploadFileStateList stateList) =>
+    stateList.uploadingStateFiles
+      .nonNulls
+      .where((fileState) => !fileState.uploadStatus.completed)
+      .toList();
 
   Iterable<UploadFileState> _toUploadFileStates(List<Attachment> attachments) =>
     attachments

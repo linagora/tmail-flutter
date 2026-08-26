@@ -179,4 +179,49 @@ void main() {
       expect(controller.listUploadAttachments, isEmpty);
     });
   });
+
+  group('UploadController::refreshAllAttachments::', () {
+    test('Should keep a waiting drive chip that the server response cannot rebuild', () {
+      final cancelToken = CancelToken();
+      controller.addDownloadingPlaceholders([
+        DriveTransferPlaceholder(
+          taskId: taskId,
+          fileName: 'file.pdf',
+          fileSize: 100,
+          mimeType: 'application/pdf',
+          cancelToken: cancelToken,
+        ),
+      ]);
+      final savedAttachment = Attachment(blobId: Id('blob-1'), size: UnsignedInt(100));
+
+      // Draft saved while the transfer is still running.
+      controller.refreshAllAttachments([savedAttachment], []);
+
+      expect(controller.listUploadAttachments, hasLength(2));
+      final waitingState = controller.getUploadFileId(taskId);
+      expect(waitingState?.uploadStatus, UploadFileStatus.waiting);
+      expect(waitingState?.cancelToken, same(cancelToken));
+      expect(cancelToken.isCancelled, isFalse);
+    });
+
+    test('Should still resolve a chip that survived the refresh', () {
+      controller.addDownloadingPlaceholders([placeholder()]);
+      controller.refreshAllAttachments([], []);
+
+      final attachment = Attachment(blobId: Id('blob-2'), size: UnsignedInt(100));
+      controller.resolveDriveTransferSuccess(taskId, attachment);
+
+      expect(controller.getUploadFileId(taskId)?.uploadStatus, UploadFileStatus.succeed);
+      expect(controller.attachmentsUploaded, contains(attachment));
+    });
+
+    test('Should not duplicate an already completed attachment', () {
+      final attachment = Attachment(blobId: Id('blob-3'), size: UnsignedInt(100));
+      controller.initializeUploadAttachments([attachment]);
+
+      controller.refreshAllAttachments([attachment], []);
+
+      expect(controller.listUploadAttachments, hasLength(1));
+    });
+  });
 }
