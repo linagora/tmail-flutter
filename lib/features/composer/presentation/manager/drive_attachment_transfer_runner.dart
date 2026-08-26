@@ -69,6 +69,9 @@ class DriveAttachmentTransferRunner {
               ),
             ))
         .toList();
+    final placeholdersById = {
+      for (final task in tasks) task.placeholder.taskId: task.placeholder,
+    };
 
     try {
       request.onPlaceholdersReady(tasks.map((task) => task.placeholder).toList());
@@ -92,11 +95,19 @@ class DriveAttachmentTransferRunner {
       onPlaceholdersReady: request.onPlaceholdersReady,
       onSuccess: (UploadTaskId taskId, Attachment attachment) {
         succeeded++;
-        _notify('onSuccess', () => request.onSuccess(taskId, attachment));
+        _notify(
+          'onSuccess',
+          placeholdersById[taskId],
+          () => request.onSuccess(taskId, attachment),
+        );
       },
       onFailure: (UploadTaskId taskId) {
         failed++;
-        _notify('onFailure', () => request.onFailure(taskId));
+        _notify(
+          'onFailure',
+          placeholdersById[taskId],
+          () => request.onFailure(taskId),
+        );
       },
     );
 
@@ -151,7 +162,11 @@ class DriveAttachmentTransferRunner {
   }
 
   /// Runs a caller callback; a throw is logged and contained to this task.
-  void _notify(String label, void Function() callback) {
+  void _notify(
+    String label,
+    DriveTransferPlaceholder? placeholder,
+    void Function() callback,
+  ) {
     try {
       callback();
     } catch (e, s) {
@@ -159,6 +174,12 @@ class DriveAttachmentTransferRunner {
         'DriveAttachmentTransferRunner::_notify: $label failed',
         exception: e,
         stackTrace: s,
+        // File name stays out: extras reach Sentry.
+        extras: {
+          'task_id': placeholder?.taskId.id,
+          'file_size': placeholder?.fileSize,
+          'mime_type': placeholder?.mimeType,
+        },
       );
     }
   }
