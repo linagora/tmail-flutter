@@ -31,6 +31,7 @@ class _TestState extends State<_TestWidget>
   num? maxAttachmentSizeBytesStub;
   num? remainingAttachmentCapacityBytesStub;
   bool uploadFromUrlSupportedOverride = true;
+  bool pickCallbackThrows = false;
 
   @override
   DrivePickerSession get session => DrivePickerSession(
@@ -45,7 +46,10 @@ class _TestState extends State<_TestWidget>
       );
 
   @override
-  OnPickDriveCallback? get pickerOnCallback => pickStates.add;
+  OnPickDriveCallback? get pickerOnCallback => (state) async {
+        pickStates.add(state);
+        if (pickCallbackThrows) throw StateError('consumer handler blew up');
+      };
 
   @override
   DriveIntentImageAssets get driveIntentImageAssets =>
@@ -123,6 +127,18 @@ void main() {
         await state.onPickerTap();
 
         expect(state.pickStates, isEmpty);
+      });
+
+      testWidgets('callback throwing → contained, tap allowed again', (tester) async {
+        final state = await _pumpPicker(tester);
+        state.pickCallbackThrows = true;
+        state.modalStub = () => Future.value(DrivePickOutcomePicked([_doc()]));
+
+        await state.onPickerTap();
+        await state.onPickerTap();
+
+        expect(state.pickStates, hasLength(2));
+        expect(state.openCalls, hasLength(2));
       });
 
       testWidgets('modal future fails → DrivePickFailure with the thrown error', (tester) async {

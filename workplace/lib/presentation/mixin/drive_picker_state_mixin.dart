@@ -10,7 +10,7 @@ import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/model/drive_picker_session.dart';
 import 'package:workplace/presentation/view/drive_intent_web_view_modal.dart';
 
-typedef OnPickDriveCallback = void Function(DrivePickState state);
+typedef OnPickDriveCallback = Future<void> Function(DrivePickState state);
 
 typedef FetchDriveIntentCallback =
     Future<WorkplaceIntent> Function({
@@ -38,7 +38,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         // Message needs the disposed context, so dispatch without one and let
         // the toast fall back to its generic failure text.
         logError('DrivePickerStateMixin::onPickerTap: state disposed before opening modal');
-        pickerOnCallback?.call(
+        await _dispatch(
           DrivePickFailure(StateError('drive picker state disposed before modal')),
         );
         return;
@@ -76,7 +76,7 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
         );
         outcome = DrivePickOutcomeFailed(e);
       }
-      _handleOutcome(outcome, failingMessage);
+      await _handleOutcome(outcome, failingMessage);
     } finally {
       _modalOpen = false;
     }
@@ -104,17 +104,34 @@ mixin DrivePickerStateMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  void _handleOutcome(DrivePickOutcome? outcome, String? failingMessage) {
+  Future<void> _handleOutcome(
+    DrivePickOutcome? outcome,
+    String? failingMessage,
+  ) async {
     switch (outcome) {
       case DrivePickOutcomePicked(:final documents):
-        pickerOnCallback?.call(DrivePickResult(documents));
+        await _dispatch(DrivePickResult(documents));
       case DrivePickOutcomeFailed(:final error):
         // Already reported to Sentry at the failing stage (modal mixin or the
         // catch above) — only dispatch the UI failure callback here.
-        pickerOnCallback?.call(DrivePickFailure(error, message: failingMessage));
+        await _dispatch(DrivePickFailure(error, message: failingMessage));
       case DrivePickOutcomeCancelled():
       case null:
         break;
+    }
+  }
+
+  /// Awaited so a throw in the consumer's handler is caught here instead of
+  /// escaping as an unhandled zone error.
+  Future<void> _dispatch(DrivePickState state) async {
+    try {
+      await pickerOnCallback?.call(state);
+    } catch (e, s) {
+      logError(
+        'DrivePickerStateMixin::_dispatch: pick callback failed',
+        exception: e,
+        stackTrace: s,
+      );
     }
   }
 

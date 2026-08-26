@@ -246,7 +246,7 @@ void main() {
 
       final ext = _makeExtension(
         notifier,
-        onPickState: (id, state) {
+        onPickState: (id, state) async {
           receivedId = id;
           receivedState = state;
         },
@@ -388,7 +388,7 @@ void main() {
 
       final ext = _makeExtension(
         notifier,
-        onPickState: (id, state) {
+        onPickState: (id, state) async {
           receivedId = id;
           receivedState = state;
         },
