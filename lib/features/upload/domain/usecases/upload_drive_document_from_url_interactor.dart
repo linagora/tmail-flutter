@@ -24,11 +24,8 @@ class UploadDriveDocumentFromUrlInteractor {
           'UploadDriveDocumentFromUrlInteractor::execute failed',
           exception: e,
           stackTrace: s,
-          extras: {
-            'accountId': request.accountId.id.value,
-            'name': request.name,
-            'mimeType': request.mimeType,
-          },
+          // Identifying values stay out: extras reach Sentry.
+          extras: {'mimeType': request.mimeType},
         );
       }
       return Left<Failure, Success>(

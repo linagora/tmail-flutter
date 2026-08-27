@@ -1087,9 +1087,9 @@ class ComposerController extends BaseController
         'ComposerController::_transferDriveDocuments: upload-from-url endpoint is unavailable',
         exception: const UploadFromUrlEndpointUnavailableException('upload-from-url uri could not be resolved'),
         stackTrace: StackTrace.current,
+        // Account id stays out: extras reach Sentry.
         extras: {
           'docCount': docs.length,
-          'accountId': accountId?.id.value,
           'hasSession': session != null,
         },
       );

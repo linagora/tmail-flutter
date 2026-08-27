@@ -248,7 +248,8 @@ class UploadController extends BaseController {
         'UploadController::resolveDriveTransferSuccess: taskId not found in state list',
         exception: const DriveTransferTaskNotFoundException('resolveDriveTransferSuccess'),
         stackTrace: StackTrace.current,
-        extras: {'taskId': taskId.id, 'fileName': attachment.name},
+        // File name stays out: extras reach Sentry.
+        extras: {'taskId': taskId.id},
       );
     }
     _refreshListUploadAttachmentState();

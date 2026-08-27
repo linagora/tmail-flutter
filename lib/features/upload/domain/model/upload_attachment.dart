@@ -70,8 +70,8 @@ class UploadAttachment with EquatableMixin {
           'UploadAttachment::upload failed',
           exception: error,
           stackTrace: stackTrace,
+          // File name stays out: extras reach Sentry.
           extras: {
-            'fileName': fileInfo.fileName,
             'mimeType': fileInfo.mimeType,
             'isInline': fileInfo.isInline,
           },

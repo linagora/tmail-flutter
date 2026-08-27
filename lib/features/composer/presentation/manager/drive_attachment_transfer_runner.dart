@@ -144,9 +144,9 @@ class DriveAttachmentTransferRunner {
         'DriveAttachmentTransferRunner::_runOne: uploadFromUrl threw',
         exception: e,
         stackTrace: s,
+        // File name stays out: extras reach Sentry.
         extras: {
           'taskId': taskId.id,
-          'fileName': task.doc.name,
           'mimeType': task.doc.mimeType,
         },
       );
