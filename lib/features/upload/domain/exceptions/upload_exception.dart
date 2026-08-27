@@ -27,3 +27,10 @@ class DriveDownloadLinkMissingException extends AppBaseException {
   @override
   String get exceptionName => 'DriveDownloadLinkMissingException';
 }
+
+class MissingAttachmentSourceException extends AppBaseException {
+  const MissingAttachmentSourceException([super.message]);
+
+  @override
+  String get exceptionName => 'MissingAttachmentSourceException';
+}
