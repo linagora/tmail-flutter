@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
-import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
@@ -20,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
-import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -34,7 +32,6 @@ class NetworkIsolateBindings extends Bindings {
     _bindingInterceptors();
     _bindingApi();
     _bindingIsolateWorker();
-    _bindingTransformer();
   }
 
   void _bindingDio() {
@@ -100,10 +97,6 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<ThreadAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
       Get.find<EmailAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
     ));
-    Get.put(FileUploader(
-      Get.find<DioClient>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
-      Get.find<FileUtils>(),
-    ));
   }
 
   void _bindingSharing() {
@@ -119,13 +112,5 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<OIDCHttpClient>(tag: BindingTag.isolateTag),
       Get.find<MailboxCacheManager>(),
     ), tag: BindingTag.isolateTag);
-  }
-
-  void _bindingTransformer() {
-    Get.put(HtmlAnalyzer(
-      Get.find<HtmlTransform>(),
-      Get.find<FileUploader>(),
-      Get.find<Uuid>(),
-    ));
   }
 }

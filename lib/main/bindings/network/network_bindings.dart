@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
@@ -36,6 +37,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -51,6 +53,7 @@ class NetworkBindings extends Bindings {
     _bindingSharing();
     _bindingInterceptors();
     _bindingApi();
+    _bindingUploader();
     _bindingTransformer();
     _bindingServices();
     _bindingException();
@@ -142,6 +145,18 @@ class NetworkBindings extends Bindings {
   void _bindingTransformer() {
     Get.put(const HtmlEscape());
     Get.put(HtmlTransform(Get.find<DioClient>(), Get.find<HtmlEscape>()));
+    Get.put(HtmlAnalyzer(
+      Get.find<HtmlTransform>(),
+      Get.find<FileUploader>(),
+      Get.find<Uuid>(),
+    ));
+  }
+
+  void _bindingUploader() {
+    Get.put(FileUploader(
+      Get.find<DioClient>(),
+      Get.find<FileUtils>(),
+    ));
   }
 
   void _bindingServices() {
