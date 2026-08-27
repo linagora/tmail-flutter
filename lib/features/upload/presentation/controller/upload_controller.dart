@@ -342,8 +342,6 @@ class UploadController extends BaseController {
   }
 
   void _showToastMessageWhenUploadAttachmentsFailure(ErrorAttachmentUploadState failure) {
-    // The chip is removed on failure, so the log is the only durable trace.
-    logError('UploadController::_showToastMessageWhenUploadAttachmentsFailure: upload ${failure.uploadId} failed');
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,

@@ -61,10 +61,21 @@ class UploadAttachment with EquatableMixin {
 
       _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
     } catch (error, stackTrace) {
-      logWarning('UploadAttachment::upload():ERROR: $error');
       if (error is DioException && error.type == DioExceptionType.cancel) {
         _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
       } else {
+        // Single logging point for attachment upload failures; the controller
+        // only shows the toast.
+        logError(
+          'UploadAttachment::upload failed',
+          exception: error,
+          stackTrace: stackTrace,
+          extras: {
+            'fileName': fileInfo.fileName,
+            'mimeType': fileInfo.mimeType,
+            'isInline': fileInfo.isInline,
+          },
+        );
         try {
           exceptionThrower.throwException(error, stackTrace);
         } catch (e) {
