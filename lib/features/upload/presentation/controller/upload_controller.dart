@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
@@ -242,14 +241,8 @@ class UploadController extends BaseController {
       ),
     );
     if (!found) {
-      // The chip is gone (composer disposed, list cleared) so the
-      // successful upload never reaches the screen - surface it.
-      logError(
+      logWarning(
         'UploadController::resolveDriveTransferSuccess: taskId not found in state list',
-        exception: const DriveTransferTaskNotFoundException('resolveDriveTransferSuccess'),
-        stackTrace: StackTrace.current,
-        // File name stays out: extras reach Sentry.
-        extras: {'taskId': taskId.id},
       );
     }
     _refreshListUploadAttachmentState();
@@ -260,11 +253,8 @@ class UploadController extends BaseController {
   void resolveDriveTransferFailure(UploadTaskId taskId) {
     final found = _uploadingStateFiles.deleteElementByUploadTaskId(taskId);
     if (!found) {
-      logError(
+      logWarning(
         'UploadController::resolveDriveTransferFailure: taskId not found in state list',
-        exception: const DriveTransferTaskNotFoundException('resolveDriveTransferFailure'),
-        stackTrace: StackTrace.current,
-        extras: {'taskId': taskId.id},
       );
     }
     _refreshListUploadAttachmentState();
@@ -350,13 +340,8 @@ class UploadController extends BaseController {
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
     } else {
-      logError(
+      logWarning(
         'UploadController::_showToastMessageWhenUploadAttachmentsFailure: no context to show failure',
-        exception: const UploadFailureToastContextMissingException(
-          '_showToastMessageWhenUploadAttachmentsFailure',
-        ),
-        stackTrace: StackTrace.current,
-        extras: {'uploadId': failure.uploadId.id},
       );
     }
   }

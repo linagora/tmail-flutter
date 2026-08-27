@@ -14,20 +14,6 @@ class UploadFromUrlEndpointUnavailableException extends AppBaseException {
   String get exceptionName => 'UploadFromUrlEndpointUnavailableException';
 }
 
-class DriveTransferTaskNotFoundException extends AppBaseException {
-  const DriveTransferTaskNotFoundException([super.message]);
-
-  @override
-  String get exceptionName => 'DriveTransferTaskNotFoundException';
-}
-
-class UploadFailureToastContextMissingException extends AppBaseException {
-  const UploadFailureToastContextMissingException([super.message]);
-
-  @override
-  String get exceptionName => 'UploadFailureToastContextMissingException';
-}
-
 class DriveDocumentNotAttachableException extends AppBaseException {
   const DriveDocumentNotAttachableException([super.message]);
 

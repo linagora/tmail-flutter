@@ -145,11 +145,12 @@ void main() {
         expect(controller.listUploadAttachments, isEmpty);
         expect(controller.attachmentsUploaded, isEmpty);
 
-        expect(logHandler.errorRecords, hasLength(1));
-        final record = logHandler.errorRecords.single;
-        expect(record.extras?.keys, isNot(contains('fileName')));
-        expect(record.rawMessage, isNot(contains(sensitiveName)));
-        expect(record.extras, containsPair('taskId', taskId.id));
+        expect(logHandler.errorRecords, isEmpty);
+        expect(logHandler.warningRecords, hasLength(1));
+        expect(
+          logHandler.warningRecords.single.rawMessage,
+          isNot(contains(sensitiveName)),
+        );
       },
     );
   });
@@ -166,15 +167,12 @@ void main() {
     testWidgets(
       'WHEN the task id is no longer present\n'
       'THEN it does not throw\n'
-      'AND emits at most one sanitized diagnostic event',
+      'AND does not emit a Sentry error event',
       (tester) async {
         final logHandler = CapturingLogHandler();
         AppLoggerRegistry.instance.registerHandler(logHandler);
         addTearDown(AppLoggerRegistry.instance.resetForTesting);
 
-        // A real context: production always has one, so the toast branch runs
-        // instead of the no-context fallback that would log a second event.
-        // testMode nulls Get.context, so it is off for this widget test only.
         Get.testMode = false;
         addTearDown(() => Get.testMode = true);
         await tester.pumpWidget(GetMaterialApp(
@@ -194,11 +192,8 @@ void main() {
           returnsNormally,
         );
 
-        expect(logHandler.errorRecords, hasLength(1));
-        final record = logHandler.errorRecords.single;
-        expect(record.extras, containsPair('taskId', 'unknown-task'));
-        expect(record.extras?.keys, isNot(contains('fileName')));
-        expect(record.stackTrace, isNotNull);
+        expect(logHandler.errorRecords, isEmpty);
+        expect(logHandler.warningRecords, hasLength(1));
       },
     );
   });

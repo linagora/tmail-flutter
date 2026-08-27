@@ -14,4 +14,7 @@ class CapturingLogHandler extends LogHandler {
 
   List<LogRecord> get errorRecords =>
       records.where((r) => r.level == Level.error).toList();
+
+  List<LogRecord> get warningRecords =>
+      records.where((r) => r.level == Level.warning).toList();
 }
