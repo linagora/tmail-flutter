@@ -648,6 +648,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final uploadExtra =
           extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
+      if (PlatformInfo.isMobile) {
+        // `copyWith` falls back to the original body when the rebuilt one is
+        // null, and that body is already consumed. Assign it explicitly so an
+        // unrebuildable upload fails plainly instead of replaying a dead stream.
+        final replayOptions = requestOptions.copyWith()
+          ..data = _getDataUploadRequest(uploadExtra);
+        return retryDio.fetch(replayOptions);
+      }
+
       return retryDio.request(
         requestOptions.path,
         data: _getDataUploadRequest(uploadExtra),

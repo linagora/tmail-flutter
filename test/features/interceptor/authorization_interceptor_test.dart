@@ -2714,11 +2714,13 @@ void main() {
   // ============================================================
   group('onError: upload retry with attachment extras', () {
     test(
-      'WHEN 401 on upload request with uploadAttachmentExtraKey + filePath\n'
+      'WHEN web receives 401 on upload request with uploadAttachmentExtraKey + filePath\n'
       'AND refresh succeeds\n'
       'THEN upload-specific retry path is taken (uses retryDio.request, not fetch)\n'
       'AND retry succeeds with 200',
       () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
         authorizationInterceptors.setTokenAndAuthorityOidc(
           newToken: OIDCFixtures.tokenOidcExpiredTime,
           newConfig: OIDCFixtures.oidcConfiguration,
