@@ -26,7 +26,6 @@ class UploadDriveDocumentFromUrlInteractor {
           stackTrace: s,
           extras: {
             'accountId': request.accountId.id.value,
-            'uploadUri': request.uploadUri.toString(),
             'name': request.name,
             'mimeType': request.mimeType,
           },
