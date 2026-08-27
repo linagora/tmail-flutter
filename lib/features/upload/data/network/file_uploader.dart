@@ -2,12 +2,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
@@ -23,6 +25,10 @@ class FileUploader {
   static const String uploadAttachmentExtraKey = 'upload-attachment';
   static const String streamDataExtraKey = 'streamData';
   static const String filePathExtraKey = 'path';
+
+  /// Charset detection only needs a prefix of the file, so an attachment is
+  /// never fully materialised on the root isolate just to sniff its encoding.
+  static const int _charsetSampleMaxBytes = 256 * 1024;
 
   final DioClient _dioClient;
   final FileUtils _fileUtils;
@@ -72,7 +78,10 @@ class FileUploader {
     );
   }
 
-  bool _hasLocalFilePath(FileInfo fileInfo) => fileInfo.filePath?.isNotEmpty == true;
+  /// Web has no `dart:io` file system, so an attachment there is always
+  /// uploaded from its bytes even if a path happens to be carried along.
+  bool _hasLocalFilePath(FileInfo fileInfo) =>
+      !PlatformInfo.isWeb && fileInfo.filePath?.isNotEmpty == true;
 
   Map<String, dynamic> _buildUploadExtra(FileInfo fileInfo) {
     final bytes = fileInfo.bytes;
@@ -86,27 +95,52 @@ class FileUploader {
     };
   }
 
-  Stream<List<int>>? _buildRequestBody(FileInfo fileInfo) {
+  Stream<List<int>> _buildRequestBody(FileInfo fileInfo) {
     if (_hasLocalFilePath(fileInfo)) {
       return File(fileInfo.filePath!).openRead();
     }
     final bytes = fileInfo.bytes;
-    return bytes != null ? BodyBytesStream.fromBytes(bytes) : null;
+    if (bytes == null) {
+      throw const MissingAttachmentSourceException();
+    }
+    return BodyBytesStream.fromBytes(bytes);
   }
 
+  /// Runs after the server already stored the blob, so a probe failure degrades
+  /// to an unknown charset instead of discarding a completed upload.
   Future<String?> _resolveCharset(FileInfo fileInfo) async {
     if (fileInfo.mimeType != FileUtils.TEXT_PLAIN_MIME_TYPE) {
       return null;
     }
 
-    final fileBytes = _hasLocalFilePath(fileInfo)
-        ? await File(fileInfo.filePath!).readAsBytes()
-        : fileInfo.bytes;
-    if (fileBytes == null) {
+    try {
+      final Uint8List? charsetSample;
+      if (_hasLocalFilePath(fileInfo)) {
+        charsetSample = await _readCharsetSample(fileInfo.filePath!);
+      } else {
+        final bytes = fileInfo.bytes;
+        charsetSample = bytes != null && bytes.length > _charsetSampleMaxBytes
+            ? Uint8List.sublistView(bytes, 0, _charsetSampleMaxBytes)
+            : bytes;
+      }
+      if (charsetSample == null) {
+        return null;
+      }
+
+      return (await _fileUtils.getCharsetFromBytes(charsetSample)).toLowerCase();
+    } catch (exception) {
+      // Only the type: the message of a file error carries the attachment path.
+      logWarning('FileUploader::_resolveCharset(): ${exception.runtimeType}');
       return null;
     }
+  }
 
-    return (await _fileUtils.getCharsetFromBytes(fileBytes)).toLowerCase();
+  Future<Uint8List> _readCharsetSample(String filePath) async {
+    final sample = BytesBuilder(copy: false);
+    await for (final chunk in File(filePath).openRead(0, _charsetSampleMaxBytes)) {
+      sample.add(chunk);
+    }
+    return sample.takeBytes();
   }
 
   Attachment _parsingResponse({

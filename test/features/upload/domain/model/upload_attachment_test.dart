@@ -14,6 +14,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
@@ -210,6 +211,35 @@ void main() {
     expect(
       (emittedStates.last as CancelAttachmentUploadState).uploadId,
       uploadTaskId,
+    );
+  });
+
+  test('surfaces a missing attachment source as ErrorAttachmentUploadState', () async {
+    const uploadTaskId = UploadTaskId('upload-no-source');
+    final uploadAttachment = UploadAttachment(
+      uploadTaskId,
+      // Neither a usable path nor bytes: the upload must fail as an error state
+      // rather than silently succeeding with an empty attachment.
+      FileInfo(fileName: 'a.pdf', fileSize: 0, filePath: '', type: 'application/pdf'),
+      Uri.parse('http://127.0.0.1:1/upload/account-id'),
+      FileUploader(DioClient(Dio()), FileUtils()),
+      _RethrowExceptionThrower(),
+    );
+
+    final statesFuture = uploadAttachment.progressState.toList();
+    uploadAttachment.upload();
+
+    final states = await statesFuture.timeout(const Duration(seconds: 30));
+    final emittedStates = <Object?>[];
+    for (final state in states) {
+      state.fold(emittedStates.add, emittedStates.add);
+    }
+
+    expect(emittedStates.whereType<CancelAttachmentUploadState>(), isEmpty);
+    expect(emittedStates.last, isA<ErrorAttachmentUploadState>());
+    expect(
+      (emittedStates.last as ErrorAttachmentUploadState).exception,
+      isA<MissingAttachmentSourceException>(),
     );
   });
 }
