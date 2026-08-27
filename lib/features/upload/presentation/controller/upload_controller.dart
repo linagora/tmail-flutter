@@ -349,7 +349,14 @@ class UploadController extends BaseController {
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
     } else {
-      logError('UploadController::_showToastMessageWhenUploadAttachmentsFailure: no context to show failure for ${failure.uploadId}');
+      logError(
+        'UploadController::_showToastMessageWhenUploadAttachmentsFailure: no context to show failure',
+        exception: const UploadFailureToastContextMissingException(
+          '_showToastMessageWhenUploadAttachmentsFailure',
+        ),
+        stackTrace: StackTrace.current,
+        extras: {'uploadId': failure.uploadId.id},
+      );
     }
   }
 

@@ -20,3 +20,10 @@ class DriveTransferTaskNotFoundException extends AppBaseException {
   @override
   String get exceptionName => 'DriveTransferTaskNotFoundException';
 }
+
+class UploadFailureToastContextMissingException extends AppBaseException {
+  const UploadFailureToastContextMissingException([super.message]);
+
+  @override
+  String get exceptionName => 'UploadFailureToastContextMissingException';
+}
