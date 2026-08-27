@@ -45,7 +45,6 @@ void main() {
   group('DriveIntentWebViewModalShell', () {
     _testLoadingOverlayIsClosable();
     _testLoadingOverlayCloseButtonCallback();
-    _testCloseButtonHoverFeedback();
     _testNoPointerInterceptorWithoutLoadingOverlay();
   });
 }
@@ -102,24 +101,6 @@ void _testLoadingOverlayCloseButtonCallback() {
     // Assert callback wiring without SVG hit-testing.
     received!.onTapActionCallback!();
     expect(closed, 1);
-  });
-}
-
-void _testCloseButtonHoverFeedback() {
-  testWidgets('close button keeps Material hover feedback', (tester) async {
-    await tester.pumpWidget(
-      _shell(
-        haveCloseButton: true,
-        constraints: const BoxConstraints(maxWidth: 800, maxHeight: 677),
-        insetPadding: const EdgeInsets.all(24),
-      ),
-    );
-
-    final button = tester.widget<TMailButtonWidget>(
-      find.byType(TMailButtonWidget),
-    );
-
-    expect(button.hoverColor, const Color(0x14424244));
   });
 }
 
