@@ -107,7 +107,6 @@ class _DriveIntentWebViewModalState extends State<DriveIntentWebViewModal>
               borderRadius: BorderRadius.all(Radius.circular(6)),
             )
           : const RoundedRectangleBorder(),
-      haveCloseButton: !isWideScreen,
       alignment: isWideScreen ? Alignment.center : null,
       closeIconPath: widget.imageAssets.closeIcon,
       onClose: cancel,

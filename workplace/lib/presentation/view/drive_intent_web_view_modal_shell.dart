@@ -12,7 +12,6 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
   final EdgeInsets insetPadding;
   final ShapeBorder? shape;
   final BoxConstraints? constraints;
-  final bool haveCloseButton;
   final AlignmentGeometry? alignment;
   final Widget Function(TMailButtonWidget closeButton)? loadingWidget;
   final String closeIconPath;
@@ -26,7 +25,6 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
     this.insetPadding = const EdgeInsets.all(0),
     this.shape,
     this.constraints,
-    this.haveCloseButton = true,
     this.alignment,
     this.loadingWidget,
   });
@@ -59,20 +57,9 @@ class DriveIntentWebViewModalShell extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           child: Stack(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (haveCloseButton)
-                    Padding(
-                      padding: const EdgeInsetsGeometry.directional(end: 17),
-                      child: closeButton,
-                    ),
-                  // Keep the iframe mounted across responsive changes (#4738).
-                  Expanded(
-                    key: const ValueKey('drive-shell-content'),
-                    child: child,
-                  ),
-                ],
+              KeyedSubtree(
+                key: const ValueKey('drive-shell-content'),
+                child: child,
               ),
               if (loadingWidget != null)
                 Positioned.fill(

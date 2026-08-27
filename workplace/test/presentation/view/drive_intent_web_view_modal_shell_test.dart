@@ -34,7 +34,6 @@ Widget _modalShell({
   return DriveIntentWebViewModalShell(
     closeIconPath: _closeIcon,
     onClose: onClose ?? () {},
-    haveCloseButton: haveCloseButton,
     constraints: constraints,
     insetPadding: insetPadding,
     loadingWidget: loadingWidget,
