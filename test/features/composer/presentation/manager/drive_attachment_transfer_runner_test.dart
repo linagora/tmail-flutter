@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,8 @@ import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/upload_drive_document_from_url_state.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+
+import '../../../../fixtures/capturing_log_handler.dart';
 
 class _StubFailure extends FeatureFailure {
   _StubFailure() : super(exception: Exception('failed'));
@@ -623,6 +626,52 @@ void main() {
       names: ['keep-a.pdf', 'drop.pdf', 'keep-b.pdf'],
       cancelledName: 'drop.pdf',
       maxConcurrent: 3,
+    );
+  });
+
+  group('DriveAttachmentTransferRunner::_runOne error reporting::', () {
+    late CapturingLogHandler logHandler;
+
+    setUp(() {
+      logHandler = CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN the injected uploadFromUrl callback throws unexpectedly\n'
+      'THEN the matching chip resolves as failed\n'
+      'AND exactly ONE error event is emitted without the file name or URL',
+      () async {
+        const sensitiveName = 'SENSITIVE-CONTRACT-2026.pdf';
+        const sensitiveLink = 'https://drive.example.com/SENSITIVE-TOKEN-1d2e/file.pdf';
+        final failedTaskIds = <UploadTaskId>[];
+        final runner = makeRunner(
+          uploadFromUrl: (_) => throw StateError('uploadFromUrl blew up'),
+        );
+
+        final result = await runner.transfer((
+          docs: [doc(downloadLink: sensitiveLink, name: sensitiveName)],
+          accountId: accountId,
+          uploadUri: uploadUri,
+          onPlaceholdersReady: (_) {},
+          onSuccess: (_, __) {},
+          onFailure: failedTaskIds.add,
+        ));
+
+        expect(failedTaskIds, hasLength(1));
+        expect(result, (started: true, succeeded: 0, failed: 1));
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+        expect(record.rawMessage, isNot(contains('SENSITIVE-TOKEN-1d2e')));
+        expect(record.extras, containsPair('taskId', failedTaskIds.single.id));
+        expect(record.exception, isA<StateError>());
+        expect(record.stackTrace, isNotNull);
+      },
     );
   });
 }

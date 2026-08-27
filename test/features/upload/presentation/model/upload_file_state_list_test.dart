@@ -129,6 +129,46 @@ void main() {
       });
     });
 
+    group('boolean found/not-found contract', () {
+      const present = UploadTaskId('a');
+      const missing = UploadTaskId('unknown');
+
+      test('updateElementBy returns true for a match and false otherwise', () {
+        final list = makeList([present]);
+
+        expect(
+          list.updateElementBy(
+            (state) => state?.uploadTaskId == present,
+            (state) => state,
+          ),
+          isTrue,
+        );
+        expect(
+          list.updateElementBy(
+            (state) => state?.uploadTaskId == missing,
+            (state) => state,
+          ),
+          isFalse,
+        );
+      });
+
+      test('updateElementByUploadTaskId returns true for a match and false otherwise', () {
+        final list = makeList([present]);
+
+        expect(list.updateElementByUploadTaskId(present, (state) => state), isTrue);
+        expect(list.updateElementByUploadTaskId(missing, (state) => state), isFalse);
+      });
+
+      test('deleteElementByUploadTaskId returns true for a match and false otherwise', () {
+        final list = makeList([present]);
+
+        expect(list.deleteElementByUploadTaskId(present), isTrue);
+        // Already removed by the call above.
+        expect(list.deleteElementByUploadTaskId(present), isFalse);
+        expect(list.deleteElementByUploadTaskId(missing), isFalse);
+      });
+    });
+
     group('cancelAll', () {
       test('cancels every pending token and empties the list', () {
         final tokenA = CancelToken();

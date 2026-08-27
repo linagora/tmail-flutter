@@ -2,7 +2,10 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -22,10 +25,13 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/features/upload/presentation/model/drive_transfer_placeholder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../fixtures/capturing_log_handler.dart';
 import 'upload_controller_drive_transfer_test.mocks.dart';
 
 @GenerateNiceMocks([
@@ -112,19 +118,40 @@ void main() {
   });
 
   group('UploadController::resolveDriveTransferSuccess after deletion::', () {
-    test('Should not restore a chip whose attachment was already deleted', () {
-      controller.addDownloadingPlaceholders([placeholder()]);
-      controller.deleteFileUploaded(taskId);
+    late CapturingLogHandler logHandler;
 
-      // Transfer completed after the user removed the waiting chip.
-      controller.resolveDriveTransferSuccess(
-        taskId,
-        Attachment(blobId: Id('blob-1'), size: UnsignedInt(100)),
-      );
-
-      expect(controller.listUploadAttachments, isEmpty);
-      expect(controller.attachmentsUploaded, isEmpty);
+    setUp(() {
+      logHandler = CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
     });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN a late success arrives after its placeholder was removed\n'
+      'THEN the chip is not restored\n'
+      'AND the diagnostic event carries no attachment file name',
+      () {
+        const sensitiveName = 'SENSITIVE-OFFER-LETTER.pdf';
+        controller.addDownloadingPlaceholders([placeholder()]);
+        controller.deleteFileUploaded(taskId);
+
+        // Transfer completed after the user removed the waiting chip.
+        controller.resolveDriveTransferSuccess(
+          taskId,
+          Attachment(blobId: Id('blob-1'), size: UnsignedInt(100), name: sensitiveName),
+        );
+
+        expect(controller.listUploadAttachments, isEmpty);
+        expect(controller.attachmentsUploaded, isEmpty);
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+        expect(record.extras, containsPair('taskId', taskId.id));
+      },
+    );
   });
 
   group('UploadController::resolveDriveTransferFailure::', () {
@@ -135,6 +162,45 @@ void main() {
 
       expect(controller.listUploadAttachments, isEmpty);
     });
+
+    testWidgets(
+      'WHEN the task id is no longer present\n'
+      'THEN it does not throw\n'
+      'AND emits at most one sanitized diagnostic event',
+      (tester) async {
+        final logHandler = CapturingLogHandler();
+        AppLoggerRegistry.instance.registerHandler(logHandler);
+        addTearDown(AppLoggerRegistry.instance.resetForTesting);
+
+        // A real context: production always has one, so the toast branch runs
+        // instead of the no-context fallback that would log a second event.
+        // testMode nulls Get.context, so it is off for this widget test only.
+        Get.testMode = false;
+        addTearDown(() => Get.testMode = true);
+        await tester.pumpWidget(GetMaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: LocalizationService.supportedLocales,
+          home: Scaffold(body: Container()),
+        ));
+
+        await tester.pumpAndSettle();
+        expect(
+          () => controller.resolveDriveTransferFailure(const UploadTaskId('unknown-task')),
+          returnsNormally,
+        );
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.extras, containsPair('taskId', 'unknown-task'));
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.stackTrace, isNotNull);
+      },
+    );
   });
 
   group('UploadController::addDownloadingPlaceholders + resolve ordering::', () {

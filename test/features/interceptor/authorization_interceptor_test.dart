@@ -4,9 +4,6 @@ import 'dart:io';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
-import 'package:core/utils/logging/log_handler.dart';
-import 'package:core/utils/logging/log_level.dart';
-import 'package:core/utils/logging/log_record.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -35,6 +32,7 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/capturing_log_handler.dart';
 import '../../fixtures/oidc_fixtures.dart';
 import 'authorization_interceptor_test.mocks.dart';
 
@@ -3648,11 +3646,11 @@ void main() {
   // failure would log twice (generic onError:Exception + the classified event).
   // ============================================================
   group('onError: web refresh failure emits a single Sentry event', () {
-    late _CapturingLogHandler logHandler;
+    late CapturingLogHandler logHandler;
 
     setUp(() {
       PlatformInfo.isTestingForWeb = true;
-      logHandler = _CapturingLogHandler();
+      logHandler = CapturingLogHandler();
       AppLoggerRegistry.instance.registerHandler(logHandler);
     });
 
@@ -3737,10 +3735,10 @@ void main() {
   // that generic event — it is their only trace.
   // ============================================================
   group('onError: mobile refresh failure emits a single Sentry event', () {
-    late _CapturingLogHandler logHandler;
+    late CapturingLogHandler logHandler;
 
     setUp(() {
-      logHandler = _CapturingLogHandler();
+      logHandler = CapturingLogHandler();
       AppLoggerRegistry.instance.registerHandler(logHandler);
     });
 
@@ -3828,14 +3826,4 @@ void main() {
     dioAdapter.close();
     dio.close();
   });
-}
-
-class _CapturingLogHandler extends LogHandler {
-  final List<LogRecord> records = [];
-
-  @override
-  void handle(LogRecord record) => records.add(record);
-
-  List<LogRecord> get errorRecords =>
-      records.where((r) => r.level == Level.error).toList();
 }

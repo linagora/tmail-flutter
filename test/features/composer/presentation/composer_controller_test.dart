@@ -1,3 +1,4 @@
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
@@ -92,6 +93,7 @@ import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
+import '../../../fixtures/capturing_log_handler.dart';
 import '../../../fixtures/session_fixtures.dart';
 import '../../../fixtures/widget_fixtures.dart';
 import '../../../mocks/mock_web_view_platform.dart';
@@ -1404,7 +1406,11 @@ void main() {
         sharingLink: Uri.parse('https://drive.example.com/report'),
       );
 
+      late CapturingLogHandler logHandler;
+
       setUp(() {
+        logHandler = CapturingLogHandler();
+        AppLoggerRegistry.instance.registerHandler(logHandler);
         Get.put(DriveAttachmentHandler());
         composerController?.richTextMobileTabletController =
             mockRichTextMobileTabletController;
@@ -1414,6 +1420,8 @@ void main() {
             .thenAnswer((_) async {});
         when(mockHtmlEditorApi.insertHtml(any)).thenAnswer((_) async {});
       });
+
+      tearDown(() => AppLoggerRegistry.instance.resetForTesting());
 
       // handleDrivePickResult awaits SchedulerBinding.instance.endOfFrame on
       // mobile, which only resolves once a frame is pumped — testWidgets +
@@ -1477,6 +1485,16 @@ void main() {
         expect(failure.error.toString(), 'Exception');
         // No placeholder means the transfer never reached the runner.
         verifyNever(mockUploadController.addDownloadingPlaceholders(any));
+
+        // One diagnostic for the batch, and it must not name the account.
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.extras?.keys, isNot(contains('accountId')));
+        expect(
+          record.rawMessage,
+          isNot(contains(AccountFixtures.aliceAccountId.id.value)),
+        );
+        expect(record.extras, containsPair('docCount', 1));
       }
 
       testWidgets(
