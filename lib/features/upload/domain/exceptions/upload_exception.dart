@@ -27,3 +27,17 @@ class UploadFailureToastContextMissingException extends AppBaseException {
   @override
   String get exceptionName => 'UploadFailureToastContextMissingException';
 }
+
+class DriveDocumentNotAttachableException extends AppBaseException {
+  const DriveDocumentNotAttachableException([super.message]);
+
+  @override
+  String get exceptionName => 'DriveDocumentNotAttachableException';
+}
+
+class DriveDownloadLinkMissingException extends AppBaseException {
+  const DriveDownloadLinkMissingException([super.message]);
+
+  @override
+  String get exceptionName => 'DriveDownloadLinkMissingException';
+}

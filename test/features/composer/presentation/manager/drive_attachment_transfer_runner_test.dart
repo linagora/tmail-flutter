@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/concurrency_gate.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/repository/upload_from_url_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/upload_drive_document_from_url_state.dart';
@@ -638,6 +639,82 @@ void main() {
     });
 
     tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN downloadLink is null\n'
+      'THEN the matching chip resolves as failed\n'
+      'AND exactly ONE error event is emitted without the file name',
+      () async {
+        const sensitiveName = 'SENSITIVE-CONTRACT-2026.pdf';
+        final failedTaskIds = <UploadTaskId>[];
+        var uploadCalls = 0;
+        final runner = makeRunner(
+          uploadFromUrl: (_) async {
+            uploadCalls++;
+            return Left(_StubFailure());
+          },
+        );
+
+        final result = await runner.transfer((
+          docs: [doc(name: sensitiveName)],
+          accountId: accountId,
+          uploadUri: uploadUri,
+          onPlaceholdersReady: (_) {},
+          onSuccess: (_, __) {},
+          onFailure: failedTaskIds.add,
+        ));
+
+        expect(uploadCalls, 0);
+        expect(failedTaskIds, hasLength(1));
+        expect(result, (started: true, succeeded: 0, failed: 1));
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.exception, isA<DriveDownloadLinkMissingException>());
+        expect(record.stackTrace, isNotNull);
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+        expect(record.extras, containsPair('taskId', failedTaskIds.single.id));
+        expect(record.extras, containsPair('mimeType', 'application/pdf'));
+      },
+    );
+
+    test(
+      'WHEN downloadLink is empty\n'
+      'THEN the matching chip resolves as failed\n'
+      'AND exactly ONE error event is emitted without the file name or URL',
+      () async {
+        const sensitiveName = 'SENSITIVE-CONTRACT-2026.pdf';
+        final failedTaskIds = <UploadTaskId>[];
+        var uploadCalls = 0;
+        final runner = makeRunner(
+          uploadFromUrl: (_) async {
+            uploadCalls++;
+            return Left(_StubFailure());
+          },
+        );
+
+        final result = await runner.transfer((
+          docs: [doc(downloadLink: '', name: sensitiveName)],
+          accountId: accountId,
+          uploadUri: uploadUri,
+          onPlaceholdersReady: (_) {},
+          onSuccess: (_, __) {},
+          onFailure: failedTaskIds.add,
+        ));
+
+        expect(uploadCalls, 0);
+        expect(failedTaskIds, hasLength(1));
+        expect(result, (started: true, succeeded: 0, failed: 1));
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.exception, isA<DriveDownloadLinkMissingException>());
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+        expect(record.extras, containsPair('taskId', failedTaskIds.single.id));
+      },
+    );
 
     test(
       'WHEN the injected uploadFromUrl callback throws unexpectedly\n'

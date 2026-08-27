@@ -1,14 +1,17 @@
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
+import '../../../../fixtures/capturing_log_handler.dart';
 import 'drive_attachment_handler_test.mocks.dart';
 import 'drive_attachment_handler_test_helper.dart';
 
@@ -285,5 +288,62 @@ void main() {
 
       expect(caughtError, isA<StateError>());
     });
+  });
+
+  group('DriveAttachmentHandler::handleDrivePickResult error reporting::', () {
+    late CapturingLogHandler logHandler;
+
+    setUp(() {
+      logHandler = CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN a document is attachable neither as link nor as download\n'
+      'THEN exactly ONE error event is emitted without the file name\n'
+      'AND it records whether sharing/download links were present',
+      () async {
+        const sensitiveName = 'SENSITIVE-PAYSLIP-2026.pdf';
+        final droppedDoc = DriveDocument(
+          id: 'drop-1',
+          name: sensitiveName,
+          size: 0,
+          mimeType: 'application/pdf',
+        );
+
+        await handlePick([droppedDoc], appLocalizations: appLocalizations);
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        expect(record.exception, isA<DriveDocumentNotAttachableException>());
+        expect(record.stackTrace, isNotNull);
+        expect(record.extras?.keys, isNot(contains('fileName')));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+        expect(record.extras, containsPair('mimeType', 'application/pdf'));
+        expect(record.extras, containsPair('hasSharingLink', false));
+        expect(record.extras, containsPair('hasDownloadLink', false));
+        expect(record.extras, containsPair('requireHttps', handler.requireHttps));
+      },
+    );
+
+    test(
+      'WHEN one document is dropped beside a valid sibling\n'
+      'THEN exactly ONE drop event is emitted',
+      () async {
+        await handlePick([linkDoc, noLinkDoc], appLocalizations: appLocalizations);
+
+        expect(logHandler.errorRecords, hasLength(1));
+        expect(
+          logHandler.errorRecords.single.exception,
+          isA<DriveDocumentNotAttachableException>(),
+        );
+        expect(
+          logHandler.errorRecords.single.extras,
+          containsPair('mimeType', noLinkDoc.mimeType),
+        );
+      },
+    );
   });
 }

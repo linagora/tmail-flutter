@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/drive_document_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -106,6 +107,19 @@ class DriveAttachmentHandler {
         downloadableDocs.add(doc);
       } else {
         droppedCount++;
+        final downloadLink = doc.downloadLink;
+        logError(
+          'DriveAttachmentHandler::_splitByAttachability: document is not attachable',
+          exception: const DriveDocumentNotAttachableException(),
+          stackTrace: StackTrace.current,
+          extras: {
+            'mimeType': doc.mimeType,
+            'hasSharingLink': doc.sharingLink != null,
+            'hasDownloadLink':
+                downloadLink != null && downloadLink.toString().trim().isNotEmpty,
+            'requireHttps': requireHttps,
+          },
+        );
       }
     }
     return (linkDocs, downloadableDocs, droppedCount);
