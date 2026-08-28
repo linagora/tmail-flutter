@@ -781,10 +781,8 @@ void main() {
         expect(logHandler.errorRecords, hasLength(1));
         final record = logHandler.errorRecords.single;
         // The raw DioException is intentionally forwarded as `exception:` so Sentry
-        // can attach it; extras/rawMessage are the only fields this call controls
-        // directly, and neither may carry the sentinel URL. The exception's own
-        // request URL is redacted downstream by
-        // SentryInitializer.sanitizeRequestForTesting, not here.
+        // can attach it; this test only asserts the runner-controlled fields
+        // (extras/rawMessage) don't carry the sentinel URL.
         expect(record.exception, isA<DioException>());
         expect(record.extras?.values, isNot(contains(sentinelUrl)));
         expect(record.rawMessage, isNot(contains(sentinelUrl)));
