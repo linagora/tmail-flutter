@@ -386,6 +386,30 @@ void main() {
     expect(capturedRequest!.cancelToken, isNotNull);
   });
 
+  test('Should fall back to octet-stream when the doc has no mimeType', () async {
+    UploadFromUrlRequest? capturedRequest;
+    final runner = makeRunner(uploadFromUrl: (request) async {
+      capturedRequest = request;
+      return Right(UploadDriveDocumentFromUrlSuccess(Attachment(name: request.name)));
+    });
+
+    await runner.transfer((
+      docs: [DriveDocument(
+        id: 'doc-no-mime',
+        name: 'report.pdf',
+        size: 100,
+        downloadLink: Uri.parse('https://drive.example.com/1'),
+      )],
+      accountId: accountId,
+      uploadUri: uploadUri,
+      onPlaceholdersReady: (_) {},
+      onSuccess: (_, __) {},
+      onFailure: (_) {},
+    ));
+
+    expect(capturedRequest!.mimeType, 'application/octet-stream');
+  });
+
   test('Should mint a unique placeholder per doc carrying its own metadata', () async {
     final placeholderDocs = [
       doc(downloadLink: 'https://drive.example.com/1', name: 'a.pdf', size: 10),

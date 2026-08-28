@@ -299,13 +299,13 @@ void main() {
         expect(done.documents.first.id, 'ok');
       });
 
-      test('document missing mimeType is skipped', () {
+      test('document missing mimeType is kept with a null mimeType', () {
         final done = _parseDone(intentId, [
-          {'id': 'bad', 'name': 'bad.pdf', 'size': 100},
+          {'id': 'no-mime', 'name': 'no-mime.pdf', 'size': 100},
           {'id': 'ok', 'name': 'ok.pdf', 'size': 100, 'mimeType': 'application/pdf'},
         ]);
-        expect(done.documents.length, 1);
-        expect(done.documents.first.id, 'ok');
+        expect(done.documents.length, 2);
+        expect(done.documents.first.mimeType, isNull);
       });
 
       test('all documents missing required field → empty list', () {
