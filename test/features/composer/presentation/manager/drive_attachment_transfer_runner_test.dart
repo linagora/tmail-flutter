@@ -750,5 +750,46 @@ void main() {
         expect(record.stackTrace, isNotNull);
       },
     );
+
+    test(
+      'WHEN the injected uploadFromUrl callback throws a real DioException\n'
+      'THEN the matching chip resolves as failed\n'
+      'AND the logged event carries no sentinel URL/account id outside the raw exception object',
+      () async {
+        const sensitiveName = 'SENSITIVE-CONTRACT-2026.pdf';
+        const sentinelUrl =
+            'https://drive.example.com/upload/accounts/sentinel-account-id?token=sentinel-token';
+        final failedTaskIds = <UploadTaskId>[];
+        final runner = makeRunner(
+          uploadFromUrl: (_) => throw DioException(
+            requestOptions: RequestOptions(path: sentinelUrl),
+          ),
+        );
+
+        final result = await runner.transfer((
+          docs: [doc(downloadLink: 'https://drive.example.com/file.pdf', name: sensitiveName)],
+          accountId: accountId,
+          uploadUri: uploadUri,
+          onPlaceholdersReady: (_) {},
+          onSuccess: (_, __) {},
+          onFailure: failedTaskIds.add,
+        ));
+
+        expect(failedTaskIds, hasLength(1));
+        expect(result, (started: true, succeeded: 0, failed: 1));
+
+        expect(logHandler.errorRecords, hasLength(1));
+        final record = logHandler.errorRecords.single;
+        // The raw DioException is intentionally forwarded as `exception:` so Sentry
+        // can attach it; extras/rawMessage are the only fields this call controls
+        // directly, and neither may carry the sentinel URL. The exception's own
+        // request URL is redacted downstream by
+        // SentryInitializer.sanitizeRequestForTesting, not here.
+        expect(record.exception, isA<DioException>());
+        expect(record.extras?.values, isNot(contains(sentinelUrl)));
+        expect(record.rawMessage, isNot(contains(sentinelUrl)));
+        expect(record.rawMessage, isNot(contains(sensitiveName)));
+      },
+    );
   });
 }
