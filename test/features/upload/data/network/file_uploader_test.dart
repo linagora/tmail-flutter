@@ -96,20 +96,21 @@ void main() {
     return server;
   }
 
-  Future<Attachment> uploadTextFileFromDisk({
+  Future<Attachment> uploadTextBytesFromDisk({
     required String fileName,
-    required String content,
+    required List<int> bytes,
     required List<List<int>> receivedBodies,
+    FileUtils? fileUtils,
   }) async {
     final directory = await Directory.systemTemp.createTemp('charset-upload-');
     addTearDown(() async {
       await directory.delete(recursive: true);
     });
     final file = File('${directory.path}/$fileName');
-    await file.writeAsString(content);
+    await file.writeAsBytes(bytes);
     final server = await startRecordingUploadServer(receivedBodies);
 
-    return FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
+    return FileUploader(DioClient(Dio()), fileUtils ?? FileUtils()).uploadAttachment(
       UploadTaskId('upload-$fileName'),
       FileInfo(
         fileName: fileName,
@@ -263,7 +264,10 @@ void main() {
       final receivedBodies = <List<int>>[];
       final server = await startRecordingUploadServer(receivedBodies);
 
-      final attachment = await FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
+      final attachment = await FileUploader(
+        DioClient(Dio()),
+        _RecordingFileUtils('Shift_JIS'),
+      ).uploadAttachment(
         const UploadTaskId('upload-web-charset'),
         FileInfo(
           fileName: 'note.txt',
@@ -274,8 +278,7 @@ void main() {
         Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
       ).timeout(const Duration(seconds: 30));
 
-      expect(attachment.charset, isNotNull);
-      expect(attachment.charset, attachment.charset!.toLowerCase());
+      expect(attachment.charset, 'shift_jis');
     });
 
     test('throws MissingAttachmentSourceException when there is no body source', () async {
@@ -299,29 +302,38 @@ void main() {
     const content = 'hello charset';
     final receivedBodies = <List<int>>[];
 
-    final attachment = await uploadTextFileFromDisk(
+    final attachment = await uploadTextBytesFromDisk(
       fileName: 'note.txt',
-      content: content,
+      bytes: utf8.encode(content),
       receivedBodies: receivedBodies,
+      fileUtils: _RecordingFileUtils('Shift_JIS'),
     );
 
-    expect(attachment.charset, isNotNull);
+    expect(attachment.charset, 'shift_jis');
     expect(receivedBodies.single, utf8.encode(content));
   });
 
-  test('bounds the charset probe without truncating the uploaded file', () async {
-    // Comfortably past the 256 KiB charset sample bound.
-    final content = 'charset detection line\n' * 40000;
+  test('probes exactly the first 256 KiB of an oversized text attachment', () async {
+    const sampleMaxBytes = 256 * 1024;
+    final bytes = Uint8List.fromList(
+      List<int>.generate(sampleMaxBytes + 4096, (index) => 0x41 + (index % 26)));
+    final fileUtils = _RecordingFileUtils('Windows-1251');
     final receivedBodies = <List<int>>[];
 
-    final attachment = await uploadTextFileFromDisk(
-      fileName: 'big.txt',
-      content: content,
+    final attachment = await uploadTextBytesFromDisk(
+      fileName: 'oversized.txt',
+      bytes: bytes,
       receivedBodies: receivedBodies,
+      fileUtils: fileUtils,
     );
 
-    expect(attachment.charset, isNotNull);
-    expect(receivedBodies.single.length, utf8.encode(content).length);
+    // The probe reads a bounded prefix so the root isolate never materialises a
+    // whole text attachment, and it reads that prefix from the start of it.
+    expect(fileUtils.probedSamples.single, bytes.sublist(0, sampleMaxBytes));
+    // Bounding the probe must not shorten what is uploaded, and the detected
+    // charset must still reach the attachment.
+    expect(receivedBodies.single.length, bytes.length);
+    expect(attachment.charset, 'windows-1251');
   });
 
   test('leaves the charset unset for a non text/plain attachment', () async {
@@ -359,7 +371,8 @@ void main() {
       releaseResponse: releaseResponse,
     );
 
-    final uploadFuture = FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
+    final fileUtils = _RecordingFileUtils('Shift_JIS');
+    final uploadFuture = FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
       const UploadTaskId('upload-charset-gone'),
       FileInfo(
         fileName: 'note.txt',
@@ -381,5 +394,24 @@ void main() {
     // with an unknown charset rather than the upload reporting a failure.
     expect(attachment.name, 'note.txt');
     expect(attachment.charset, isNull);
+    // The failure has to come from reading the vanished file, not from the
+    // detector: the sample never got far enough to be probed.
+    expect(fileUtils.probedSamples, isEmpty);
   });
+}
+
+/// The real detector is a native federated plugin, so `CharsetDetector.autoDecode`
+/// throws in the VM and `FileUtils` silently falls back to UTF-8. Recording the
+/// bytes it is handed is the only way a unit test can observe what was sampled.
+class _RecordingFileUtils extends FileUtils {
+  _RecordingFileUtils(this._charset);
+
+  final String _charset;
+  final List<Uint8List> probedSamples = <Uint8List>[];
+
+  @override
+  Future<String> getCharsetFromBytes(Uint8List bytes) async {
+    probedSamples.add(bytes);
+    return _charset;
+  }
 }
