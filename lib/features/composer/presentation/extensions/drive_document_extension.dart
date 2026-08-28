@@ -10,6 +10,23 @@ extension DriveDocumentExtension on DriveDocument {
   /// Link precedence lives at the call site, not here.
   bool isAttachableAsDownload() =>
       downloadLink?.toString().trim().isNotEmpty ?? false;
+
+  /// Root cause for why a doc failed both attachability checks; used for Sentry triage.
+  String dropReason({required bool requireHttps}) {
+    final hasSharingLink = sharingLink != null;
+    final downloadLinkText = downloadLink?.toString().trim();
+    final hasDownloadLink = downloadLinkText?.isNotEmpty ?? false;
+
+    if (!hasSharingLink && !hasDownloadLink) return 'missing_links';
+    if (hasSharingLink &&
+        !sharingLink!.isSafeLinkScheme(requireHttps: requireHttps)) {
+      return 'unsafe_sharing_scheme';
+    }
+    if (downloadLinkText != null && downloadLinkText.isEmpty) {
+      return 'blank_download_link';
+    }
+    return 'unsupported_link_scheme';
+  }
 }
 
 extension _SafeLinkSchemeExtension on Uri {

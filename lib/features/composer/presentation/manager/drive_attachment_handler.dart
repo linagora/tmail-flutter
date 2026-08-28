@@ -118,6 +118,7 @@ class DriveAttachmentHandler {
             'hasDownloadLink':
                 downloadLink != null && downloadLink.toString().trim().isNotEmpty,
             'requireHttps': requireHttps,
+            'dropReason': doc.dropReason(requireHttps: requireHttps),
           },
         );
       }
