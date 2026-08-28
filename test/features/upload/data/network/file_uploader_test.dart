@@ -96,6 +96,21 @@ void main() {
     return server;
   }
 
+  Future<HttpServer> startFailingUploadServer() async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({'error': 'upload failed'}));
+      await request.response.close();
+    });
+    addTearDown(() async {
+      await server.close(force: true);
+    });
+    return server;
+  }
+
   Future<Attachment> uploadTextBytesFromDisk({
     required String fileName,
     required List<int> bytes,
@@ -201,6 +216,36 @@ void main() {
         DioExceptionType.cancel,
       )),
     );
+  });
+
+  test('scrubs byte-backed request data from upload DioExceptions', () async {
+    final sourceBytes = Uint8List.fromList(<int>[1, 2, 3, 4]);
+    final server = await startFailingUploadServer();
+
+    try {
+      await FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
+        const UploadTaskId('upload-fail'),
+        FileInfo(
+          fileName: 'a.pdf',
+          fileSize: sourceBytes.length,
+          bytes: sourceBytes,
+          type: 'application/pdf',
+        ),
+        Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+      ).timeout(const Duration(seconds: 30));
+      fail('Expected upload to throw a DioException');
+    } on DioException catch (exception) {
+      expect(exception.requestOptions.data, '');
+      expect(
+        exception.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        isFalse,
+      );
+      expect(exception.response?.requestOptions.data, '');
+      expect(
+        exception.response?.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        isFalse,
+      );
+    }
   });
 
   group('web', () {
