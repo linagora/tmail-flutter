@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -645,33 +646,52 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
       log('AuthorizationInterceptors::_retryRequest: '
           'Retry upload request with TokenId = ${_token?.tokenIdHash}');
-      final uploadExtra =
-          extraInRequest[FileUploader.uploadAttachmentExtraKey];
+      return _retryUploadRequest(
+        retryDio,
+        requestOptions,
+        extraInRequest[FileUploader.uploadAttachmentExtraKey],
+      );
+    }
 
-      if (PlatformInfo.isMobile) {
-        // `copyWith` falls back to the original body when the rebuilt one is
-        // null, and that body is already consumed. Assign it explicitly so an
-        // unrebuildable upload fails plainly instead of replaying a dead stream.
-        final replayOptions = requestOptions.copyWith()
-          ..data = _getDataUploadRequest(uploadExtra);
-        return retryDio.fetch(replayOptions);
+    log('AuthorizationInterceptors::_retryRequest: '
+        'Retry request with TokenId = ${_token?.tokenIdHash}');
+    return retryDio.fetch(requestOptions);
+  }
+
+  /// The failed attempt already consumed the body stream, so a replay has to
+  /// rebuild it from the file path or the retained bytes.
+  Future<Response> _retryUploadRequest(
+    Dio retryDio,
+    RequestOptions requestOptions,
+    dynamic uploadExtra,
+  ) {
+    if (PlatformInfo.isMobile) {
+      final uploadBody = _getDataUploadRequest(uploadExtra);
+
+      // Without a rebuilt body the replay would send an empty one, so fail
+      // plainly instead of storing a zero-byte blob under the attachment's name.
+      if (uploadBody == null) {
+        throw const MissingAttachmentSourceException();
       }
 
-      return retryDio.request(
-        requestOptions.path,
-        data: _getDataUploadRequest(uploadExtra),
-        queryParameters: requestOptions.queryParameters,
-        options: Options(
-          method: requestOptions.method,
-          headers: requestOptions.headers,
-          extra: requestOptions.extra,
-        ),
-      );
-    } else {
-      log('AuthorizationInterceptors::_retryRequest: '
-          'Retry request with TokenId = ${_token?.tokenIdHash}');
-      return retryDio.fetch(requestOptions);
+      // Replaying the original options keeps `onSendProgress`, `CancelToken`,
+      // the timeouts and the response type, all of which rebuilding an
+      // `Options` from scratch drops.
+      return retryDio.fetch(requestOptions.copyWith(data: uploadBody));
     }
+
+    // Web keeps the retry path it already had. It works today, and this fix is
+    // scoped to the mobile isolate regression.
+    return retryDio.request(
+      requestOptions.path,
+      data: _getDataUploadRequest(uploadExtra),
+      queryParameters: requestOptions.queryParameters,
+      options: Options(
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        extra: requestOptions.extra,
+      ),
+    );
   }
 
   /// Creates a separate Dio instance without interceptors for retry requests.

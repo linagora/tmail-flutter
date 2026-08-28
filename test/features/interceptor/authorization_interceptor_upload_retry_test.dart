@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -91,6 +93,41 @@ void main() {
     return server;
   }
 
+  /// Rejects the first request with 401, then reads the replay's body and holds
+  /// the response open, so a test can cancel while the replay awaits its reply.
+  Future<HttpServer> startReplayStallingServer({
+    required Completer<void> replayStarted,
+    required Completer<void> releaseReplay,
+  }) async {
+    var requestCount = 0;
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      requestCount++;
+      if (requestCount == 1) {
+        request.response.statusCode = HttpStatus.unauthorized;
+        request.response.headers.contentType = ContentType.json;
+        request.response.write(jsonEncode({'error': 'unauthorized'}));
+        await request.response.close();
+        return;
+      }
+      if (!replayStarted.isCompleted) {
+        replayStarted.complete();
+      }
+      await releaseReplay.future;
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({'uploaded': true}));
+      await request.response.close();
+    });
+    addTearDown(() async {
+      if (!releaseReplay.isCompleted) {
+        releaseReplay.complete();
+      }
+      await server.close(force: true);
+    });
+    return server;
+  }
+
   Dio buildUploadDio() {
     final dio = Dio(BaseOptions(headers: <String, dynamic>{
       HttpHeaders.acceptHeader: DioClient.jmapHeader,
@@ -134,7 +171,12 @@ void main() {
     return dio;
   }
 
-  Options uploadOptions(List<int> sourceBytes) => Options(
+  /// Mirrors the byte-backed request `FileUploader` builds. `contentLength` is
+  /// what makes Dio emit send progress, so it is opt-in per test.
+  Options uploadOptions(List<int> sourceBytes, {bool withContentLength = false}) => Options(
+    headers: withContentLength
+        ? <String, dynamic>{HttpHeaders.contentLengthHeader: sourceBytes.length}
+        : null,
     extra: <String, dynamic>{
       FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
         FileUploader.streamDataExtraKey:
@@ -200,6 +242,34 @@ void main() {
     );
   }
 
+  /// Uploads [body] through one 401 + refresh cycle and returns the `count ==
+  /// total` send-progress events observed across the original and the replay.
+  Future<List<int>> completedProgressAcrossReplay({
+    required Stream<List<int>> body,
+    required Options options,
+  }) async {
+    final receivedBodies = <List<int>>[];
+    final authorizationHeaders = <String?>[];
+    final server = await startUploadServer(receivedBodies, authorizationHeaders);
+    final dio = buildUploadDio();
+    final completedProgressEvents = <int>[];
+
+    final response = await dio.post(
+      'http://${server.address.address}:${server.port}/upload/account-id',
+      data: body,
+      options: options,
+      onSendProgress: (count, total) {
+        if (count == total) {
+          completedProgressEvents.add(count);
+        }
+      },
+    ).timeout(const Duration(seconds: 30));
+
+    expect(response.statusCode, HttpStatus.ok);
+    expect(receivedBodies.length, 2);
+    return completedProgressEvents;
+  }
+
   test('replays concurrent attachment uploads on mobile after one shared token refresh', () async {
     final receivedBodies = <List<int>>[];
     final authorizationHeaders = <String?>[];
@@ -258,31 +328,19 @@ void main() {
     );
   });
 
-  test('keeps reporting upload progress on the mobile replay after 401', () async {
+  // The replay must keep the original `onSendProgress`, otherwise the attachment
+  // chip freezes at the progress reached before the 401.
+  test('keeps reporting progress on a file-backed mobile replay after 401', () async {
     final sourceBytes = List<int>.generate(4096, (index) => index % 256);
     final file = await createTempUploadFile(sourceBytes);
-    final receivedBodies = <List<int>>[];
-    final authorizationHeaders = <String?>[];
-    final server = await startUploadServer(receivedBodies, authorizationHeaders);
-    final dio = buildUploadDio();
-    final completedProgressEvents = <int>[];
 
-    final response = await dio.post(
-      'http://${server.address.address}:${server.port}/upload/account-id',
-      data: file.openRead(),
-      options: filePathUploadOptions(file.path, sourceBytes.length),
-      onSendProgress: (count, total) {
-        if (count == total) {
-          completedProgressEvents.add(count);
-        }
-      },
-    ).timeout(const Duration(seconds: 30));
-
-    expect(response.statusCode, HttpStatus.ok);
-    expect(receivedBodies.length, 2);
-    // The replay must keep the original `onSendProgress`, otherwise the
-    // attachment chip freezes at the progress reached before the 401.
-    expect(completedProgressEvents, [sourceBytes.length, sourceBytes.length]);
+    expect(
+      await completedProgressAcrossReplay(
+        body: file.openRead(),
+        options: filePathUploadOptions(file.path, sourceBytes.length),
+      ),
+      [sourceBytes.length, sourceBytes.length],
+    );
   });
 
   test('replays the attachment body on web after 401 through the legacy retry path', () async {
@@ -340,18 +398,79 @@ void main() {
     final dio = buildUploadDio();
 
     // Malformed extras: neither a path nor a stream, so the replay body is null.
-    // It must not silently resend the already-consumed original stream.
-    final response = await dio.post(
-      'http://${server.address.address}:${server.port}/upload/account-id',
-      data: Stream<List<int>>.value(sourceBytes),
-      options: Options(
-        extra: <String, dynamic>{
-          FileUploader.uploadAttachmentExtraKey: <String, dynamic>{},
-        },
-      ),
-    ).timeout(const Duration(seconds: 30));
+    // The already-consumed original stream cannot be resent, and sending no body
+    // at all would store a zero-byte blob under the attachment's name.
+    await expectLater(
+      dio.post(
+        'http://${server.address.address}:${server.port}/upload/account-id',
+        data: Stream<List<int>>.value(sourceBytes),
+        options: Options(
+          extra: <String, dynamic>{
+            FileUploader.uploadAttachmentExtraKey: <String, dynamic>{},
+          },
+        ),
+      ).timeout(const Duration(seconds: 30)),
+      throwsA(isA<DioException>().having(
+        (exception) => exception.error,
+        'error',
+        isA<MissingAttachmentSourceException>(),
+      )),
+    );
 
-    expect(response.statusCode, HttpStatus.ok);
-    expect(receivedBodies, [sourceBytes, isEmpty]);
+    // Only the original request reached the server; no empty replay followed it.
+    expect(receivedBodies, [sourceBytes]);
+  });
+
+  // A mobile attachment with bytes but no file path (Drive, inline image)
+  // replays from streamData and must report progress like a file-backed one.
+  test('keeps reporting progress on a byte-backed mobile replay after 401', () async {
+    final sourceBytes = List<int>.generate(4096, (index) => index % 256);
+
+    expect(
+      await completedProgressAcrossReplay(
+        body: BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
+        options: uploadOptions(sourceBytes, withContentLength: true),
+      ),
+      [sourceBytes.length, sourceBytes.length],
+    );
+  });
+
+  // Cancels once the replay is in flight awaiting its response, not mid-body.
+  // Both phases abort through the same `cancelFuture.whenComplete(request.abort)`
+  // in `IOHttpClientAdapter`, reading the same `options.cancelToken`, so this
+  // covers the regression: whether the replay carries the token at all. Forcing
+  // a mid-body abort would need a multi-MB payload to defeat socket buffers and
+  // would buy no extra discrimination.
+  test('aborts the in-flight mobile replay when the upload CancelToken is cancelled', () async {
+    final sourceBytes = List<int>.generate(4096, (index) => index % 256);
+    final replayStarted = Completer<void>();
+    final releaseReplay = Completer<void>();
+    final server = await startReplayStallingServer(
+      replayStarted: replayStarted,
+      releaseReplay: releaseReplay,
+    );
+    final dio = buildUploadDio();
+    final cancelToken = CancelToken();
+
+    final uploadFuture = dio.post(
+      'http://${server.address.address}:${server.port}/upload/account-id',
+      data: BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
+      options: uploadOptions(sourceBytes),
+      cancelToken: cancelToken,
+    );
+
+    await replayStarted.future.timeout(const Duration(seconds: 30));
+    cancelToken.cancel();
+
+    // Without the token on the replay, nothing aborts it and the upload hangs on
+    // the stalled server until the timeout fires instead of reporting `cancel`.
+    await expectLater(
+      uploadFuture.timeout(const Duration(seconds: 30)),
+      throwsA(isA<DioException>().having(
+        (exception) => exception.type,
+        'type',
+        DioExceptionType.cancel,
+      )),
+    );
   });
 }
