@@ -8,7 +8,7 @@ class DriveDocument with EquatableMixin {
   final String id;
   final String name;
   final int size;
-  final String mimeType;
+  final String? mimeType;
   final Uri? sharingLink;
   final Uri? downloadLink;
   final DriveDocumentThumbnail? thumbnail;
@@ -17,7 +17,7 @@ class DriveDocument with EquatableMixin {
     required this.id,
     required this.name,
     required this.size,
-    required this.mimeType,
+    this.mimeType,
     this.sharingLink,
     this.downloadLink,
     this.thumbnail,

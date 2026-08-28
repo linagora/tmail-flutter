@@ -1,3 +1,4 @@
+import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -135,7 +136,7 @@ class DriveAttachmentTransferRunner {
         uploadUri: request.uploadUri,
         attachmentUrl: downloadLink,
         name: task.doc.name,
-        mimeType: task.doc.mimeType,
+        mimeType: task.doc.mimeType ?? Constant.octetStreamMimeType,
         cancelToken: task.placeholder.cancelToken,
       ));
     } catch (_) {
