@@ -30,6 +30,33 @@ class FileUploader {
   /// never fully materialised on the root isolate just to sniff its encoding.
   static const int _charsetSampleMaxBytes = 256 * 1024;
 
+  static RequestOptions _sanitizeUploadRequestOptions(RequestOptions requestOptions) {
+    final scrubbedExtra = Map<String, dynamic>.from(requestOptions.extra)
+      ..remove(uploadAttachmentExtraKey);
+    return requestOptions.copyWith(data: '', extra: scrubbedExtra);
+  }
+
+  static DioException _sanitizeUploadException(DioException exception) {
+    final scrubbedRequestOptions =
+        _sanitizeUploadRequestOptions(exception.requestOptions);
+    final response = exception.response;
+    return exception.copyWith(
+      requestOptions: scrubbedRequestOptions,
+      response: response == null
+          ? null
+          : Response<dynamic>(
+              data: response.data,
+              requestOptions: scrubbedRequestOptions,
+              statusCode: response.statusCode,
+              statusMessage: response.statusMessage,
+              isRedirect: response.isRedirect,
+              redirects: response.redirects,
+              extra: response.extra,
+              headers: response.headers,
+            ),
+    );
+  }
+
   final DioClient _dioClient;
   final FileUtils _fileUtils;
 
@@ -51,31 +78,38 @@ class FileUploader {
     headerParam[HttpHeaders.contentTypeHeader] = fileInfo.mimeType;
     headerParam[HttpHeaders.contentLengthHeader] = fileInfo.fileSize;
 
-    final resultJson = await _dioClient.post(
-      Uri.decodeFull(uploadUri.toString()),
-      options: Options(
-        headers: headerParam,
-        extra: _buildUploadExtra(fileInfo)
-      ),
-      data: _buildRequestBody(fileInfo),
-      cancelToken: cancelToken,
-      onSendProgress: (count, total) {
-        log('FileUploader::uploadAttachment():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
-        onSendController?.add(
-          Right(UploadingAttachmentUploadState(
-            uploadId,
-            count,
-            fileInfo.fileSize
-          ))
-        );
-      }
-    );
-    log('FileUploader::uploadAttachment(): RESULT_JSON = $resultJson');
-    return _parsingResponse(
-      resultJson: resultJson,
-      fileName: fileInfo.fileName,
-      fileCharset: await _resolveCharset(fileInfo),
-    );
+    try {
+      final resultJson = await _dioClient.post(
+        Uri.decodeFull(uploadUri.toString()),
+        options: Options(
+          headers: headerParam,
+          extra: _buildUploadExtra(fileInfo)
+        ),
+        data: _buildRequestBody(fileInfo),
+        cancelToken: cancelToken,
+        onSendProgress: (count, total) {
+          log('FileUploader::uploadAttachment():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
+          onSendController?.add(
+            Right(UploadingAttachmentUploadState(
+                uploadId,
+                count,
+                fileInfo.fileSize
+            ))
+          );
+        }
+      );
+      log('FileUploader::uploadAttachment(): RESULT_JSON = $resultJson');
+      return _parsingResponse(
+        resultJson: resultJson,
+        fileName: fileInfo.fileName,
+        fileCharset: await _resolveCharset(fileInfo),
+      );
+    } on DioException catch (exception) {
+      Error.throwWithStackTrace(
+        _sanitizeUploadException(exception),
+        exception.stackTrace,
+      );
+    }
   }
 
   /// Web has no `dart:io` file system, so an attachment there is always
