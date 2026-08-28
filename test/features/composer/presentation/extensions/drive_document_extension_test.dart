@@ -66,4 +66,28 @@ void main() {
       expect(doc.isAttachableAsDownload(), isTrue);
     });
   });
+
+  group('DriveDocumentExtension::dropReason::', () {
+    test('Should report missing_links when neither link is set', () {
+      expect(_doc().dropReason(requireHttps: false), equals('missing_links'));
+    });
+
+    test('Should report blank_download_link when downloadLink is blank, even without a sharingLink', () {
+      final doc = _doc(downloadLink: '');
+
+      expect(doc.dropReason(requireHttps: false), equals('blank_download_link'));
+    });
+
+    test('Should report unsafe_sharing_scheme when sharingLink fails the scheme check', () {
+      final doc = _doc(sharingLink: 'http://drive.example.com/report');
+
+      expect(doc.dropReason(requireHttps: true), equals('unsafe_sharing_scheme'));
+    });
+
+    test('Should report unsupported_link_scheme as the fallback when only a non-blank downloadLink is set', () {
+      final doc = _doc(downloadLink: 'https://drive.example.com/report-dl');
+
+      expect(doc.dropReason(requireHttps: false), equals('unsupported_link_scheme'));
+    });
+  });
 }
