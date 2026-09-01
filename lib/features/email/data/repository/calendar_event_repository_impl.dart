@@ -1,6 +1,7 @@
 
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -76,14 +77,25 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
     CalendarEvent calendarEvent,
     TransformConfiguration transformConfiguration,
   ) async {
+    final description = _removeVideoConferenceSection(calendarEvent.description);
+
     return calendarEvent.copyWith(
-      description: calendarEvent.description?.trim().isNotEmpty == true
+      description: description?.trim().isNotEmpty == true
         ? await _htmlDataSource.transformHtmlEmailContent(
-            calendarEvent.description!,
+            description!,
             transformConfiguration,
           )
-        : calendarEvent.description,
+        : description,
     );
+  }
+
+  /// The visio link is already part of the invitation email body, so the
+  /// "do not edit" section Twake Calendar appends to the ICS description is
+  /// dropped before rendering (see linagora/tmail-flutter#4802).
+  String? _removeVideoConferenceSection(String? description) {
+    if (description == null) return null;
+
+    return VideoConferenceSectionUtils.removeSection(description);
   }
   
   @override

@@ -1,5 +1,6 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -175,6 +176,40 @@ void main() {
         // assert
         verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
         expect(result.first.calendarEventList.first.description, '   ');
+      });
+    });
+
+    group('_transformCalendarEventDescription — video conference section removal:', () {
+      const separator = VideoConferenceSectionUtils.separator;
+      const visioSection =
+          '$separator\n'
+          'Participer via Visio : https://meet.linagora.com/apw-gxwg-naw\n'
+          '\n'
+          'Veuillez ne pas modifier cette section.\n'
+          '$separator';
+
+      test('should blank out a description made only of the visio section and never call htmlDataSource', () async {
+        // act
+        final result = await transformSingle(CalendarEvent(description: visioSection));
+
+        // assert
+        verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
+        expect(result.first.calendarEventList.first.description, isEmpty);
+      });
+
+      test('should strip the visio section before delegating to htmlDataSource', () async {
+        // arrange
+        when(htmlDatasource.transformHtmlEmailContent(any, any))
+          .thenAnswer((_) async => '<body>Sprint planning</body>');
+
+        // act
+        final result = await transformSingle(
+          CalendarEvent(description: 'Sprint planning\n\n$visioSection'),
+        );
+
+        // assert
+        verify(htmlDatasource.transformHtmlEmailContent('Sprint planning', transformConfiguration)).called(1);
+        expect(result.first.calendarEventList.first.description, '<body>Sprint planning</body>');
       });
     });
 
