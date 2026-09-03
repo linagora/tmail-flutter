@@ -384,8 +384,8 @@ void main() {
       throwsA(isA<DioException>()),
     );
 
-    // The replay carries _refreshAttemptedKey through copyWith, so a second 401
-    // must give up rather than refresh and retry forever.
+    // The retry Dio has no interceptors, so a second 401 is propagated after
+    // this one replay instead of starting another refresh and retry cycle.
     expect(receivedBodies.length, 2);
     expectRefreshedExactlyOnce();
   });
