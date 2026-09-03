@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -10,8 +11,7 @@ import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 import '../../../../fixtures/capturing_log_handler.dart';
-import 'upload_attachment_test.mocks.dart';
 
 /// Mirrors the production thrower closely enough for these tests: it maps the
 /// raw error to a domain exception by throwing it.
@@ -30,19 +29,27 @@ class _RethrowingExceptionThrower extends ExceptionThrower {
   throwException(dynamic error, dynamic stackTrace) => throw error;
 }
 
-class _RethrowExceptionThrower extends ExceptionThrower {
+class _ThrowingFileUploader extends FileUploader {
+  _ThrowingFileUploader(this._error) : super(DioClient(Dio()), FileUtils());
+
+  final Object _error;
+
   @override
-  throwException(dynamic error, dynamic stackTrace) => throw error;
+  Future<Attachment> uploadAttachment(
+    UploadTaskId uploadId,
+    FileInfo fileInfo,
+    Uri uploadUri, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onSendController,
+  }) async => throw _error;
 }
 
-@GenerateNiceMocks([MockSpec<FileUploader>()])
 void main() {
   group('UploadAttachment::upload error reporting::', () {
     const taskId = UploadTaskId('upload-task-1');
     const sensitiveName = 'SENSITIVE-PAYSLIP-2026.pdf';
     final uploadUri = Uri.parse('https://mail.example.com/upload/account-1');
 
-    late MockFileUploader fileUploader;
     late CapturingLogHandler logHandler;
 
     final fileInfo = FileInfo(
@@ -53,18 +60,20 @@ void main() {
     );
 
     setUp(() {
-      fileUploader = MockFileUploader();
       logHandler = CapturingLogHandler();
       AppLoggerRegistry.instance.registerHandler(logHandler);
     });
 
     tearDown(() => AppLoggerRegistry.instance.resetForTesting());
 
-    UploadAttachment makeUploadAttachment({CancelToken? cancelToken}) => UploadAttachment(
+    UploadAttachment makeUploadAttachment({
+      required Object error,
+      CancelToken? cancelToken,
+    }) => UploadAttachment(
           taskId,
           fileInfo,
           uploadUri,
-          fileUploader,
+          _ThrowingFileUploader(error),
           _RethrowingExceptionThrower(),
           cancelToken: cancelToken,
         );
@@ -81,15 +90,9 @@ void main() {
       'THEN exactly ONE error event is emitted with its exception and stack\n'
       'AND the file name is not part of it',
       () async {
-        when(fileUploader.uploadAttachment(
-          any,
-          any,
-          any,
-          cancelToken: anyNamed('cancelToken'),
-          onSendController: anyNamed('onSendController'),
-        )).thenThrow(StateError('backend refused the upload'));
-
-        final events = await runUpload(makeUploadAttachment());
+        final events = await runUpload(makeUploadAttachment(
+          error: StateError('backend refused the upload'),
+        ));
 
         expect(
           events.any((e) => e.fold((l) => l is ErrorAttachmentUploadState, (_) => false)),
@@ -111,18 +114,13 @@ void main() {
       'WHEN the upload is cancelled\n'
       'THEN it emits CancelAttachmentUploadState and NO error event',
       () async {
-        when(fileUploader.uploadAttachment(
-          any,
-          any,
-          any,
-          cancelToken: anyNamed('cancelToken'),
-          onSendController: anyNamed('onSendController'),
-        )).thenThrow(DioException.requestCancelled(
-          requestOptions: RequestOptions(path: '/upload'),
-          reason: null,
+        final events = await runUpload(makeUploadAttachment(
+          error: DioException.requestCancelled(
+            requestOptions: RequestOptions(path: '/upload'),
+            reason: null,
+          ),
+          cancelToken: CancelToken(),
         ));
-
-        final events = await runUpload(makeUploadAttachment(cancelToken: CancelToken()));
 
         expect(
           events.any((e) => e.fold((l) => l is CancelAttachmentUploadState, (_) => false)),
@@ -166,6 +164,60 @@ void main() {
     return server;
   }
 
+  Future<HttpServer> startSuccessfulUploadServer() async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({
+        'accountId': 'account-id',
+        'blobId': 'blob-id',
+        'type': 'application/pdf',
+        'size': 3,
+      }));
+      await request.response.close();
+    });
+    addTearDown(() async {
+      await server.close(force: true);
+    });
+    return server;
+  }
+
+  Future<HttpServer> startFailingUploadServer() async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.headers.contentType = ContentType.json;
+      request.response.write(jsonEncode({'error': 'upload failed'}));
+      await request.response.close();
+    });
+    addTearDown(() async {
+      await server.close(force: true);
+    });
+    return server;
+  }
+
+  UploadAttachment buildUploadAttachment({
+    required UploadTaskId uploadTaskId,
+    required FileInfo fileInfo,
+    required Uri uploadUri,
+  }) => UploadAttachment(
+    uploadTaskId,
+    fileInfo,
+    uploadUri,
+    FileUploader(DioClient(Dio()), FileUtils()),
+    _RethrowingExceptionThrower(),
+  );
+
+  List<Object?> emittedStates(List<Either<Failure, Success>> states) {
+    final emittedStates = <Object?>[];
+    for (final state in states) {
+      state.fold(emittedStates.add, emittedStates.add);
+    }
+    return emittedStates;
+  }
+
   test('reports a cancelled upload as CancelAttachmentUploadState, not an error', () async {
     final sourceBytes = List<int>.generate(2048, (index) => index % 256);
     final directory = await Directory.systemTemp.createTemp('cancel-attachment-');
@@ -188,7 +240,7 @@ void main() {
       FileInfo(fileName: 'a.pdf', fileSize: sourceBytes.length, filePath: file.path),
       Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
       FileUploader(DioClient(Dio()), FileUtils()),
-      _RethrowExceptionThrower(),
+      _RethrowingExceptionThrower(),
       cancelToken: cancelToken,
     );
 
@@ -223,7 +275,7 @@ void main() {
       FileInfo(fileName: 'a.pdf', fileSize: 0, filePath: '', type: 'application/pdf'),
       Uri.parse('http://127.0.0.1:1/upload/account-id'),
       FileUploader(DioClient(Dio()), FileUtils()),
-      _RethrowExceptionThrower(),
+      _RethrowingExceptionThrower(),
     );
 
     final statesFuture = uploadAttachment.progressState.toList();
@@ -240,6 +292,92 @@ void main() {
     expect(
       (emittedStates.last as ErrorAttachmentUploadState).exception,
       isA<MissingAttachmentSourceException>(),
+    );
+  });
+
+  test('reports a completed upload as SuccessAttachmentUploadState', () async {
+    const uploadTaskId = UploadTaskId('upload-success');
+    final server = await startSuccessfulUploadServer();
+    final uploadAttachment = buildUploadAttachment(
+      uploadTaskId: uploadTaskId,
+      fileInfo: FileInfo(
+        fileName: 'a.pdf',
+        fileSize: 3,
+        bytes: Uint8List.fromList(<int>[1, 2, 3]),
+        type: 'application/pdf',
+      ),
+      uploadUri: Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+    );
+
+    final statesFuture = uploadAttachment.progressState.toList();
+    uploadAttachment.upload();
+
+    final states = emittedStates(await statesFuture.timeout(const Duration(seconds: 30)));
+
+    expect(states.first, isA<PendingAttachmentUploadState>());
+    expect(states.last, isA<SuccessAttachmentUploadState>());
+    expect((states.last as SuccessAttachmentUploadState).uploadId, uploadTaskId);
+    expect((states.last as SuccessAttachmentUploadState).attachment.name, 'a.pdf');
+  });
+
+  test('forwards send progress to progressState', () async {
+    const uploadTaskId = UploadTaskId('upload-progress');
+    final sourceBytes = Uint8List.fromList(
+      List<int>.generate(4096, (index) => index % 256),
+    );
+    final server = await startSuccessfulUploadServer();
+    final uploadAttachment = buildUploadAttachment(
+      uploadTaskId: uploadTaskId,
+      fileInfo: FileInfo(
+        fileName: 'a.pdf',
+        fileSize: sourceBytes.length,
+        bytes: sourceBytes,
+        type: 'application/pdf',
+      ),
+      uploadUri: Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+    );
+
+    final statesFuture = uploadAttachment.progressState.toList();
+    uploadAttachment.upload();
+
+    final states = emittedStates(await statesFuture.timeout(const Duration(seconds: 30)));
+    final progressStates = states.whereType<UploadingAttachmentUploadState>();
+
+    expect(progressStates, isNotEmpty);
+    expect(progressStates.last.uploadId, uploadTaskId);
+    expect(progressStates.last.progress, sourceBytes.length);
+    expect(progressStates.last.total, sourceBytes.length);
+  });
+
+  test('reports a failed upload as ErrorAttachmentUploadState', () async {
+    const uploadTaskId = UploadTaskId('upload-failure');
+    final server = await startFailingUploadServer();
+    final uploadAttachment = buildUploadAttachment(
+      uploadTaskId: uploadTaskId,
+      fileInfo: FileInfo(
+        fileName: 'a.pdf',
+        fileSize: 3,
+        bytes: Uint8List.fromList(<int>[1, 2, 3]),
+        type: 'application/pdf',
+      ),
+      uploadUri: Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+    );
+
+    final statesFuture = uploadAttachment.progressState.toList();
+    uploadAttachment.upload();
+
+    final states = emittedStates(await statesFuture.timeout(const Duration(seconds: 30)));
+
+    expect(states.whereType<SuccessAttachmentUploadState>(), isEmpty);
+    expect(states.whereType<CancelAttachmentUploadState>(), isEmpty);
+    expect(states.last, isA<ErrorAttachmentUploadState>());
+    expect(
+      (states.last as ErrorAttachmentUploadState).exception,
+      isA<DioException>().having(
+        (exception) => exception.response?.statusCode,
+        'status code',
+        HttpStatus.internalServerError,
+      ),
     );
   });
 }

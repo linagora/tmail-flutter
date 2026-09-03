@@ -305,13 +305,16 @@ void main() {
     });
 
     test('resolves the charset of a text/plain attachment from bytes', () async {
-      final sourceBytes = Uint8List.fromList(utf8.encode('hello charset'));
+      const sampleMaxBytes = 256 * 1024;
+      final sourceBytes = Uint8List.fromList(
+        List<int>.generate(sampleMaxBytes + 4096, (index) => 0x41 + (index % 26)));
       final receivedBodies = <List<int>>[];
       final server = await startRecordingUploadServer(receivedBodies);
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
 
       final attachment = await FileUploader(
         DioClient(Dio()),
-        _RecordingFileUtils('Shift_JIS'),
+        fileUtils,
       ).uploadAttachment(
         const UploadTaskId('upload-web-charset'),
         FileInfo(
@@ -324,6 +327,8 @@ void main() {
       ).timeout(const Duration(seconds: 30));
 
       expect(attachment.charset, 'shift_jis');
+      expect(fileUtils.probedSamples.single, sourceBytes.sublist(0, sampleMaxBytes));
+      expect(receivedBodies.single, sourceBytes);
     });
 
     test('throws MissingAttachmentSourceException when there is no body source', () async {
@@ -443,6 +448,30 @@ void main() {
     // detector: the sample never got far enough to be probed.
     expect(fileUtils.probedSamples, isEmpty);
   });
+
+  test('keeps a completed upload when the charset detector throws', () async {
+    final sourceBytes = Uint8List.fromList(utf8.encode('hello charset'));
+    final receivedBodies = <List<int>>[];
+    final server = await startRecordingUploadServer(receivedBodies);
+
+    final attachment = await FileUploader(
+      DioClient(Dio()),
+      _ThrowingFileUtils(),
+    ).uploadAttachment(
+      const UploadTaskId('upload-charset-detector-failure'),
+      FileInfo(
+        fileName: 'note.txt',
+        fileSize: sourceBytes.length,
+        bytes: sourceBytes,
+        type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+      ),
+      Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+    ).timeout(const Duration(seconds: 30));
+
+    expect(attachment.name, 'note.txt');
+    expect(attachment.charset, isNull);
+    expect(receivedBodies.single, sourceBytes);
+  });
 }
 
 /// The real detector is a native federated plugin, so `CharsetDetector.autoDecode`
@@ -458,5 +487,12 @@ class _RecordingFileUtils extends FileUtils {
   Future<String> getCharsetFromBytes(Uint8List bytes) async {
     probedSamples.add(bytes);
     return _charset;
+  }
+}
+
+class _ThrowingFileUtils extends FileUtils {
+  @override
+  Future<String> getCharsetFromBytes(Uint8List bytes) async {
+    throw StateError('charset detector failed');
   }
 }
