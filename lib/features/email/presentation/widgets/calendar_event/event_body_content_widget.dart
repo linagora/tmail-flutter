@@ -71,14 +71,35 @@ class EventBodyContentWidget extends StatelessWidget {
           else
             LayoutBuilder(builder: (context, constraints) {
               return HtmlContentViewer(
-                contentHtml: content,
-                initialWidth: constraints.maxWidth,
-                maxHtmlContentHeight: PlatformInfo.isIOS
-                  ? ConstantsUI.htmlContentMaxHeight
-                  : null,
-                useDefaultFontStyle: true,
-                direction: AppUtils.getCurrentDirection(context),
-                onMailtoDelegateAction: onMailtoDelegateAction
+                configuration: HtmlContentViewerConfiguration(
+                  content: HtmlContentViewerContent(
+                    html: content,
+                    direction: AppUtils.getCurrentDirection(context),
+                  ),
+                  layout: HtmlContentViewerLayout(
+                    viewport: HtmlContentViewerViewport(
+                      constraints: BoxConstraints.tightFor(
+                        width: constraints.maxWidth,
+                      ),
+                    ),
+                    height: HtmlContentViewerHeightConfiguration(
+                      contentConstraints: PlatformInfo.isIOS
+                          ? const BoxConstraints(
+                              minHeight: ConstantsUI.htmlContentMinHeight,
+                              maxHeight: ConstantsUI.htmlContentMaxHeight,
+                            )
+                          : const BoxConstraints(
+                              minHeight: ConstantsUI.htmlContentMinHeight,
+                            ),
+                    ),
+                  ),
+                  typography: const HtmlContentViewerTypography(
+                    fontStyle: HtmlContentViewerFontStyle.defaultStyle,
+                  ),
+                  callbacks: HtmlContentViewerCallbacks(
+                    onMailto: onMailtoDelegateAction,
+                  ),
+                ),
               );
             }),
           PositionedDirectional(
