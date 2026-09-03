@@ -132,10 +132,14 @@ void main() {
 
     setUp(() => reset(htmlDatasource));
 
-    Future<List<BlobCalendarEvent>> transformSingle(CalendarEvent event) =>
+    Future<List<BlobCalendarEvent>> transformSingle(
+      CalendarEvent event, {
+      String Function(String) sanitizeDescription = VideoConferenceSectionUtils.removeSection,
+    }) =>
       calendarEventRepository.transformCalendarEventDescription(
         [BlobCalendarEvent(blobId: blobId, calendarEventList: [event])],
         transformConfiguration,
+        sanitizeDescription: sanitizeDescription,
       );
 
     Future<void> expectDelegated({
@@ -179,37 +183,110 @@ void main() {
       });
     });
 
-    group('_transformCalendarEventDescription — video conference section removal:', () {
-      const separator = VideoConferenceSectionUtils.separator;
+    group('_transformCalendarEventDescription — description sanitizing:', () {
       const visioSection =
-          '$separator\n'
+          '${VideoConferenceSectionUtils.separator}\n'
           'Participer via Visio : https://meet.linagora.com/apw-gxwg-naw\n'
           '\n'
           'Veuillez ne pas modifier cette section.\n'
-          '$separator';
+          '${VideoConferenceSectionUtils.separator}';
 
-      test('should blank out a description made only of the visio section and never call htmlDataSource', () async {
-        // act
-        final result = await transformSingle(CalendarEvent(description: visioSection));
+      test('should skip htmlDataSource when sanitizeDescription returns blank', () async {
+        final result = await transformSingle(
+          CalendarEvent(description: 'any visio block'),
+          sanitizeDescription: (_) => '',
+        );
 
-        // assert
         verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
         expect(result.first.calendarEventList.first.description, isEmpty);
       });
 
-      test('should strip the visio section before delegating to htmlDataSource', () async {
-        // arrange
+      test('should skip htmlDataSource when sanitizeDescription returns whitespace', () async {
+        final result = await transformSingle(
+          CalendarEvent(description: 'any visio block'),
+          sanitizeDescription: (_) => '   ',
+        );
+
+        verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
+        expect(result.first.calendarEventList.first.description, '   ');
+      });
+
+      test('should not call sanitizeDescription when description is null', () async {
+        var sanitized = false;
+
+        final result = await transformSingle(
+          CalendarEvent(description: null, title: 'Meeting'),
+          sanitizeDescription: (description) {
+            sanitized = true;
+            return description;
+          },
+        );
+
+        expect(sanitized, isFalse);
+        verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
+        expect(result.first.calendarEventList.first.description, isNull);
+      });
+
+      test('should pass the raw description into sanitizeDescription', () async {
+        when(htmlDatasource.transformHtmlEmailContent(any, any))
+          .thenAnswer((_) async => '<body>Sprint planning</body>');
+        late String capturedRaw;
+
+        await transformSingle(
+          CalendarEvent(description: 'Sprint planning with visio block'),
+          sanitizeDescription: (raw) {
+            capturedRaw = raw;
+            return 'Sprint planning';
+          },
+        );
+
+        expect(capturedRaw, 'Sprint planning with visio block');
+      });
+
+      test('should send sanitizeDescription output to htmlDataSource', () async {
         when(htmlDatasource.transformHtmlEmailContent(any, any))
           .thenAnswer((_) async => '<body>Sprint planning</body>');
 
-        // act
+        final result = await transformSingle(
+          CalendarEvent(description: 'Sprint planning with visio block'),
+          sanitizeDescription: (_) => 'Sprint planning',
+        );
+
+        verify(htmlDatasource.transformHtmlEmailContent('Sprint planning', transformConfiguration)).called(1);
+        expect(result.first.calendarEventList.first.description, '<body>Sprint planning</body>');
+      });
+
+      test('should use VideoConferenceSectionUtils by default for a visio-only description', () async {
+        final result = await transformSingle(CalendarEvent(description: visioSection));
+
+        verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
+        expect(result.first.calendarEventList.first.description, isEmpty);
+      });
+
+      test('should use VideoConferenceSectionUtils by default before htmlDataSource', () async {
+        when(htmlDatasource.transformHtmlEmailContent(any, any))
+          .thenAnswer((_) async => '<body>Sprint planning</body>');
+
         final result = await transformSingle(
           CalendarEvent(description: 'Sprint planning\n\n$visioSection'),
         );
 
-        // assert
         verify(htmlDatasource.transformHtmlEmailContent('Sprint planning', transformConfiguration)).called(1);
         expect(result.first.calendarEventList.first.description, '<body>Sprint planning</body>');
+      });
+
+      test('should still call htmlDataSource when a visio-only section is wrapped in HTML tags', () async {
+        const wrappedDescription = '<p>$visioSection</p>';
+        const leftover = '<p>\n</p>';
+        when(htmlDatasource.transformHtmlEmailContent(any, any))
+          .thenAnswer((_) async => '<body><p></p></body>');
+
+        final result = await transformSingle(
+          CalendarEvent(description: wrappedDescription),
+        );
+
+        verify(htmlDatasource.transformHtmlEmailContent(leftover, transformConfiguration)).called(1);
+        expect(result.first.calendarEventList.first.description, '<body><p></p></body>');
       });
     });
 
@@ -357,6 +434,35 @@ void main() {
         // assert
         verifyNever(htmlDatasource.transformHtmlEmailContent(any, any));
         expect(result, isEmpty);
+      });
+
+      test('should sanitize each CalendarEvent independently', () async {
+        when(htmlDatasource.transformHtmlEmailContent(any, any))
+          .thenAnswer((invocation) async {
+            final raw = invocation.positionalArguments.first as String;
+            return '<body>$raw</body>';
+          });
+
+        final blob = BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [
+            CalendarEvent(description: 'keep me'),
+            CalendarEvent(description: 'drop me'),
+            CalendarEvent(description: null),
+          ],
+        );
+
+        final result = await calendarEventRepository.transformCalendarEventDescription(
+          [blob],
+          transformConfiguration,
+          sanitizeDescription: (text) => text == 'drop me' ? '' : text,
+        );
+
+        verify(htmlDatasource.transformHtmlEmailContent('keep me', transformConfiguration)).called(1);
+        verifyNever(htmlDatasource.transformHtmlEmailContent('drop me', transformConfiguration));
+        expect(result.first.calendarEventList[0].description, '<body>keep me</body>');
+        expect(result.first.calendarEventList[1].description, isEmpty);
+        expect(result.first.calendarEventList[2].description, isNull);
       });
 
       test('should process all CalendarEvents within a single BlobCalendarEvent', () async {

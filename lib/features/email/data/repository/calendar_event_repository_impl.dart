@@ -56,16 +56,25 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
       .rejectEventInvitation(accountId, blobIds, language);
   }
 
+  /// [sanitizeDescription] cleans the raw ICS description before it is
+  /// rendered. It defaults to dropping the "do not edit" section Twake Calendar
+  /// appends to the description, because the visio link it holds is already
+  /// rendered by the invitation email body.
   @override
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
-    TransformConfiguration transformConfiguration,
-  ) async {
+    TransformConfiguration transformConfiguration, {
+    String Function(String) sanitizeDescription = VideoConferenceSectionUtils.removeSection,
+  }) async {
     return Future.wait(blobCalendarEvents.map((blobCalendarEvent) async {
       return BlobCalendarEvent(
         blobId: blobCalendarEvent.blobId,
         calendarEventList: await Future.wait(blobCalendarEvent.calendarEventList.map((calendarEvent) {
-          return _transformCalendarEventDescription(calendarEvent, transformConfiguration);
+          return _transformCalendarEventDescription(
+            calendarEvent,
+            transformConfiguration,
+            sanitizeDescription,
+          );
         })),
         isFree: blobCalendarEvent.isFree,
         attendanceStatus: blobCalendarEvent.attendanceStatus,
@@ -76,8 +85,11 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   Future<CalendarEvent> _transformCalendarEventDescription(
     CalendarEvent calendarEvent,
     TransformConfiguration transformConfiguration,
+    String Function(String) sanitizeDescription,
   ) async {
-    final description = _removeVideoConferenceSection(calendarEvent.description);
+    final description = calendarEvent.description == null
+        ? null
+        : sanitizeDescription(calendarEvent.description!);
 
     return calendarEvent.copyWith(
       description: description?.trim().isNotEmpty == true
@@ -87,15 +99,6 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
           )
         : description,
     );
-  }
-
-  /// The visio link is already part of the invitation email body, so the
-  /// "do not edit" section Twake Calendar appends to the ICS description is
-  /// dropped before rendering (see linagora/tmail-flutter#4802).
-  String? _removeVideoConferenceSection(String? description) {
-    if (description == null) return null;
-
-    return VideoConferenceSectionUtils.removeSection(description);
   }
   
   @override
