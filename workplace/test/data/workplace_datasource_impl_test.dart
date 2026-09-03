@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
+import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 
 /// Captures the last request and returns a fixed JSON response.
@@ -247,9 +248,11 @@ void main() {
       final result = await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(result.intentId, equals('intent-abc'));
@@ -263,9 +266,11 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com/api/'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -281,9 +286,11 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -299,9 +306,11 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'my-secret-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -317,9 +326,11 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.dark,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.dark,
+        ),
       );
 
       // Normalize through jsonEncode so nested Dart objects are fully serialized
@@ -348,13 +359,15 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(
-          label: 'https://attach.url',
-          maxFileSize: 5000,
-          availableSize: 4500,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(
+            label: 'https://attach.url',
+            maxFileSize: 5000,
+            availableSize: 4500,
+          ),
+          theme: WorkplaceTheme.light,
         ),
-        theme: WorkplaceTheme.light,
       );
 
       final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
@@ -374,8 +387,10 @@ void main() {
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
         accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        theme: WorkplaceTheme.light,
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
@@ -386,6 +401,22 @@ void main() {
       expect(config['downloadLink'], isNull);
     });
 
+    test('Should reject a null access token when the cozy bridge is unavailable', () async {
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessToken: null,
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
+
     test('Should propagate DioException on network error', () async {
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
 
@@ -393,9 +424,11 @@ void main() {
         () => datasource.createIntent(
           platformUrl: Uri.parse('https://platform.example.com'),
           accessToken: 'test-token',
-          addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-          addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-          theme: WorkplaceTheme.light,
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+            theme: WorkplaceTheme.light,
+          ),
         ),
         throwsA(isA<DioException>()),
       );

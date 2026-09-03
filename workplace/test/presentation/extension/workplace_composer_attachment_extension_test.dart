@@ -560,14 +560,13 @@ void main() {
         ),
       );
 
-      // `_buildIntentRequest` doesn't fully explicitToJson-serialize nested
-      // request objects (only WorkplaceFilePickerConfigRequest does), so the
-      // captured body still holds the typed request graph at this depth.
       final intentBody = adapter.capturedBodies[1] as Map<String, dynamic>;
-      final requestData = intentBody['data'] as WorkplaceIntentDataRequest;
-      final downloadLink = requestData.attributes.data.downloadLink;
-      expect(downloadLink!.maxFileSize, equals(5000));
-      expect(downloadLink.availableSize, equals(5000));
+      final requestData = intentBody['data'] as Map<String, dynamic>;
+      final attributes = requestData['attributes'] as Map<String, dynamic>;
+      final filePickerData = attributes['data'] as Map<String, dynamic>;
+      final downloadLink = filePickerData['downloadLink'] as Map<String, dynamic>;
+      expect(downloadLink['maxFileSize'], equals(5000));
+      expect(downloadLink['availableSize'], equals(5000));
     });
   });
 }
