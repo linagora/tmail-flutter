@@ -39,7 +39,10 @@ class CalendarEventDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final eventDesc = _generateEventDescriptionAsHtml();
+    final eventDesc = generateEventDescriptionAsHtml(
+      description: calendarEvent.description,
+      emailContent: emailContent,
+    );
 
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -78,19 +81,23 @@ class CalendarEventDetailWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _generateEventDescriptionAsHtml() {
-    final descriptions = calendarEvent.description?.trimmed ?? '';
-    final emailContentTrimmed = emailContent.trimmed;
+@visibleForTesting
+String generateEventDescriptionAsHtml({
+  required String? description,
+  required String emailContent,
+}) {
+  final descriptions = description?.trimmed ?? '';
+  final emailContentTrimmed = emailContent.trimmed;
 
-    if (descriptions.isEmpty && emailContentTrimmed.isEmpty) {
-      return '';
-    }
+  if (descriptions.isEmpty && emailContentTrimmed.isEmpty) {
+    return '';
+  }
 
-    return '''
+  return '''
       $descriptions
       <br>
       $emailContentTrimmed
     ''';
-  }
 }

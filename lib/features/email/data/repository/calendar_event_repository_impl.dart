@@ -1,6 +1,7 @@
 
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -56,16 +57,14 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
       .rejectEventInvitation(accountId, blobIds, language);
   }
 
-  /// [sanitizeDescription] cleans the raw ICS description before it is
-  /// rendered. It defaults to dropping the "do not edit" section Twake Calendar
-  /// appends to the description, because the visio link it holds is already
-  /// rendered by the invitation email body.
   @override
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
     TransformConfiguration transformConfiguration, {
-    String Function(String) sanitizeDescription = VideoConferenceSectionUtils.removeSection,
+    String Function(String)? sanitizeDescription,
   }) async {
+    final sanitize =
+        sanitizeDescription ?? VideoConferenceSectionUtils.removeSection;
     return Future.wait(blobCalendarEvents.map((blobCalendarEvent) async {
       return BlobCalendarEvent(
         blobId: blobCalendarEvent.blobId,
@@ -73,7 +72,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
           return _transformCalendarEventDescription(
             calendarEvent,
             transformConfiguration,
-            sanitizeDescription,
+            sanitize,
           );
         })),
         isFree: blobCalendarEvent.isFree,
@@ -89,7 +88,9 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   ) async {
     final description = calendarEvent.description == null
         ? null
-        : sanitizeDescription(calendarEvent.description!);
+        : _visibleCalendarDescription(
+            sanitizeDescription(calendarEvent.description!),
+          );
 
     return calendarEvent.copyWith(
       description: description?.trim().isNotEmpty == true
@@ -100,7 +101,21 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
         : description,
     );
   }
-  
+
+  static final _mediaTagRegex = RegExp(
+    r'<(?:img|video|audio|canvas|svg|iframe)\b',
+    caseSensitive: false,
+  );
+
+  String _visibleCalendarDescription(String html) {
+    final plainText = HtmlUtils.extractPlainText(
+      html,
+      removeQuotes: false,
+    ).trim();
+    if (plainText.isNotEmpty || _mediaTagRegex.hasMatch(html)) return html;
+    return '';
+  }
+
   @override
   Future<CalendarEventAcceptResponse> acceptCounterEvent(
     AccountId accountId,

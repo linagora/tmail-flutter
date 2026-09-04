@@ -33,9 +33,10 @@ class _EventDescription {
 
   static const String _marker = VideoConferenceSectionUtils.separator;
 
-  /// One run of line breaks, written either literally or as `<br>` tags in any
-  /// casing. The whitespace a tag may hold before its slash is bounded, so a
-  /// malformed `<br` fails within one pass instead of backtracking (ADR 0069).
+  /// One run of line breaks: `\r\n` / `\n` / `\r`, or `<br>` / `<br/>` in any
+  /// casing. Tag-internal whitespace before the optional slash is at most 32
+  /// HTML whitespace characters (space, tab, LF, FF, CR — Dart/JS `\s`). A
+  /// malformed `<br` then fails in one pass instead of backtracking (ADR 0069).
   static final RegExp _breakRunPattern = RegExp(
     r'(?:\r\n|[\n\r]|<br\s{0,32}/?>)+',
     caseSensitive: false,

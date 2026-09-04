@@ -4,13 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'redos_test_utils.dart';
 
 void main() {
-  const separator = VideoConferenceSectionUtils.separator;
+  const separator =
+      '-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-';
   const visioSection =
       '$separator\n'
       'Participer via Visio : https://meet.linagora.com/apw-gxwg-naw\n'
       '\n'
       'Veuillez ne pas modifier cette section.\n'
       '$separator';
+
+  test('separator SHOULD match the Twake Calendar delimiter used in production', () {
+    expect(VideoConferenceSectionUtils.separator, separator);
+  });
 
   group('VideoConferenceSectionUtils.removeSection', () {
     test('SHOULD return description unchanged when it has no separator', () {
@@ -250,6 +255,16 @@ void main() {
     test('SHOULD strip <br> tags holding whitespace before the slash', () {
       const description =
           'Before<br  />$separator<br\t/>Join Visio : https://meet.example.com/a-b-c<br \n/>$separator<br  />After';
+
+      expect(
+        VideoConferenceSectionUtils.removeSection(description),
+        'Before\nAfter',
+      );
+    });
+
+    test('SHOULD strip <br> tags holding a form feed before the slash', () {
+      const description =
+          'Before<br\f/>$separator<br\f/>Join Visio : https://meet.example.com/a-b-c<br\f/>$separator<br\f/>After';
 
       expect(
         VideoConferenceSectionUtils.removeSection(description),
