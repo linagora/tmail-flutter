@@ -1172,7 +1172,7 @@ class MailboxDashBoardController extends ReloadableController
         AppLocalizations.of(currentContext!).drafts_saved,
         actionName: AppLocalizations.of(currentContext!).discard,
         onActionClick: () => _discardEmail(success.emailId, success.draftMailboxId),
-        leadingSVGIcon: imagePaths.icMailboxDrafts,
+        leadingSVGIcon: imagePaths.icMailboxDraftsAction,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,

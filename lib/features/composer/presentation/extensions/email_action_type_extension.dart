@@ -156,7 +156,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.unsubscribe:
         return imagePaths.icUnsubscribe;
       case EmailActionType.archiveMessage:
-        return imagePaths.icMailboxArchived;
+        return imagePaths.icMailboxArchivedAction;
       case EmailActionType.downloadMessageAsEML:
         return imagePaths.icDownloadAttachment;
       case EmailActionType.editAsNewEmail:

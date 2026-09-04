@@ -121,9 +121,9 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.enableMailbox:
         return imagePaths.icShowMailbox;
       case MailboxActions.emptyTrash:
-        return imagePaths.icMailboxTrash;
+        return imagePaths.icMailboxTrashAction;
       case MailboxActions.emptySpam:
-        return imagePaths.icMailboxTrash;
+        return imagePaths.icMailboxTrashAction;
       case MailboxActions.confirmMailSpam:
         return imagePaths.icMarkAsRead;
       case MailboxActions.recoverDeletedMessages:

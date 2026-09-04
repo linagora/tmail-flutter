@@ -618,7 +618,7 @@ class ThreadView extends GetWidget<ThreadController>
         background: _buildEmailSwipeBackground(context, presentationEmail),
         secondaryBackground: controller.isInArchiveMailbox(presentationEmail)
             ? null
-            : _buildEmailSwipeSecondaryBackground(context),
+            : buildEmailSwipeSecondaryBackground(context, controller.imagePaths),
         confirmDismiss: (direction) => controller.swipeEmailAction(
           presentationEmail,
           direction,
@@ -726,7 +726,11 @@ class ThreadView extends GetWidget<ThreadController>
     );
   }
 
-  Widget _buildEmailSwipeSecondaryBackground(BuildContext context) {
+  @visibleForTesting
+  static Widget buildEmailSwipeSecondaryBackground(
+    BuildContext context,
+    ImagePaths imagePaths,
+  ) {
     return Container(
       color: AppColor.colorItemRecipientSelected,
       padding: const EdgeInsetsDirectional.only(end: 16),
@@ -737,7 +741,7 @@ class ThreadView extends GetWidget<ThreadController>
           CircleAvatar(
             backgroundColor: AppColor.colorSpamReportBannerBackground,
             radius: 24,
-            child: SvgPicture.asset(controller.imagePaths.icMailboxArchived, colorFilter: AppColor.primaryLinShare.asFilter(), fit: BoxFit.fill),
+            child: SvgPicture.asset(imagePaths.icMailboxArchivedAction, colorFilter: AppColor.primaryLinShare.asFilter(), fit: BoxFit.fill),
           ),
           const SizedBox(width: 11),
           Text(

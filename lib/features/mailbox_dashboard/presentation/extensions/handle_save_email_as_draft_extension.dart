@@ -13,7 +13,7 @@ extension HandleSaveEmailAsDraftExtension on MailboxDashBoardController {
     appToast.showToastMessage(
       currentOverlayContext!,
       AppLocalizations.of(currentContext!).drafts_saved,
-      leadingSVGIcon: imagePaths.icMailboxDrafts,
+      leadingSVGIcon: imagePaths.icMailboxDraftsAction,
       leadingSVGIconColor: Colors.white,
       backgroundColor: AppColor.toastSuccessBackgroundColor,
       textColor: Colors.white,

@@ -5,6 +5,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/widgets.dart' hide State;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -12,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
@@ -26,6 +28,8 @@ import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_typ
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
@@ -118,6 +122,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -273,7 +279,7 @@ void main() {
   final logoutOidcInteractor = MockLogoutOidcInteractor();
   final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
   final appToast = MockAppToast();
-  final imagePaths = MockImagePaths();
+  final imagePaths = ImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final mockToastManager = MockToastManager();
@@ -328,6 +334,23 @@ void main() {
       Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
+
+  Future<void> pumpLocalizedApp(WidgetTester tester) async {
+    await tester.pumpWidget(
+      const GetMaterialApp(
+        locale: LocalizationService.defaultLocale,
+        supportedLocales: LocalizationService.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: SizedBox(),
+      ),
+    );
+    await tester.pump();
+  }
 
   setUp(() {
     Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
@@ -405,6 +428,56 @@ void main() {
       storeEmailSortOrderInteractor,
       getStoredEmailSortOrderInteractor,
     );
+  });
+
+  group('draft saved toast icon:', () {
+    testWidgets('uses the legacy action icon after creating a draft',
+        (tester) async {
+      await pumpLocalizedApp(tester);
+      clearInteractions(appToast);
+
+      mailboxDashboardController.handleSuccessViewState(
+        SaveEmailAsDraftsSuccess(EmailId(Id('draft-email')), null),
+      );
+
+      verify(
+        appToast.showToastMessage(
+          any,
+          any,
+          actionName: anyNamed('actionName'),
+          onActionClick: anyNamed('onActionClick'),
+          actionIcon: anyNamed('actionIcon'),
+          leadingSVGIcon: imagePaths.icMailboxDraftsAction,
+          leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
+          backgroundColor: anyNamed('backgroundColor'),
+          textColor: anyNamed('textColor'),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('uses the legacy action icon after updating a draft',
+        (tester) async {
+      await pumpLocalizedApp(tester);
+      clearInteractions(appToast);
+
+      mailboxDashboardController.handleSuccessViewState(
+        UpdateEmailDraftsSuccess(
+          emailId: EmailId(Id('draft-email')),
+          attachments: [],
+        ),
+      );
+
+      verify(
+        appToast.showToastMessage(
+          any,
+          any,
+          leadingSVGIcon: imagePaths.icMailboxDraftsAction,
+          leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
+          backgroundColor: anyNamed('backgroundColor'),
+          textColor: anyNamed('textColor'),
+        ),
+      ).called(1);
+    });
   });
 
   group('search/sort/filter feature:', () {

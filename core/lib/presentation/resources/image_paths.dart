@@ -46,6 +46,9 @@ class ImagePaths {
   String get icMailboxTrash => _getImagePath('ic_trash_folder.svg');
   String get icMailboxFavorite => _getImagePath('ic_starred_folder.svg');
   String get icMailboxActionRequired => _getImagePath('ic_action_required_folder.svg');
+  String get icMailboxArchivedAction => _getImagePath('ic_mailbox_archived_action.svg');
+  String get icMailboxDraftsAction => _getImagePath('ic_mailbox_drafts_action.svg');
+  String get icMailboxTrashAction => _getImagePath('ic_mailbox_trash_action.svg');
   String get icFilterSelected => _getImagePath('ic_filter_selected.svg');
   String get icFilterMessageAll => _getImagePath('ic_filter_message_all.svg');
   String get icFilterMessageAttachments => _getImagePath('ic_filter_message_attachments.svg');

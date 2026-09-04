@@ -71,7 +71,7 @@ enum EmailSelectionActionType {
       case EmailSelectionActionType.markAsNotSpam:
         return imagePaths.icNotSpam;
       case EmailSelectionActionType.archiveMessage:
-        return imagePaths.icMailboxArchived;
+        return imagePaths.icMailboxArchivedAction;
       case EmailSelectionActionType.moreAction:
         return imagePaths.icMoreVertical;
       case EmailSelectionActionType.labelAs:
