@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Removes the video-conference section that Twake Calendar appends to event
 /// descriptions, delimited by [separator]:
 ///
@@ -18,139 +20,104 @@ class VideoConferenceSectionUtils {
   static const String separator =
       '-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-';
 
-  static String removeSection(String description) {
-    const markerLength = separator.length;
+  static String removeSection(String description) =>
+      _EventDescription(description).withoutVideoConferenceSections();
+}
+
+/// The description being cleaned, held as a whole so every step below works on
+/// offsets into [text] instead of on `(text, offset)` argument pairs.
+class _EventDescription {
+  _EventDescription(this.text);
+
+  final String text;
+
+  static const String _marker = VideoConferenceSectionUtils.separator;
+
+  /// One run of line breaks, written either literally or as `<br>` tags in any
+  /// casing. The whitespace a tag may hold before its slash is bounded, so a
+  /// malformed `<br` fails within one pass instead of backtracking (ADR 0069).
+  static final RegExp _breakRunPattern = RegExp(
+    r'(?:\r\n|[\n\r]|<br\s{0,32}/?>)+',
+    caseSensitive: false,
+  );
+
+  /// Every break run of [text], collected in the single pass both indexes below
+  /// share.
+  late final List<RegExpMatch> _breakRuns =
+      _breakRunPattern.allMatches(text).toList();
+
+  /// Where the break run ending at a given offset starts.
+  late final Map<int, int> _runStartByEnd = {
+    for (final run in _breakRuns) run.end: run.start,
+  };
+
+  /// Where the break run starting at a given offset ends.
+  late final Map<int, int> _runEndByStart = {
+    for (final run in _breakRuns) run.start: run.end,
+  };
+
+  String withoutVideoConferenceSections() {
+    final sections = _sections(_markerOffsets());
+    if (sections.isEmpty) return text;
+
+    return _render(_keptRanges(sections));
+  }
+
+  /// Every separator occurrence, in order, searched without overlap.
+  List<int> _markerOffsets() {
+    final offsets = <int>[];
+    var at = text.indexOf(_marker);
+    while (at != -1) {
+      offsets.add(at);
+      at = text.indexOf(_marker, at + _marker.length);
+    }
+    return offsets;
+  }
+
+  /// The ranges to drop: each pair of markers grown over the break run hugging
+  /// it on either side, so a removed section leaves neither a blank line nor a
+  /// half-open one. A separator without a closing partner delimits nothing and
+  /// stays in the text.
+  List<_Range> _sections(List<int> markerOffsets) {
+    final sections = <_Range>[];
+    for (var pair = 0; pair + 1 < markerOffsets.length; pair += 2) {
+      final open = markerOffsets[pair];
+      final afterClose = markerOffsets[pair + 1] + _marker.length;
+      sections.add(_Range(
+        _runStartByEnd[open] ?? open,
+        _runEndByStart[afterClose] ?? afterClose,
+      ));
+    }
+    return sections;
+  }
+
+  /// The ranges left around [sections]. Two sections parted by nothing but a
+  /// break run both grow over that run, hence the clamp: a kept range never
+  /// starts before the section ahead of it ended.
+  List<_Range> _keptRanges(List<_Range> sections) {
+    final kept = <_Range>[];
     var cursor = 0;
-    var removedPair = false;
-    StringBuffer? result;
-
-    while (true) {
-      final open = description.indexOf(separator, cursor);
-      if (open == -1) break;
-
-      final close = description.indexOf(separator, open + markerLength);
-      if (close == -1) break;
-
-      result ??= StringBuffer();
-      _writeKept(
-        result,
-        description.substring(cursor, open),
-        stripLeading: removedPair,
-        stripTrailing: true,
-      );
-      removedPair = true;
-      cursor = close + markerLength;
+    for (final section in sections) {
+      kept.add(_Range(cursor, max(cursor, section.start)));
+      cursor = section.end;
     }
-
-    if (result == null) return description;
-
-    _writeKept(
-      result,
-      description.substring(cursor),
-      stripLeading: true,
-      stripTrailing: false,
-    );
-    return result.toString();
+    kept.add(_Range(cursor, text.length));
+    return kept;
   }
 
-  /// Writes [chunk] into [buffer] without the breaks that hugged a removed
-  /// section, separated from what came before by exactly one newline.
-  ///
-  /// The separator is written whatever the dropped section looked like: a pair
-  /// with no break on either side would otherwise weld the surrounding text
-  /// into a single token.
-  static void _writeKept(
-    StringBuffer buffer,
-    String chunk, {
-    required bool stripLeading,
-    required bool stripTrailing,
-  }) {
-    var kept = chunk;
-    if (stripTrailing) kept = _stripTrailingBreaks(kept);
-    if (stripLeading) kept = _stripLeadingBreaks(kept);
-    if (kept.isEmpty) return;
+  /// Renders [ranges] separated by exactly one newline, whatever the dropped
+  /// sections looked like: a pair with no break on either side would otherwise
+  /// weld the surrounding text into a single token.
+  String _render(List<_Range> ranges) => ranges
+      .map((range) => text.substring(range.start, range.end))
+      .where((slice) => slice.isNotEmpty)
+      .join('\n');
+}
 
-    if (buffer.isNotEmpty) buffer.write('\n');
-    buffer.write(kept);
-  }
+/// A `[start, end)` slice of a description.
+class _Range {
+  const _Range(this.start, this.end);
 
-  static String _stripLeadingBreaks(String text) {
-    var start = 0;
-    while (start < text.length) {
-      final length = _breakLengthStartingAt(text, start);
-      if (length == 0) break;
-      start += length;
-    }
-    return start == 0 ? text : text.substring(start);
-  }
-
-  static String _stripTrailingBreaks(String text) {
-    var end = text.length;
-    while (end > 0) {
-      final length = _breakLengthEndingAt(text, end);
-      if (length == 0) break;
-      end -= length;
-    }
-    return end == text.length ? text : text.substring(0, end);
-  }
-
-  static int _breakLengthStartingAt(String text, int index) {
-    if (index >= text.length) return 0;
-    if (text.startsWith('\r\n', index)) return 2;
-    if (text[index] == '\n' || text[index] == '\r') return 1;
-    return _brTagLengthAt(text, index);
-  }
-
-  static int _breakLengthEndingAt(String text, int end) {
-    if (end <= 0) return 0;
-    if (end >= 2 && text.startsWith('\r\n', end - 2)) return 2;
-    if (text[end - 1] == '\n' || text[end - 1] == '\r') return 1;
-    return _brTagLengthEndingAt(text, end);
-  }
-
-  /// Length of the `<br>` tag starting at [index], or 0 when there is none.
-  /// Accepts `<br>`, `<br/>` and any casing, with whitespace before the slash.
-  static int _brTagLengthAt(String text, int index) {
-    if (index + 3 >= text.length || text[index] != '<') return 0;
-    if (!_isLetter(text.codeUnitAt(index + 1), _letterB)) return 0;
-    if (!_isLetter(text.codeUnitAt(index + 2), _letterR)) return 0;
-
-    var cursor = index + 3;
-    while (cursor < text.length && _isTagWhitespace(text[cursor])) {
-      cursor++;
-    }
-    if (cursor < text.length && text[cursor] == '/') cursor++;
-    if (cursor < text.length && text[cursor] == '>') {
-      return cursor - index + 1;
-    }
-    return 0;
-  }
-
-  /// Right-to-left mirror of [_brTagLengthAt], so both directions accept the
-  /// same tags instead of a backward scan guessing at candidate lengths.
-  static int _brTagLengthEndingAt(String text, int end) {
-    if (text[end - 1] != '>') return 0;
-
-    var cursor = end - 2;
-    if (cursor >= 0 && text[cursor] == '/') cursor--;
-    while (cursor >= 0 && _isTagWhitespace(text[cursor])) {
-      cursor--;
-    }
-    if (cursor < 2) return 0;
-    if (!_isLetter(text.codeUnitAt(cursor), _letterR)) return 0;
-    if (!_isLetter(text.codeUnitAt(cursor - 1), _letterB)) return 0;
-    if (text[cursor - 2] != '<') return 0;
-
-    return end - (cursor - 2);
-  }
-
-  static const int _letterB = 0x62;
-  static const int _letterR = 0x72;
-
-  /// Case-insensitive match against a lowercase ASCII [letter].
-  static bool _isLetter(int codeUnit, int letter) =>
-      (codeUnit | 0x20) == letter;
-
-  static bool _isTagWhitespace(String char) =>
-      char == ' ' || char == '\t' || char == '\n' || char == '\r';
+  final int start;
+  final int end;
 }
