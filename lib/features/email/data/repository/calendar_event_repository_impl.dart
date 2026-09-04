@@ -1,6 +1,7 @@
 
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -89,7 +90,10 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
     final description = calendarEvent.description == null
         ? null
         : _visibleCalendarDescription(
-            sanitizeDescription(calendarEvent.description!),
+            _sanitizeDescription(
+              calendarEvent.description!,
+              sanitizeDescription,
+            ),
           );
 
     return calendarEvent.copyWith(
@@ -100,6 +104,20 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
           )
         : description,
     );
+  }
+
+  String _sanitizeDescription(
+    String description,
+    SanitizeCalendarEventDescription sanitizeDescription,
+  ) {
+    try {
+      return sanitizeDescription(description);
+    } catch (e) {
+      logWarning(
+        'CalendarEventRepositoryImpl::_sanitizeDescription:Exception $e',
+      );
+      return description;
+    }
   }
 
   static final _mediaTagRegex = RegExp(
