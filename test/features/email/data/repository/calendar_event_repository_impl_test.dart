@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/calendar_event_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 
@@ -141,7 +142,7 @@ void main() {
 
     Future<List<BlobCalendarEvent>> transformSingle(
       CalendarEvent event, {
-      String Function(String)? sanitizeDescription,
+      SanitizeCalendarEventDescription? sanitizeDescription,
     }) =>
       calendarEventRepository.transformCalendarEventDescription(
         [BlobCalendarEvent(blobId: blobId, calendarEventList: [event])],

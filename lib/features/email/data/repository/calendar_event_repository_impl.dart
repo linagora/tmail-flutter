@@ -61,7 +61,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
     TransformConfiguration transformConfiguration, {
-    String Function(String)? sanitizeDescription,
+    SanitizeCalendarEventDescription? sanitizeDescription,
   }) async {
     final sanitize =
         sanitizeDescription ?? VideoConferenceSectionUtils.removeSection;
@@ -84,7 +84,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   Future<CalendarEvent> _transformCalendarEventDescription(
     CalendarEvent calendarEvent,
     TransformConfiguration transformConfiguration,
-    String Function(String) sanitizeDescription,
+    SanitizeCalendarEventDescription sanitizeDescription,
   ) async {
     final description = calendarEvent.description == null
         ? null
