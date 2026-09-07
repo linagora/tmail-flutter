@@ -58,9 +58,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     // Mobile has no container app, so it authenticates against Drive directly;
-    // on web the bridge proxies through a session that already exists.
+    // on web the bridge proxies through a session that already exists, unless
+    // the bridge itself is unavailable, in which case fall back to direct auth.
     String? accessToken;
-    if (!CozyBridge.isSupported) {
+    if (!CozyBridge.isSupported || !CozyBridge.isAvailable) {
       final oidcToken = oidcTokenGetter();
       if (oidcToken == null) throw StateError('OIDC token is unavailable');
       accessToken = await _exchangeAccessToken(platformUrl, oidcToken);

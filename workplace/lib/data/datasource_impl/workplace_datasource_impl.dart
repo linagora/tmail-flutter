@@ -11,7 +11,6 @@ import '../model/workplace_intent_response.dart';
 import '../bridge/cozy_bridge.dart';
 import '../workplace_dio.dart';
 import '../../domain/entity/workplace_intent.dart';
-import '../../domain/exceptions/workplace_exceptions.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
@@ -33,9 +32,9 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   }) async {
     final body = _buildIntentRequest(config);
 
-    // The container app already holds the stack session, so no bearer token.
-    if (CozyBridge.isSupported) {
-      if (!CozyBridge.isAvailable) throw WorkplaceBridgeUnavailableException();
+    // The container app already holds the stack session, so no bearer token;
+    // fall back to the direct bearer-token flow when the bridge isn't usable.
+    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
       final data = await CozyBridge.fetchJson(
         method: 'POST',
         path: '/intents',
