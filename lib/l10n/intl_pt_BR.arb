@@ -483,7 +483,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "Nova mensagem",
+  "compose": "Escrever",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
@@ -565,7 +565,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starred": "Favoritas",
+  "starred": "Favoritos",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
@@ -3376,5 +3376,16 @@
     "type": "text",
     "placeholders_order": ["errorMessage"],
     "placeholders": {"errorMessage": {}}
-  }
+  },
+  "downloadMessageAsEML": "Baixar mensagem como EML",
+  "print": "Imprimir",
+  "saveMessage": "Salvar mensagem",
+  "discardChanges": "Descartar alterações",
+  "warningMessageWhenClickCloseComposer": "Salvar esta mensagem na pasta de rascunhos e fechar o editor?",
+  "editAsNewEmail": "Editar como novo e-mail",
+  "markAsImportant": "Marcar como importante",
+  "saveAsTemplate": "Salvar como modelo",
+  "countMessageInSpam": "{count} mensagens na caixa de spam",
+  "view": "Ver",
+  "favoriteMailboxDisplayName": "Favoritos"
 }
