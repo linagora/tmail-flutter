@@ -203,7 +203,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "Inicie a digitação dsua mensagem aqui",
+  "hint_content_email_composer": "Inicie a digitação da sua mensagem aqui",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
@@ -267,7 +267,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "Mover para  a lixeira",
+  "move_to_trash": "Mover para a lixeira",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
@@ -687,7 +687,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersFailure": "Excluir pastas falhou",
+  "deleteFoldersFailure": "Falha ao excluir pastas",
   "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
@@ -775,7 +775,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fullscreen": "Tela cheio",
+  "fullscreen": "Tela cheia",
   "@fullscreen": {
     "type": "text",
     "placeholders_order": [],
@@ -967,7 +967,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_delete_all_email_in_trash_button": "Todas as mensagem na lixeira serão apagadas se atingir o limite de armazenamento.",
+  "message_delete_all_email_in_trash_button": "Todas as mensagens na lixeira serão apagadas se atingir o limite de armazenamento.",
   "@message_delete_all_email_in_trash_button": {
     "type": "text",
     "placeholders_order": [],
@@ -985,7 +985,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "Você está prestes a excluir permanentemente todos as mensagens da lixeira. Deseja continuar?",
+  "empty_trash_dialog_message": "Você está prestes a excluir permanentemente todas as mensagens da lixeira. Deseja continuar?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
@@ -3283,24 +3283,6 @@
   },
   "continueAction": "Continuar",
   "@continueAction": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiScribe": "AI Scribe",
-  "@aiScribe": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiScribeSettingExplanation": "Use a IA para ajudar a escrever e melhorar seus e-mails",
-  "@aiScribeSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiScribeToggleDescription": "Ativar o AI Scribe",
-  "@aiScribeToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
