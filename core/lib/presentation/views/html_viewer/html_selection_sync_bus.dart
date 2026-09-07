@@ -7,24 +7,35 @@ class HtmlSelectionSyncBus {
 
   static final HtmlSelectionSyncBus instance = HtmlSelectionSyncBus._();
 
-  final StreamController<void> _flutterSelectionStartedController =
-      StreamController<void>.broadcast();
-  final StreamController<void> _iframeSelectionStartedController =
-      StreamController<void>.broadcast();
+  StreamController<void>? _flutterSelectionStartedController;
+  StreamController<void>? _iframeSelectionStartedController;
 
   /// A selection started in the Flutter tree (e.g. the email subject).
   Stream<void> get flutterSelectionStarted =>
-      _flutterSelectionStartedController.stream;
+      (_flutterSelectionStartedController ??=
+              StreamController<void>.broadcast())
+          .stream;
 
   /// A selection started inside an email body iframe.
   Stream<void> get iframeSelectionStarted =>
-      _iframeSelectionStartedController.stream;
+      (_iframeSelectionStartedController ??=
+              StreamController<void>.broadcast())
+          .stream;
 
   void notifyFlutterSelectionStarted() {
-    _flutterSelectionStartedController.add(null);
+    _flutterSelectionStartedController?.add(null);
   }
 
   void notifyIframeSelectionStarted() {
-    _iframeSelectionStartedController.add(null);
+    _iframeSelectionStartedController?.add(null);
+  }
+
+  /// Releases both streams when the email view that owns them closes; the
+  /// next view lazily recreates fresh ones on first subscribe.
+  void dispose() {
+    _flutterSelectionStartedController?.close();
+    _iframeSelectionStartedController?.close();
+    _flutterSelectionStartedController = null;
+    _iframeSelectionStartedController = null;
   }
 }

@@ -321,6 +321,7 @@ class ThreadDetailController extends BaseController {
   void onClose() {
     onKeyboardShortcutDispose();
     _iframeSelectionStartedSubscription?.cancel();
+    HtmlSelectionSyncBus.instance.dispose();
     super.onClose();
   }
 }

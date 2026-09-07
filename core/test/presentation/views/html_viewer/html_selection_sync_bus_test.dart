@@ -1,49 +1,59 @@
+import 'dart:async';
+
 import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// Subscribes to both bus streams, tracking how many events each received.
+class _BothSidesListener {
+  _BothSidesListener(HtmlSelectionSyncBus bus)
+      : _flutterSub = bus.flutterSelectionStarted.listen(null),
+        _iframeSub = bus.iframeSelectionStarted.listen(null) {
+    _flutterSub.onData((_) => flutterCount++);
+    _iframeSub.onData((_) => iframeCount++);
+  }
+
+  final StreamSubscription<void> _flutterSub;
+  final StreamSubscription<void> _iframeSub;
+  int flutterCount = 0;
+  int iframeCount = 0;
+
+  Future<void> cancel() async {
+    await _flutterSub.cancel();
+    await _iframeSub.cancel();
+  }
+}
 
 void main() {
   // Locks the mutual-exclusion contract subject/body selection syncing relies on.
   group('HtmlSelectionSyncBus', () {
+    tearDown(() => HtmlSelectionSyncBus.instance.dispose());
+
     test('instance is a singleton', () {
       expect(HtmlSelectionSyncBus.instance, same(HtmlSelectionSyncBus.instance));
     });
 
     test('notifyFlutterSelectionStarted only fires flutterSelectionStarted', () async {
       final bus = HtmlSelectionSyncBus.instance;
-      final flutterEvents = <void>[];
-      final iframeEvents = <void>[];
-      final subs = [
-        bus.flutterSelectionStarted.listen(flutterEvents.add),
-        bus.iframeSelectionStarted.listen(iframeEvents.add),
-      ];
+      final listener = _BothSidesListener(bus);
 
       bus.notifyFlutterSelectionStarted();
       await Future<void>.delayed(Duration.zero);
 
-      expect(flutterEvents, hasLength(1));
-      expect(iframeEvents, isEmpty);
-      for (final sub in subs) {
-        await sub.cancel();
-      }
+      expect(listener.flutterCount, 1);
+      expect(listener.iframeCount, 0);
+      await listener.cancel();
     });
 
     test('notifyIframeSelectionStarted only fires iframeSelectionStarted', () async {
       final bus = HtmlSelectionSyncBus.instance;
-      final flutterEvents = <void>[];
-      final iframeEvents = <void>[];
-      final subs = [
-        bus.flutterSelectionStarted.listen(flutterEvents.add),
-        bus.iframeSelectionStarted.listen(iframeEvents.add),
-      ];
+      final listener = _BothSidesListener(bus);
 
       bus.notifyIframeSelectionStarted();
       await Future<void>.delayed(Duration.zero);
 
-      expect(iframeEvents, hasLength(1));
-      expect(flutterEvents, isEmpty);
-      for (final sub in subs) {
-        await sub.cancel();
-      }
+      expect(listener.iframeCount, 1);
+      expect(listener.flutterCount, 0);
+      await listener.cancel();
     });
 
     test('broadcasts to every listener', () async {
@@ -63,6 +73,42 @@ void main() {
       for (final sub in subs) {
         await sub.cancel();
       }
+    });
+
+    test('notify* before any listener subscribes is a safe no-op', () {
+      expect(HtmlSelectionSyncBus.instance.notifyFlutterSelectionStarted, returnsNormally);
+      expect(HtmlSelectionSyncBus.instance.notifyIframeSelectionStarted, returnsNormally);
+    });
+
+    test('dispose closes the streams and notify* after dispose is a safe no-op', () async {
+      final bus = HtmlSelectionSyncBus.instance;
+      var doneCount = 0;
+      final sub = bus.flutterSelectionStarted.listen(
+        (_) {},
+        onDone: () => doneCount++,
+      );
+
+      bus.dispose();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(doneCount, 1);
+      expect(bus.notifyFlutterSelectionStarted, returnsNormally);
+      expect(bus.notifyIframeSelectionStarted, returnsNormally);
+      await sub.cancel();
+    });
+
+    test('a fresh stream works again after dispose', () async {
+      final bus = HtmlSelectionSyncBus.instance;
+      bus.dispose();
+
+      final events = <void>[];
+      final sub = bus.iframeSelectionStarted.listen(events.add);
+
+      bus.notifyIframeSelectionStarted();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events, hasLength(1));
+      await sub.cancel();
     });
   });
 }
