@@ -222,6 +222,18 @@ void verifyScalingFallback() {
     );
   });
 
+  test('breaks unbreakable cell text instead of shrinking it', () async {
+    await withEmail(
+      '<table><tr>'
+      '<td id="cell" style="font-size:16px">${'A' * 120}</td>'
+      '</tr></table>',
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.renderedFontSizeOf('#cell'), 16);
+      },
+    );
+  });
+
   test('reflows a fixed-width table before shrinking its text', () async {
     await withEmail(
       '<table id="grid" width="900" style="width:900px"><tr>'

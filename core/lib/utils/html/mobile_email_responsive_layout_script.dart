@@ -322,6 +322,27 @@ $_eventScript
           }
         }
 
+        function relaxUnbreakableCellText(table) {
+          // The document stylesheet forbids breaking words inside cells, which
+          // keeps a single long token wider than the screen.
+          var cells = table.querySelectorAll('td, th');
+          for (var i = 0; i < cells.length; i++) {
+            setResponsiveStyle(cells[i], 'word-break', 'break-word');
+          }
+        }
+
+        function fitTableWithinAvailableWidth(content, table, availableWidth) {
+          // Breaking long words preserves the type size, so it is tried first.
+          relaxUnbreakableCellText(table);
+          if (table.getBoundingClientRect().width <= availableWidth + 1) return;
+
+          scaleElementToAvailableWidth(
+            content,
+            table,
+            table.getBoundingClientRect().width,
+          );
+        }
+
         function reflowTableToAvailableWidth(content, table, naturalWidth) {
           var fixedWidthCells = getFixedWidthCells(table, naturalWidth);
           var textElements = collectTableTextElements(table);
@@ -339,7 +360,7 @@ $_eventScript
 
           var availableWidth = getAvailableWidth(content, table);
           if (table.getBoundingClientRect().width > availableWidth + 1) {
-            scaleElementToAvailableWidth(content, table, table.getBoundingClientRect().width);
+            fitTableWithinAvailableWidth(content, table, availableWidth);
           } else if (document.documentElement.clientWidth <= 480) {
             var textScale = Math.max(0.7, availableWidth / naturalWidth);
             for (var i = 0; i < fixedWidthCells.length; i++) {
