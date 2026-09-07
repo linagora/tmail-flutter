@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_ev
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_response.dart';
 
+typedef SanitizeCalendarEventDescription = String Function(String);
+
 abstract class CalendarEventRepository {
   Future<List<BlobCalendarEvent>> parse(AccountId accountId, Set<Id> blobIds);
 
@@ -27,7 +29,9 @@ abstract class CalendarEventRepository {
 
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
-    TransformConfiguration transformConfiguration);
+    TransformConfiguration transformConfiguration, {
+    SanitizeCalendarEventDescription? sanitizeDescription,
+  });
 
   Future<CalendarEventAcceptResponse> acceptCounterEvent(
     AccountId accountId,

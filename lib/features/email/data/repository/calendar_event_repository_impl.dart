@@ -1,6 +1,9 @@
 
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -58,13 +61,20 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   @override
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
-    TransformConfiguration transformConfiguration,
-  ) async {
+    TransformConfiguration transformConfiguration, {
+    SanitizeCalendarEventDescription? sanitizeDescription,
+  }) async {
+    final sanitize =
+        sanitizeDescription ?? VideoConferenceSectionUtils.removeSection;
     return Future.wait(blobCalendarEvents.map((blobCalendarEvent) async {
       return BlobCalendarEvent(
         blobId: blobCalendarEvent.blobId,
         calendarEventList: await Future.wait(blobCalendarEvent.calendarEventList.map((calendarEvent) {
-          return _transformCalendarEventDescription(calendarEvent, transformConfiguration);
+          return _transformCalendarEventDescription(
+            calendarEvent,
+            transformConfiguration,
+            sanitize,
+          );
         })),
         isFree: blobCalendarEvent.isFree,
         attendanceStatus: blobCalendarEvent.attendanceStatus,
@@ -75,17 +85,55 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   Future<CalendarEvent> _transformCalendarEventDescription(
     CalendarEvent calendarEvent,
     TransformConfiguration transformConfiguration,
+    SanitizeCalendarEventDescription sanitizeDescription,
   ) async {
+    final description = calendarEvent.description == null
+        ? null
+        : _visibleCalendarDescription(
+            _sanitizeDescription(
+              calendarEvent.description!,
+              sanitizeDescription,
+            ),
+          );
+
     return calendarEvent.copyWith(
-      description: calendarEvent.description?.trim().isNotEmpty == true
+      description: description?.trim().isNotEmpty == true
         ? await _htmlDataSource.transformHtmlEmailContent(
-            calendarEvent.description!,
+            description!,
             transformConfiguration,
           )
-        : calendarEvent.description,
+        : description,
     );
   }
-  
+
+  String _sanitizeDescription(
+    String description,
+    SanitizeCalendarEventDescription sanitizeDescription,
+  ) {
+    try {
+      return sanitizeDescription(description);
+    } catch (e) {
+      logWarning(
+        'CalendarEventRepositoryImpl::_sanitizeDescription:Exception $e',
+      );
+      return description;
+    }
+  }
+
+  static final _mediaTagRegex = RegExp(
+    r'<(?:img|video|audio|canvas|svg|iframe)\b',
+    caseSensitive: false,
+  );
+
+  String _visibleCalendarDescription(String html) {
+    final plainText = HtmlUtils.extractPlainText(
+      html,
+      removeQuotes: false,
+    ).trim();
+    if (plainText.isNotEmpty || _mediaTagRegex.hasMatch(html)) return html;
+    return '';
+  }
+
   @override
   Future<CalendarEventAcceptResponse> acceptCounterEvent(
     AccountId accountId,
