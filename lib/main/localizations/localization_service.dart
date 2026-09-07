@@ -20,7 +20,8 @@ class LocalizationService extends Translations {
     LanguageCodeConstants.arabic,
     LanguageCodeConstants.italian,
     LanguageCodeConstants.german,
-    LanguageCodeConstants.mongolian
+    LanguageCodeConstants.mongolian,
+    LanguageCodeConstants.portuguese
   ];
 
   static const List<Locale> supportedLocales = [
@@ -31,7 +32,8 @@ class LocalizationService extends Translations {
     Locale(LanguageCodeConstants.arabic, 'TN'),
     Locale(LanguageCodeConstants.italian, 'IT'),
     Locale(LanguageCodeConstants.german, 'DE'),
-    Locale(LanguageCodeConstants.mongolian, 'MN')
+    Locale(LanguageCodeConstants.mongolian, 'MN'),
+    Locale(LanguageCodeConstants.portuguese, 'BR')
   ];
 
   static void changeLocale(Locale newLocale) {

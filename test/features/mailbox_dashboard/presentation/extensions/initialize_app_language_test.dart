@@ -120,8 +120,27 @@ void main() {
       await tester.pumpAndSettle();
       
       // assert
-      expect(Get.locale, expectedLocale);
-    });
+       expect(Get.locale, expectedLocale);
+     });
+
+    testWidgets(
+      'should apply Brazilian Portuguese device language',
+      (tester) async {
+        const expectedLocale = Locale('pt', 'BR');
+        final success = GetServerSettingSuccess(TMailServerSettingOptions(
+          language: null,
+        ));
+        when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+        TestWidgetsFlutterBinding
+          .instance
+          .platformDispatcher
+          .localeTestValue = expectedLocale;
+
+        mailboxDashboardController.initializeAppLanguage(success);
+        await tester.pumpAndSettle();
+
+        expect(Get.locale, expectedLocale);
+      });
 
     testWidgets(
       'should apply device language '
