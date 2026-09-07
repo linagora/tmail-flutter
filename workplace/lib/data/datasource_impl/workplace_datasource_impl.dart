@@ -57,6 +57,10 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     String accessToken,
     Map<String, dynamic> body,
   ) async {
+    // Fail fast instead of sending a malformed Authorization header.
+    if (accessToken.trim().isEmpty) {
+      throw StateError('Access token is empty');
+    }
     final response = await WorkplaceDio.instance.post(
       platformUrl.replace(
         pathSegments: [

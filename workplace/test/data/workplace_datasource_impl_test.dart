@@ -418,6 +418,40 @@ void main() {
         throwsA(isA<DioException>()),
       );
     });
+
+    test('Should reject an empty bearer access token without contacting WorkplaceDio', () async {
+      final adapter = _MockAdapter(intentResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessMode: const BearerTokenAccessMode(''),
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(adapter.capturedOptions, isNull);
+    });
+
+    test('Should reject a whitespace-only bearer access token', () async {
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessMode: const BearerTokenAccessMode('   '),
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
   });
 
   group('WorkplaceDataSourceImpl::exchangeToken::', () {
