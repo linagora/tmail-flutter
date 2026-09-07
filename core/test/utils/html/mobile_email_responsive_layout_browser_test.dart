@@ -220,6 +220,23 @@ void verifyNonWrappingContentReflow() {
     );
   });
 
+  test('wraps a non-wrapping table cell instead of scaling the table', () async {
+    await withEmail(
+      EmailFixture(
+        '<table><tr>'
+        '<td id="cell" style="white-space:nowrap;font-size:16px">'
+        '${'word ' * 40}'
+        '</td>'
+        '</tr></table>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.whiteSpaceOf('#cell'), 'normal');
+        expect(viewport.renderedFontSizeOf('#cell'), 16);
+      },
+    );
+  });
+
   test('keeps the spacing of preformatted content while wrapping it', () async {
     await withEmail(
       EmailFixture(

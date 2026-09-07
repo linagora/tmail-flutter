@@ -170,6 +170,13 @@ $_eventScript
           return replacedElements.indexOf(element.tagName) !== -1;
         }
 
+        function wrappableWhiteSpace(whiteSpace) {
+          if (whiteSpace === 'nowrap') return 'normal';
+          // Preformatted content keeps its spacing and only gains wrapping.
+          if (whiteSpace === 'pre') return 'pre-wrap';
+          return '';
+        }
+
         function hasFixedWidth(element) {
           var styleWidth = element.style.width;
           var attributeWidth = element.getAttribute('width');
@@ -261,20 +268,14 @@ $_eventScript
             if (element.scrollWidth <= element.clientWidth + 1) continue;
 
             var computedStyle = window.getComputedStyle(element);
-            if (computedStyle.whiteSpace !== 'nowrap' &&
-                computedStyle.whiteSpace !== 'pre') {
-              continue;
-            }
+            var whiteSpace = wrappableWhiteSpace(computedStyle.whiteSpace);
+            if (!whiteSpace) continue;
             if (computedStyle.overflowX !== 'visible' &&
                 computedStyle.overflowX !== 'clip') {
               continue;
             }
 
-            // Preformatted content keeps its spacing and only gains wrapping.
-            noWrapElements.push({
-              element: element,
-              whiteSpace: computedStyle.whiteSpace === 'pre' ? 'pre-wrap' : 'normal',
-            });
+            noWrapElements.push({ element: element, whiteSpace: whiteSpace });
           }
 
           // Style after all measurements to keep the scan free of layout thrash.
@@ -326,8 +327,27 @@ $_eventScript
           // The document stylesheet forbids breaking words inside cells, which
           // keeps a single long token wider than the screen.
           var cells = table.querySelectorAll('td, th');
+          var relaxedCells = [];
           for (var i = 0; i < cells.length; i++) {
-            setResponsiveStyle(cells[i], 'word-break', 'break-word');
+            relaxedCells.push({
+              element: cells[i],
+              whiteSpace: wrappableWhiteSpace(
+                window.getComputedStyle(cells[i]).whiteSpace,
+              ),
+            });
+          }
+
+          for (var j = 0; j < relaxedCells.length; j++) {
+            var relaxedCell = relaxedCells[j];
+            // word-break cannot wrap a cell while its white-space forbids it.
+            if (relaxedCell.whiteSpace) {
+              setResponsiveStyle(
+                relaxedCell.element,
+                'white-space',
+                relaxedCell.whiteSpace,
+              );
+            }
+            setResponsiveStyle(relaxedCell.element, 'word-break', 'break-word');
           }
         }
 
