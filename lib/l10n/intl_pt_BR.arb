@@ -3287,6 +3287,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Use a IA para ajudar a escrever e melhorar seus e-mails",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Ativar o AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "badCredentials": "Credenciais incorretas",
   "@badCredentials": {
     "type": "text",

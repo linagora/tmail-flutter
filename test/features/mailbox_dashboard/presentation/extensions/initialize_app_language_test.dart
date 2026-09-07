@@ -37,296 +37,277 @@ void main() {
   });
 
   group('initialize app language test:', () {
-    testWidgets(
-      'should apply server language '
-      'when server language is not null '
-      'and server language is supported',
-    (tester) async {
+    testWidgets('should apply server language '
+        'when server language is not null '
+        'and server language is supported', (tester) async {
       // arrange
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: LanguageCodeConstants.vietnamese,
-      ));
-      
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: LanguageCodeConstants.vietnamese),
+      );
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale?.languageCode, LanguageCodeConstants.vietnamese);
     });
 
-    testWidgets(
-      'should apply cached language '
-      'when server language is null '
-      'and cached language is not null '
-      'and cached language is supported',
-    (tester) async {
+    testWidgets('should apply cached language '
+        'when server language is null '
+        'and cached language is not null '
+        'and cached language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(expectedLocale);
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, expectedLocale);
     });
 
-    testWidgets(
-      'should apply cached language '
-      'when server language is not null '
-      'and server language is not supported '
-      'and cached language is not null '
-      'and cached language is supported',
-    (tester) async {
+    testWidgets('should apply cached language '
+        'when server language is not null '
+        'and server language is not supported '
+        'and cached language is not null '
+        'and cached language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: 'fi',
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: 'fi'),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(expectedLocale);
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, expectedLocale);
     });
 
-    testWidgets(
-      'should apply device language '
-      'when server language is null '
-      'and cached language is null '
-      'and device language is supported',
-    (tester) async {
+    testWidgets('should apply device language '
+        'when server language is null '
+        'and cached language is null '
+        'and device language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = expectedLocale;
-      
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          expectedLocale;
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
-       expect(Get.locale, expectedLocale);
-     });
+      expect(Get.locale, expectedLocale);
+    });
+
+    testWidgets('should apply Brazilian Portuguese device language', (
+      tester,
+    ) async {
+      const expectedLocale = Locale('pt', 'BR');
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          expectedLocale;
+
+      mailboxDashboardController.initializeAppLanguage(success);
+      await tester.pumpAndSettle();
+
+      expect(Get.locale, expectedLocale);
+    });
 
     testWidgets(
-      'should apply Brazilian Portuguese device language',
+      'should normalize Portuguese device language to Brazilian Portuguese',
       (tester) async {
         const expectedLocale = Locale('pt', 'BR');
-        final success = GetServerSettingSuccess(TMailServerSettingOptions(
-          language: null,
-        ));
+        final success = GetServerSettingSuccess(
+          TMailServerSettingOptions(language: null),
+        );
         when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-        TestWidgetsFlutterBinding
-          .instance
-          .platformDispatcher
-          .localeTestValue = expectedLocale;
+        TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+            const Locale('pt', 'PT');
 
         mailboxDashboardController.initializeAppLanguage(success);
         await tester.pumpAndSettle();
 
         expect(Get.locale, expectedLocale);
-      });
+      },
+    );
 
-    testWidgets(
-      'should apply device language '
-      'when server language is not null '
-      'and server language is not supported '
-      'and cached language is null '
-      'and device language is supported',
-    (tester) async {
+    testWidgets('should apply device language '
+        'when server language is not null '
+        'and server language is not supported '
+        'and cached language is null '
+        'and device language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: 'fi',
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: 'fi'),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = expectedLocale;
-      
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          expectedLocale;
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, expectedLocale);
     });
 
-    testWidgets(
-      'should apply device language '
-      'when server language is null '
-      'and cached language is not null '
-      'and cached language is not supported '
-      'and device language is supported',
-    (tester) async {
+    testWidgets('should apply device language '
+        'when server language is null '
+        'and cached language is not null '
+        'and cached language is not supported '
+        'and device language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
-      when(languageCacheManager.getStoredLanguage())
-        .thenReturn(const Locale('fi', 'FI'));
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = expectedLocale;
-      
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
+      when(
+        languageCacheManager.getStoredLanguage(),
+      ).thenReturn(const Locale('fi', 'FI'));
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          expectedLocale;
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, expectedLocale);
     });
 
-    testWidgets(
-      'should apply device language '
-      'when server language is not null '
-      'and server language is not supported '
-      'and cached language is not null '
-      'and cached language is not supported '
-      'and device language is supported',
-    (tester) async {
+    testWidgets('should apply device language '
+        'when server language is not null '
+        'and server language is not supported '
+        'and cached language is not null '
+        'and cached language is not supported '
+        'and device language is supported', (tester) async {
       // arrange
       const expectedLocale = Locale('en', 'US');
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: 'es',
-      ));
-      when(languageCacheManager.getStoredLanguage())
-        .thenReturn(const Locale('fi', 'FI'));
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = expectedLocale;
-      
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: 'es'),
+      );
+      when(
+        languageCacheManager.getStoredLanguage(),
+      ).thenReturn(const Locale('fi', 'FI'));
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          expectedLocale;
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, expectedLocale);
     });
 
-    testWidgets(
-      'should apply default language (English) '
-      'when server language is null '
-      'and cached language is null '
-      'and current locale is null '
-      'and device language is not supported',
-    (tester) async {
+    testWidgets('should apply default language (English) '
+        'when server language is null '
+        'and cached language is null '
+        'and current locale is null '
+        'and device language is not supported', (tester) async {
       // arrange
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = const Locale('es', 'ES');
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          const Locale('es', 'ES');
       Get.locale = null;
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, LocalizationService.defaultLocale);
     });
 
-    testWidgets(
-      'should apply default language (English) '
-      'when server language is not null '
-      'and server language is not supported '
-      'and cached language is null '
-      'and current locale is null '
-      'and device language is not supported',
-    (tester) async {
+    testWidgets('should apply default language (English) '
+        'when server language is not null '
+        'and server language is not supported '
+        'and cached language is null '
+        'and current locale is null '
+        'and device language is not supported', (tester) async {
       // arrange
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: 'fi',
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: 'fi'),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = const Locale('es', 'ES');
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          const Locale('es', 'ES');
       Get.locale = null;
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, LocalizationService.defaultLocale);
     });
 
-    testWidgets(
-      'should apply default language (English) '
-      'when server language is null '
-      'and cached language is not null '
-      'and cached language is not supported '
-      'and current locale is null '
-      'and device language is not supported',
-    (tester) async {
+    testWidgets('should apply default language (English) '
+        'when server language is null '
+        'and cached language is not null '
+        'and cached language is not supported '
+        'and current locale is null '
+        'and device language is not supported', (tester) async {
       // arrange
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
-      when(languageCacheManager.getStoredLanguage())
-        .thenReturn(const Locale('fi', 'FI'));
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = const Locale('es', 'ES');
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
+      when(
+        languageCacheManager.getStoredLanguage(),
+      ).thenReturn(const Locale('fi', 'FI'));
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          const Locale('es', 'ES');
       Get.locale = null;
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, LocalizationService.defaultLocale);
     });
 
-    testWidgets(
-      'should apply default language (English) '
-      'when server language is null '
-      'and cached language is null '
-      'and current locale is not null '
-      'and current locale is not supported '
-      'and device language is not supported',
-    (tester) async {
+    testWidgets('should apply default language (English) '
+        'when server language is null '
+        'and cached language is null '
+        'and current locale is not null '
+        'and current locale is not supported '
+        'and device language is not supported', (tester) async {
       // arrange
-      final success = GetServerSettingSuccess(TMailServerSettingOptions(
-        language: null,
-      ));
+      final success = GetServerSettingSuccess(
+        TMailServerSettingOptions(language: null),
+      );
       when(languageCacheManager.getStoredLanguage()).thenReturn(null);
-      TestWidgetsFlutterBinding
-        .instance
-        .platformDispatcher
-        .localeTestValue = const Locale('es', 'ES');
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localeTestValue =
+          const Locale('es', 'ES');
       Get.locale = const Locale('fi', 'FI');
-      
+
       // act
       mailboxDashboardController.initializeAppLanguage(success);
       await tester.pumpAndSettle();
-      
+
       // assert
       expect(Get.locale, LocalizationService.defaultLocale);
     });

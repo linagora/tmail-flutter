@@ -18,7 +18,8 @@ import 'package:tmail_ui_user/main/runner/app_runner_mobile.dart'
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:workplace/l10n/workplace_localizations.dart' as workplace_localizations;
+import 'package:workplace/l10n/workplace_localizations.dart'
+    as workplace_localizations;
 
 Future<void> main() async {
   await runAppWithMonitoring(runTmail);
@@ -67,7 +68,7 @@ class _TMailAppState extends State<TMailApp> {
         localeResolutionCallback: (deviceLocale, supportedLocales) {
           for (var locale in supportedLocales) {
             if (locale.languageCode == deviceLocale?.languageCode) {
-              return deviceLocale;
+              return locale;
             }
           }
           return supportedLocales.first;

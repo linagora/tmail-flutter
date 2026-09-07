@@ -8,9 +8,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 typedef OnServerLanguageApplied = Function(Locale locale);
 
 class LocalizationService extends Translations {
-
   static const defaultLocale = Locale(LanguageCodeConstants.english, 'US');
   static const fallbackLocale = Locale(LanguageCodeConstants.english, 'US');
+  static const brazilianPortugueseLocale = Locale(
+    LanguageCodeConstants.portuguese,
+    'BR',
+  );
 
   static final supportedLanguageCodes = [
     LanguageCodeConstants.french,
@@ -21,7 +24,7 @@ class LocalizationService extends Translations {
     LanguageCodeConstants.italian,
     LanguageCodeConstants.german,
     LanguageCodeConstants.mongolian,
-    LanguageCodeConstants.portuguese
+    LanguageCodeConstants.portuguese,
   ];
 
   static const List<Locale> supportedLocales = [
@@ -33,21 +36,30 @@ class LocalizationService extends Translations {
     Locale(LanguageCodeConstants.italian, 'IT'),
     Locale(LanguageCodeConstants.german, 'DE'),
     Locale(LanguageCodeConstants.mongolian, 'MN'),
-    Locale(LanguageCodeConstants.portuguese, 'BR')
+    brazilianPortugueseLocale,
   ];
 
   static void changeLocale(Locale newLocale) {
+    newLocale = _normalizeLocale(newLocale);
     log('LocalizationService::changeLocale(): New locale is $newLocale');
     Get.updateLocale(newLocale);
+  }
+
+  static Locale _normalizeLocale(Locale locale) {
+    if (locale.languageCode == LanguageCodeConstants.portuguese) {
+      return brazilianPortugueseLocale;
+    }
+    return locale;
   }
 
   static Locale getInitialLocale() {
     try {
       final cachedLocale = _getCachedLocale();
-      if (cachedLocale != null) return cachedLocale;
+      if (cachedLocale != null) return _normalizeLocale(cachedLocale);
 
       final deviceLocale = _getDeviceLocale();
-      if (_isSupportedLocale(deviceLocale)) return deviceLocale;
+      if (_isSupportedLocale(deviceLocale))
+        return _normalizeLocale(deviceLocale);
 
       return defaultLocale;
     } catch (e) {
@@ -70,8 +82,12 @@ class LocalizationService extends Translations {
       WidgetsBinding.instance.platformDispatcher.locale;
 
   static String supportedLocalesToLanguageTags() {
-    final listLanguageTags = supportedLocales.map((locale) => locale.toLanguageTag()).join(', ');
-    log('LocalizationService::supportedLocalesToLanguageTags:listLanguageTags: $listLanguageTags');
+    final listLanguageTags = supportedLocales
+        .map((locale) => locale.toLanguageTag())
+        .join(', ');
+    log(
+      'LocalizationService::supportedLocalesToLanguageTags:listLanguageTags: $listLanguageTags',
+    );
     return listLanguageTags;
   }
 
@@ -79,7 +95,9 @@ class LocalizationService extends Translations {
     String? serverLanguage,
     OnServerLanguageApplied? onServerLanguageApplied,
   }) {
-    log('LocalizationService::initializeAppLanguage:Server language: $serverLanguage');
+    log(
+      'LocalizationService::initializeAppLanguage:Server language: $serverLanguage',
+    );
     try {
       // From server
       if (serverLanguage != null &&
@@ -110,7 +128,9 @@ class LocalizationService extends Translations {
 
   static bool _useDeviceLocale() {
     final deviceLocale = _getDeviceLocale();
-    log('LocalizationService::_useDeviceLocale: Device locale is $deviceLocale');
+    log(
+      'LocalizationService::_useDeviceLocale: Device locale is $deviceLocale',
+    );
     if (_isSupportedLocale(deviceLocale)) {
       changeLocale(deviceLocale);
       return true;
@@ -120,7 +140,9 @@ class LocalizationService extends Translations {
 
   static bool _useCachedLocale() {
     final cachedLocale = _getCachedLocale();
-    log('LocalizationService::_useCachedLocale: Cached locale is $cachedLocale');
+    log(
+      'LocalizationService::_useCachedLocale: Cached locale is $cachedLocale',
+    );
     if (cachedLocale != null && _isSupportedLocale(cachedLocale)) {
       changeLocale(cachedLocale);
       return true;
@@ -133,7 +155,9 @@ class LocalizationService extends Translations {
     required OnServerLanguageApplied? onServerLanguageApplied,
   }) {
     final serverLocale = _findSupportedLocale(languageCode);
-    log('LocalizationService::_useServerLocale: Server locale is $serverLocale');
+    log(
+      'LocalizationService::_useServerLocale: Server locale is $serverLocale',
+    );
     if (serverLocale != null && _isSupportedLocale(serverLocale)) {
       changeLocale(serverLocale);
       onServerLanguageApplied?.call(serverLocale);
@@ -143,13 +167,15 @@ class LocalizationService extends Translations {
   }
 
   static bool _isSupportedLocale(Locale locale) {
-    return supportedLocales
-        .any((supported) => supported.languageCode == locale.languageCode);
+    return supportedLocales.any(
+      (supported) => supported.languageCode == locale.languageCode,
+    );
   }
 
   static Locale? _findSupportedLocale(String languageCode) {
     return supportedLocales.firstWhereOrNull(
-        (supported) => supported.languageCode == languageCode);
+      (supported) => supported.languageCode == languageCode,
+    );
   }
 
   @override
