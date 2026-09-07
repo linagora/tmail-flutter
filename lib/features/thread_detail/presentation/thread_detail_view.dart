@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -216,7 +217,15 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     }
 
     if (PlatformInfo.isWeb) {
-      bodyWidget = SelectionArea(child: bodyWidget);
+      bodyWidget = SelectionArea(
+        key: controller.bodySelectionAreaKey,
+        onSelectionChanged: (selection) {
+          if (selection != null) {
+            HtmlSelectionSyncBus.instance.notifyFlutterSelectionStarted();
+          }
+        },
+        child: bodyWidget,
+      );
     }
 
     if (controller.responsiveUtils.isDesktop(context)) {

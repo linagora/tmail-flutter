@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
@@ -133,6 +135,10 @@ class ThreadDetailController extends BaseController {
   StreamController<MailViewShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailViewShortcutActionViewEvent>? shortcutActionEventSubscription;
 
+  /// Clears the body selection when an email body iframe starts its own.
+  final GlobalKey<SelectionAreaState> bodySelectionAreaKey = GlobalKey<SelectionAreaState>();
+  StreamSubscription<void>? _iframeSelectionStartedSubscription;
+
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
   MailboxId? get sentMailboxId => mailboxDashBoardController.getMailboxIdByRole(
@@ -162,6 +168,11 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    if (PlatformInfo.isWeb) {
+      _iframeSelectionStartedSubscription = HtmlSelectionSyncBus
+          .instance.iframeSelectionStarted
+          .listen((_) => bodySelectionAreaKey.currentState?.selectableRegion.clearSelection());
+    }
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId == null) return;
 
@@ -309,6 +320,7 @@ class ThreadDetailController extends BaseController {
   @override
   void onClose() {
     onKeyboardShortcutDispose();
+    _iframeSelectionStartedSubscription?.cancel();
     super.onClose();
   }
 }

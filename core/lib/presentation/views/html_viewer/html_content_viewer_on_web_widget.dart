@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
@@ -118,11 +119,14 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   bool _isLoading = true;
   late double minHeight;
   late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
+  StreamSubscription<void>? _flutterSelectionStartedSubscription;
+  html.IFrameElement? _iframeElement;
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
   static const String onScrollChangedEvent = 'onScrollChanged';
   static const String onScrollEndEvent = 'onScrollEnd';
+  static const String onSelectionChangedEvent = 'onSelectionChanged';
 
   IframeTooltipOverlay? _tooltipOverlay;
 
@@ -139,6 +143,18 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
     _setUpWeb();
     _onMessageSubscription = html.window.onMessage.listen(_handleMessageEvent);
+    _flutterSelectionStartedSubscription = HtmlSelectionSyncBus
+        .instance.flutterSelectionStarted
+        .listen((_) => _clearIframeSelection());
+  }
+
+  /// Clears this iframe's selection and blurs it to restore top-document focus.
+  void _clearIframeSelection() {
+    html.window.postMessage(
+      json.encode({'view': _createdViewId, 'type': 'toIframe: clearSelection'}),
+      '*',
+    );
+    _iframeElement?.blur();
   }
 
   void _handleMessageEvent(html.MessageEvent event) {
@@ -149,42 +165,56 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       if (viewId != _createdViewId) return;
 
       final type = data['type'];
-      if (_isScrollingIsAvailable && _isScrollChangedEventTriggered(type)) {
-        _handleIframeOnScrollChangedListener(data, widget.scrollController!);
-        return;
-      } else if (_isScrollingIsAvailable && _isScrollEndEventTriggered(type)) {
-        _handleIframeOnScrollEndListener(data, widget.scrollController!);
-        return;
-      } else if (_isIframeKeyboardEventTriggered(type)) {
-        _handleOnIFrameKeyboardEvent(data);
-        return;
-      } else if (_isIframeClickEventTriggered(type)) {
-        _handleOnIFrameClickEvent(data);
-        return;
-      } else if (_isIframeLinkHoverEventTriggered(type)) {
-        _handleOnIFrameLinkHoverEvent(data);
-        return;
-      } else if (_isIframeLinkOutEventTriggered(type)) {
-        _handleOnIFrameLinkOutEvent(data);
-        return;
-      }
+      if (_tryHandleImmediateEvent(type, data)) return;
 
       if (data['message'] == iframeOnLoadMessage) {
         _iframeLoaded = true;
       }
       if (!_iframeLoaded) return;
 
-      if (_isHtmlContentHeightEventTriggered(type)) {
-        _handleContentHeightEvent(data['height']);
-      } else if (_isHtmlContentWidthEventTriggered(type)) {
-        _handleContentWidthEvent(data['width']);
-      } else if (_isMailtoLinkEventTriggered(type)) {
-        _handleMailtoLinkEvent(data['url']);
-      } else if (_isHyperLinkEventTriggered(type)) {
-        _handleHyperLinkEvent(data['url']);
-      }
+      _handleLoadedContentEvent(type, data);
     } catch (e) {
       logWarning('$runtimeType::_handleMessageEvent:Exception = $e');
+    }
+  }
+
+  /// Handles events independent of iframe load state; true if [type] matched.
+  bool _tryHandleImmediateEvent(String? type, dynamic data) {
+    final matches = [
+      (
+        _isScrollingIsAvailable && _isScrollChangedEventTriggered(type),
+        () => _handleIframeOnScrollChangedListener(data, widget.scrollController!),
+      ),
+      (
+        _isScrollingIsAvailable && _isScrollEndEventTriggered(type),
+        () => _handleIframeOnScrollEndListener(data, widget.scrollController!),
+      ),
+      (_isIframeKeyboardEventTriggered(type), () => _handleOnIFrameKeyboardEvent(data)),
+      (_isIframeClickEventTriggered(type), () => _handleOnIFrameClickEvent(data)),
+      (_isIframeLinkHoverEventTriggered(type), () => _handleOnIFrameLinkHoverEvent(data)),
+      (_isIframeLinkOutEventTriggered(type), () => _handleOnIFrameLinkOutEvent(data)),
+      (_isSelectionChangedEventTriggered(type), () => _handleOnIFrameSelectionChangedEvent(data)),
+    ];
+
+    for (final (matched, handle) in matches) {
+      if (matched) {
+        handle();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Events that require the iframe content to have finished loading.
+  void _handleLoadedContentEvent(String? type, dynamic data) {
+    if (_isHtmlContentHeightEventTriggered(type)) {
+      _handleContentHeightEvent(data['height']);
+    } else if (_isHtmlContentWidthEventTriggered(type)) {
+      _handleContentWidthEvent(data['width']);
+    } else if (_isMailtoLinkEventTriggered(type)) {
+      _handleMailtoLinkEvent(data['url']);
+    } else if (_isHyperLinkEventTriggered(type)) {
+      _handleHyperLinkEvent(data['url']);
     }
   }
 
@@ -355,6 +385,17 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     return type?.contains('toDart: iframeLinkOut') == true;
   }
 
+  bool _isSelectionChangedEventTriggered(String? type) {
+    return type?.contains('toDart: $onSelectionChangedEvent') == true;
+  }
+
+  /// Notifies the sync bus so the Flutter-side selection gets cleared.
+  void _handleOnIFrameSelectionChangedEvent(dynamic data) {
+    if (data['hasSelection'] == true) {
+      HtmlSelectionSyncBus.instance.notifyIframeSelectionStarted();
+    }
+  }
+
   void _handleOnIFrameLinkHoverEvent(dynamic data) {
     try {
       log('$runtimeType::_handleOnIFrameLinkHoverEvent: $data');
@@ -415,6 +456,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
+          document.removeEventListener('selectionchange', handleSelectionChange);
           ${!widget.autoAdjustHeight ? '''
             clearTimeout(_resizeDebounceTimer);
             if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
@@ -440,9 +482,22 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                   document.execCommand(data["command"], false, data["argument"]);
                 }
               }
+              if (data["type"].includes("clearSelection")) {
+                window.getSelection().removeAllRanges();
+              }
             }
           }
         }
+
+        // Reports selection changes to Dart to sync with the Flutter side.
+        var _lastSelectionNonEmpty = false;
+        function handleSelectionChange() {
+          var hasSelection = window.getSelection().toString().length > 0;
+          if (hasSelection === _lastSelectionNonEmpty) return;
+          _lastSelectionNonEmpty = hasSelection;
+          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: $onSelectionChangedEvent", "hasSelection": hasSelection}), "*");
+        }
+        document.addEventListener('selectionchange', handleSelectionChange);
 
         ${!widget.autoAdjustHeight ? '''
           var _lastResizeHeight = 0;
@@ -594,6 +649,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                   srcdoc: _htmlData,
                   width: _actualWidth.toString(),
                   height: _actualHeight.toString(),
+                  onIframeCreated: (iframe) => _iframeElement = iframe,
                 );
 
                 if (widget.viewMaxHeight != null) {
@@ -643,6 +699,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void dispose() {
     _htmlData = null;
     _onMessageSubscription.cancel();
+    _flutterSelectionStartedSubscription?.cancel();
     if (PlatformInfo.isWebDesktop) {
       _tooltipOverlay?.hide();
       _tooltipOverlay = null;
