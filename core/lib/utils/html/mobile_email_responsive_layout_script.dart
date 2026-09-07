@@ -29,6 +29,7 @@ $_eventScript
         var style = document.createElement('style');
         var responsiveStyles = [];
         var responsiveLayoutPending = false;
+        var lastLayoutWidth = -1;
         style.textContent =
           '.tmail-content .tmail-responsive-layout,' +
           '.tmail-content .tmail-responsive-scale {' +
@@ -163,6 +164,12 @@ $_eventScript
           return scale;
         }
 
+        var replacedElements = ['IMG', 'IFRAME', 'VIDEO', 'CANVAS', 'SVG', 'OBJECT', 'EMBED'];
+
+        function isReplacedElement(element) {
+          return replacedElements.indexOf(element.tagName) !== -1;
+        }
+
         function hasFixedWidth(element) {
           var styleWidth = element.style.width;
           var attributeWidth = element.getAttribute('width');
@@ -246,6 +253,41 @@ $_eventScript
   ''';
 
   static const String _layoutScript = '''
+        function relaxNoWrapContent(content) {
+          var elements = content.getElementsByTagName('*');
+          var noWrapElements = [];
+          for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            if (element.scrollWidth <= element.clientWidth + 1) continue;
+
+            var computedStyle = window.getComputedStyle(element);
+            if (computedStyle.whiteSpace !== 'nowrap' &&
+                computedStyle.whiteSpace !== 'pre') {
+              continue;
+            }
+            if (computedStyle.overflowX !== 'visible' &&
+                computedStyle.overflowX !== 'clip') {
+              continue;
+            }
+
+            // Preformatted content keeps its spacing and only gains wrapping.
+            noWrapElements.push({
+              element: element,
+              whiteSpace: computedStyle.whiteSpace === 'pre' ? 'pre-wrap' : 'normal',
+            });
+          }
+
+          // Style after all measurements to keep the scan free of layout thrash.
+          for (var j = 0; j < noWrapElements.length; j++) {
+            var noWrapElement = noWrapElements[j];
+            setResponsiveStyle(
+              noWrapElement.element,
+              'white-space',
+              noWrapElement.whiteSpace,
+            );
+          }
+        }
+
         function makeWrapperResponsive(element) {
           setResponsiveStyle(element, 'width', '100%');
           setResponsiveStyle(element, 'max-width', '100%');
@@ -333,7 +375,7 @@ $_eventScript
           }
         }
 
-        function applyTextReadableLayout(content, roots, layoutMetrics) {
+        function applyTextReadableLayout(content, roots) {
           for (var i = 0; i < roots.length; i++) {
             var root = roots[i];
             var tables = getTopLevelTables(root);
@@ -342,8 +384,14 @@ $_eventScript
               markResponsiveLayout(root);
               if (root.tagName === 'TABLE') {
                 reflowTableToAvailableWidth(content, root, root.getBoundingClientRect().width);
-              } else {
+              } else if (isReplacedElement(root)) {
                 scaleElementToAvailableWidth(content, root, root.getBoundingClientRect().width);
+              } else {
+                makeWrapperResponsive(root);
+                var reflowedWidth = root.getBoundingClientRect().width;
+                if (reflowedWidth > getAvailableWidth(content, root) + 1) {
+                  scaleElementToAvailableWidth(content, root, reflowedWidth);
+                }
               }
               continue;
             }
@@ -370,12 +418,15 @@ $_eventScript
 
           try {
             clearResponsiveLayout(content);
+            relaxNoWrapContent(content);
 
             var layoutMetrics = createLayoutMetrics(content);
             var roots = getOverflowRoots(content, layoutMetrics);
-            applyTextReadableLayout(content, roots, layoutMetrics);
+            applyTextReadableLayout(content, roots);
+            lastLayoutWidth = content.clientWidth;
           } catch (_) {
             clearResponsiveLayout(content);
+            lastLayoutWidth = -1;
           }
         }
   ''';
@@ -418,7 +469,12 @@ $_eventScript
         } else {
           window.addEventListener('load', scheduleResponsiveLayout);
         }
-        window.addEventListener('resize', scheduleResponsiveLayout);
+        window.addEventListener('resize', function() {
+          var content = document.getElementsByClassName('tmail-content')[0];
+          if (content && content.clientWidth === lastLayoutWidth) return;
+
+          scheduleResponsiveLayout();
+        });
         document.addEventListener('load', function(event) {
           if (event.target && event.target.tagName === 'IMG') {
             scheduleResponsiveLayout();

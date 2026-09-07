@@ -18,6 +18,7 @@ env:
     workplace/test/presentation/mixin/web_window_message_mixin_web_test.dart
     workplace/test/presentation/view/drive_intent_web_view_modal_web_test.dart
     core/test/utils/html/editor_script/quoted_reply_enter_handler_script_browser_test.dart
+    core/test/utils/html/mobile_email_responsive_layout_browser_test.dart
 
 jobs:
   analyze-test:
