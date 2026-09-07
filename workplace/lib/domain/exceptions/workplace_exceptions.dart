@@ -2,9 +2,6 @@ class WorkplaceCreateIntentException implements Exception {}
 
 class WorkplaceExchangeTokenException implements Exception {}
 
-/// Web reaches Drive only through the container app's bridge.
-class WorkplaceBridgeUnavailableException implements Exception {}
-
 class DriveIntentErrorException implements Exception {}
 
 class DriveIntentPageLoadException implements Exception {
