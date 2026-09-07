@@ -78,7 +78,7 @@ class WorkplaceIntentAttributesRequest {
   Map<String, dynamic> toJson() => _$WorkplaceIntentAttributesRequestToJson(this);
 }
 
-@JsonSerializable(createFactory: false)
+@JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceIntentDataRequest {
   final WorkplaceDataRequestType type;
   final WorkplaceIntentAttributesRequest attributes;
@@ -91,7 +91,7 @@ class WorkplaceIntentDataRequest {
   Map<String, dynamic> toJson() => _$WorkplaceIntentDataRequestToJson(this);
 }
 
-@JsonSerializable(createFactory: false)
+@JsonSerializable(createFactory: false, explicitToJson: true)
 class WorkplaceIntentRequest {
   final WorkplaceIntentDataRequest data;
 
