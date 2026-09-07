@@ -417,6 +417,22 @@ void main() {
       );
     });
 
+    test('Should reject an empty access token when the cozy bridge is unavailable', () async {
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessToken: '',
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
+
     test('Should propagate DioException on network error', () async {
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
 
