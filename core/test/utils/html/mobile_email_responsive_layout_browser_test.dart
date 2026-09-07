@@ -125,6 +125,7 @@ void main() {
     verifyNonWrappingContentReflow();
     verifyScalingFallback();
     verifyTableWidthsOutsideTheMobileBreakpoint();
+    verifyDefensiveLayoutGuards();
   });
 }
 
@@ -237,6 +238,51 @@ void verifyNonWrappingContentReflow() {
     );
   });
 
+  test('wraps a link that forbids wrapping instead of shrinking it', () async {
+    await withEmail(
+      const EmailFixture(
+        '<div id="body" style="font-size:16px">Forwarded message</div>'
+        '<a id="link" href="https://example.com/pull/12" rel="noreferrer" '
+        'style="white-space:nowrap;word-break:keep-all;font-size:16px">'
+        'example.com/acme/widgets/pull/12/changes/0123456789abcdef0123456789'
+        'abcdef01234567#diff-fedcba9876543210fedcba9876543210fedcba9876543210'
+        'fedcba9876543210L42'
+        '</a>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(
+          viewport.widthOf('#link'),
+          lessThanOrEqualTo(viewport.contentWidth),
+        );
+        expect(viewport.renderedFontSizeOf('#link'), 16);
+        expect(viewport.renderedFontSizeOf('#body'), 16);
+      },
+    );
+  });
+
+  test('wraps a link that forbids wrapping inside a table cell', () async {
+    // The cell grows to fit an unbreakable link, so the overflow is only
+    // visible against the width the email itself can occupy.
+    await withEmail(
+      const EmailFixture(
+        '<table width="900" style="width:900px"><tr>'
+        '<td id="cell" style="font-size:15px">'
+        '<a id="link" href="https://example.com/pull/12" '
+        'style="white-space:nowrap;word-break:keep-all;font-size:15px">'
+        'example.com/acme/widgets/pull/12/changes/0123456789abcdef0123456789'
+        'abcdef01234567#diff-fedcba9876543210fedcba9876543210fedcba9876543210'
+        'fedcba9876543210L42'
+        '</a>'
+        '</td></tr></table>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.renderedFontSizeOf('#link'), 15);
+      },
+    );
+  });
+
   test('keeps the spacing of preformatted content while wrapping it', () async {
     await withEmail(
       EmailFixture(
@@ -278,6 +324,25 @@ void verifyScalingFallback() {
       (viewport) async {
         expect(viewport.overflowsHorizontally, isFalse);
         expect(viewport.renderedFontSizeOf('#cell'), 16);
+      },
+    );
+  });
+
+  test('scales a frame whose min-width survives the reflow', () async {
+    await withEmail(
+      const EmailFixture(
+        '<table id="frame" style="min-width:640px;width:100%"><tr><td>'
+        '<table style="width:640px"><tr>'
+        '<td id="cell" style="font-size:15px">Build status report</td>'
+        '</tr></table>'
+        '</td></tr></table>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(
+          viewport.widthOf('#frame'),
+          lessThanOrEqualTo(viewport.contentWidth),
+        );
       },
     );
   });
@@ -338,6 +403,105 @@ void verifyTableWidthsOutsideTheMobileBreakpoint() {
       (viewport) async {
         expect(viewport.overflowsHorizontally, isFalse);
         expect(viewport.renderedFontSizeOf('#cell'), 16);
+      },
+    );
+  });
+}
+
+/// The relaxation must reach content that genuinely overflows and nothing
+/// else, so these lock down the cases it has to leave alone.
+void verifyDefensiveLayoutGuards() {
+  test('keeps a short link that forbids wrapping on one line', () async {
+    await withEmail(
+      const EmailFixture(
+        '<div style="font-size:16px">Sent on '
+        '<a id="link" href="https://example.com" '
+        'style="white-space:nowrap;word-break:keep-all;font-size:16px">'
+        'Nov 3, 2026'
+        '</a></div>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.whiteSpaceOf('#link'), 'nowrap');
+        expect(viewport.renderedFontSizeOf('#link'), 16);
+      },
+    );
+  });
+
+  test('leaves a block that scrolls its own overflow untouched', () async {
+    await withEmail(
+      EmailFixture(
+        '<div id="listing" style="white-space:nowrap;overflow-x:auto;'
+        'width:100%;font-size:16px">'
+        '${'token ' * 120}'
+        '</div>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.whiteSpaceOf('#listing'), 'nowrap');
+        expect(viewport.renderedFontSizeOf('#listing'), 16);
+      },
+    );
+  });
+
+  test('ignores a hidden link that has no measurable width', () async {
+    await withEmail(
+      const EmailFixture(
+        '<div style="display:none">'
+        '<a id="link" href="https://example.com/pull/12" '
+        'style="white-space:nowrap;word-break:keep-all">'
+        'example.com/acme/widgets/pull/12/changes/0123456789abcdef0123456789'
+        'abcdef01234567#diff-fedcba9876543210fedcba9876543210fedcba9876543210'
+        'fedcba9876543210L42'
+        '</a>'
+        '</div>'
+        '<p id="body" style="font-size:16px">Visible body.</p>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.whiteSpaceOf('#link'), 'nowrap');
+        expect(viewport.renderedFontSizeOf('#body'), 16);
+      },
+    );
+  });
+
+  test('wraps a link nested inside a non-wrapping span', () async {
+    await withEmail(
+      const EmailFixture(
+        '<span id="holder" style="white-space:nowrap;font-size:16px">'
+        '<a id="link" href="https://example.com/pull/12" '
+        'style="white-space:nowrap;word-break:keep-all;font-size:16px">'
+        'example.com/acme/widgets/pull/12/changes/0123456789abcdef0123456789'
+        'abcdef01234567#diff-fedcba9876543210fedcba9876543210fedcba9876543210'
+        'fedcba9876543210L42'
+        '</a>'
+        '</span>',
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(viewport.renderedFontSizeOf('#link'), 16);
+      },
+    );
+  });
+
+  test('wraps a non-wrapping link in a right-to-left email', () async {
+    await withEmail(
+      const EmailFixture(
+        '<a id="link" href="https://example.com/pull/12" '
+        'style="white-space:nowrap;word-break:keep-all;font-size:16px">'
+        'example.com/acme/widgets/pull/12/changes/0123456789abcdef0123456789'
+        'abcdef01234567#diff-fedcba9876543210fedcba9876543210fedcba9876543210'
+        'fedcba9876543210L42'
+        '</a>',
+        direction: TextDirection.rtl,
+      ),
+      (viewport) async {
+        expect(viewport.overflowsHorizontally, isFalse);
+        expect(
+          viewport.widthOf('#link'),
+          lessThanOrEqualTo(viewport.contentWidth),
+        );
+        expect(viewport.renderedFontSizeOf('#link'), 16);
       },
     );
   });

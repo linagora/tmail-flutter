@@ -260,33 +260,38 @@ $_eventScript
   ''';
 
   static const String _layoutScript = '''
+        // An inline box reports no scroll width, and a table cell grows to fit
+        // one, so a link wider than the screen only shows against the width
+        // the email itself can occupy.
+        function overflowsOwnBox(element, contentWidth) {
+          if (element.clientWidth !== 0 || element.scrollWidth !== 0) {
+            return element.scrollWidth > element.clientWidth + 1;
+          }
+
+          return contentWidth > 0 &&
+              element.getBoundingClientRect().width > contentWidth + 1;
+        }
+
         function relaxNoWrapContent(content) {
+          var contentWidth = content.clientWidth;
           var elements = content.getElementsByTagName('*');
           var noWrapElements = [];
           for (var i = 0; i < elements.length; i++) {
             var element = elements[i];
-            if (element.scrollWidth <= element.clientWidth + 1) continue;
+            if (!overflowsOwnBox(element, contentWidth)) continue;
 
             var computedStyle = window.getComputedStyle(element);
-            var whiteSpace = wrappableWhiteSpace(computedStyle.whiteSpace);
-            if (!whiteSpace) continue;
+            if (!wrappableWhiteSpace(computedStyle.whiteSpace)) continue;
             if (computedStyle.overflowX !== 'visible' &&
                 computedStyle.overflowX !== 'clip') {
               continue;
             }
 
-            noWrapElements.push({ element: element, whiteSpace: whiteSpace });
+            noWrapElements.push(element);
           }
 
           // Style after all measurements to keep the scan free of layout thrash.
-          for (var j = 0; j < noWrapElements.length; j++) {
-            var noWrapElement = noWrapElements[j];
-            setResponsiveStyle(
-              noWrapElement.element,
-              'white-space',
-              noWrapElement.whiteSpace,
-            );
-          }
+          relaxUnbreakableText(noWrapElements);
         }
 
         function makeWrapperResponsive(element) {
@@ -323,31 +328,31 @@ $_eventScript
           }
         }
 
-        function relaxUnbreakableCellText(table) {
-          // The document stylesheet forbids breaking words inside cells, which
-          // keeps a single long token wider than the screen.
-          var cells = table.querySelectorAll('td, th');
-          var relaxedCells = [];
-          for (var i = 0; i < cells.length; i++) {
-            relaxedCells.push({
-              element: cells[i],
+        // The document stylesheet forbids breaking words inside cells, and a
+        // sender can forbid it on any element, which keeps a single long token
+        // such as a URL wider than the screen.
+        function relaxUnbreakableText(elements) {
+          var relaxedElements = [];
+          for (var i = 0; i < elements.length; i++) {
+            relaxedElements.push({
+              element: elements[i],
               whiteSpace: wrappableWhiteSpace(
-                window.getComputedStyle(cells[i]).whiteSpace,
+                window.getComputedStyle(elements[i]).whiteSpace,
               ),
             });
           }
 
-          for (var j = 0; j < relaxedCells.length; j++) {
-            var relaxedCell = relaxedCells[j];
-            // word-break cannot wrap a cell while its white-space forbids it.
-            if (relaxedCell.whiteSpace) {
+          for (var j = 0; j < relaxedElements.length; j++) {
+            var relaxedElement = relaxedElements[j];
+            // word-break cannot wrap an element while its white-space forbids it.
+            if (relaxedElement.whiteSpace) {
               setResponsiveStyle(
-                relaxedCell.element,
+                relaxedElement.element,
                 'white-space',
-                relaxedCell.whiteSpace,
+                relaxedElement.whiteSpace,
               );
             }
-            setResponsiveStyle(relaxedCell.element, 'word-break', 'break-word');
+            setResponsiveStyle(relaxedElement.element, 'word-break', 'break-word');
           }
         }
 
@@ -395,7 +400,7 @@ $_eventScript
 
         function fitTableWithinAvailableWidth(content, table, availableWidth) {
           // Breaking long words preserves the type size, so it is tried first.
-          relaxUnbreakableCellText(table);
+          relaxUnbreakableText(table.querySelectorAll('td, th'));
           if (table.getBoundingClientRect().width <= availableWidth + 1) return;
 
           makeTableColumnsProportional(table);
