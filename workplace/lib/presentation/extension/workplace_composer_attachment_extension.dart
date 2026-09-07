@@ -3,6 +3,8 @@ import 'package:core/presentation/extensions/composer_toolbar_button_style.dart'
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/bridge/cozy_bridge.dart';
@@ -33,6 +35,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   /// Read when the picker opens, so the JMAP capability is always current.
   final ValueGetter<bool> uploadFromUrlSupported;
   final String? Function() oidcTokenGetter;
+
+  /// Triggers the main app's OIDC refresh; returns the refreshed id token.
+  final Future<String?> Function()? oidcRefreshTrigger;
   final num? Function() maxAttachmentSizeBytesGetter;
 
   /// Per-composer: the remainder depends on what that composer already holds.
@@ -50,6 +55,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required this.workplaceUri,
     required this.uploadFromUrlSupported,
     required this.oidcTokenGetter,
+    this.oidcRefreshTrigger,
     required this.maxAttachmentSizeBytesGetter,
     required this.remainingAttachmentCapacityBytesGetter,
     this.onPickState,
@@ -89,18 +95,34 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<String?> _exchangeAccessToken(
     Uri platformUrl,
+    String oidcToken, {
+    bool refreshAttempted = false,
+  }) async {
+    final result = await _requestAccessToken(platformUrl, oidcToken);
+    return result.fold(
+      (failure) => _retryAfterRefreshOrThrow(
+        platformUrl: platformUrl,
+        failure: failure,
+        refreshAttempted: refreshAttempted,
+      ),
+      (accessToken) => accessToken,
+    );
+  }
+
+  Future<Either<Object, String?>> _requestAccessToken(
+    Uri platformUrl,
     String oidcToken,
   ) async {
     String? accessToken;
+    Object? caughtFailure;
     await for (final either in _exchangeTokenInteractor.execute(
       platformUrl,
       oidcToken,
     )) {
       either.fold(
-        (failure) {
-          // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
-          throw failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException();
-        },
+        // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
+        (failure) => caughtFailure =
+            failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException(),
         (success) {
           if (success is ExchangeWorkplaceTokenSuccess) {
             accessToken = success.accessToken;
@@ -108,8 +130,28 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         },
       );
     }
-    return accessToken;
+    return caughtFailure == null ? Right(accessToken) : Left(caughtFailure!);
   }
+
+  /// Retries once with a refreshed token on a 401 (Workplace's Dio has no
+  /// refresh interceptor of its own).
+  Future<String?> _retryAfterRefreshOrThrow({
+    required Uri platformUrl,
+    required Object failure,
+    required bool refreshAttempted,
+  }) async {
+    if (refreshAttempted || oidcRefreshTrigger == null || !_isUnauthorized(failure)) {
+      throw failure;
+    }
+
+    final refreshedToken = await oidcRefreshTrigger!();
+    if (refreshedToken == null) throw failure;
+
+    return _exchangeAccessToken(platformUrl, refreshedToken, refreshAttempted: true);
+  }
+
+  bool _isUnauthorized(Object failure) =>
+      failure is DioException && failure.response?.statusCode == 401;
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,

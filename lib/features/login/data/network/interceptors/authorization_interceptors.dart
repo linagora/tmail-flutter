@@ -39,6 +39,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   OIDCConfiguration? _configOIDC;
   TokenOIDC? _token;
   String? _authorization;
+  Future<TokenOIDC>? _refreshInFlight;
 
   final RefreshTokenErrorClassifier? _injectedErrorClassifier;
 
@@ -90,6 +91,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   TokenOIDC? get currentToken =>
       _authenticationType == AuthenticationType.oidc ? _token : null;
+
+  /// Triggers a refresh, or joins one already running — dedupes an external
+  /// caller (e.g. Workplace's own Dio) against this interceptor's [onError].
+  Future<TokenOIDC> requestTokenRefresh() {
+    return _refreshInFlight ??= _acquireAndPersistNewToken()
+        .whenComplete(() => _refreshInFlight = null);
+  }
+
+  /// True when [error] is a confirmed server-side refresh rejection (session
+  /// dead). Mirrors [_handleRefreshErrorOnWeb]/[_handleRefreshErrorOnMobile].
+  bool isRefreshFailureFatal(Object error) => PlatformInfo.isWeb
+      ? _errorClassifier.isServerRejection(error)
+      : _isRefreshRejectedByTokenEndpoint(error);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -351,11 +365,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: Perform get New Token',
         webConsoleEnabled: true,
       );
-      final newTokenOidc = PlatformInfo.isIOS
-        ? await _getNewTokenForIOSPlatform()
-        : await _getNewTokenForOtherPlatform();
+      final previousToken = _token?.token;
+      final newTokenOidc = await requestTokenRefresh();
 
-      if (newTokenOidc.token == _token?.token) {
+      if (newTokenOidc.token == previousToken) {
         // Refresh returned the SAME token — retrying cannot clear the 401, so it
         // propagates to logout. Real auth death, but tag it for forensics.
         _logForcedLogoutFor401(
@@ -364,13 +377,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           hasAttemptedRefresh: true,
         );
         return super.onError(err, handler);
-      }
-      _updateNewToken(newTokenOidc);
-
-      final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
-
-      if (PlatformInfo.isIOS) {
-        await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
       }
 
       requestOptions.extra[_refreshAttemptedKey] = true;
@@ -631,6 +637,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Future<TokenOIDC> _getNewTokenForOtherPlatform() {
     return _invokeRefreshTokenFromServer();
+  }
+
+  Future<TokenOIDC> _acquireAndPersistNewToken() async {
+    final newTokenOidc = PlatformInfo.isIOS
+        ? await _getNewTokenForIOSPlatform()
+        : await _getNewTokenForOtherPlatform();
+    _updateNewToken(newTokenOidc);
+
+    final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+    if (PlatformInfo.isIOS) {
+      await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+    }
+
+    return newTokenOidc;
   }
 
   Future<Response> _retryRequest(

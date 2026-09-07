@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/data/constants/constant.dart';
@@ -1640,6 +1641,108 @@ void main() {
         // update _token, so second request can't detect the first's attempt).
         // Key assertion: no infinite loop — each request tries once and stops.
         expect(refreshCallCount, 2);
+      },
+    );
+  });
+
+  // ============================================================
+  // requestTokenRefresh: concurrent callers dedup
+  // ============================================================
+  group('requestTokenRefresh: concurrent callers dedup', () {
+    test(
+      'GIVEN two concurrent direct callers of requestTokenRefresh\n'
+      'WHEN both call before the first refresh resolves\n'
+      'THEN refresh is invoked exactly once\n'
+      'AND both callers receive the same new token',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        final refreshCompleter = Completer<TokenOIDC>();
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) => refreshCompleter.future);
+        stubAccountCache();
+
+        final firstCall = authorizationInterceptors.requestTokenRefresh();
+        final secondCall = authorizationInterceptors.requestTokenRefresh();
+        refreshCompleter.complete(OIDCFixtures.newTokenOidc);
+        final results = await Future.wait([firstCall, secondCall]);
+
+        verify(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).called(1);
+        expect(results[0].token, equals(OIDCFixtures.newTokenOidc.token));
+        expect(results[1].token, equals(OIDCFixtures.newTokenOidc.token));
+      },
+    );
+
+    test(
+      'GIVEN a lib request 401s through onError\n'
+      'AND an external caller (e.g. Workplace, on its own unwired Dio) calls\n'
+      '    requestTokenRefresh at the same time\n'
+      'WHEN both race before refresh resolves\n'
+      'THEN refresh is invoked exactly once\n'
+      'AND the external caller resolves to the same token used to retry the lib request',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        final refreshCompleter = Completer<TokenOIDC>();
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) => refreshCompleter.future);
+        stubAccountCache();
+
+        // Workplace-style caller races the interceptor's reactive onError path.
+        final workplaceRefresh = authorizationInterceptors.requestTokenRefresh();
+        final libRequest = dio.post(baseUrl);
+        refreshCompleter.complete(OIDCFixtures.newTokenOidc);
+
+        final response = await libRequest;
+        final workplaceToken = await workplaceRefresh;
+
+        verify(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).called(1);
+        expect(response.statusCode, equals(HttpStatus.ok));
+        expect(workplaceToken.token, equals(OIDCFixtures.newTokenOidc.token));
       },
     );
   });

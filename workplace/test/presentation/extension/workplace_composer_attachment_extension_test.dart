@@ -22,8 +22,16 @@ class _Fail {
 
 const _fail = _Fail();
 
+// Sentinel used by _SequentialAdapter to throw a 401 DioException.
+class _Fail401 {
+  const _Fail401();
+}
+
+const _fail401 = _Fail401();
+
 // Returns responses from a pre-defined queue, one per HTTP request.
-// Queue items are either a Map (returned as JSON) or _Fail (throws DioException).
+// Queue items are a Map (returned as JSON), _Fail (network error, no
+// response), or _Fail401 (401 response, e.g. a stale OIDC id token).
 class _SequentialAdapter implements HttpClientAdapter {
   final List<dynamic> _queue;
   int _index = 0;
@@ -39,6 +47,13 @@ class _SequentialAdapter implements HttpClientAdapter {
     final item = _queue[_index++];
     if (item is _Fail) {
       throw DioException(requestOptions: options, message: 'Network error');
+    }
+    if (item is _Fail401) {
+      throw DioException(
+        requestOptions: options,
+        response: Response(statusCode: 401, requestOptions: options),
+        type: DioExceptionType.badResponse,
+      );
     }
     return ResponseBody.fromString(
       jsonEncode(item),
@@ -127,11 +142,13 @@ WorkplaceComposerAttachmentExtension _makeExtension(
   num? remainingAttachmentCapacityBytes,
   OnDrivePickStateChanged? onPickState,
   ValueGetter<bool>? uploadFromUrlSupported,
+  Future<String?> Function()? oidcRefreshTrigger,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
       uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
       oidcTokenGetter: () => oidcToken,
+      oidcRefreshTrigger: oidcRefreshTrigger,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
       remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
       onPickState: onPickState,
@@ -567,6 +584,76 @@ void main() {
       final downloadLink = filePickerData['downloadLink'] as Map<String, dynamic>;
       expect(downloadLink['maxFileSize'], equals(5000));
       expect(downloadLink['availableSize'], equals(5000));
+    });
+
+    testWidgets('retries once via oidcRefreshTrigger after a 401, then succeeds', (tester) async {
+      WorkplaceDio.setInstance(
+        Dio()
+          ..httpClientAdapter = _SequentialAdapter([
+            _fail401, // stale token exchange → 401
+            _tokenResponse, // retry with refreshed token → succeeds
+            _intentResponse,
+          ]),
+      );
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      final result = await tester.runAsync(
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+          ),
+        ),
+      );
+
+      expect(refreshCallCount, equals(1));
+      expect(result, isNotNull);
+      expect(result!.intentId, equals('intent-xyz'));
+    });
+
+    testWidgets('does not retry twice when the refreshed token also gets a 401', (tester) async {
+      WorkplaceDio.setInstance(
+        Dio()
+          ..httpClientAdapter = _SequentialAdapter([_fail401, _fail401]),
+      );
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      // Called once for the first 401, not again after the retry also fails.
+      expect(refreshCallCount, equals(1));
     });
   });
 }
