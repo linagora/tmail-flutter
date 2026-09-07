@@ -3,7 +3,6 @@ library;
 
 import 'dart:convert';
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -11,24 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 
-@JS('window')
-external JSObject get _window;
-
-/// Installs a fake `window._cozyBridge.fetchJSON` so `CozyBridge.isAvailable` is true.
-void _installBridge(JSAny? Function(JSObject options) handler) {
-  JSPromise<JSAny?> fetchJson(JSObject options) =>
-      Future<JSAny?>.value(handler(options)).toJS;
-
-  final bridge = JSObject();
-  bridge['fetchJSON'] = fetchJson.toJS;
-  _window['_cozyBridge'] = bridge;
-}
-
-/// Removes the bridge so `CozyBridge.isAvailable` is false (`isSupported` stays true on chrome).
-void _removeBridge() => _window['_cozyBridge'] = null;
+import '../test_utils/cozy_bridge_test_helper.dart';
 
 /// Captures the last request and returns a fixed JSON response.
 class _MockAdapter implements HttpClientAdapter {
@@ -81,20 +67,21 @@ void main() {
   });
 
   tearDown(() {
-    _removeBridge();
+    removeCozyBridge();
     WorkplaceDio.setInstance(originalDio);
   });
 
   group('WorkplaceDataSourceImpl::createIntent::CozyBridge::', () {
     test('Should return WorkplaceIntent via the bridge when available', () async {
       JSObject? capturedOptions;
-      _installBridge((options) {
+      installCozyBridge((options) {
         capturedOptions = options;
         return intentResponse.jsify();
       });
 
       final result = await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
+        accessMode: const BridgeAccessMode(),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           theme: WorkplaceTheme.light,
@@ -109,13 +96,13 @@ void main() {
       expect(decoded['path'], equals('/intents'));
     });
 
-    test('Should reject a null access token when the bridge is unavailable', () async {
-      _removeBridge();
+    test('Should propagate the error when the bridge fetchJSON call throws', () async {
+      installCozyBridge((options) => throw StateError('bridge rejected'));
 
       expect(
         () => datasource.createIntent(
           platformUrl: Uri.parse('https://platform.example.com'),
-          accessToken: null,
+          accessMode: const BridgeAccessMode(),
           config: const WorkplaceIntentConfig(
             addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
             theme: WorkplaceTheme.light,
@@ -125,14 +112,13 @@ void main() {
       );
     });
 
-    test('Should fall back to the bearer-token flow when the bridge is unavailable but an access token is present', () async {
-      _removeBridge();
+    test('Should use the bearer-token flow when explicitly requested', () async {
       final adapter = _MockAdapter(intentResponse);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       final result = await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           theme: WorkplaceTheme.light,
