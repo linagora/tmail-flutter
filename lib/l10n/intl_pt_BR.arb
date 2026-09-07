@@ -59,7 +59,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signIn": "Autenticar",
+  "signIn": "Entrar",
   "@signIn": {
     "type": "text",
     "placeholders_order": [],
@@ -2565,6 +2565,12 @@
   },
   "privacyPolicy": "Política de privacidade",
   "@privacyPolicy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "byContinuingYouAreAgreeingToOur": "Ao continuar, você concorda com nossa",
+  "@byContinuingYouAreAgreeingToOur": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
