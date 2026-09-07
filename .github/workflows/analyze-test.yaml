@@ -19,6 +19,7 @@ env:
     workplace/test/presentation/view/drive_intent_web_view_modal_web_test.dart
     core/test/utils/html/editor_script/quoted_reply_enter_handler_script_browser_test.dart
     workplace/test/data/workplace_datasource_impl_web_test.dart
+    workplace/test/presentation/extension/workplace_composer_attachment_extension_web_test.dart
 
 jobs:
   analyze-test:

@@ -11,6 +11,7 @@ import '../model/workplace_intent_response.dart';
 import '../bridge/cozy_bridge.dart';
 import '../workplace_dio.dart';
 import '../../domain/entity/workplace_intent.dart';
+import '../../domain/entity/workplace_intent_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
@@ -27,26 +28,35 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    String? accessToken,
+    required WorkplaceIntentAccessMode accessMode,
     required WorkplaceIntentConfig config,
   }) async {
     final body = _buildIntentRequest(config);
 
-    // The container app already holds the stack session, so no bearer token;
-    // fall back to the direct bearer-token flow when the bridge isn't usable.
-    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
-      final data = await CozyBridge.fetchJson(
-        method: 'POST',
-        path: '/intents',
-        body: body,
-      );
-      return parseIntentResponse(data);
-    }
+    return switch (accessMode) {
+      BridgeAccessMode() => _createIntentViaBridge(body),
+      BearerTokenAccessMode(:final accessToken) =>
+        _createIntentViaBearerToken(platformUrl, accessToken, body),
+    };
+  }
 
-    if (accessToken == null || accessToken.isEmpty) {
-      throw StateError('Drive access token is required');
-    }
+  // No token: the container app already holds the stack session.
+  Future<WorkplaceIntent> _createIntentViaBridge(
+    Map<String, dynamic> body,
+  ) async {
+    final data = await CozyBridge.fetchJson(
+      method: 'POST',
+      path: '/intents',
+      body: body,
+    );
+    return parseIntentResponse(data);
+  }
 
+  Future<WorkplaceIntent> _createIntentViaBearerToken(
+    Uri platformUrl,
+    String accessToken,
+    Map<String, dynamic> body,
+  ) async {
     final response = await WorkplaceDio.instance.post(
       platformUrl.replace(
         pathSegments: [

@@ -1,5 +1,6 @@
 import '../datasource/workplace_datasource.dart';
 import '../../domain/entity/workplace_intent.dart';
+import '../../domain/entity/workplace_intent_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 import '../../domain/repository/workplace_repository.dart';
 
@@ -11,11 +12,11 @@ class WorkplaceRepositoryImpl implements WorkplaceRepository {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    String? accessToken,
+    required WorkplaceIntentAccessMode accessMode,
     required WorkplaceIntentConfig config,
   }) => _dataSource.createIntent(
     platformUrl: platformUrl,
-    accessToken: accessToken,
+    accessMode: accessMode,
     config: config,
   );
 

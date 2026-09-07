@@ -11,6 +11,7 @@ import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
@@ -57,19 +58,26 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     Uri platformUrl, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
-    // Mobile has no container app, so it authenticates against Drive directly;
-    // on web the bridge proxies through a session that already exists, unless
-    // the bridge itself is unavailable, in which case fall back to direct auth.
-    String? accessToken;
-    if (!CozyBridge.isSupported || !CozyBridge.isAvailable) {
-      final oidcToken = oidcTokenGetter();
-      if (oidcToken == null) throw StateError('OIDC token is unavailable');
-      accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
-      if (accessToken == null) throw StateError('Drive access token exchange failed');
+    // Try the bridge first; any failure falls back to the bearer-token flow.
+    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
+      try {
+        return await _createIntent(
+          platformUrl,
+          const BridgeAccessMode(),
+          filePickerConfig: filePickerConfig,
+        );
+      } catch (_) {
+        // fall through to the bearer-token flow below
+      }
     }
+
+    final oidcToken = oidcTokenGetter();
+    if (oidcToken == null) throw StateError('OIDC token is unavailable');
+    final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
+    if (accessToken == null) throw StateError('Drive access token exchange failed');
     return _createIntent(
       platformUrl,
-      accessToken,
+      BearerTokenAccessMode(accessToken),
       filePickerConfig: filePickerConfig,
     );
   }
@@ -100,13 +108,13 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
-    String? accessToken, {
+    WorkplaceIntentAccessMode accessMode, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     WorkplaceIntent? intent;
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
-      accessToken,
+      accessMode,
       config: WorkplaceIntentConfig(
         addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
         addAsAttachment: filePickerConfig.downloadLink == null

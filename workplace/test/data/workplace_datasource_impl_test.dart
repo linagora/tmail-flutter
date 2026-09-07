@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 
@@ -247,7 +248,7 @@ void main() {
 
       final result = await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
@@ -265,7 +266,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com/api/'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
@@ -285,7 +286,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
@@ -305,7 +306,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'my-secret-token',
+        accessMode: const BearerTokenAccessMode('my-secret-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
@@ -325,7 +326,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
@@ -358,7 +359,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           addAsAttachment: WorkplaceActionConfig(
@@ -386,7 +387,7 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
+        accessMode: const BearerTokenAccessMode('test-token'),
         config: const WorkplaceIntentConfig(
           addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
           theme: WorkplaceTheme.light,
@@ -401,45 +402,13 @@ void main() {
       expect(config['downloadLink'], isNull);
     });
 
-    test('Should reject a null access token when the cozy bridge is unavailable', () async {
-      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
-
-      expect(
-        () => datasource.createIntent(
-          platformUrl: Uri.parse('https://platform.example.com'),
-          accessToken: null,
-          config: const WorkplaceIntentConfig(
-            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
-            theme: WorkplaceTheme.light,
-          ),
-        ),
-        throwsA(isA<StateError>()),
-      );
-    });
-
-    test('Should reject an empty access token when the cozy bridge is unavailable', () async {
-      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
-
-      expect(
-        () => datasource.createIntent(
-          platformUrl: Uri.parse('https://platform.example.com'),
-          accessToken: '',
-          config: const WorkplaceIntentConfig(
-            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
-            theme: WorkplaceTheme.light,
-          ),
-        ),
-        throwsA(isA<StateError>()),
-      );
-    });
-
     test('Should propagate DioException on network error', () async {
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
 
       expect(
         () => datasource.createIntent(
           platformUrl: Uri.parse('https://platform.example.com'),
-          accessToken: 'test-token',
+          accessMode: const BearerTokenAccessMode('test-token'),
           config: const WorkplaceIntentConfig(
             addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
             addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
