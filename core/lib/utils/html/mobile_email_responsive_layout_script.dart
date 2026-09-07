@@ -331,9 +331,54 @@ $_eventScript
           }
         }
 
+        function measureTableColumns(table) {
+          var cells = table.querySelectorAll('td, th, col');
+          var columns = [];
+          var ownerWidths = new Map();
+          for (var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+            var ownerTable = cell.closest('table');
+            if (!ownerTable) continue;
+
+            if (!ownerWidths.has(ownerTable)) {
+              ownerWidths.set(ownerTable, ownerTable.getBoundingClientRect().width);
+            }
+            columns.push({
+              element: cell,
+              width: cell.getBoundingClientRect().width,
+              ownerWidth: ownerWidths.get(ownerTable),
+            });
+          }
+          return columns;
+        }
+
+        function makeTableColumnsProportional(table) {
+          // Widths from a stylesheet or a nested table are invisible to
+          // hasFixedWidth, so proportions are taken from the measured layout.
+          var columns = measureTableColumns(table);
+          var nestedTables = table.getElementsByTagName('table');
+          for (var i = 0; i < nestedTables.length; i++) {
+            setResponsiveStyle(nestedTables[i], 'width', '100%');
+            setResponsiveStyle(nestedTables[i], 'max-width', '100%');
+          }
+          for (var j = 0; j < columns.length; j++) {
+            var column = columns[j];
+            if (column.ownerWidth <= 0 || column.width <= 0) continue;
+
+            setResponsiveStyle(
+              column.element,
+              'width',
+              Math.min(100, column.width / column.ownerWidth * 100).toFixed(3) + '%',
+            );
+          }
+        }
+
         function fitTableWithinAvailableWidth(content, table, availableWidth) {
           // Breaking long words preserves the type size, so it is tried first.
           relaxUnbreakableCellText(table);
+          if (table.getBoundingClientRect().width <= availableWidth + 1) return;
+
+          makeTableColumnsProportional(table);
           if (table.getBoundingClientRect().width <= availableWidth + 1) return;
 
           scaleElementToAvailableWidth(
