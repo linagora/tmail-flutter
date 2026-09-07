@@ -3377,6 +3377,7 @@
     "placeholders_order": ["errorMessage"],
     "placeholders": {"errorMessage": {}}
   },
+  "archiveMessage": "Arquivar mensagem",
   "downloadMessageAsEML": "Baixar mensagem como EML",
   "print": "Imprimir",
   "saveMessage": "Salvar mensagem",
