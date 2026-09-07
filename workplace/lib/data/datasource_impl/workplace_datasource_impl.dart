@@ -44,7 +44,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       return parseIntentResponse(data);
     }
 
-    if (accessToken == null) {
+    if (accessToken == null || accessToken.isEmpty) {
       throw StateError('Drive access token is required');
     }
 
