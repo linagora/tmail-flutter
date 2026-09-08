@@ -26,7 +26,7 @@ class _BothSidesListener {
 void main() {
   // Locks the mutual-exclusion contract subject/body selection syncing relies on.
   group('HtmlSelectionSyncBus', () {
-    tearDown(() => HtmlSelectionSyncBus.instance.dispose());
+    tearDown(() => HtmlSelectionSyncBus.instance.release());
 
     test('instance is a singleton', () {
       expect(HtmlSelectionSyncBus.instance, same(HtmlSelectionSyncBus.instance));
@@ -80,7 +80,7 @@ void main() {
       expect(HtmlSelectionSyncBus.instance.notifyIframeSelectionStarted, returnsNormally);
     });
 
-    test('dispose closes the streams and notify* after dispose is a safe no-op', () async {
+    test('release closes the streams and notify* after release is a safe no-op', () async {
       final bus = HtmlSelectionSyncBus.instance;
       var doneCount = 0;
       final sub = bus.flutterSelectionStarted.listen(
@@ -88,7 +88,7 @@ void main() {
         onDone: () => doneCount++,
       );
 
-      bus.dispose();
+      bus.release();
       await Future<void>.delayed(Duration.zero);
 
       expect(doneCount, 1);
@@ -97,9 +97,9 @@ void main() {
       await sub.cancel();
     });
 
-    test('a fresh stream works again after dispose', () async {
+    test('a fresh stream works again after release', () async {
       final bus = HtmlSelectionSyncBus.instance;
-      bus.dispose();
+      bus.release();
 
       final events = <void>[];
       final sub = bus.iframeSelectionStarted.listen(events.add);
@@ -108,6 +108,26 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(events, hasLength(1));
+      await sub.cancel();
+    });
+
+    test('release is a no-op while another consumer still holds the bus', () async {
+      final bus = HtmlSelectionSyncBus.instance;
+      bus.acquire();
+      bus.acquire();
+      var doneCount = 0;
+      final sub = bus.flutterSelectionStarted.listen(
+        (_) {},
+        onDone: () => doneCount++,
+      );
+
+      bus.release();
+      await Future<void>.delayed(Duration.zero);
+      expect(doneCount, 0, reason: 'stream must stay open for the remaining consumer');
+
+      bus.release();
+      await Future<void>.delayed(Duration.zero);
+      expect(doneCount, 1);
       await sub.cancel();
     });
   });

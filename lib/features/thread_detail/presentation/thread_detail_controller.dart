@@ -169,6 +169,7 @@ class ThreadDetailController extends BaseController {
   void onInit() {
     super.onInit();
     if (PlatformInfo.isWeb) {
+      HtmlSelectionSyncBus.instance.acquire();
       _iframeSelectionStartedSubscription = HtmlSelectionSyncBus
           .instance.iframeSelectionStarted
           .listen((_) => bodySelectionAreaKey.currentState?.selectableRegion.clearSelection());
@@ -320,8 +321,10 @@ class ThreadDetailController extends BaseController {
   @override
   void onClose() {
     onKeyboardShortcutDispose();
-    _iframeSelectionStartedSubscription?.cancel();
-    HtmlSelectionSyncBus.instance.dispose();
+    if (PlatformInfo.isWeb) {
+      _iframeSelectionStartedSubscription?.cancel();
+      HtmlSelectionSyncBus.instance.release();
+    }
     super.onClose();
   }
 }

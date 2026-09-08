@@ -59,6 +59,7 @@ void main() {
         HtmlUtils.unregisterDropListener.name,
         selectionChangeScript.name,
         HtmlUtils.collapseSelectionToEnd.name,
+        HtmlUtils.clearEditorFocusAndSelection.name,
         HtmlUtils.deleteSelectionContent.name,
         HtmlUtils.saveSelection.name,
         HtmlUtils.restoreSelection.name,

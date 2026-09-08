@@ -9,6 +9,7 @@ class HtmlSelectionSyncBus {
 
   StreamController<void>? _flutterSelectionStartedController;
   StreamController<void>? _iframeSelectionStartedController;
+  int _refCount = 0;
 
   /// A selection started in the Flutter tree (e.g. the email subject).
   Stream<void> get flutterSelectionStarted =>
@@ -30,9 +31,16 @@ class HtmlSelectionSyncBus {
     _iframeSelectionStartedController?.add(null);
   }
 
-  /// Releases both streams when the email view that owns them closes; the
-  /// next view lazily recreates fresh ones on first subscribe.
-  void dispose() {
+  /// Registers one more consumer of the shared bus.
+  void acquire() {
+    _refCount++;
+  }
+
+  /// Closes both streams once every consumer has released; a no-op otherwise.
+  void release() {
+    if (_refCount > 0) _refCount--;
+    if (_refCount > 0) return;
+
     _flutterSelectionStartedController?.close();
     _iframeSelectionStartedController?.close();
     _flutterSelectionStartedController = null;

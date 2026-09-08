@@ -340,6 +340,7 @@ class ComposerController extends BaseController
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
       menuMoreOptionController = CustomPopupMenuController();
+      HtmlSelectionSyncBus.instance.acquire();
       _flutterSelectionStartedSubscription = HtmlSelectionSyncBus
           .instance.flutterSelectionStarted
           .listen((_) => handleFlutterSelectionStartedWeb());
@@ -388,7 +389,10 @@ class ComposerController extends BaseController
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
     _subscriptionOnBlur?.cancel();
-    _flutterSelectionStartedSubscription?.cancel();
+    if (PlatformInfo.isWeb) {
+      _flutterSelectionStartedSubscription?.cancel();
+      HtmlSelectionSyncBus.instance.release();
+    }
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
