@@ -12,8 +12,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
-  id-token: write
 
 jobs:
   validate-tag:
@@ -41,6 +39,10 @@ jobs:
   build-web-image:
     name: Build web release image
     needs: validate-tag
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     uses: ./.github/workflows/reusable-web-release-image.yaml
     with:
       ref: refs/tags/${{ inputs.tag }}
