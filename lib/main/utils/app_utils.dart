@@ -44,6 +44,15 @@ class AppUtils {
     });
   }
 
+  static void copyLinkToClipboard(BuildContext context, String link) {
+    Clipboard.setData(ClipboardData(text: link)).then((_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).linkCopiedToClipboard)),
+      );
+    });
+  }
+
   static date_format.DateLocale getCurrentDateLocale() {
     final currentLanguageCode = Get.locale?.languageCode;
     if (currentLanguageCode == LanguageCodeConstants.french) {

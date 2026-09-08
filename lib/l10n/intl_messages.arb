@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-08-24T15:11:50.161826",
+  "@@last_modified": "2026-09-08T15:41:58.711795",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3160,6 +3160,30 @@
   },
   "organizer": "Organizer",
   "@organizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attending": "Attending?",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "Join the video conference",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "Copy link",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "Link copied to clipboard",
+  "@linkCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
