@@ -15,6 +15,7 @@ final class WebEditorSelectionScriptGroup
   List<WebEditorScriptDescriptor> build() => [
     WebEditorScriptDescriptor(script: selectionChangeScript, runOnInit: true),
     adapter.fromHtmlUtils(HtmlUtils.collapseSelectionToEnd),
+    adapter.fromHtmlUtils(HtmlUtils.clearEditorFocusAndSelection),
     adapter.fromHtmlUtils(HtmlUtils.deleteSelectionContent),
     adapter.fromHtmlUtils(HtmlUtils.saveSelection),
     adapter.fromHtmlUtils(HtmlUtils.restoreSelection),

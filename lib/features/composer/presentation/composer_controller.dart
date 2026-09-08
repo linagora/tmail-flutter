@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:core/core.dart';
+import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -248,6 +249,7 @@ class ComposerController extends BaseController
   StreamSubscription<html.Event>? _subscriptionOnDrop;
   StreamSubscription<html.Event>? _subscriptionOnBlur;
   StreamSubscription<String>? _composerCacheListener;
+  StreamSubscription<void>? _flutterSelectionStartedSubscription;
 
   RichTextMobileTabletController? richTextMobileTabletController;
   RichTextWebController? richTextWebController;
@@ -338,6 +340,9 @@ class ComposerController extends BaseController
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
       menuMoreOptionController = CustomPopupMenuController();
+      _flutterSelectionStartedSubscription = HtmlSelectionSyncBus
+          .instance.flutterSelectionStarted
+          .listen((_) => handleFlutterSelectionStartedWeb());
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
     }
@@ -383,6 +388,7 @@ class ComposerController extends BaseController
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
     _subscriptionOnBlur?.cancel();
+    _flutterSelectionStartedSubscription?.cancel();
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
@@ -2038,7 +2044,24 @@ class ComposerController extends BaseController
     _autoFocusFieldWhenLauncher();
   }
 
+  /// A Flutter-side selection (e.g. the email subject) just started — clear
+  /// this composer's own iframe selection and blur it. In-iframe `.blur()`
+  /// only releases focus inside the editor's own document; the top document
+  /// still sees the `<iframe>` element itself as focused until it is blurred
+  /// from here, so copy/selection keeps targeting the editor otherwise.
+  void handleFlutterSelectionStartedWeb() {
+    final activeElement = html.document.activeElement;
+    if (activeElement is html.IFrameElement) {
+      activeElement.blur();
+    }
+    richTextWebController?.editorController
+        .evaluateJavascriptWeb(HtmlUtils.clearEditorFocusAndSelection.name);
+  }
+
   void handleOnFocusHtmlEditorWeb() {
+    // The composer editor is its own iframe taking real DOM focus, same as
+    // an email body iframe — clear any stale subject selection behind it.
+    HtmlSelectionSyncBus.instance.notifyIframeSelectionStarted();
     // This handler only ever runs because the html editor's own native DOM
     // element just gained focus (wired exclusively to the editor widget's
     // `onFocus` callback), so calling editorController.setFocus() again is

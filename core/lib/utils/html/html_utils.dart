@@ -446,6 +446,15 @@ class HtmlUtils {
         name: 'registerFileLinkCardClickHandler',
       );
 
+  static const clearEditorFocusAndSelection = (
+    script: '''
+      (() => {
+        const selection = window.getSelection();
+        if (selection) selection.removeAllRanges();
+        document.querySelector(".note-editable")?.blur();
+      })();''',
+    name: 'clearEditorFocusAndSelection');
+
   static const collapseSelectionToEnd = (
     script: '''
       (() => {

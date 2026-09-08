@@ -7,6 +7,8 @@ import 'package:core/presentation/utils/html_transformer/dom/normalize_line_heig
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_selection_sync_bus.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -1823,6 +1825,43 @@ void main() {
           // Let the asynchronous drop processing (loading dialog/toast) settle.
           await tester.pump(const Duration(seconds: 1));
         });
+      });
+    });
+
+    group('handleOnFocusHtmlEditorWeb test:', () {
+      tearDown(() => HtmlSelectionSyncBus.instance.dispose());
+
+      test(
+          'Should notify HtmlSelectionSyncBus.iframeSelectionStarted\n'
+          'When the composer editor iframe gains focus', () async {
+        // arrange
+        final events = <void>[];
+        final sub = HtmlSelectionSyncBus.instance.iframeSelectionStarted
+            .listen(events.add);
+        addTearDown(() => sub.cancel());
+
+        // act
+        composerController?.handleOnFocusHtmlEditorWeb();
+        await Future<void>.delayed(Duration.zero);
+
+        // assert
+        expect(events, hasLength(1));
+      });
+    });
+
+    group('handleFlutterSelectionStartedWeb test:', () {
+      test(
+          'Should clear the composer editor selection/focus\n'
+          'When a Flutter-side selection starts', () {
+        // arrange
+        composerController?.richTextWebController = mockRichTextWebController;
+
+        // act
+        composerController?.handleFlutterSelectionStartedWeb();
+
+        // assert
+        verify(mockRichTextWebController.editorController
+            .evaluateJavascriptWeb(HtmlUtils.clearEditorFocusAndSelection.name));
       });
     });
   });
