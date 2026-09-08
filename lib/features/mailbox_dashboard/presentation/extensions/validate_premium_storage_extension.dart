@@ -5,6 +5,9 @@ extension ValidatePremiumStorageExtension on MailboxDashBoardController {
     if (accountId.value == null || sessionCurrent == null) {
       return false;
     }
+    if (paywallController?.isAvailable == false) {
+      return false;
+    }
     return isPremiumAvailable(
       accountId: accountId.value,
       session: sessionCurrent,

@@ -12,8 +12,8 @@ extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
   void loadLinagoraEcosystem() {
     _registerEcosystemHandlers();
 
-    if (cachedLinagoraEcosystem != null) {
-      getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem!);
+    if (cachedLinagoraEcosystem.value != null) {
+      getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem.value!);
       return;
     }
 
@@ -32,13 +32,13 @@ extension SetupLinagoraEcoSystemExtension on MailboxDashBoardController {
   }
 
   void handleGetLinagoraEcosystemSuccess(GetLinagoraEcosystemSuccess success) {
-    cachedLinagoraEcosystem = success.linagoraEcosystem;
-    getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem!);
+    cachedLinagoraEcosystem.value = success.linagoraEcosystem;
+    getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchLoaded(cachedLinagoraEcosystem.value!);
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
     logWarning('SetupLinagoraEcoSystemExtension::handleGetLinagoraEcosystemFailure: ${failure.exception}');
-    cachedLinagoraEcosystem = null;
+    cachedLinagoraEcosystem.value = null;
     getBinding<LinagoraEcosystemHandlerRegistry>()?.dispatchCleared();
   }
 
