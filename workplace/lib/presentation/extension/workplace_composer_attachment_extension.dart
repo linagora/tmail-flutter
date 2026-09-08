@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/bridge/cozy_bridge.dart';
@@ -68,6 +69,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         );
       } catch (_) {
         // fall through to the bearer-token flow below
+        logWarning(
+          'WorkplaceComposerAttachmentExtension::_fetchIntent: Cozy bridge createIntent failed, falling back to bearer-token flow',
+          webConsoleEnabled: true,
+        );
       }
     }
 
