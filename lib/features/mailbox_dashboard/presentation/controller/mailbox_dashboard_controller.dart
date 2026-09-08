@@ -361,7 +361,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
-  LinagoraEcosystem? cachedLinagoraEcosystem;
+  final cachedLinagoraEcosystem = Rxn<LinagoraEcosystem>();
   PaywallController? paywallController;
   final workerObxVariables = <Worker>[];
   ProviderSubscription<bool>? advancedSearchViewSubscription;
@@ -993,6 +993,7 @@ class MailboxDashBoardController extends ReloadableController
 
     paywallController = PaywallController(
       ownEmailAddress: ownEmailAddress.value,
+      linagoraEcosystem: cachedLinagoraEcosystem,
     );
 
     if (isLabelCapabilitySupported) {
@@ -3496,7 +3497,7 @@ class MailboxDashBoardController extends ReloadableController
     twakeAppManager.setHasComposer(false);
     paywallController?.onClose();
     paywallController = null;
-    cachedLinagoraEcosystem = null;
+    cachedLinagoraEcosystem.value = null;
     _sentryEcosystem = null;
     _disposeWorkerObxVariables();
     _dashboardSearchCoordinator?.dispose();

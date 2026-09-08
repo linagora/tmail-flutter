@@ -5,7 +5,9 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/web_link_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
 import 'package:tmail_ui_user/features/paywall/domain/usecases/get_paywall_url_interactor.dart';
@@ -16,8 +18,24 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class PaywallController extends BaseController {
   final String ownEmailAddress;
+  final Rxn<LinagoraEcosystem>? linagoraEcosystem;
 
-  PaywallController({required this.ownEmailAddress});
+  PaywallController({required this.ownEmailAddress, this.linagoraEcosystem});
+
+  static bool isReachable({String? workplaceFqdn, String? paywallUrlTemplate}) {
+    return workplaceFqdn?.trim().isNotEmpty == true ||
+        paywallUrlTemplate?.trim().isNotEmpty == true;
+  }
+
+  /// `true` when no ecosystem is available to tell, so the caller keeps its CTA.
+  bool get isAvailable {
+    if (linagoraEcosystem == null) return true;
+
+    return isReachable(
+      workplaceFqdn: twakeAppManager.oidcUserInfo?.workplaceFqdn,
+      paywallUrlTemplate: linagoraEcosystem!.value?.paywallUrlTemplate,
+    );
+  }
 
   void _loadPaywallUrl() {
     final getPaywallUrlInteractor = getBinding<GetPaywallUrlInteractor>();
