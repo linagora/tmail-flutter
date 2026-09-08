@@ -1829,7 +1829,7 @@ void main() {
     });
 
     group('handleOnFocusHtmlEditorWeb test:', () {
-      tearDown(() => HtmlSelectionSyncBus.instance.dispose());
+      tearDown(() => HtmlSelectionSyncBus.instance.release());
 
       test(
           'Should notify HtmlSelectionSyncBus.iframeSelectionStarted\n'
