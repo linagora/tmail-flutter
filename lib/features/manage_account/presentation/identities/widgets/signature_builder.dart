@@ -72,15 +72,27 @@ class SignatureBuilder extends StatelessWidget {
       );
     } else {
       return HtmlContentViewer(
-        contentHtml: value,
-        initialWidth: width,
-        maxViewHeight: height,
-        contentPadding: 0,
-        htmlContentMinHeight: 0.0,
-        offsetHtmlContentHeight: 0.0,
-        direction: AppUtils.getCurrentDirection(context),
-        keepAlive: true,
-        disableScrolling: true,
+        configuration: HtmlContentViewerConfiguration(
+          content: HtmlContentViewerContent(
+            html: value,
+            direction: AppUtils.getCurrentDirection(context),
+          ),
+          layout: HtmlContentViewerLayout(
+            viewport: HtmlContentViewerViewport(
+              constraints: BoxConstraints.tightFor(width: width),
+            ),
+            height: HtmlContentViewerHeightConfiguration(
+              contentConstraints: const BoxConstraints(minHeight: 0),
+              viewConstraints: BoxConstraints(maxHeight: height),
+              offset: const HtmlContentViewerLength(0),
+            ),
+            contentPadding: const HtmlContentViewerLength(0),
+          ),
+          behavior: HtmlContentViewerBehavior(features: {
+            HtmlContentViewerFeature.keepAlive,
+            HtmlContentViewerFeature.disableScrolling,
+          }),
+        ),
       );
     }
   }

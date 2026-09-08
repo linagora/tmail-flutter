@@ -456,18 +456,47 @@ class EmailView extends GetWidget<SingleEmailController> {
                             key: PlatformInfo.isIntegrationTesting
                                 ? controller.htmlContentViewKey
                                 : null,
-                            contentHtml: allEmailContents,
-                            initialWidth: bodyConstraints.maxWidth,
-                            direction: AppUtils.getCurrentDirection(context),
-                            contentPadding: 0,
-                            useDefaultFontStyle: true,
-                            maxHtmlContentHeight: ConstantsUI.htmlContentMaxHeight,
-                            onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
-                            onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
-                            onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
-                            keepAlive: isInsideThreadDetailView,
-                            enableQuoteToggle: true,
-                            fontSize: isMobileResponsive ? 16 : 14,
+                            configuration: HtmlContentViewerConfiguration(
+                              content: HtmlContentViewerContent(
+                                html: allEmailContents,
+                                direction: AppUtils.getCurrentDirection(context),
+                              ),
+                              layout: HtmlContentViewerLayout(
+                                viewport: HtmlContentViewerViewport(
+                                  constraints: BoxConstraints.tightFor(
+                                    width: bodyConstraints.maxWidth,
+                                  ),
+                                ),
+                                height: const HtmlContentViewerHeightConfiguration(
+                                  contentConstraints: BoxConstraints(
+                                    minHeight: ConstantsUI.htmlContentMinHeight,
+                                    maxHeight: ConstantsUI.htmlContentMaxHeight,
+                                  ),
+                                ),
+                                contentPadding: const HtmlContentViewerLength(0),
+                              ),
+                              typography: HtmlContentViewerTypography(
+                                fontStyle: HtmlContentViewerFontStyle.defaultStyle,
+                                textSize: HtmlContentViewerLength(
+                                  isMobileResponsive ? 16 : 14,
+                                ),
+                              ),
+                              behavior: HtmlContentViewerBehavior(features: {
+                                if (isInsideThreadDetailView)
+                                  HtmlContentViewerFeature.keepAlive,
+                                HtmlContentViewerFeature.quoteToggle,
+                                HtmlContentViewerFeature.mobileResponsiveLayout,
+                              }),
+                              callbacks: HtmlContentViewerCallbacks(
+                                onMailto: (uri) async => controller.openMailToLink(uri),
+                                onContentClipped: (_) =>
+                                    controller.onHtmlContentClippedAction(true),
+                                onScrollHorizontalEnd: (direction) =>
+                                    controller.onScrollHorizontalEnd(
+                                      direction == HtmlContentViewerHorizontalDirection.left,
+                                    ),
+                              ),
+                            ),
                           ),
                         ),
                         Obx(() {
@@ -495,16 +524,39 @@ class EmailView extends GetWidget<SingleEmailController> {
                     key: PlatformInfo.isIntegrationTesting
                         ? controller.htmlContentViewKey
                         : null,
-                    contentHtml: allEmailContents,
-                    initialWidth: bodyConstraints.maxWidth,
-                    direction: AppUtils.getCurrentDirection(context),
-                    contentPadding: 0,
-                    useDefaultFontStyle: true,
-                    onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
-                    keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: true,
-                    onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
-                    fontSize: isMobileResponsive ? 16 : 14,
+                    configuration: HtmlContentViewerConfiguration(
+                      content: HtmlContentViewerContent(
+                        html: allEmailContents,
+                        direction: AppUtils.getCurrentDirection(context),
+                      ),
+                      layout: HtmlContentViewerLayout(
+                        viewport: HtmlContentViewerViewport(
+                          constraints: BoxConstraints.tightFor(
+                            width: bodyConstraints.maxWidth,
+                          ),
+                        ),
+                        contentPadding: const HtmlContentViewerLength(0),
+                      ),
+                      typography: HtmlContentViewerTypography(
+                        fontStyle: HtmlContentViewerFontStyle.defaultStyle,
+                        textSize: HtmlContentViewerLength(
+                          isMobileResponsive ? 16 : 14,
+                        ),
+                      ),
+                      behavior: HtmlContentViewerBehavior(features: {
+                        if (isInsideThreadDetailView)
+                          HtmlContentViewerFeature.keepAlive,
+                        HtmlContentViewerFeature.quoteToggle,
+                        HtmlContentViewerFeature.mobileResponsiveLayout,
+                      }),
+                      callbacks: HtmlContentViewerCallbacks(
+                        onMailto: (uri) async => controller.openMailToLink(uri),
+                        onScrollHorizontalEnd: (direction) =>
+                            controller.onScrollHorizontalEnd(
+                              direction == HtmlContentViewerHorizontalDirection.left,
+                            ),
+                      ),
+                    ),
                   )
                 );
               }

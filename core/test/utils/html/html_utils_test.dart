@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
+import 'package:core/utils/html/mobile_email_responsive_layout_script.dart';
 import 'package:universal_html/html.dart' as html;
 
 void main() {
@@ -42,6 +43,22 @@ void main() {
       final result = HtmlUtils.generateHtmlDocument(content: '<p>Test</p>');
 
       expect(result, contains('box-sizing: border-box'));
+    });
+
+    test('appends the mobile responsive script after email content', () {
+      const content = '<style>table { width: 790px !important; }</style>';
+      final document = HtmlUtils.generateHtmlDocument(
+        content: content,
+        javaScripts: MobileEmailResponsiveLayoutScript.generate(
+          contentSizeChangedEventJSChannelName: 'TestContentSizeChanged',
+        ),
+      );
+
+      final contentIndex = document.indexOf(content);
+      final scriptIndex = document.indexOf("document.createElement('style')");
+
+      expect(contentIndex, greaterThan(-1));
+      expect(scriptIndex, greaterThan(contentIndex));
     });
   });
 

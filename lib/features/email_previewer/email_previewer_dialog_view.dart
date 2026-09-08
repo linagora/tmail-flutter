@@ -86,13 +86,25 @@ class EmailPreviewerDialogView extends StatelessWidget {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: HtmlContentViewer(
-            contentHtml: emlPreviewer.content,
-            initialWidth: context.width,
-            useDefaultFontStyle: true,
-            direction: AppUtils.getCurrentDirection(context),
-            onMailtoDelegateAction: onMailtoDelegateAction,
-            onPreviewEMLDelegateAction: onPreviewEMLDelegateAction,
-            onDownloadAttachmentDelegateAction: onDownloadAttachmentDelegateAction,
+            configuration: HtmlContentViewerConfiguration(
+              content: HtmlContentViewerContent(
+                html: emlPreviewer.content,
+                direction: AppUtils.getCurrentDirection(context),
+              ),
+              layout: HtmlContentViewerLayout(
+                viewport: HtmlContentViewerViewport(
+                  constraints: BoxConstraints.tightFor(width: context.width),
+                ),
+              ),
+              typography: const HtmlContentViewerTypography(
+                fontStyle: HtmlContentViewerFontStyle.defaultStyle,
+              ),
+              callbacks: HtmlContentViewerCallbacks(
+                onMailto: onMailtoDelegateAction,
+                onPreviewEML: onPreviewEMLDelegateAction,
+                onDownloadAttachment: onDownloadAttachmentDelegateAction,
+              ),
+            ),
           ),
         ),
       );
