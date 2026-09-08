@@ -23,12 +23,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "Bad credentials": "Credenciais incorretas",
-  "@Bad credentials": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "next": "Avançar",
   "@next": {
     "type": "text",
@@ -1585,6 +1579,12 @@
   },
   "languageItalian": "Italiano",
   "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languagePortuguese": "Português (Brasil)",
+  "@languagePortuguese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1686,6 +1686,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languagePortuguese": "Portuguese",
+  "@languagePortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "messageDialogSendEmailUploadingAttachment": "Your message could not be sent because it uploading attachment",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
