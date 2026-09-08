@@ -56,9 +56,43 @@ class EmailViewport {
 
   final web.HTMLIFrameElement _frame;
 
-  const EmailViewport._(this._frame);
+  /// How long the layout pass took to resolve the overflow. Only populated by
+  /// [renderAndSettle], which waits for the result instead of a fixed delay.
+  final double? settleMilliseconds;
+
+  const EmailViewport._(this._frame, {this.settleMilliseconds});
+
+  static const _settleTimeout = Duration(seconds: 20);
 
   static Future<EmailViewport> render(EmailFixture fixture) async {
+    final frame = await _attach(fixture);
+    // The layout pass is scheduled on an animation frame after load.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    return EmailViewport._(frame);
+  }
+
+  /// Renders [fixture] and polls until the email no longer overflows, so
+  /// [settleMilliseconds] measures the pass rather than a fixed delay.
+  static Future<EmailViewport> renderAndSettle(EmailFixture fixture) async {
+    final frame = await _attach(fixture);
+
+    final startedAt = DateTime.now();
+    final content =
+        frame.contentDocument!.getElementsByClassName('tmail-content').item(0)!;
+    while (content.scrollWidth > content.clientWidth + 1) {
+      await Future<void>.delayed(const Duration(milliseconds: 4));
+      if (DateTime.now().difference(startedAt) > _settleTimeout) break;
+    }
+
+    return EmailViewport._(
+      frame,
+      settleMilliseconds:
+          DateTime.now().difference(startedAt).inMicroseconds / 1000,
+    );
+  }
+
+  static Future<web.HTMLIFrameElement> _attach(EmailFixture fixture) async {
     final frame = web.HTMLIFrameElement()
       ..width = '${fixture.viewportWidth}'
       ..height = '480'
@@ -70,10 +104,8 @@ class EmailViewport {
     }.toJS);
     web.document.body!.append(frame);
     await loaded.future;
-    // The layout pass is scheduled on an animation frame after load.
-    await Future<void>.delayed(const Duration(milliseconds: 100));
 
-    return EmailViewport._(frame);
+    return frame;
   }
 
   web.Element get _content =>

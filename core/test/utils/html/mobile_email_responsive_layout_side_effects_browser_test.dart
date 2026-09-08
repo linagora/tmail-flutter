@@ -4,13 +4,78 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'mobile_email_responsive_layout_fixture.dart';
 
+String buildLargeEmail(int rows) {
+  final buffer = StringBuffer('<div id="wide" style="width:790px">');
+  for (var row = 0; row < rows; row++) {
+    buffer.write(
+      '<div class="row"><span>Row $row</span><span>column b</span>'
+      '<span>column c</span><b id="cell$row">value</b></div>',
+    );
+  }
+  buffer.write('</div>');
+  return buffer.toString();
+}
+
 void main() {
   group('Mobile email responsive layout side effects', () {
     verifyQuotedBodyTypography();
     verifyNoWrapRelaxationScope();
     verifySenderStylesAreRestored();
     verifyQuoteToggleReflow();
+    verifyLargeEmailStaysLinear();
   });
+}
+
+/// The pass walks every element, so its cost has to stay proportional to the
+/// document rather than to the square of it. An absolute budget cannot show
+/// that — it only says the machine was fast enough — so this compares two
+/// documents instead: quadrupling the element count must not cost far more
+/// than four times the work.
+///
+/// Measured locally the ratio sits at 3.0-3.1 across runs, because a fixed
+/// per-pass overhead is amortised over the larger document. A quadratic scan
+/// puts it near 16, so the allowance below is wide enough never to flake and
+/// still far below what a regression would produce.
+void verifyLargeEmailStaysLinear() {
+  const smallRows = 1000;
+  const largeRows = smallRows * 4;
+  const maxGrowthFactor = 8;
+
+  test('reflows four times the elements in far less than four times the '
+      'squared work', () async {
+    final small = await _settleLargeEmail(smallRows);
+    final large = await _settleLargeEmail(largeRows);
+
+    expect(
+      large / small,
+      lessThan(maxGrowthFactor),
+      reason: '${smallRows * 5} elements took ${small}ms and '
+          '${largeRows * 5} took ${large}ms, a factor of '
+          '${(large / small).toStringAsFixed(2)} for 4x the document, which '
+          'points at a scan that no longer grows linearly',
+    );
+  }, timeout: const Timeout(Duration(minutes: 2)));
+}
+
+/// Renders an email of [rows] rows, asserts it was actually reflowed, and
+/// returns how long the pass took.
+Future<double> _settleLargeEmail(int rows) async {
+  final viewport = await EmailViewport.renderAndSettle(
+    EmailFixture(buildLargeEmail(rows)),
+  );
+
+  try {
+    expect(
+      viewport.overflowsHorizontally,
+      isFalse,
+      reason: 'a $rows row email must still be reflowed, not given up on',
+    );
+    expect(viewport.renderedFontSizeOf('#cell0'), 16);
+
+    return viewport.settleMilliseconds!;
+  } finally {
+    viewport.dispose();
+  }
 }
 
 /// A collapsed quote is display:none, so it has no width and the first pass
