@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/mail_address.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 
@@ -45,33 +46,11 @@ void main() {
   });
 
   group('calendar_event_extension::dateTimeEventAsString::test', () {
-    test('dateTimeEventAsString should return string with format start date - end date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for many days', () {
-      const expectedFormattedDateString = 'Sunday, October 10, 2021 - Sunday, October 24, 2021 (GMT+0)';
-
+    void expectAllDayEvent({
+      required DateTime endDate,
+      required String expectedFormattedDateString,
+    }) {
       final startDate = DateTime(2021, 10, 10, 00, 00, 00, 00, 00);
-      final endDate = DateTime(2021, 10, 25, 00, 00, 00, 00, 00);
-
-      final calendarEvent = CalendarEvent(
-        startDate: startDate,
-        endDate: endDate,
-        startUtcDate: UTCDate(startDate),
-        endUtcDate: UTCDate(endDate),
-      );
-
-      final formattedDateString = calendarEvent.getDateTimeEvent(
-          timeZone: 'GMT+0',
-          dateLocale: const EnglishDateLocale()
-      );
-
-      expect(formattedDateString, expectedFormattedDateString);
-    });
-
-    test('dateTimeEventAsString should return string with format date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for one day', () {
-      const expectedFormattedDateString = 'Sunday, October 10, 2021 (GMT+0)';
-
-      final startDate = DateTime(2021, 10, 10, 00, 00, 00, 00, 00);
-      final endDate = DateTime(2021, 10, 11, 00, 00, 00, 00, 00);
-
       final calendarEvent = CalendarEvent(
         startDate: startDate,
         endDate: endDate,
@@ -81,10 +60,81 @@ void main() {
 
       final formattedDateString = calendarEvent.getDateTimeEvent(
         timeZone: 'GMT+0',
-        dateLocale: const EnglishDateLocale()
+        dateLocale: const EnglishDateLocale(),
       );
 
       expect(formattedDateString, expectedFormattedDateString);
+    }
+
+    test('dateTimeEventAsString should return string with format start date - end date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for many days', () {
+      expectAllDayEvent(
+        endDate: DateTime(2021, 10, 25, 00, 00, 00, 00, 00),
+        expectedFormattedDateString:
+            'Sunday, October 10, 2021 - Sunday, October 24, 2021 (GMT+0)',
+      );
+    });
+
+    test('dateTimeEventAsString should return string with format date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for one day', () {
+      expectAllDayEvent(
+        endDate: DateTime(2021, 10, 11, 00, 00, 00, 00, 00),
+        expectedFormattedDateString: 'Sunday, October 10, 2021 (GMT+0)',
+      );
+    });
+  });
+
+  group('calendar_event_extension::getDateTimeParts::test', () {
+    CalendarEvent buildEvent(DateTime start, DateTime end) => CalendarEvent(
+      startDate: start,
+      endDate: end,
+      startUtcDate: UTCDate(start),
+      endUtcDate: UTCDate(end),
+    );
+
+    LinagoraEventDateTime partsOf(CalendarEvent event) => event.getDateTimeParts(
+      timeZone: 'GMT+0',
+      dateLocale: const EnglishDateLocale(),
+    );
+
+    test('SHOULD split the day from the clock time for a same-day event', () {
+      final parts = partsOf(
+        buildEvent(DateTime(2021, 10, 10, 8), DateTime(2021, 10, 10, 9)),
+      );
+
+      expect(parts.date, 'Sunday, October 10, 2021');
+      expect(parts.time, '08:00 AM - 09:00 AM');
+    });
+
+    test('SHOULD keep an all-day event whole', () {
+      final parts = partsOf(
+        buildEvent(DateTime(2021, 10, 10), DateTime(2021, 10, 11)),
+      );
+
+      expect(parts.date, 'Sunday, October 10, 2021 (GMT+0)');
+      expect(parts.time, isNull);
+    });
+
+    test('SHOULD keep a range spanning several days whole', () {
+      final parts = partsOf(
+        buildEvent(DateTime(2021, 10, 10, 8), DateTime(2021, 10, 11, 9)),
+      );
+
+      expect(parts.time, isNull);
+      expect(parts.date, contains(' - '));
+    });
+
+    test('SHOULD read as the line it replaces', () {
+      final event = buildEvent(
+        DateTime(2021, 10, 10, 8),
+        DateTime(2021, 10, 10, 9),
+      );
+
+      expect(
+        partsOf(event).joined,
+        event.getDateTimeEvent(
+          timeZone: 'GMT+0',
+          dateLocale: const EnglishDateLocale(),
+        ),
+      );
     });
   });
 
@@ -161,60 +211,61 @@ void main() {
   });
 
   group('calendar_event_extension::getEventActionTypesIsDisplayed:', () {
-    test('Should returns yes/maybe/no + mailToAttendees when method is request and user is in participants', () {
+    void expectActions({
+      required EventMethod method,
+      required List<CalendarAttendee> participants,
+      required List<EventActionType> expectedActions,
+    }) {
       final event = CalendarEvent(
-        method: EventMethod.request,
+        method: method,
         organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
-        participants: [matchingParticipant],
+        participants: participants,
       );
 
-      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+      expect(
+        event.getEventActionTypesIsDisplayed(ownerEmail),
+        expectedActions,
+      );
+    }
 
-      expect(actions, [
-        EventActionType.yes,
-        EventActionType.maybe,
-        EventActionType.no,
-        EventActionType.mailToAttendees,
-      ]);
+    test('Should returns yes/maybe/no + mailToAttendees when method is request and user is in participants', () {
+      expectActions(
+        method: EventMethod.request,
+        participants: [matchingParticipant],
+        expectedActions: [
+          EventActionType.yes,
+          EventActionType.maybe,
+          EventActionType.no,
+          EventActionType.mailToAttendees,
+        ],
+      );
     });
 
     test('Should returns acceptCounter + mailToAttendees when method is counter and user is in participants', () {
-      final event = CalendarEvent(
+      expectActions(
         method: EventMethod.counter,
-        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
         participants: [matchingParticipant],
+        expectedActions: [
+          EventActionType.acceptCounter,
+          EventActionType.mailToAttendees,
+        ],
       );
-
-      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
-
-      expect(actions, [
-        EventActionType.acceptCounter,
-        EventActionType.mailToAttendees,
-      ]);
     });
 
     test('Should returns only mailToAttendees when method is not repliable but organizer is present', () {
-      final event = CalendarEvent(
+      expectActions(
         method: EventMethod.cancel,
-        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
         participants: [matchingParticipant],
+        expectedActions: [EventActionType.mailToAttendees],
       );
-
-      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
-
-      expect(actions, [EventActionType.mailToAttendees]);
     });
 
     test('Should returns only mailToAttendees when user is NOT in participants but organizer is present', () {
-      final event = CalendarEvent(
+      expectActions(
         method: EventMethod.request,
-        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
         participants: [nonMatchingParticipant],
+        expectedActions: [EventActionType.mailToAttendees],
       );
-
-      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
-
-      expect(actions, [EventActionType.mailToAttendees]);
     });
 
     test('Should returns empty list when no organizer and no participants', () {

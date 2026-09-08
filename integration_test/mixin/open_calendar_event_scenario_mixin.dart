@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_card_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -48,7 +48,7 @@ mixin OpenCalendarEventScenarioMixin on BaseScenario {
     AppLocalizations appLocalizations,
   ) async {
     final yesButton =
-        $(CalendarEventActionButtonWidget).$(appLocalizations.yes);
+        $(CalendarEventCardWidget).$(appLocalizations.yes);
     await yesButton.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(yesButton);
   }
@@ -57,7 +57,7 @@ mixin OpenCalendarEventScenarioMixin on BaseScenario {
     AppLocalizations appLocalizations,
   ) async {
     final mailToAttendeesButton =
-        $(CalendarEventActionButtonWidget).$(appLocalizations.mailToAttendees);
+        $(CalendarEventCardWidget).$(appLocalizations.mailToAttendees);
     await mailToAttendeesButton.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(mailToAttendeesButton);
   }
@@ -65,7 +65,7 @@ mixin OpenCalendarEventScenarioMixin on BaseScenario {
   Future<void> _expectNoButtonInvisible(
     AppLocalizations appLocalizations,
   ) async {
-    final noButton = $(CalendarEventActionButtonWidget).$(appLocalizations.no);
+    final noButton = $(CalendarEventCardWidget).$(appLocalizations.no);
     await expectViewInvisible(noButton);
   }
 
@@ -73,7 +73,7 @@ mixin OpenCalendarEventScenarioMixin on BaseScenario {
     AppLocalizations appLocalizations,
   ) async {
     final maybeButton =
-        $(CalendarEventActionButtonWidget).$(appLocalizations.maybe);
+        $(CalendarEventCardWidget).$(appLocalizations.maybe);
     await expectViewInvisible(maybeButton);
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/tag_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_card_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
@@ -104,7 +105,11 @@ class EmailRobot extends CoreRobot {
     await $(#delete_thread_button).tap();
   }
 
-  Future<void> tapMailToAttendeesEventActionButton() async {
-    await $(#mailToAttendees_event_action_button).tap();
+  Future<void> tapMailToAttendeesEventActionButton(
+    AppLocalizations appLocalizations,
+  ) async {
+    await $(CalendarEventCardWidget)
+        .$(appLocalizations.mailToAttendees)
+        .tap();
   }
 }

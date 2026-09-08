@@ -33,7 +33,7 @@ class MailToAttendeesEventEmailScenario extends BaseTestScenario
       appLocalizations: appLocalizations,
     );
 
-    await emailRobot.tapMailToAttendeesEventActionButton();
+    await emailRobot.tapMailToAttendeesEventActionButton(appLocalizations);
     await _expectComposerViewVisible();
     await composerRobot.grantContactPermission();
 
