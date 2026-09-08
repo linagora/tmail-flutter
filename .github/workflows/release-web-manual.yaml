@@ -1,0 +1,49 @@
+name: Release web (manual, no tests)
+
+# Manual-only: builds and pushes the web release image for an existing tag.
+# Skips the web E2E gate and does not move the floating `release` Docker tag.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing git tag to build (e.g. v1.2.3 or v1.2.3-rc1)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  validate-tag:
+    name: Validate tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check tag format and existence
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "::error::Tag '$TAG' must look like vX.Y.Z (optionally with a suffix)."
+            exit 1
+          fi
+          if ! git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
+            echo "::error::Tag '$TAG' does not exist on the remote."
+            exit 1
+          fi
+
+  build-web-image:
+    name: Build web release image
+    needs: validate-tag
+    uses: ./.github/workflows/reusable-web-release-image.yaml
+    with:
+      ref: refs/tags/${{ inputs.tag }}
+      image_tag: ${{ inputs.tag }}
+      push_release_tag: false
+    secrets: inherit
