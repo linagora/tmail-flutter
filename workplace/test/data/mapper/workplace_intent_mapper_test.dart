@@ -5,7 +5,8 @@ import 'package:workplace/data/mapper/workplace_intent_mapper.dart';
 void main() {
   Map<String, dynamic> buildResponse({
     required String id,
-    required String href,
+    List<String> hrefs = const ['https://drive.example.com/pick'],
+    String? client,
   }) => {
     'data': {
       'id': id,
@@ -13,9 +14,8 @@ void main() {
         'action': 'PICK',
         'type': 'files',
         'permissions': ['GET'],
-        'services': [
-          {'href': href},
-        ],
+        'services': [for (final href in hrefs) {'href': href}],
+        if (client != null) 'client': client,
       },
     },
   };
@@ -23,7 +23,7 @@ void main() {
   group('WorkplaceIntentMapper::parseIntentResponse::', () {
     test('Should return WorkplaceIntent with correct id and url', () {
       final result = parseIntentResponse(
-        buildResponse(id: 'intent-1', href: 'https://drive.example.com/pick'),
+        buildResponse(id: 'intent-1'),
         requireHttps: false,
       );
 
@@ -45,20 +45,11 @@ void main() {
     });
 
     test('Should throw StateError when services list is empty', () {
-      final data = {
-        'data': {
-          'id': 'intent-1',
-          'attributes': {
-            'action': 'PICK',
-            'type': 'files',
-            'permissions': ['GET'],
-            'services': <dynamic>[],
-          },
-        },
-      };
-
       expect(
-        () => parseIntentResponse(data, requireHttps: false),
+        () => parseIntentResponse(
+          buildResponse(id: 'intent-1', hrefs: []),
+          requireHttps: false,
+        ),
         throwsA(isA<StateError>()),
       );
     });
@@ -73,7 +64,7 @@ void main() {
     test('Should throw ArgumentError when requireHttps is true and URL is http', () {
       expect(
         () => parseIntentResponse(
-          buildResponse(id: 'intent-1', href: 'http://drive.example.com/pick'),
+          buildResponse(id: 'intent-1', hrefs: ['http://drive.example.com/pick']),
           requireHttps: true,
         ),
         throwsA(isA<ArgumentError>()),
@@ -82,7 +73,7 @@ void main() {
 
     test('Should accept http URL when requireHttps is false', () {
       final result = parseIntentResponse(
-        buildResponse(id: 'intent-1', href: 'http://drive.example.com/pick'),
+        buildResponse(id: 'intent-1', hrefs: ['http://drive.example.com/pick']),
         requireHttps: false,
       );
 
@@ -94,14 +85,14 @@ void main() {
       if (kReleaseMode) {
         expect(
           () => parseIntentResponse(
-            buildResponse(id: 'intent-1', href: 'http://drive.example.com/pick'),
+            buildResponse(id: 'intent-1', hrefs: ['http://drive.example.com/pick']),
           ),
           throwsA(isA<ArgumentError>()),
         );
       } else {
         expect(
           parseIntentResponse(
-            buildResponse(id: 'intent-1', href: 'http://drive.example.com/pick'),
+            buildResponse(id: 'intent-1', hrefs: ['http://drive.example.com/pick']),
           ),
           isNotNull,
         );
@@ -109,29 +100,17 @@ void main() {
     });
 
     test('Should parse client from attributes when present', () {
-      final data = {
-        'data': {
-          'id': 'intent-1',
-          'attributes': {
-            'action': 'PICK',
-            'type': 'files',
-            'permissions': ['GET'],
-            'services': [
-              {'href': 'https://drive.example.com/pick'},
-            ],
-            'client': 'client-abc',
-          },
-        },
-      };
-
-      final result = parseIntentResponse(data, requireHttps: false);
+      final result = parseIntentResponse(
+        buildResponse(id: 'intent-1', client: 'client-abc'),
+        requireHttps: false,
+      );
 
       expect(result.client, equals('client-abc'));
     });
 
     test('Should have null client when attributes omit it', () {
       final result = parseIntentResponse(
-        buildResponse(id: 'intent-1', href: 'https://drive.example.com/pick'),
+        buildResponse(id: 'intent-1'),
         requireHttps: false,
       );
 
@@ -139,25 +118,18 @@ void main() {
     });
 
     test('Should use first service href when multiple services are present', () {
-      final data = {
-        'data': {
-          'id': 'intent-multi',
-          'attributes': {
-            'action': 'PICK',
-            'type': 'files',
-            'permissions': ['GET'],
-            'services': [
-              {'href': 'https://drive.example.com/first'},
-              {'href': 'https://drive.example.com/second'},
-            ],
-          },
-        },
-      };
-
-      final result = parseIntentResponse(data, requireHttps: false);
+      final result = parseIntentResponse(
+        buildResponse(
+          id: 'intent-multi',
+          hrefs: [
+            'https://drive.example.com/first',
+            'https://drive.example.com/second',
+          ],
+        ),
+        requireHttps: false,
+      );
 
       expect(result.intentUrl, equals(Uri.parse('https://drive.example.com/first')));
     });
   });
-
 }
