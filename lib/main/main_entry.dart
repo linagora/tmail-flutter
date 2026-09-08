@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/utils/web_selection/web_selection_coordinator.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
@@ -33,5 +34,6 @@ Future<void> runTmailPreload() async {
 
   if (PlatformInfo.isWeb) {
     setPathUrlStrategy();
+    WebSelectionCoordinator.instance.start();
   }
 }

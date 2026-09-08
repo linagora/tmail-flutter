@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/android_selection_handles_manager.dart';
+import 'package:core/presentation/utils/flutter_selection_clearer.dart';
 import 'package:core/presentation/utils/selection_handles_controller.dart';
 import 'package:core/presentation/utils/selection_handles_guard.dart';
 import 'package:core/utils/platform_info.dart';
@@ -74,13 +75,16 @@ class SelectionHandlesOverlayGuard {
     var clearedSelection = false;
 
     if (context?.mounted == true) {
-      clearedSelection = _clearSelectableRegion(context!) || clearedSelection;
+      clearedSelection =
+          FlutterSelectionClearer.clearSelectableRegionOf(context!) ||
+              clearedSelection;
     }
 
     final focusContext = FocusManager.instance.primaryFocus?.context;
     if (focusContext != null) {
       clearedSelection =
-          _clearSelectableRegion(focusContext) || clearedSelection;
+          FlutterSelectionClearer.clearSelectableRegionOf(focusContext) ||
+              clearedSelection;
     }
 
     final editableTextState = focusContext
@@ -92,18 +96,5 @@ class SelectionHandlesOverlayGuard {
     }
 
     return clearedSelection;
-  }
-
-  static bool _clearSelectableRegion(BuildContext context) {
-    final selectableRegion = context
-        .findAncestorStateOfType<SelectableRegionState>();
-    if (selectableRegion == null) {
-      return false;
-    }
-
-    selectableRegion.hideToolbar();
-    selectableRegion.clearSelection();
-    FocusManager.instance.primaryFocus?.unfocus();
-    return true;
   }
 }
