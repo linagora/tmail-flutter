@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
@@ -17,11 +18,13 @@ void main() {
     option = DriveAttachmentPreferenceOption(fakeLocal);
     _setDriveAttachmentEnabled(null);
     _setWorkplaceFqdn(null);
+    dotenv.testLoad(mergeWith: {'DRIVE_ATTACHMENT_ENABLED': 'true'});
   });
 
   tearDown(() {
     _setDriveAttachmentEnabled(null);
     _setWorkplaceFqdn(null);
+    dotenv.clean();
   });
 
   test(
@@ -75,6 +78,18 @@ void main() {
   );
 
   group('availability', () {
+    test(
+      'WHEN the env config DRIVE_ATTACHMENT_ENABLED is off\n'
+      'THEN the setting is hidden even with ecosystem enabled and a FQDN',
+      () {
+        dotenv.testLoad(mergeWith: {'DRIVE_ATTACHMENT_ENABLED': ''});
+        _setDriveAttachmentEnabled(true);
+        _setWorkplaceFqdn('https://workplace.example.com');
+
+        expect(option.isAvailable(preferencesContext()), isFalse);
+      },
+    );
+
     test(
       'WHEN the ecosystem disables drive attachment\n'
       'THEN the setting is hidden',

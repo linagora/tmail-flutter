@@ -4,15 +4,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 part 'drive_attachment_uri_value_notifier_provider.g.dart';
 
 bool _canBuildUri({
+  required bool configEnabled,
   required bool enabled,
   required String? fqdn,
   required bool userPref,
 }) =>
-    enabled && fqdn != null && fqdn.isNotEmpty && userPref;
+    configEnabled && enabled && fqdn != null && fqdn.isNotEmpty && userPref;
 
 Uri? _computeUri(Ref ref) {
   final fqdn = ref.read(workplaceFqdnProvider);
@@ -21,7 +23,13 @@ Uri? _computeUri(Ref ref) {
       .read(localSettingsProvider)
       .driveAttachmentConfig
       .isEnabled;
-  if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) {
+  final canBuild = _canBuildUri(
+    configEnabled: AppConfig.isDriveAttachmentEnabled,
+    enabled: enabled,
+    fqdn: fqdn,
+    userPref: userPref,
+  );
+  if (!canBuild) {
     return null;
   }
   final hasScheme = fqdn!.startsWith('http://') || fqdn.startsWith('https://');

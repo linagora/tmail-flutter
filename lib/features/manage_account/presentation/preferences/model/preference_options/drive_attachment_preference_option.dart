@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class DriveAttachmentPreferenceOption extends LocalPreferenceOption {
   DriveAttachmentPreferenceOption(super.updateLocalSettingsInteractor);
@@ -27,6 +28,7 @@ class DriveAttachmentPreferenceOption extends LocalPreferenceOption {
 
   @override
   bool isAvailable(PreferencesContext context) {
+    if (!AppConfig.isDriveAttachmentEnabled) return false;
     final enabled = appProviderContainer.read(driveAttachmentEnabledProvider);
     final fqdn = appProviderContainer.read(workplaceFqdnProvider);
     return enabled && fqdn != null && fqdn.isNotEmpty;

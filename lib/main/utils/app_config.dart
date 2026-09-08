@@ -79,4 +79,9 @@ class AppConfig {
 
   static bool get isForceEmailQueryEnabled =>
       dotenv.get('FORCE_EMAIL_QUERY', fallback: 'false') == 'true';
+
+  // Absent, empty or non-'true' hides the Drive attachment button.
+  static bool get isDriveAttachmentEnabled =>
+      dotenv.isInitialized &&
+      dotenv.get('DRIVE_ATTACHMENT_ENABLED', fallback: 'false') == 'true';
 }

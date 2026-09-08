@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
@@ -81,7 +82,30 @@ void main() {
   group('driveAttachmentUriValueProvider', () {
     late ProviderContainer container;
 
-    tearDown(() => container.dispose());
+    setUp(() => dotenv.testLoad(mergeWith: {'DRIVE_ATTACHMENT_ENABLED': 'true'}));
+
+    tearDown(() {
+      container.dispose();
+      dotenv.clean();
+    });
+
+    test('null URI when env config is false even if all other conditions met', () {
+      dotenv.testLoad(mergeWith: {'DRIVE_ATTACHMENT_ENABLED': 'false'});
+      container = _makeAllMetContainer();
+      expect(_isNullUri(_currentUri(container)), isTrue);
+    });
+
+    test('null URI when env config is empty even if all other conditions met', () {
+      dotenv.testLoad(mergeWith: {'DRIVE_ATTACHMENT_ENABLED': ''});
+      container = _makeAllMetContainer();
+      expect(_isNullUri(_currentUri(container)), isTrue);
+    });
+
+    test('null URI when env not loaded even if all other conditions met', () {
+      dotenv.clean();
+      container = _makeAllMetContainer();
+      expect(_isNullUri(_currentUri(container)), isTrue);
+    });
 
     test('null URI when all conditions unset (defaults)', () {
       container = _makeContainer();
