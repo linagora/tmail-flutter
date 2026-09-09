@@ -1,14 +1,12 @@
-import '../../domain/entity/workplace_action_config.dart';
 import '../../domain/entity/workplace_intent.dart';
-import '../../domain/entity/workplace_theme.dart';
+import '../../domain/entity/workplace_intent_access_mode.dart';
+import '../../domain/entity/workplace_intent_config.dart';
 
 abstract class WorkplaceDataSource {
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    required String accessToken,
-    required WorkplaceActionConfig addAsLink,
-    WorkplaceActionConfig? addAsAttachment,
-    required WorkplaceTheme theme,
+    required WorkplaceIntentAccessMode accessMode,
+    required WorkplaceIntentConfig config,
   });
   Future<String> exchangeToken(Uri platformUrl, String oidcIdToken);
 }

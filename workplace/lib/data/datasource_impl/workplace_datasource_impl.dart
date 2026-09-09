@@ -8,10 +8,11 @@ import '../datasource/workplace_datasource.dart';
 import '../model/workplace_enums.dart';
 import '../model/workplace_intent_request.dart';
 import '../model/workplace_intent_response.dart';
+import '../bridge/cozy_bridge.dart';
 import '../workplace_dio.dart';
-import '../../domain/entity/workplace_action_config.dart';
 import '../../domain/entity/workplace_intent.dart';
-import '../../domain/entity/workplace_theme.dart';
+import '../../domain/entity/workplace_intent_access_mode.dart';
+import '../../domain/entity/workplace_intent_config.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   WorkplaceDataSourceImpl();
@@ -27,11 +28,39 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    required String accessToken,
-    required WorkplaceActionConfig addAsLink,
-    WorkplaceActionConfig? addAsAttachment,
-    required WorkplaceTheme theme,
+    required WorkplaceIntentAccessMode accessMode,
+    required WorkplaceIntentConfig config,
   }) async {
+    final body = _buildIntentRequest(config);
+
+    return switch (accessMode) {
+      BridgeAccessMode() => _createIntentViaBridge(body),
+      BearerTokenAccessMode(:final accessToken) =>
+        _createIntentViaBearerToken(platformUrl, accessToken, body),
+    };
+  }
+
+  // No token: the container app already holds the stack session.
+  Future<WorkplaceIntent> _createIntentViaBridge(
+    Map<String, dynamic> body,
+  ) async {
+    final data = await CozyBridge.fetchJson(
+      method: 'POST',
+      path: '/intents',
+      body: body,
+    );
+    return parseIntentResponse(data);
+  }
+
+  Future<WorkplaceIntent> _createIntentViaBearerToken(
+    Uri platformUrl,
+    String accessToken,
+    Map<String, dynamic> body,
+  ) async {
+    // Fail fast instead of sending a malformed Authorization header.
+    if (accessToken.trim().isEmpty) {
+      throw StateError('Access token is empty');
+    }
     final response = await WorkplaceDio.instance.post(
       platformUrl.replace(
         pathSegments: [
@@ -46,11 +75,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
       options: Options(
         headers: {'Authorization': 'Bearer $accessToken'},
       ),
-      data: _buildIntentRequest(
-        addAsLink: addAsLink,
-        addAsAttachment: addAsAttachment,
-        theme: theme,
-      ),
+      data: body,
     );
     return parseIntentResponse(response.data);
   }
@@ -78,11 +103,8 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     );
   }
 
-  Map<String, dynamic> _buildIntentRequest({
-    required WorkplaceActionConfig addAsLink,
-    WorkplaceActionConfig? addAsAttachment,
-    required WorkplaceTheme theme,
-  }) => WorkplaceIntentRequest(
+  Map<String, dynamic> _buildIntentRequest(WorkplaceIntentConfig config) =>
+      WorkplaceIntentRequest(
     data: WorkplaceIntentDataRequest(
       type: WorkplaceDataRequestType.intents,
       attributes: WorkplaceIntentAttributesRequest(
@@ -90,11 +112,11 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
         type: WorkplaceDocType.files,
         permissions: [WorkplacePermission.get],
         data: WorkplaceFilePickerConfigRequest(
-          sharingLink: WorkplaceActionConfigRequest.fromEntity(addAsLink),
-          downloadLink: addAsAttachment == null
+          sharingLink: WorkplaceActionConfigRequest.fromEntity(config.addAsLink),
+          downloadLink: config.addAsAttachment == null
               ? null
-              : WorkplaceActionConfigRequest.fromEntity(addAsAttachment),
-          theme: WorkplaceThemeConfigRequest.fromEntity(theme),
+              : WorkplaceActionConfigRequest.fromEntity(config.addAsAttachment!),
+          theme: WorkplaceThemeConfigRequest.fromEntity(config.theme),
         ),
       ),
     ),

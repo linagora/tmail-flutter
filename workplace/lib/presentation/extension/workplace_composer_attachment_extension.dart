@@ -2,14 +2,18 @@ import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:workplace/data/bridge/cozy_bridge.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
+import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
@@ -55,13 +59,30 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     Uri platformUrl, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
+    // Try the bridge first; any failure falls back to the bearer-token flow.
+    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
+      try {
+        return await _createIntent(
+          platformUrl,
+          const BridgeAccessMode(),
+          filePickerConfig: filePickerConfig,
+        );
+      } catch (_) {
+        // fall through to the bearer-token flow below
+        logWarning(
+          'WorkplaceComposerAttachmentExtension::_fetchIntent: Cozy bridge createIntent failed, falling back to bearer-token flow',
+          webConsoleEnabled: true,
+        );
+      }
+    }
+
     final oidcToken = oidcTokenGetter();
     if (oidcToken == null) throw StateError('OIDC token is unavailable');
     final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
     if (accessToken == null) throw StateError('Drive access token exchange failed');
     return _createIntent(
       platformUrl,
-      accessToken,
+      BearerTokenAccessMode(accessToken),
       filePickerConfig: filePickerConfig,
     );
   }
@@ -92,25 +113,27 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
-    String accessToken, {
+    WorkplaceIntentAccessMode accessMode, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     WorkplaceIntent? intent;
     await for (final either in _createIntentInteractor.execute(
       platformUrl,
-      accessToken,
-      addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
-      addAsAttachment: filePickerConfig.downloadLink == null
-          ? null
-          : WorkplaceActionConfig(
-              label: filePickerConfig.downloadLink!.label,
-              maxFileSize: filePickerConfig.downloadLink!.maxFileSize,
-              availableSize: filePickerConfig.downloadLink!.availableSize,
-            ),
-      theme: switch (filePickerConfig.theme.type) {
-        WorkplaceThemeType.light => WorkplaceTheme.light,
-        WorkplaceThemeType.dark => WorkplaceTheme.dark,
-      },
+      accessMode,
+      config: WorkplaceIntentConfig(
+        addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
+        addAsAttachment: filePickerConfig.downloadLink == null
+            ? null
+            : WorkplaceActionConfig(
+                label: filePickerConfig.downloadLink!.label,
+                maxFileSize: filePickerConfig.downloadLink!.maxFileSize,
+                availableSize: filePickerConfig.downloadLink!.availableSize,
+              ),
+        theme: switch (filePickerConfig.theme.type) {
+          WorkplaceThemeType.light => WorkplaceTheme.light,
+          WorkplaceThemeType.dark => WorkplaceTheme.dark,
+        },
+      ),
     )) {
       either.fold(
         (failure) {

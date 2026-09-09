@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
+import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 
 /// Captures the last request and returns a fixed JSON response.
@@ -246,10 +248,12 @@ void main() {
 
       final result = await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(result.intentId, equals('intent-abc'));
@@ -262,10 +266,12 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com/api/'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -280,10 +286,12 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -298,10 +306,12 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'my-secret-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.light,
+        accessMode: const BearerTokenAccessMode('my-secret-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       expect(
@@ -316,10 +326,12 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-        theme: WorkplaceTheme.dark,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+          theme: WorkplaceTheme.dark,
+        ),
       );
 
       // Normalize through jsonEncode so nested Dart objects are fully serialized
@@ -347,14 +359,16 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        addAsAttachment: const WorkplaceActionConfig(
-          label: 'https://attach.url',
-          maxFileSize: 5000,
-          availableSize: 4500,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          addAsAttachment: WorkplaceActionConfig(
+            label: 'https://attach.url',
+            maxFileSize: 5000,
+            availableSize: 4500,
+          ),
+          theme: WorkplaceTheme.light,
         ),
-        theme: WorkplaceTheme.light,
       );
 
       final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
@@ -373,9 +387,11 @@ void main() {
 
       await datasource.createIntent(
         platformUrl: Uri.parse('https://platform.example.com'),
-        accessToken: 'test-token',
-        addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-        theme: WorkplaceTheme.light,
+        accessMode: const BearerTokenAccessMode('test-token'),
+        config: const WorkplaceIntentConfig(
+          addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+          theme: WorkplaceTheme.light,
+        ),
       );
 
       final body = jsonDecode(jsonEncode(adapter.capturedOptions!.data)) as Map<String, dynamic>;
@@ -392,12 +408,48 @@ void main() {
       expect(
         () => datasource.createIntent(
           platformUrl: Uri.parse('https://platform.example.com'),
-          accessToken: 'test-token',
-          addAsLink: const WorkplaceActionConfig(label: 'https://link.url'),
-          addAsAttachment: const WorkplaceActionConfig(label: 'https://attach.url'),
-          theme: WorkplaceTheme.light,
+          accessMode: const BearerTokenAccessMode('test-token'),
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            addAsAttachment: WorkplaceActionConfig(label: 'https://attach.url'),
+            theme: WorkplaceTheme.light,
+          ),
         ),
         throwsA(isA<DioException>()),
+      );
+    });
+
+    test('Should reject an empty bearer access token without contacting WorkplaceDio', () async {
+      final adapter = _MockAdapter(intentResponse);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessMode: const BearerTokenAccessMode(''),
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(adapter.capturedOptions, isNull);
+    });
+
+    test('Should reject a whitespace-only bearer access token', () async {
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _MockAdapter(intentResponse));
+
+      expect(
+        () => datasource.createIntent(
+          platformUrl: Uri.parse('https://platform.example.com'),
+          accessMode: const BearerTokenAccessMode('   '),
+          config: const WorkplaceIntentConfig(
+            addAsLink: WorkplaceActionConfig(label: 'https://link.url'),
+            theme: WorkplaceTheme.light,
+          ),
+        ),
+        throwsA(isA<StateError>()),
       );
     });
   });
