@@ -1,20 +1,26 @@
 import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:workplace/data/bridge/cozy_bridge.dart';
+import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
+import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
+import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
-import 'package:workplace/presentation/intent_fetcher/bridge_drive_intent_fetcher.dart';
-import 'package:workplace/presentation/intent_fetcher/drive_intent_fetcher.dart';
-import 'package:workplace/presentation/intent_fetcher/fallback_drive_intent_fetcher.dart';
-import 'package:workplace/presentation/intent_fetcher/token_drive_intent_fetcher.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/model/drive_picker_session.dart';
+import 'package:workplace/domain/state/workplace_intent_state.dart';
+import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
+import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
@@ -33,11 +39,12 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final num? Function(String? composerId) remainingAttachmentCapacityBytesGetter;
   final OnDrivePickStateChanged? onPickState;
 
-  // Bridge first (container session), token exchange as the fallback route.
-  late final DriveIntentFetcher _intentFetcher = FallbackDriveIntentFetcher([
-    BridgeDriveIntentFetcher(),
-    TokenDriveIntentFetcher(oidcTokenGetter: oidcTokenGetter),
-  ]);
+  late final _dataSource = WorkplaceDataSourceImpl();
+  late final _repository = WorkplaceRepositoryImpl(_dataSource);
+  late final _createIntentInteractor = CreateDriveIntentInteractor(_repository);
+  late final _exchangeTokenInteractor = ExchangeDriveTokenInteractor(
+    _repository,
+  );
 
   WorkplaceComposerAttachmentExtension({
     required this.workplaceUri,
@@ -51,13 +58,69 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Future<WorkplaceIntent> _fetchIntent(
     Uri platformUrl, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
-  }) =>
-      _intentFetcher.fetchIntent(platformUrl, _toIntentConfig(filePickerConfig));
+  }) async {
+    // Try the bridge first; any failure falls back to the bearer-token flow.
+    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
+      try {
+        return await _createIntent(
+          platformUrl,
+          const BridgeAccessMode(),
+          filePickerConfig: filePickerConfig,
+        );
+      } catch (_) {
+        // fall through to the bearer-token flow below
+        logWarning(
+          'WorkplaceComposerAttachmentExtension::_fetchIntent: Cozy bridge createIntent failed, falling back to bearer-token flow',
+          webConsoleEnabled: true,
+        );
+      }
+    }
 
-  WorkplaceIntentConfig _toIntentConfig(
-    WorkplaceFilePickerConfigRequest filePickerConfig,
-  ) =>
-      WorkplaceIntentConfig(
+    final oidcToken = oidcTokenGetter();
+    if (oidcToken == null) throw StateError('OIDC token is unavailable');
+    final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
+    if (accessToken == null) throw StateError('Drive access token exchange failed');
+    return _createIntent(
+      platformUrl,
+      BearerTokenAccessMode(accessToken),
+      filePickerConfig: filePickerConfig,
+    );
+  }
+
+  Future<String?> _exchangeAccessToken(
+    Uri platformUrl,
+    String oidcToken,
+  ) async {
+    String? accessToken;
+    await for (final either in _exchangeTokenInteractor.execute(
+      platformUrl,
+      oidcToken,
+    )) {
+      either.fold(
+        (failure) {
+          // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
+          throw failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException();
+        },
+        (success) {
+          if (success is ExchangeWorkplaceTokenSuccess) {
+            accessToken = success.accessToken;
+          }
+        },
+      );
+    }
+    return accessToken;
+  }
+
+  Future<WorkplaceIntent> _createIntent(
+    Uri platformUrl,
+    WorkplaceIntentAccessMode accessMode, {
+    required WorkplaceFilePickerConfigRequest filePickerConfig,
+  }) async {
+    WorkplaceIntent? intent;
+    await for (final either in _createIntentInteractor.execute(
+      platformUrl,
+      accessMode,
+      config: WorkplaceIntentConfig(
         addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
         addAsAttachment: filePickerConfig.downloadLink == null
             ? null
@@ -70,7 +133,20 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           WorkplaceThemeType.light => WorkplaceTheme.light,
           WorkplaceThemeType.dark => WorkplaceTheme.dark,
         },
+      ),
+    )) {
+      either.fold(
+        (failure) {
+          // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
+          throw failure is FeatureFailure ? failure.exception : WorkplaceCreateIntentException();
+        },
+        (success) {
+          if (success is CreateWorkplaceIntentSuccess) intent = success.intent;
+        },
       );
+    }
+    return intent!;
+  }
 
   @override
   Widget buildToolbarButton(

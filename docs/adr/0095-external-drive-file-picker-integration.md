@@ -54,26 +54,28 @@ During development before the real flow is wired, a fake `data:` URI is returned
 
 ### Step 2 — Platform Access Token
 
-Two routes obtain an intent, selected at runtime by a `DriveIntentFetcher` chain owned by
-`WorkplaceComposerAttachmentExtension` (see **[ADR-0106](0106-drive-intent-bridge-and-token-routes.md)**):
+Token exchange is handled inline by `WorkplaceComposerAttachmentExtension` (a plain Dart class, not a Riverpod notifier). The OIDC `id_token` is obtained via an `oidcTokenGetter` function reference passed as a constructor parameter at startup — no direct GetX session coupling.
 
-- **Bridge route** (web inside the Twake Workplace container): `cozy-external-bridge` exposes
-  `fetchJSON`, which proxies the call through the container app's own stack session. No token is
-  needed, so this step is skipped.
-- **Token route** (standalone web, mobile, tablet): the OIDC `id_token` is read through an
-  `oidcTokenGetter` function reference passed to the extension at startup — no direct GetX session
-  coupling. `ExchangeDriveTokenInteractor` posts it to `POST https://<platformUrl>/auth/token_exchange`
-  and receives the Drive access token.
+```dart
+// workplace/lib/presentation/extension/workplace_composer_attachment_extension.dart
+class WorkplaceComposerAttachmentExtension {
+  final String? Function() oidcTokenGetter;
+  ...
+  Future<WorkplaceIntent> _fetchIntent(Uri platformUrl, ...) async {
+    final oidcToken = oidcTokenGetter();
+    if (oidcToken == null) throw StateError('OIDC token is unavailable');
+    final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
+    if (accessToken == null) throw StateError('Drive access token exchange failed');
+    return _createIntent(platformUrl, accessToken, ...);
+  }
+}
+```
 
-The bridge route is tried first when available; any failure falls back to the token route.
+**Production:** `ExchangeDriveTokenInteractor` calls `POST https://<platformUrl>/auth/token_exchange` with the current OIDC `id_token` and returns the drive access token.
 
 Token storage: in-memory only, held for the duration of the intent creation call. Not persisted.
 
 ### Step 3 — Create Intent
-
-Both routes send the same request body and parse the same response through one mapper. The bridge
-route passes it to `fetchJSON` with `path: /intents`; the token route posts it over HTTP with the
-bearer header and `force_session_id=true`:
 
 ```
 POST https://<platformUrl>/intents
