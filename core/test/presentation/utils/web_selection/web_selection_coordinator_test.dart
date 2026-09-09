@@ -173,5 +173,45 @@ void main() {
 
       expect(dom.clearIframeSelectionsCalls, 0);
     });
+
+    testWidgets('keeps Flutter selection when stopped before deferred blur',
+        (tester) async {
+      await pumpApp(tester);
+      coordinator.start();
+      await selectSubjectWithMouse(tester);
+
+      dom.iframeFocused = true;
+      dom.blurHandler!();
+      coordinator.stop();
+      await tester.pump(const Duration(milliseconds: 1));
+
+      expect(lastSelection, isNotNull);
+      expect(regionFocusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('ignores iframe blur without a Flutter focus context',
+        (tester) async {
+      coordinator.start();
+      expect(FocusManager.instance.primaryFocus?.context, isNull);
+
+      await focusIframe(tester);
+
+      expect(lastSelection, isNull);
+      expect(dom.clearIframeSelectionsCalls, 0);
+    });
+
+    testWidgets('ignores deferred blur after the selection region is disposed',
+        (tester) async {
+      await pumpApp(tester);
+      coordinator.start();
+      await selectSubjectWithMouse(tester);
+
+      dom.iframeFocused = true;
+      dom.blurHandler!();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(milliseconds: 1));
+
+      expect(tester.takeException(), isNull);
+    });
   });
 }
