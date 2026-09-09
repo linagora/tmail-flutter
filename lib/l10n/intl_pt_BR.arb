@@ -1583,8 +1583,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languagePortuguese": "Português (Brasil)",
-  "@languagePortuguese": {
+  "languageBrazilianPortuguese": "Português (Brasil)",
+  "@languageBrazilianPortuguese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

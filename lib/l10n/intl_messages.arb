@@ -1686,8 +1686,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languagePortuguese": "Portuguese",
-  "@languagePortuguese": {
+  "languageBrazilianPortuguese": "Portuguese (Brazil)",
+  "@languageBrazilianPortuguese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -23,7 +23,7 @@ extension LocaleExtension on Locale {
       case 'mn':
         return appLocalizations.languageMongolian;
       case 'pt':
-        return appLocalizations.languagePortuguese;
+        return appLocalizations.languageBrazilianPortuguese;
       default:
         return '';
     }
@@ -48,7 +48,7 @@ extension LocaleExtension on Locale {
       case 'mn':
         return 'Монгол';
       case 'pt':
-        return 'Português';
+        return 'Português (Brasil)';
       default:
         return '';
     }

@@ -1703,10 +1703,10 @@ class AppLocalizations {
       name: 'languageItalian');
   }
 
-  String get languagePortuguese {
+  String get languageBrazilianPortuguese {
     return Intl.message(
-      'Portuguese',
-      name: 'languagePortuguese');
+      'Portuguese (Brazil)',
+      name: 'languageBrazilianPortuguese');
   }
 
   String get messageDialogSendEmailUploadingAttachment {
