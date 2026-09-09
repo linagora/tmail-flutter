@@ -26,6 +26,10 @@ jobs:
     name: Build release image with Sentry
     runs-on: ubuntu-latest
     environment: prod
+    # Two runs pushing the same image tag would race; last writer would win.
+    concurrency:
+      group: web-release-image-${{ inputs.image_tag }}
+      cancel-in-progress: false
     permissions:
       contents: read
       packages: write
