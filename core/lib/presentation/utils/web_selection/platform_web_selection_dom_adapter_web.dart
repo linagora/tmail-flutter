@@ -1,6 +1,7 @@
 import 'dart:js_interop';
 
 import 'package:core/presentation/utils/web_selection/web_selection_dom_adapter.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:web/web.dart' as web;
 
 /// Web build: touches every `<iframe>` directly (srcdoc iframes are same-origin).
@@ -36,8 +37,11 @@ class PlatformWebSelectionDomAdapter implements WebSelectionDomAdapter {
   void _clearSelectionOf(web.HTMLIFrameElement iframe) {
     try {
       iframe.contentWindow?.getSelection()?.removeAllRanges();
-    } catch (_) {
-      // Cross-origin iframe.
+    } catch (e) {
+      logWarning(
+        'PlatformWebSelectionDomAdapter::_clearSelectionOf: Exception = $e',
+        webConsoleEnabled: true,
+      );
     }
   }
 

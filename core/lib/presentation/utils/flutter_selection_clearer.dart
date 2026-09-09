@@ -6,6 +6,7 @@ class FlutterSelectionClearer {
 
   /// Returns true when a [SelectableRegion] was found and cleared.
   static bool clearSelectableRegionOf(BuildContext context) {
+    if (!context.mounted) return false;
     final selectableRegion = context
         .findAncestorStateOfType<SelectableRegionState>();
     if (selectableRegion == null) {
