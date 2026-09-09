@@ -2,11 +2,13 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/mailbox_sidebar_footer.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
 class MailboxView extends BaseMailboxView {
 
@@ -34,9 +36,16 @@ class MailboxView extends BaseMailboxView {
     final sidebarMenu = buildSidebarMenu(
       context,
       footerItems: [
-        MailboxSidebarFooter(
-          isDesktop: isDesktop,
-          showIncreaseSpaceButton: true,
+        Consumer(
+          builder: (context, ref, child) {
+            final workplaceFqdn = ref.watch(workplaceFqdnProvider);
+            return MailboxSidebarFooter(
+              key: ValueKey((isDesktop, workplaceFqdn)),
+              isDesktop: isDesktop,
+              showIncreaseSpaceButton: true,
+              workplaceFqdn: workplaceFqdn,
+            );
+          },
         ),
       ],
       bodyOverlay: Obx(() => LinagoraSidebarAutoScrollOverlay(
