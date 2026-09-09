@@ -16,11 +16,13 @@ class MailboxSidebarFooter extends GetWidget<QuotasController> {
 
   final bool isDesktop;
   final bool showIncreaseSpaceButton;
+  final String? workplaceFqdn;
 
   const MailboxSidebarFooter({
     super.key,
     this.isDesktop = false,
     this.showIncreaseSpaceButton = false,
+    this.workplaceFqdn,
   });
 
   @override
@@ -109,8 +111,12 @@ class MailboxSidebarFooter extends GetWidget<QuotasController> {
   ) {
     if (!showIncreaseSpaceButton) return false;
     if (dashboardController.paywallController == null) return false;
+    if (dashboardController.octetsQuota.value?.storageAvailable != true) {
+      return false;
+    }
 
-    return dashboardController.validatePremiumIsAvailable() &&
-        dashboardController.octetsQuota.value?.storageAvailable == true;
+    return dashboardController.validateIncreaseSpaceIsAvailable(
+      workplaceFqdn: workplaceFqdn,
+    );
   }
 }

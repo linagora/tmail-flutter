@@ -9,6 +9,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -24,6 +28,7 @@ import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/saas/saas_account_capability.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -40,6 +45,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_mes
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -78,6 +84,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
@@ -100,6 +107,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
@@ -127,6 +135,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -347,6 +356,72 @@ void main() {
       (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
     );
     when(uuid.v1()).thenReturn('dab123456789');
+  }
+
+  Session createPremiumSession() {
+    final saasCapability = SaaSAccountCapability(canUpgrade: true);
+    return Session(
+      {SessionExtensions.linagoraSaaSCapability: saasCapability},
+      {
+        AccountFixtures.aliceAccountId: Account(
+          AccountName('alice@domain.tld'),
+          true,
+          false,
+          {SessionExtensions.linagoraSaaSCapability: saasCapability},
+        ),
+      },
+      {
+        SessionExtensions.linagoraSaaSCapability:
+            AccountFixtures.aliceAccountId,
+      },
+      UserName('alice@domain.tld'),
+      Uri.parse('https://domain.tld/jmap'),
+      Uri.parse('https://domain.tld/download'),
+      Uri.parse('https://domain.tld/upload'),
+      Uri.parse('https://domain.tld/events'),
+      jmap.State('premium-session'),
+    );
+  }
+
+  void arrangeIncreaseSpaceAvailable() {
+    arrangeSidebarMenu();
+    mailboxDashboardController.sessionCurrent = createPremiumSession();
+    mailboxDashboardController.accountId.value =
+        AccountFixtures.aliceAccountId;
+    mailboxDashboardController.paywallController = PaywallController(
+      ownEmailAddress: 'alice@domain.tld',
+    );
+    mailboxDashboardController.octetsQuota.value = _storageQuota(
+      used: 1,
+      hardLimit: 100,
+      warnLimit: 90,
+    );
+  }
+
+  void cachePaywallUrlTemplate(String? template) {
+    mailboxDashboardController.cachedLinagoraEcosystem = template == null
+        ? null
+        : LinagoraEcosystem.deserialize({'paywallUrlTemplate': template});
+  }
+
+  Future<ProviderContainer> pumpWebMailbox(WidgetTester tester) async {
+    addTearDown(() => WidgetFixtures.resetResponsive(tester));
+    await WidgetFixtures.pumpResponsiveWidget(
+      tester,
+      WidgetFixtures.makeTestableWidget(child: MailboxView()),
+      logicalSize: const Size(1920, 1080),
+      platform: TargetPlatform.macOS,
+    );
+
+    final providerContainer = ProviderScope.containerOf(
+      tester.element(find.byType(MailboxView)),
+    );
+    addTearDown(() => providerContainer
+        .read(workplaceFqdnProvider.notifier)
+        .setFqdn(null));
+    providerContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
+    await tester.pump();
+    return providerContainer;
   }
 
   group('MailboxDashboardView', () {
@@ -1298,6 +1373,85 @@ void main() {
             ),
             isFalse,
           );
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN premium and storage are available on web '
+        'WHEN ecosystem paywall loads and clears after the first render '
+        'THEN increase-space CTA follows its availability',
+        (tester) async {
+          arrangeIncreaseSpaceAvailable();
+          await pumpWebMailbox(tester);
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
+
+          cachePaywallUrlTemplate('javascript:alert(1)');
+          await tester.pump();
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
+
+          cachePaywallUrlTemplate('https://domain.tld/#/premium');
+          await tester.pump();
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsOneWidget);
+
+          cachePaywallUrlTemplate(null);
+          await tester.pump();
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN premium and storage are available on web '
+        'WHEN Workplace FQDN loads and clears after the first render '
+        'THEN increase-space CTA follows its availability',
+        (tester) async {
+          arrangeIncreaseSpaceAvailable();
+          final providerContainer = await pumpWebMailbox(tester);
+
+          providerContainer
+              .read(workplaceFqdnProvider.notifier)
+              .setFqdn('workplace.domain.tld');
+          await tester.pumpAndSettle();
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsOneWidget);
+
+          providerContainer
+              .read(workplaceFqdnProvider.notifier)
+              .setFqdn(null);
+          await tester.pump();
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN all increase-space conditions are available '
+        'WHEN the mobile drawer is built '
+        'THEN increase-space CTA remains hidden',
+        (tester) async {
+          arrangeIncreaseSpaceAvailable();
+          cachePaywallUrlTemplate('https://domain.tld/paywall');
+
+          addTearDown(() => WidgetFixtures.resetResponsive(tester));
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(
+              child: mobile_mailbox_view.MailboxView(),
+            ),
+            logicalSize: const Size(375, 720),
+            platform: TargetPlatform.android,
+          );
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
 
           WidgetFixtures.resetResponsive(tester);
         },
