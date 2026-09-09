@@ -13,6 +13,11 @@ void main() {
     'triggerScrollWhenExpandFolder does nothing when the folder is collapsed',
     _doesNotScrollWhenFolderCollapsed,
   );
+
+  testWidgets(
+    'triggerScrollWhenExpandFolder ignores an unmounted folder',
+    _doesNotScrollAfterFolderUnmounted,
+  );
 }
 
 Future<void> _scrollsWhenItemKeyAndScrollControllerGiven(
@@ -43,6 +48,21 @@ Future<void> _doesNotScrollWhenFolderCollapsed(WidgetTester tester) async {
   await tester.pumpAndSettle();
 
   expect(scrollController.offset, 0);
+}
+
+Future<void> _doesNotScrollAfterFolderUnmounted(WidgetTester tester) async {
+  final itemKey = GlobalKey();
+  final scrollController = await _pumpFolderList(tester, itemKey);
+
+  _ExpandFolderHost().triggerScrollWhenExpandFolder(
+    ExpandMode.EXPAND,
+    itemKey,
+    scrollController,
+  );
+  await tester.pumpWidget(const SizedBox());
+  await tester.pump();
+
+  expect(tester.takeException(), isNull);
 }
 
 /// Pumps a folder list whose keyed item sits at the bottom edge of the

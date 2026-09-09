@@ -1,8 +1,7 @@
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 
 extension ValidatePremiumStorageExtension on MailboxDashBoardController {
   bool validatePremiumIsAvailable() {
@@ -17,20 +16,17 @@ extension ValidatePremiumStorageExtension on MailboxDashBoardController {
 
   bool validateIncreaseSpaceIsAvailable({String? workplaceFqdn}) {
     if (!validatePremiumIsAvailable()) return false;
-    if (PaywallUtils.buildWorkplacePaywallUrl(workplaceFqdn).isNotEmpty) {
-      return true;
-    }
-    return PaywallUtils.isValidPaywallUrl(_qualifiedEcosystemPaywallUrl());
+    return paywallController?.canNavigateToPaywall(
+      workplaceFqdn: workplaceFqdn,
+      ecosystemPaywallUrlPattern: cachedEcosystemPaywallUrlPattern,
+    ) ?? false;
   }
 
-  String? _qualifiedEcosystemPaywallUrl() {
+  PaywallUrlPattern? get cachedEcosystemPaywallUrlPattern {
     final paywallUrlTemplate = cachedLinagoraEcosystem?.paywallUrlTemplate;
     if (paywallUrlTemplate == null) return null;
 
-    return PaywallUrlPattern(paywallUrlTemplate).getQualifiedUrl(
-      ownerEmail: ownEmailAddress.value,
-      domainName: RouteUtils.getRootDomain(),
-    );
+    return PaywallUrlPattern(paywallUrlTemplate);
   }
 
   bool validateUserHasIsAlreadyHighestSubscription() {

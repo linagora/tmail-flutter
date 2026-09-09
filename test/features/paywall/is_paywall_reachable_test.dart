@@ -90,6 +90,11 @@ void main() {
         expected: false,
       ),
       (
+        description: 'URL without a fully-qualified host',
+        input: 'https://localhost/paywall',
+        expected: false,
+      ),
+      (
         description: 'URL containing user info',
         input: 'https://user@domain.tld/paywall',
         expected: false,

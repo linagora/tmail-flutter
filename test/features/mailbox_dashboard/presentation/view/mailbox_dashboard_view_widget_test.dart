@@ -2,6 +2,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SearchController, State;
@@ -110,6 +111,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -144,6 +146,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
+import '../../../../fixtures/recording_paywall_controller.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../../fixtures/widget_fixtures.dart';
 import 'mailbox_dashboard_view_widget_test.mocks.dart';
@@ -573,6 +576,97 @@ void main() {
 
       expect(mailboxDashboardController.selectedMailboxForDisplay, inbox);
       expect(mailboxDashboardController.selectedMailbox.value, inbox);
+    });
+
+    group('Quota banner premium CTA', () {
+      void arrangeQuotaBanner() {
+        arrangeIncreaseSpaceAvailable();
+        mailboxDashboardController.octetsQuota.value = _storageQuota(
+          used: 91,
+          hardLimit: 100,
+          warnLimit: 90,
+        );
+        quotasController.isBannerEnabled.value = true;
+      }
+
+      Future<ProviderContainer> pumpQuotaBanner(WidgetTester tester) async {
+        await tester.pumpWidget(const SizedBox());
+        PlatformInfo.isTestingForWeb = true;
+        await tester.pumpWidget(
+          makeTestableWidget(child: QuotasBannerWidget()),
+        );
+        await tester.pump();
+        return ProviderScope.containerOf(
+          tester.element(find.byType(QuotasBannerWidget)),
+        );
+      }
+
+      String manageMyStorageLabel(WidgetTester tester) {
+        return AppLocalizations.of(
+          tester.element(find.byType(QuotasBannerWidget)),
+        ).manageMyStorage;
+      }
+
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      testWidgets('hides CTA when no paywall is available', (tester) async {
+        arrangeQuotaBanner();
+        await pumpQuotaBanner(tester);
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+      });
+
+      testWidgets('reacts to Workplace FQDN changes', (tester) async {
+        arrangeQuotaBanner();
+        final container = await pumpQuotaBanner(tester);
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+
+        container
+            .read(workplaceFqdnProvider.notifier)
+            .setFqdn('workplace.domain.tld');
+        await tester.pump();
+
+        expect(find.text(manageMyStorageLabel(tester)), findsOneWidget);
+
+        container.read(workplaceFqdnProvider.notifier).setFqdn(null);
+        await tester.pump();
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+      });
+
+      testWidgets('uses the visible ecosystem paywall and rechecks on click',
+          (tester) async {
+        arrangeQuotaBanner();
+        final paywallController = RecordingPaywallController();
+        mailboxDashboardController.paywallController = paywallController;
+        await pumpQuotaBanner(tester);
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+
+        cachePaywallUrlTemplate('https://domain.tld/premium');
+        await tester.pump();
+
+        expect(find.text(manageMyStorageLabel(tester)), findsOneWidget);
+
+        await tester.tap(find.text(manageMyStorageLabel(tester)));
+        await tester.pump();
+
+        expect(paywallController.navigateCount, 1);
+        expect(
+          paywallController.navigatedEcosystemPattern?.pattern,
+          'https://domain.tld/premium',
+        );
+
+        cachePaywallUrlTemplate(null);
+        await tester.pump();
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+
+        quotasController.handleManageMyStorage();
+
+        expect(paywallController.navigateCount, 1);
+      });
     });
 
     group('DesktopDashboardRouteBody', () {
@@ -1427,6 +1521,31 @@ void main() {
               .setFqdn(null);
           await tester.pump();
 
+          expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN increase-space CTA is visible '
+        'WHEN paywall becomes unavailable before the button rebuilds '
+        'THEN the stale tap does not navigate',
+        (tester) async {
+          arrangeIncreaseSpaceAvailable();
+          final paywallController = RecordingPaywallController();
+          mailboxDashboardController.paywallController = paywallController;
+          cachePaywallUrlTemplate('https://domain.tld/premium');
+          await pumpWebMailbox(tester);
+
+          expect(find.byType(LinagoraSidebarUpsellButton), findsOneWidget);
+
+          cachePaywallUrlTemplate(null);
+          await tester.tap(find.byType(LinagoraSidebarUpsellButton));
+
+          expect(paywallController.navigateCount, 0);
+
+          await tester.pump();
           expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);
 
           WidgetFixtures.resetResponsive(tester);

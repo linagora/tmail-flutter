@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -76,6 +77,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/a
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
@@ -94,6 +96,7 @@ import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/capturing_log_handler.dart';
+import '../../../fixtures/recording_paywall_controller.dart';
 import '../../../fixtures/session_fixtures.dart';
 import '../../../fixtures/widget_fixtures.dart';
 import '../../../mocks/mock_web_view_platform.dart';
@@ -145,12 +148,20 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   Session? get sessionCurrent => SessionFixtures.aliceSession;
 
   bool premiumAvailable = false;
+  LinagoraEcosystem? cachedEcosystem;
+  PaywallController? paywallControllerValue;
 
   @override
   bool isPremiumAvailable({Session? session, AccountId? accountId}) => premiumAvailable;
 
   @override
   bool isAlreadyHighestSubscription({Session? session, AccountId? accountId}) => false;
+
+  @override
+  LinagoraEcosystem? get cachedLinagoraEcosystem => cachedEcosystem;
+
+  @override
+  PaywallController? get paywallController => paywallControllerValue;
 
   @override
   RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
@@ -200,6 +211,123 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   LabelController get labelController => MockLabelController();
+}
+
+typedef _OverQuotaPremiumTestCase = ({
+  String description,
+  String? paywallTemplate,
+  bool shouldOfferIncreaseSpace,
+});
+
+typedef _OverQuotaDraftDependencies = ({
+  ComposerController controller,
+  MockRichTextWebController richTextWebController,
+  MockUploadController uploadController,
+  MockComposerRepository composerRepository,
+  MockCreateNewAndSaveEmailToDraftsInteractor saveDraftInteractor,
+  MockMailboxDashBoardController dashboardController,
+  String emailContent,
+  Attachment attachment,
+});
+
+RecordingPaywallController _arrangeOverQuotaDraftScenario(
+  _OverQuotaDraftDependencies dependencies,
+  _OverQuotaPremiumTestCase testCase,
+) {
+  PlatformInfo.isTestingForWeb = true;
+  addTearDown(() => PlatformInfo.isTestingForWeb = false);
+  InAppWebViewPlatform.instance = MockWebViewPlatform();
+  dependencies.dashboardController.premiumAvailable = true;
+  final paywallController = RecordingPaywallController();
+  dependencies.dashboardController.paywallControllerValue = paywallController;
+  if (testCase.paywallTemplate != null) {
+    dependencies.dashboardController.cachedEcosystem =
+        LinagoraEcosystem.deserialize({
+      'paywallUrlTemplate': testCase.paywallTemplate,
+    });
+  }
+  when(dependencies.uploadController.uploadInlineViewState).thenReturn(
+    Rx(Right(UIState.idle)));
+  when(dependencies.uploadController.listUploadAttachments).thenReturn(
+    RxList<UploadFileState>());
+  when(dependencies.uploadController.attachmentsUploaded).thenReturn(
+    [dependencies.attachment],
+  );
+  when(dependencies.composerRepository.removeCollapsedExpandedSignatureEffect(
+    emailContent: anyNamed('emailContent'),
+  )).thenAnswer((_) async => dependencies.emailContent);
+  when(dependencies.saveDraftInteractor.execute(
+    createEmailRequest: anyNamed('createEmailRequest'),
+    cancelToken: anyNamed('cancelToken'),
+  )).thenAnswer((_) => Stream.value(
+    Left(SaveEmailAsDraftsFailure(SetMethodException({
+      Id('draft'): SetError(SetError.overQuota),
+    }))),
+  ));
+  return paywallController;
+}
+
+Future<AppLocalizations> _pumpOverQuotaDraftFailure(
+  WidgetTester tester,
+  _OverQuotaDraftDependencies dependencies,
+) async {
+  Get.put(dependencies.controller);
+  dependencies.controller.richTextWebController =
+      dependencies.richTextWebController;
+  dependencies.controller.setTextEditorWeb(dependencies.emailContent);
+  dependencies.controller.composerArguments.value = ComposerArguments();
+
+  await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+    child: const Stack(children: [ComposerView()]),
+  ));
+  await tester.pump();
+
+  final saveAsDraftButton = find.ancestor(
+    of: find.byType(InkWell),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is TMailButtonWidget
+        && widget.icon == ImagePaths().icSaveToDraft,
+    ),
+  );
+  await tester.tap(saveAsDraftButton);
+  await tester.pump();
+  await untilCalled(dependencies.saveDraftInteractor.execute(
+    createEmailRequest: anyNamed('createEmailRequest'),
+    cancelToken: anyNamed('cancelToken'),
+  ));
+  await tester.pumpAndSettle();
+
+  return AppLocalizations.of(tester.element(find.byType(ComposerView)));
+}
+
+Future<void> _verifyOverQuotaPremiumAction(
+  WidgetTester tester,
+  _OverQuotaPremiumTestCase testCase,
+  AppLocalizations appLocalizations,
+  RecordingPaywallController paywallController,
+) async {
+  expect(
+    find.text(appLocalizations.increaseYourSpace),
+    testCase.shouldOfferIncreaseSpace ? findsOneWidget : findsNothing,
+  );
+  expect(find.text(appLocalizations.edit), findsOneWidget);
+  expect(find.text(appLocalizations.closeAnyway), findsNothing);
+
+  await tester.tap(find.text(
+    testCase.shouldOfferIncreaseSpace
+        ? appLocalizations.increaseYourSpace
+        : appLocalizations.edit,
+  ));
+  await tester.pumpAndSettle();
+
+  expect(
+    paywallController.navigateCount,
+    testCase.shouldOfferIncreaseSpace ? 1 : 0,
+  );
+  expect(
+    paywallController.navigatedEcosystemPattern?.pattern,
+    testCase.paywallTemplate,
+  );
 }
 
 @GenerateNiceMocks([
@@ -329,6 +457,8 @@ void main() {
     // Reset the shared drag state so it does not leak between tests.
     mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
     mockMailboxDashBoardController.premiumAvailable = false;
+    mockMailboxDashBoardController.cachedEcosystem = null;
+    mockMailboxDashBoardController.paywallControllerValue = null;
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
@@ -646,70 +776,50 @@ void main() {
           });
         });
 
-        testWidgets(
-          'Should still offer increase space and edit\n'
-          'When save as draft fails because of over quota',
-        (tester) async {
-          await tester.runAsync(() async {
-            PlatformInfo.isTestingForWeb = true;
-            InAppWebViewPlatform.instance = MockWebViewPlatform();
-            mockMailboxDashBoardController.premiumAvailable = true;
+        final overQuotaPremiumCases = [
+          (
+            description: 'Should hide increase space on web when paywall is unavailable',
+            paywallTemplate: null,
+            shouldOfferIncreaseSpace: false,
+          ),
+          (
+            description: 'Should offer increase space on web when paywall is available',
+            paywallTemplate: 'https://domain.tld/premium',
+            shouldOfferIncreaseSpace: true,
+          ),
+        ];
 
-            when(mockUploadController.uploadInlineViewState).thenReturn(
-              Rx(Right(UIState.idle)));
-            when(mockUploadController.listUploadAttachments).thenReturn(
-              RxList<UploadFileState>());
-
-            Get.put(composerController!);
-            composerController?.richTextWebController = mockRichTextWebController;
-
-            composerController?.setTextEditorWeb(emailContent);
-            composerController?.composerArguments.value = ComposerArguments();
-            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
-            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
-              emailContent: anyNamed('emailContent'),
-            )).thenAnswer((_) async => emailContent);
-            when(
-              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
-                createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
-                Left(SaveEmailAsDraftsFailure(SetMethodException({
-                  Id('draft'): SetError(SetError.overQuota),
-                })))));
-
-            await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
-              child: const Stack(children: [ComposerView()])));
-            await tester.pump();
-
-            final saveAsDraftButton = find.ancestor(
-              of: find.byType(InkWell),
-              matching: find.byWidgetPredicate(
-                (widget) => widget is TMailButtonWidget
-                  && widget.icon == ImagePaths().icSaveToDraft));
-            await tester.tap(saveAsDraftButton);
-            await tester.pump();
-            await untilCalled(
-              mockCreateNewAndSaveEmailToDraftsInteractor.execute(
-                createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
-            await tester.pumpAndSettle();
-
-            final appLocalizations = AppLocalizations.of(
-              tester.element(find.byType(ComposerView)));
-            expect(find.text(appLocalizations.increaseYourSpace), findsOneWidget);
-            expect(find.text(appLocalizations.edit), findsOneWidget);
-            expect(find.text(appLocalizations.closeAnyway), findsNothing);
-
-            await tester.tap(find.text(appLocalizations.edit));
-            await tester.pumpAndSettle();
-
-            expect(find.byType(ComposerView), findsOneWidget);
-            expect(find.text(appLocalizations.increaseYourSpace), findsNothing);
-
-            PlatformInfo.isTestingForWeb = false;
+        for (final testCase in overQuotaPremiumCases) {
+          testWidgets(testCase.description, (tester) async {
+            await tester.runAsync(() async {
+              final dependencies = (
+                controller: composerController!,
+                richTextWebController: mockRichTextWebController,
+                uploadController: mockUploadController,
+                composerRepository: mockComposerRepository,
+                saveDraftInteractor:
+                    mockCreateNewAndSaveEmailToDraftsInteractor,
+                dashboardController: mockMailboxDashBoardController,
+                emailContent: emailContent,
+                attachment: attachment,
+              );
+              final paywallController = _arrangeOverQuotaDraftScenario(
+                dependencies,
+                testCase,
+              );
+              final appLocalizations = await _pumpOverQuotaDraftFailure(
+                tester,
+                dependencies,
+              );
+              await _verifyOverQuotaPremiumAction(
+                tester,
+                testCase,
+                appLocalizations,
+                paywallController,
+              );
+            });
           });
-        });
+        }
 
         testWidgets(
           'Should still offer to close the composer\n'

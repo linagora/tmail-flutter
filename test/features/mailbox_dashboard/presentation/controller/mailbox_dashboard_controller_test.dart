@@ -482,6 +482,11 @@ void main() {
     setUp(() {
       mailboxDashboardController.sessionCurrent = createPremiumSession();
       mailboxDashboardController.accountId.value = testAccountId;
+      mailboxDashboardController.ownEmailAddress.value =
+          'alice@domain.tld';
+      mailboxDashboardController.paywallController = PaywallController(
+        ownEmailAddress: mailboxDashboardController.ownEmailAddress.value,
+      );
     });
 
     final ecosystemPaywallCases = [
@@ -536,6 +541,9 @@ void main() {
     test('should validate ecosystem paywall with the current identity', () {
       mailboxDashboardController.ownEmailAddress.value =
           'alice.smith@domain.tld';
+      mailboxDashboardController.paywallController = PaywallController(
+        ownEmailAddress: mailboxDashboardController.ownEmailAddress.value,
+      );
       expectEcosystemPaywallAvailability(
         template: 'https://{localPart}.domain.tld/paywall',
         isAvailable: true,
@@ -561,6 +569,16 @@ void main() {
         mailboxDashboardController.validateIncreaseSpaceIsAvailable(
           workplaceFqdn: 'workplace.domain.tld',
         ),
+        isFalse,
+      );
+    });
+
+    test('should not be available when paywall controller is missing', () {
+      mailboxDashboardController.paywallController = null;
+      cachePaywallUrlTemplate('https://domain.tld/paywall');
+
+      expect(
+        mailboxDashboardController.validateIncreaseSpaceIsAvailable(),
         isFalse,
       );
     });
@@ -606,6 +624,75 @@ void main() {
         launchedUrls,
         ['https://workplace.domain.tld/settings/premium'],
       );
+    });
+
+    final paywallAvailabilityCases = [
+      (
+        description: 'valid Workplace',
+        workplaceFqdn: 'workplace.domain.tld',
+        ecosystemPattern: null,
+        isAvailable: true,
+      ),
+      (
+        description: 'valid ecosystem',
+        workplaceFqdn: null,
+        ecosystemPattern: 'https://domain.tld/{localPart}/premium',
+        isAvailable: true,
+      ),
+      (
+        description: 'valid Workplace preferred over unsafe ecosystem',
+        workplaceFqdn: 'workplace.domain.tld',
+        ecosystemPattern: 'javascript:alert(1)',
+        isAvailable: true,
+      ),
+      (
+        description: 'valid ecosystem fallback for invalid Workplace',
+        workplaceFqdn: 'localhost',
+        ecosystemPattern: 'https://domain.tld/premium',
+        isAvailable: true,
+      ),
+      (
+        description: 'invalid Workplace and ecosystem',
+        workplaceFqdn: 'localhost',
+        ecosystemPattern: 'javascript:alert(1)',
+        isAvailable: false,
+      ),
+      (
+        description: 'missing Workplace and ecosystem',
+        workplaceFqdn: null,
+        ecosystemPattern: null,
+        isAvailable: false,
+      ),
+    ];
+
+    for (final testCase in paywallAvailabilityCases) {
+      test('should resolve availability for ${testCase.description}', () {
+        final ecosystemPattern = testCase.ecosystemPattern;
+        expect(
+          paywallController.canNavigateToPaywall(
+            workplaceFqdn: testCase.workplaceFqdn,
+            ecosystemPaywallUrlPattern: ecosystemPattern == null
+                ? null
+                : PaywallUrlPattern(ecosystemPattern),
+          ),
+          testCase.isAvailable,
+          reason: testCase.toString(),
+        );
+      });
+    }
+
+    testWidgets('should launch a preloaded ecosystem paywall URL',
+        (tester) async {
+      when(mockTwakeAppManager.oidcUserInfo).thenReturn(null);
+
+      paywallController.navigateToPaywall(
+        ecosystemPaywallUrlPattern: PaywallUrlPattern(
+          'https://domain.tld/#/premium',
+        ),
+      );
+      await tester.pump();
+
+      expect(launchedUrls, ['https://domain.tld/#/premium']);
     });
 
     testWidgets('should launch a valid ecosystem fragment route on web',

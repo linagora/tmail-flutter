@@ -45,7 +45,7 @@ class MailboxSidebarFooter extends GetWidget<QuotasController> {
               ),
               expanded: !isDesktop,
               onPressed: () =>
-                  dashboardController.paywallController?.navigateToPaywall(),
+                  _handleIncreaseSpacePressed(dashboardController),
             ),
           ApplicationVersionWidget(
             title: '${AppLocalizations.of(context).version.toLowerCase()} ',
@@ -110,13 +110,24 @@ class MailboxSidebarFooter extends GetWidget<QuotasController> {
     MailboxDashBoardController dashboardController,
   ) {
     if (!showIncreaseSpaceButton) return false;
-    if (dashboardController.paywallController == null) return false;
     if (dashboardController.octetsQuota.value?.storageAvailable != true) {
       return false;
     }
 
     return dashboardController.validateIncreaseSpaceIsAvailable(
       workplaceFqdn: workplaceFqdn,
+    );
+  }
+
+  void _handleIncreaseSpacePressed(
+    MailboxDashBoardController dashboardController,
+  ) {
+    if (!_isIncreaseSpaceDisplayed(dashboardController)) return;
+
+    dashboardController.paywallController?.navigateToPaywall(
+      workplaceFqdn: workplaceFqdn,
+      ecosystemPaywallUrlPattern:
+          dashboardController.cachedEcosystemPaywallUrlPattern,
     );
   }
 }
