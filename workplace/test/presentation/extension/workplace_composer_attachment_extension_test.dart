@@ -138,6 +138,7 @@ final _intentResponse = {
 WorkplaceComposerAttachmentExtension _makeExtension(
   ValueListenable<Uri?> notifier, {
   String? oidcToken = 'oidc-token',
+  String? Function()? oidcTokenGetter,
   num? maxAttachmentSizeBytes,
   num? remainingAttachmentCapacityBytes,
   OnDrivePickStateChanged? onPickState,
@@ -147,7 +148,7 @@ WorkplaceComposerAttachmentExtension _makeExtension(
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
       uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
-      oidcTokenGetter: () => oidcToken,
+      oidcTokenGetter: oidcTokenGetter ?? () => oidcToken,
       oidcRefreshTrigger: oidcRefreshTrigger,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
       remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
@@ -654,6 +655,47 @@ void main() {
 
       // Called once for the first 401, not again after the retry also fails.
       expect(refreshCallCount, equals(1));
+    });
+    testWidgets('reuses the already-refreshed token when a second 401 arrives late, with one refresh', (tester) async {
+      WorkplaceDio.setInstance(
+        Dio()
+          ..httpClientAdapter = _SequentialAdapter([
+            _fail401, // A: old token → 401
+            _tokenResponse, // A: retry with refreshed token
+            _intentResponse,
+            _fail401, // B: still sent the old token → 401
+            _tokenResponse, // B: retry with current token, no refresh
+            _intentResponse,
+          ]),
+      );
+
+      var refreshCallCount = 0;
+      var currentToken = 'old-oidc-token';
+      var tokenReads = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        // Reads 1-2: A start + A retry check; read 3: B start (old); read 4: B retry check.
+        oidcTokenGetter: () => ++tokenReads <= 3 ? 'old-oidc-token' : currentToken,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          currentToken = 'refreshed-oidc-token';
+          return currentToken;
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+      const config = WorkplaceFilePickerConfigRequest(
+        sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+        downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+        theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+      );
+
+      final resultA = await tester.runAsync(() => callback(filePickerConfig: config));
+      final resultB = await tester.runAsync(() => callback(filePickerConfig: config));
+
+      expect(refreshCallCount, equals(1));
+      expect(resultA?.intentId, equals('intent-xyz'));
+      expect(resultB?.intentId, equals('intent-xyz'));
     });
   });
 }

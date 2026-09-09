@@ -102,6 +102,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return result.fold(
       (failure) => _retryAfterRefreshOrThrow(
         platformUrl: platformUrl,
+        failedToken: oidcToken,
         failure: failure,
         refreshAttempted: refreshAttempted,
       ),
@@ -133,15 +134,23 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return caughtFailure == null ? Right(accessToken) : Left(caughtFailure!);
   }
 
-  /// Retries once with a refreshed token on a 401 (Workplace's Dio has no
+  /// Retries once on a 401 with the current token if another request already
+  /// refreshed it, else with a freshly refreshed one (Workplace's Dio has no
   /// refresh interceptor of its own).
   Future<String?> _retryAfterRefreshOrThrow({
     required Uri platformUrl,
+    required String failedToken,
     required Object failure,
     required bool refreshAttempted,
   }) async {
     if (refreshAttempted || oidcRefreshTrigger == null || !_isUnauthorized(failure)) {
       throw failure;
+    }
+
+    // Mirrors AuthorizationInterceptors.validateToRetryTheRequestWithNewToken.
+    final currentToken = oidcTokenGetter();
+    if (currentToken != null && currentToken != failedToken) {
+      return _exchangeAccessToken(platformUrl, currentToken, refreshAttempted: true);
     }
 
     final refreshedToken = await oidcRefreshTrigger!();
