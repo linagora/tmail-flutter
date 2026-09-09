@@ -46,6 +46,15 @@ jobs:
         id: commit
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      # Docker tags cannot contain "/", so a ref like `feature/x` becomes `feature-x`.
+      - name: Sanitize image tag
+        id: image_tag
+        env:
+          RAW_TAG: ${{ inputs.image_tag }}
+        run: |
+          SAFE_TAG=$(printf '%s' "$RAW_TAG" | tr -c 'A-Za-z0-9_.-' '-')
+          echo "value=${SAFE_TAG:0:128}" >> "$GITHUB_OUTPUT"
+
       - name: Extract app version from pubspec.yaml
         id: app_version
         run: |
@@ -60,7 +69,7 @@ jobs:
             ${{ github.repository_owner }}/tmail-web
             ghcr.io/${{ github.repository_owner }}/tmail-web
           tags: |
-            type=raw,value=${{ inputs.image_tag }}
+            type=raw,value=${{ steps.image_tag.outputs.value }}
             type=raw,value=release,enable=${{ inputs.push_release_tag }}
 
       - name: Login to Docker Hub
