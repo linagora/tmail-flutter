@@ -61,38 +61,53 @@ class PaywallController extends BaseController {
     );
   }
 
-  void navigateToPaywall() {
+  void navigateToPaywall({
+    String? workplaceFqdn,
+    PaywallUrlPattern? ecosystemPaywallUrlPattern,
+  }) {
     try {
-      final paywallUrl = PaywallUtils.buildWorkplacePaywallUrl(
-        twakeAppManager.oidcUserInfo?.workplaceFqdn,
+      final paywallUrl = resolvePaywallUrl(
+        workplaceFqdn: workplaceFqdn ??
+            twakeAppManager.oidcUserInfo?.workplaceFqdn,
+        ecosystemPaywallUrlPattern: ecosystemPaywallUrlPattern,
       );
-      if (paywallUrl.isEmpty) {
-        _navigateToPaywallUseEcoSystem();
+      if (paywallUrl != null) {
+        _openPaywallUrl(paywallUrl);
         return;
       }
-      AppUtils.launchLink(paywallUrl);
-    } catch (e) {
-      logWarning('$runtimeType::navigateToPaywall: Failed to navigate to paywall $e');
-      _navigateToPaywallUseEcoSystem();
+    } catch (error, stackTrace) {
+      logWarning(
+        '$runtimeType::navigateToPaywall: '
+        'errorType=${error.runtimeType} | stackTrace=$stackTrace',
+      );
     }
-  }
 
-  void _navigateToPaywallUseEcoSystem() {
-    _loadPaywallUrl();
-  }
-  
-  void _redirectPaywallPage(PaywallUrlPattern urlPattern) {
-    final qualifiedPaywall = urlPattern.getQualifiedUrl(
-      ownerEmail: ownEmailAddress,
-      domainName: RouteUtils.getRootDomain(),
-    );
-    if (PlatformInfo.isWeb &&
-        !PaywallUtils.isValidPaywallUrl(qualifiedPaywall)) {
-      logWarning('$runtimeType::_redirectPaywallPage: Invalid paywall URL');
+    if (ecosystemPaywallUrlPattern != null) {
       _loadPaywallUrlFailure();
       return;
     }
-    AppUtils.launchLink(qualifiedPaywall);
+    _loadPaywallUrl();
+  }
+
+  void _redirectPaywallPage(PaywallUrlPattern urlPattern) {
+    final paywallUrl = resolvePaywallUrl(
+      ecosystemPaywallUrlPattern: urlPattern,
+    );
+    if (paywallUrl == null) {
+      _loadPaywallUrlFailure();
+      return;
+    }
+    _openPaywallUrl(paywallUrl);
+  }
+
+  void _openPaywallUrl(String paywallUrl) {
+    if (PlatformInfo.isWeb &&
+        !PaywallUtils.isValidPaywallUrl(paywallUrl)) {
+      logWarning('$runtimeType::_openPaywallUrl: Invalid paywall URL');
+      _loadPaywallUrlFailure();
+      return;
+    }
+    AppUtils.launchLink(paywallUrl);
   }
 
   void _handleRetryGetPaywallUrl() {
@@ -115,5 +130,41 @@ class PaywallController extends BaseController {
     } else {
       super.handleFailureViewState(failure);
     }
+  }
+}
+
+extension PaywallAvailabilityExtension on PaywallController {
+  bool canNavigateToPaywall({
+    String? workplaceFqdn,
+    PaywallUrlPattern? ecosystemPaywallUrlPattern,
+  }) {
+    try {
+      return PaywallUtils.isValidPaywallUrl(resolvePaywallUrl(
+        workplaceFqdn: workplaceFqdn,
+        ecosystemPaywallUrlPattern: ecosystemPaywallUrlPattern,
+      ));
+    } catch (error, stackTrace) {
+      logWarning(
+        '$runtimeType::canNavigateToPaywall: '
+        'errorType=${error.runtimeType} | stackTrace=$stackTrace',
+      );
+      return false;
+    }
+  }
+
+  String? resolvePaywallUrl({
+    String? workplaceFqdn,
+    PaywallUrlPattern? ecosystemPaywallUrlPattern,
+  }) {
+    final workplacePaywallUrl = PaywallUtils.buildWorkplacePaywallUrl(
+      workplaceFqdn,
+    );
+    if (workplacePaywallUrl.isNotEmpty) return workplacePaywallUrl;
+    if (ecosystemPaywallUrlPattern == null) return null;
+
+    return ecosystemPaywallUrlPattern.getQualifiedUrl(
+      ownerEmail: ownEmailAddress,
+      domainName: RouteUtils.getRootDomain(),
+    );
   }
 }

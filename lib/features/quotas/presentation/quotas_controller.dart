@@ -98,13 +98,20 @@ class QuotasController extends BaseController {
     }
   }
 
-  bool get isManageMyStorageIsDisabled {
-    return !mailboxDashBoardController.validatePremiumIsAvailable() ||
-      mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
+  bool isManageMyStorageDisabled({String? workplaceFqdn}) {
+    return !mailboxDashBoardController.validateIncreaseSpaceIsAvailable(
+      workplaceFqdn: workplaceFqdn,
+    );
   }
 
-  void handleManageMyStorage() {
-    mailboxDashBoardController.paywallController?.navigateToPaywall();
+  void handleManageMyStorage({String? workplaceFqdn}) {
+    if (isManageMyStorageDisabled(workplaceFqdn: workplaceFqdn)) return;
+
+    mailboxDashBoardController.paywallController?.navigateToPaywall(
+      workplaceFqdn: workplaceFqdn,
+      ecosystemPaywallUrlPattern:
+          mailboxDashBoardController.cachedEcosystemPaywallUrlPattern,
+    );
   }
 
   void closeBanner() {

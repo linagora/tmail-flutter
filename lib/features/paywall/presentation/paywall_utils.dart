@@ -39,7 +39,8 @@ class PaywallUtils {
 
     final uri = Uri.tryParse(normalizedUrl);
     if (uri == null) return false;
-    return _isSecureAbsoluteUri(uri);
+    if (!_isSecureAbsoluteUri(uri)) return false;
+    return WebLinkGenerator.isValidFqdn(uri.host);
   }
 
   /// Builds a paywall URL from a template.

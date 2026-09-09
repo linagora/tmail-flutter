@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -135,6 +136,7 @@ import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -1172,11 +1174,10 @@ class ComposerController extends BaseController
       exception: failure.exception,
     );
 
-    final isIncreaseMySpaceIsDisabled =
-        !mailboxDashBoardController.validatePremiumIsAvailable() ||
-            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
-
-    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
+    final workplaceFqdn = _workplaceFqdn(context);
+    final needIncreaseMySpace = _isIncreaseSpaceAvailable(
+          workplaceFqdn: workplaceFqdn,
+        ) &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
@@ -1197,7 +1198,7 @@ class ComposerController extends BaseController
         popBack();
 
         if (needIncreaseMySpace) {
-          mailboxDashBoardController.paywallController?.navigateToPaywall();
+          _navigateToPaywall(workplaceFqdn: workplaceFqdn);
         } else {
           _autoFocusFieldWhenLauncher();
         }
@@ -1484,12 +1485,12 @@ class ComposerController extends BaseController
           context: context,
           failure: resultState,
           shouldOfferCloseComposer: false,
-          onConfirmAction: (needIncreaseMySpace) {
+          onConfirmAction: (needIncreaseMySpace, workplaceFqdn) {
             _saveToDraftButtonState = ButtonState.enabled;
             popBack();
 
             if (needIncreaseMySpace) {
-              mailboxDashBoardController.paywallController?.navigateToPaywall();
+              _navigateToPaywall(workplaceFqdn: workplaceFqdn);
             } else {
               _autoFocusFieldWhenLauncher();
             }
@@ -2479,7 +2480,7 @@ class ComposerController extends BaseController
     required BuildContext context,
     required FeatureFailure failure,
     bool shouldOfferCloseComposer = true,
-    Function(bool)? onConfirmAction,
+    Function(bool, String?)? onConfirmAction,
     Function(bool)? onCancelAction,
   }) async {
     final messageRecord = getMessageFailure(
@@ -2488,11 +2489,10 @@ class ComposerController extends BaseController
       isDraft: true,
     );
 
-    final isIncreaseMySpaceIsDisabled =
-        !mailboxDashBoardController.validatePremiumIsAvailable() ||
-            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
-
-    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
+    final workplaceFqdn = _workplaceFqdn(context);
+    final needIncreaseMySpace = _isIncreaseSpaceAvailable(
+          workplaceFqdn: workplaceFqdn,
+        ) &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
@@ -2511,13 +2511,13 @@ class ComposerController extends BaseController
       autoPerformPopBack: false,
       onConfirmAction: () {
         if (onConfirmAction != null) {
-          onConfirmAction(needIncreaseMySpace);
+          onConfirmAction(needIncreaseMySpace, workplaceFqdn);
         } else {
           _closeComposerButtonState = ButtonState.enabled;
           popBack();
 
           if (needIncreaseMySpace) {
-            mailboxDashBoardController.paywallController?.navigateToPaywall();
+            _navigateToPaywall(workplaceFqdn: workplaceFqdn);
           } else {
             _autoFocusFieldWhenLauncher();
           }
@@ -2537,6 +2537,39 @@ class ComposerController extends BaseController
           }
         }
       },
+    );
+  }
+
+  String? _workplaceFqdn(BuildContext context) {
+    if (!PlatformInfo.isWeb) return null;
+    return ProviderScope.containerOf(context, listen: false)
+        .read(workplaceFqdnProvider);
+  }
+
+  bool _isIncreaseSpaceAvailable({String? workplaceFqdn}) {
+    if (mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription()) {
+      return false;
+    }
+    if (!PlatformInfo.isWeb) {
+      return mailboxDashBoardController.validatePremiumIsAvailable();
+    }
+    return mailboxDashBoardController.validateIncreaseSpaceIsAvailable(
+      workplaceFqdn: workplaceFqdn,
+    );
+  }
+
+  void _navigateToPaywall({String? workplaceFqdn}) {
+    if (PlatformInfo.isWeb &&
+        !mailboxDashBoardController.validateIncreaseSpaceIsAvailable(
+          workplaceFqdn: workplaceFqdn,
+        )) {
+      return;
+    }
+    mailboxDashBoardController.paywallController?.navigateToPaywall(
+      workplaceFqdn: workplaceFqdn,
+      ecosystemPaywallUrlPattern: PlatformInfo.isWeb
+          ? mailboxDashBoardController.cachedEcosystemPaywallUrlPattern
+          : null,
     );
   }
 
