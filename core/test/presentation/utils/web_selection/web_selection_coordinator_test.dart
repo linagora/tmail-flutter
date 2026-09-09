@@ -29,6 +29,7 @@ void main() {
   late WebSelectionCoordinator coordinator;
   late FocusNode regionFocusNode;
   late FocusNode textFieldFocusNode;
+  late FocusNode innerFocusNode;
   SelectedContent? lastSelection;
 
   setUp(() {
@@ -36,6 +37,7 @@ void main() {
     coordinator = WebSelectionCoordinator(dom: dom);
     regionFocusNode = FocusNode();
     textFieldFocusNode = FocusNode();
+    innerFocusNode = FocusNode();
     lastSelection = null;
   });
 
@@ -43,6 +45,7 @@ void main() {
     coordinator.stop();
     regionFocusNode.dispose();
     textFieldFocusNode.dispose();
+    innerFocusNode.dispose();
   });
 
   Future<void> pumpApp(WidgetTester tester) async {
@@ -54,7 +57,12 @@ void main() {
               SelectionArea(
                 focusNode: regionFocusNode,
                 onSelectionChanged: (selection) => lastSelection = selection,
-                child: const Text('Subject line to select'),
+                child: Column(
+                  children: [
+                    const Text('Subject line to select'),
+                    TextField(focusNode: innerFocusNode),
+                  ],
+                ),
               ),
               TextField(focusNode: textFieldFocusNode),
             ],
@@ -119,6 +127,33 @@ void main() {
       await tester.pump();
 
       expect(dom.clearIframeSelectionsCalls, 0);
+    });
+
+    testWidgets('ignores focus moving to a widget inside the SelectionArea',
+        (tester) async {
+      await pumpApp(tester);
+      coordinator.start();
+
+      innerFocusNode.requestFocus();
+      await tester.pump();
+
+      expect(innerFocusNode.hasFocus, isTrue);
+      expect(dom.clearIframeSelectionsCalls, 0);
+    });
+
+    testWidgets(
+        'does not clear iframes again when focus moves from the region to a child',
+        (tester) async {
+      await pumpApp(tester);
+      coordinator.start();
+      await selectSubjectWithMouse(tester);
+      expect(dom.clearIframeSelectionsCalls, 1);
+
+      innerFocusNode.requestFocus();
+      await tester.pump();
+
+      expect(innerFocusNode.hasFocus, isTrue);
+      expect(dom.clearIframeSelectionsCalls, 1);
     });
 
     testWidgets('clears the Flutter selection when focus lands in an iframe',
