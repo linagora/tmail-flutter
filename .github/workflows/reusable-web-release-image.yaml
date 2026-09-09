@@ -41,6 +41,9 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           fetch-depth: 0
+          # The repo has no .dockerignore, so `COPY . .` would sweep .git/config -
+          # and the checkout token it holds - into the build layer and the cache.
+          persist-credentials: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
