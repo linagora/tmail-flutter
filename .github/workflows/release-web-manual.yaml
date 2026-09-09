@@ -18,21 +18,18 @@ jobs:
     name: Validate tag
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+      # Queried through the API so the check costs no clone.
       - name: Check tag format and existence
         env:
           TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "::error::Tag '$TAG' must look like vX.Y.Z (optionally with a suffix)."
             exit 1
           fi
-          if ! git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
-            echo "::error::Tag '$TAG' does not exist on the remote."
+          if ! gh api "repos/${{ github.repository }}/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag '$TAG' does not exist in ${{ github.repository }}."
             exit 1
           fi
 
