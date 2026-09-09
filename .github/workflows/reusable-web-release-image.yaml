@@ -1,9 +1,7 @@
 name: Web release image (reusable)
 
-# Reusable definition of the web release image build. Called by:
-#   - image-sentry.yaml (on tag push, after the web E2E gate)
-#   - release-web-manual.yaml (manual dispatch on a chosen tag, no tests)
-# Keeping the steps here means the image build is defined once and both callers stay in sync.
+# Reusable definition of the web release image build.
+# Called by release-web-manual.yaml (manual dispatch on a chosen tag, no tests).
 on:
   workflow_call:
     inputs:
@@ -15,11 +13,6 @@ on:
         description: "Docker image tag to push (e.g. v1.2.3)"
         required: true
         type: string
-      push_release_tag:
-        description: "Also push the floating `release` tag"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   build-release-image-with-sentry:
@@ -76,7 +69,6 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/tmail-web
           tags: |
             type=raw,value=${{ steps.image_tag.outputs.value }}
-            type=raw,value=release,enable=${{ inputs.push_release_tag }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3

@@ -43,5 +43,4 @@ jobs:
     with:
       ref: refs/tags/${{ inputs.tag }}
       image_tag: ${{ inputs.tag }}
-      push_release_tag: false
     secrets: inherit
