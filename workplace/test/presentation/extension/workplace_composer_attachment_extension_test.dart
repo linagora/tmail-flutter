@@ -29,11 +29,13 @@ class _Fail401 {
 
 const _fail401 = _Fail401();
 
-// Returns responses from a pre-defined queue, one per HTTP request.
+// Returns responses from a pre-defined queue, one per HTTP request, and
+// records each request body so a test can assert on the outgoing JSON.
 // Queue items are a Map (returned as JSON), _Fail (network error, no
 // response), or _Fail401 (401 response, e.g. a stale OIDC id token).
 class _SequentialAdapter implements HttpClientAdapter {
   final List<dynamic> _queue;
+  final List<dynamic> capturedBodies = [];
   int _index = 0;
 
   _SequentialAdapter(this._queue);
@@ -44,6 +46,7 @@ class _SequentialAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future? cancelFuture,
   ) async {
+    capturedBodies.add(options.data);
     final item = _queue[_index++];
     if (item is _Fail) {
       throw DioException(requestOptions: options, message: 'Network error');
@@ -55,36 +58,6 @@ class _SequentialAdapter implements HttpClientAdapter {
         type: DioExceptionType.badResponse,
       );
     }
-    return ResponseBody.fromString(
-      jsonEncode(item),
-      200,
-      headers: {
-        Headers.contentTypeHeader: ['application/json; charset=utf-8'],
-      },
-    );
-  }
-
-  @override
-  void close({bool force = false}) {}
-}
-
-// Returns queued responses like _SequentialAdapter, but also records each
-// request body so a test can assert on the outgoing JSON shape.
-class _CapturingAdapter implements HttpClientAdapter {
-  final List<dynamic> _queue;
-  final List<dynamic> capturedBodies = [];
-  int _index = 0;
-
-  _CapturingAdapter(this._queue);
-
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future? cancelFuture,
-  ) async {
-    capturedBodies.add(options.data);
-    final item = _queue[_index++];
     return ResponseBody.fromString(
       jsonEncode(item),
       200,
@@ -557,7 +530,7 @@ void main() {
     });
 
     testWidgets('forwards downloadLink maxFileSize/availableSize from filePickerConfig into the request', (tester) async {
-      final adapter = _CapturingAdapter([_tokenResponse, _intentResponse]);
+      final adapter = _SequentialAdapter([_tokenResponse, _intentResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       final notifier = ValueNotifier<Uri?>(_platformUri);
@@ -588,14 +561,12 @@ void main() {
     });
 
     testWidgets('retries once via oidcRefreshTrigger after a 401, then succeeds', (tester) async {
-      WorkplaceDio.setInstance(
-        Dio()
-          ..httpClientAdapter = _SequentialAdapter([
-            _fail401, // stale token exchange → 401
-            _tokenResponse, // retry with refreshed token → succeeds
-            _intentResponse,
-          ]),
-      );
+      final adapter = _SequentialAdapter([
+        _fail401, // stale token exchange → 401
+        _tokenResponse, // retry with refreshed token → succeeds
+        _intentResponse,
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       var refreshCallCount = 0;
       final notifier = ValueNotifier<Uri?>(_platformUri);
@@ -621,6 +592,8 @@ void main() {
       expect(refreshCallCount, equals(1));
       expect(result, isNotNull);
       expect(result!.intentId, equals('intent-xyz'));
+      expect(adapter.capturedBodies[0]['id_token'], equals('oidc-token'));
+      expect(adapter.capturedBodies[1]['id_token'], equals('refreshed-oidc-token'));
     });
 
     testWidgets('does not retry twice when the refreshed token also gets a 401', (tester) async {
@@ -657,17 +630,15 @@ void main() {
       expect(refreshCallCount, equals(1));
     });
     testWidgets('reuses the already-refreshed token when a second 401 arrives late, with one refresh', (tester) async {
-      WorkplaceDio.setInstance(
-        Dio()
-          ..httpClientAdapter = _SequentialAdapter([
-            _fail401, // A: old token → 401
-            _tokenResponse, // A: retry with refreshed token
-            _intentResponse,
-            _fail401, // B: still sent the old token → 401
-            _tokenResponse, // B: retry with current token, no refresh
-            _intentResponse,
-          ]),
-      );
+      final adapter = _SequentialAdapter([
+        _fail401, // A: old token → 401
+        _tokenResponse, // A: retry with refreshed token
+        _intentResponse,
+        _fail401, // B: still sent the old token → 401
+        _tokenResponse, // B: retry with current token, no refresh
+        _intentResponse,
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       var refreshCallCount = 0;
       var currentToken = 'old-oidc-token';
@@ -696,6 +667,11 @@ void main() {
       expect(refreshCallCount, equals(1));
       expect(resultA?.intentId, equals('intent-xyz'));
       expect(resultB?.intentId, equals('intent-xyz'));
+      // Bodies: [0] A old, [1] A retry, [2] A intent, [3] B old, [4] B retry, [5] B intent.
+      expect(adapter.capturedBodies[0]['id_token'], equals('old-oidc-token'));
+      expect(adapter.capturedBodies[1]['id_token'], equals('refreshed-oidc-token'));
+      expect(adapter.capturedBodies[3]['id_token'], equals('old-oidc-token'));
+      expect(adapter.capturedBodies[4]['id_token'], equals('refreshed-oidc-token'));
     });
   });
 }
