@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_stat
 import 'package:tmail_ui_user/features/paywall/domain/usecases/get_paywall_url_interactor.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
@@ -301,6 +302,52 @@ void main() {
       await stateController.close();
     });
 
+    test('routes urgent ecosystem failures through the base controller',
+        () async {
+      arrangePaywallState(Stream.value(Left(GetPaywallUrlFailure(
+        const BadCredentialsException(),
+      ))));
+      final recordingController = _RecordingUrgentStorageController(
+        dashBoardController: dashboardController,
+        getPaywallUrlInteractor: getPaywallUrlInteractor,
+      );
+      storageController = recordingController;
+
+      PlatformInfo.isTestingForWeb = true;
+      recordingController.onInit();
+      await pumpEventQueue();
+
+      expect(
+        recordingController.handledUrgentFailure,
+        isA<GetPaywallUrlFailure>(),
+      );
+      expect(
+        recordingController.handledUrgentException,
+        isA<BadCredentialsException>(),
+      );
+      expect(recordingController.isUpgradeStorageDisabled(), isTrue);
+    });
+
+    test('routes urgent stream errors through the base controller', () async {
+      arrangePaywallState(Stream.error(const BadCredentialsException()));
+      final recordingController = _RecordingUrgentStorageController(
+        dashBoardController: dashboardController,
+        getPaywallUrlInteractor: getPaywallUrlInteractor,
+      );
+      storageController = recordingController;
+
+      PlatformInfo.isTestingForWeb = true;
+      recordingController.onInit();
+      await pumpEventQueue();
+
+      expect(recordingController.handledUrgentFailure, isNull);
+      expect(
+        recordingController.handledUrgentException,
+        isA<BadCredentialsException>(),
+      );
+      expect(recordingController.isUpgradeStorageDisabled(), isTrue);
+    });
+
     test('does not load paywall or change mobile navigation behavior', () async {
       createController(isWeb: false);
       await pumpEventQueue();
@@ -419,6 +466,22 @@ class _TestStorageView extends StorageView {
 
   @override
   StorageController get controller => testController;
+}
+
+class _RecordingUrgentStorageController extends StorageController {
+  Failure? handledUrgentFailure;
+  Exception? handledUrgentException;
+
+  _RecordingUrgentStorageController({
+    required super.dashBoardController,
+    required super.getPaywallUrlInteractor,
+  });
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) {
+    handledUrgentFailure = failure;
+    handledUrgentException = exception;
+  }
 }
 
 Quota _storageQuota({

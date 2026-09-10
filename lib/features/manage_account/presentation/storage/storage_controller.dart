@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
@@ -45,10 +44,7 @@ class StorageController extends BaseController with SaaSPremiumMixin {
       onError: (Object error, StackTrace stackTrace) {
         if (isClosed) return;
         _ecosystemPaywallUrlPattern.value = null;
-        logWarning(
-          '$runtimeType::_loadEcosystemPaywallUrl: '
-          'errorType=${error.runtimeType} | stackTrace=$stackTrace',
-        );
+        onError(error, stackTrace);
       },
     );
   }
@@ -57,7 +53,10 @@ class StorageController extends BaseController with SaaSPremiumMixin {
     if (isClosed) return;
 
     state.fold(
-      (_) => _ecosystemPaywallUrlPattern.value = null,
+      (failure) {
+        _ecosystemPaywallUrlPattern.value = null;
+        onDataFailureViewState(failure);
+      },
       (success) {
         if (success is GetPaywallUrlSuccess) {
           _ecosystemPaywallUrlPattern.value = success.paywallUrlPattern;
