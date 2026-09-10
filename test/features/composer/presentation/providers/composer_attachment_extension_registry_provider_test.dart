@@ -190,10 +190,13 @@ void main() {
           (e) => e.error, 'error', isA<RefreshTokenFailedException>(),
         )),
       );
-      final workplaceRefresh = expectLater(
-        readExtension().oidcRefreshTrigger!(),
-        throwsA(isA<RefreshTokenFailedException>()),
-      );
+      Object? workplaceError;
+      final workplaceRefresh = readExtension()
+          .oidcRefreshTrigger!()
+          .then<String?>((_) => null, onError: (Object e) {
+            workplaceError = e;
+            return null;
+          });
       // Let both callers reach the in-flight refresh before it is rejected.
       await pumpEventQueue();
       refreshCompleter.completeError(const OAuthAuthorizationError(
@@ -204,6 +207,19 @@ void main() {
 
       verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(1);
       expect(realInterceptor.authenticationType, AuthenticationType.none);
+      expect(workplaceError, isA<RefreshTokenFailedException>());
+
+      // The Drive picker reports that rejection as a DrivePickFailure; the
+      // registry must hand it to the dashboard's BaseController path, not toast.
+      final failure = DrivePickFailure(workplaceError!);
+      when(dashboard.validateUrgentException(workplaceError)).thenReturn(true);
+      await readExtension().onPickState!(null, failure);
+
+      verify(dashboard.handleUrgentException(
+        failure: failure,
+        exception: workplaceError as Exception,
+      )).called(1);
+      verifyNever(toastManager.showMessageFailure(any));
     });
 
     test('transient refresh failure racing a JMAP 401 keeps the session', () async {

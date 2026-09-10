@@ -629,6 +629,35 @@ void main() {
       // Called once for the first 401, not again after the retry also fails.
       expect(refreshCallCount, equals(1));
     });
+    testWidgets('propagates the oidcRefreshTrigger failure after a 401 with no second exchange', (tester) async {
+      final adapter = _SequentialAdapter([_fail401]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      // Stands in for the app's RefreshTokenFailedException: must reach the
+      // picker failure untouched so the app can route it to logout.
+      final rejection = StateError('refresh rejected by the server');
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async => throw rejection,
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(same(rejection)),
+        );
+      });
+
+      expect(adapter.capturedBodies, hasLength(1));
+    });
     testWidgets('reuses the already-refreshed token when a second 401 arrives late, with one refresh', (tester) async {
       final adapter = _SequentialAdapter([
         _fail401, // A: old token → 401

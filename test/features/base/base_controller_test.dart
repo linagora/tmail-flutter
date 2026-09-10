@@ -5,6 +5,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -14,7 +15,9 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -37,10 +40,18 @@ class MockBaseController extends BaseController {
 
   bool isUrgentExceptionEnable = false;
   bool isErrorViewStateEnable = false;
+  int logoutCalls = 0;
 
   void resetState() {
      isUrgentExceptionEnable = false;
      isErrorViewStateEnable = false;
+     logoutCalls = 0;
+  }
+
+  // Records the forced logout instead of clearing storage and routing.
+  @override
+  Future<void> clearDataAndGoToLoginPage() async {
+    logoutCalls++;
   }
 
   @override
@@ -77,6 +88,7 @@ class SomeOtherException extends RemoteException {
   MockSpec<Uuid>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
+  MockSpec<BeforeReconnectManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -95,6 +107,7 @@ void main() {
   late MockUuid mockUuid;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
+  late MockBeforeReconnectManager mockBeforeReconnectManager;
 
   setUpAll(() {
     mockCachingManager = MockCachingManager();
@@ -110,6 +123,7 @@ void main() {
     mockUuid = MockUuid();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
+    mockBeforeReconnectManager = MockBeforeReconnectManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -128,6 +142,7 @@ void main() {
     Get.put<Uuid>(mockUuid);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
+    Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
     Get.testMode = true;
 
     mockBaseController = MockBaseController();
@@ -144,6 +159,10 @@ void main() {
 
     test('should return true when exception is ConnectionError', () {
       expect(mockBaseController.validateUrgentException(const ConnectionError()), isTrue);
+    });
+
+    test('should return true when exception is RefreshTokenFailedException', () {
+      expect(mockBaseController.validateUrgentException(RefreshTokenFailedException()), isTrue);
     });
 
     test('should return false when exception is SomeOtherException', () {
@@ -204,6 +223,20 @@ void main() {
       expect(mockBaseController.isErrorViewStateEnable, false);
     });
 
+    test('handleUrgentException should called when error is RefreshTokenFailedException', () {
+      // arrange
+      final error = RefreshTokenFailedException();
+      final stackTrace = StackTrace.current;
+
+      // act
+      mockBaseController.resetState();
+      mockBaseController.onError(error, stackTrace);
+
+      // assert
+      expect(mockBaseController.isUrgentExceptionEnable, true);
+      expect(mockBaseController.isErrorViewStateEnable, false);
+    });
+
     test('handleErrorViewState should called when error is SomeOtherException', () {
       // arrange
       const error = SomeOtherException();
@@ -216,6 +249,59 @@ void main() {
       // assert
       expect(mockBaseController.isErrorViewStateEnable, true);
       expect(mockBaseController.isUrgentExceptionEnable, false);
+    });
+  });
+
+  // Forced logout after a rejected OIDC refresh — the path every
+  // RefreshTokenFailedException ends in, whether it came from the JMAP
+  // interceptor or from a Drive token refresh.
+  group('BaseController::handleRefreshTokenFailedException', () {
+    setUp(() {
+      mockBaseController.resetState();
+      clearInteractions(mockTwakeAppManager);
+      clearInteractions(mockBeforeReconnectManager);
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    });
+
+    test(
+      'web with a composer open: saves via before-reconnect listeners, '
+      'suppresses the browser prompt, then logs out',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        when(mockTwakeAppManager.hasComposer).thenReturn(true);
+
+        mockBaseController.handleUrgentException(exception: RefreshTokenFailedException());
+        await pumpEventQueue();
+
+        verifyInOrder([
+          mockTwakeAppManager.setExecutingBeforeReconnect(true),
+          mockBeforeReconnectManager.executeBeforeReconnectListeners(),
+        ]);
+        expect(mockBaseController.logoutCalls, 1);
+      },
+    );
+
+    test('web without a composer: logs out directly, no before-reconnect', () async {
+      PlatformInfo.isTestingForWeb = true;
+      when(mockTwakeAppManager.hasComposer).thenReturn(false);
+
+      mockBaseController.handleUrgentException(exception: RefreshTokenFailedException());
+      await pumpEventQueue();
+
+      verifyNever(mockTwakeAppManager.setExecutingBeforeReconnect(any));
+      verifyNever(mockBeforeReconnectManager.executeBeforeReconnectListeners());
+      expect(mockBaseController.logoutCalls, 1);
+    });
+
+    test('mobile with a composer open: logs out directly, no before-reconnect', () async {
+      when(mockTwakeAppManager.hasComposer).thenReturn(true);
+
+      mockBaseController.handleUrgentException(exception: RefreshTokenFailedException());
+      await pumpEventQueue();
+
+      verifyNever(mockTwakeAppManager.setExecutingBeforeReconnect(any));
+      verifyNever(mockBeforeReconnectManager.executeBeforeReconnectListeners());
+      expect(mockBaseController.logoutCalls, 1);
     });
   });
 
