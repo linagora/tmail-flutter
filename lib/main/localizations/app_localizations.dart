@@ -5624,6 +5624,27 @@ class AppLocalizations {
     );
   }
 
+  String get errorReporting {
+    return Intl.message(
+      'Error reporting',
+      name: 'errorReporting',
+    );
+  }
+
+  String get errorReportingSettingExplanation {
+    return Intl.message(
+      'Send crash and error reports so the support team can diagnose problems you run into. Your emails, their content and their recipients are never included.',
+      name: 'errorReportingSettingExplanation',
+    );
+  }
+
+  String get errorReportingToggleDescription {
+    return Intl.message(
+      'Send error reports',
+      name: 'errorReportingToggleDescription',
+    );
+  }
+
   String get driveAttachmentAddedSuccessfully {
     return Intl.message(
       'Files attached from Drive.',

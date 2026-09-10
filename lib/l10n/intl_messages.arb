@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-08-24T15:11:50.161826",
+  "@@last_modified": "2026-09-10T15:06:11.757374",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5292,6 +5292,24 @@
   },
   "driveAttachmentToggleDescription": "Enable Drive attachment button",
   "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReporting": "Error reporting",
+  "@errorReporting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingSettingExplanation": "Send crash and error reports so the support team can diagnose problems you run into. Your emails, their content and their recipients are never included.",
+  "@errorReportingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingToggleDescription": "Send error reports",
+  "@errorReportingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

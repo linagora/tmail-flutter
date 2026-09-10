@@ -7,6 +7,7 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
@@ -28,12 +29,14 @@ class PreferencesController extends BaseController {
   PreferencesController(
     this._getServerSettingInteractor,
     this._getLocalSettingInteractor,
-    this._preferenceOptionRegistry,
-  );
+    this._preferenceOptionRegistry, {
+    SentryEcosystem? sentryEcosystem,
+  }) : _sentryEcosystem = sentryEcosystem;
 
   final GetServerSettingInteractor _getServerSettingInteractor;
   final GetLocalSettingsInteractor _getLocalSettingInteractor;
   final PreferenceOptionRegistry _preferenceOptionRegistry;
+  final SentryEcosystem? _sentryEcosystem;
 
   PreferenceOptionRegistry get registry => _preferenceOptionRegistry;
 
@@ -139,6 +142,12 @@ class PreferencesController extends BaseController {
 
   void _updateSettingOptionValue({required TMailServerSettingOptions? newSettingOption}) {
     settingOption.value = newSettingOption;
+    if (newSettingOption == null) return;
+
+    // Applied only once the server acknowledged the value. A null payload
+    // means the fetch failed, not that the user cleared their choice, so the
+    // consent already in effect must survive it.
+    applySentryReportingConsent(_sentryEcosystem, newSettingOption.sentryUserOptIn);
   }
 
   void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {

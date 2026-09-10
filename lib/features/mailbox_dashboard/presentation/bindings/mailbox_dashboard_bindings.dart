@@ -9,6 +9,7 @@ import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
@@ -119,6 +120,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
@@ -188,6 +190,7 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
   @override
   void dependencies() {
     CleanupBindings().dependencies();
+    _bindSentryEcosystem();
     super.dependencies();
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
@@ -196,6 +199,14 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
     SearchEmailBindings().dependencies();
     QuotasBindings().dependencies();
     ThreadDetailBindings().dependencies();
+  }
+
+  void _bindSentryEcosystem() {
+    if (!PlatformInfo.isMobile) return;
+    Get.put(SentryEcosystem(
+      Get.find<SentryConfigurationCacheManager>(),
+      Get.find<IOSSharingManager>(),
+    ));
   }
 
   @override

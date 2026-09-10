@@ -153,6 +153,13 @@ class FcmMessageController extends PushBaseController {
         return;
       }
 
+      SentryManager.instance
+          .setSentryReportingConsent(sentryConfig.isReportingAllowed);
+      if (!sentryConfig.isReportingAllowed) {
+        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry reporting is not allowed');
+        return;
+      }
+
       await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
 
       try {

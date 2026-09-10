@@ -34,6 +34,10 @@ class SentryConfig {
   // Check if Sentry is available
   final bool isAvailable;
 
+  // Whether this process may send reports. Persisted for background workers
+  // that cannot load the account's server settings before Sentry starts.
+  final bool isReportingAllowed;
+
   // The distribution version of the release.
   // In this project, it represents the Git SHA passed via `--dart-define=SENTRY_DIST`.
   // This must match the `--dist` parameter used when uploading source maps to Sentry.
@@ -61,8 +65,26 @@ class SentryConfig {
     this.isDebug = BuildUtils.isDebugMode,
     this.attachScreenshot = false,
     this.isAvailable = false,
+    this.isReportingAllowed = true,
     this.dist,
   });
+
+  SentryConfig withReportingAllowed(bool allowed) => SentryConfig(
+        dsn: dsn,
+        environment: environment,
+        release: release,
+        tracesSampleRate: tracesSampleRate,
+        profilesSampleRate: profilesSampleRate,
+        sessionSampleRate: sessionSampleRate,
+        onErrorSampleRate: onErrorSampleRate,
+        enableLogs: enableLogs,
+        enableFramesTracking: enableFramesTracking,
+        isDebug: isDebug,
+        attachScreenshot: attachScreenshot,
+        isAvailable: isAvailable,
+        isReportingAllowed: allowed,
+        dist: dist,
+      );
 
   /// Loads configuration from loaded environment variables.
   static Future<SentryConfig?> load() async {
@@ -128,6 +150,7 @@ class SentryConfig {
       'isDebug': isDebug,
       'attachScreenshot': attachScreenshot,
       'isAvailable': isAvailable,
+      'isReportingAllowed': isReportingAllowed,
       'enableFramesTracking': enableFramesTracking,
     };
   }

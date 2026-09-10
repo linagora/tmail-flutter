@@ -19,6 +19,7 @@ class SentryManager {
         // Retrieve config and validate 'isAvailable' and DSN presence
         guard let config = keychainController.retrieveSentryConfig(),
               config.isAvailable,
+              config.isReportingAllowed == true,
               !config.dsn.isEmpty else {
             TwakeLogger.shared.log(message: "Sentry is disabled or config is missing")
             return
@@ -36,7 +37,10 @@ class SentryManager {
             // Maps 'onErrorSampleRate' (Dart) to 'sampleRate' (iOS).
             // tracesSampleRate, profilesSampleRate, sessionSampleRate are intentionally not applied:
             // NSE has no UI and its lifecycle is too short for performance/session tracking.
-            options.sampleRate = NSNumber(value: config.onErrorSampleRate)
+            if let onErrorSampleRate = config.onErrorSampleRate {
+                options.sampleRate = NSNumber(value: onErrorSampleRate)
+            }
+            options.enableAutoSessionTracking = false
             // Disable App Hang tracking: NSE execution is short, this causes false positives.
             options.enableAppHangTracking = false
             // Disable Watchdog tracking: Prevent OOM reports specific to extensions.
