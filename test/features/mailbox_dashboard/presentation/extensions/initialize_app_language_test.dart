@@ -124,6 +124,117 @@ void main() {
     });
 
     testWidgets(
+      'should apply Brazilian Portuguese device language '
+      'when server language is null '
+      'and cached language is null '
+      'and device language is Brazilian Portuguese',
+    (tester) async {
+      // arrange
+      const expectedLocale = Locale('pt', 'BR');
+      final success = GetServerSettingSuccess(TMailServerSettingOptions(
+        language: null,
+      ));
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = expectedLocale;
+
+      // act
+      mailboxDashboardController.initializeAppLanguage(success);
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, expectedLocale);
+    });
+
+    testWidgets(
+      'should normalize Portuguese device language '
+      'to Brazilian Portuguese',
+    (tester) async {
+      // arrange
+      const expectedLocale = Locale('pt', 'BR');
+      final success = GetServerSettingSuccess(TMailServerSettingOptions(
+        language: null,
+      ));
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('pt', 'PT');
+
+      // act
+      mailboxDashboardController.initializeAppLanguage(success);
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, expectedLocale);
+    });
+
+    testWidgets(
+      'getInitialLocale should normalize pt_PT device locale '
+      'to pt_BR when cached locale is null',
+    (tester) async {
+      // arrange
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('pt', 'PT');
+
+      // act
+      final initialLocale = LocalizationService.getInitialLocale();
+
+      // assert
+      expect(initialLocale, const Locale('pt', 'BR'));
+    });
+
+    testWidgets(
+      'changeLocale should normalize pt_PT locale to pt_BR',
+    (tester) async {
+      // act
+      LocalizationService.changeLocale(const Locale('pt', 'PT'));
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, const Locale('pt', 'BR'));
+    });
+
+    testWidgets(
+      'changeLocale should preserve a non-Portuguese locale',
+    (tester) async {
+      // arrange
+      const frenchLocale = Locale('fr', 'CA');
+
+      // act
+      LocalizationService.changeLocale(frenchLocale);
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, frenchLocale);
+    });
+
+    for (final cachedLocale in const [
+      Locale('pt'),
+      Locale('pt', 'PT'),
+    ]) {
+      test(
+        'getInitialLocale should normalize cached '
+        '${cachedLocale.toLanguageTag()} locale to pt_BR',
+      () {
+        // arrange
+        when(languageCacheManager.getStoredLanguage())
+          .thenReturn(cachedLocale);
+
+        // act
+        final initialLocale = LocalizationService.getInitialLocale();
+
+        // assert
+        expect(initialLocale, const Locale('pt', 'BR'));
+      });
+    }
+
+    testWidgets(
       'should apply device language '
       'when server language is not null '
       'and server language is not supported '

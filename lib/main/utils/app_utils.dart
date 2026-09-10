@@ -60,6 +60,8 @@ class AppUtils {
       return const date_format.ItalianDateLocale();
     } else if (currentLanguageCode == LanguageCodeConstants.german) {
       return const date_format.GermanDateLocale();
+    } else if (currentLanguageCode == LanguageCodeConstants.portuguese) {
+      return const date_format.PortugueseDateLocale();
     } else {
       return const date_format.EnglishDateLocale();
     }

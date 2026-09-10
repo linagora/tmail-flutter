@@ -11,6 +11,10 @@ class LocalizationService extends Translations {
 
   static const defaultLocale = Locale(LanguageCodeConstants.english, 'US');
   static const fallbackLocale = Locale(LanguageCodeConstants.english, 'US');
+  static const brazilianPortugueseLocale = Locale(
+    LanguageCodeConstants.portuguese,
+    'BR',
+  );
 
   static final supportedLanguageCodes = [
     LanguageCodeConstants.french,
@@ -20,7 +24,8 @@ class LocalizationService extends Translations {
     LanguageCodeConstants.arabic,
     LanguageCodeConstants.italian,
     LanguageCodeConstants.german,
-    LanguageCodeConstants.mongolian
+    LanguageCodeConstants.mongolian,
+    LanguageCodeConstants.portuguese
   ];
 
   static const List<Locale> supportedLocales = [
@@ -31,21 +36,36 @@ class LocalizationService extends Translations {
     Locale(LanguageCodeConstants.arabic, 'TN'),
     Locale(LanguageCodeConstants.italian, 'IT'),
     Locale(LanguageCodeConstants.german, 'DE'),
-    Locale(LanguageCodeConstants.mongolian, 'MN')
+    Locale(LanguageCodeConstants.mongolian, 'MN'),
+    Locale(LanguageCodeConstants.portuguese, 'BR')
   ];
 
   static void changeLocale(Locale newLocale) {
-    log('LocalizationService::changeLocale(): New locale is $newLocale');
-    Get.updateLocale(newLocale);
+    final normalizedLocale = _normalizeLocale(newLocale);
+    log('LocalizationService::changeLocale(): New locale is $normalizedLocale');
+    Get.updateLocale(normalizedLocale);
+  }
+
+  // Tracks catalog state, not permanent: only pt_BR ships a full catalog
+  // (bare pt and pt_AO/pt_MZ would land on the partial intl_pt.arb, pt_PT
+  // has none), so every Portuguese variant resolves to pt_BR. Drop the
+  // pt case here when a dedicated catalog for it lands.
+  static Locale _normalizeLocale(Locale locale) {
+    if (locale.languageCode == LanguageCodeConstants.portuguese) {
+      return brazilianPortugueseLocale;
+    }
+    return locale;
   }
 
   static Locale getInitialLocale() {
     try {
       final cachedLocale = _getCachedLocale();
-      if (cachedLocale != null) return cachedLocale;
+      if (cachedLocale != null) return _normalizeLocale(cachedLocale);
 
       final deviceLocale = _getDeviceLocale();
-      if (_isSupportedLocale(deviceLocale)) return deviceLocale;
+      if (_isSupportedLocale(deviceLocale)) {
+        return _normalizeLocale(deviceLocale);
+      }
 
       return defaultLocale;
     } catch (e) {
