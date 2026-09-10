@@ -101,6 +101,23 @@ void main() {
       verifyNever(dashboard.handleRefreshTokenFailedException());
     });
 
+    // Journey B, first half: the duplicate-token verdict must survive the hop
+    // into Workplace so the dashboard gets a chance to classify it. The second
+    // half — that classification returning urgent — is asserted in
+    // base_controller_test (validateUrgentException), where the real
+    // BaseController runs instead of a mock.
+    test('rethrows RefreshTokenDuplicatedException untouched so the dashboard can classify it', () async {
+      const duplicated = RefreshTokenDuplicatedException();
+      when(interceptor.requestTokenRefresh()).thenThrow(duplicated);
+
+      await expectLater(
+        readExtension().oidcRefreshTrigger!(),
+        throwsA(same(duplicated)),
+      );
+
+      verifyNever(interceptor.clear());
+    });
+
     test('rethrows a transient failure untouched', () async {
       when(interceptor.requestTokenRefresh()).thenThrow(transientError);
 

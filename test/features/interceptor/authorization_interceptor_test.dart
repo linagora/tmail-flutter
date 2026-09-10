@@ -1804,6 +1804,36 @@ void main() {
         expect(authorizationInterceptors.currentToken, OIDCFixtures.tokenOidcExpiredTime);
       },
     );
+
+    test(
+      'GIVEN a JMAP 401 already cleared the session on a rejected refresh\n'
+      'WHEN a second caller (e.g. Workplace, whose 401 arrived moments later)\n'
+      '    calls requestTokenRefresh on the now-empty session\n'
+      'THEN it fails with RefreshTokenFailedException, not a raw TypeError\n'
+      'SO the Drive failure can be classified urgent and routed to logout.\n'
+      'KNOWN FAILING: clear() nulls _configOIDC, and _invokeRefreshTokenFromServer\n'
+      'dereferences _configOIDC! — the caller currently gets a TypeError, which is\n'
+      'an Error not an Exception, so it falls through to a generic toast.',
+      () async {
+        stubRefreshThrowing(const OAuthAuthorizationError(
+          error: 'invalid_grant',
+          errorDescription: 'The refresh token has been revoked',
+        ));
+
+        // First caller: the JMAP 401 path kills the session.
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenFailedException>()),
+        );
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
+
+        // Second caller races in after the session is already gone.
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenFailedException>()),
+        );
+      },
+    );
   });
 
   // ============================================================

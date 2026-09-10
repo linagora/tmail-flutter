@@ -140,10 +140,14 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   InternalFinalCallback<void> get onDelete => mockControllerCallback();
 
+  // Overridable so a test can reproduce a session torn down mid-logout.
+  AccountId? currentAccountId = AccountFixtures.aliceAccountId;
+  Session? currentSession = SessionFixtures.aliceSession;
+
   @override
-  Rxn<AccountId> get accountId => Rxn(AccountFixtures.aliceAccountId);
+  Rxn<AccountId> get accountId => Rxn(currentAccountId);
   @override
-  Session? get sessionCurrent => SessionFixtures.aliceSession;
+  Session? get sessionCurrent => currentSession;
 
   bool premiumAvailable = false;
 
@@ -1306,6 +1310,52 @@ void main() {
         'When platform is not web',
       () async {
         PlatformInfo.isTestingForWeb = false;
+        composerController?.composerArguments.value = ComposerArguments();
+
+        await composerController?.onBeforeReconnect();
+
+        verifyNever(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        ));
+      });
+
+      // The account/session guard runs on web too. If either is already gone
+      // when the forced logout starts, the draft is not written — logout still
+      // proceeds, so the draft is lost. Locked here so the skip stays a
+      // deliberate choice rather than a silent regression.
+      test(
+        'Should skip the save without throwing\n'
+        'When platform is web but the account is already gone',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        mockMailboxDashBoardController.currentAccountId = null;
+        addTearDown(() => mockMailboxDashBoardController.currentAccountId =
+            AccountFixtures.aliceAccountId);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.composerArguments.value = ComposerArguments();
+
+        await composerController?.onBeforeReconnect();
+
+        verifyNever(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        ));
+      });
+
+      test(
+        'Should skip the save without throwing\n'
+        'When platform is web but the session is already gone',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        mockMailboxDashBoardController.currentSession = null;
+        addTearDown(() => mockMailboxDashBoardController.currentSession =
+            SessionFixtures.aliceSession);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
         composerController?.composerArguments.value = ComposerArguments();
 
         await composerController?.onBeforeReconnect();
