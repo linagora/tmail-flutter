@@ -365,22 +365,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: Perform get New Token',
         webConsoleEnabled: true,
       );
-      final previousToken = _token?.token;
-      final newTokenOidc = await requestTokenRefresh();
-
-      if (newTokenOidc.token == previousToken) {
-        // Refresh returned the SAME token — retrying cannot clear the 401, so it
-        // propagates to logout. Real auth death, but tag it for forensics.
-        _logForcedLogoutFor401(
-          authErrorType: 'forced_logout_401_refreshed_token_duplicated',
-          err: err,
-          hasAttemptedRefresh: true,
-        );
-        return super.onError(err, handler);
-      }
+      await requestTokenRefresh();
 
       requestOptions.extra[_refreshAttemptedKey] = true;
       return await _performRetry(requestOptions, err, handler);
+    } on RefreshTokenDuplicatedException {
+      // Retrying cannot clear the 401, so it propagates to logout; tag it for forensics.
+      _logForcedLogoutFor401(
+        authErrorType: 'forced_logout_401_refreshed_token_duplicated',
+        err: err,
+        hasAttemptedRefresh: true,
+      );
+      return super.onError(err, handler);
     } on DioException catch (refreshError, st) {
       // Web routes ALL refresh failures (Dio or non-Dio) through the single
       // web handler, so the session decision is uniform regardless of how the
@@ -643,6 +639,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final newTokenOidc = _withCurrentIdTokenIfMissing(PlatformInfo.isIOS
         ? await _getNewTokenForIOSPlatform()
         : await _getNewTokenForOtherPlatform());
+    if (newTokenOidc.token == _token?.token) {
+      throw const RefreshTokenDuplicatedException();
+    }
     _updateNewToken(newTokenOidc);
 
     final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);

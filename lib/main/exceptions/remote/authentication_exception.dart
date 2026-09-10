@@ -27,3 +27,11 @@ class RefreshTokenFailedException extends AuthenticationException {
   @override
   String get exceptionName => 'RefreshTokenFailedException';
 }
+
+class RefreshTokenDuplicatedException extends AuthenticationException {
+  const RefreshTokenDuplicatedException()
+      : super(message: 'Refresh returned the current token; retry cannot clear the 401.');
+
+  @override
+  String get exceptionName => 'RefreshTokenDuplicatedException';
+}

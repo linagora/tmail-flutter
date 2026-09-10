@@ -46,9 +46,9 @@ import 'authorization_interceptor_test.mocks.dart';
 void main() {
   late Dio dio;
   late DioAdapter dioAdapter;
-  late AuthenticationClientBase authenticationClient;
-  late TokenOidcCacheManager tokenOidcCacheManager;
-  late AccountCacheManager accountCacheManager;
+  late MockAuthenticationClientBase authenticationClient;
+  late MockTokenOidcCacheManager tokenOidcCacheManager;
+  late MockAccountCacheManager accountCacheManager;
   late IOSSharingManager iosSharingManager;
   late AuthorizationInterceptors authorizationInterceptors;
 
@@ -1641,6 +1641,8 @@ void main() {
         // update _token, so second request can't detect the first's attempt).
         // Key assertion: no infinite loop — each request tries once and stops.
         expect(refreshCallCount, 2);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
       },
     );
   });
@@ -1788,8 +1790,7 @@ void main() {
           authorizationInterceptors.currentOidcIdToken,
           equals(OIDCFixtures.tokenOidcExpiredTime.tokenId.uuid),
         );
-        final persisted = verify((tokenOidcCacheManager as MockTokenOidcCacheManager)
-                .persistOneTokenOidc(captureAny))
+        final persisted = verify(tokenOidcCacheManager.persistOneTokenOidc(captureAny))
             .captured.single as TokenOIDC;
         expect(persisted.tokenId, equals(OIDCFixtures.tokenOidcExpiredTime.tokenId));
       },
@@ -2069,6 +2070,42 @@ void main() {
         );
 
         expect(refreshCallCount, 1);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
+      },
+    );
+
+    test(
+      'GIVEN a direct requestTokenRefresh caller\n'
+      'WHEN refresh returns the current token\n'
+      'THEN RefreshTokenDuplicatedException is thrown before anything is persisted\n'
+      'AND the next call refreshes again (in-flight slot released)',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcNotExpiredYet,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.tokenOidcNotExpiredYet);
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenDuplicatedException>()),
+        );
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenDuplicatedException>()),
+        );
+
+        verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(2);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
       },
     );
   });
