@@ -1,33 +1,37 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/widgets/storage_progress_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/widgets/upgrade_storage_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
-class StorageView extends ConsumerWidget with AppLoaderMixin {
+class StorageView extends StatelessWidget with AppLoaderMixin {
   const StorageView({Key? key}) : super(key: key);
 
-  StorageController get controller => Get.find<StorageController>();
+  ImagePaths get imagePaths => Get.find<ImagePaths>();
+
+  ManageAccountDashBoardController get dashBoardController =>
+      Get.find<ManageAccountDashBoardController>();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final viewContext = _StorageViewContext(
       context: context,
-      responsiveUtils: controller.responsiveUtils,
-      ref: ref,
+      responsiveUtils: Get.find<ResponsiveUtils>(),
     );
 
     return SettingDetailViewBuilder(
@@ -87,7 +91,7 @@ class StorageView extends ConsumerWidget with AppLoaderMixin {
 
   Widget _buildStorageContent(_StorageViewContext viewContext) {
     return Obx(() {
-      final octetsQuota = controller.dashBoardController.octetsQuota.value;
+      final octetsQuota = dashBoardController.octetsQuota.value;
       if (octetsQuota == null || !octetsQuota.storageAvailable) {
         return const SizedBox.shrink();
       }
@@ -103,49 +107,57 @@ class StorageView extends ConsumerWidget with AppLoaderMixin {
     required Quota octetsQuota,
     required _StorageViewContext viewContext,
   }) {
-    final upgradeStorageWidget = _buildUpgradeStorageWidget(
-      octetsQuota: octetsQuota,
-      viewContext: viewContext,
-    );
-    final children = <Widget>[
-      StorageProgressBarWidget(
-        imagePaths: controller.imagePaths,
-        quota: octetsQuota,
-        isMobile: viewContext.isMobile,
-      ),
-      if (upgradeStorageWidget != null) upgradeStorageWidget,
-    ];
+    final premiumContext =
+        dashBoardController.currentPremiumCtaContext;
+    return Consumer(
+      builder: (context, ref, _) {
+        final premiumState = ref.watchWebPremiumCta(premiumContext);
+        final upgradeStorageWidget = _buildUpgradeStorageWidget(
+          octetsQuota: octetsQuota,
+          viewContext: viewContext,
+          premiumState: premiumState,
+          ref: ref,
+        );
+        final children = <Widget>[
+          StorageProgressBarWidget(
+            imagePaths: imagePaths,
+            quota: octetsQuota,
+            isMobile: viewContext.isMobile,
+          ),
+          if (upgradeStorageWidget != null) upgradeStorageWidget,
+        ];
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: _getPadding(viewContext),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: children,
-        ),
-      ),
+        return SingleChildScrollView(
+          child: Padding(
+            padding: _getPadding(viewContext),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: children,
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget? _buildUpgradeStorageWidget({
     required Quota octetsQuota,
     required _StorageViewContext viewContext,
+    required PremiumCtaState premiumState,
+    required WidgetRef ref,
   }) {
-    final isPremiumAvailable = PlatformInfo.isWeb &&
-        !controller.isUpgradeStorageDisabled(
-          workplaceFqdn: viewContext.workplaceFqdn,
-        );
+    final isPremiumAvailable = premiumState is PremiumCtaAvailable;
     final isQuotaExceeds90Percent = octetsQuota.allowedDisplayToQuotaBanner;
     if (!isPremiumAvailable && !isQuotaExceeds90Percent) return null;
 
     return UpgradeStorageWidget(
-      imagePaths: controller.imagePaths,
+      imagePaths: imagePaths,
       isMobile: viewContext.isMobile,
       isPremiumAvailable: isPremiumAvailable,
       isQuotaExceeds90Percent: isQuotaExceeds90Percent,
-      onUpgradeStorageAction: () => controller.onUpgradeStorage(
-        workplaceFqdn: viewContext.workplaceFqdn,
+      onUpgradeStorageAction: () => ref.openPremiumCta(
+        dashBoardController.currentPremiumCtaContext,
       ),
     );
   }
@@ -167,16 +179,11 @@ class _StorageViewContext {
   final bool isMobile;
   final bool isDesktop;
   final bool isWebDesktop;
-  final String? workplaceFqdn;
 
   _StorageViewContext({
     required this.context,
     required this.responsiveUtils,
-    required WidgetRef ref,
   }) : isMobile = responsiveUtils.isMobile(context),
        isDesktop = responsiveUtils.isDesktop(context),
-       isWebDesktop = responsiveUtils.isWebDesktop(context),
-       workplaceFqdn = PlatformInfo.isWeb
-           ? ref.watch(workplaceFqdnProvider)
-           : null;
+       isWebDesktop = responsiveUtils.isWebDesktop(context);
 }

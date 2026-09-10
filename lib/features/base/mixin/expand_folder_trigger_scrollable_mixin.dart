@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin ExpandFolderTriggerScrollableMixin {
@@ -55,15 +55,12 @@ mixin ExpandFolderTriggerScrollableMixin {
       final dashboardController = getBinding<MailboxDashBoardController>();
       final quota = dashboardController?.octetsQuota.value;
       final isQuotaViewDisplayed = quota?.storageAvailable ?? false;
-      final workplaceFqdn = PlatformInfo.isWeb
-          ? ProviderScope.containerOf(context, listen: false)
-              .read(workplaceFqdnProvider)
-          : null;
       final isIncreaseSpaceButtonDisplayed = PlatformInfo.isWeb &&
           isQuotaViewDisplayed &&
-          (dashboardController?.validateIncreaseSpaceIsAvailable(
-            workplaceFqdn: workplaceFqdn,
-          ) ?? false);
+          ProviderScope.containerOf(context, listen: false)
+              .isPremiumCtaAvailable(
+            dashboardController?.currentPremiumCtaContext,
+          );
 
       if (isIncreaseSpaceButtonDisplayed) return 260;
       if (isQuotaViewDisplayed) return 200;

@@ -6,14 +6,12 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_bindings.dart';
 
 class ManageAccountDashBoardBindings extends Bindings {
 
   @override
   void dependencies() {
     SettingInteractorBindings().dependencies();
-    PaywallBindings().dependencies();
     // Ensure [LocalSettingsService] is available when the user navigates
     // directly to the settings route (e.g. web page reload), bypassing
     // [MailboxDashBoardBindings] which also registers it during a normal session.

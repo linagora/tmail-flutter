@@ -1,5 +1,5 @@
-import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -12,6 +12,7 @@ import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -68,7 +69,6 @@ import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -77,7 +77,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/a
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
@@ -96,7 +97,7 @@ import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/capturing_log_handler.dart';
-import '../../../fixtures/recording_paywall_controller.dart';
+import '../../../fixtures/recording_paywall_launcher.dart';
 import '../../../fixtures/session_fixtures.dart';
 import '../../../fixtures/widget_fixtures.dart';
 import '../../../mocks/mock_web_view_platform.dart';
@@ -138,6 +139,10 @@ class MockLabelController extends Mock implements LabelController {
 
 class MockMailboxDashBoardController extends Mock implements MailboxDashBoardController {
   @override
+  final DynamicUrlInterceptors dynamicUrlInterceptors =
+      DynamicUrlInterceptors()..setJmapUrl('https://jmap.domain.tld');
+
+  @override
   InternalFinalCallback<void> get onStart => mockControllerCallback();
   @override
   InternalFinalCallback<void> get onDelete => mockControllerCallback();
@@ -146,22 +151,6 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   Rxn<AccountId> get accountId => Rxn(AccountFixtures.aliceAccountId);
   @override
   Session? get sessionCurrent => SessionFixtures.aliceSession;
-
-  bool premiumAvailable = false;
-  LinagoraEcosystem? cachedEcosystem;
-  PaywallController? paywallControllerValue;
-
-  @override
-  bool isPremiumAvailable({Session? session, AccountId? accountId}) => premiumAvailable;
-
-  @override
-  bool isAlreadyHighestSubscription({Session? session, AccountId? accountId}) => false;
-
-  @override
-  LinagoraEcosystem? get cachedLinagoraEcosystem => cachedEcosystem;
-
-  @override
-  PaywallController? get paywallController => paywallControllerValue;
 
   @override
   RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
@@ -225,27 +214,17 @@ typedef _OverQuotaDraftDependencies = ({
   MockUploadController uploadController,
   MockComposerRepository composerRepository,
   MockCreateNewAndSaveEmailToDraftsInteractor saveDraftInteractor,
-  MockMailboxDashBoardController dashboardController,
   String emailContent,
   Attachment attachment,
 });
 
-RecordingPaywallController _arrangeOverQuotaDraftScenario(
+RecordingPaywallLauncher _arrangeOverQuotaDraftScenario(
   _OverQuotaDraftDependencies dependencies,
-  _OverQuotaPremiumTestCase testCase,
 ) {
   PlatformInfo.isTestingForWeb = true;
   addTearDown(() => PlatformInfo.isTestingForWeb = false);
   InAppWebViewPlatform.instance = MockWebViewPlatform();
-  dependencies.dashboardController.premiumAvailable = true;
-  final paywallController = RecordingPaywallController();
-  dependencies.dashboardController.paywallControllerValue = paywallController;
-  if (testCase.paywallTemplate != null) {
-    dependencies.dashboardController.cachedEcosystem =
-        LinagoraEcosystem.deserialize({
-      'paywallUrlTemplate': testCase.paywallTemplate,
-    });
-  }
+  final paywallLauncher = RecordingPaywallLauncher();
   when(dependencies.uploadController.uploadInlineViewState).thenReturn(
     Rx(Right(UIState.idle)));
   when(dependencies.uploadController.listUploadAttachments).thenReturn(
@@ -264,12 +243,14 @@ RecordingPaywallController _arrangeOverQuotaDraftScenario(
       Id('draft'): SetError(SetError.overQuota),
     }))),
   ));
-  return paywallController;
+  return paywallLauncher;
 }
 
 Future<AppLocalizations> _pumpOverQuotaDraftFailure(
   WidgetTester tester,
   _OverQuotaDraftDependencies dependencies,
+  _OverQuotaPremiumTestCase testCase,
+  RecordingPaywallLauncher paywallLauncher,
 ) async {
   Get.put(dependencies.controller);
   dependencies.controller.richTextWebController =
@@ -277,8 +258,21 @@ Future<AppLocalizations> _pumpOverQuotaDraftFailure(
   dependencies.controller.setTextEditorWeb(dependencies.emailContent);
   dependencies.controller.composerArguments.value = ComposerArguments();
 
+  final providerContainer = ProviderContainer(overrides: [
+    paywallLauncherProvider.overrideWithValue(paywallLauncher),
+    premiumCtaProvider.overrideWith((ref, _) {
+      final paywallTemplate = testCase.paywallTemplate;
+      return paywallTemplate == null
+          ? const PremiumCtaUnavailable(
+              PremiumCtaUnavailableReason.paywallNotConfigured,
+            )
+          : PremiumCtaAvailable(Uri.parse(paywallTemplate));
+    }),
+  ]);
+  addTearDown(providerContainer.dispose);
   await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
     child: const Stack(children: [ComposerView()]),
+    providerContainer: providerContainer,
   ));
   await tester.pump();
 
@@ -304,7 +298,7 @@ Future<void> _verifyOverQuotaPremiumAction(
   WidgetTester tester,
   _OverQuotaPremiumTestCase testCase,
   AppLocalizations appLocalizations,
-  RecordingPaywallController paywallController,
+  RecordingPaywallLauncher paywallLauncher,
 ) async {
   expect(
     find.text(appLocalizations.increaseYourSpace),
@@ -321,12 +315,14 @@ Future<void> _verifyOverQuotaPremiumAction(
   await tester.pumpAndSettle();
 
   expect(
-    paywallController.navigateCount,
+    paywallLauncher.launchCount,
     testCase.shouldOfferIncreaseSpace ? 1 : 0,
   );
   expect(
-    paywallController.navigatedEcosystemPattern?.pattern,
-    testCase.paywallTemplate,
+    paywallLauncher.launchedDestination,
+    testCase.paywallTemplate == null
+        ? null
+        : Uri.parse(testCase.paywallTemplate!),
   );
 }
 
@@ -456,9 +452,6 @@ void main() {
     // Mock Getx controllers
     // Reset the shared drag state so it does not leak between tests.
     mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
-    mockMailboxDashBoardController.premiumAvailable = false;
-    mockMailboxDashBoardController.cachedEcosystem = null;
-    mockMailboxDashBoardController.paywallControllerValue = null;
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
@@ -799,23 +792,23 @@ void main() {
                 composerRepository: mockComposerRepository,
                 saveDraftInteractor:
                     mockCreateNewAndSaveEmailToDraftsInteractor,
-                dashboardController: mockMailboxDashBoardController,
                 emailContent: emailContent,
                 attachment: attachment,
               );
-              final paywallController = _arrangeOverQuotaDraftScenario(
+              final paywallLauncher = _arrangeOverQuotaDraftScenario(
                 dependencies,
-                testCase,
               );
               final appLocalizations = await _pumpOverQuotaDraftFailure(
                 tester,
                 dependencies,
+                testCase,
+                paywallLauncher,
               );
               await _verifyOverQuotaPremiumAction(
                 tester,
                 testCase,
                 appLocalizations,
-                paywallController,
+                paywallLauncher,
               );
             });
           });

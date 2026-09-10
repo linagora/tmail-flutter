@@ -1,41 +1,54 @@
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_banner_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
-class QuotasBannerWidget extends ConsumerWidget {
+class QuotasBannerWidget extends StatelessWidget {
 
   final QuotasController _quotasController = Get.find<QuotasController>();
 
   QuotasBannerWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final workplaceFqdn = PlatformInfo.isWeb
-        ? ref.watch(workplaceFqdnProvider)
-        : null;
+  Widget build(BuildContext context) {
+    // Every observable the banner depends on must be read here: Obx only
+    // tracks reads made synchronously inside its own builder, so a read from
+    // the Consumer builder below would never trigger a rebuild.
+    return Obx(() {
+      final dashboardController = _quotasController.mailboxDashBoardController;
+      final octetQuota = dashboardController.octetsQuota.value;
+      if (octetQuota == null || !_shouldDisplayBanner(octetQuota)) {
+        return const SizedBox.shrink();
+      }
 
-    return Obx(() => _buildBanner(context, workplaceFqdn));
+      final premiumContext = dashboardController.currentPremiumCtaContext;
+      return Consumer(
+        builder: (context, ref, _) => _buildBanner(
+          context,
+          octetQuota,
+          ref.watchWebPremiumCta(premiumContext),
+          ref,
+        ),
+      );
+    });
   }
 
-  Widget _buildBanner(BuildContext context, String? workplaceFqdn) {
-    final octetQuota = _quotasController
-        .mailboxDashBoardController
-        .octetsQuota
-        .value;
-
-    if (octetQuota == null) return const SizedBox.shrink();
-    if (!_shouldDisplayBanner(octetQuota)) return const SizedBox.shrink();
-
+  Widget _buildBanner(
+    BuildContext context,
+    Quota octetQuota,
+    PremiumCtaState premiumState,
+    WidgetRef ref,
+  ) {
     return Container(
       decoration: const BoxDecoration(
         color: QuotasBannerStyles.backgroundColor,
@@ -49,7 +62,12 @@ class QuotasBannerWidget extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          _buildBannerContent(context, octetQuota, workplaceFqdn),
+          _buildBannerContent(
+            context,
+            octetQuota,
+            premiumState,
+            ref,
+          ),
           DefaultCloseButtonWidget(
             iconClose: _quotasController.imagePaths.icCloseDialog,
             onTapActionCallback: _quotasController.closeBanner,
@@ -67,7 +85,8 @@ class QuotasBannerWidget extends ConsumerWidget {
   Widget _buildBannerContent(
     BuildContext context,
     Quota octetQuota,
-    String? workplaceFqdn,
+    PremiumCtaState premiumState,
+    WidgetRef ref,
   ) {
     return Padding(
       padding: QuotasBannerStyles.bannerPadding,
@@ -80,7 +99,12 @@ class QuotasBannerWidget extends ConsumerWidget {
             fit: BoxFit.fill,
           ),
           const SizedBox(width: QuotasBannerStyles.iconPadding),
-          _buildQuotaDetails(context, octetQuota, workplaceFqdn),
+          _buildQuotaDetails(
+            context,
+            octetQuota,
+            premiumState,
+            ref,
+          ),
         ],
       ),
     );
@@ -89,7 +113,8 @@ class QuotasBannerWidget extends ConsumerWidget {
   Widget _buildQuotaDetails(
     BuildContext context,
     Quota octetQuota,
-    String? workplaceFqdn,
+    PremiumCtaState premiumState,
+    WidgetRef ref,
   ) {
     return Expanded(
       child: Column(
@@ -100,21 +125,24 @@ class QuotasBannerWidget extends ConsumerWidget {
             style: QuotasBannerStyles.titleTextStyle,
           ),
           const SizedBox(height: 8),
-          _buildSubtitle(context, workplaceFqdn),
+          _buildSubtitle(
+            context,
+            premiumState,
+            ref,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSubtitle(BuildContext context, String? workplaceFqdn) {
+  Widget _buildSubtitle(
+    BuildContext context,
+    PremiumCtaState premiumState,
+    WidgetRef ref,
+  ) {
     final appLocalizations = AppLocalizations.of(context);
 
-    if (!PlatformInfo.isWeb) {
-      return _buildSubtitleWithoutPremium(appLocalizations);
-    }
-    if (_quotasController.isManageMyStorageDisabled(
-      workplaceFqdn: workplaceFqdn,
-    )) {
+    if (premiumState is! PremiumCtaAvailable) {
       return _buildSubtitleWithoutPremium(appLocalizations);
     }
 
@@ -130,8 +158,10 @@ class QuotasBannerWidget extends ConsumerWidget {
           backgroundColor: QuotasBannerStyles.backgroundColor,
           textStyle: QuotasBannerStyles.manageStorageButtonTextStyle,
           padding: EdgeInsets.zero,
-          onTapActionCallback: () => _quotasController.handleManageMyStorage(
-            workplaceFqdn: workplaceFqdn,
+          onTapActionCallback: () => ref.openPremiumCta(
+            _quotasController
+                .mailboxDashBoardController
+                .currentPremiumCtaContext,
           ),
         ),
       ],

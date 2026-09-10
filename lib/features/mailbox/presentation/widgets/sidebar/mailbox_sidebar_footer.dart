@@ -1,57 +1,71 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MailboxSidebarFooter extends GetWidget<QuotasController> {
+class MailboxSidebarFooter extends StatelessWidget {
 
   final bool isDesktop;
   final bool showIncreaseSpaceButton;
-  final String? workplaceFqdn;
 
   const MailboxSidebarFooter({
     super.key,
     this.isDesktop = false,
     this.showIncreaseSpaceButton = false,
-    this.workplaceFqdn,
   });
+
+  QuotasController get controller => Get.find<QuotasController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final dashboardController = controller.mailboxDashBoardController;
       final octetQuota = dashboardController.octetsQuota.value;
+      final premiumContext = dashboardController.currentPremiumCtaContext;
 
-      return LinagoraSidebarFooter(
-        children: [
-          if (octetQuota?.isStorageUsageIndicatorAppear == true)
-            _buildStorage(context, octetQuota!),
-          if (_isIncreaseSpaceDisplayed(dashboardController))
-            LinagoraSidebarUpsellButton(
-              label: AppLocalizations.of(context).increaseYourSpace,
-              semanticLabel: AppLocalizations.of(context).increaseYourSpace,
-              iconWidget: SvgPicture.asset(
-                controller.imagePaths.icPremium,
-                fit: BoxFit.contain,
+      return Consumer(
+        builder: (context, ref, _) {
+          final premiumState = ref.watchWebPremiumCta(premiumContext);
+          return LinagoraSidebarFooter(
+            children: [
+              if (octetQuota?.isStorageUsageIndicatorAppear == true)
+                _buildStorage(context, octetQuota!),
+              if (_isIncreaseSpaceDisplayed(
+                dashboardController,
+                premiumState,
+              ))
+                LinagoraSidebarUpsellButton(
+                  label: AppLocalizations.of(context).increaseYourSpace,
+                  semanticLabel: AppLocalizations.of(context).increaseYourSpace,
+                  iconWidget: SvgPicture.asset(
+                    controller.imagePaths.icPremium,
+                    fit: BoxFit.contain,
+                  ),
+                  expanded: !isDesktop,
+                  onPressed: () => _handleIncreaseSpacePressed(
+                    dashboardController,
+                    ref,
+                  ),
+                ),
+              ApplicationVersionWidget(
+                title: '${AppLocalizations.of(context).version.toLowerCase()} ',
+                builder: (context, version) => LinagoraSidebarVersion(text: version),
               ),
-              expanded: !isDesktop,
-              onPressed: () =>
-                  _handleIncreaseSpacePressed(dashboardController),
-            ),
-          ApplicationVersionWidget(
-            title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-            builder: (context, version) => LinagoraSidebarVersion(text: version),
-          ),
-        ],
+            ],
+          );
+        },
       );
     });
   }
@@ -108,26 +122,20 @@ class MailboxSidebarFooter extends GetWidget<QuotasController> {
 
   bool _isIncreaseSpaceDisplayed(
     MailboxDashBoardController dashboardController,
+    PremiumCtaState premiumState,
   ) {
     if (!showIncreaseSpaceButton) return false;
     if (dashboardController.octetsQuota.value?.storageAvailable != true) {
       return false;
     }
 
-    return dashboardController.validateIncreaseSpaceIsAvailable(
-      workplaceFqdn: workplaceFqdn,
-    );
+    return premiumState is PremiumCtaAvailable;
   }
 
   void _handleIncreaseSpacePressed(
     MailboxDashBoardController dashboardController,
+    WidgetRef ref,
   ) {
-    if (!_isIncreaseSpaceDisplayed(dashboardController)) return;
-
-    dashboardController.paywallController?.navigateToPaywall(
-      workplaceFqdn: workplaceFqdn,
-      ecosystemPaywallUrlPattern:
-          dashboardController.cachedEcosystemPaywallUrlPattern,
-    );
+    ref.openPremiumCta(dashboardController.currentPremiumCtaContext);
   }
 }

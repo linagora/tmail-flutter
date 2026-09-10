@@ -1,5 +1,6 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/button/default_close_button_widget.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -109,7 +110,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
@@ -147,7 +149,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
-import '../../../../fixtures/recording_paywall_controller.dart';
+import '../../../../fixtures/recording_paywall_launcher.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../../fixtures/widget_fixtures.dart';
 import 'mailbox_dashboard_view_widget_test.mocks.dart';
@@ -157,6 +159,19 @@ const fallbackGenerators = {
   #onStart: mockControllerCallback,
   #onDelete: mockControllerCallback,
 };
+
+class _TestEcosystemNotifier extends Notifier<LinagoraEcosystem?> {
+  final LinagoraEcosystem? Function() _initialValue;
+
+  _TestEcosystemNotifier(this._initialValue);
+
+  @override
+  LinagoraEcosystem? build() => _initialValue();
+
+  void setEcosystem(LinagoraEcosystem? ecosystem) {
+    state = ecosystem;
+  }
+}
 
 @GenerateNiceMocks([
   MockSpec<MoveToMailboxInteractor>(),
@@ -332,9 +347,29 @@ void main() {
   late MailboxController mailboxController;
   late ThreadController threadController;
   late QuotasController quotasController;
+  LinagoraEcosystem? initialTestEcosystem;
+  ProviderContainer? currentTestProviderContainer;
+  var testPaywallLauncher = RecordingPaywallLauncher();
+  late final NotifierProvider<_TestEcosystemNotifier, LinagoraEcosystem?>
+      testEcosystemProvider;
+
+  testEcosystemProvider = NotifierProvider(
+    () => _TestEcosystemNotifier(() => initialTestEcosystem),
+  );
 
   Widget makeTestableWidget({required Widget child}) {
     return ProviderScope(
+      overrides: [
+        paywallLauncherProvider.overrideWithValue(testPaywallLauncher),
+        activeEcosystemProvider.overrideWith((ref, _) {
+          final ecosystem = ref.watch(testEcosystemProvider);
+          return ecosystem == null
+              ? const EcosystemUnavailable(
+                  EcosystemUnavailableReason.loadFailed,
+                )
+              : EcosystemAvailable(ecosystem);
+        }),
+      ],
       child: GetMaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
@@ -392,9 +427,7 @@ void main() {
     mailboxDashboardController.sessionCurrent = createPremiumSession();
     mailboxDashboardController.accountId.value =
         AccountFixtures.aliceAccountId;
-    mailboxDashboardController.paywallController = PaywallController(
-      ownEmailAddress: 'alice@domain.tld',
-    );
+    mailboxDashboardController.ownEmailAddress.value = 'alice@domain.tld';
     mailboxDashboardController.octetsQuota.value = _storageQuota(
       used: 1,
       hardLimit: 100,
@@ -403,9 +436,12 @@ void main() {
   }
 
   void cachePaywallUrlTemplate(String? template) {
-    mailboxDashboardController.cachedLinagoraEcosystem = template == null
+    initialTestEcosystem = template == null
         ? null
         : LinagoraEcosystem.deserialize({'paywallUrlTemplate': template});
+    currentTestProviderContainer
+        ?.read(testEcosystemProvider.notifier)
+        .setEcosystem(initialTestEcosystem);
   }
 
   Future<ProviderContainer> pumpWebMailbox(WidgetTester tester) async {
@@ -417,7 +453,7 @@ void main() {
     addTearDown(() => WidgetFixtures.resetResponsive(tester));
     await WidgetFixtures.pumpResponsiveWidget(
       tester,
-      WidgetFixtures.makeTestableWidget(child: MailboxView()),
+      makeTestableWidget(child: MailboxView()),
       logicalSize: const Size(1920, 1080),
       platform: TargetPlatform.macOS,
     );
@@ -425,18 +461,14 @@ void main() {
     final providerContainer = ProviderScope.containerOf(
       tester.element(find.byType(MailboxView)),
     );
-    addTearDown(() => providerContainer
-        .read(workplaceFqdnProvider.notifier)
-        .setFqdn(null));
+    currentTestProviderContainer = providerContainer;
     providerContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
     await tester.pump();
     return providerContainer;
   }
 
   group('MailboxDashboardView', () {
-    setUp(() {
-      Get.testMode = true;
-
+    void registerMockDependencies() {
       Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
       Get.put<EmailReceiveManager>(emailReceiveManager);
       Get.put<DownloadController>(downloadController);
@@ -485,7 +517,9 @@ void main() {
         getAllRecentSearchLatestInteractor
       );
       Get.put(searchController);
+    }
 
+    void createDashboardController() {
       mailboxDashboardController = MailboxDashBoardController(
         moveToMailboxInteractor,
         deleteEmailPermanentlyInteractor,
@@ -518,7 +552,9 @@ void main() {
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
+    }
 
+    void createScreenControllers() {
       mailboxController = MailboxController(
         createNewMailboxInteractor,
         deleteMultipleMailboxInteractor,
@@ -550,6 +586,17 @@ void main() {
 
       quotasController = QuotasController(getQuotasInteractor);
       Get.put(quotasController);
+    }
+
+    setUp(() {
+      Get.testMode = true;
+      initialTestEcosystem = null;
+      currentTestProviderContainer = null;
+      testPaywallLauncher = RecordingPaywallLauncher();
+
+      registerMockDependencies();
+      createDashboardController();
+      createScreenControllers();
 
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
@@ -605,9 +652,11 @@ void main() {
           makeTestableWidget(child: QuotasBannerWidget()),
         );
         await tester.pump();
-        return ProviderScope.containerOf(
+        final providerContainer = ProviderScope.containerOf(
           tester.element(find.byType(QuotasBannerWidget)),
         );
+        currentTestProviderContainer = providerContainer;
+        return providerContainer;
       }
 
       String manageMyStorageLabel(WidgetTester tester) {
@@ -622,6 +671,21 @@ void main() {
         arrangeQuotaBanner();
         await pumpQuotaBanner(tester);
 
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+      });
+
+      testWidgets('hides the banner as soon as it is dismissed',
+          (tester) async {
+        arrangeQuotaBanner();
+        cachePaywallUrlTemplate('https://domain.tld/premium');
+        await pumpQuotaBanner(tester);
+
+        expect(find.byType(DefaultCloseButtonWidget), findsOneWidget);
+
+        await tester.tap(find.byType(DefaultCloseButtonWidget));
+        await tester.pump();
+
+        expect(find.byType(DefaultCloseButtonWidget), findsNothing);
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
       });
 
@@ -655,8 +719,8 @@ void main() {
       testWidgets('uses the visible ecosystem paywall and rechecks on click',
           (tester) async {
         arrangeQuotaBanner();
-        final paywallController = RecordingPaywallController();
-        mailboxDashboardController.paywallController = paywallController;
+        final paywallLauncher = RecordingPaywallLauncher();
+        testPaywallLauncher = paywallLauncher;
         await pumpQuotaBanner(tester);
 
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
@@ -669,20 +733,41 @@ void main() {
         await tester.tap(find.text(manageMyStorageLabel(tester)));
         await tester.pump();
 
-        expect(paywallController.navigateCount, 1);
+        expect(paywallLauncher.launchCount, 1);
         expect(
-          paywallController.navigatedEcosystemPattern?.pattern,
-          'https://domain.tld/premium',
+          paywallLauncher.launchedDestination,
+          Uri.parse('https://domain.tld/premium'),
         );
 
         cachePaywallUrlTemplate(null);
+        await tester.tap(find.text(manageMyStorageLabel(tester)));
+
+        expect(paywallLauncher.launchCount, 1);
+
         await tester.pump();
-
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+      });
 
-        quotasController.handleManageMyStorage();
+      testWidgets('re-resolves the destination with the current identity',
+          (tester) async {
+        arrangeQuotaBanner();
+        final paywallLauncher = RecordingPaywallLauncher();
+        testPaywallLauncher = paywallLauncher;
+        cachePaywallUrlTemplate(
+          'https://domain.tld/{localPart}/premium',
+        );
+        await pumpQuotaBanner(tester);
 
-        expect(paywallController.navigateCount, 1);
+        expect(find.text(manageMyStorageLabel(tester)), findsOneWidget);
+
+        mailboxDashboardController.ownEmailAddress.value =
+            'bob@domain.tld';
+        await tester.tap(find.text(manageMyStorageLabel(tester)));
+
+        expect(
+          paywallLauncher.launchedDestination,
+          Uri.parse('https://domain.tld/bob/premium'),
+        );
       });
     });
 
@@ -1550,8 +1635,8 @@ void main() {
         'THEN the stale tap does not navigate',
         (tester) async {
           arrangeIncreaseSpaceAvailable();
-          final paywallController = RecordingPaywallController();
-          mailboxDashboardController.paywallController = paywallController;
+          final paywallLauncher = RecordingPaywallLauncher();
+          testPaywallLauncher = paywallLauncher;
           cachePaywallUrlTemplate('https://domain.tld/premium');
           await pumpWebMailbox(tester);
 
@@ -1560,7 +1645,7 @@ void main() {
           cachePaywallUrlTemplate(null);
           await tester.tap(find.byType(LinagoraSidebarUpsellButton));
 
-          expect(paywallController.navigateCount, 0);
+          expect(paywallLauncher.launchCount, 0);
 
           await tester.pump();
           expect(find.byType(LinagoraSidebarUpsellButton), findsNothing);

@@ -111,14 +111,15 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
@@ -136,7 +137,6 @@ import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
@@ -1174,9 +1174,9 @@ class ComposerController extends BaseController
       exception: failure.exception,
     );
 
-    final workplaceFqdn = _workplaceFqdn(context);
-    final needIncreaseMySpace = _isIncreaseSpaceAvailable(
-          workplaceFqdn: workplaceFqdn,
+    final providerContainer = ProviderScope.containerOf(context, listen: false);
+    final needIncreaseMySpace = providerContainer.isPremiumCtaAvailable(
+          mailboxDashBoardController.currentPremiumCtaContext,
         ) &&
         messageRecord.errorType == SetError.overQuota;
 
@@ -1198,7 +1198,9 @@ class ComposerController extends BaseController
         popBack();
 
         if (needIncreaseMySpace) {
-          _navigateToPaywall(workplaceFqdn: workplaceFqdn);
+          providerContainer.openPremiumCta(
+            mailboxDashBoardController.currentPremiumCtaContext,
+          );
         } else {
           _autoFocusFieldWhenLauncher();
         }
@@ -1485,15 +1487,8 @@ class ComposerController extends BaseController
           context: context,
           failure: resultState,
           shouldOfferCloseComposer: false,
-          onConfirmAction: (needIncreaseMySpace, workplaceFqdn) {
+          onConfirmAction: () {
             _saveToDraftButtonState = ButtonState.enabled;
-            popBack();
-
-            if (needIncreaseMySpace) {
-              _navigateToPaywall(workplaceFqdn: workplaceFqdn);
-            } else {
-              _autoFocusFieldWhenLauncher();
-            }
           },
           onCancelAction: (needIncreaseMySpace) {
             _saveToDraftButtonState = ButtonState.enabled;
@@ -2480,7 +2475,7 @@ class ComposerController extends BaseController
     required BuildContext context,
     required FeatureFailure failure,
     bool shouldOfferCloseComposer = true,
-    Function(bool, String?)? onConfirmAction,
+    VoidCallback? onConfirmAction,
     Function(bool)? onCancelAction,
   }) async {
     final messageRecord = getMessageFailure(
@@ -2489,9 +2484,9 @@ class ComposerController extends BaseController
       isDraft: true,
     );
 
-    final workplaceFqdn = _workplaceFqdn(context);
-    final needIncreaseMySpace = _isIncreaseSpaceAvailable(
-          workplaceFqdn: workplaceFqdn,
+    final providerContainer = ProviderScope.containerOf(context, listen: false);
+    final needIncreaseMySpace = providerContainer.isPremiumCtaAvailable(
+          mailboxDashBoardController.currentPremiumCtaContext,
         ) &&
         messageRecord.errorType == SetError.overQuota;
 
@@ -2510,17 +2505,19 @@ class ComposerController extends BaseController
       outsideDismissible: false,
       autoPerformPopBack: false,
       onConfirmAction: () {
-        if (onConfirmAction != null) {
-          onConfirmAction(needIncreaseMySpace, workplaceFqdn);
-        } else {
+        if (onConfirmAction == null) {
           _closeComposerButtonState = ButtonState.enabled;
-          popBack();
+        } else {
+          onConfirmAction();
+        }
+        popBack();
 
-          if (needIncreaseMySpace) {
-            _navigateToPaywall(workplaceFqdn: workplaceFqdn);
-          } else {
-            _autoFocusFieldWhenLauncher();
-          }
+        if (needIncreaseMySpace) {
+          providerContainer.openPremiumCta(
+            mailboxDashBoardController.currentPremiumCtaContext,
+          );
+        } else {
+          _autoFocusFieldWhenLauncher();
         }
       },
       onCancelAction: () {
@@ -2537,39 +2534,6 @@ class ComposerController extends BaseController
           }
         }
       },
-    );
-  }
-
-  String? _workplaceFqdn(BuildContext context) {
-    if (!PlatformInfo.isWeb) return null;
-    return ProviderScope.containerOf(context, listen: false)
-        .read(workplaceFqdnProvider);
-  }
-
-  bool _isIncreaseSpaceAvailable({String? workplaceFqdn}) {
-    if (mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription()) {
-      return false;
-    }
-    if (!PlatformInfo.isWeb) {
-      return mailboxDashBoardController.validatePremiumIsAvailable();
-    }
-    return mailboxDashBoardController.validateIncreaseSpaceIsAvailable(
-      workplaceFqdn: workplaceFqdn,
-    );
-  }
-
-  void _navigateToPaywall({String? workplaceFqdn}) {
-    if (PlatformInfo.isWeb &&
-        !mailboxDashBoardController.validateIncreaseSpaceIsAvailable(
-          workplaceFqdn: workplaceFqdn,
-        )) {
-      return;
-    }
-    mailboxDashBoardController.paywallController?.navigateToPaywall(
-      workplaceFqdn: workplaceFqdn,
-      ecosystemPaywallUrlPattern: PlatformInfo.isWeb
-          ? mailboxDashBoardController.cachedEcosystemPaywallUrlPattern
-          : null,
     );
   }
 

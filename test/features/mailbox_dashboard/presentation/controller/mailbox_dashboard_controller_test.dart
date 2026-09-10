@@ -10,7 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -21,8 +20,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/oidc/response/oidc_user_info.dart';
-import 'package:model/saas/saas_account_capability.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -46,7 +43,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_mes
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -88,14 +84,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -107,9 +101,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
-import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -345,44 +337,6 @@ void main() {
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
 
-  Session createPremiumSession() {
-    final saasCapability = SaaSAccountCapability(canUpgrade: true);
-    return Session(
-      {SessionExtensions.linagoraSaaSCapability: saasCapability},
-      {
-        testAccountId: Account(
-          AccountName('alice@domain.tld'),
-          true,
-          false,
-          {SessionExtensions.linagoraSaaSCapability: saasCapability},
-        ),
-      },
-      {SessionExtensions.linagoraSaaSCapability: testAccountId},
-      UserName('alice@domain.tld'),
-      google,
-      google,
-      google,
-      google,
-      State('premium-session'),
-    );
-  }
-
-  void cachePaywallUrlTemplate(String template) {
-    mailboxDashboardController.cachedLinagoraEcosystem =
-        LinagoraEcosystem.deserialize({'paywallUrlTemplate': template});
-  }
-
-  void expectEcosystemPaywallAvailability({
-    required String template,
-    required bool isAvailable,
-  }) {
-    cachePaywallUrlTemplate(template);
-    expect(
-      mailboxDashboardController.validateIncreaseSpaceIsAvailable(),
-      isAvailable,
-    );
-  }
-
   Future<void> pumpLocalizedApp(WidgetTester tester) async {
     await tester.pumpWidget(
       const GetMaterialApp(
@@ -478,130 +432,24 @@ void main() {
     );
   });
 
-  group('validate increase space availability', () {
-    setUp(() {
-      mailboxDashboardController.sessionCurrent = createPremiumSession();
-      mailboxDashboardController.accountId.value = testAccountId;
-      mailboxDashboardController.ownEmailAddress.value =
-          'alice@domain.tld';
-      mailboxDashboardController.paywallController = PaywallController(
-        ownEmailAddress: mailboxDashboardController.ownEmailAddress.value,
-      );
-    });
-
-    final ecosystemPaywallCases = [
-      (
-        description: 'should be available when ecosystem paywall is configured',
-        template: 'https://domain.tld/paywall?email={localPart}',
-        isAvailable: true,
-      ),
-      (
-        description: 'should be available for an ecosystem fragment route',
-        template: 'https://domain.tld/#/premium',
-        isAvailable: true,
-      ),
-      (
-        description: 'should reject ecosystem paywall that cannot be qualified',
-        template: 'https://{localPart}/paywall',
-        isAvailable: false,
-      ),
-      (
-        description: 'should not be available when ecosystem paywall is unsafe',
-        template: 'javascript:alert(1)',
-        isAvailable: false,
-      ),
-    ];
-
-    for (final ecosystemPaywallCase in ecosystemPaywallCases) {
-      test(ecosystemPaywallCase.description, () {
-        expectEcosystemPaywallAvailability(
-          template: ecosystemPaywallCase.template,
-          isAvailable: ecosystemPaywallCase.isAvailable,
-        );
-      });
-    }
-
-    test('should preserve premium capability when paywall is not configured', () {
-      expect(mailboxDashboardController.validatePremiumIsAvailable(), isTrue);
-      expect(
-        mailboxDashboardController.validateIncreaseSpaceIsAvailable(),
-        isFalse,
-      );
-    });
-
-    test('should be available when Workplace FQDN is valid', () {
-      expect(
-        mailboxDashboardController.validateIncreaseSpaceIsAvailable(
-          workplaceFqdn: 'workplace.domain.tld',
-        ),
-        isTrue,
-      );
-    });
-
-    test('should validate ecosystem paywall with the current identity', () {
-      mailboxDashboardController.ownEmailAddress.value =
-          'alice.smith@domain.tld';
-      mailboxDashboardController.paywallController = PaywallController(
-        ownEmailAddress: mailboxDashboardController.ownEmailAddress.value,
-      );
-      expectEcosystemPaywallAvailability(
-        template: 'https://{localPart}.domain.tld/paywall',
-        isAvailable: true,
-      );
-    });
-
-    test('should not be available when Workplace FQDN is invalid', () {
-      expect(
-        mailboxDashboardController.validateIncreaseSpaceIsAvailable(
-          workplaceFqdn: 'localhost',
-        ),
-        isFalse,
-      );
-    });
-
-    test('should not be available when premium capability is missing', () {
-      mailboxDashboardController.sessionCurrent = testSession;
-      cachePaywallUrlTemplate(
-        'https://domain.tld/paywall?email={localPart}',
-      );
-
-      expect(
-        mailboxDashboardController.validateIncreaseSpaceIsAvailable(
-          workplaceFqdn: 'workplace.domain.tld',
-        ),
-        isFalse,
-      );
-    });
-
-    test('should not be available when paywall controller is missing', () {
-      mailboxDashboardController.paywallController = null;
-      cachePaywallUrlTemplate('https://domain.tld/paywall');
-
-      expect(
-        mailboxDashboardController.validateIncreaseSpaceIsAvailable(),
-        isFalse,
-      );
-    });
-  });
-
-  group('PaywallController navigation', () {
+  group('PaywallLauncher navigation', () {
     const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
     late List<String> launchedUrls;
-    late PaywallController paywallController;
+    late List<String> receivedMethods;
+    late PaywallLauncher paywallLauncher;
 
     setUp(() {
       launchedUrls = [];
-      paywallController = PaywallController(
-        ownEmailAddress: 'alice@domain.tld',
-      );
+      receivedMethods = [];
+      paywallLauncher = const PaywallLauncher();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(urlLauncherChannel, (call) async {
-        if (call.method == 'launch') {
+        receivedMethods.add(call.method);
+        if (call.method == 'launch' || call.method == 'launchUrl') {
           final arguments = call.arguments as Map<dynamic, dynamic>;
           launchedUrls.add(arguments['url'] as String);
-          return true;
         }
-        return null;
+        return true;
       });
     });
 
@@ -611,134 +459,22 @@ void main() {
           .setMockMethodCallHandler(urlLauncherChannel, null);
     });
 
-    testWidgets('should launch the normalized Workplace premium URL',
+    testWidgets('should launch a resolved paywall destination',
         (tester) async {
-      when(mockTwakeAppManager.oidcUserInfo).thenReturn(
-        const OidcUserInfo(workplaceFqdn: 'workplace.domain.tld'),
-      );
-
-      paywallController.navigateToPaywall();
-      await tester.pump();
-
-      expect(
-        launchedUrls,
-        ['https://workplace.domain.tld/settings/premium'],
-      );
-    });
-
-    final paywallAvailabilityCases = [
-      (
-        description: 'valid Workplace',
-        workplaceFqdn: 'workplace.domain.tld',
-        ecosystemPattern: null,
-        isAvailable: true,
-      ),
-      (
-        description: 'valid ecosystem',
-        workplaceFqdn: null,
-        ecosystemPattern: 'https://domain.tld/{localPart}/premium',
-        isAvailable: true,
-      ),
-      (
-        description: 'valid Workplace preferred over unsafe ecosystem',
-        workplaceFqdn: 'workplace.domain.tld',
-        ecosystemPattern: 'javascript:alert(1)',
-        isAvailable: true,
-      ),
-      (
-        description: 'valid ecosystem fallback for invalid Workplace',
-        workplaceFqdn: 'localhost',
-        ecosystemPattern: 'https://domain.tld/premium',
-        isAvailable: true,
-      ),
-      (
-        description: 'invalid Workplace and ecosystem',
-        workplaceFqdn: 'localhost',
-        ecosystemPattern: 'javascript:alert(1)',
-        isAvailable: false,
-      ),
-      (
-        description: 'missing Workplace and ecosystem',
-        workplaceFqdn: null,
-        ecosystemPattern: null,
-        isAvailable: false,
-      ),
-    ];
-
-    for (final testCase in paywallAvailabilityCases) {
-      test('should resolve availability for ${testCase.description}', () {
-        final ecosystemPattern = testCase.ecosystemPattern;
-        expect(
-          paywallController.canNavigateToPaywall(
-            workplaceFqdn: testCase.workplaceFqdn,
-            ecosystemPaywallUrlPattern: ecosystemPattern == null
-                ? null
-                : PaywallUrlPattern(ecosystemPattern),
-          ),
-          testCase.isAvailable,
-          reason: testCase.toString(),
-        );
-      });
-    }
-
-    testWidgets('should launch a preloaded ecosystem paywall URL',
-        (tester) async {
-      when(mockTwakeAppManager.oidcUserInfo).thenReturn(null);
-
-      paywallController.navigateToPaywall(
-        ecosystemPaywallUrlPattern: PaywallUrlPattern(
-          'https://domain.tld/#/premium',
-        ),
-      );
+      paywallLauncher.launch(Uri.parse('https://domain.tld/#/premium'));
       await tester.pump();
 
       expect(launchedUrls, ['https://domain.tld/#/premium']);
     });
 
-    testWidgets('should launch a valid ecosystem fragment route on web',
+    testWidgets('should reject an unsafe resolved destination',
         (tester) async {
-      PlatformInfo.isTestingForWeb = true;
-
-      paywallController.handleSuccessViewState(
-        GetPaywallUrlSuccess(
-          PaywallUrlPattern('https://domain.tld/#/premium'),
-        ),
-      );
-      await tester.pump();
-
-      expect(launchedUrls, ['https://domain.tld/#/premium']);
-    });
-
-    testWidgets('should reject an unsafe ecosystem URL on web',
-        (tester) async {
-      PlatformInfo.isTestingForWeb = true;
-
-      paywallController.handleSuccessViewState(
-        GetPaywallUrlSuccess(
-          PaywallUrlPattern('https://domain.tld/premium'),
-        ),
-      );
-      await tester.pump();
-
-      expect(launchedUrls, ['https://domain.tld/premium']);
-      launchedUrls.clear();
-
-      paywallController.handleSuccessViewState(
-        GetPaywallUrlSuccess(PaywallUrlPattern('javascript:alert(1)')),
-      );
+      paywallLauncher.launch(Uri.parse('javascript:alert(1)'));
       await tester.pump();
 
       expect(launchedUrls, isEmpty);
-    });
-
-    testWidgets('should preserve ecosystem navigation on non-web platforms',
-        (tester) async {
-      paywallController.handleSuccessViewState(
-        GetPaywallUrlSuccess(PaywallUrlPattern('http://domain.tld/paywall')),
-      );
-      await tester.pump();
-
-      expect(launchedUrls, ['http://domain.tld/paywall']);
+      // Rejected before any platform call, not by a failing launch.
+      expect(receivedMethods, isEmpty);
     });
   });
 

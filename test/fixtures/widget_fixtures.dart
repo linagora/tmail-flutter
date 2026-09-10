@@ -9,9 +9,12 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class WidgetFixtures {
-  static Widget makeTestableWidget({required Widget child}) {
+  static Widget makeTestableWidget({
+    required Widget child,
+    ProviderContainer? providerContainer,
+  }) {
     return UncontrolledProviderScope(
-    container: appProviderContainer,
+    container: providerContainer ?? appProviderContainer,
     child: GetMaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),

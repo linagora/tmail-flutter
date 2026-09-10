@@ -13,11 +13,6 @@ class GetLinagoraEcosystemSuccess extends Success {
   List<Object?> get props => [linagoraEcosystem];
 }
 
-class GetLinagoraEcosystemFailure extends Failure {
-  final Object exception;
-
-  GetLinagoraEcosystemFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+class GetLinagoraEcosystemFailure extends FeatureFailure {
+  GetLinagoraEcosystemFailure(Object exception) : super(exception: exception);
 }
