@@ -88,23 +88,21 @@ void main() {
       verifyNever(dashboard.handleRefreshTokenFailedException());
     });
 
-    test('fatal rejection triggers the logout handler exactly once and throws RefreshTokenFailedException', () async {
-      final rejection = Exception('invalid_grant');
+    test('rethrows a fatal rejection untouched; the interceptor already owns clear and classification', () async {
+      final rejection = RefreshTokenFailedException();
       when(interceptor.requestTokenRefresh()).thenThrow(rejection);
-      when(interceptor.isRefreshFailureFatal(rejection)).thenReturn(true);
 
       await expectLater(
         readExtension().oidcRefreshTrigger!(),
-        throwsA(isA<RefreshTokenFailedException>()),
+        throwsA(same(rejection)),
       );
 
-      verify(interceptor.clear()).called(1);
-      verify(dashboard.handleRefreshTokenFailedException()).called(1);
+      verifyNever(interceptor.clear());
+      verifyNever(dashboard.handleRefreshTokenFailedException());
     });
 
-    test('transient failure keeps the session and rethrows the original error', () async {
+    test('rethrows a transient failure untouched', () async {
       when(interceptor.requestTokenRefresh()).thenThrow(transientError);
-      when(interceptor.isRefreshFailureFatal(transientError)).thenReturn(false);
 
       await expectLater(
         readExtension().oidcRefreshTrigger!(),
@@ -184,7 +182,7 @@ void main() {
       )).thenAnswer((_) => refreshCompleter.future);
     });
 
-    test('fatal refresh racing a JMAP 401 refreshes once and logs out once', () async {
+    test('fatal refresh racing a JMAP 401 refreshes once and kills the session once', () async {
       // Matchers attach first so neither rejection is reported as unhandled.
       final libRequest = expectLater(
         dio.post(baseUrl),
@@ -205,7 +203,6 @@ void main() {
       await Future.wait([libRequest, workplaceRefresh]);
 
       verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(1);
-      verify(dashboard.handleRefreshTokenFailedException()).called(1);
       expect(realInterceptor.authenticationType, AuthenticationType.none);
     });
 
@@ -224,7 +221,6 @@ void main() {
       await Future.wait([libRequest, workplaceRefresh]);
 
       verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(1);
-      verifyNever(dashboard.handleRefreshTokenFailedException());
       expect(realInterceptor.authenticationType, AuthenticationType.oidc);
     });
   });
@@ -232,18 +228,25 @@ void main() {
   group('onPickState::', () {
     test('transient Drive failure is reported once by the picker layer', () async {
       final failure = DrivePickFailure(transientError);
+      when(dashboard.validateUrgentException(transientError)).thenReturn(false);
 
       await readExtension().onPickState!(null, failure);
 
       verify(toastManager.showMessageFailure(failure)).called(1);
+      verifyNever(dashboard.handleUrgentException(
+        failure: anyNamed('failure'),
+        exception: anyNamed('exception'),
+      ));
     });
 
-    test('refresh rejection already handled by the refresh layer is not reported again', () async {
-      await readExtension().onPickState!(
-        null,
-        DrivePickFailure(RefreshTokenFailedException()),
-      );
+    test('urgent failure takes the dashboard BaseController path instead of a toast', () async {
+      final rejection = RefreshTokenFailedException();
+      final failure = DrivePickFailure(rejection);
+      when(dashboard.validateUrgentException(rejection)).thenReturn(true);
 
+      await readExtension().onPickState!(null, failure);
+
+      verify(dashboard.handleUrgentException(failure: failure, exception: rejection)).called(1);
       verifyNever(toastManager.showMessageFailure(any));
     });
   });

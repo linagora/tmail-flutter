@@ -94,14 +94,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   /// Triggers a refresh, or joins one already running — dedupes an external
   /// caller (e.g. Workplace's own Dio) against this interceptor's [onError].
+  /// Owns the outcome: throws [RefreshTokenDuplicatedException] on a same-token
+  /// response, clears the session and throws [RefreshTokenFailedException] on a
+  /// server rejection, rethrows transient failures untouched.
   Future<TokenOIDC> requestTokenRefresh() {
     return _refreshInFlight ??= _acquireAndPersistNewToken()
         .whenComplete(() => _refreshInFlight = null);
   }
 
-  /// True when [error] is a confirmed server-side refresh rejection (session
-  /// dead). Mirrors [_handleRefreshErrorOnWeb]/[_handleRefreshErrorOnMobile].
-  bool isRefreshFailureFatal(Object error) => PlatformInfo.isWeb
+  bool _isRefreshRejectedByServer(Object error) => PlatformInfo.isWeb
       ? _errorClassifier.isServerRejection(error)
       : _isRefreshRejectedByTokenEndpoint(error);
 
@@ -217,8 +218,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// the session and is propagated WITHOUT the stale 401 — same as mobile — so
   /// a flaky connection does not log the web user out.
   ///
-  /// Error routing delegates RFC 6749 classification to [RefreshTokenErrorClassifier]:
-  /// - Server rejection (400/401 or RFC 6749 bad-grant code) → logout.
+  /// Server rejections never reach here: [_acquireAndPersistNewToken] already
+  /// turned them into [RefreshTokenFailedException]. What is left:
   /// - [ArgumentError] with unknown OAuth2 code → Sentry trace, keep session.
   /// - Network/transport failure → keep session silently.
   void _handleRefreshErrorOnWeb(
@@ -227,25 +228,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
-    final isRejected = _errorClassifier.isServerRejection(error);
-
-    if (isRejected) {
-      logError(
-        'AuthorizationInterceptors::_handleRefreshErrorOnWeb: '
-        'will_logout=true — error=$error',
-        exception: error,
-        stackTrace: stackTrace,
-        extras: _errorClassifier.buildSentryExtras(error),
-        webConsoleEnabled: true,
-      );
-      clear();
-      return handler.reject(DioException(
-        requestOptions: originalError.requestOptions,
-        error: RefreshTokenFailedException(),
-        type: DioExceptionType.badResponse,
-      ));
-    }
-
     if (error is ArgumentError) {
       // Non-standard OAuth2 code — log to Sentry for investigation, keep session.
       logError(
@@ -284,43 +266,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   /// On mobile the refresh runs through flutter_appauth (native), so a rejected
-  /// refresh token never surfaces as a [DioException] — the `statusCode == 400`
-  /// branch in [_refreshTokenThenRetry] is unreachable here. The rejection
-  /// arrives as an [OAuthAuthorizationError] instead, and without this check the
-  /// dead session would be kept and every request would retry forever.
-  ///
-  /// Only a confirmed RFC 6749 rejection logs out; transient codes
-  /// (`server_error`, `temporarily_unavailable`) keep the session so a flaky
-  /// connection does not sign the user out.
-  ///
-  /// Shared with [_refreshTokenThenRetry] so the routing decision and the
-  /// handling of it cannot drift apart.
+  /// refresh token arrives as an [OAuthAuthorizationError], never a [DioException].
+  /// Only a confirmed RFC 6749 rejection is fatal; transient codes
+  /// (`server_error`, `temporarily_unavailable`) keep the session.
   bool _isRefreshRejectedByTokenEndpoint(Object error) =>
       error is OAuthAuthorizationError &&
       _errorClassifier.isServerRejection(error);
 
+  /// Server rejections never reach here (see [_acquireAndPersistNewToken]).
   void _handleRefreshErrorOnMobile(
     Object error,
     StackTrace stackTrace,
     DioException originalError,
     ErrorInterceptorHandler handler,
   ) {
-    if (_isRefreshRejectedByTokenEndpoint(error)) {
-      logError(
-        'AuthorizationInterceptors::_handleRefreshErrorOnMobile: '
-        'will_logout=true — error=$error',
-        exception: error,
-        stackTrace: stackTrace,
-        extras: _errorClassifier.buildSentryExtras(error),
-      );
-      clear();
-      return handler.reject(DioException(
-        requestOptions: originalError.requestOptions,
-        error: RefreshTokenFailedException(),
-        type: DioExceptionType.badResponse,
-      ));
-    }
-
     return _propagateKeepingSession(error, originalError, handler);
   }
 
@@ -377,6 +336,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         hasAttemptedRefresh: true,
       );
       return super.onError(err, handler);
+    } on RefreshTokenFailedException catch (refreshError) {
+      // Session already cleared by requestTokenRefresh; surface the dead session.
+      return handler.reject(DioException(
+        requestOptions: err.requestOptions,
+        error: refreshError,
+        type: DioExceptionType.badResponse,
+      ));
     } on DioException catch (refreshError, st) {
       // Web routes ALL refresh failures (Dio or non-Dio) through the single
       // web handler, so the session decision is uniform regardless of how the
@@ -435,16 +401,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         handler,
       );
     } catch (e, st) {
-      // Failures the platform handler already classifies are routed straight to
-      // it, so the outer catch in onError() does not fire and log a second,
-      // generic Sentry event for the same refresh failure. On web that is every
-      // non-Dio error flutter_appauth_web throws (ArgumentError and friends); on
-      // mobile it is the native token-endpoint rejection.
-      //
-      // Anything still unclassified is rethrown on purpose: the generic event in
-      // onError() is then the only trace of it, and losing it would leave those
-      // failures invisible.
-      if (PlatformInfo.isWeb || _isRefreshRejectedByTokenEndpoint(e)) {
+      // Web routes every non-Dio error flutter_appauth_web throws (ArgumentError
+      // and friends) to its handler so the outer catch in onError() does not log
+      // a second, generic Sentry event. Mobile rethrows on purpose: the generic
+      // event in onError() is then the only trace of an unclassified failure.
+      if (PlatformInfo.isWeb) {
         return _handleRefreshError(e, st, err, handler);
       }
       rethrow;
@@ -636,9 +597,26 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _acquireAndPersistNewToken() async {
-    final newTokenOidc = _withCurrentIdTokenIfMissing(PlatformInfo.isIOS
-        ? await _getNewTokenForIOSPlatform()
-        : await _getNewTokenForOtherPlatform());
+    final TokenOIDC acquired;
+    try {
+      acquired = PlatformInfo.isIOS
+          ? await _getNewTokenForIOSPlatform()
+          : await _getNewTokenForOtherPlatform();
+    } catch (e, st) {
+      if (!_isRefreshRejectedByServer(e)) rethrow;
+      logError(
+        'AuthorizationInterceptors::_acquireAndPersistNewToken: '
+        'will_logout=true — error=$e',
+        exception: e,
+        stackTrace: st,
+        extras: _errorClassifier.buildSentryExtras(e),
+        webConsoleEnabled: true,
+      );
+      clear();
+      throw RefreshTokenFailedException();
+    }
+
+    final newTokenOidc = _withCurrentIdTokenIfMissing(acquired);
     if (newTokenOidc.token == _token?.token) {
       throw const RefreshTokenDuplicatedException();
     }

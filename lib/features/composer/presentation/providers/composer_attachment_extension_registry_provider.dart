@@ -5,7 +5,6 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -48,19 +47,13 @@ bool _isUploadFromUrlSupported() {
 }
 
 /// Triggers the main app's OIDC refresh for Workplace's own (unwired) Dio.
+/// The interceptor owns the outcome; a dead session surfaces as
+/// RefreshTokenFailedException and is routed by [_onDrivePickState].
 Future<String?> _refreshWorkplaceOidcToken() async {
   final interceptor = getBinding<AuthorizationInterceptors>();
   if (interceptor == null) return null;
-  try {
-    final newToken = await interceptor.requestTokenRefresh();
-    return newToken.tokenId.uuid;
-  } catch (e) {
-    if (!interceptor.isRefreshFailureFatal(e)) rethrow;
-    interceptor.clear();
-    // Same funnel as the interceptor's own reject(RefreshTokenFailedException) path.
-    getBinding<MailboxDashBoardController>()?.handleRefreshTokenFailedException();
-    throw RefreshTokenFailedException();
-  }
+  final newToken = await interceptor.requestTokenRefresh();
+  return newToken.tokenId.uuid;
 }
 
 Future<void> _onDrivePickState(String? composerId, DrivePickState state) async {
@@ -77,8 +70,13 @@ Future<void> _onDrivePickState(String? composerId, DrivePickState state) async {
     // No catch here: handleDrivePickResult swallows and toasts its own errors.
     await composer.handleDrivePickResult(state.documents);
   } else if (state is DrivePickFailure) {
-    // Logout already triggered by _refreshWorkplaceOidcToken; no second report.
-    if (state.error is RefreshTokenFailedException) return;
+    final dashboard = getBinding<MailboxDashBoardController>();
+    final error = state.error;
+    if (dashboard != null && error is Exception && dashboard.validateUrgentException(error)) {
+      // Session-level failures take BaseController's standard path (logout, reconnect).
+      dashboard.handleUrgentException(failure: state, exception: error);
+      return;
+    }
     getBinding<ToastManager>()?.showMessageFailure(state);
   }
 }

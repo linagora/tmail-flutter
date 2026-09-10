@@ -1750,6 +1750,63 @@ void main() {
   });
 
   // ============================================================
+  // requestTokenRefresh: owns the fatal-vs-transient decision
+  // ============================================================
+  group('requestTokenRefresh: owns the fatal-vs-transient decision', () {
+    void stubRefreshThrowing(Object error) {
+      authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: OIDCFixtures.tokenOidcExpiredTime,
+        newConfig: OIDCFixtures.oidcConfiguration,
+      );
+      when(authenticationClient.refreshingTokensOIDC(
+        OIDCFixtures.oidcConfiguration.clientId,
+        OIDCFixtures.oidcConfiguration.redirectUrl,
+        OIDCFixtures.oidcConfiguration.discoveryUrl,
+        OIDCFixtures.oidcConfiguration.scopes,
+        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+      )).thenThrow(error);
+    }
+
+    test(
+      'GIVEN a direct caller (e.g. Workplace)\n'
+      'WHEN the token endpoint rejects the refresh token (invalid_grant)\n'
+      'THEN the session is cleared and RefreshTokenFailedException is thrown',
+      () async {
+        stubRefreshThrowing(const OAuthAuthorizationError(
+          error: 'invalid_grant',
+          errorDescription: 'The refresh token has been revoked',
+        ));
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenFailedException>()),
+        );
+
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+      },
+    );
+
+    test(
+      'GIVEN a direct caller (e.g. Workplace)\n'
+      'WHEN the refresh fails transiently\n'
+      'THEN the original error is rethrown and the session is kept',
+      () async {
+        const transient = ServerError();
+        stubRefreshThrowing(transient);
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(same(transient)),
+        );
+
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+        expect(authorizationInterceptors.currentToken, OIDCFixtures.tokenOidcExpiredTime);
+      },
+    );
+  });
+
+  // ============================================================
   // requestTokenRefresh: id_token omitted from the refresh response
   // ============================================================
   group('requestTokenRefresh: id_token omitted from the refresh response', () {
@@ -3892,7 +3949,7 @@ void main() {
         expect(errorRecords.single.rawMessage, contains('will_logout=true'));
         expect(
           errorRecords.single.rawMessage,
-          contains('_handleRefreshErrorOnWeb'),
+          contains('_acquireAndPersistNewToken'),
         );
         expect(
           errorRecords.any((r) => r.rawMessage.contains('onError:Exception')),

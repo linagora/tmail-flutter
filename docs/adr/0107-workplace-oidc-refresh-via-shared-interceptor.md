@@ -13,7 +13,8 @@ Workplace's Drive `token_exchange` request runs on `WorkplaceDio`, a bare `Dio()
 ## Decision
 
 - `AuthorizationInterceptors` exposes `requestTokenRefresh()`, a dedup-guarded public entry point backed by an in-flight `Future<TokenOIDC>`. Any caller — the interceptor's own reactive `onError` path or an external caller — joins the same in-flight refresh instead of starting a second one.
-- `AuthorizationInterceptors` exposes `isRefreshFailureFatal()`, reusing the existing web/mobile rejection classifiers, so an external caller can tell a dead session (RFC 6749 400/401-equivalent) from a transient failure and decide whether to call the existing public `clear()`.
+- `requestTokenRefresh()` owns the outcome of a refresh for every caller: a server rejection (RFC 6749 400/401-equivalent, classified by the existing web/mobile classifiers) clears the session and throws `RefreshTokenFailedException`; a same-token response throws `RefreshTokenDuplicatedException` before anything is persisted; transient failures are rethrown untouched.
+- Callers never classify refresh failures themselves. The Workplace wiring forwards a `DrivePickFailure` carrying an urgent exception into `MailboxDashBoardController`'s `BaseController` handling (`validateUrgentException` / `handleUrgentException`), the same path the interceptor's own rejected requests take.
 - `ComposerAttachmentExtensionRegistry`'s Workplace wiring passes an `oidcRefreshTrigger` callback into `WorkplaceComposerAttachmentExtension`, alongside the existing `oidcTokenGetter`, mirroring the same callback-injection pattern across the package boundary.
 - `WorkplaceComposerAttachmentExtension._exchangeAccessToken` catches a 401 from the token-exchange call and retries exactly once with a token refreshed via `oidcRefreshTrigger`, guarded by a `refreshAttempted` flag to prevent looping.
 
@@ -22,4 +23,4 @@ Workplace's Drive `token_exchange` request runs on `WorkplaceDio`, a bare `Dio()
 - A stale OIDC id token on the Workplace exchange-token request self-heals via one retry instead of surfacing as a generic toast.
 - A 401 on the main Dio and a 401 on Workplace's Dio racing at the same time still trigger exactly one refresh call against the server; both callers resolve to the same new token.
 - `WorkplaceDio` remains a plain, interceptor-free `Dio()`; only the exchange-token call site gains retry logic, not every Workplace request.
-- Workplace's own refresh failures follow the same fatal-vs-transient classification as the main app's reactive path, so a dead refresh token forces logout consistently regardless of which request discovered it.
+- Fatal-vs-transient classification lives in one place, so a dead refresh token forces logout consistently regardless of which request discovered it.
