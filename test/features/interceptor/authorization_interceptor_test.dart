@@ -1748,6 +1748,71 @@ void main() {
   });
 
   // ============================================================
+  // requestTokenRefresh: id_token omitted from the refresh response
+  // ============================================================
+  group('requestTokenRefresh: id_token omitted from the refresh response', () {
+    void stubRefreshReturning(TokenOIDC refreshed) {
+      authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: OIDCFixtures.tokenOidcExpiredTime,
+        newConfig: OIDCFixtures.oidcConfiguration,
+      );
+      when(authenticationClient.refreshingTokensOIDC(
+        OIDCFixtures.oidcConfiguration.clientId,
+        OIDCFixtures.oidcConfiguration.redirectUrl,
+        OIDCFixtures.oidcConfiguration.discoveryUrl,
+        OIDCFixtures.oidcConfiguration.scopes,
+        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+      )).thenAnswer((_) async => refreshed);
+      when(accountCacheManager.getCurrentAccount())
+          .thenAnswer((_) async => AccountFixtures.aliceAccount);
+    }
+
+    test(
+      'GIVEN the refresh response carries no id_token (OIDC Core 12.2)\n'
+      'THEN the current id token is kept on the new token\n'
+      'AND that token is what gets persisted',
+      () async {
+        final refreshedWithoutId = TokenOIDC(
+          OIDCFixtures.newTokenOidc.token,
+          TokenId(''),
+          OIDCFixtures.newTokenOidc.refreshToken,
+          expiredTime: OIDCFixtures.newTokenOidc.expiredTime,
+        );
+        stubRefreshReturning(refreshedWithoutId);
+
+        final result = await authorizationInterceptors.requestTokenRefresh();
+
+        expect(result.token, equals(OIDCFixtures.newTokenOidc.token));
+        expect(result.tokenId, equals(OIDCFixtures.tokenOidcExpiredTime.tokenId));
+        expect(
+          authorizationInterceptors.currentOidcIdToken,
+          equals(OIDCFixtures.tokenOidcExpiredTime.tokenId.uuid),
+        );
+        final persisted = verify((tokenOidcCacheManager as MockTokenOidcCacheManager)
+                .persistOneTokenOidc(captureAny))
+            .captured.single as TokenOIDC;
+        expect(persisted.tokenId, equals(OIDCFixtures.tokenOidcExpiredTime.tokenId));
+      },
+    );
+
+    test(
+      'GIVEN the refresh response carries a new id_token\n'
+      'THEN the new id token replaces the current one',
+      () async {
+        stubRefreshReturning(OIDCFixtures.newTokenOidc);
+
+        final result = await authorizationInterceptors.requestTokenRefresh();
+
+        expect(result.tokenId, equals(OIDCFixtures.newTokenOidc.tokenId));
+        expect(
+          authorizationInterceptors.currentOidcIdToken,
+          equals(OIDCFixtures.newTokenOidc.tokenId.uuid),
+        );
+      },
+    );
+  });
+
+  // ============================================================
   // onError: retry fails (separate Dio error handling)
   // ============================================================
   group('onError: retry fails (separate Dio error handling)', () {

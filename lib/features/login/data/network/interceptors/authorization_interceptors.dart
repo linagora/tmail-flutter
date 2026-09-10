@@ -640,9 +640,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _acquireAndPersistNewToken() async {
-    final newTokenOidc = PlatformInfo.isIOS
+    final newTokenOidc = _withCurrentIdTokenIfMissing(PlatformInfo.isIOS
         ? await _getNewTokenForIOSPlatform()
-        : await _getNewTokenForOtherPlatform();
+        : await _getNewTokenForOtherPlatform());
     _updateNewToken(newTokenOidc);
 
     final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
@@ -651,6 +651,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
 
     return newTokenOidc;
+  }
+
+  // OIDC Core 12.2: a refresh response may omit id_token; keep the one we have.
+  TokenOIDC _withCurrentIdTokenIfMissing(TokenOIDC fresh) {
+    final currentIdToken = _token?.tokenId;
+    if (fresh.tokenId.uuid.isNotEmpty || currentIdToken == null || currentIdToken.uuid.isEmpty) {
+      return fresh;
+    }
+    return TokenOIDC(
+      fresh.token,
+      currentIdToken,
+      fresh.refreshToken,
+      expiredTime: fresh.expiredTime,
+    );
   }
 
   Future<Response> _retryRequest(
