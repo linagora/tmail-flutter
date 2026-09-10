@@ -159,6 +159,29 @@ void main() {
       storageController!.onInit();
     }
 
+    Future<void> verifyUrgentPaywallErrorRouting({
+      required Stream<Either<Failure, Success>> paywallState,
+      required Matcher expectedFailure,
+    }) async {
+      arrangePaywallState(paywallState);
+      final recordingController = _RecordingUrgentStorageController(
+        dashBoardController: dashboardController,
+        getPaywallUrlInteractor: getPaywallUrlInteractor,
+      );
+      storageController = recordingController;
+
+      PlatformInfo.isTestingForWeb = true;
+      recordingController.onInit();
+      await pumpEventQueue();
+
+      expect(recordingController.handledUrgentFailure, expectedFailure);
+      expect(
+        recordingController.handledUrgentException,
+        isA<BadCredentialsException>(),
+      );
+      expect(recordingController.isUpgradeStorageDisabled(), isTrue);
+    }
+
     setUp(() {
       dashboardController = MockManageAccountDashBoardController();
       getPaywallUrlInteractor = MockGetPaywallUrlInteractor();
@@ -304,48 +327,19 @@ void main() {
 
     test('routes urgent ecosystem failures through the base controller',
         () async {
-      arrangePaywallState(Stream.value(Left(GetPaywallUrlFailure(
-        const BadCredentialsException(),
-      ))));
-      final recordingController = _RecordingUrgentStorageController(
-        dashBoardController: dashboardController,
-        getPaywallUrlInteractor: getPaywallUrlInteractor,
+      await verifyUrgentPaywallErrorRouting(
+        paywallState: Stream.value(Left(GetPaywallUrlFailure(
+          const BadCredentialsException(),
+        ))),
+        expectedFailure: isA<GetPaywallUrlFailure>(),
       );
-      storageController = recordingController;
-
-      PlatformInfo.isTestingForWeb = true;
-      recordingController.onInit();
-      await pumpEventQueue();
-
-      expect(
-        recordingController.handledUrgentFailure,
-        isA<GetPaywallUrlFailure>(),
-      );
-      expect(
-        recordingController.handledUrgentException,
-        isA<BadCredentialsException>(),
-      );
-      expect(recordingController.isUpgradeStorageDisabled(), isTrue);
     });
 
     test('routes urgent stream errors through the base controller', () async {
-      arrangePaywallState(Stream.error(const BadCredentialsException()));
-      final recordingController = _RecordingUrgentStorageController(
-        dashBoardController: dashboardController,
-        getPaywallUrlInteractor: getPaywallUrlInteractor,
+      await verifyUrgentPaywallErrorRouting(
+        paywallState: Stream.error(const BadCredentialsException()),
+        expectedFailure: isNull,
       );
-      storageController = recordingController;
-
-      PlatformInfo.isTestingForWeb = true;
-      recordingController.onInit();
-      await pumpEventQueue();
-
-      expect(recordingController.handledUrgentFailure, isNull);
-      expect(
-        recordingController.handledUrgentException,
-        isA<BadCredentialsException>(),
-      );
-      expect(recordingController.isUpgradeStorageDisabled(), isTrue);
     });
 
     test('does not load paywall or change mobile navigation behavior', () async {

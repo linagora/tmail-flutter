@@ -6,6 +6,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SearchController, State;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -408,6 +409,11 @@ void main() {
   }
 
   Future<ProviderContainer> pumpWebMailbox(WidgetTester tester) async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    if (!dotenv.isInitialized) {
+      dotenv.testLoad(mergeWith: {'PLATFORM': 'other'});
+    }
     addTearDown(() => WidgetFixtures.resetResponsive(tester));
     await WidgetFixtures.pumpResponsiveWidget(
       tester,
