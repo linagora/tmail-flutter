@@ -34,14 +34,19 @@ class WebSelectionCoordinator {
 
   /// A Flutter selection surface took focus: drop every iframe selection.
   void _handleFlutterFocusChanged() {
-    final context = _focusManager.primaryFocus?.context;
-    if (context == null || !_isFlutterSelectionSurface(context)) return;
+    final focusNode = _focusManager.primaryFocus;
+    if (focusNode == null || !_isSelectionSurfaceFocus(focusNode)) return;
     _dom.clearIframeSelections();
   }
 
-  /// The single place to extend if more Flutter surfaces must take part.
-  static bool _isFlutterSelectionSurface(BuildContext context) =>
-      context.findAncestorStateOfType<SelectableRegionState>() != null;
+  /// Only the region's own node counts; focus on a child inside it is not a selection.
+  static bool _isSelectionSurfaceFocus(FocusNode node) {
+    final region = _enclosingRegionOf(node);
+    return region != null && _enclosingRegionOf(node.parent) != region;
+  }
+
+  static SelectableRegionState? _enclosingRegionOf(FocusNode? node) =>
+      node?.context?.findAncestorStateOfType<SelectableRegionState>();
 
   /// Deferred one tick so `activeElement` already points at the iframe.
   void _handleTopWindowBlur() {
