@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/linagora_ecosystem_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 
 class _StubDioClient extends DioClient {
   final dynamic response;
@@ -20,7 +21,7 @@ class _StubDioClient extends DioClient {
 }
 
 void main() {
-  group('LinagoraEcosystemApi.getPaywallUrl', () {
+  group('LinagoraEcosystemApi.getLinagoraEcosystem', () {
     const paywallUrlTemplate =
         'https://domain.tld/paywall?email={localPart}';
     final validResponses = [
@@ -36,15 +37,17 @@ void main() {
     ];
 
     for (final validResponse in validResponses) {
-      test('should return paywall URL pattern for a valid '
+      test('should return the ecosystem for a valid '
           '${validResponse.description}', () async {
         final api = LinagoraEcosystemApi(
           _StubDioClient(validResponse.response),
         );
 
-        final result = await api.getPaywallUrl('https://mail.domain.tld');
+        final result = await api.getLinagoraEcosystem(
+          'https://mail.domain.tld',
+        );
 
-        expect(result.pattern, paywallUrlTemplate);
+        expect(result.paywallUrlTemplate, paywallUrlTemplate);
       });
     }
 
@@ -66,16 +69,17 @@ void main() {
     ];
 
     for (final missingPaywallCase in missingPaywallCases) {
-      test('should throw NotFoundPaywallUrl for '
+      test('should keep paywall unavailable for '
           '${missingPaywallCase.description}', () async {
         final api = LinagoraEcosystemApi(
           _StubDioClient(missingPaywallCase.response),
         );
 
-        await expectLater(
-          api.getPaywallUrl('https://mail.domain.tld'),
-          throwsA(isA<NotFoundPaywallUrl>()),
+        final result = await api.getLinagoraEcosystem(
+          'https://mail.domain.tld',
         );
+
+        expect(result.paywallUrlTemplate, isNull);
       });
     }
 
@@ -92,7 +96,7 @@ void main() {
         );
 
         await expectLater(
-          api.getPaywallUrl('https://mail.domain.tld'),
+          api.getLinagoraEcosystem('https://mail.domain.tld'),
           throwsA(isA<NotFoundLinagoraEcosystem>()),
         );
       });

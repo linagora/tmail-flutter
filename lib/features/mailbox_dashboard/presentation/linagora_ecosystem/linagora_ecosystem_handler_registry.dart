@@ -1,5 +1,8 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_handler.dart';
+
+part 'linagora_ecosystem_handler_registry.g.dart';
 
 class LinagoraEcosystemHandlerRegistry {
   final List<LinagoraEcosystemHandler> _handlers = [];
@@ -20,3 +23,9 @@ class LinagoraEcosystemHandlerRegistry {
     }
   }
 }
+
+/// App-lifetime registry: handlers are registered once and must survive the
+/// dashboard being rebuilt.
+@Riverpod(keepAlive: true)
+LinagoraEcosystemHandlerRegistry linagoraEcosystemHandlerRegistry(Ref ref) =>
+    LinagoraEcosystemHandlerRegistry();
