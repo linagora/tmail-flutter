@@ -714,6 +714,16 @@ void main() {
       PlatformInfo.isTestingForWeb = true;
 
       paywallController.handleSuccessViewState(
+        GetPaywallUrlSuccess(
+          PaywallUrlPattern('https://domain.tld/premium'),
+        ),
+      );
+      await tester.pump();
+
+      expect(launchedUrls, ['https://domain.tld/premium']);
+      launchedUrls.clear();
+
+      paywallController.handleSuccessViewState(
         GetPaywallUrlSuccess(PaywallUrlPattern('javascript:alert(1)')),
       );
       await tester.pump();

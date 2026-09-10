@@ -589,9 +589,12 @@ void main() {
         quotasController.isBannerEnabled.value = true;
       }
 
-      Future<ProviderContainer> pumpQuotaBanner(WidgetTester tester) async {
+      Future<ProviderContainer> pumpQuotaBanner(
+        WidgetTester tester, {
+        bool isWeb = true,
+      }) async {
         await tester.pumpWidget(const SizedBox());
-        PlatformInfo.isTestingForWeb = true;
+        PlatformInfo.isTestingForWeb = isWeb;
         await tester.pumpWidget(
           makeTestableWidget(child: QuotasBannerWidget()),
         );
@@ -612,6 +615,14 @@ void main() {
       testWidgets('hides CTA when no paywall is available', (tester) async {
         arrangeQuotaBanner();
         await pumpQuotaBanner(tester);
+
+        expect(find.text(manageMyStorageLabel(tester)), findsNothing);
+      });
+
+      testWidgets('keeps CTA hidden on non-web platforms', (tester) async {
+        arrangeQuotaBanner();
+        cachePaywallUrlTemplate('https://domain.tld/premium');
+        await pumpQuotaBanner(tester, isWeb: false);
 
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
       });
