@@ -143,7 +143,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required Object failure,
     required bool refreshAttempted,
   }) async {
-    if (refreshAttempted || oidcRefreshTrigger == null || !_isUnauthorized(failure)) {
+    if (refreshAttempted || oidcRefreshTrigger == null || !_isStaleSubjectToken(failure)) {
       throw failure;
     }
 
@@ -166,8 +166,13 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return _exchangeAccessToken(platformUrl, refreshedToken, refreshAttempted: true);
   }
 
-  bool _isUnauthorized(Object failure) =>
-      failure is DioException && failure.response?.statusCode == 401;
+  // RFC 8693 says 400 invalid_grant for a bad subject_token; token_exchange has
+  // also been seen answering 401. Both mean the id token needs refreshing.
+  bool _isStaleSubjectToken(Object failure) {
+    if (failure is! DioException) return false;
+    final statusCode = failure.response?.statusCode;
+    return statusCode == 400 || statusCode == 401;
+  }
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,

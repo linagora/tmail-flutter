@@ -22,17 +22,20 @@ class _Fail {
 
 const _fail = _Fail();
 
-// Sentinel used by _SequentialAdapter to throw a 401 DioException.
-class _Fail401 {
-  const _Fail401();
+// Sentinel used by _SequentialAdapter to throw a DioException with a status.
+class _FailStatus {
+  final int statusCode;
+
+  const _FailStatus(this.statusCode);
 }
 
-const _fail401 = _Fail401();
+const _fail401 = _FailStatus(401);
+const _fail400 = _FailStatus(400);
 
 // Returns responses from a pre-defined queue, one per HTTP request, and
 // records each request body so a test can assert on the outgoing JSON.
 // Queue items are a Map (returned as JSON), _Fail (network error, no
-// response), or _Fail401 (401 response, e.g. a stale OIDC id token).
+// response), or _FailStatus (a status response, e.g. a stale OIDC id token).
 class _SequentialAdapter implements HttpClientAdapter {
   final List<dynamic> _queue;
   final List<dynamic> capturedBodies = [];
@@ -51,10 +54,10 @@ class _SequentialAdapter implements HttpClientAdapter {
     if (item is _Fail) {
       throw DioException(requestOptions: options, message: 'Network error');
     }
-    if (item is _Fail401) {
+    if (item is _FailStatus) {
       throw DioException(
         requestOptions: options,
-        response: Response(statusCode: 401, requestOptions: options),
+        response: Response(statusCode: item.statusCode, requestOptions: options),
         type: DioExceptionType.badResponse,
       );
     }
@@ -558,6 +561,37 @@ void main() {
       final downloadLink = filePickerData['downloadLink'] as Map<String, dynamic>;
       expect(downloadLink['maxFileSize'], equals(5000));
       expect(downloadLink['availableSize'], equals(5000));
+    });
+
+    testWidgets('retries once via oidcRefreshTrigger after a 400, then succeeds', (tester) async {
+      // RFC 8693's invalid_grant answer for a stale subject_token.
+      final adapter = _SequentialAdapter([_fail400, _tokenResponse, _intentResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      final result = await tester.runAsync(
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+          ),
+        ),
+      );
+
+      expect(refreshCallCount, equals(1));
+      expect(result!.intentId, equals('intent-xyz'));
+      expect(adapter.capturedBodies[1]['id_token'], equals('refreshed-oidc-token'));
     });
 
     testWidgets('retries once via oidcRefreshTrigger after a 401, then succeeds', (tester) async {
