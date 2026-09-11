@@ -8,13 +8,37 @@ import 'package:core/utils/sentry/sentry_initializer.dart';
 import 'package:core/utils/sentry/sentry_reporting_consent.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+typedef SentryScopeSynchronizer = Future<void> Function(
+  SentryUser? user, {
+  required bool clearBreadcrumbs,
+});
+
+Future<void> _synchronizeSentryScope(
+  SentryUser? user, {
+  required bool clearBreadcrumbs,
+}) async {
+  await Sentry.configureScope((scope) async {
+    if (clearBreadcrumbs) await scope.clearBreadcrumbs();
+    await scope.setUser(user);
+  });
+}
+
 /// Controls Sentry initialization and error reporting.
 class SentryManager implements SentryReporter, SentryReportingConsent {
-  SentryManager._();
+  SentryManager._()
+      : _isSentryAvailable = false,
+        _synchronizeScope = _synchronizeSentryScope;
+
+  @visibleForTesting
+  SentryManager.forTesting({
+    required SentryScopeSynchronizer synchronizeScope,
+  })  : _isSentryAvailable = true,
+        _synchronizeScope = synchronizeScope;
 
   static final SentryManager instance = SentryManager._();
 
-  bool _isSentryAvailable = false;
+  bool _isSentryAvailable;
+  final SentryScopeSynchronizer _synchronizeScope;
 
   // Defaults to true so platforms that never publish a default — web, where
   // Sentry is driven by build-time env vars — keep reporting as before.
@@ -22,6 +46,8 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   bool? _userSentryReportingConsent;
   SentryUser? _sentryUser;
   Future<void> _pendingScopeSync = Future.value();
+  int _scopeSyncGeneration = 0;
+  int _synchronizedScopeGeneration = 0;
 
   @override
   bool get isSentryAvailable => _isSentryAvailable;
@@ -42,8 +68,12 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     _syncUserScope();
   }
 
+  bool get isSentryReportingReady =>
+      isSentryReportingAllowed &&
+      _scopeSyncGeneration == _synchronizedScopeGeneration;
+
   /// The single gate every outgoing Sentry report passes through.
-  bool get _canSendToSentry => _isSentryAvailable && isSentryReportingAllowed;
+  bool get _canSendToSentry => _isSentryAvailable && isSentryReportingReady;
 
   /// The identity the scope should carry: the one that was set, but only while
   /// reporting is allowed. Independent of [isSentryAvailable], which
@@ -51,6 +81,9 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   @visibleForTesting
   SentryUser? get userForScope =>
       isSentryReportingAllowed ? _sentryUser : null;
+
+  @visibleForTesting
+  Future<void> get pendingScopeSync => _pendingScopeSync;
 
   /// Initialize Sentry.
   Future<void> initialize({
@@ -223,28 +256,34 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   void _syncUserScope() {
     if (!_isSentryAvailable) return;
 
+    final scopeSyncGeneration = ++_scopeSyncGeneration;
     final user = userForScope;
     final clearBreadcrumbs = !isSentryReportingAllowed;
-    _pendingScopeSync = _pendingScopeSync.then(
-      (_) => _syncUserScopeInternal(
+    _pendingScopeSync = _pendingScopeSync.then((_) async {
+      final isSynchronized = await _syncUserScopeInternal(
         user,
         clearBreadcrumbs: clearBreadcrumbs,
-      ),
-    );
+      );
+      if (isSynchronized) {
+        _synchronizedScopeGeneration = scopeSyncGeneration;
+      }
+    });
   }
 
-  Future<void> _syncUserScopeInternal(
+  Future<bool> _syncUserScopeInternal(
     SentryUser? user, {
     required bool clearBreadcrumbs,
   }) async {
     try {
-      await Sentry.configureScope((scope) async {
-        if (clearBreadcrumbs) await scope.clearBreadcrumbs();
-        await scope.setUser(user);
-      });
+      await _synchronizeScope(
+        user,
+        clearBreadcrumbs: clearBreadcrumbs,
+      );
       log('[SentryManager] User scope ${user == null ? 'cleared' : 'set'}');
+      return true;
     } catch (e) {
       logWarning('[SentryManager] Sync user scope failed. Exception: $e');
+      return false;
     }
   }
 }

@@ -118,7 +118,7 @@ class SentryInitializer {
     SentryEvent event,
     Hint? hint,
   ) async {
-    if (!SentryManager.instance.isSentryReportingAllowed) return null;
+    if (!SentryManager.instance.isSentryReportingReady) return null;
 
     event.request = _sanitizeRequest(event.request);
     event.exceptions = _deminifyExceptions(event.exceptions);
@@ -130,7 +130,7 @@ class SentryInitializer {
     SentryTransaction transaction,
     Hint hint,
   ) {
-    return SentryManager.instance.isSentryReportingAllowed ? transaction : null;
+    return SentryManager.instance.isSentryReportingReady ? transaction : null;
   }
 
   @visibleForTesting
@@ -138,12 +138,12 @@ class SentryInitializer {
     Breadcrumb? breadcrumb,
     Hint hint,
   ) {
-    return SentryManager.instance.isSentryReportingAllowed ? breadcrumb : null;
+    return SentryManager.instance.isSentryReportingReady ? breadcrumb : null;
   }
 
   @visibleForTesting
   static SentryLog? beforeSendLogHandler(SentryLog log) {
-    return SentryManager.instance.isSentryReportingAllowed ? log : null;
+    return SentryManager.instance.isSentryReportingReady ? log : null;
   }
 
   @visibleForTesting
@@ -151,7 +151,7 @@ class SentryInitializer {
     String key, {
     Map<String, String>? tags,
   }) {
-    return SentryManager.instance.isSentryReportingAllowed;
+    return SentryManager.instance.isSentryReportingReady;
   }
 
   static List<SentryException>? _deminifyExceptions(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -122,6 +124,56 @@ void main() {
       sentryManager.clearUser();
 
       expect(sentryManager.userForScope, isNull);
+    });
+
+    test('blocks reporting until the latest account scope update completes', () async {
+      final pendingSyncs = <Completer<void>>[];
+      final synchronizedScopes = <({String? userId, bool clearBreadcrumbs})>[];
+      var isInitialSync = true;
+      final manager = SentryManager.forTesting(
+        synchronizeScope: (user, {required clearBreadcrumbs}) {
+          synchronizedScopes.add((
+            userId: user?.id,
+            clearBreadcrumbs: clearBreadcrumbs,
+          ));
+          if (isInitialSync) {
+            isInitialSync = false;
+            return Future.value();
+          }
+          final pendingSync = Completer<void>();
+          pendingSyncs.add(pendingSync);
+          return pendingSync.future;
+        },
+      );
+
+      manager.setUser(SentryUser(id: 'alice'));
+      await manager.pendingScopeSync;
+      expect(manager.isSentryReportingReady, isTrue);
+
+      manager.clearUser();
+      manager.setSentryReportingDefault(false);
+      manager.setSentryReportingDefault(true);
+      manager.setUser(SentryUser(id: 'bob'));
+
+      expect(manager.isSentryReportingAllowed, isTrue);
+      expect(manager.isSentryReportingReady, isFalse);
+
+      for (var index = 0; index < 4; index++) {
+        await Future<void>.delayed(Duration.zero);
+        expect(pendingSyncs, hasLength(index + 1));
+        expect(manager.isSentryReportingReady, isFalse);
+        pendingSyncs[index].complete();
+      }
+      await manager.pendingScopeSync;
+
+      expect(manager.isSentryReportingReady, isTrue);
+      expect(synchronizedScopes, [
+        (userId: 'alice', clearBreadcrumbs: false),
+        (userId: null, clearBreadcrumbs: false),
+        (userId: null, clearBreadcrumbs: true),
+        (userId: null, clearBreadcrumbs: false),
+        (userId: 'bob', clearBreadcrumbs: false),
+      ]);
     });
   });
 }
