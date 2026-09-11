@@ -46,9 +46,8 @@ void main() {
     // and no null guard, so an absent id_token arrives as the 4-char string
     // "null" — not '' and not null:
     // https://github.com/linagora/flutter_appauth_web/blob/0952346bf781bd87b93b8c61619f81a264be52db/lib/flutter_appauth_web.dart#L179
-    // KNOWN FAILING: _orCurrent tests isNotEmpty, and "null" is not empty, so the
-    // sentinel is stored as the id token. tokenIdHash then keys the token cache
-    // by hash("null") and currentOidcIdToken hands "null" to the Drive exchange.
+    // Storing the sentinel would key the token cache by hash("null") and hand
+    // "null" to the Drive exchange through currentOidcIdToken.
     test('keeps the current id token when the web plugin yields the "null" sentinel', () {
       final result = response(idToken: 'null').toTokenOIDC(currentToken: currentToken);
 
@@ -72,11 +71,9 @@ void main() {
       expect(result.refreshToken, currentToken.refreshToken);
     });
 
-    // KNOWN FAILING: _orCurrent widened the fallback to empty strings, which
-    // master never did. Neither plugin can produce '' here — web guards null
+    // Only null falls back. Neither plugin can produce '' here — web guards null
     // explicitly (flutter_appauth_web.dart:177) and mobile passes the native
-    // map value through (method_channel_flutter_appauth.dart:66) — so the
-    // widening only changes semantics, never behaviour.
+    // map value through (method_channel_flutter_appauth.dart:66).
     test('keeps an empty refresh token as-is, the way master did', () {
       final result = response(refreshToken: '').toTokenOIDC(currentToken: currentToken);
 

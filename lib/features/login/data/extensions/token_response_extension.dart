@@ -9,12 +9,13 @@ extension TokenResponseExtension on TokenResponse {
   TokenOIDC toTokenOIDC({required TokenOIDC currentToken}) {
     return TokenOIDC(
       accessToken ?? '',
-      TokenId(_orCurrent(idToken, currentToken.tokenId.uuid)),
-      _orCurrent(refreshToken, currentToken.refreshToken),
+      TokenId(_idTokenOrCurrent(currentToken.tokenId.uuid)),
+      refreshToken ?? currentToken.refreshToken,
       expiredTime: accessTokenExpirationDateTime ?? DateTime.now());
   }
 
-  // The plugin returns '' rather than null when a field is absent.
-  String _orCurrent(String? value, String current) =>
-      value?.isNotEmpty == true ? value! : current;
+  // flutter_appauth_web stringifies the absent field, so it arrives as "null";
+  // mobile sends '' or null for the same thing.
+  String _idTokenOrCurrent(String current) =>
+      (idToken?.isNotEmpty == true && idToken != 'null') ? idToken! : current;
 }
