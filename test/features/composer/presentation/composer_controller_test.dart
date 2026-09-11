@@ -141,7 +141,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   InternalFinalCallback<void> get onDelete => mockControllerCallback();
 
   // Overridable so a test can reproduce a session torn down mid-logout.
+  @override
   AccountId? currentAccountId = AccountFixtures.aliceAccountId;
+  @override
   Session? currentSession = SessionFixtures.aliceSession;
 
   @override
