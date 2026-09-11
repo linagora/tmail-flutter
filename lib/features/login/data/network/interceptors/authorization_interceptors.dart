@@ -97,9 +97,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   /// Triggers a refresh, or joins one already running — dedupes an external
   /// caller (e.g. Workplace's own Dio) against this interceptor's [onError].
-  /// Owns the outcome: throws [RefreshTokenDuplicatedException] on a same-token
-  /// response, clears the session and throws [RefreshTokenFailedException] on a
-  /// server rejection, rethrows transient failures untouched.
+  /// Owns the outcome: throws [RefreshTokenUnavailableException] without sending
+  /// anything when the session has no refresh token, [RefreshTokenDuplicatedException]
+  /// on a same-token response, clears the session and throws
+  /// [RefreshTokenFailedException] on a server rejection, rethrows transient
+  /// failures untouched.
   Future<TokenOIDC> requestTokenRefresh() {
     final inFlight = _refreshInFlight;
     if (inFlight != null) return inFlight;
@@ -107,6 +109,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // Nothing left to refresh with — the session already died elsewhere.
     if (_configOIDC == null || _token == null) {
       return Future.error(RefreshTokenFailedException());
+    }
+
+    // Same bar as validateToRefreshToken: sending a refresh the session cannot
+    // make earns a server rejection that would clear a session still in use.
+    if (!_isAuthenticationOidcValid() || !_isRefreshTokenNotEmpty(_token)) {
+      return Future.error(const RefreshTokenUnavailableException());
     }
 
     late final Future<TokenOIDC> pending;

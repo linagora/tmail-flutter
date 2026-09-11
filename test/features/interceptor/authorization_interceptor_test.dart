@@ -1874,6 +1874,31 @@ void main() {
     );
 
     test(
+      'GIVEN an OIDC session whose token carries no refresh token\n'
+      'WHEN a caller asks for a refresh\n'
+      'THEN nothing is sent and the session is kept\n'
+      'SO a Drive-only 401 cannot earn a server rejection that logs the user out',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTimeAndRefreshTokenEmpty,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenUnavailableException>()),
+        );
+
+        verifyNever(authenticationClient.refreshingTokensOIDC(any, any, any, any, any));
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+        expect(
+          authorizationInterceptors.currentToken,
+          OIDCFixtures.tokenOidcExpiredTimeAndRefreshTokenEmpty,
+        );
+      },
+    );
+
+    test(
       'GIVEN a refresh in flight\n'
       'WHEN the session is cleared before it resolves\n'
       'THEN the token is dropped instead of re-arming a logged-out interceptor\n'

@@ -50,3 +50,13 @@ class StaleSessionRefreshException extends AuthenticationException {
   @override
   String get exceptionName => 'StaleSessionRefreshException';
 }
+
+/// The session holds nothing to refresh with, so no request was sent. Not a
+/// [RefreshTokenFailedException]: the session is untouched, not dead.
+class RefreshTokenUnavailableException extends AuthenticationException {
+  const RefreshTokenUnavailableException()
+      : super(message: 'No refresh token available for the current session.');
+
+  @override
+  String get exceptionName => 'RefreshTokenUnavailableException';
+}
