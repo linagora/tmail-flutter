@@ -4,6 +4,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,6 +101,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -428,6 +430,52 @@ void main() {
       storeEmailSortOrderInteractor,
       getStoredEmailSortOrderInteractor,
     );
+  });
+
+  group('PaywallLauncher navigation', () {
+    const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+    late List<String> launchedUrls;
+    late List<String> receivedMethods;
+    late PaywallLauncher paywallLauncher;
+
+    setUp(() {
+      launchedUrls = [];
+      receivedMethods = [];
+      paywallLauncher = const PaywallLauncher();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(urlLauncherChannel, (call) async {
+        receivedMethods.add(call.method);
+        if (call.method == 'launch' || call.method == 'launchUrl') {
+          final arguments = call.arguments as Map<dynamic, dynamic>;
+          launchedUrls.add(arguments['url'] as String);
+        }
+        return true;
+      });
+    });
+
+    tearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(urlLauncherChannel, null);
+    });
+
+    testWidgets('should launch a resolved paywall destination',
+        (tester) async {
+      paywallLauncher.launch(Uri.parse('https://domain.tld/#/premium'));
+      await tester.pump();
+
+      expect(launchedUrls, ['https://domain.tld/#/premium']);
+    });
+
+    testWidgets('should reject an unsafe resolved destination',
+        (tester) async {
+      paywallLauncher.launch(Uri.parse('javascript:alert(1)'));
+      await tester.pump();
+
+      expect(launchedUrls, isEmpty);
+      // Rejected before any platform call, not by a failing launch.
+      expect(receivedMethods, isEmpty);
+    });
   });
 
   group('draft saved toast icon:', () {

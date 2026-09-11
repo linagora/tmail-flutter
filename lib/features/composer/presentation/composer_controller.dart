@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -110,14 +111,15 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
@@ -1172,11 +1174,10 @@ class ComposerController extends BaseController
       exception: failure.exception,
     );
 
-    final isIncreaseMySpaceIsDisabled =
-        !mailboxDashBoardController.validatePremiumIsAvailable() ||
-            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
-
-    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
+    final providerContainer = ProviderScope.containerOf(context, listen: false);
+    final needIncreaseMySpace = providerContainer.isPremiumCtaAvailable(
+          mailboxDashBoardController.currentPremiumCtaContext,
+        ) &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
@@ -1197,7 +1198,9 @@ class ComposerController extends BaseController
         popBack();
 
         if (needIncreaseMySpace) {
-          mailboxDashBoardController.paywallController?.navigateToPaywall();
+          providerContainer.openPremiumCta(
+            mailboxDashBoardController.currentPremiumCtaContext,
+          );
         } else {
           _autoFocusFieldWhenLauncher();
         }
@@ -1484,15 +1487,8 @@ class ComposerController extends BaseController
           context: context,
           failure: resultState,
           shouldOfferCloseComposer: false,
-          onConfirmAction: (needIncreaseMySpace) {
+          onConfirmAction: () {
             _saveToDraftButtonState = ButtonState.enabled;
-            popBack();
-
-            if (needIncreaseMySpace) {
-              mailboxDashBoardController.paywallController?.navigateToPaywall();
-            } else {
-              _autoFocusFieldWhenLauncher();
-            }
           },
           onCancelAction: (needIncreaseMySpace) {
             _saveToDraftButtonState = ButtonState.enabled;
@@ -2479,7 +2475,7 @@ class ComposerController extends BaseController
     required BuildContext context,
     required FeatureFailure failure,
     bool shouldOfferCloseComposer = true,
-    Function(bool)? onConfirmAction,
+    VoidCallback? onConfirmAction,
     Function(bool)? onCancelAction,
   }) async {
     final messageRecord = getMessageFailure(
@@ -2488,11 +2484,10 @@ class ComposerController extends BaseController
       isDraft: true,
     );
 
-    final isIncreaseMySpaceIsDisabled =
-        !mailboxDashBoardController.validatePremiumIsAvailable() ||
-            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
-
-    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
+    final providerContainer = ProviderScope.containerOf(context, listen: false);
+    final needIncreaseMySpace = providerContainer.isPremiumCtaAvailable(
+          mailboxDashBoardController.currentPremiumCtaContext,
+        ) &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
@@ -2510,17 +2505,19 @@ class ComposerController extends BaseController
       outsideDismissible: false,
       autoPerformPopBack: false,
       onConfirmAction: () {
-        if (onConfirmAction != null) {
-          onConfirmAction(needIncreaseMySpace);
-        } else {
+        if (onConfirmAction == null) {
           _closeComposerButtonState = ButtonState.enabled;
-          popBack();
+        } else {
+          onConfirmAction();
+        }
+        popBack();
 
-          if (needIncreaseMySpace) {
-            mailboxDashBoardController.paywallController?.navigateToPaywall();
-          } else {
-            _autoFocusFieldWhenLauncher();
-          }
+        if (needIncreaseMySpace) {
+          providerContainer.openPremiumCta(
+            mailboxDashBoardController.currentPremiumCtaContext,
+          );
+        } else {
+          _autoFocusFieldWhenLauncher();
         }
       },
       onCancelAction: () {

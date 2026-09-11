@@ -8,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
@@ -96,15 +95,6 @@ class QuotasController extends BaseController {
     } else {
       super.handleFailureViewState(failure);
     }
-  }
-
-  bool get isManageMyStorageIsDisabled {
-    return !mailboxDashBoardController.validatePremiumIsAvailable() ||
-      mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
-  }
-
-  void handleManageMyStorage() {
-    mailboxDashBoardController.paywallController?.navigateToPaywall();
   }
 
   void closeBanner() {

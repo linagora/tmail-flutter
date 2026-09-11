@@ -111,7 +111,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/email_action_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/linagora_ecosystem_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mobile_mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/web_mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
@@ -134,7 +133,6 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_bindings.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
@@ -433,8 +431,6 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetIdentityCacheOnWebInteractor(
       Get.find<IdentityCreatorRepository>()
     ));
-    PaywallBindings().dependencies();
-
     DownloadInteractorBindings().dependencies();
 
     SettingInteractorBindings().dependencies();
@@ -453,7 +449,6 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
     );
 
     EmailActionInteractorBindings(Get.find<EmailRepository>()).dependencies();
-    LinagoraEcosystemInteractorBindings().dependencies();
   }
 
   @override

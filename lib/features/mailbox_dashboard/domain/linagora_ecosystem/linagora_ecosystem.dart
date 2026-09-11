@@ -48,6 +48,14 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
     return listAppLinagoraEcosystem.where((app) => app.isAppAndroidEnabled).toList();
   }
 
+  String? get paywallUrlTemplate {
+    final property = properties?[LinagoraEcosystemIdentifier.paywallURL];
+    if (property is! ApiUrlLinagoraEcosystem) return null;
+
+    final template = property.value.trim();
+    return template.isEmpty ? null : template;
+  }
+
   String? get scribePromptUrl =>
       (properties?[LinagoraEcosystemIdentifier.scribePromptUrl] as ApiUrlLinagoraEcosystem?)?.value;
 

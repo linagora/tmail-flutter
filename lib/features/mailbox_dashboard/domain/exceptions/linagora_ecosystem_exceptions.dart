@@ -6,10 +6,3 @@ class NotFoundLinagoraEcosystem extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundLinagoraEcosystem';
 }
-
-class NotFoundPaywallUrl extends AppBaseException {
-  NotFoundPaywallUrl([super.message]);
-
-  @override
-  String get exceptionName => 'NotFoundPaywallUrl';
-}

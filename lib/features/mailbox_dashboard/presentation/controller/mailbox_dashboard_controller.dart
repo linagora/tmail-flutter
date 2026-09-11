@@ -111,10 +111,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_ac
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_stored_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_text_formatting_menu_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -135,7 +133,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/setup_linagora_eco_system_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
@@ -189,8 +186,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
-import 'package:tmail_ui_user/features/paywall/presentation/saas_premium_mixin.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -247,7 +242,6 @@ import 'package:uuid/uuid.dart';
 class MailboxDashBoardController extends ReloadableController
     with ContactSupportMixin,
         OwnEmailAddressMixin,
-        SaaSPremiumMixin,
         AiScribeMixin,
         SearchLabelFilterModalMixin,
         AddLabelToEmailMixin,
@@ -361,8 +355,6 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
-  LinagoraEcosystem? cachedLinagoraEcosystem;
-  PaywallController? paywallController;
   final workerObxVariables = <Worker>[];
   ProviderSubscription<bool>? advancedSearchViewSubscription;
   ProviderSubscription<bool>? searchInputFocusSubscription;
@@ -588,8 +580,6 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(success.isDisplayed);
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
-    } else if (success is GetLinagoraEcosystemSuccess) {
-      handleGetLinagoraEcosystemSuccess(success);
     } else {
       subscribeLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
@@ -641,8 +631,6 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(false);
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
-    } else if (failure is GetLinagoraEcosystemFailure) {
-      handleGetLinagoraEcosystemFailure(failure);
     } else {
       subscribeLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
@@ -991,17 +979,11 @@ class MailboxDashBoardController extends ReloadableController
       _storeSessionAction(session);
     }
 
-    paywallController = PaywallController(
-      ownEmailAddress: ownEmailAddress.value,
-    );
-
     if (isLabelCapabilitySupported) {
       labelController.checkLabelSettingState(session, currentAccountId);
     } else {
       injectWebSocket(session: session, accountId: currentAccountId);
     }
-
-    loadLinagoraEcosystem();
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
@@ -3494,9 +3476,6 @@ class MailboxDashBoardController extends ReloadableController
     _currentEmailState = null;
     _isFirstSessionLoad = false;
     twakeAppManager.setHasComposer(false);
-    paywallController?.onClose();
-    paywallController = null;
-    cachedLinagoraEcosystem = null;
     _sentryEcosystem = null;
     _disposeWorkerObxVariables();
     _dashboardSearchCoordinator?.dispose();

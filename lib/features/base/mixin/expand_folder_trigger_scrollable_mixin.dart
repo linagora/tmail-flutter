@@ -1,9 +1,11 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/extensions/premium_cta_ref_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -27,12 +29,13 @@ mixin ExpandFolderTriggerScrollableMixin {
     BuildContext context,
     ScrollController scrollController,
   ) {
+    if (!context.mounted || !scrollController.hasClients) return;
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero);
     final screenHeight = MediaQuery.of(context).size.height;
-    final offsetY = _getOffsetY();
+    final offsetY = _getOffsetY(context);
     final bottomY = position.dy + renderBox.size.height + offsetY;
     log('$runtimeType::_scrollToSelfIfNeeded:position = $position |screenHeight = $screenHeight | bottomY = $bottomY | offsetY = $offsetY');
     if (bottomY > screenHeight) {
@@ -47,19 +50,20 @@ mixin ExpandFolderTriggerScrollableMixin {
     }
   }
 
-  double _getOffsetY() {
+  double _getOffsetY(BuildContext context) {
     try {
-      final quota = getBinding<MailboxDashBoardController>()?.octetsQuota.value;
+      final dashboardController = getBinding<MailboxDashBoardController>();
+      final quota = dashboardController?.octetsQuota.value;
       final isQuotaViewDisplayed = quota?.storageAvailable ?? false;
+      final isIncreaseSpaceButtonDisplayed = PlatformInfo.isWeb &&
+          isQuotaViewDisplayed &&
+          ProviderScope.containerOf(context, listen: false)
+              .isPremiumCtaAvailable(
+            dashboardController?.currentPremiumCtaContext,
+          );
 
-      final isPremiumAvailable = getBinding<MailboxDashBoardController>()
-          ?.validatePremiumIsAvailable() ?? false;
-      final isIncreaseSpaceButtonDisplayed =
-          isPremiumAvailable && PlatformInfo.isWeb;
-
-      if (isQuotaViewDisplayed && isIncreaseSpaceButtonDisplayed) return 260;
+      if (isIncreaseSpaceButtonDisplayed) return 260;
       if (isQuotaViewDisplayed) return 200;
-      if (isIncreaseSpaceButtonDisplayed) return 150;
       return 70;
     } catch (_) {
       return 70;
