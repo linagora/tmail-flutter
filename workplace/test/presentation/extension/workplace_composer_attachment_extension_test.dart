@@ -629,6 +629,40 @@ void main() {
       // Called once for the first 401, not again after the retry also fails.
       expect(refreshCallCount, equals(1));
     });
+
+    testWidgets('does not retry when the refresh keeps the id token that just 401ed', (tester) async {
+      final adapter = _SequentialAdapter([_fail401]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        // The IdP omitted id_token, so the interceptor kept the current one.
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      expect(refreshCallCount, equals(1));
+      // No second exchange: the token that just failed is not re-sent.
+      expect(adapter.capturedBodies, hasLength(1));
+    });
     testWidgets('propagates the oidcRefreshTrigger failure after a 401 with no second exchange', (tester) async {
       final adapter = _SequentialAdapter([_fail401]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);

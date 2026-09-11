@@ -154,7 +154,14 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     }
 
     final refreshedToken = await oidcRefreshTrigger!();
-    if (refreshedToken == null) throw failure;
+    logWarning(
+      'WorkplaceComposerAttachmentExtension::_retryAfterRefreshOrThrow: '
+      'failedIdTokenHash=${failedToken.hashCode} | '
+      'refreshedIdTokenHash=${refreshedToken?.hashCode}',
+    );
+    // The IdP may omit id_token on refresh, in which case the current one is
+    // kept — retrying would re-send the token that just 401'd.
+    if (refreshedToken == null || refreshedToken == failedToken) throw failure;
 
     return _exchangeAccessToken(platformUrl, refreshedToken, refreshAttempted: true);
   }
