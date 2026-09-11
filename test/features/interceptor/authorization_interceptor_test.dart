@@ -150,7 +150,7 @@ void main() {
       OIDCFixtures.oidcConfiguration.redirectUrl,
       OIDCFixtures.oidcConfiguration.discoveryUrl,
       OIDCFixtures.oidcConfiguration.scopes,
-      OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+      OIDCFixtures.tokenOidcExpiredTime,
     )).thenThrow(error);
   }
 
@@ -399,7 +399,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -413,7 +413,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
       },
     );
@@ -451,7 +451,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          OIDCFixtures.tokenOidcNotExpiredYet,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -465,7 +465,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          OIDCFixtures.tokenOidcNotExpiredYet,
         )).called(1);
       },
     );
@@ -489,7 +489,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.tokenOidcExpiredTime);
         stubAccountCache();
 
@@ -535,7 +535,7 @@ void main() {
         OIDCFixtures.oidcConfiguration.redirectUrl,
         OIDCFixtures.oidcConfiguration.discoveryUrl,
         OIDCFixtures.oidcConfiguration.scopes,
-        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        OIDCFixtures.tokenOidcExpiredTime,
       )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
       stubAccountCache();
     }
@@ -628,7 +628,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
@@ -646,7 +646,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
 
         expect(
@@ -689,7 +689,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh401);
         stubAccountCache();
 
@@ -742,7 +742,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh403);
         stubAccountCache();
 
@@ -789,7 +789,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh500);
         stubAccountCache();
 
@@ -832,7 +832,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(const ServerError());
         stubAccountCache();
 
@@ -864,7 +864,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(const TemporarilyUnavailable());
         stubAccountCache();
 
@@ -897,7 +897,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(AccessTokenInvalidException());
         stubAccountCache();
 
@@ -947,7 +947,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(PlatformException(
           code: 'token_failed',
           message: 'Failed to get token: [error: null, description: Network error]',
@@ -1011,7 +1011,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         ));
       },
     );
@@ -1065,7 +1065,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         ));
       },
     );
@@ -1108,7 +1108,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         ));
       },
     );
@@ -1168,7 +1168,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -1181,7 +1181,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
 
         expect(response1.statusCode, equals(HttpStatus.ok));
@@ -1225,7 +1225,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(AccessTokenInvalidException());
         stubAccountCache();
 
@@ -1241,7 +1241,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
       },
     );
@@ -1308,7 +1308,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -1323,7 +1323,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
 
         expect(responses[0].statusCode, equals(HttpStatus.ok));
@@ -1382,7 +1382,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -1398,7 +1398,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
 
         for (final response in responses) {
@@ -1452,7 +1452,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
@@ -1519,7 +1519,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
@@ -1560,7 +1560,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1); // only the first call
       },
     );
@@ -1607,7 +1607,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async {
           refreshCallCount++;
           return OIDCFixtures.tokenOidcExpiredTime; // same token → duplicate
@@ -1667,7 +1667,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) => refreshCompleter.future);
         stubAccountCache();
 
@@ -1681,7 +1681,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
         expect(results[0].token, equals(OIDCFixtures.newTokenOidc.token));
         expect(results[1].token, equals(OIDCFixtures.newTokenOidc.token));
@@ -1724,7 +1724,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) => refreshCompleter.future);
         stubAccountCache();
 
@@ -1741,7 +1741,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
         expect(response.statusCode, equals(HttpStatus.ok));
         expect(workplaceToken.token, equals(OIDCFixtures.newTokenOidc.token));
@@ -1763,7 +1763,7 @@ void main() {
         OIDCFixtures.oidcConfiguration.redirectUrl,
         OIDCFixtures.oidcConfiguration.discoveryUrl,
         OIDCFixtures.oidcConfiguration.scopes,
-        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        OIDCFixtures.tokenOidcExpiredTime,
       )).thenThrow(error);
     }
 
@@ -1993,70 +1993,6 @@ void main() {
   });
 
   // ============================================================
-  // requestTokenRefresh: id_token omitted from the refresh response
-  // ============================================================
-  group('requestTokenRefresh: id_token omitted from the refresh response', () {
-    void stubRefreshReturning(TokenOIDC refreshed) {
-      authorizationInterceptors.setTokenAndAuthorityOidc(
-        newToken: OIDCFixtures.tokenOidcExpiredTime,
-        newConfig: OIDCFixtures.oidcConfiguration,
-      );
-      when(authenticationClient.refreshingTokensOIDC(
-        OIDCFixtures.oidcConfiguration.clientId,
-        OIDCFixtures.oidcConfiguration.redirectUrl,
-        OIDCFixtures.oidcConfiguration.discoveryUrl,
-        OIDCFixtures.oidcConfiguration.scopes,
-        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
-      )).thenAnswer((_) async => refreshed);
-      when(accountCacheManager.getCurrentAccount())
-          .thenAnswer((_) async => AccountFixtures.aliceAccount);
-    }
-
-    test(
-      'GIVEN the refresh response carries no id_token (OIDC Core 12.2)\n'
-      'THEN the current id token is kept on the new token\n'
-      'AND that token is what gets persisted',
-      () async {
-        final refreshedWithoutId = TokenOIDC(
-          OIDCFixtures.newTokenOidc.token,
-          TokenId(''),
-          OIDCFixtures.newTokenOidc.refreshToken,
-          expiredTime: OIDCFixtures.newTokenOidc.expiredTime,
-        );
-        stubRefreshReturning(refreshedWithoutId);
-
-        final result = await authorizationInterceptors.requestTokenRefresh();
-
-        expect(result.token, equals(OIDCFixtures.newTokenOidc.token));
-        expect(result.tokenId, equals(OIDCFixtures.tokenOidcExpiredTime.tokenId));
-        expect(
-          authorizationInterceptors.currentOidcIdToken,
-          equals(OIDCFixtures.tokenOidcExpiredTime.tokenId.uuid),
-        );
-        final persisted = verify(tokenOidcCacheManager.persistOneTokenOidc(captureAny))
-            .captured.single as TokenOIDC;
-        expect(persisted.tokenId, equals(OIDCFixtures.tokenOidcExpiredTime.tokenId));
-      },
-    );
-
-    test(
-      'GIVEN the refresh response carries a new id_token\n'
-      'THEN the new id token replaces the current one',
-      () async {
-        stubRefreshReturning(OIDCFixtures.newTokenOidc);
-
-        final result = await authorizationInterceptors.requestTokenRefresh();
-
-        expect(result.tokenId, equals(OIDCFixtures.newTokenOidc.tokenId));
-        expect(
-          authorizationInterceptors.currentOidcIdToken,
-          equals(OIDCFixtures.newTokenOidc.tokenId.uuid),
-        );
-      },
-    );
-  });
-
-  // ============================================================
   // onError: retry fails (separate Dio error handling)
   // ============================================================
   group('onError: retry fails (separate Dio error handling)', () {
@@ -2097,7 +2033,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -2112,7 +2048,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
       },
     );
@@ -2161,7 +2097,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -2253,7 +2189,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -2298,7 +2234,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          OIDCFixtures.tokenOidcNotExpiredYet,
         )).thenAnswer((_) async {
           refreshCallCount++;
           return OIDCFixtures.tokenOidcNotExpiredYet; // same token → duplicate
@@ -2333,7 +2269,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          OIDCFixtures.tokenOidcNotExpiredYet,
         )).thenAnswer((_) async => OIDCFixtures.tokenOidcNotExpiredYet);
 
         await expectLater(
@@ -2384,7 +2320,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(refreshTimeoutError);
 
         await expectLater(
@@ -2418,7 +2354,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+          OIDCFixtures.tokenOidcNotExpiredYet,
         )).thenThrow(refreshTimeoutError);
 
         await expectLater(
@@ -2472,7 +2408,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -2528,7 +2464,7 @@ void main() {
             OIDCFixtures.oidcConfiguration.redirectUrl,
             OIDCFixtures.oidcConfiguration.discoveryUrl,
             OIDCFixtures.oidcConfiguration.scopes,
-            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+            OIDCFixtures.tokenOidcExpiredTime,
           )).thenThrow(platformNetworkException);
 
           await expectLater(
@@ -2566,7 +2502,7 @@ void main() {
             OIDCFixtures.oidcConfiguration.redirectUrl,
             OIDCFixtures.oidcConfiguration.discoveryUrl,
             OIDCFixtures.oidcConfiguration.scopes,
-            OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+            OIDCFixtures.tokenOidcNotExpiredYet,
           )).thenThrow(platformNetworkException);
 
           await expectLater(
@@ -2604,7 +2540,7 @@ void main() {
             OIDCFixtures.oidcConfiguration.redirectUrl,
             OIDCFixtures.oidcConfiguration.discoveryUrl,
             OIDCFixtures.oidcConfiguration.scopes,
-            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+            OIDCFixtures.tokenOidcExpiredTime,
           )).thenThrow(PlatformException(
             code: 'network_error',
             message: 'Failed to connect to token endpoint',
@@ -2645,7 +2581,7 @@ void main() {
             OIDCFixtures.oidcConfiguration.redirectUrl,
             OIDCFixtures.oidcConfiguration.discoveryUrl,
             OIDCFixtures.oidcConfiguration.scopes,
-            OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+            OIDCFixtures.tokenOidcExpiredTime,
           )).thenThrow(const OAuthAuthorizationError(
             error: 'invalid_grant',
             errorDescription: 'The refresh token has been revoked',
@@ -2712,7 +2648,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -2728,7 +2664,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
 
         for (final response in responses) {
@@ -2777,7 +2713,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(refreshTimeoutError);
         stubAccountCache();
 
@@ -2835,7 +2771,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(PlatformException(
           code: 'network_error',
           message: 'Failed to connect to token endpoint',
@@ -2897,7 +2833,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenThrow(dioErrorRefresh400);
         stubAccountCache();
 
@@ -2980,7 +2916,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -3009,7 +2945,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
       },
     );
@@ -3060,7 +2996,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         ));
       },
     );
@@ -3090,7 +3026,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         when(accountCacheManager.getCurrentAccount())
             .thenAnswer((_) async => AccountFixtures.aliceAccount);
@@ -3133,7 +3069,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
         final expectedPersonalAccount = PersonalAccount(
@@ -3207,7 +3143,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -3259,7 +3195,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -3341,7 +3277,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         ));
       },
     );
@@ -3409,7 +3345,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -3421,7 +3357,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).called(1);
       },
     );
@@ -3913,7 +3849,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -3969,7 +3905,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 
@@ -4071,7 +4007,7 @@ void main() {
           OIDCFixtures.oidcConfiguration.redirectUrl,
           OIDCFixtures.oidcConfiguration.discoveryUrl,
           OIDCFixtures.oidcConfiguration.scopes,
-          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+          OIDCFixtures.tokenOidcExpiredTime,
         )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
         stubAccountCache();
 

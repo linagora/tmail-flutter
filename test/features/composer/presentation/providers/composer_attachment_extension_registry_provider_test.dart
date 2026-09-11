@@ -197,7 +197,7 @@ void main() {
         OIDCFixtures.oidcConfiguration.redirectUrl,
         OIDCFixtures.oidcConfiguration.discoveryUrl,
         OIDCFixtures.oidcConfiguration.scopes,
-        OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        OIDCFixtures.tokenOidcExpiredTime,
       )).thenAnswer((_) => refreshCompleter.future);
     });
 

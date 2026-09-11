@@ -13,7 +13,6 @@ import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -609,7 +608,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       _configOIDC!.redirectUrl,
       _configOIDC!.discoveryUrl,
       _configOIDC!.scopes,
-      _token!.refreshToken
+      _token!
     );
   }
 
@@ -644,18 +643,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // logged-out account and re-persist it over wiped caches.
     if (generation != _sessionGeneration) throw RefreshTokenFailedException();
 
-    final newTokenOidc = acquired.withIdTokenFallback(_token?.tokenId);
-    if (newTokenOidc.token == _token?.token) {
+    if (acquired.token == _token?.token) {
       throw const RefreshTokenDuplicatedException();
     }
-    _updateNewToken(newTokenOidc);
+    _updateNewToken(acquired);
 
-    final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+    final personalAccount = await _updateCurrentAccount(tokenOIDC: acquired);
     if (PlatformInfo.isIOS) {
       await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
     }
 
-    return newTokenOidc;
+    return acquired;
   }
 
   Future<Response> _retryRequest(
