@@ -10,7 +10,9 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -634,5 +636,95 @@ void main() {
       expect(recipientCcButtonFinder, findsNothing);
       expect(recipientBccButtonFinder, findsNothing);
     });
+
+    testWidgets(
+      'Bcc TagEditor enableBorder becomes true while a To recipient is dragged over it\n'
+      '(regression for #3074)',
+      (tester) async {
+        const composerId = 'composer-drag-highlight';
+        final toKey = GlobalKey<TagsEditorState>();
+        final bccKey = GlobalKey<TagsEditorState>();
+        final toEmail = EmailAddress('Alice', 'alice@example.com');
+
+        await tester.pumpWidget(
+          makeTestableWidget(
+            child: Column(
+              children: [
+                RecipientComposerWidget(
+                  prefix: PrefixEmailAddress.to,
+                  prefixRootState: PrefixEmailAddress.to,
+                  listEmailAddress: <EmailAddress>[toEmail],
+                  imagePaths: imagePaths,
+                  maxWidth: 600,
+                  keyTagEditor: toKey,
+                  isTestingForWeb: true,
+                  toState: PrefixRecipientState.enabled,
+                  ccState: PrefixRecipientState.enabled,
+                  bccState: PrefixRecipientState.enabled,
+                  composerId: composerId,
+                ),
+                RecipientComposerWidget(
+                  prefix: PrefixEmailAddress.cc,
+                  listEmailAddress: <EmailAddress>[],
+                  imagePaths: imagePaths,
+                  maxWidth: 600,
+                  isTestingForWeb: true,
+                  composerId: composerId,
+                ),
+                RecipientComposerWidget(
+                  prefix: PrefixEmailAddress.bcc,
+                  listEmailAddress: <EmailAddress>[],
+                  imagePaths: imagePaths,
+                  maxWidth: 600,
+                  keyTagEditor: bccKey,
+                  isTestingForWeb: true,
+                  composerId: composerId,
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final bccDragTarget = find.descendant(
+          of: find.byWidgetPredicate(
+            (widget) =>
+                widget is RecipientComposerWidget &&
+                widget.prefix == PrefixEmailAddress.bcc,
+          ),
+          matching: find.byType(DragTarget<DraggableEmailAddress>),
+        );
+        expect(bccDragTarget, findsOneWidget);
+
+        TagEditor getBccTagEditor() {
+          return tester.widget<TagEditor>(
+            find.descendant(
+              of: find.byWidgetPredicate(
+                (widget) =>
+                    widget is RecipientComposerWidget &&
+                    widget.prefix == PrefixEmailAddress.bcc,
+              ),
+              matching: find.byType(TagEditor<SuggestionEmailAddress>),
+            ),
+          );
+        }
+
+        expect(getBccTagEditor().enableBorder, isFalse);
+
+        final draggableFinder = find.byType(Draggable<DraggableEmailAddress>);
+        expect(draggableFinder, findsOneWidget);
+
+        final gesture = await tester.startGesture(
+          tester.getCenter(draggableFinder),
+        );
+        await gesture.moveTo(tester.getCenter(bccDragTarget));
+        await tester.pump();
+
+        expect(getBccTagEditor().enableBorder, isTrue);
+
+        await gesture.cancel();
+        await tester.pump();
+      },
+    );
   });
 }
