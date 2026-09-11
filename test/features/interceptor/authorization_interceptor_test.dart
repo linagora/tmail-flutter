@@ -1934,6 +1934,62 @@ void main() {
         expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
       },
     );
+
+    test(
+      'GIVEN a request that 401ed and is awaiting a refresh from its own session\n'
+      'WHEN the user logs out and a new session signs in before that refresh lands\n'
+      'THEN the leftover request fails without a session verdict\n'
+      'SO it cannot force the freshly signed-in session to log out.\n'
+      'KNOWN FAILING: the generation guard throws RefreshTokenFailedException,\n'
+      'which validateUrgentException treats as urgent, so BaseController runs\n'
+      'handleRefreshTokenFailedException on a session that is perfectly healthy.',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+
+        final gate = Completer<TokenOIDC>();
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) => gate.future);
+
+        // The request is now parked inside onError, awaiting the refresh.
+        final leftoverRequest = dio.post(baseUrl).then<Object?>(
+              (_) => null,
+              onError: (Object e) => e,
+            );
+        await pumpEventQueue();
+
+        // The user logs out and someone else signs in on the same interceptor.
+        authorizationInterceptors.clear();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.newTokenOidc,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        gate.complete(OIDCFixtures.tokenOidcNotExpiredYet);
+
+        final failure = await leftoverRequest;
+        final surfaced = failure is DioException ? failure.error : failure;
+
+        // Any of these three reaches BaseController.validateUrgentException and
+        // logs the new user out; a stale answer is not a session verdict.
+        expect(surfaced, isNot(isA<RefreshTokenFailedException>()));
+        expect(surfaced, isNot(isA<RefreshTokenDuplicatedException>()));
+        expect(surfaced, isNot(isA<BadCredentialsException>()));
+
+        // The new session must be untouched by the old request's failure.
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+        expect(authorizationInterceptors.currentToken, OIDCFixtures.newTokenOidc);
+      },
+    );
   });
 
   // ============================================================
