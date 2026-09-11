@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -52,8 +53,14 @@ bool _isUploadFromUrlSupported() {
 Future<String?> _refreshWorkplaceOidcToken() async {
   final interceptor = getBinding<AuthorizationInterceptors>();
   if (interceptor == null) return null;
-  final newToken = await interceptor.requestTokenRefresh();
-  return newToken.tokenId.uuid;
+  try {
+    final newToken = await interceptor.requestTokenRefresh();
+    return newToken.tokenId.uuid;
+  } on RefreshTokenFailedException catch (e, st) {
+    // The JMAP path logs its own; without this the Drive journey is silent.
+    interceptor.logFatalRefreshRejection(e, st);
+    rethrow;
+  }
 }
 
 Future<void> _onDrivePickState(String? composerId, DrivePickState state) async {

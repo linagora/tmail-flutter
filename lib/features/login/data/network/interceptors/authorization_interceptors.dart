@@ -117,6 +117,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return _refreshInFlight = pending;
   }
 
+  /// Reports a refresh the server rejected. Public so a direct caller (e.g. the
+  /// Workplace Drive exchange) reports its own journey with the same shape.
+  void logFatalRefreshRejection(RefreshTokenFailedException error, StackTrace st) {
+    final cause = error.cause ?? error;
+    logError(
+      'AuthorizationInterceptors::logFatalRefreshRejection: '
+      'will_logout=true — error=$cause',
+      exception: cause,
+      stackTrace: st,
+      extras: _errorClassifier.buildSentryExtras(cause),
+      webConsoleEnabled: true,
+    );
+  }
+
   bool _isRefreshRejectedByServer(Object error) => PlatformInfo.isWeb
       ? _errorClassifier.isServerRejection(error)
       : _isRefreshRejectedByTokenEndpoint(error);
@@ -351,8 +365,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         hasAttemptedRefresh: true,
       );
       return super.onError(err, handler);
-    } on RefreshTokenFailedException catch (refreshError) {
+    } on RefreshTokenFailedException catch (refreshError, st) {
       // Session already cleared by requestTokenRefresh; surface the dead session.
+      logFatalRefreshRejection(refreshError, st);
       return handler.reject(DioException(
         requestOptions: err.requestOptions,
         error: refreshError,
@@ -617,18 +632,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       acquired = PlatformInfo.isIOS
           ? await _getNewTokenForIOSPlatform()
           : await _getNewTokenForOtherPlatform();
-    } catch (e, st) {
+    } catch (e) {
       if (!_isRefreshRejectedByServer(e)) rethrow;
-      logError(
-        'AuthorizationInterceptors::_acquireAndPersistNewToken: '
-        'will_logout=true — error=$e',
-        exception: e,
-        stackTrace: st,
-        extras: _errorClassifier.buildSentryExtras(e),
-        webConsoleEnabled: true,
-      );
       clear();
-      throw RefreshTokenFailedException();
+      // Each caller logs it — this one method serves both JMAP and Workplace.
+      throw RefreshTokenFailedException(cause: e);
     }
 
     // The session died while we were away; re-arming it would resurrect a

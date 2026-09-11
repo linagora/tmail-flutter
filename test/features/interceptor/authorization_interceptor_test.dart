@@ -4038,7 +4038,7 @@ void main() {
         expect(errorRecords.single.rawMessage, contains('will_logout=true'));
         expect(
           errorRecords.single.rawMessage,
-          contains('_acquireAndPersistNewToken'),
+          contains('logFatalRefreshRejection'),
         );
         expect(
           errorRecords.any((r) => r.rawMessage.contains('onError:Exception')),

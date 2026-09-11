@@ -15,9 +15,13 @@ class BadCredentialsException extends AuthenticationException {
 }
 
 class RefreshTokenFailedException extends AuthenticationException {
+  /// The server rejection that killed the session, for the caller to log.
+  final Object? cause;
+
   RefreshTokenFailedException({
     int code = 400,
     String? message,
+    this.cause,
   }) : super(
           code: code,
           message: message ??

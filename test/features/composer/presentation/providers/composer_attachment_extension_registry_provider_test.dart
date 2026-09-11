@@ -81,7 +81,7 @@ void main() {
         (_) async => TokenOIDC('access', TokenId('id-token-2'), 'refresh'),
       );
 
-      final token = await readExtension().oidcRefreshTrigger!();
+      final token = await readExtension().oidcRefreshTrigger();
 
       expect(token, equals('id-token-2'));
       verifyNever(interceptor.clear());
@@ -93,10 +93,12 @@ void main() {
       when(interceptor.requestTokenRefresh()).thenThrow(rejection);
 
       await expectLater(
-        readExtension().oidcRefreshTrigger!(),
+        readExtension().oidcRefreshTrigger(),
         throwsA(same(rejection)),
       );
 
+      // Without this the Drive journey reaches logout with nothing in Sentry.
+      verify(interceptor.logFatalRefreshRejection(rejection, any)).called(1);
       verifyNever(interceptor.clear());
       verifyNever(dashboard.handleRefreshTokenFailedException());
     });
@@ -111,7 +113,7 @@ void main() {
       when(interceptor.requestTokenRefresh()).thenThrow(duplicated);
 
       await expectLater(
-        readExtension().oidcRefreshTrigger!(),
+        readExtension().oidcRefreshTrigger(),
         throwsA(same(duplicated)),
       );
 
@@ -122,7 +124,7 @@ void main() {
       when(interceptor.requestTokenRefresh()).thenThrow(transientError);
 
       await expectLater(
-        readExtension().oidcRefreshTrigger!(),
+        readExtension().oidcRefreshTrigger(),
         throwsA(same(transientError)),
       );
 
@@ -133,7 +135,7 @@ void main() {
     test('returns null without logout when no interceptor is registered', () async {
       Get.delete<AuthorizationInterceptors>();
 
-      final token = await readExtension().oidcRefreshTrigger!();
+      final token = await readExtension().oidcRefreshTrigger();
 
       expect(token, isNull);
       verifyNever(dashboard.handleRefreshTokenFailedException());
@@ -209,7 +211,7 @@ void main() {
       );
       Object? workplaceError;
       final workplaceRefresh = readExtension()
-          .oidcRefreshTrigger!()
+          .oidcRefreshTrigger()
           .then<String?>((_) => null, onError: (Object e) {
             workplaceError = e;
             return null;
@@ -246,7 +248,7 @@ void main() {
         throwsA(isA<DioException>().having((e) => e.error, 'error', same(transient))),
       );
       final workplaceRefresh = expectLater(
-        readExtension().oidcRefreshTrigger!(),
+        readExtension().oidcRefreshTrigger(),
         throwsA(same(transient)),
       );
       await pumpEventQueue();
