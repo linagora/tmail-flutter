@@ -159,7 +159,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
-import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -240,7 +239,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
-import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -416,10 +414,7 @@ class MailboxDashBoardController extends ReloadableController
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
-      _sentryEcosystem = SentryEcosystem(
-        getBinding<SentryConfigurationCacheManager>(),
-        getBinding<IOSSharingManager>(),
-      );
+      _sentryEcosystem = getBinding<SentryEcosystem>();
       _registerReceivingFileSharingStream();
       _registerDeepLinks();
     }
@@ -568,6 +563,7 @@ class MailboxDashBoardController extends ReloadableController
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
       setupAINeedsActionSetting(options: success.settingOption);
       initializeAppLanguage(success);
+      applySentryReportingConsent(_sentryEcosystem, success.settingOption.sentryUserOptIn);
     } else if (success is ClearMailboxSuccess) {
       clearMailboxSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
@@ -3488,6 +3484,10 @@ class MailboxDashBoardController extends ReloadableController
     _identities = null;
     outboxMailbox = null;
     sessionCurrent = null;
+    // Do not let the next account inherit either the previous identity or its
+    // reporting state while the new account's server settings are loading.
+    SentryManager.instance.clearUser();
+    applySentryReportingConsent(_sentryEcosystem, false);
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();

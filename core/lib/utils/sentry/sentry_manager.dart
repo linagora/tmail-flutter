@@ -1,20 +1,89 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:core/utils/sentry/sentry_reporter.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_initializer.dart';
+import 'package:core/utils/sentry/sentry_reporting_consent.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+typedef SentryScopeSynchronizer = Future<void> Function(
+  SentryUser? user, {
+  required bool clearBreadcrumbs,
+});
+
+Future<void> _synchronizeSentryScope(
+  SentryUser? user, {
+  required bool clearBreadcrumbs,
+}) async {
+  await Sentry.configureScope((scope) async {
+    if (clearBreadcrumbs) await scope.clearBreadcrumbs();
+    await scope.setUser(user);
+  });
+}
+
 /// Controls Sentry initialization and error reporting.
-class SentryManager implements SentryReporter {
-  SentryManager._();
+class SentryManager implements SentryReporter, SentryReportingConsent {
+  SentryManager._()
+      : _isSentryAvailable = false,
+        _synchronizeScope = _synchronizeSentryScope;
+
+  @visibleForTesting
+  SentryManager.forTesting({
+    required SentryScopeSynchronizer synchronizeScope,
+  })  : _isSentryAvailable = true,
+        _synchronizeScope = synchronizeScope;
 
   static final SentryManager instance = SentryManager._();
 
-  bool _isSentryAvailable = false;
+  bool _isSentryAvailable;
+  final SentryScopeSynchronizer _synchronizeScope;
 
+  // Defaults to true so platforms that never publish a default — web, where
+  // Sentry is driven by build-time env vars — keep reporting as before.
+  bool _isSentryReportingAllowedByDefault = true;
+  bool? _userSentryReportingConsent;
+  SentryUser? _sentryUser;
+  Future<void> _pendingScopeSync = Future.value();
+  int _scopeSyncGeneration = 0;
+  int _synchronizedScopeGeneration = 0;
+
+  @override
   bool get isSentryAvailable => _isSentryAvailable;
+
+  @override
+  bool get isSentryReportingAllowed =>
+      _userSentryReportingConsent ?? _isSentryReportingAllowedByDefault;
+
+  @override
+  void setSentryReportingDefault(bool allowed) {
+    _isSentryReportingAllowedByDefault = allowed;
+    _syncUserScope();
+  }
+
+  @override
+  void setSentryReportingConsent(bool? consent) {
+    _userSentryReportingConsent = consent;
+    _syncUserScope();
+  }
+
+  bool get isSentryReportingReady =>
+      isSentryReportingAllowed &&
+      _scopeSyncGeneration == _synchronizedScopeGeneration;
+
+  /// The single gate every outgoing Sentry report passes through.
+  bool get _canSendToSentry => _isSentryAvailable && isSentryReportingReady;
+
+  /// The identity the scope should carry: the one that was set, but only while
+  /// reporting is allowed. Independent of [isSentryAvailable], which
+  /// [_syncUserScope] checks separately before touching the SDK.
+  @visibleForTesting
+  SentryUser? get userForScope =>
+      isSentryReportingAllowed ? _sentryUser : null;
+
+  @visibleForTesting
+  Future<void> get pendingScopeSync => _pendingScopeSync;
 
   /// Initialize Sentry.
   Future<void> initialize({
@@ -66,7 +135,7 @@ class SentryManager implements SentryReporter {
     Map<String, dynamic>? extras,
     SentryLevel level = SentryLevel.error,
   }) {
-    if (!_isSentryAvailable) return;
+    if (!_canSendToSentry) return;
 
     // Use unawaited to prevent linter warnings about unawaited futures.
     // We do not want the UI to pause while Sentry writes the crash report.
@@ -104,7 +173,7 @@ class SentryManager implements SentryReporter {
     Map<String, dynamic>? extras,
     SentryLevel level = SentryLevel.info,
   }) {
-    if (!_isSentryAvailable) return;
+    if (!_canSendToSentry) return;
 
     unawaited(_captureMessageInternal(message, level, extras));
   }
@@ -140,7 +209,7 @@ class SentryManager implements SentryReporter {
     SentryLevel level = SentryLevel.debug,
     String? category,
   }) {
-    if (!_isSentryAvailable) return;
+    if (!_canSendToSentry) return;
 
     unawaited(_addBreadcrumbInternal(message, extras: extras, level: level, category: category));
   }
@@ -169,25 +238,52 @@ class SentryManager implements SentryReporter {
 
   /// Sets the user context.
   void setUser(SentryUser user) {
-    if (!_isSentryAvailable) return;
-
-    try {
-      Sentry.configureScope((scope) => scope.setUser(user));
-      log('[SentryManager] User set: ${user.email}');
-    } catch (e) {
-      logWarning('[SentryManager] Set user failed. Exception: $e');
-    }
+    _sentryUser = user;
+    _syncUserScope();
   }
 
   /// Clears the user context.
   void clearUser() {
+    _sentryUser = null;
+    _syncUserScope();
+  }
+
+  /// Keeps the scope's user in step with the identity and the consent.
+  ///
+  /// The identity is remembered rather than dropped when reporting is off, so
+  /// opting in later still tells support who hit the bug; it is kept out of the
+  /// scope meanwhile so it cannot ride along with what the SDK sends on its own.
+  void _syncUserScope() {
     if (!_isSentryAvailable) return;
 
+    final scopeSyncGeneration = ++_scopeSyncGeneration;
+    final user = userForScope;
+    final clearBreadcrumbs = !isSentryReportingAllowed;
+    _pendingScopeSync = _pendingScopeSync.then((_) async {
+      final isSynchronized = await _syncUserScopeInternal(
+        user,
+        clearBreadcrumbs: clearBreadcrumbs,
+      );
+      if (isSynchronized) {
+        _synchronizedScopeGeneration = scopeSyncGeneration;
+      }
+    });
+  }
+
+  Future<bool> _syncUserScopeInternal(
+    SentryUser? user, {
+    required bool clearBreadcrumbs,
+  }) async {
     try {
-      Sentry.configureScope((scope) => scope.setUser(null));
-      log('[SentryManager] User cleared');
+      await _synchronizeScope(
+        user,
+        clearBreadcrumbs: clearBreadcrumbs,
+      );
+      log('[SentryManager] User scope ${user == null ? 'cleared' : 'set'}');
+      return true;
     } catch (e) {
-      logWarning('[SentryManager] Clear user failed. Exception: $e');
+      logWarning('[SentryManager] Sync user scope failed. Exception: $e');
+      return false;
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +24,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
@@ -893,6 +895,34 @@ void main() {
             .read(searchEmailPresentationProvider)
             .currentSearchText,
         isEmpty,
+      );
+    });
+
+    test(
+      'WHEN the dashboard closes\n'
+      'SHOULD clear the previous Sentry identity and deny reporting until '
+      'the next account consent loads',
+    () {
+      final sentryManager = SentryManager.instance
+        ..setSentryReportingDefault(true)
+        ..setSentryReportingConsent(true)
+        ..setUser(SentryUser(id: 'departed-account'));
+      addTearDown(() {
+        sentryManager
+          ..clearUser()
+          ..setSentryReportingConsent(null)
+          ..setSentryReportingDefault(true);
+      });
+
+      mailboxDashboardController.onClose();
+
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
+
+      sentryManager.setSentryReportingConsent(true);
+      expect(
+        sentryManager.userForScope,
+        isNull,
+        reason: 'the next account must not inherit the previous identity',
       );
     });
 
