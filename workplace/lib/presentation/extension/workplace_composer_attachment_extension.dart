@@ -160,6 +160,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken: '
       'failedIdTokenHash=${failedToken.hashCode} | '
       'refreshedIdTokenHash=${refreshedToken?.hashCode}',
+      webConsoleEnabled: true,
     );
     // The IdP may omit id_token on refresh, in which case the current one is
     // kept — retrying would re-send the token that just 401'd.
