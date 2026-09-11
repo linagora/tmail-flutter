@@ -365,6 +365,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         hasAttemptedRefresh: true,
       );
       return super.onError(err, handler);
+    } on StaleSessionRefreshException catch (staleError) {
+      // Another session owns the interceptor now; this answer is not its verdict.
+      logWarning(
+        'AuthorizationInterceptors::onError: '
+        'refresh answered for a replaced session, keeping the current one',
+        webConsoleEnabled: true,
+      );
+      return _propagateKeepingSession(staleError, err, handler);
     } on RefreshTokenFailedException catch (refreshError, st) {
       // Session already cleared by requestTokenRefresh; surface the dead session.
       logFatalRefreshRejection(refreshError, st);
@@ -641,7 +649,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
     // The session died while we were away; re-arming it would resurrect a
     // logged-out account and re-persist it over wiped caches.
-    if (generation != _sessionGeneration) throw RefreshTokenFailedException();
+    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
     if (acquired.token == _token?.token) {
       throw const RefreshTokenDuplicatedException();

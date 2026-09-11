@@ -1891,7 +1891,7 @@ void main() {
         authorizationInterceptors.clear();
         gate.complete(OIDCFixtures.tokenOidcNotExpiredYet);
 
-        await expectLater(pending, throwsA(isA<RefreshTokenFailedException>()));
+        await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
         expect(authorizationInterceptors.currentToken, isNull);
         expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
         verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
@@ -1928,7 +1928,7 @@ void main() {
         final fresh = authorizationInterceptors.requestTokenRefresh();
         gate.complete(OIDCFixtures.tokenOidcNotExpiredYet);
 
-        await expectLater(stale, throwsA(isA<RefreshTokenFailedException>()));
+        await expectLater(stale, throwsA(isA<StaleSessionRefreshException>()));
         expect(await fresh, OIDCFixtures.tokenOidcNotExpiredYet);
         verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(2);
         expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
@@ -1939,10 +1939,7 @@ void main() {
       'GIVEN a request that 401ed and is awaiting a refresh from its own session\n'
       'WHEN the user logs out and a new session signs in before that refresh lands\n'
       'THEN the leftover request fails without a session verdict\n'
-      'SO it cannot force the freshly signed-in session to log out.\n'
-      'KNOWN FAILING: the generation guard throws RefreshTokenFailedException,\n'
-      'which validateUrgentException treats as urgent, so BaseController runs\n'
-      'handleRefreshTokenFailedException on a session that is perfectly healthy.',
+      'SO it cannot force the freshly signed-in session to log out.',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
           newToken: OIDCFixtures.tokenOidcExpiredTime,

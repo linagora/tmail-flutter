@@ -39,3 +39,14 @@ class RefreshTokenDuplicatedException extends AuthenticationException {
   @override
   String get exceptionName => 'RefreshTokenDuplicatedException';
 }
+
+/// The refresh answered for a session that no longer exists, so it says nothing
+/// about whichever session is signed in now. Deliberately not a
+/// [RefreshTokenFailedException]: that type forces a logout.
+class StaleSessionRefreshException extends AuthenticationException {
+  const StaleSessionRefreshException()
+      : super(message: 'Refresh answered for a session that has since been replaced.');
+
+  @override
+  String get exceptionName => 'StaleSessionRefreshException';
+}
