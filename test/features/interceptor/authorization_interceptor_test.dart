@@ -1810,10 +1810,7 @@ void main() {
       'WHEN a second caller (e.g. Workplace, whose 401 arrived moments later)\n'
       '    calls requestTokenRefresh on the now-empty session\n'
       'THEN it fails with RefreshTokenFailedException, not a raw TypeError\n'
-      'SO the Drive failure can be classified urgent and routed to logout.\n'
-      'KNOWN FAILING: clear() nulls _configOIDC, and _invokeRefreshTokenFromServer\n'
-      'dereferences _configOIDC! — the caller currently gets a TypeError, which is\n'
-      'an Error not an Exception, so it falls through to a generic toast.',
+      'SO the Drive failure can be classified urgent and routed to logout',
       () async {
         stubRefreshThrowing(const OAuthAuthorizationError(
           error: 'invalid_grant',
@@ -1832,6 +1829,68 @@ void main() {
           authorizationInterceptors.requestTokenRefresh(),
           throwsA(isA<RefreshTokenFailedException>()),
         );
+      },
+    );
+
+    test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared before it resolves\n'
+      'THEN the token is dropped instead of re-arming a logged-out interceptor\n'
+      'AND nothing is persisted over the wiped caches',
+      () async {
+        final gate = Completer<TokenOIDC>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) => gate.future);
+
+        final pending = authorizationInterceptors.requestTokenRefresh();
+        authorizationInterceptors.clear();
+        gate.complete(OIDCFixtures.tokenOidcNotExpiredYet);
+
+        await expectLater(pending, throwsA(isA<RefreshTokenFailedException>()));
+        expect(authorizationInterceptors.currentToken, isNull);
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
+      },
+    );
+
+    test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared and a new one signs in\n'
+      'THEN the next caller starts its own refresh instead of joining the dead one\n'
+      'AND the stale result does not kill the new session',
+      () async {
+        final gate = Completer<TokenOIDC>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) => gate.future);
+
+        final stale = authorizationInterceptors.requestTokenRefresh();
+        authorizationInterceptors.clear();
+
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) async => OIDCFixtures.tokenOidcNotExpiredYet);
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) async => AccountFixtures.aliceAccount);
+
+        final fresh = authorizationInterceptors.requestTokenRefresh();
+        gate.complete(OIDCFixtures.tokenOidcNotExpiredYet);
+
+        await expectLater(stale, throwsA(isA<RefreshTokenFailedException>()));
+        expect(await fresh, OIDCFixtures.tokenOidcNotExpiredYet);
+        verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(2);
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
       },
     );
   });

@@ -41,6 +41,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   String? _authorization;
   Future<TokenOIDC>? _refreshInFlight;
 
+  /// Bumped by [clear]; a refresh that started on an older generation is stale.
+  int _sessionGeneration = 0;
+
   final RefreshTokenErrorClassifier? _injectedErrorClassifier;
 
   late final RefreshTokenErrorClassifier _errorClassifier =
@@ -98,8 +101,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// response, clears the session and throws [RefreshTokenFailedException] on a
   /// server rejection, rethrows transient failures untouched.
   Future<TokenOIDC> requestTokenRefresh() {
-    return _refreshInFlight ??= _acquireAndPersistNewToken()
-        .whenComplete(() => _refreshInFlight = null);
+    final inFlight = _refreshInFlight;
+    if (inFlight != null) return inFlight;
+
+    // Nothing left to refresh with — the session already died elsewhere.
+    if (_configOIDC == null || _token == null) {
+      return Future.error(RefreshTokenFailedException());
+    }
+
+    late final Future<TokenOIDC> pending;
+    pending = _acquireAndPersistNewToken(_sessionGeneration).whenComplete(() {
+      // Only the future still owning the slot may release it.
+      if (identical(_refreshInFlight, pending)) _refreshInFlight = null;
+    });
+    return _refreshInFlight = pending;
   }
 
   bool _isRefreshRejectedByServer(Object error) => PlatformInfo.isWeb
@@ -596,7 +611,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return _invokeRefreshTokenFromServer();
   }
 
-  Future<TokenOIDC> _acquireAndPersistNewToken() async {
+  Future<TokenOIDC> _acquireAndPersistNewToken(int generation) async {
     final TokenOIDC acquired;
     try {
       acquired = PlatformInfo.isIOS
@@ -615,6 +630,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       clear();
       throw RefreshTokenFailedException();
     }
+
+    // The session died while we were away; re-arming it would resurrect a
+    // logged-out account and re-persist it over wiped caches.
+    if (generation != _sessionGeneration) throw RefreshTokenFailedException();
 
     final newTokenOidc = _withCurrentIdTokenIfMissing(acquired);
     if (newTokenOidc.token == _token?.token) {
@@ -715,5 +734,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = null;
     _configOIDC = null;
     _authenticationType = AuthenticationType.none;
+    // A refresh still running belongs to the session we just dropped.
+    _sessionGeneration++;
+    _refreshInFlight = null;
   }
 }
