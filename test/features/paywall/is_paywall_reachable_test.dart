@@ -42,6 +42,42 @@ void main() {
         input: 'https://user@workplace.domain.tld',
         expected: '',
       ),
+      (
+        description: 'unparseable URI',
+        input: 'https://[invalid',
+        expected: '',
+      ),
+      (
+        description: 'URL without a host',
+        input: 'https:///settings',
+        expected: '',
+      ),
+      // Only the host survives: the caller-supplied path, query and fragment are
+      // replaced by the fixed premium route.
+      (
+        description: 'URL carrying a path, query and fragment',
+        input: 'https://workplace.domain.tld/foo?x=1#fragment',
+        expected: 'https://workplace.domain.tld/settings/premium',
+      ),
+      (
+        description: 'uppercase host',
+        input: 'HTTPS://WORKPLACE.DOMAIN.TLD',
+        expected: 'https://workplace.domain.tld/settings/premium',
+      ),
+      // A Workplace served on a non-default port must keep that port, otherwise
+      // the CTA silently navigates to a different origin.
+      (
+        description: 'explicit port',
+        input: 'https://workplace.domain.tld:8443',
+        expected: 'https://workplace.domain.tld:8443/settings/premium',
+      ),
+      // An IP literal passes the FQDN check because that check only counts
+      // dot-separated parts. Pinned as current behaviour, not as an endorsement.
+      (
+        description: 'IP literal host',
+        input: 'https://192.168.1.1',
+        expected: 'https://192.168.1.1/settings/premium',
+      ),
     ];
 
     for (final workplaceCase in workplaceCases) {
@@ -98,6 +134,33 @@ void main() {
         description: 'URL containing user info',
         input: 'https://user@domain.tld/paywall',
         expected: false,
+      ),
+      (
+        description: 'unparseable URI',
+        input: 'https://[invalid',
+        expected: false,
+      ),
+      (
+        description: 'URL padded with whitespace',
+        input: '  https://domain.tld/paywall  ',
+        expected: true,
+      ),
+      // Ports are accepted here even though buildWorkplacePaywallUrl drops them.
+      (
+        description: 'URL with an explicit port',
+        input: 'https://domain.tld:8443/paywall',
+        expected: true,
+      ),
+      // Both cases clear the FQDN check, which only counts dot-separated parts.
+      (
+        description: 'IP literal host',
+        input: 'https://192.168.1.1/paywall',
+        expected: true,
+      ),
+      (
+        description: 'trailing-dot host',
+        input: 'https://domain.tld./paywall',
+        expected: true,
       ),
     ];
 
