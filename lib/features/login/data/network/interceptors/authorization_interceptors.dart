@@ -576,8 +576,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   String _getTokenAsBearerHeader(String token) => 'Bearer $token';
 
-  Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+  Future<PersonalAccount> _updateCurrentAccount({
+    required TokenOIDC tokenOIDC,
+    required int generation,
+  }) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
+
+    // The session died while we read the account; these writes land between
+    // clearAll() and closeHive(), resurrecting it on the next launch.
+    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
     // Persist the new token BEFORE mutating the account cache. persistOneTokenOidc
     // is crash-safe (write-before-prune), so the token box always holds a usable
@@ -668,7 +675,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
     _updateNewToken(acquired);
 
-    final personalAccount = await _updateCurrentAccount(tokenOIDC: acquired);
+    final personalAccount = await _updateCurrentAccount(
+      tokenOIDC: acquired,
+      generation: generation,
+    );
     if (PlatformInfo.isIOS) {
       await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
     }

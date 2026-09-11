@@ -1925,6 +1925,33 @@ void main() {
     );
 
     test(
+      'GIVEN a refresh whose new token already arrived\n'
+      'WHEN the session is cleared while the account cache is being read\n'
+      'THEN nothing is written back into the caches logout just wiped\n'
+      'SO the next launch cannot restore the account the user logged out of',
+      () async {
+        final accountGate = Completer<PersonalAccount>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) async => OIDCFixtures.tokenOidcNotExpiredYet);
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) => accountGate.future);
+
+        final pending = authorizationInterceptors.requestTokenRefresh();
+        await pumpEventQueue();
+        authorizationInterceptors.clear();
+        accountGate.complete(AccountFixtures.aliceAccount);
+
+        await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
+      },
+    );
+
+    test(
       'GIVEN a refresh in flight\n'
       'WHEN the session is cleared and a new one signs in\n'
       'THEN the next caller starts its own refresh instead of joining the dead one\n'
