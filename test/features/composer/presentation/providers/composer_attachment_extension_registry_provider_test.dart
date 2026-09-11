@@ -88,7 +88,9 @@ void main() {
       verifyNever(dashboard.handleRefreshTokenFailedException());
     });
 
-    test('rethrows a fatal rejection untouched; the interceptor already owns clear and classification', () async {
+    // The trigger adds nothing of its own: requestTokenRefresh clears the
+    // session and emits the fatal event where the rejection is confirmed.
+    test('rethrows a fatal rejection untouched; the interceptor already owns clear, logging and classification', () async {
       final rejection = RefreshTokenFailedException();
       when(interceptor.requestTokenRefresh()).thenThrow(rejection);
 
@@ -97,8 +99,6 @@ void main() {
         throwsA(same(rejection)),
       );
 
-      // Without this the Drive journey reaches logout with nothing in Sentry.
-      verify(interceptor.logFatalRefreshRejection(rejection, any)).called(1);
       verifyNever(interceptor.clear());
       verifyNever(dashboard.handleRefreshTokenFailedException());
     });

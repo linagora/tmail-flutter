@@ -4142,6 +4142,50 @@ void main() {
   // adds its own generic event. Failures the handler does NOT classify keep
   // that generic event — it is their only trace.
   // ============================================================
+  // Workplace calls requestTokenRefresh directly, with no onError above it, so
+  // the fatal event has to come from the interceptor rather than the caller.
+  group('requestTokenRefresh: a direct caller gets the fatal event too', () {
+    late CapturingLogHandler logHandler;
+
+    setUp(() {
+      logHandler = CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    test(
+      'WHEN a direct refresh is rejected by the token endpoint\n'
+      'THEN exactly ONE error-level event is emitted (will_logout=true)\n'
+      'AND the caller adds none of its own',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenThrow(const OAuthAuthorizationError(
+          error: 'invalid_grant',
+          errorDescription: 'The refresh token has been revoked',
+        ));
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenFailedException>()),
+        );
+
+        final errorRecords = logHandler.errorRecords;
+        expect(errorRecords.length, 1);
+        expect(errorRecords.single.rawMessage, contains('will_logout=true'));
+        expect(
+          errorRecords.single.extras,
+          containsPair('auth_error_type', 'token_endpoint_oauth_rejected'),
+        );
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
+      },
+    );
+  });
+
   group('onError: mobile refresh failure emits a single Sentry event', () {
     late CapturingLogHandler logHandler;
 

@@ -125,12 +125,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return _refreshInFlight = pending;
   }
 
-  /// Reports a refresh the server rejected. Public so a direct caller (e.g. the
-  /// Workplace Drive exchange) reports its own journey with the same shape.
-  void logFatalRefreshRejection(RefreshTokenFailedException error, StackTrace st) {
+  /// Reports a refresh the server rejected, once, where the session is cleared.
+  void _logFatalRefreshRejection(RefreshTokenFailedException error, StackTrace st) {
     final cause = error.cause ?? error;
     logError(
-      'AuthorizationInterceptors::logFatalRefreshRejection: '
+      'AuthorizationInterceptors::_logFatalRefreshRejection: '
       'will_logout=true — error=$cause',
       exception: cause,
       stackTrace: st,
@@ -381,9 +380,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         webConsoleEnabled: true,
       );
       return _propagateKeepingSession(staleError, err, handler);
-    } on RefreshTokenFailedException catch (refreshError, st) {
-      // Session already cleared by requestTokenRefresh; surface the dead session.
-      logFatalRefreshRejection(refreshError, st);
+    } on RefreshTokenFailedException catch (refreshError) {
+      // Already cleared and logged by requestTokenRefresh; surface the dead session.
       return handler.reject(DioException(
         requestOptions: err.requestOptions,
         error: refreshError,
@@ -648,11 +646,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       acquired = PlatformInfo.isIOS
           ? await _getNewTokenForIOSPlatform()
           : await _getNewTokenForOtherPlatform();
-    } catch (e) {
+    } catch (e, st) {
       if (!_isRefreshRejectedByServer(e)) rethrow;
       clear();
-      // Each caller logs it — this one method serves both JMAP and Workplace.
-      throw RefreshTokenFailedException(cause: e);
+      // Logged here, not per caller: this one method serves JMAP and Workplace.
+      final fatal = RefreshTokenFailedException(cause: e);
+      _logFatalRefreshRejection(fatal, st);
+      throw fatal;
     }
 
     // The session died while we were away; re-arming it would resurrect a
