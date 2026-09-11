@@ -42,16 +42,21 @@ class MockBaseController extends BaseController {
   bool isErrorViewStateEnable = false;
   int logoutCalls = 0;
 
+  /// Shared with the before-reconnect stub so a test can assert the ordering.
+  final List<String> events = [];
+
   void resetState() {
      isUrgentExceptionEnable = false;
      isErrorViewStateEnable = false;
      logoutCalls = 0;
+     events.clear();
   }
 
   // Records the forced logout instead of clearing storage and routing.
   @override
   Future<void> clearDataAndGoToLoginPage() async {
     logoutCalls++;
+    events.add('logout');
   }
 
   @override
@@ -281,6 +286,14 @@ void main() {
         PlatformInfo.isTestingForWeb = true;
         when(mockTwakeAppManager.hasComposer).thenReturn(true);
 
+        // Yields before recording, so dropping the await in production would
+        // land 'logout' first and fail the ordering assertion below.
+        when(mockBeforeReconnectManager.executeBeforeReconnectListeners())
+            .thenAnswer((_) async {
+          await Future<void>.delayed(Duration.zero);
+          mockBaseController.events.add('listeners');
+        });
+
         mockBaseController.handleUrgentException(exception: RefreshTokenFailedException());
         await pumpEventQueue();
 
@@ -289,6 +302,8 @@ void main() {
           mockBeforeReconnectManager.executeBeforeReconnectListeners(),
         ]);
         expect(mockBaseController.logoutCalls, 1);
+        // Logout must not start before the draft save finishes, or it is lost.
+        expect(mockBaseController.events, ['listeners', 'logout']);
       },
     );
 

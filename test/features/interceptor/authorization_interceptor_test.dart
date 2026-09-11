@@ -1833,6 +1833,47 @@ void main() {
     );
 
     test(
+      'GIVEN a direct caller on web, where Drive attach ships\n'
+      'WHEN flutter_appauth_web rejects the refresh with a non-Dio ArgumentError\n'
+      'THEN the web classifier still calls it a server rejection\n'
+      'AND the session is cleared with RefreshTokenFailedException',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        stubRefreshThrowing(ArgumentError(
+          'Failed to get token: [error: token_failed, description: invalid_request]',
+        ));
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(isA<RefreshTokenFailedException>()),
+        );
+
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.none);
+        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
+      },
+    );
+
+    test(
+      'GIVEN a direct caller on web\n'
+      'WHEN the refresh fails with an error the web classifier does not own\n'
+      'THEN the original error is rethrown and the session is kept',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        final transient = ArgumentError('Failed to get token: [error: network_error]');
+        stubRefreshThrowing(transient);
+
+        await expectLater(
+          authorizationInterceptors.requestTokenRefresh(),
+          throwsA(same(transient)),
+        );
+
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+      },
+    );
+
+    test(
       'GIVEN a refresh in flight\n'
       'WHEN the session is cleared before it resolves\n'
       'THEN the token is dropped instead of re-arming a logged-out interceptor\n'
