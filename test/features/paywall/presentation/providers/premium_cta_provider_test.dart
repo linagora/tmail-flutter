@@ -29,6 +29,7 @@ void main() {
   group('ecosystem JMAP URL keying', _jmapUrlKeyingTests);
   group('ecosystem account isolation', _accountIsolationTests);
   group('premium CTA destination', _premiumCtaDestinationTests);
+  group('premium CTA loading states', _loadingStateTests);
   group('premium CTA unavailable states', _premiumCtaUnavailableTests);
   group('premium CTA gating', _premiumCtaGatingTests);
   group('premium CTA urgent failure routing', _urgentFailureRoutingTests);
@@ -140,6 +141,27 @@ void _jmapUrlKeyingTests() {
     );
     expect(repository.callCount, 1);
   });
+
+  // The JMAP URL is trimmed before it becomes the cache key, so a padded URL
+  // must reuse the entry instead of firing a second identical request.
+  test('shares one ecosystem entry with a whitespace-padded JMAP URL',
+      () async {
+    final repository = _succeedingRepository();
+    final container = _createContainer(repository);
+    _keepActiveEcosystemAlive(container, _firstTarget);
+    _keepActiveEcosystemAlive(container, _paddedFirstTarget);
+
+    await _readEcosystem(container, _firstTarget);
+    await container.pump();
+
+    expect(repository.callCount, 1);
+    expect(
+      container.read(
+        activeEcosystemProvider(_firstAccountId, _paddedFirstJmapUrl),
+      ),
+      isA<EcosystemAvailable>(),
+    );
+  });
 }
 
 void _accountIsolationTests() {
@@ -223,6 +245,57 @@ void _premiumCtaDestinationTests() {
       _availableCta(Uri.parse('https://workplace.domain.tld/settings/premium')),
     );
     expect(repository.callCount, 0);
+  });
+
+  // An unusable Workplace FQDN must not strand the CTA: it falls through to the
+  // ecosystem destination rather than reporting the CTA unavailable.
+  test('falls back to the ecosystem when the Workplace FQDN is unusable',
+      () async {
+    final repository = _succeedingRepository();
+    final container = _createContainer(repository);
+    container.read(workplaceFqdnProvider.notifier).setFqdn('localhost');
+    final context = _upgradableContext(_firstTarget);
+    _keepPremiumCtaAlive(container, context);
+
+    await _readEcosystem(container, _firstTarget);
+    await container.pump();
+
+    expect(
+      container.read(premiumCtaProvider(context)),
+      _availableCta(Uri.parse(_paywallTemplate)),
+    );
+    expect(repository.callCount, 1);
+  });
+}
+
+/// The state both the ecosystem and the CTA expose while the request is still
+/// in flight — what a premium button renders before any destination exists.
+void _loadingStateTests() {
+  test('reports loading until the ecosystem request settles', () async {
+    final completer = Completer<LinagoraEcosystem>();
+    final container = _createContainer(
+      _EcosystemRepository((_) => completer.future),
+    );
+    final context = _upgradableContext(_firstTarget);
+    _keepPremiumCtaAlive(container, context);
+
+    expect(
+      container.read(activeEcosystemProvider(_firstAccountId, _firstJmapUrl)),
+      const EcosystemLoading(),
+    );
+    expect(
+      container.read(premiumCtaProvider(context)),
+      const PremiumCtaLoading(),
+    );
+
+    completer.complete(_ecosystem(_paywallTemplate));
+    await _readEcosystem(container, _firstTarget);
+    await container.pump();
+
+    expect(
+      container.read(premiumCtaProvider(context)),
+      _availableCta(Uri.parse(_paywallTemplate)),
+    );
   });
 }
 
@@ -416,6 +489,9 @@ final _secondAccountOnFirstUrl =
     (accountId: _secondAccountId, jmapUrl: _firstJmapUrl);
 final _targetWithoutJmapUrl = (accountId: _firstAccountId, jmapUrl: null);
 final _targetWithBlankJmapUrl = (accountId: _firstAccountId, jmapUrl: '   ');
+const _paddedFirstJmapUrl = '  $_firstJmapUrl  ';
+final _paddedFirstTarget =
+    (accountId: _firstAccountId, jmapUrl: _paddedFirstJmapUrl);
 
 LinagoraEcosystem _ecosystem(String? template) => LinagoraEcosystem.deserialize(
       template == null ? {} : {'paywallUrlTemplate': template},
