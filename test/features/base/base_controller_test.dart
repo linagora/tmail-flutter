@@ -169,7 +169,6 @@ void main() {
     // BadCredentialsException and forces logout. Journey B (Drive token_exchange
     // 401) surfaces the RefreshTokenDuplicatedException itself, so it must be
     // classified urgent here or the dead session only produces a toast.
-    // KNOWN FAILING: RefreshTokenDuplicatedException is not in validateUrgentException.
     test('should return true when exception is RefreshTokenDuplicatedException', () {
       expect(
         mockBaseController.validateUrgentException(const RefreshTokenDuplicatedException()),
