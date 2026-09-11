@@ -29,6 +29,9 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 typedef OnDrivePickStateChanged =
     Future<void> Function(String? composerId, DrivePickState state);
 
+/// Triggers the host app's OIDC refresh; returns the refreshed id token.
+typedef OidcRefreshTrigger = Future<String?> Function();
+
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
 
@@ -36,8 +39,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueGetter<bool> uploadFromUrlSupported;
   final String? Function() oidcTokenGetter;
 
-  /// Triggers the main app's OIDC refresh; returns the refreshed id token.
-  final Future<String?> Function()? oidcRefreshTrigger;
+  final OidcRefreshTrigger oidcRefreshTrigger;
   final num? Function() maxAttachmentSizeBytesGetter;
 
   /// Per-composer: the remainder depends on what that composer already holds.
@@ -55,7 +57,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required this.workplaceUri,
     required this.uploadFromUrlSupported,
     required this.oidcTokenGetter,
-    this.oidcRefreshTrigger,
+    required this.oidcRefreshTrigger,
     required this.maxAttachmentSizeBytesGetter,
     required this.remainingAttachmentCapacityBytesGetter,
     this.onPickState,
@@ -100,7 +102,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   }) async {
     final result = await _requestAccessToken(platformUrl, oidcToken);
     return result.fold(
-      (failure) => _retryAfterRefreshOrThrow(
+      (failure) => _triggerRefreshOIDCToken(
         platformUrl: platformUrl,
         failedToken: oidcToken,
         failure: failure,
@@ -134,16 +136,16 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     return caughtFailure == null ? Right(accessToken) : Left(caughtFailure!);
   }
 
-  /// Retries once on a 401 with the current token if another request already
-  /// refreshed it, else with a freshly refreshed one (Workplace's Dio has no
-  /// refresh interceptor of its own).
-  Future<String?> _retryAfterRefreshOrThrow({
+  /// Retries once on a stale-token response with the current token if another
+  /// request already refreshed it, else with a freshly refreshed one
+  /// (Workplace's Dio has no refresh interceptor of its own).
+  Future<String?> _triggerRefreshOIDCToken({
     required Uri platformUrl,
     required String failedToken,
     required Object failure,
     required bool refreshAttempted,
   }) async {
-    if (refreshAttempted || oidcRefreshTrigger == null || !_isStaleSubjectToken(failure)) {
+    if (refreshAttempted || !_isStaleSubjectToken(failure)) {
       throw failure;
     }
 
@@ -153,9 +155,9 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       return _exchangeAccessToken(platformUrl, currentToken, refreshAttempted: true);
     }
 
-    final refreshedToken = await oidcRefreshTrigger!();
+    final refreshedToken = await oidcRefreshTrigger();
     logWarning(
-      'WorkplaceComposerAttachmentExtension::_retryAfterRefreshOrThrow: '
+      'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken: '
       'failedIdTokenHash=${failedToken.hashCode} | '
       'refreshedIdTokenHash=${refreshedToken?.hashCode}',
     );

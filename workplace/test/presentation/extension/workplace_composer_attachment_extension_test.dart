@@ -119,13 +119,13 @@ WorkplaceComposerAttachmentExtension _makeExtension(
   num? remainingAttachmentCapacityBytes,
   OnDrivePickStateChanged? onPickState,
   ValueGetter<bool>? uploadFromUrlSupported,
-  Future<String?> Function()? oidcRefreshTrigger,
+  OidcRefreshTrigger? oidcRefreshTrigger,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
       uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
       oidcTokenGetter: oidcTokenGetter ?? () => oidcToken,
-      oidcRefreshTrigger: oidcRefreshTrigger,
+      oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
       remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
       onPickState: onPickState,
