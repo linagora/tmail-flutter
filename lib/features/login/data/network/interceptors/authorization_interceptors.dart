@@ -100,8 +100,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   /// Owns the outcome: throws [RefreshTokenUnavailableException] without sending
   /// anything when the session has no refresh token, [RefreshTokenDuplicatedException]
   /// on a same-token response, clears the session and throws
-  /// [RefreshTokenFailedException] on a server rejection, rethrows transient
-  /// failures untouched.
+  /// [RefreshTokenFailedException] on a server rejection,
+  /// [StaleSessionRefreshException] when the session that started it was
+  /// replaced meanwhile, rethrows transient failures untouched.
   Future<TokenOIDC> requestTokenRefresh() {
     final inFlight = _refreshInFlight;
     if (inFlight != null) return inFlight;
@@ -647,6 +648,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           ? await _getNewTokenForIOSPlatform()
           : await _getNewTokenForOtherPlatform();
     } catch (e, st) {
+      // The session that started this refresh is gone; its answer is not a
+      // verdict on the session that replaced it.
+      if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
       if (!_isRefreshRejectedByServer(e)) rethrow;
       clear();
       // Logged here, not per caller: this one method serves JMAP and Workplace.

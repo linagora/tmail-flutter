@@ -1961,6 +1961,77 @@ void main() {
     );
 
     test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared, a new one signs in,\n'
+      '    and only then the token endpoint rejects the old refresh\n'
+      'THEN the rejection is not the new session\'s verdict\n'
+      'SO the freshly signed-in session is neither cleared nor logged out',
+      () async {
+        final gate = Completer<TokenOIDC>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) => gate.future);
+
+        final stale = authorizationInterceptors.requestTokenRefresh();
+        authorizationInterceptors.clear();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.newTokenOidc,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        gate.completeError(const OAuthAuthorizationError(
+          error: 'invalid_grant',
+          errorDescription: 'The refresh token has been revoked',
+        ));
+
+        await expectLater(stale, throwsA(isA<StaleSessionRefreshException>()));
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+        expect(authorizationInterceptors.currentToken, OIDCFixtures.newTokenOidc);
+      },
+    );
+
+    test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared, a new one signs in,\n'
+      '    and only then the token endpoint answers 400 as a DioException\n'
+      'THEN the stale answer never reaches the mobile 400 logout mapping\n'
+      'SO the freshly signed-in session survives',
+      () async {
+        final gate = Completer<TokenOIDC>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) => gate.future);
+
+        final stale = authorizationInterceptors.requestTokenRefresh();
+        authorizationInterceptors.clear();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.newTokenOidc,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        gate.completeError(DioException(
+          requestOptions: RequestOptions(path: '/token'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/token'),
+            statusCode: 400,
+            data: {'error': 'invalid_grant'},
+          ),
+          type: DioExceptionType.badResponse,
+        ));
+
+        await expectLater(stale, throwsA(isA<StaleSessionRefreshException>()));
+        expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
+        expect(authorizationInterceptors.currentToken, OIDCFixtures.newTokenOidc);
+      },
+    );
+
+    test(
       'GIVEN a request that 401ed and is awaiting a refresh from its own session\n'
       'WHEN the user logs out and a new session signs in before that refresh lands\n'
       'THEN the leftover request fails without a session verdict\n'
