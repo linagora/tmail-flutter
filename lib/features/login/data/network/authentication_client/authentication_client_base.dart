@@ -25,7 +25,7 @@ abstract class AuthenticationClientBase {
       String redirectUrl,
       String discoveryUrl,
       List<String> scopes,
-      String refreshToken);
+      TokenOIDC currentToken);
 
   Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
 

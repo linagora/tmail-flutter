@@ -151,7 +151,7 @@ void main() {
       OIDCFixtures.oidcConfiguration.redirectUrl,
       OIDCFixtures.oidcConfiguration.discoveryUrl,
       OIDCFixtures.oidcConfiguration.scopes,
-      OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+      OIDCFixtures.tokenOidcNotExpiredYet,
     )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
     when(accountCacheManager.getCurrentAccount())
         .thenAnswer((_) async => AccountFixtures.aliceAccount);
@@ -221,7 +221,7 @@ void main() {
       OIDCFixtures.oidcConfiguration.redirectUrl,
       OIDCFixtures.oidcConfiguration.discoveryUrl,
       OIDCFixtures.oidcConfiguration.scopes,
-      OIDCFixtures.tokenOidcNotExpiredYet.refreshToken,
+      OIDCFixtures.tokenOidcNotExpiredYet,
     )).called(1);
   }
 

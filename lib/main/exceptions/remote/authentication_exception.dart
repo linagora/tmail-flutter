@@ -15,9 +15,13 @@ class BadCredentialsException extends AuthenticationException {
 }
 
 class RefreshTokenFailedException extends AuthenticationException {
+  /// The server rejection that killed the session, for the caller to log.
+  final Object? cause;
+
   RefreshTokenFailedException({
     int code = 400,
     String? message,
+    this.cause,
   }) : super(
           code: code,
           message: message ??
@@ -26,4 +30,33 @@ class RefreshTokenFailedException extends AuthenticationException {
 
   @override
   String get exceptionName => 'RefreshTokenFailedException';
+}
+
+class RefreshTokenDuplicatedException extends AuthenticationException {
+  const RefreshTokenDuplicatedException()
+      : super(message: 'Refresh returned the current token; retry cannot clear the 401.');
+
+  @override
+  String get exceptionName => 'RefreshTokenDuplicatedException';
+}
+
+/// The refresh answered for a session that no longer exists, so it says nothing
+/// about whichever session is signed in now. Deliberately not a
+/// [RefreshTokenFailedException]: that type forces a logout.
+class StaleSessionRefreshException extends AuthenticationException {
+  const StaleSessionRefreshException()
+      : super(message: 'Refresh answered for a session that has since been replaced.');
+
+  @override
+  String get exceptionName => 'StaleSessionRefreshException';
+}
+
+/// The session holds nothing to refresh with, so no request was sent. Not a
+/// [RefreshTokenFailedException]: the session is untouched, not dead.
+class RefreshTokenUnavailableException extends AuthenticationException {
+  const RefreshTokenUnavailableException()
+      : super(message: 'No refresh token available for the current session.');
+
+  @override
+  String get exceptionName => 'RefreshTokenUnavailableException';
 }

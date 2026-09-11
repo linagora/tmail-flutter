@@ -3,6 +3,8 @@ import 'package:core/presentation/extensions/composer_toolbar_button_style.dart'
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/bridge/cozy_bridge.dart';
@@ -27,12 +29,17 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 typedef OnDrivePickStateChanged =
     Future<void> Function(String? composerId, DrivePickState state);
 
+/// Triggers the host app's OIDC refresh; returns the refreshed id token.
+typedef OidcRefreshTrigger = Future<String?> Function();
+
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
 
   /// Read when the picker opens, so the JMAP capability is always current.
   final ValueGetter<bool> uploadFromUrlSupported;
   final String? Function() oidcTokenGetter;
+
+  final OidcRefreshTrigger oidcRefreshTrigger;
   final num? Function() maxAttachmentSizeBytesGetter;
 
   /// Per-composer: the remainder depends on what that composer already holds.
@@ -50,6 +57,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required this.workplaceUri,
     required this.uploadFromUrlSupported,
     required this.oidcTokenGetter,
+    required this.oidcRefreshTrigger,
     required this.maxAttachmentSizeBytesGetter,
     required this.remainingAttachmentCapacityBytesGetter,
     this.onPickState,
@@ -89,18 +97,35 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<String?> _exchangeAccessToken(
     Uri platformUrl,
+    String oidcToken, {
+    bool refreshAttempted = false,
+  }) async {
+    final result = await _requestAccessToken(platformUrl, oidcToken);
+    return result.fold(
+      (failure) => _triggerRefreshOIDCToken(
+        platformUrl: platformUrl,
+        failedToken: oidcToken,
+        failure: failure,
+        refreshAttempted: refreshAttempted,
+      ),
+      (accessToken) => accessToken,
+    );
+  }
+
+  Future<Either<Object, String?>> _requestAccessToken(
+    Uri platformUrl,
     String oidcToken,
   ) async {
     String? accessToken;
+    Object? caughtFailure;
     await for (final either in _exchangeTokenInteractor.execute(
       platformUrl,
       oidcToken,
     )) {
       either.fold(
-        (failure) {
-          // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
-          throw failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException();
-        },
+        // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
+        (failure) => caughtFailure =
+            failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException(),
         (success) {
           if (success is ExchangeWorkplaceTokenSuccess) {
             accessToken = success.accessToken;
@@ -108,7 +133,48 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         },
       );
     }
-    return accessToken;
+    return caughtFailure == null ? Right(accessToken) : Left(caughtFailure!);
+  }
+
+  /// Retries once on a stale-token response with the current token if another
+  /// request already refreshed it, else with a freshly refreshed one
+  /// (Workplace's Dio has no refresh interceptor of its own).
+  Future<String?> _triggerRefreshOIDCToken({
+    required Uri platformUrl,
+    required String failedToken,
+    required Object failure,
+    required bool refreshAttempted,
+  }) async {
+    if (refreshAttempted || !_isStaleSubjectToken(failure)) {
+      throw failure;
+    }
+
+    // Mirrors AuthorizationInterceptors.validateToRetryTheRequestWithNewToken.
+    final currentToken = oidcTokenGetter();
+    if (currentToken != null && currentToken != failedToken) {
+      return _exchangeAccessToken(platformUrl, currentToken, refreshAttempted: true);
+    }
+
+    final refreshedToken = await oidcRefreshTrigger();
+    logWarning(
+      'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken: '
+      'failedIdTokenHash=${failedToken.hashCode} | '
+      'refreshedIdTokenHash=${refreshedToken?.hashCode}',
+      webConsoleEnabled: true,
+    );
+    // The IdP may omit id_token on refresh, in which case the current one is
+    // kept — retrying would re-send the token that just 401'd.
+    if (refreshedToken == null || refreshedToken == failedToken) throw failure;
+
+    return _exchangeAccessToken(platformUrl, refreshedToken, refreshAttempted: true);
+  }
+
+  // RFC 8693 says 400 invalid_grant for a bad subject_token; token_exchange has
+  // also been seen answering 401. Both mean the id token needs refreshing.
+  bool _isStaleSubjectToken(Object failure) {
+    if (failure is! DioException) return false;
+    final statusCode = failure.response?.statusCode;
+    return statusCode == 400 || statusCode == 401;
   }
 
   Future<WorkplaceIntent> _createIntent(

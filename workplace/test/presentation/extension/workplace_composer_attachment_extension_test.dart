@@ -22,45 +22,30 @@ class _Fail {
 
 const _fail = _Fail();
 
-// Returns responses from a pre-defined queue, one per HTTP request.
-// Queue items are either a Map (returned as JSON) or _Fail (throws DioException).
-class _SequentialAdapter implements HttpClientAdapter {
-  final List<dynamic> _queue;
-  int _index = 0;
+// Sentinel used by _SequentialAdapter to throw a DioException with a status.
+class _FailStatus {
+  final int statusCode;
 
-  _SequentialAdapter(this._queue);
-
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future? cancelFuture,
-  ) async {
-    final item = _queue[_index++];
-    if (item is _Fail) {
-      throw DioException(requestOptions: options, message: 'Network error');
-    }
-    return ResponseBody.fromString(
-      jsonEncode(item),
-      200,
-      headers: {
-        Headers.contentTypeHeader: ['application/json; charset=utf-8'],
-      },
-    );
-  }
-
-  @override
-  void close({bool force = false}) {}
+  const _FailStatus(this.statusCode);
 }
 
-// Returns queued responses like _SequentialAdapter, but also records each
-// request body so a test can assert on the outgoing JSON shape.
-class _CapturingAdapter implements HttpClientAdapter {
+const _fail401 = _FailStatus(401);
+const _fail400 = _FailStatus(400);
+
+// Returns responses from a pre-defined queue, one per HTTP request, and
+// records each request body so a test can assert on the outgoing JSON.
+// Queue items are a Map (returned as JSON), _Fail (network error, no
+// response), or _FailStatus (a status response, e.g. a stale OIDC id token).
+class _SequentialAdapter implements HttpClientAdapter {
   final List<dynamic> _queue;
+
+  /// Called with each request's queue index before its response is served, so a
+  /// test can move shared state at a named point instead of counting reads.
+  final void Function(int index)? onRequest;
   final List<dynamic> capturedBodies = [];
   int _index = 0;
 
-  _CapturingAdapter(this._queue);
+  _SequentialAdapter(this._queue, {this.onRequest});
 
   @override
   Future<ResponseBody> fetch(
@@ -69,7 +54,19 @@ class _CapturingAdapter implements HttpClientAdapter {
     Future? cancelFuture,
   ) async {
     capturedBodies.add(options.data);
-    final item = _queue[_index++];
+    final index = _index++;
+    onRequest?.call(index);
+    final item = _queue[index];
+    if (item is _Fail) {
+      throw DioException(requestOptions: options, message: 'Network error');
+    }
+    if (item is _FailStatus) {
+      throw DioException(
+        requestOptions: options,
+        response: Response(statusCode: item.statusCode, requestOptions: options),
+        type: DioExceptionType.badResponse,
+      );
+    }
     return ResponseBody.fromString(
       jsonEncode(item),
       200,
@@ -120,18 +117,39 @@ final _intentResponse = {
 
 // ── Factory ───────────────────────────────────────────────────────────────────
 
+// Stands in for AuthorizationInterceptors: holds the id token and an explicit
+// flag for whether the caller is still on the one that will get a 401.
+class _FakeOidcTokenSource {
+  static const staleToken = 'old-oidc-token';
+  static const refreshedToken = 'refreshed-oidc-token';
+
+  bool isStale = true;
+  int refreshCount = 0;
+
+  String get currentToken => isStale ? staleToken : refreshedToken;
+
+  Future<String?> refresh() async {
+    refreshCount++;
+    isStale = false;
+    return refreshedToken;
+  }
+}
+
 WorkplaceComposerAttachmentExtension _makeExtension(
   ValueListenable<Uri?> notifier, {
   String? oidcToken = 'oidc-token',
+  String? Function()? oidcTokenGetter,
   num? maxAttachmentSizeBytes,
   num? remainingAttachmentCapacityBytes,
   OnDrivePickStateChanged? onPickState,
   ValueGetter<bool>? uploadFromUrlSupported,
+  OidcRefreshTrigger? oidcRefreshTrigger,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
       uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
-      oidcTokenGetter: () => oidcToken,
+      oidcTokenGetter: oidcTokenGetter ?? () => oidcToken,
+      oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
       remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
       onPickState: onPickState,
@@ -539,7 +557,7 @@ void main() {
     });
 
     testWidgets('forwards downloadLink maxFileSize/availableSize from filePickerConfig into the request', (tester) async {
-      final adapter = _CapturingAdapter([_tokenResponse, _intentResponse]);
+      final adapter = _SequentialAdapter([_tokenResponse, _intentResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       final notifier = ValueNotifier<Uri?>(_platformUri);
@@ -567,6 +585,277 @@ void main() {
       final downloadLink = filePickerData['downloadLink'] as Map<String, dynamic>;
       expect(downloadLink['maxFileSize'], equals(5000));
       expect(downloadLink['availableSize'], equals(5000));
+    });
+
+    testWidgets('retries once via oidcRefreshTrigger after a 400, then succeeds', (tester) async {
+      // RFC 8693's invalid_grant answer for a stale subject_token.
+      final adapter = _SequentialAdapter([_fail400, _tokenResponse, _intentResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      final result = await tester.runAsync(
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+          ),
+        ),
+      );
+
+      expect(refreshCallCount, equals(1));
+      expect(result!.intentId, equals('intent-xyz'));
+      expect(adapter.capturedBodies[1]['id_token'], equals('refreshed-oidc-token'));
+    });
+
+    testWidgets('retries once via oidcRefreshTrigger after a 401, then succeeds', (tester) async {
+      final adapter = _SequentialAdapter([
+        _fail401, // stale token exchange → 401
+        _tokenResponse, // retry with refreshed token → succeeds
+        _intentResponse,
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      final result = await tester.runAsync(
+        () => callback(
+          filePickerConfig: const WorkplaceFilePickerConfigRequest(
+            sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+            downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+            theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+          ),
+        ),
+      );
+
+      expect(refreshCallCount, equals(1));
+      expect(result, isNotNull);
+      expect(result!.intentId, equals('intent-xyz'));
+      expect(adapter.capturedBodies[0]['id_token'], equals('oidc-token'));
+      expect(adapter.capturedBodies[1]['id_token'], equals('refreshed-oidc-token'));
+    });
+
+    testWidgets('does not retry twice when the refreshed token also gets a 401', (tester) async {
+      WorkplaceDio.setInstance(
+        Dio()
+          ..httpClientAdapter = _SequentialAdapter([_fail401, _fail401]),
+      );
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      // Called once for the first 401, not again after the retry also fails.
+      expect(refreshCallCount, equals(1));
+    });
+
+    testWidgets('does not retry when the refresh keeps the id token that just 401ed', (tester) async {
+      final adapter = _SequentialAdapter([_fail401]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        // The IdP omitted id_token, so the interceptor kept the current one.
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      expect(refreshCallCount, equals(1));
+      // No second exchange: the token that just failed is not re-sent.
+      expect(adapter.capturedBodies, hasLength(1));
+    });
+    testWidgets('propagates the oidcRefreshTrigger failure after a 401 with no second exchange', (tester) async {
+      final adapter = _SequentialAdapter([_fail401]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      // Stands in for the app's RefreshTokenFailedException: must reach the
+      // picker failure untouched so the app can route it to logout.
+      final rejection = StateError('refresh rejected by the server');
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async => throw rejection,
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(same(rejection)),
+        );
+      });
+
+      expect(adapter.capturedBodies, hasLength(1));
+    });
+    testWidgets('reuses the already-refreshed token when a second 401 arrives late, with one refresh', (tester) async {
+      final source = _FakeOidcTokenSource();
+      final adapter = _SequentialAdapter(
+        [
+          _fail401, // A: stale token → 401
+          _tokenResponse, // A: retry with refreshed token
+          _intentResponse,
+          _fail401, // B: was already in flight with the stale token → 401
+          _tokenResponse, // B: retry with the token A refreshed, no refresh
+          _intentResponse,
+        ],
+        // B's exchange leaves holding the stale token; by the time its 401 comes
+        // back, A's refresh has rotated the source.
+        onRequest: (index) {
+          if (index == 3) source.isStale = false;
+        },
+      );
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcTokenGetter: () => source.currentToken,
+        oidcRefreshTrigger: source.refresh,
+      );
+      final callback = await extractCallback(tester, ext);
+      const config = WorkplaceFilePickerConfigRequest(
+        sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+        downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+        theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+      );
+
+      final resultA = await tester.runAsync(() => callback(filePickerConfig: config));
+      source.isStale = true; // B started before A's refresh landed.
+      final resultB = await tester.runAsync(() => callback(filePickerConfig: config));
+
+      expect(source.refreshCount, equals(1));
+      expect(resultA?.intentId, equals('intent-xyz'));
+      expect(resultB?.intentId, equals('intent-xyz'));
+      // Bodies: [0] A stale, [1] A retry, [2] A intent, [3] B stale, [4] B retry, [5] B intent.
+      expect(adapter.capturedBodies[0]['id_token'], equals(_FakeOidcTokenSource.staleToken));
+      expect(adapter.capturedBodies[1]['id_token'], equals(_FakeOidcTokenSource.refreshedToken));
+      expect(adapter.capturedBodies[3]['id_token'], equals(_FakeOidcTokenSource.staleToken));
+      expect(adapter.capturedBodies[4]['id_token'], equals(_FakeOidcTokenSource.refreshedToken));
+    });
+
+    testWidgets('never triggers a refresh when the exchange fails without a 4xx response', (tester) async {
+      final adapter = _SequentialAdapter([_fail]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      var refreshCallCount = 0;
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(
+        notifier,
+        oidcRefreshTrigger: () async {
+          refreshCallCount++;
+          return 'refreshed-oidc-token';
+        },
+      );
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      // A network error is not a stale token; refreshing would be pointless.
+      expect(refreshCallCount, equals(0));
+      expect(adapter.capturedBodies, hasLength(1));
+    });
+
+    testWidgets('throws the original 401 when the refresh trigger yields no token', (tester) async {
+      final adapter = _SequentialAdapter([_fail401]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(notifier, oidcRefreshTrigger: () async => null);
+      final callback = await extractCallback(tester, ext);
+
+      await tester.runAsync(() async {
+        await expectLater(
+          callback(
+            filePickerConfig: const WorkplaceFilePickerConfigRequest(
+              sharingLink: WorkplaceActionConfigRequest(label: 'Link'),
+              downloadLink: WorkplaceActionConfigRequest(label: 'Attachment'),
+              theme: WorkplaceThemeConfigRequest(type: WorkplaceThemeType.light),
+            ),
+          ),
+          // Not a StateError from a null access token: the 401 is the real cause.
+          throwsA(isA<DioException>().having(
+            (e) => e.response?.statusCode,
+            'statusCode',
+            401,
+          )),
+        );
+      });
+
+      expect(adapter.capturedBodies, hasLength(1));
     });
   });
 }

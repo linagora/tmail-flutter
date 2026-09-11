@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
@@ -139,10 +140,16 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   InternalFinalCallback<void> get onDelete => mockControllerCallback();
 
+  // Overridable so a test can reproduce a session torn down mid-logout.
   @override
-  Rxn<AccountId> get accountId => Rxn(AccountFixtures.aliceAccountId);
+  AccountId? currentAccountId = AccountFixtures.aliceAccountId;
   @override
-  Session? get sessionCurrent => SessionFixtures.aliceSession;
+  Session? currentSession = SessionFixtures.aliceSession;
+
+  @override
+  Rxn<AccountId> get accountId => Rxn(currentAccountId);
+  @override
+  Session? get sessionCurrent => currentSession;
 
   bool premiumAvailable = false;
 
@@ -1264,6 +1271,101 @@ void main() {
           () => composerController?.markCleanClose(),
           returnsNormally,
         );
+      });
+    });
+
+    // Runs when the app is forced to log out (e.g. rejected OIDC refresh) with
+    // a composer open: web saves the draft to cache before the redirect.
+    group('onBeforeReconnect:', () {
+      const emailContent = '<p>unsent draft</p>';
+
+      test(
+        'Should save the composer cache\n'
+        'When platform is web and account and session are available',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.composerArguments.value = ComposerArguments();
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => emailContent);
+        when(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        )).thenAnswer((_) async => Right(UIState.idle));
+
+        await composerController?.onBeforeReconnect();
+
+        final request = verify(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: captureAnyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        )).captured.single as CreateEmailRequest;
+        expect(request.emailContent, emailContent);
+        expect(request.accountId, AccountFixtures.aliceAccountId);
+      });
+
+      test(
+        'Should do nothing\n'
+        'When platform is not web',
+      () async {
+        PlatformInfo.isTestingForWeb = false;
+        composerController?.composerArguments.value = ComposerArguments();
+
+        await composerController?.onBeforeReconnect();
+
+        verifyNever(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        ));
+      });
+
+      // The account/session guard runs on web too. If either is already gone
+      // when the forced logout starts, the draft is not written — logout still
+      // proceeds, so the draft is lost. Locked here so the skip stays a
+      // deliberate choice rather than a silent regression.
+      test(
+        'Should skip the save without throwing\n'
+        'When platform is web but the account is already gone',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        mockMailboxDashBoardController.currentAccountId = null;
+        addTearDown(() => mockMailboxDashBoardController.currentAccountId =
+            AccountFixtures.aliceAccountId);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.composerArguments.value = ComposerArguments();
+
+        await composerController?.onBeforeReconnect();
+
+        verifyNever(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        ));
+      });
+
+      test(
+        'Should skip the save without throwing\n'
+        'When platform is web but the session is already gone',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        mockMailboxDashBoardController.currentSession = null;
+        addTearDown(() => mockMailboxDashBoardController.currentSession =
+            SessionFixtures.aliceSession);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.composerArguments.value = ComposerArguments();
+
+        await composerController?.onBeforeReconnect();
+
+        verifyNever(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        ));
       });
     });
 
