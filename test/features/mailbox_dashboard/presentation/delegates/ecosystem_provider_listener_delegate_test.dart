@@ -178,4 +178,144 @@ void main() {
       expect(secondController.setUpSentryCount, 1);
     },
   );
+
+  // The unavailable arm is what stops a failed or unconfigured ecosystem from
+  // leaving stale data live in the app-lifetime registry.
+  testWidgets(
+    'clears handlers when the ecosystem becomes unavailable',
+    (tester) async {
+      final dashboardController = _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry();
+      final recordingHandler = _RecordingEcosystemHandler();
+      registry.register(recordingHandler);
+
+      final container = await _pumpDelegate(tester, registry);
+      final ecosystem = LinagoraEcosystem.deserialize({
+        'paywallUrlTemplate': 'https://domain.tld/premium',
+      });
+      final notifier = container.read(_ecosystemStateProvider.notifier);
+
+      notifier.setState(EcosystemAvailable(ecosystem));
+      await tester.pump();
+
+      expect(recordingHandler.loaded, [ecosystem]);
+
+      notifier.setState(
+        const EcosystemUnavailable(EcosystemUnavailableReason.loadFailed),
+      );
+      await tester.pump();
+
+      // One clear from the initial subscribe, one from the unavailable state.
+      expect(recordingHandler.clearedCount, 2);
+      expect(recordingHandler.loaded, [ecosystem]);
+      expect(dashboardController.setUpSentryCount, 0);
+    },
+  );
+
+  // Pins which ecosystem the delegate actually subscribes to: the signed-in
+  // account paired with its JMAP URL, re-keyed whenever the account changes.
+  testWidgets(
+    'keys the ecosystem subscription on the account and JMAP URL',
+    (tester) async {
+      final dashboardController = _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry();
+      registry.register(_RecordingEcosystemHandler());
+      final observedKeys = <(AccountId?, String?)>[];
+
+      await _pumpDelegate(tester, registry, observedKeys: observedKeys);
+
+      final jmapUrl = dashboardController.dynamicUrlInterceptors.jmapUrl;
+      expect(observedKeys, [(AccountId(Id('first')), jmapUrl)]);
+
+      dashboardController.testAccountId.value = AccountId(Id('second'));
+      await tester.pump();
+
+      expect(observedKeys, [
+        (AccountId(Id('first')), jmapUrl),
+        (AccountId(Id('second')), jmapUrl),
+      ]);
+    },
+  );
+
+  testWidgets(
+    'stays inert when no dashboard controller is registered',
+    (tester) async {
+      Get.testMode = true;
+      addTearDown(Get.reset);
+      final registry = LinagoraEcosystemHandlerRegistry();
+      final recordingHandler = _RecordingEcosystemHandler();
+      registry.register(recordingHandler);
+      final observedKeys = <(AccountId?, String?)>[];
+
+      await _pumpDelegate(tester, registry, observedKeys: observedKeys);
+      await tester.pumpWidget(const SizedBox());
+
+      expect(observedKeys, isEmpty);
+      expect(recordingHandler.clearedCount, 0);
+      expect(recordingHandler.loaded, isEmpty);
+    },
+  );
+
+  // A registry that already holds handlers must not gain the default ones on
+  // top, which would dispatch every ecosystem twice.
+  testWidgets(
+    'does not add default handlers to a populated registry',
+    (tester) async {
+      final dashboardController = _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry();
+      final recordingHandler = _RecordingEcosystemHandler();
+      registry.register(recordingHandler);
+
+      final container = await _pumpDelegate(tester, registry);
+      final ecosystem = LinagoraEcosystem.deserialize({
+        'sentry': {'enabled': false},
+      });
+      container
+          .read(_ecosystemStateProvider.notifier)
+          .setState(EcosystemAvailable(ecosystem));
+      await tester.pump();
+
+      expect(recordingHandler.loaded, [ecosystem]);
+      // The default SentryEcosystemHandler would have forwarded this config.
+      expect(dashboardController.setUpSentryCount, 0);
+    },
+  );
+}
+
+_DashboardController _registerDashboardController(String accountId) {
+  Get.testMode = true;
+  addTearDown(Get.reset);
+  final dashboardController = _DashboardController();
+  dashboardController.testAccountId.value = AccountId(Id(accountId));
+  Get.put<MailboxDashBoardController>(dashboardController);
+  return dashboardController;
+}
+
+/// Mounts the delegate over [registry], recording into [observedKeys] the
+/// ecosystem family arguments it subscribes with.
+Future<ProviderContainer> _pumpDelegate(
+  WidgetTester tester,
+  LinagoraEcosystemHandlerRegistry registry, {
+  List<(AccountId?, String?)>? observedKeys,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+        activeEcosystemProvider.overrideWith((ref, args) {
+          observedKeys?.add(args);
+          return ref.watch(_ecosystemStateProvider);
+        }),
+      ],
+      child: const MaterialApp(
+        home: MailboxDashboardProviderListenerWidget(
+          delegateFactories: [EcosystemProviderListenerDelegate.new],
+          child: SizedBox(),
+        ),
+      ),
+    ),
+  );
+  return ProviderScope.containerOf(
+    tester.element(find.byType(MailboxDashboardProviderListenerWidget)),
+  );
 }
