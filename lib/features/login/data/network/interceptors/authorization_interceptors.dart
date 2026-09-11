@@ -13,6 +13,7 @@ import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/extensions/object_extensions.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -643,7 +644,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // logged-out account and re-persist it over wiped caches.
     if (generation != _sessionGeneration) throw RefreshTokenFailedException();
 
-    final newTokenOidc = _withCurrentIdTokenIfMissing(acquired);
+    final newTokenOidc = acquired.withIdTokenFallback(_token?.tokenId);
     if (newTokenOidc.token == _token?.token) {
       throw const RefreshTokenDuplicatedException();
     }
@@ -655,20 +656,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
 
     return newTokenOidc;
-  }
-
-  // OIDC Core 12.2: a refresh response may omit id_token; keep the one we have.
-  TokenOIDC _withCurrentIdTokenIfMissing(TokenOIDC fresh) {
-    final currentIdToken = _token?.tokenId;
-    if (fresh.tokenId.uuid.isNotEmpty || currentIdToken == null || currentIdToken.uuid.isEmpty) {
-      return fresh;
-    }
-    return TokenOIDC(
-      fresh.token,
-      currentIdToken,
-      fresh.refreshToken,
-      expiredTime: fresh.expiredTime,
-    );
   }
 
   Future<Response> _retryRequest(
