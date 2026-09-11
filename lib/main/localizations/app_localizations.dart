@@ -5645,6 +5645,27 @@ class AppLocalizations {
     );
   }
 
+  String get rag {
+    return Intl.message(
+      'Index my emails with AI',
+      name: 'rag',
+    );
+  }
+
+  String get ragSettingExplanation {
+    return Intl.message(
+      'Allow AI assistant to access and analyze your emails to contextualize its responses.',
+      name: 'ragSettingExplanation',
+    );
+  }
+
+  String get ragToggleDescription {
+    return Intl.message(
+      'Index my emails with AI',
+      name: 'ragToggleDescription',
+    );
+  }
+
   String get labelAs {
     return Intl.message(
       'Label as',
