@@ -597,9 +597,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // token even if the process is killed mid-update.
     await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
     if (generation != _sessionGeneration) {
-      // A clear() landed mid-write; undo it so the token box doesn't say
-      // "authenticated" for a session that was just wiped.
-      await _tokenOidcCacheManager.deleteTokenOidc(tokenOIDC.tokenIdHash);
+      // A clear() landed mid-write; undo it. Best-effort — must not shadow
+      // the StaleSessionRefreshException below.
+      try {
+        await _tokenOidcCacheManager.deleteTokenOidc(tokenOIDC.tokenIdHash);
+      } catch (e) {
+        logWarning('AuthorizationInterceptors::_updateCurrentAccount: rollback deleteTokenOidc failed: $e');
+      }
       throw const StaleSessionRefreshException();
     }
 
@@ -614,7 +618,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     await _accountCacheManager.setCurrentAccount(personalAccount);
     if (generation != _sessionGeneration) {
       // Same as above, but for the account write.
-      await _accountCacheManager.deleteCurrentAccount(personalAccount.id);
+      try {
+        await _accountCacheManager.deleteCurrentAccount(personalAccount.id);
+      } catch (e) {
+        logWarning('AuthorizationInterceptors::_updateCurrentAccount: rollback deleteCurrentAccount failed: $e');
+      }
       throw const StaleSessionRefreshException();
     }
 
