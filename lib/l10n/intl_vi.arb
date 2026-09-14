@@ -2644,6 +2644,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageBrazilianPortuguese": "Tiếng Bồ Đào Nha (Brazil)",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "emptyListEmailForward": "Vui lòng nhập ít nhất một người nhận",
   "@emptyListEmailForward": {
     "type": "text",

@@ -1583,6 +1583,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageBrazilianPortuguese": "Португал (Бразил)",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "languageGerman": "Герман",
   "@languageGerman": {
     "type": "text",

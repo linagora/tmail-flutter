@@ -2828,6 +2828,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageBrazilianPortuguese": "Португальский (Бразилия)",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "emptyListEmailForward": "Укажите хотя бы одного получателя",
   "@emptyListEmailForward": {
     "type": "text",

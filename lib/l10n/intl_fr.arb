@@ -2638,6 +2638,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageBrazilianPortuguese": "Portugais (Brésil)",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "emptyListEmailForward": "Veuillez saisir au moins un destinataire",
   "@emptyListEmailForward": {
     "type": "text",
