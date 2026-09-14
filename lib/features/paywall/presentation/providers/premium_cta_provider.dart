@@ -1,63 +1,21 @@
-import 'dart:async';
-
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/saas/saas_account_capability.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
 
 part 'premium_cta_provider.g.dart';
 
-enum EcosystemUnavailableReason {
-  missingAccount,
-  missingJmapUrl,
-  dependencyUnavailable,
-  loadFailed,
-}
-
-sealed class EcosystemState {
-  const EcosystemState();
-}
-
-class EcosystemLoading extends EcosystemState with EquatableMixin {
-  const EcosystemLoading();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class EcosystemUnavailable extends EcosystemState with EquatableMixin {
-  final EcosystemUnavailableReason reason;
-  final Object? error;
-
-  const EcosystemUnavailable(this.reason, {this.error});
-
-  @override
-  List<Object?> get props => [reason, error];
-}
-
-class EcosystemAvailable extends EcosystemState with EquatableMixin {
-  final LinagoraEcosystem ecosystem;
-
-  const EcosystemAvailable(this.ecosystem);
-
-  @override
-  List<Object?> get props => [ecosystem];
-}
+Duration? _neverRetry(int retryCount, Object error) =>
+    neverRetryEcosystem(retryCount, error);
 
 enum PremiumCtaUnavailableReason {
   missingAccount,
@@ -160,46 +118,18 @@ Future<LinagoraEcosystem> ecosystem(
   Ref ref,
   AccountId accountId,
   String jmapUrl,
-) async {
-  final interactor = ref.watch(getLinagoraEcosystemInteractorProvider);
-  if (interactor == null) {
-    logWarning('ecosystemProvider: GetLinagoraEcosystemInteractor is missing');
-    throw StateError('GetLinagoraEcosystemInteractor is unavailable');
-  }
-  return _EcosystemLoader(ref).load(interactor, jmapUrl);
-}
-
-Duration? _neverRetry(int retryCount, Object error) => null;
+) => loadEcosystem(ref, jmapUrl);
 
 @riverpod
-EcosystemState activeEcosystem(Ref ref, AccountId? accountId, String? jmapUrl) {
-  if (accountId == null) {
-    return const EcosystemUnavailable(
-      EcosystemUnavailableReason.missingAccount,
+EcosystemState activeEcosystem(Ref ref, AccountId? accountId, String? jmapUrl) =>
+    resolveActiveEcosystem(
+      ref,
+      accountId,
+      jmapUrl,
+      (accountId, jmapUrl) => ref.watch(
+        ecosystemProvider(accountId, jmapUrl),
+      ),
     );
-  }
-  if (ref.watch(getLinagoraEcosystemInteractorProvider) == null) {
-    return const EcosystemUnavailable(
-      EcosystemUnavailableReason.dependencyUnavailable,
-    );
-  }
-
-  final normalizedJmapUrl = jmapUrl?.trim();
-  if (normalizedJmapUrl == null || normalizedJmapUrl.isEmpty) {
-    return const EcosystemUnavailable(
-      EcosystemUnavailableReason.missingJmapUrl,
-    );
-  }
-
-  return ref.watch(ecosystemProvider(accountId, normalizedJmapUrl)).when(
-    loading: () => const EcosystemLoading(),
-    error: (error, _) => EcosystemUnavailable(
-      EcosystemUnavailableReason.loadFailed,
-      error: error,
-    ),
-    data: EcosystemAvailable.new,
-  );
-}
 
 @riverpod
 PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
@@ -244,53 +174,6 @@ PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
       ),
   };
 }
-
-/// Consumes the ecosystem interactor through the shared seam so the failure is
-/// logged once and urgent exceptions still reach the re-login / reconnect flow
-/// (ADR-0103), exactly like `BaseController.consumeState` does for GetX.
-class _EcosystemLoader with InteractorConsumer {
-  final Ref _ref;
-
-  _EcosystemLoader(this._ref);
-
-  Future<LinagoraEcosystem> load(
-    GetLinagoraEcosystemInteractor interactor,
-    String jmapUrl,
-  ) async {
-    LinagoraEcosystem? loadedEcosystem;
-    Object? failure;
-    StackTrace? failureStackTrace;
-
-    await consumeInteractor(
-      () => interactor.execute(jmapUrl).firstWhere(_isTerminalEcosystemState),
-      isStale: () => !_ref.mounted,
-      onSuccess: (success) {
-        if (success is GetLinagoraEcosystemSuccess) {
-          loadedEcosystem = success.linagoraEcosystem;
-        }
-      },
-      onFailure: (error, stackTrace) {
-        failure = error;
-        failureStackTrace = stackTrace;
-      },
-    );
-
-    final error = failure;
-    if (error != null) {
-      Error.throwWithStackTrace(error, failureStackTrace ?? StackTrace.current);
-    }
-    final ecosystem = loadedEcosystem;
-    if (ecosystem == null) {
-      throw StateError('Ecosystem result is unavailable');
-    }
-    return ecosystem;
-  }
-}
-
-bool _isTerminalEcosystemState(Either<Failure, Success> state) => state.fold(
-      (_) => true,
-      (success) => success is! GettingLinagoraEcosystem,
-    );
 
 PremiumCtaState _resolveEcosystemPaywall(
   PremiumCtaContext context,

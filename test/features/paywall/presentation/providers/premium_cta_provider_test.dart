@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/linagora_ecosystem_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
@@ -140,6 +141,40 @@ void _jmapUrlKeyingTests() {
       isA<EcosystemAvailable>(),
     );
     expect(repository.callCount, 1);
+  });
+
+  test('refreshes ecosystem when JMAP URL changes for the same account',
+      () async {
+    final firstEcosystem = _ecosystem('$_firstJmapUrl/premium');
+    final secondEcosystem = _ecosystem('$_secondJmapUrl/premium');
+    final repository = _EcosystemRepository(
+      (url) async => url == _firstJmapUrl ? firstEcosystem : secondEcosystem,
+    );
+    final container = _createContainer(repository);
+    _keepActiveEcosystemAlive(container, _firstTarget);
+    _keepActiveEcosystemAlive(container, _sameAccountOnSecondUrl);
+
+    await _readEcosystem(container, _firstTarget);
+    await _readEcosystem(container, _sameAccountOnSecondUrl);
+    await container.pump();
+
+    expect(
+      container.read(activeEcosystemProvider(_firstAccountId, _firstJmapUrl)),
+      isA<EcosystemAvailable>().having(
+        (state) => state.ecosystem,
+        'ecosystem',
+        same(firstEcosystem),
+      ),
+    );
+    expect(
+      container.read(activeEcosystemProvider(_firstAccountId, _secondJmapUrl)),
+      isA<EcosystemAvailable>().having(
+        (state) => state.ecosystem,
+        'ecosystem',
+        same(secondEcosystem),
+      ),
+    );
+    expect(repository.callCount, 2);
   });
 
   // The JMAP URL is trimmed before it becomes the cache key, so a padded URL
@@ -352,6 +387,33 @@ void _premiumCtaGatingTests() {
     );
   });
 
+  test('refreshes premium CTA when capability changes for the same account',
+      () {
+    final repository = _succeedingRepository();
+    final container = _createContainer(repository);
+    container
+        .read(workplaceFqdnProvider.notifier)
+        .setFqdn('workplace.domain.tld');
+    final upgradableContext = _premiumContext(
+      _firstTarget,
+      capability: _upgradableCapability(),
+    );
+    final lockedContext = _premiumContext(
+      _firstTarget,
+      capability: _lockedCapability(),
+    );
+
+    expect(
+      container.read(premiumCtaProvider(upgradableContext)),
+      _availableCta(Uri.parse('https://workplace.domain.tld/settings/premium')),
+    );
+    expect(
+      container.read(premiumCtaProvider(lockedContext)),
+      _unavailableCta(PremiumCtaUnavailableReason.premiumNotAvailable),
+    );
+    expect(repository.callCount, 0);
+  });
+
   test('does not fetch ecosystem without session and account context', () {
     _expectCtaWithoutFetch(null, PremiumCtaUnavailableReason.missingAccount);
   });
@@ -485,6 +547,8 @@ typedef _EcosystemTarget = ({AccountId accountId, String? jmapUrl});
 
 final _firstTarget = (accountId: _firstAccountId, jmapUrl: _firstJmapUrl);
 final _secondTarget = (accountId: _secondAccountId, jmapUrl: _secondJmapUrl);
+final _sameAccountOnSecondUrl =
+    (accountId: _firstAccountId, jmapUrl: _secondJmapUrl);
 final _secondAccountOnFirstUrl =
     (accountId: _secondAccountId, jmapUrl: _firstJmapUrl);
 final _targetWithoutJmapUrl = (accountId: _firstAccountId, jmapUrl: null);
