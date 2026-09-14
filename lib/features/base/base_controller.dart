@@ -163,8 +163,7 @@ abstract class BaseController extends GetxController
     return exception is NoNetworkError
       || exception is BadCredentialsException
       || exception is ConnectionError
-      || exception is RefreshTokenFailedException
-      || exception is RefreshTokenDuplicatedException;
+      || exception is RefreshTokenFailedException;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
@@ -186,9 +185,7 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
-    } else if (exception is RefreshTokenFailedException
-        || exception is RefreshTokenDuplicatedException) {
-      // A refresh that returns the same token cannot clear the 401 either.
+    } else if (exception is RefreshTokenFailedException) {
       handleRefreshTokenFailedException();
     }
   }
@@ -205,9 +202,7 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
-    } else if (exception is RefreshTokenFailedException
-        || exception is RefreshTokenDuplicatedException) {
-      // A refresh that returns the same token cannot clear the 401 either.
+    } else if (exception is RefreshTokenFailedException) {
       handleRefreshTokenFailedException();
     } else {
       logWarning(

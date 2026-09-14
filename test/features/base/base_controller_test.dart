@@ -170,17 +170,6 @@ void main() {
       expect(mockBaseController.validateUrgentException(RefreshTokenFailedException()), isTrue);
     });
 
-    // Journey A (JMAP 401): a same-token refresh reaches super.onError, becomes a
-    // BadCredentialsException and forces logout. Journey B (Drive token_exchange
-    // 401) surfaces the RefreshTokenDuplicatedException itself, so it must be
-    // classified urgent here or the dead session only produces a toast.
-    test('should return true when exception is RefreshTokenDuplicatedException', () {
-      expect(
-        mockBaseController.validateUrgentException(const RefreshTokenDuplicatedException()),
-        isTrue,
-      );
-    });
-
     test('should return false when exception is SomeOtherException', () {
       expect(mockBaseController.validateUrgentException(const SomeOtherException()), isFalse);
     });
