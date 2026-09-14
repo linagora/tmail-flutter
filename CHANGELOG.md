@@ -1,3 +1,18 @@
+## [0.37.0] - 2026-09-14
+### Added
+- Add Brazilian Portuguese localization
+- Implement fetchJson for workplace web
+
+### Fixed
+- #4790 Fix attachment upload failing to retry after a mobile 401
+- #4799 Fix HTML Mail being truncated in width
+- #4805 Clear iframes only when the SelectableRegion node itself takes focus
+- Restore legacy icons for mailbox actions
+- Hide Twake Calendar visio section when rendering ICS description
+
+### Changed
+- Translate vi, ru, fr, mn
+
 ## [0.36.0] - 2026-08-28
 ### Added
 - #4678 Deep sidebar tree navigation for mailboxes, no more horizontal scrolling
