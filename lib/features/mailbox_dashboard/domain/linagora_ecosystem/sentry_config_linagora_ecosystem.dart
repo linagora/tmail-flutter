@@ -13,10 +13,28 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
   final String? dsn;
   final String? environment;
 
-  SentryConfigLinagoraEcosystem({this.enabled, this.dsn, this.environment});
+  /// Starting position of the per-user reporting toggle, not a master switch:
+  /// on-prem serves `false` so nothing is sent until a user opts in.
+  /// Falls back to [enabled] so deployments without this key are unaffected.
+  @JsonKey(fromJson: _parseBool)
+  final bool? userOptInByDefault;
 
-  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) =>
-      _$SentryConfigLinagoraEcosystemFromJson(json);
+  SentryConfigLinagoraEcosystem({
+    this.enabled,
+    this.dsn,
+    this.environment,
+    this.userOptInByDefault,
+  });
+
+  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) {
+    final generated = _$SentryConfigLinagoraEcosystemFromJson(json);
+    return SentryConfigLinagoraEcosystem(
+      enabled: generated.enabled,
+      dsn: generated.dsn,
+      environment: generated.environment,
+      userOptInByDefault: _parseBool(json['userOptInByDefault']),
+    );
+  }
 
   static bool? _parseBool(dynamic value) {
     if (value == null) return null;
@@ -25,7 +43,13 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     return null;
   }
 
-  Map<String, dynamic> toJson() => _$SentryConfigLinagoraEcosystemToJson(this);
+  Map<String, dynamic> toJson() {
+    final json = _$SentryConfigLinagoraEcosystemToJson(this);
+    if (userOptInByDefault != null) {
+      json['userOptInByDefault'] = userOptInByDefault;
+    }
+    return json;
+  }
 
   static LinagoraEcosystemProperties? deserialize(dynamic json) {
     if (json is Map<String, dynamic>) {
@@ -35,12 +59,16 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     }
   }
 
+  bool get isUserOptedInByDefault => userOptInByDefault ?? enabled ?? false;
+
   @override
-  List<Object?> get props => [enabled, dsn, environment];
+  List<Object?> get props => [enabled, dsn, environment, userOptInByDefault];
 }
 
 extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosystem {
-  Future<SentryConfig> toSentryConfig() async {
+  Future<SentryConfig> toSentryConfig({
+    bool isReportingAllowed = false,
+  }) async {
     const dartDefineRelease = String.fromEnvironment('SENTRY_RELEASE');
     final release = dartDefineRelease.isNotEmpty
         ? dartDefineRelease
@@ -51,6 +79,7 @@ extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosyste
       environment: environment ?? '',
       release: release,
       isAvailable: enabled ?? false,
+      isReportingAllowed: isReportingAllowed,
     );
   }
 }
