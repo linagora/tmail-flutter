@@ -43,17 +43,42 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'ai.label-categorization.enabled')
   final bool? aiLabelCategorizationEnabled;
 
+  /// User opt-in for sending error reports to Sentry.
+  /// Tri-state: `null` means never chosen, so the instance-wide
+  /// `userOptInByDefault` from the Linagora ecosystem config applies.
+  @JsonKey(name: 'sentry.user-opt-in')
+  final bool? sentryUserOptIn;
+
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
     this.aiLabelCategorizationEnabled,
+    this.sentryUserOptIn,
   });
 
-  factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
-    _$TMailServerSettingOptionsFromJson(json);
+  factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) {
+    final generated = _$TMailServerSettingOptionsFromJson(json);
+    return TMailServerSettingOptions(
+      alwaysReadReceipts: generated.alwaysReadReceipts,
+      displaySenderPriority: generated.displaySenderPriority,
+      language: generated.language,
+      aiLabelCategorizationEnabled: generated.aiLabelCategorizationEnabled,
+      sentryUserOptIn: const BooleanNullableConverter().fromJson(
+        json['sentry.user-opt-in'] as String?,
+      ),
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$TMailServerSettingOptionsToJson(this);
+  Map<String, dynamic> toJson() {
+    final json = _$TMailServerSettingOptionsToJson(this);
+    final sentryUserOptInValue = const BooleanNullableConverter()
+        .toJson(sentryUserOptIn);
+    if (sentryUserOptInValue != null) {
+      json['sentry.user-opt-in'] = sentryUserOptInValue;
+    }
+    return json;
+  }
 
   TMailServerSettingOptions copyWith({
     bool? alwaysReadReceipts,
@@ -66,6 +91,17 @@ class TMailServerSettingOptions with EquatableMixin {
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
       aiLabelCategorizationEnabled: aiLabelCategorizationEnabled ?? this.aiLabelCategorizationEnabled,
+      sentryUserOptIn: sentryUserOptIn,
+    );
+  }
+
+  TMailServerSettingOptions withSentryUserOptIn(bool value) {
+    return TMailServerSettingOptions(
+      alwaysReadReceipts: alwaysReadReceipts,
+      displaySenderPriority: displaySenderPriority,
+      language: language,
+      aiLabelCategorizationEnabled: aiLabelCategorizationEnabled,
+      sentryUserOptIn: value,
     );
   }
 
@@ -75,5 +111,6 @@ class TMailServerSettingOptions with EquatableMixin {
     displaySenderPriority,
     language,
     aiLabelCategorizationEnabled,
+    sentryUserOptIn,
   ];
 }
