@@ -110,6 +110,7 @@ void main() {
     enabled: true,
     dsn: 'https://test@sentry.io/123',
     environment: 'test',
+    userOptInByDefault: false,
   );
 
   setUp(() {
@@ -125,6 +126,50 @@ void main() {
   });
 
   test('persists the latest consent when it changes while Sentry initializes', () async {
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+    );
+    SentryConfig? initializedConfig;
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (config) async {
+        initializedConfig = config;
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    )..initUser(SentryUser(id: 'account-b'));
+
+    final setUp = ecosystem.setUp(optedInByDefaultConfig);
+    await initializeStarted.future;
+    await ecosystem.updateReportingConsent(false);
+
+    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.user.id, 'account-a');
+
+    finishInitialize.complete();
+    await setUp;
+
+    expect(initializedConfig?.isReportingAllowed, isTrue);
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(cacheManager.user.id, 'account-b');
+    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.writes, [
+      'config:false',
+      'user:account-b',
+    ]);
+  });
+
+  test('persists an opt-in that arrives while opted-out Sentry initializes', () async {
     final cacheManager = _FakeCacheManager(
       configuration: _configuration(isReportingAllowed: false),
       user: _user('account-a'),
@@ -144,7 +189,7 @@ void main() {
 
     final setUp = ecosystem.setUp(ecosystemConfig);
     await initializeStarted.future;
-    await ecosystem.updateReportingConsent(false);
+    await ecosystem.updateReportingConsent(true);
 
     expect(cacheManager.configuration.isReportingAllowed, isFalse);
     expect(cacheManager.user.id, 'account-a');
@@ -152,13 +197,14 @@ void main() {
     finishInitialize.complete();
     await setUp;
 
-    expect(initializedConfig?.isReportingAllowed, isTrue);
-    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(initializedConfig?.isReportingAllowed, isFalse);
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
     expect(cacheManager.user.id, 'account-b');
-    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.configuration.isReportingAllowed, isTrue);
     expect(cacheManager.writes, [
       'config:false',
       'user:account-b',
+      'config:true',
     ]);
   });
 
@@ -220,8 +266,32 @@ void main() {
     expect(cacheManager.writes, ['config:false']);
   });
 
+  test('uses the ecosystem default while the user has not chosen', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-b'),
+    );
+    SentryConfig? initializedConfig;
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (config) async => initializedConfig = config,
+    )..initUser(SentryUser(id: 'account-b'));
+
+    await ecosystem.setUp(ecosystemConfig);
+
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(initializedConfig?.isReportingAllowed, isFalse);
+  });
+
   test('updates iOS Keychain when reporting consent changes', () async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
     final cacheManager = _FakeCacheManager(
       configuration: _configuration(isReportingAllowed: true),
       user: _user('account-a'),
@@ -233,7 +303,7 @@ void main() {
       initializeSentry: (_) async {},
     );
 
-    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.setUp(optedInByDefaultConfig);
     await ecosystem.updateReportingConsent(false);
 
     final savedConfigs = verify(

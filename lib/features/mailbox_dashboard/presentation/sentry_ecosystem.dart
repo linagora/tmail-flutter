@@ -59,8 +59,13 @@ class SentryEcosystem {
       return;
     }
 
-    final sentryConfig = (await ecosystemConfig.toSentryConfig())
-        .withReportingAllowed(SentryManager.instance.isSentryReportingAllowed);
+    SentryManager.instance
+        .setSentryReportingDefault(ecosystemConfig.isUserOptedInByDefault);
+
+    final sentryConfig = await ecosystemConfig.toSentryConfig(
+      isReportingAllowed:
+          SentryManager.instance.isSentryReportingAllowed,
+    );
 
     await _initializeSentry(sentryConfig);
 
