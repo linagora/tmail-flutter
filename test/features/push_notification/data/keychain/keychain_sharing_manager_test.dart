@@ -39,6 +39,25 @@ void main() {
       expect(decoded['dsn'], equals('https://test@sentry.io/123'));
       expect(decoded['environment'], equals('production'));
       expect(decoded['release'], equals('1.0.0'));
+      expect(decoded['isReportingAllowed'], isTrue);
+    });
+
+    test('WHEN reporting is not allowed \n'
+        'THEN stores the denied state for the notification extension', () async {
+      final config = SentryConfig(
+        dsn: 'https://test@sentry.io/123',
+        environment: 'production',
+        release: '1.0.0',
+        isReportingAllowed: false,
+      );
+
+      await keychainSharingManager.saveSentryConfig(config);
+
+      final stored = await flutterSecureStorage.read(
+        key: SentryConfig.sentryConfigKeyChain,
+      );
+      final decoded = jsonDecode(stored!) as Map<String, dynamic>;
+      expect(decoded['isReportingAllowed'], isFalse);
     });
 
     test('WHEN SentryConfig has no dist \n'
