@@ -97,10 +97,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   /// Triggers a refresh, or joins one already running — dedupes an external
   /// caller (e.g. Workplace's own Dio) against this interceptor's [onError].
+  /// Always returns the acquired token; duplicate detection is the caller's job.
   /// Owns the outcome: throws [RefreshTokenUnavailableException] without sending
-  /// anything when the session has no refresh token, [RefreshTokenDuplicatedException]
-  /// on a same-token response, clears the session and throws
-  /// [RefreshTokenFailedException] on a server rejection,
+  /// anything when the session has no refresh token, clears the session and
+  /// throws [RefreshTokenFailedException] on a server rejection,
   /// [StaleSessionRefreshException] when the session that started it was
   /// replaced meanwhile, rethrows transient failures untouched.
   Future<TokenOIDC> requestTokenRefresh() {
@@ -356,12 +356,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     RequestOptions requestOptions,
     ErrorInterceptorHandler handler,
   ) async {
+    // Captured before refreshing: a retry with the same access token would
+    // just 401 again, so detect that here rather than in the shared refresh.
+    final tokenBeforeRefresh = _token?.token;
     try {
       log(
         'AuthorizationInterceptors::onError: Perform get New Token',
         webConsoleEnabled: true,
       );
       await requestTokenRefresh();
+      if (_token?.token == tokenBeforeRefresh) {
+        throw const RefreshTokenDuplicatedException();
+      }
 
       requestOptions.extra[_refreshAttemptedKey] = true;
       return await _performRetry(requestOptions, err, handler);
@@ -582,14 +588,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
-    // The session died while we read the account; these writes land between
-    // clearAll() and closeHive(), resurrecting it on the next launch.
+    // Re-checked before every write below — a clear() landing during any
+    // of these awaits must not resurrect a session it just wiped.
     if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
     // Persist the new token BEFORE mutating the account cache. persistOneTokenOidc
     // is crash-safe (write-before-prune), so the token box always holds a usable
     // token even if the process is killed mid-update.
     await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
+    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
     final personalAccount = PersonalAccount(
       tokenOIDC.tokenIdHash,
@@ -600,6 +607,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       userName: currentAccount.userName
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
+    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
     return personalAccount;
   }
@@ -670,9 +678,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // logged-out account and re-persist it over wiped caches.
     if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
 
-    if (acquired.token == _token?.token) {
-      throw const RefreshTokenDuplicatedException();
-    }
+    // No duplicate check here: JMAP and Workplace compare different fields,
+    // so each caller decides for itself once it has the acquired token.
     _updateNewToken(acquired);
 
     final personalAccount = await _updateCurrentAccount(
@@ -680,6 +687,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       generation: generation,
     );
     if (PlatformInfo.isIOS) {
+      if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
       await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
     }
 

@@ -598,6 +598,61 @@ void main() {
             accountCacheManager.deleteCurrentAccount(AccountFixtures.aliceAccount.id));
       },
     );
+
+    test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared while the token is being persisted\n'
+      'THEN the account cache is never written\n'
+      'SO a logout racing the persist step cannot be resurrected',
+      () async {
+        final persistGate = Completer<void>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) async => AccountFixtures.aliceAccount);
+        when(tokenOidcCacheManager.persistOneTokenOidc(any))
+            .thenAnswer((_) => persistGate.future);
+
+        final pending = authorizationInterceptors.requestTokenRefresh();
+        await pumpEventQueue();
+        authorizationInterceptors.clear();
+        persistGate.complete();
+
+        await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
+        verifyNever(accountCacheManager.setCurrentAccount(any));
+      },
+    );
+
+    test(
+      'GIVEN a refresh in flight\n'
+      'WHEN the session is cleared while the account cache is being written\n'
+      'THEN the refresh surfaces as stale, not as a usable token\n'
+      'SO the caller never treats an account write racing logout as success',
+      () async {
+        final setAccountGate = Completer<void>();
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(any, any, any, any, any))
+            .thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) async => AccountFixtures.aliceAccount);
+        when(accountCacheManager.setCurrentAccount(any))
+            .thenAnswer((_) => setAccountGate.future);
+
+        final pending = authorizationInterceptors.requestTokenRefresh();
+        await pumpEventQueue();
+        authorizationInterceptors.clear();
+        setAccountGate.complete();
+
+        await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
+      },
+    );
   });
 
   // ============================================================
@@ -1641,8 +1696,10 @@ void main() {
         // update _token, so second request can't detect the first's attempt).
         // Key assertion: no infinite loop — each request tries once and stops.
         expect(refreshCallCount, 2);
-        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
-        verifyNever(accountCacheManager.setCurrentAccount(any));
+        // The shared acquire step persists regardless of duplicate; only the
+        // retry decision is skipped — once per independent attempt.
+        verify(tokenOidcCacheManager.persistOneTokenOidc(any)).called(2);
+        verify(accountCacheManager.setCurrentAccount(any)).called(2);
       },
     );
   });
@@ -2369,16 +2426,20 @@ void main() {
         );
 
         expect(refreshCallCount, 1);
-        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
-        verifyNever(accountCacheManager.setCurrentAccount(any));
+        // _refreshTokenThenRetry detects the duplicate itself (access token
+        // unchanged) AFTER the shared acquire step already persisted.
+        verify(tokenOidcCacheManager
+                .persistOneTokenOidc(OIDCFixtures.tokenOidcNotExpiredYet))
+            .called(1);
+        verify(accountCacheManager.setCurrentAccount(any)).called(1);
       },
     );
 
     test(
-      'GIVEN a direct requestTokenRefresh caller\n'
-      'WHEN refresh returns the current token\n'
-      'THEN RefreshTokenDuplicatedException is thrown before anything is persisted\n'
-      'AND the next call refreshes again (in-flight slot released)',
+      'GIVEN a direct requestTokenRefresh caller (e.g. Workplace)\n'
+      'WHEN refresh returns the current access token\n'
+      'THEN the token is still returned and persisted\n'
+      'SO a caller comparing a different field (e.g. id token) is not blocked',
       () async {
         authorizationInterceptors.setTokenAndAuthorityOidc(
           newToken: OIDCFixtures.tokenOidcNotExpiredYet,
@@ -2391,19 +2452,14 @@ void main() {
           OIDCFixtures.oidcConfiguration.scopes,
           OIDCFixtures.tokenOidcNotExpiredYet,
         )).thenAnswer((_) async => OIDCFixtures.tokenOidcNotExpiredYet);
+        stubAccountCache();
 
-        await expectLater(
-          authorizationInterceptors.requestTokenRefresh(),
-          throwsA(isA<RefreshTokenDuplicatedException>()),
-        );
-        await expectLater(
-          authorizationInterceptors.requestTokenRefresh(),
-          throwsA(isA<RefreshTokenDuplicatedException>()),
-        );
+        final refreshed = await authorizationInterceptors.requestTokenRefresh();
 
-        verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(2);
-        verifyNever(tokenOidcCacheManager.persistOneTokenOidc(any));
-        verifyNever(accountCacheManager.setCurrentAccount(any));
+        expect(refreshed, OIDCFixtures.tokenOidcNotExpiredYet);
+        verify(tokenOidcCacheManager
+                .persistOneTokenOidc(OIDCFixtures.tokenOidcNotExpiredYet))
+            .called(1);
         expect(authorizationInterceptors.authenticationType, AuthenticationType.oidc);
       },
     );
