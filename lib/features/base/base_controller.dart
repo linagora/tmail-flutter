@@ -649,12 +649,12 @@ abstract class BaseController extends GetxController
 
   Future<void> _clearAllData() async {
     try {
-      // Bump the session generation BEFORE wiping caches, not after: an
-      // in-flight refresh must see itself as stale before its writes race the wipe.
+      // Read before clear() flips it to none.
+      final wasAuthenticatedWithOidc = isAuthenticatedWithOidc;
       authorizationInterceptors.clear();
       authorizationIsolateInterceptors.clear();
       await Future.wait([
-        if (isAuthenticatedWithOidc)
+        if (wasAuthenticatedWithOidc)
           deleteAuthorityOidcInteractor.execute()
         else
           deleteCredentialInteractor.execute(),

@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -317,6 +318,34 @@ void main() {
       verifyNever(mockTwakeAppManager.setExecutingBeforeReconnect(any));
       verifyNever(mockBeforeReconnectManager.executeBeforeReconnectListeners());
       expect(mockBaseController.logoutCalls, 1);
+    });
+  });
+
+  group('BaseController::clearAllData', () {
+    setUp(() {
+      clearInteractions(mockTwakeAppManager);
+      clearInteractions(mockDeleteAuthorityOidcInteractor);
+      clearInteractions(mockDeleteCredentialInteractor);
+      when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer(
+        (invocation) => (invocation.positionalArguments[0] as Future<void> Function())());
+    });
+
+    test('OIDC session: deletes via deleteAuthorityOidcInteractor, not deleteCredentialInteractor', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
+
+      await mockBaseController.clearAllData();
+
+      verify(mockDeleteAuthorityOidcInteractor.execute()).called(1);
+      verifyNever(mockDeleteCredentialInteractor.execute());
+    });
+
+    test('basic session: deletes via deleteCredentialInteractor, not deleteAuthorityOidcInteractor', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData();
+
+      verify(mockDeleteCredentialInteractor.execute()).called(1);
+      verifyNever(mockDeleteAuthorityOidcInteractor.execute());
     });
   });
 
