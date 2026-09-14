@@ -84,6 +84,12 @@ return UncontrolledProviderScope(
 
 `UncontrolledProviderScope(container: appProviderContainer)` exposes the **same container** to both the widget tree and the imperative GetX layer, enabling incremental `ConsumerWidget` migration.
 
+### Resolving the container from legacy code with a `BuildContext`
+
+When a legacy GetX controller or helper already receives a `BuildContext`, it resolves the nearest widget-tree container with `ProviderScope.containerOf(context, listen: false)`. This keeps the call site on the Riverpod scope used by its UI, including scoped overrides in tests, without adding another direct dependency on the frozen `appProviderContainer` singleton.
+
+Code with a `WidgetRef` continues to use `ref.read` or `ref.watch`. The global `appProviderContainer` remains limited to the existing context-free call sites listed below.
+
 ### 2. `LocalSettingsNotifier` — `StateNotifier` → `@riverpod Notifier`
 
 ```dart

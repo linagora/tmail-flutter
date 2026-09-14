@@ -26,10 +26,12 @@ class PaywallUtils {
     if (!_isSecureAbsoluteUri(uri)) return '';
     if (!WebLinkGenerator.isValidFqdn(uri.host)) return '';
 
-    return WebLinkGenerator.safeGenerateWebLink(
-      workplaceFqdn: uri.host,
-      pathname: '/settings/premium',
-    );
+    return Uri(
+      scheme: 'https',
+      host: uri.host,
+      port: uri.hasPort ? uri.port : null,
+      path: '/settings/premium',
+    ).toString();
   }
 
   static bool isValidPaywallUrl(String? url) {

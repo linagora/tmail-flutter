@@ -145,7 +145,8 @@ void main() {
         input: '  https://domain.tld/paywall  ',
         expected: true,
       ),
-      // Ports are accepted here even though buildWorkplacePaywallUrl drops them.
+      // Ports are accepted consistently by validation and Workplace URL
+      // generation.
       (
         description: 'URL with an explicit port',
         input: 'https://domain.tld:8443/paywall',

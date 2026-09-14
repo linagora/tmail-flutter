@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/scribe_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/sentry_ecosystem_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
