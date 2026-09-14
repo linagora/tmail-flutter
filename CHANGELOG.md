@@ -1,3 +1,8 @@
+## [0.37.1] - 2026-09-14
+
+### Fixed
+- #4820 Change arrow size to 16
+
 ## [0.37.0] - 2026-09-14
 ### Added
 - Add Brazilian Portuguese localization
