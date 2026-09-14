@@ -364,8 +364,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         'AuthorizationInterceptors::onError: Perform get New Token',
         webConsoleEnabled: true,
       );
-      await requestTokenRefresh();
-      if (_token?.token == tokenBeforeRefresh) {
+      final refreshedToken = await requestTokenRefresh();
+      if (refreshedToken.token == tokenBeforeRefresh) {
         throw const RefreshTokenDuplicatedException();
       }
 
