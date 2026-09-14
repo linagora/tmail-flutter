@@ -261,48 +261,44 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _performSaveAndReconnection({required String reason}) async {
+  void _performSaveAndReconnection({required String reason}) {
     if (PlatformInfo.isWeb) {
       log(
         '$runtimeType::_performSaveAndReconnection: web save-and-reconnect path',
         webConsoleEnabled: true,
       );
-      await _executeBeforeReconnectAndLogOut(reason: reason);
+      _executeBeforeReconnectAndLogOut(reason: reason);
     } else if (PlatformInfo.isMobile) {
       logError(
         '$runtimeType::_performSaveAndReconnection: '
         'forcing logout on mobile after save-and-reconnect | reason=$reason',
         extras: {'auth_error_type': reason},
       );
-      await clearDataAndGoToLoginPage();
+      clearDataAndGoToLoginPage();
     }
   }
 
-  Future<void> _performReconnection({required String reason}) async {
+  void _performReconnection({required String reason}) {
     logError(
       '$runtimeType::_performReconnection: '
       'forcing logout | reason=$reason',
       extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
-    await clearDataAndGoToLoginPage();
+    clearDataAndGoToLoginPage();
   }
 
-  /// Guarded so a fatal refresh reported by two independent callers (JMAP
-  /// path, Workplace/Drive path) logs and navigates only once.
-  Future<void> handleRefreshTokenFailedException() {
+  void handleRefreshTokenFailedException() {
     log(
       '$runtimeType::handleRefreshTokenFailedException: '
       'hasComposer=${twakeAppManager.hasComposer}',
       webConsoleEnabled: true,
     );
-    return twakeAppManager.runForcedLogoutOnce(() {
-      if (twakeAppManager.hasComposer) {
-        return _performSaveAndReconnection(reason: 'refresh_token_400');
-      } else {
-        return _performReconnection(reason: 'refresh_token_400');
-      }
-    });
+    if (twakeAppManager.hasComposer) {
+      _performSaveAndReconnection(reason: 'refresh_token_400');
+    } else {
+      _performReconnection(reason: 'refresh_token_400');
+    }
   }
 
   void onDataFailureViewState(Failure failure) {

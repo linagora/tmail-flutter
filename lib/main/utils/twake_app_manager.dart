@@ -6,20 +6,11 @@ class TwakeAppManager {
   bool _isExecutingBeforeReconnect = false;
   OidcUserInfo? _oidcUserInfo;
   Future<void>? _clearingDataFuture;
-  Future<void>? _forcedLogoutFuture;
 
   /// Serialises cache teardown so only one run is ever in flight.
   Future<void> runClearDataOnce(Future<void> Function() clearData) {
     return _clearingDataFuture ??= clearData().whenComplete(() {
       _clearingDataFuture = null;
-    });
-  }
-
-  /// Serialises the forced-logout funnel so a fatal refresh reported by two
-  /// independent callers (JMAP + Workplace/Drive) logs and navigates once.
-  Future<void> runForcedLogoutOnce(Future<void> Function() forceLogout) {
-    return _forcedLogoutFuture ??= forceLogout().whenComplete(() {
-      _forcedLogoutFuture = null;
     });
   }
 
