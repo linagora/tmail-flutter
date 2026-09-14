@@ -261,44 +261,48 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void _performSaveAndReconnection({required String reason}) {
+  Future<void> _performSaveAndReconnection({required String reason}) async {
     if (PlatformInfo.isWeb) {
       log(
         '$runtimeType::_performSaveAndReconnection: web save-and-reconnect path',
         webConsoleEnabled: true,
       );
-      _executeBeforeReconnectAndLogOut(reason: reason);
+      await _executeBeforeReconnectAndLogOut(reason: reason);
     } else if (PlatformInfo.isMobile) {
       logError(
         '$runtimeType::_performSaveAndReconnection: '
         'forcing logout on mobile after save-and-reconnect | reason=$reason',
         extras: {'auth_error_type': reason},
       );
-      clearDataAndGoToLoginPage();
+      await clearDataAndGoToLoginPage();
     }
   }
 
-  void _performReconnection({required String reason}) {
+  Future<void> _performReconnection({required String reason}) async {
     logError(
       '$runtimeType::_performReconnection: '
       'forcing logout | reason=$reason',
       extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
-    clearDataAndGoToLoginPage();
+    await clearDataAndGoToLoginPage();
   }
 
-  void handleRefreshTokenFailedException() {
+  /// Guarded so a fatal refresh reported by two independent callers (JMAP
+  /// path, Workplace/Drive path) logs and navigates only once.
+  Future<void> handleRefreshTokenFailedException() {
     log(
       '$runtimeType::handleRefreshTokenFailedException: '
       'hasComposer=${twakeAppManager.hasComposer}',
       webConsoleEnabled: true,
     );
-    if (twakeAppManager.hasComposer) {
-      _performSaveAndReconnection(reason: 'refresh_token_400');
-    } else {
-      _performReconnection(reason: 'refresh_token_400');
-    }
+    return twakeAppManager.runForcedLogoutOnce(() {
+      if (twakeAppManager.hasComposer) {
+        return _performSaveAndReconnection(reason: 'refresh_token_400');
+      } else {
+        return _performReconnection(reason: 'refresh_token_400');
+      }
+    });
   }
 
   void onDataFailureViewState(Failure failure) {
