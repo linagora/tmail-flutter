@@ -45,6 +45,9 @@ class SentryConfigurationCache extends HiveObject with EquatableMixin {
   @HiveField(12)
   final String? dist;
 
+  @HiveField(13, defaultValue: false)
+  final bool isReportingAllowed;
+
   SentryConfigurationCache({
     required this.dsn,
     required this.environment,
@@ -59,7 +62,28 @@ class SentryConfigurationCache extends HiveObject with EquatableMixin {
     required this.onErrorSampleRate,
     required this.enableFramesTracking,
     required this.dist,
+    this.isReportingAllowed = false,
   });
+
+  SentryConfigurationCache copyWith({
+    bool? isReportingAllowed,
+  }) =>
+      SentryConfigurationCache(
+        dsn: dsn,
+        environment: environment,
+        release: release,
+        tracesSampleRate: tracesSampleRate,
+        profilesSampleRate: profilesSampleRate,
+        enableLogs: enableLogs,
+        isDebug: isDebug,
+        attachScreenshot: attachScreenshot,
+        isAvailable: isAvailable,
+        sessionSampleRate: sessionSampleRate,
+        onErrorSampleRate: onErrorSampleRate,
+        enableFramesTracking: enableFramesTracking,
+        dist: dist,
+        isReportingAllowed: isReportingAllowed ?? this.isReportingAllowed,
+      );
 
   @override
   List<Object?> get props => [
@@ -76,5 +100,6 @@ class SentryConfigurationCache extends HiveObject with EquatableMixin {
         onErrorSampleRate,
         enableFramesTracking,
         dist,
+        isReportingAllowed,
       ];
 }

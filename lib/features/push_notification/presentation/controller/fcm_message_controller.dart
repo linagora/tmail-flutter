@@ -6,6 +6,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -13,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
 import 'package:tmail_ui_user/features/caching/extensions/sentry_cache_extensions.dart';
@@ -37,6 +39,22 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+class FcmSentryRuntime {
+  const FcmSentryRuntime();
+
+  void setReportingConsent(bool? consent) {
+    SentryManager.instance.setSentryReportingConsent(consent);
+  }
+
+  Future<void> initialize(SentryConfig sentryConfig) {
+    return SentryManager.instance.initializeWithSentryConfig(sentryConfig);
+  }
+
+  void setUser(SentryUser user) {
+    SentryManager.instance.setUser(user);
+  }
+}
 
 class FcmMessageController extends PushBaseController {
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
@@ -131,17 +149,21 @@ class FcmMessageController extends PushBaseController {
     }
   }
 
-  Future<void> setUpSentryConfiguration() async {
+  Future<void> setUpSentryConfiguration({
+    SentryConfigurationCacheManager? cacheManager,
+    FcmSentryRuntime sentryRuntime = const FcmSentryRuntime(),
+  }) async {
     try {
-      final cacheManager = getBinding<SentryConfigurationCacheManager>();
-      if (cacheManager == null) {
+      final effectiveCacheManager = cacheManager ??
+          getBinding<SentryConfigurationCacheManager>();
+      if (effectiveCacheManager == null) {
         logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfigurationCacheManager is null');
         return;
       }
 
       final SentryConfigurationCache configCache;
       try {
-        configCache = await cacheManager.getSentryConfiguration();
+        configCache = await effectiveCacheManager.getSentryConfiguration();
       } catch (e) {
         logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration not cached: $e');
         return;
@@ -153,11 +175,17 @@ class FcmMessageController extends PushBaseController {
         return;
       }
 
-      await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
+      sentryRuntime.setReportingConsent(sentryConfig.isReportingAllowed);
+      if (!sentryConfig.isReportingAllowed) {
+        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry reporting is not allowed');
+        return;
+      }
+
+      await sentryRuntime.initialize(sentryConfig);
 
       try {
-        final userCache = await cacheManager.getSentryUser();
-        SentryManager.instance.setUser(userCache.toSentryUser());
+        final userCache = await effectiveCacheManager.getSentryUser();
+        sentryRuntime.setUser(userCache.toSentryUser());
       } catch (e) {
         logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user not cached: $e');
         // Acceptable — Sentry initialized without user context
