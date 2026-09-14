@@ -4,11 +4,11 @@ set -e
 echo "Prebuild started..."
 
 # Single pub get resolves the entire workspace (Dart pub workspaces)
-flutter pub get > /dev/null 2>&1
+flutter pub get > /dev/null
 echo "[workspace] pub get done."
 
 # Run build_runner across all workspace members in a single invocation
-dart run build_runner build --workspace --delete-conflicting-outputs > /dev/null 2>&1
+dart run build_runner build --workspace > /dev/null
 echo "[workspace] build_runner done."
 
 # Root module: intl localization generation

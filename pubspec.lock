@@ -1865,18 +1865,18 @@ packages:
     dependency: transitive
     description:
       name: photo_manager
-      sha256: e29619443803c40385ee509abc7937835d9b5122f899940080d28b2dceed59c1
+      sha256: "2d00a785b501bf1e5f6180bbef772846e767be11d45d11112b63092ef54a419e"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "3.12.0"
   photo_manager_image_provider:
     dependency: transitive
     description:
       name: photo_manager_image_provider
-      sha256: "38ef1023dc11de3a8669f16e7c981673b3c5cfee715d17120f4b87daa2cdd0af"
+      sha256: b6015b67b32f345f57cf32c126f871bced2501236c405aafaefa885f7c821e4f
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.2.0"
   platform:
     dependency: transitive
     description:
