@@ -596,7 +596,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     // is crash-safe (write-before-prune), so the token box always holds a usable
     // token even if the process is killed mid-update.
     await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
-    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
+    if (generation != _sessionGeneration) {
+      // A clear() landed mid-write; undo it so the token box doesn't say
+      // "authenticated" for a session that was just wiped.
+      await _tokenOidcCacheManager.deleteTokenOidc(tokenOIDC.tokenIdHash);
+      throw const StaleSessionRefreshException();
+    }
 
     final personalAccount = PersonalAccount(
       tokenOIDC.tokenIdHash,
@@ -607,7 +612,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       userName: currentAccount.userName
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
-    if (generation != _sessionGeneration) throw const StaleSessionRefreshException();
+    if (generation != _sessionGeneration) {
+      // Same as above, but for the account write.
+      await _accountCacheManager.deleteCurrentAccount(personalAccount.id);
+      throw const StaleSessionRefreshException();
+    }
 
     return personalAccount;
   }

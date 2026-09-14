@@ -91,6 +91,11 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
     }
   }
 
+  Future<void> deleteTokenOidc(String tokenIdHash) {
+    log('TokenOidcCacheManager::deleteTokenOidc(): $tokenIdHash');
+    return _tokenOidcCacheClient.deleteItem(tokenIdHash);
+  }
+
   Future<void> clear() async {
     await _tokenOidcCacheClient.clearAllData();
   }

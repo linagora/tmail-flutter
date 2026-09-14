@@ -603,6 +603,7 @@ void main() {
       'GIVEN a refresh in flight\n'
       'WHEN the session is cleared while the token is being persisted\n'
       'THEN the account cache is never written\n'
+      'AND the token just persisted is deleted (detector undoes its own write)\n'
       'SO a logout racing the persist step cannot be resurrected',
       () async {
         final persistGate = Completer<void>();
@@ -616,6 +617,8 @@ void main() {
             .thenAnswer((_) async => AccountFixtures.aliceAccount);
         when(tokenOidcCacheManager.persistOneTokenOidc(any))
             .thenAnswer((_) => persistGate.future);
+        when(tokenOidcCacheManager.deleteTokenOidc(any))
+            .thenAnswer((_) async {});
 
         final pending = authorizationInterceptors.requestTokenRefresh();
         await pumpEventQueue();
@@ -624,6 +627,9 @@ void main() {
 
         await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
         verifyNever(accountCacheManager.setCurrentAccount(any));
+        verify(tokenOidcCacheManager.deleteTokenOidc(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+        )).called(1);
       },
     );
 
@@ -631,6 +637,7 @@ void main() {
       'GIVEN a refresh in flight\n'
       'WHEN the session is cleared while the account cache is being written\n'
       'THEN the refresh surfaces as stale, not as a usable token\n'
+      'AND the account just written is deleted (detector undoes its own write)\n'
       'SO the caller never treats an account write racing logout as success',
       () async {
         final setAccountGate = Completer<void>();
@@ -644,6 +651,9 @@ void main() {
             .thenAnswer((_) async => AccountFixtures.aliceAccount);
         when(accountCacheManager.setCurrentAccount(any))
             .thenAnswer((_) => setAccountGate.future);
+        when(accountCacheManager.deleteCurrentAccount(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+        )).thenAnswer((_) async {});
 
         final pending = authorizationInterceptors.requestTokenRefresh();
         await pumpEventQueue();
@@ -651,6 +661,9 @@ void main() {
         setAccountGate.complete();
 
         await expectLater(pending, throwsA(isA<StaleSessionRefreshException>()));
+        verify(accountCacheManager.deleteCurrentAccount(
+          OIDCFixtures.newTokenOidc.tokenIdHash,
+        )).called(1);
       },
     );
   });

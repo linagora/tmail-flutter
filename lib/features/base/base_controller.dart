@@ -649,6 +649,10 @@ abstract class BaseController extends GetxController
 
   Future<void> _clearAllData() async {
     try {
+      // Bump the session generation BEFORE wiping caches, not after: an
+      // in-flight refresh must see itself as stale before its writes race the wipe.
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
       await Future.wait([
         if (isAuthenticatedWithOidc)
           deleteAuthorityOidcInteractor.execute()
@@ -657,8 +661,6 @@ abstract class BaseController extends GetxController
         cachingManager.clearAll(),
         languageCacheManager.removeLanguage(),
       ]);
-      authorizationInterceptors.clear();
-      authorizationIsolateInterceptors.clear();
       await cachingManager.closeHive();
     } catch (e) {
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
