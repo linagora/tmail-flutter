@@ -171,6 +171,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart'
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_bindings.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 abstract class MailboxDashBoardBindings extends BaseBindings {
@@ -203,9 +204,10 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
 
   void _bindSentryEcosystem() {
     if (!PlatformInfo.isMobile) return;
+    // getBinding, not Get.find: both deps are optional, a miss must not throw.
     Get.put(SentryEcosystem(
-      Get.find<SentryConfigurationCacheManager>(),
-      Get.find<IOSSharingManager>(),
+      getBinding<SentryConfigurationCacheManager>(),
+      getBinding<IOSSharingManager>(),
     ));
   }
 
