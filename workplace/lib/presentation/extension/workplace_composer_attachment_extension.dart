@@ -156,10 +156,14 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     }
 
     final refreshedToken = await oidcRefreshTrigger();
-    logWarning(
-      'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken: '
-      'failedIdTokenHash=${failedToken.hashCode} | '
-      'refreshedIdTokenHash=${refreshedToken?.hashCode}',
+    // Trace level so this rides into Sentry as a breadcrumb on the _failWith
+    // event; warning reaches the console only.
+    logTrace(
+      'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken',
+      extras: {
+        'refreshReturnedToken': refreshedToken != null,
+        'refreshReturnedSameToken': refreshedToken == failedToken,
+      },
       webConsoleEnabled: true,
     );
     // The IdP may omit id_token on refresh, in which case the current one is
