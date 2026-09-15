@@ -57,28 +57,10 @@ class TMailServerSettingOptions with EquatableMixin {
     this.sentryUserOptIn,
   });
 
-  factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) {
-    final generated = _$TMailServerSettingOptionsFromJson(json);
-    return TMailServerSettingOptions(
-      alwaysReadReceipts: generated.alwaysReadReceipts,
-      displaySenderPriority: generated.displaySenderPriority,
-      language: generated.language,
-      aiLabelCategorizationEnabled: generated.aiLabelCategorizationEnabled,
-      sentryUserOptIn: const BooleanNullableConverter().fromJson(
-        json['sentry.user-opt-in'] as String?,
-      ),
-    );
-  }
+  factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
+    _$TMailServerSettingOptionsFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final json = _$TMailServerSettingOptionsToJson(this);
-    final sentryUserOptInValue = const BooleanNullableConverter()
-        .toJson(sentryUserOptIn);
-    if (sentryUserOptInValue != null) {
-      json['sentry.user-opt-in'] = sentryUserOptInValue;
-    }
-    return json;
-  }
+  Map<String, dynamic> toJson() => _$TMailServerSettingOptionsToJson(this);
 
   TMailServerSettingOptions copyWith({
     bool? alwaysReadReceipts,
