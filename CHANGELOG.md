@@ -1,3 +1,14 @@
+## [0.37.2] - 2026-09-15
+### Added
+- Allow workplace to refresh jmap token
+
+### Fixed
+- Hide the premium CTA when no paywall url is configured
+
+### Changed
+- #4817 Improve premium CTA ecosystem handling
+- Translate id, lb, de, ga, zh_Hans
+
 ## [0.37.1] - 2026-09-14
 
 ### Fixed
