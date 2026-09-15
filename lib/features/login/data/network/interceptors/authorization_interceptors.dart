@@ -109,7 +109,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
     // Nothing left to refresh with — the session already died elsewhere.
     if (_configOIDC == null || _token == null) {
-      return Future.error(RefreshTokenFailedException());
+      final error = RefreshTokenFailedException();
+      logError(
+        'AuthorizationInterceptors::requestTokenRefresh: '
+        'auth_error_type=refresh_on_cleared_session | will_logout=true | '
+        'hasConfig=${_configOIDC != null} | hasToken=${_token != null}',
+        exception: error,
+        webConsoleEnabled: true,
+      );
+      return Future.error(error);
     }
 
     // Same bar as validateToRefreshToken: sending a refresh the session cannot
