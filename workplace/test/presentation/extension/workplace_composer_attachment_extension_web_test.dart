@@ -93,6 +93,7 @@ WorkplaceComposerAttachmentExtension _makeExtension(ValueListenable<Uri?> notifi
       oidcTokenGetter: () => 'oidc-token',
       maxAttachmentSizeBytesGetter: () => null,
       remainingAttachmentCapacityBytesGetter: (_) => null,
+      oidcRefreshTrigger: () => Future.value(null),
     );
 
 const _filePickerConfig = WorkplaceFilePickerConfigRequest(

@@ -71,21 +71,19 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     String redirectUrl,
     String discoveryUrl,
     List<String> scopes,
-    String refreshToken,
+    TokenOIDC currentToken,
   ) async {
     try {
       final tokenRequest = getRefreshTokenRequest(
         clientId,
         redirectUrl,
         discoveryUrl,
-        refreshToken,
+        currentToken.refreshToken,
         scopes,
       );
       final tokenResponse = await _appAuth.token(tokenRequest);
       log('$runtimeType::refreshingTokensOIDC():Token: ${tokenResponse.accessToken}');
-      final tokenOIDC = tokenResponse.toTokenOIDC(
-        maybeAvailableRefreshToken: refreshToken,
-      );
+      final tokenOIDC = tokenResponse.toTokenOIDC(currentToken: currentToken);
       if (tokenOIDC.isTokenValid()) {
         return tokenOIDC;
       } else {

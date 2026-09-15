@@ -649,16 +649,18 @@ abstract class BaseController extends GetxController
 
   Future<void> _clearAllData() async {
     try {
+      // Read before clear() flips it to none.
+      final wasAuthenticatedWithOidc = isAuthenticatedWithOidc;
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
       await Future.wait([
-        if (isAuthenticatedWithOidc)
+        if (wasAuthenticatedWithOidc)
           deleteAuthorityOidcInteractor.execute()
         else
           deleteCredentialInteractor.execute(),
         cachingManager.clearAll(),
         languageCacheManager.removeLanguage(),
       ]);
-      authorizationInterceptors.clear();
-      authorizationIsolateInterceptors.clear();
       await cachingManager.closeHive();
     } catch (e) {
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
