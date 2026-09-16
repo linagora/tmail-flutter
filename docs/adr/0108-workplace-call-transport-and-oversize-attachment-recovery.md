@@ -76,9 +76,6 @@ on ValidationRejected(failure):
 
 - Adding a Workplace call is a request description, not another auth flow.
 - Adding an alternative to a blocking upload dialog is one class plus one builder argument.
-- Reusable from the local-file uploader: the bytes-or-path body stream, the validation kernel,
-  the attachment chip state.
-- Not reusable: the rest of the JMAP uploader chain, which exists to produce a blobId.
 - Exchanging a token per call costs one extra round trip whenever the bridge is absent.
 
 ## Open questions
