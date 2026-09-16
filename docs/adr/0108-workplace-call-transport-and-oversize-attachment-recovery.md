@@ -51,6 +51,14 @@ send(platformUrl, accessMode, method, pathSegments, query, body, headers):
 
 - The bridge body widens from a JSON map to any payload, so binary can ride the same path.
 
+### One file body reader for both destinations
+
+- A picked file is read the same way whatever uploads it.
+- It streams from the file's path when the platform has a file system.
+- It reads from the file's bytes otherwise, which on web is always.
+- A file carrying neither is an error, not a silently empty body.
+- It is lifted out of the JMAP uploader's body builder, so both destinations share one reader.
+
 ### Recovery before the failure dialog
 
 - A rejected upload may be handed to a recovery first; the dialog is the fallback.
@@ -75,7 +83,8 @@ on ValidationRejected(failure):
 
 ### Module boundary
 
-- `workplace` owns the transport; the main app owns the composer wiring and the recovery.
+- `workplace` owns the transport; the main app owns the composer wiring, the recovery,
+  and the file body reader.
 - Unchanged from ADR-0095 and ADR-0105.
 
 ## Consequences
