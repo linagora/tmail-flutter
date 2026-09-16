@@ -60,6 +60,8 @@ on ValidationRejected(failure):
   return false
 ```
 
+- A recovery is registered as one optional builder argument on the upload validation service,
+  built per rejection from the composer's context; no builder argument means today's dialog.
 - No recovery is registered yet, so the dialog is still what every rejection shows.
 - Drive availability for the oversize path is the same gate as the Drive picker button:
   workplace FQDN, ecosystem flag, user preference.
