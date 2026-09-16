@@ -26,16 +26,22 @@ Accepted
 ### One transport for every Workplace call
 
 - The access mode stays a sealed pair: bridge (the container holds the session) or bearer token.
-- A runner resolves the mode per call; a request executor sends whatever the caller describes.
-- The Drive token is exchanged per call, kept in memory, never persisted or refreshed.
-- One OIDC refresh retry on a 400/401 subject-token error stays the only retry.
+- A runner resolves the mode once per action, then hands it to that action.
+- Every request the action sends rides that one mode, so an action costs at most one exchange.
+- The bridge exists on web only, so every action on mobile resolves to the bearer token.
+- A request executor sends whatever the caller describes.
+- The Drive token is exchanged per action, kept in memory, never persisted or refreshed.
+- The runner owns the exchange and its one OIDC refresh retry on a 400/401 subject-token
+  error; that stays the only retry.
+- The main app keeps supplying the OIDC token getter and refresh trigger to the composer
+  extension, which passes both to the runner.
 
 ```
 run(platformUrl, action):
   if bridge supported and available:
     try:   return action(BridgeAccessMode)
     catch: log, fall through
-  token = exchange(oidcToken)        # per call, not stored
+  token = exchange(oidcToken)        # per action, not stored
   return action(BearerTokenAccessMode(token))
 
 send(platformUrl, accessMode, method, pathSegments, query, body, headers):
@@ -76,7 +82,8 @@ on ValidationRejected(failure):
 
 - Adding a Workplace call is a request description, not another auth flow.
 - Adding an alternative to a blocking upload dialog is one class plus one builder argument.
-- Exchanging a token per call costs one extra round trip whenever the bridge is absent.
+- Exchanging a token per action costs one extra round trip whenever the bridge is absent,
+  which on mobile is every action.
 
 ## Open questions
 
