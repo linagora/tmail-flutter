@@ -679,6 +679,27 @@ void main() {
       });
     });
 
+    test('SHOULD use the attendee fallback WHEN a reply name is blank', () {
+      final mapper = _mapper(
+        event: _event(
+          method: EventMethod.reply,
+          attendees: [
+            _attendee(
+              '   ',
+              'jordan.blake@example.invalid',
+              participationStatus: 'ACCEPTED',
+            ),
+          ],
+        ),
+        viewState: _viewState(
+          listEmailAddressSender: const ['jordan.blake@example.invalid'],
+        ),
+      );
+
+      expect(mapper.actorName, appLocalizations.anAttendee);
+      expect(mapper.hasActivity, isTrue);
+    });
+
     test('SHOULD show no badge WHEN the method carries no message', () {
       expect(_mapper(event: _event(method: EventMethod.publish)).hasActivity, isFalse);
     });

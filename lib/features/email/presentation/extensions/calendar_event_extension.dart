@@ -84,7 +84,10 @@ extension CalendarEventExtension on CalendarEvent {
   ) {
     final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
     if (matchedAttendee != null) {
-      return matchedAttendee.name?.name ?? appLocalizations.anAttendee;
+      final name = matchedAttendee.name?.name.trim();
+      return name?.isNotEmpty == true
+          ? name!
+          : appLocalizations.anAttendee;
     } else {
       return appLocalizations.anAttendee;
     }
