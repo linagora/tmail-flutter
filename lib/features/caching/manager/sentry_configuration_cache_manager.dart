@@ -33,6 +33,27 @@ class SentryConfigurationCacheManager {
     );
   }
 
+  Future<SentryConfigurationCache?> updateSentryReportingAllowed(
+    bool isReportingAllowed,
+  ) async {
+    try {
+      final current = await getSentryConfiguration();
+      final updated = current.copyWith(
+        isReportingAllowed: isReportingAllowed,
+      );
+      await saveSentryConfiguration(updated);
+      return updated;
+    } catch (e) {
+      logWarning(
+        'SentryConfigurationCacheManager::updateSentryReportingAllowed: $e',
+      );
+      if (!isReportingAllowed) {
+        await clearSentryConfiguration();
+      }
+      return null;
+    }
+  }
+
   Future<SentryUserCache> getSentryUser() async {
     final cache = await _userCacheClient.getItem(_userCacheKey);
     if (cache == null) throw const NotFoundSentryUserException();

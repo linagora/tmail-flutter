@@ -19,6 +19,7 @@ extension SentryConfigExtension on SentryConfig {
       isDebug: isDebug,
       attachScreenshot: attachScreenshot,
       dist: dist,
+      isReportingAllowed: isReportingAllowed,
     );
   }
 }
@@ -39,6 +40,7 @@ extension SentryConfigurationCacheExtension on SentryConfigurationCache {
       isDebug: isDebug,
       attachScreenshot: attachScreenshot,
       dist: dist,
+      isReportingAllowed: isReportingAllowed,
     );
   }
 }
