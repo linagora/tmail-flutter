@@ -188,7 +188,7 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   @visibleForTesting
   Future<void> get pendingScopeSync => _pendingScopeSync;
 
-  @visibleForTesting
+  /// Completes after all requested SDK start/close transitions are applied.
   Future<void> get pendingLifecycleTransition => _pendingLifecycleTransition;
 
   /// Initialize Sentry.
