@@ -3491,6 +3491,7 @@ class MailboxDashBoardController extends ReloadableController
     _identities = null;
     outboxMailbox = null;
     sessionCurrent = null;
+    SentryManager.instance.clearUser();
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();
