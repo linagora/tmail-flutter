@@ -12,9 +12,6 @@ Future<void> _ensureBackgroundInitialized() {
     await FcmMessageController.instance
         .initialAppConfig()
         .timeout(const Duration(seconds: 10));
-    await FcmMessageController.instance
-        .setUpSentryConfiguration()
-        .timeout(const Duration(seconds: 10));
   }()).catchError((Object error, StackTrace stackTrace) {
     _backgroundInitFuture = null;
     throw error;
@@ -22,10 +19,19 @@ Future<void> _ensureBackgroundInitialized() {
 }
 
 @pragma('vm:entry-point')
-Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
+Future<void> handleFirebaseBackgroundMessage(
+  RemoteMessage message, {
+  Future<void> Function()? ensureBackgroundInitialized,
+  Future<void> Function()? refreshSentryConfiguration,
+  void Function(RemoteMessage)? handleMessage,
+}) async {
   try {
-    await _ensureBackgroundInitialized();
-    FcmService.instance.handleFirebaseBackgroundMessage(message);
+    await (ensureBackgroundInitialized ?? _ensureBackgroundInitialized)();
+    await (refreshSentryConfiguration ??
+        () => FcmMessageController.instance
+            .setUpSentryConfiguration()
+            .timeout(const Duration(seconds: 10)))();
+    (handleMessage ?? FcmService.instance.handleFirebaseBackgroundMessage)(message);
   } catch (e, st) {
     logError(
       'FcmReceiver::handleFirebaseBackgroundMessage: throw exception',
