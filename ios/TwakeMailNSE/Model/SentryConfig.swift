@@ -22,11 +22,11 @@ struct SentryConfig: Codable {
     let profilesSampleRate: Double
     
     /// Release Health: The sampling rate for sessions (0.0 to 1.0).
-    let sessionSampleRate: Double
+    let sessionSampleRate: Double?
     
     /// Error tracking: The sampling rate for errors (0.0 to 1.0).
     /// If set to 0.1, only 10% of errors are sent.
-    let onErrorSampleRate: Double
+    let onErrorSampleRate: Double?
     
     /// Enable logs to be sent to Sentry (or internal console logging).
     let enableLogs: Bool
@@ -40,6 +40,9 @@ struct SentryConfig: Codable {
     
     /// Master switch to check if Sentry integration is allowed/available.
     let isAvailable: Bool
+
+    /// Effective consent mirrored by the main app for this account.
+    let isReportingAllowed: Bool?
     
     /// Performance: Tracks UI rendering performance.
     /// Ignored in NSE as there is no UI rendering.
