@@ -57,9 +57,15 @@ class SentryEcosystem {
     );
     _sentryConfig = configToPersist;
     final pendingPersistence = _pendingConsentPersistence.then((_) async {
-      await _cacheData(configToPersist, _sentryUser);
+      final isReportingAllowedPersisted =
+          await _cacheData(configToPersist, _sentryUser);
+      final configToShare = configToPersist.withReportingAllowed(
+        isReportingAllowedPersisted &&
+            SentryManager.instance.isSentryReportingAllowed,
+      );
+      _sentryConfig = configToShare;
       if (PlatformInfo.isIOS) {
-        await _saveSentryConfigToKeychain(configToPersist);
+        await _saveSentryConfigToKeychain(configToShare);
       }
     });
     _pendingConsentPersistence = pendingPersistence.catchError((_) {});
@@ -88,17 +94,35 @@ class SentryEcosystem {
     // config and identity together.
     if (_sentryConfig == null) return;
 
-    final updatedCache = await _cacheManager
-        ?.updateSentryReportingAllowed(isReportingAllowed);
-    final updatedConfig = updatedCache?.toSentryConfig() ??
-        _sentryConfig?.withReportingAllowed(isReportingAllowed);
-    if (updatedConfig == null) return;
+    final currentConfig = _sentryConfig!;
+    SentryConfig updatedConfig;
+    try {
+      final updatedCache = await _cacheManager
+          ?.updateSentryReportingAllowed(isReportingAllowed);
+      updatedConfig = updatedCache?.toSentryConfig() ??
+          currentConfig.withReportingAllowed(false);
+    } catch (e, st) {
+      logError(
+        'SentryEcosystem::_persistReportingConsent: Cannot update cached reporting consent',
+        exception: e,
+        stackTrace: st,
+      );
+      final configToShare = currentConfig.withReportingAllowed(false);
+      _sentryConfig = configToShare;
+      if (PlatformInfo.isIOS) {
+        await _saveSentryConfigToKeychain(configToShare);
+      }
+      Error.throwWithStackTrace(e, st);
+    }
 
     _sentryConfig = updatedConfig;
+    if (PlatformInfo.isIOS) {
+      await _saveSentryConfigToKeychain(updatedConfig);
+    }
   }
 
-  Future<void> _cacheData(SentryConfig sentryConfig, SentryUser? sentryUser) async {
-    if (_cacheManager == null) return;
+  Future<bool> _cacheData(SentryConfig sentryConfig, SentryUser? sentryUser) async {
+    if (_cacheManager == null) return false;
     try {
       // Treat the allowed config as the commit marker. During an account
       // switch, background workers must see reporting denied until the new
@@ -116,6 +140,7 @@ class SentryEcosystem {
         await _cacheManager.saveSentryConfiguration(
           sentryConfig.toSentryConfigurationCache(),
         );
+        return true;
       }
     } catch (e, st) {
       logError(
@@ -126,6 +151,7 @@ class SentryEcosystem {
       // Clear both caches to avoid stale/inconsistent state (e.g. new config + old user PII)
       await _cacheManager.clearSentryConfiguration();
     }
+    return false;
   }
 
   Future<void> _saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
