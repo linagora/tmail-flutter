@@ -475,7 +475,11 @@ Future<void> _useRegularArrangementAtDesktopWidth(WidgetTester tester) async {
   final value = tester.getRect(find.text('Tuesday, June 16, 2026'));
 
   expect(find.byType(LinagoraEventDateIcon), findsOneWidget);
-  expect(label.top, value.top);
+  expect(
+    label.center.dy,
+    closeTo(value.center.dy, 0.5),
+    reason: 'the label is vertically centred on the first value line',
+  );
   expect(value.left, greaterThan(label.right));
 
   expect(_fontSizeOf(tester, l.when), 12);
