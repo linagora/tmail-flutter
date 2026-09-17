@@ -1,6 +1,3 @@
-
-import 'dart:async';
-
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -59,6 +56,14 @@ class FcmSentryRuntime {
   void clearUser() {
     SentryManager.instance.clearUser();
   }
+}
+
+class FcmSentrySetupCancellation {
+  bool _isCancelled = false;
+
+  bool get isCancelled => _isCancelled;
+
+  void cancel() => _isCancelled = true;
 }
 
 class FcmMessageController extends PushBaseController {
@@ -157,54 +162,149 @@ class FcmMessageController extends PushBaseController {
   Future<void> setUpSentryConfiguration({
     SentryConfigurationCacheManager? cacheManager,
     FcmSentryRuntime sentryRuntime = const FcmSentryRuntime(),
+    FcmSentrySetupCancellation? cancellation,
   }) async {
-    await sentryRuntime.setReportingConsent(false);
-    sentryRuntime.clearUser();
-
+    final cancellationToken = cancellation ?? FcmSentrySetupCancellation();
     try {
-      final effectiveCacheManager = cacheManager ??
-          getBinding<SentryConfigurationCacheManager>();
-      if (effectiveCacheManager == null) {
-        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfigurationCacheManager is null');
-        return;
-      }
-
-      final SentryConfigurationCache configCache;
-      try {
-        configCache = await effectiveCacheManager.getSentryConfiguration();
-      } catch (e) {
-        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration not cached: $e');
-        return;
-      }
-
-      final sentryConfig = configCache.toSentryConfig();
-      if (!sentryConfig.isAvailable) {
-        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is not available');
-        return;
-      }
-
-      if (!sentryConfig.isReportingAllowed) {
-        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry reporting is not allowed');
-        return;
-      }
-
-      try {
-        final userCache = await effectiveCacheManager.getSentryUser();
-        sentryRuntime.setUser(userCache.toSentryUser());
-      } catch (e) {
-        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user not cached: $e');
-        // Acceptable — Sentry will start without user context
-      }
-
-      await sentryRuntime.initialize(sentryConfig);
-      await sentryRuntime.setReportingConsent(true);
+      await _runSentrySetup(
+        cacheManager: cacheManager ??
+            getBinding<SentryConfigurationCacheManager>(),
+        sentryRuntime: sentryRuntime,
+        cancellation: cancellationToken,
+      );
     } catch (e, st) {
-      logError(
-        'FcmMessageController::setUpSentryConfiguration: throw exception',
-        exception: e,
-        stackTrace: st,
+      await _handleSentrySetupFailure(
+        e,
+        st,
+        cancellationToken,
+        sentryRuntime,
       );
     }
+  }
+
+  Future<void> _runSentrySetup({
+    required SentryConfigurationCacheManager? cacheManager,
+    required FcmSentryRuntime sentryRuntime,
+    required FcmSentrySetupCancellation cancellation,
+  }) async {
+    await _resetSentryRuntime(sentryRuntime);
+    if (cancellation.isCancelled) return;
+    if (cacheManager == null) {
+      logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfigurationCacheManager is null');
+      return;
+    }
+
+    final configCache = await _loadAllowedSentryConfiguration(cacheManager);
+    if (configCache == null || cancellation.isCancelled) return;
+
+    await _restoreSentryUser(cacheManager, sentryRuntime, cancellation);
+    if (cancellation.isCancelled) return;
+
+    await sentryRuntime.initialize(configCache.toSentryConfig());
+    if (!await _canEnableSentry(
+      cacheManager,
+      configCache,
+      cancellation,
+    )) {
+      return;
+    }
+
+    await sentryRuntime.setReportingConsent(true);
+    if (cancellation.isCancelled) {
+      await invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+    }
+  }
+
+  Future<void> _resetSentryRuntime(FcmSentryRuntime sentryRuntime) async {
+    await sentryRuntime.setReportingConsent(false);
+    sentryRuntime.clearUser();
+  }
+
+  Future<SentryConfigurationCache?> _loadAllowedSentryConfiguration(
+    SentryConfigurationCacheManager cacheManager,
+  ) async {
+    final SentryConfigurationCache configCache;
+    try {
+      configCache = await cacheManager.getSentryConfiguration();
+    } catch (e) {
+      logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration not cached: $e');
+      return null;
+    }
+
+    if (!configCache.isAvailable) {
+      logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is not available');
+      return null;
+    }
+    if (!configCache.isReportingAllowed) {
+      logTrace('FcmMessageController::setUpSentryConfiguration: Sentry reporting is not allowed');
+      return null;
+    }
+    return configCache;
+  }
+
+  Future<void> _restoreSentryUser(
+    SentryConfigurationCacheManager cacheManager,
+    FcmSentryRuntime sentryRuntime,
+    FcmSentrySetupCancellation cancellation,
+  ) async {
+    try {
+      final userCache = await cacheManager.getSentryUser();
+      if (!cancellation.isCancelled) {
+        sentryRuntime.setUser(userCache.toSentryUser());
+      }
+    } catch (e) {
+      logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user not cached: $e');
+      // Acceptable — Sentry will start without user context
+    }
+  }
+
+  Future<bool> _canEnableSentry(
+    SentryConfigurationCacheManager cacheManager,
+    SentryConfigurationCache expectedConfig,
+    FcmSentrySetupCancellation cancellation,
+  ) async {
+    if (cancellation.isCancelled) return false;
+    final latestConfig = await cacheManager.getSentryConfiguration();
+    if (cancellation.isCancelled) return false;
+    if (!latestConfig.isReportingAllowed) return false;
+    return latestConfig == expectedConfig;
+  }
+
+  Future<void> _handleSentrySetupFailure(
+    Object error,
+    StackTrace stackTrace,
+    FcmSentrySetupCancellation cancellation,
+    FcmSentryRuntime sentryRuntime,
+  ) async {
+    try {
+      await invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+    } catch (invalidationError, invalidationStackTrace) {
+      logError(
+        'FcmMessageController::setUpSentryConfiguration: Cannot invalidate failed setup',
+        exception: invalidationError,
+        stackTrace: invalidationStackTrace,
+      );
+    }
+    logError(
+      'FcmMessageController::setUpSentryConfiguration: throw exception',
+      exception: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  Future<void> invalidateSentrySetup(
+    FcmSentrySetupCancellation cancellation, {
+    FcmSentryRuntime sentryRuntime = const FcmSentryRuntime(),
+  }) {
+    cancellation.cancel();
+    sentryRuntime.clearUser();
+    return sentryRuntime.setReportingConsent(false);
   }
 
   void _getInteractorBindings() {
