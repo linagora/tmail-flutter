@@ -44,6 +44,7 @@ class EcosystemProviderListenerDelegate
     registry
       ..register(DriveAttachmentEcosystemHandler())
       ..register(WorkplaceFqdnEcosystemHandler(
+        ref: registry.ref,
         resolveOwnerEmail: () =>
             getBinding<MailboxDashBoardController>()?.sessionCurrent?.username.value,
       ))

@@ -89,7 +89,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => registry..attachRef(ref),
+            ),
             activeEcosystemProvider.overrideWith(
               (ref, _) => ref.watch(_ecosystemStateProvider),
             ),
@@ -151,7 +153,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => registry..attachRef(ref),
+            ),
             activeEcosystemProvider.overrideWith(
               (ref, _) => ref.watch(_ecosystemStateProvider),
             ),
@@ -302,7 +306,9 @@ Future<ProviderContainer> _pumpDelegate(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+        linagoraEcosystemHandlerRegistryProvider.overrideWith(
+          (ref) => registry..attachRef(ref),
+        ),
         activeEcosystemProvider.overrideWith((ref, args) {
           observedKeys?.add(args);
           return ref.watch(_ecosystemStateProvider);

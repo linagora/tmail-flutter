@@ -1,56 +1,80 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/workplace_fqdn_ecosystem_handler.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+
+/// Exposes the [Ref] a provider is built with, mirroring how
+/// `LinagoraEcosystemHandlerRegistry.ref` is sourced in production.
+final _refProvider = Provider<Ref>((ref) => ref);
+
+const _localPartTemplate = '{localPart}.twake.linagora.com';
 
 LinagoraEcosystem _ecosystem(String? template) => LinagoraEcosystem.deserialize(
       template == null ? {} : {'workplaceFqdnFallback': template},
     );
 
-void _resetProvider() {
-  appProviderContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
-  appProviderContainer
-      .read(workplaceFqdnProvider.notifier)
-      .setFallbackFqdn(null);
-}
-
 /// Loads [template] through a handler resolving [ownerEmail] and returns the
 /// provider state afterwards.
-String? _loadAndReadState({required String? template, String? ownerEmail}) {
-  WorkplaceFqdnEcosystemHandler(resolveOwnerEmail: () => ownerEmail)
-      .onEcosystemLoaded(_ecosystem(template));
-  return appProviderContainer.read(workplaceFqdnProvider);
+String? _loadAndReadState(
+  ProviderContainer container, {
+  required String? template,
+  String? ownerEmail,
+}) {
+  WorkplaceFqdnEcosystemHandler(
+    ref: container.read(_refProvider),
+    resolveOwnerEmail: () => ownerEmail,
+  ).onEcosystemLoaded(_ecosystem(template));
+  return container.read(workplaceFqdnProvider);
 }
+
+final _localPartResolutionCases = [
+  (
+    description: 'resolves the {localPart} placeholder against the owner email',
+    ownerEmail: 'alice@example.com',
+    expected: 'alice.twake.linagora.com',
+  ),
+  (
+    description: 'strips dots from a dotted local part',
+    ownerEmail: 'john.doe@corp.tld',
+    expected: 'johndoe.twake.linagora.com',
+  ),
+  (
+    description: 'leaves the provider null when the owner email is null',
+    ownerEmail: null,
+    expected: null,
+  ),
+  (
+    description: 'leaves the provider null when the owner email is blank',
+    ownerEmail: '   ',
+    expected: null,
+  ),
+];
 
 void main() {
   group('WorkplaceFqdnEcosystemHandler', () {
-    setUp(_resetProvider);
-    tearDown(_resetProvider);
+    late ProviderContainer container;
 
-    test('resolves the localpart placeholder against the owner email', () {
-      expect(
-        _loadAndReadState(
-          template: '{localpart}.twake.linagora.com',
-          ownerEmail: 'alice@example.com',
-        ),
-        'alice.twake.linagora.com',
-      );
-    });
+    setUp(() => container = ProviderContainer());
+    tearDown(() => container.dispose());
 
-    test('strips dots from a dotted local part', () {
-      expect(
-        _loadAndReadState(
-          template: '{localpart}.twake.linagora.com',
-          ownerEmail: 'john.doe@corp.tld',
-        ),
-        'johndoe.twake.linagora.com',
-      );
-    });
+    for (final testCase in _localPartResolutionCases) {
+      test(testCase.description, () {
+        expect(
+          _loadAndReadState(
+            container,
+            template: _localPartTemplate,
+            ownerEmail: testCase.ownerEmail,
+          ),
+          testCase.expected,
+        );
+      });
+    }
 
     test('stores the template verbatim when it has no placeholder', () {
       expect(
         _loadAndReadState(
+          container,
           template: 'workplace.example.com',
           ownerEmail: 'alice@example.com',
         ),
@@ -60,39 +84,18 @@ void main() {
 
     test('leaves the provider null when the key is absent', () {
       expect(
-        _loadAndReadState(template: null, ownerEmail: 'alice@example.com'),
-        isNull,
-      );
-    });
-
-    test('leaves the provider null when the owner email is null', () {
-      expect(
-        _loadAndReadState(
-          template: '{localpart}.twake.linagora.com',
-          ownerEmail: null,
-        ),
-        isNull,
-      );
-    });
-
-    test('leaves the provider null when the owner email is blank', () {
-      expect(
-        _loadAndReadState(
-          template: '{localpart}.twake.linagora.com',
-          ownerEmail: '   ',
-        ),
+        _loadAndReadState(container, template: null, ownerEmail: 'alice@example.com'),
         isNull,
       );
     });
 
     test('does not override an already-set userInfo value', () {
-      appProviderContainer
-          .read(workplaceFqdnProvider.notifier)
-          .setFqdn('userinfo.example.com');
+      container.read(workplaceFqdnProvider.notifier).setFqdn('userinfo.example.com');
 
       expect(
         _loadAndReadState(
-          template: '{localpart}.twake.linagora.com',
+          container,
+          template: _localPartTemplate,
           ownerEmail: 'alice@example.com',
         ),
         'userinfo.example.com',
@@ -100,22 +103,16 @@ void main() {
     });
 
     test('onEcosystemCleared clears only the fallback', () {
-      appProviderContainer
-          .read(workplaceFqdnProvider.notifier)
-          .setFqdn('userinfo.example.com');
+      container.read(workplaceFqdnProvider.notifier).setFqdn('userinfo.example.com');
       final handler = WorkplaceFqdnEcosystemHandler(
+        ref: container.read(_refProvider),
         resolveOwnerEmail: () => 'alice@example.com',
       );
-      handler.onEcosystemLoaded(
-        _ecosystem('{localpart}.twake.linagora.com'),
-      );
+      handler.onEcosystemLoaded(_ecosystem(_localPartTemplate));
 
       handler.onEcosystemCleared();
 
-      expect(
-        appProviderContainer.read(workplaceFqdnProvider),
-        'userinfo.example.com',
-      );
+      expect(container.read(workplaceFqdnProvider), 'userinfo.example.com');
     });
   });
 }
