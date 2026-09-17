@@ -193,7 +193,7 @@ PODS:
     - FlutterMacOS
   - permission_handler_apple (9.3.0):
     - Flutter
-  - photo_manager (2.0.0):
+  - photo_manager (3.12.0):
     - Flutter
     - FlutterMacOS
   - pointer_interceptor_ios (0.0.1):
@@ -259,7 +259,7 @@ DEPENDENCIES:
   - patrol (from `.symlinks/plugins/patrol/darwin`)
   - pdfrx (from `.symlinks/plugins/pdfrx/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
-  - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
+  - photo_manager (from `.symlinks/plugins/photo_manager/darwin`)
   - pointer_interceptor_ios (from `.symlinks/plugins/pointer_interceptor_ios/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
@@ -360,7 +360,7 @@ EXTERNAL SOURCES:
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   photo_manager:
-    :path: ".symlinks/plugins/photo_manager/ios"
+    :path: ".symlinks/plugins/photo_manager/darwin"
   pointer_interceptor_ios:
     :path: ".symlinks/plugins/pointer_interceptor_ios/ios"
   printing:
@@ -426,7 +426,7 @@ SPEC CHECKSUMS:
   patrol: cea8074f183a2a4232d0ebd10569ae05149ada42
   pdfrx: 310e84d01e06fd2af26e16507a0e48c27e99195c
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
-  photo_manager: d2fbcc0f2d82458700ee6256a15018210a81d413
+  photo_manager: c303e4476f6c220274119f0212a7753e45edd4a2
   pointer_interceptor_ios: 6c19a55ea369c3f64424c9a95441e2b0e8beb8f3
   printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47

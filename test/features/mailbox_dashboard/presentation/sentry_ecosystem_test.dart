@@ -27,6 +27,7 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
     this.throwOnClear = false,
     this.reportingUpdateFailures = 0,
     this.onSaveUser,
+    this.onUpdate,
     this.returnNullOnUpdate = false,
     this.throwOnUpdate = false,
   });
@@ -38,6 +39,7 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
   final bool throwOnClear;
   int reportingUpdateFailures;
   final Future<void> Function()? onSaveUser;
+  final Future<void> Function()? onUpdate;
   final bool returnNullOnUpdate;
   final bool throwOnUpdate;
   final writes = <String>[];
@@ -82,6 +84,7 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
     configuration = configuration.copyWith(
       isReportingAllowed: isReportingAllowed,
     );
+    await onUpdate?.call();
     return configuration;
   }
 
@@ -462,6 +465,44 @@ void main() {
     final optOut = ecosystem.updateReportingConsent(false);
     finishUserSave.complete();
     await Future.wait([setUp, optOut]);
+
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(
+      savedConfigs.map((config) => config.isReportingAllowed),
+      everyElement(isFalse),
+    );
+  });
+
+  test('does not publish allowed iOS config when opt-in is superseded by opt-out', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final updateStarted = Completer<void>();
+    final finishUpdate = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      onUpdate: () async {
+        if (!updateStarted.isCompleted) {
+          updateStarted.complete();
+        }
+        await finishUpdate.future;
+      },
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+    sentryManager.setSentryReportingConsent(false);
+
+    await ecosystem.setUp(ecosystemConfig);
+    final optIn = ecosystem.updateReportingConsent(true);
+    await updateStarted.future;
+    final optOut = ecosystem.updateReportingConsent(false);
+    finishUpdate.complete();
+    await Future.wait([optIn, optOut]);
 
     final savedConfigs = verify(
       iosSharingManager.saveSentryConfigToKeychain(captureAny),
