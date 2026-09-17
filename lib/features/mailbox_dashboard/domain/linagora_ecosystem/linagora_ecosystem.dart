@@ -67,4 +67,12 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
     final value = properties?[LinagoraEcosystemIdentifier.driveAttachment];
     return value is DriveAttachmentLinagoraEcosystem ? value : null;
   }
+
+  String? get workplaceFqdnFallbackTemplate {
+    final property = properties?[LinagoraEcosystemIdentifier.workplaceFqdnFallback];
+    if (property is! ApiUrlLinagoraEcosystem) return null;
+
+    final template = property.value.trim();
+    return template.isEmpty ? null : template;
+  }
 }

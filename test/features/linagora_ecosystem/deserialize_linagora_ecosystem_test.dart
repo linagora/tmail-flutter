@@ -211,5 +211,52 @@ void main() {
       expect(() => linagoraEcosystem.paywallUrlTemplate, returnsNormally);
       expect(linagoraEcosystem.paywallUrlTemplate, isNull);
     });
+
+    test('Should return workplace FQDN fallback template when configured', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'workplaceFqdnFallback': '{localpart}.twake.linagora.com',
+      });
+
+      expect(
+        linagoraEcosystem.workplaceFqdnFallbackTemplate,
+        '{localpart}.twake.linagora.com',
+      );
+    });
+
+    test('Should return null when workplace FQDN fallback template is missing', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'scribePromptUrl': 'https://domain.tld/scribe',
+      });
+
+      expect(linagoraEcosystem.workplaceFqdnFallbackTemplate, isNull);
+    });
+
+    test('Should return null when workplace FQDN fallback template is blank', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'workplaceFqdnFallback': '   ',
+      });
+
+      expect(linagoraEcosystem.workplaceFqdnFallbackTemplate, isNull);
+    });
+
+    test('Should trim workplace FQDN fallback template', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'workplaceFqdnFallback': '  {localpart}.twake.linagora.com  ',
+      });
+
+      expect(
+        linagoraEcosystem.workplaceFqdnFallbackTemplate,
+        '{localpart}.twake.linagora.com',
+      );
+    });
+
+    test('Should return null when workplace FQDN fallback template has invalid type', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'workplaceFqdnFallback': {'url': 'invalid'},
+      });
+
+      expect(() => linagoraEcosystem.workplaceFqdnFallbackTemplate, returnsNormally);
+      expect(linagoraEcosystem.workplaceFqdnFallbackTemplate, isNull);
+    });
   });
 }
