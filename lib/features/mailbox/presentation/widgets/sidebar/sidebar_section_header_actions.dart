@@ -17,15 +17,8 @@ class SidebarSectionHeaderActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var index = 0; index < actions.length; index++) ...[
-          if (index > 0)
-            const SizedBox(
-              width: SidebarSectionHeaderActionStyles.actionSpacing,
-            ),
-          actions[index],
-        ],
-      ],
+      spacing: SidebarSectionHeaderActionStyles.actionSpacing,
+      children: actions,
     );
   }
 }

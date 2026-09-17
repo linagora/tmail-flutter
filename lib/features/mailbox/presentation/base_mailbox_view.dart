@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sideba
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/sidebar_section_header_action_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
@@ -296,8 +295,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       onTap: onTap,
       iconWidget: SvgPicture.asset(
         icon,
-        width: SidebarSectionHeaderActionStyles.iconSize,
-        height: SidebarSectionHeaderActionStyles.iconSize,
+        width: style.itemIconSize,
+        height: style.itemIconSize,
         colorFilter: style.resolvedSectionHeaderForeground.asFilter(),
         fit: BoxFit.contain,
       ),
