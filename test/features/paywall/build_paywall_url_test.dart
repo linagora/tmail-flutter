@@ -166,5 +166,35 @@ void main() {
       );
       expect(url, 'https://mix.combo.net/mix-combo.net/paywall');
     });
+
+    // --- Lowercase placeholder spelling (ecosystem templates) ---
+    test('replaces raw {localpart} and {domainname}', () {
+      const template = 'https://{localpart}.{domainname}/paywall';
+      final url = PaywallUtils.buildPaywallUrlFromTemplate(
+        template: template,
+        localPart: 'alice',
+        domainName: 'example.com',
+      );
+      expect(url, 'https://alice.example.com/paywall');
+    });
+
+    test('replaces encoded %7Blocalpart%7D and %7Bdomainname%7D', () {
+      const template = 'https://%7Blocalpart%7D.%7Bdomainname%7D/paywall';
+      final url = PaywallUtils.buildPaywallUrlFromTemplate(
+        template: template,
+        localPart: 'bob',
+        domainName: 'test.org',
+      );
+      expect(url, 'https://bob.test.org/paywall');
+    });
+
+    test('workplace FQDN fallback template resolves {localpart} only', () {
+      const template = '{localpart}.twake.linagora.com';
+      final url = PaywallUtils.buildPaywallUrlFromTemplate(
+        template: template,
+        localPart: 'alice',
+      );
+      expect(url, 'alice.twake.linagora.com');
+    });
   });
 }
