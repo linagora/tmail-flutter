@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
@@ -22,21 +24,80 @@ Future<void> _ensureBackgroundInitialized() {
 Future<void> handleFirebaseBackgroundMessage(
   RemoteMessage message, {
   Future<void> Function()? ensureBackgroundInitialized,
-  Future<void> Function()? refreshSentryConfiguration,
+  Future<void> Function(FcmSentrySetupCancellation cancellation)? refreshSentryConfiguration,
+  Future<void> Function(FcmSentrySetupCancellation cancellation)? invalidateSentryConfiguration,
   void Function(RemoteMessage)? handleMessage,
+  Duration sentryRefreshTimeout = const Duration(seconds: 10),
 }) async {
   try {
     await (ensureBackgroundInitialized ?? _ensureBackgroundInitialized)();
-    await (refreshSentryConfiguration ??
-        () => FcmMessageController.instance
-            .setUpSentryConfiguration()
-            .timeout(const Duration(seconds: 10)))();
-    (handleMessage ?? FcmService.instance.handleFirebaseBackgroundMessage)(message);
+    await _refreshSentryForBackgroundMessage(
+      refreshSentryConfiguration: refreshSentryConfiguration,
+      invalidateSentryConfiguration: invalidateSentryConfiguration,
+      timeout: sentryRefreshTimeout,
+    ).whenComplete(
+      () => (handleMessage ??
+          FcmService.instance.handleFirebaseBackgroundMessage)(message),
+    );
   } catch (e, st) {
     logError(
       'FcmReceiver::handleFirebaseBackgroundMessage: throw exception',
       exception: e,
       stackTrace: st,
+    );
+  }
+}
+
+Future<void> _refreshSentryForBackgroundMessage({
+  Future<void> Function(FcmSentrySetupCancellation cancellation)? refreshSentryConfiguration,
+  Future<void> Function(FcmSentrySetupCancellation cancellation)? invalidateSentryConfiguration,
+  required Duration timeout,
+}) async {
+  final cancellation = FcmSentrySetupCancellation();
+  try {
+    await (refreshSentryConfiguration ??
+        (cancellation) => FcmMessageController.instance
+            .setUpSentryConfiguration(cancellation: cancellation))(
+      cancellation,
+    ).timeout(timeout);
+  } catch (e, st) {
+    cancellation.cancel();
+    _invalidateSentrySetup(cancellation, invalidateSentryConfiguration);
+    _logSentryRefreshFailure(e, st);
+  }
+}
+
+void _invalidateSentrySetup(
+  FcmSentrySetupCancellation cancellation,
+  Future<void> Function(FcmSentrySetupCancellation cancellation)? invalidateSentryConfiguration,
+) {
+  try {
+    final invalidation = (invalidateSentryConfiguration ??
+        FcmMessageController.instance.invalidateSentrySetup)(cancellation);
+    unawaited(invalidation.catchError(_logSentryInvalidationFailure));
+  } catch (error, stackTrace) {
+    _logSentryInvalidationFailure(error, stackTrace);
+  }
+}
+
+void _logSentryInvalidationFailure(Object error, StackTrace stackTrace) {
+  logError(
+    'FcmReceiver::handleFirebaseBackgroundMessage: Failed to invalidate Sentry setup',
+    exception: error,
+    stackTrace: stackTrace,
+  );
+}
+
+void _logSentryRefreshFailure(Object error, StackTrace stackTrace) {
+  if (error is TimeoutException) {
+    logWarning(
+      'FcmReceiver::handleFirebaseBackgroundMessage: Sentry refresh timed out: $error\n$stackTrace',
+    );
+  } else {
+    logError(
+      'FcmReceiver::handleFirebaseBackgroundMessage: Sentry refresh failed',
+      exception: error,
+      stackTrace: stackTrace,
     );
   }
 }
@@ -99,7 +160,7 @@ class FcmReceiver {
           exception: e,
           stackTrace: st,
         );
-      }
+      },
     );
   }
 }
