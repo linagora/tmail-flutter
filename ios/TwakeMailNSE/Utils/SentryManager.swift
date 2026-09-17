@@ -5,6 +5,12 @@ protocol SentryConfigProvider: AnyObject {
     func retrieveSentryConfig() -> SentryConfig?
 }
 
+struct SentryBreadcrumbData {
+    let message: String
+    let category: String
+    let level: SentryLevel
+}
+
 protocol SentrySDKClient {
     func start(
         config: SentryConfig,
@@ -14,7 +20,7 @@ protocol SentrySDKClient {
     func capture(error: Error)
     func capture(message: String)
     func flush(timeout: TimeInterval)
-    func addBreadcrumb(message: String, category: String, level: SentryLevel)
+    func addBreadcrumb(_ data: SentryBreadcrumbData)
     func setUser(_ user: User?)
     func clearBreadcrumbs()
 }
@@ -71,11 +77,11 @@ final class DefaultSentrySDKClient: SentrySDKClient {
         SentrySDK.flush(timeout: timeout)
     }
 
-    func addBreadcrumb(message: String, category: String, level: SentryLevel) {
+    func addBreadcrumb(_ data: SentryBreadcrumbData) {
         let crumb = Breadcrumb()
-        crumb.message = message
-        crumb.category = category
-        crumb.level = level
+        crumb.message = data.message
+        crumb.category = data.category
+        crumb.level = data.level
         SentrySDK.addBreadcrumb(crumb)
     }
 
@@ -98,16 +104,22 @@ class SentryManager {
     /// Internal flag to prevent multiple initializations
     private var isInitialized: Bool = false
 
+    /// Routing used by the active SDK instance. A later Keychain update must not
+    /// authorize events that would still be sent through this stale routing.
+    private var activeDsn: String?
+    private var activeEnvironment: String?
+
     /// Used to re-read consent because the NSE process can handle more than one notification.
     private var configProvider: SentryConfigProvider?
 
     private let sentryClient: SentrySDKClient
 
     private var isReportingAllowed: Bool {
-        guard let config = configProvider?.retrieveSentryConfig() else { return false }
-        return config.isAvailable &&
-            config.isReportingAllowed == true &&
-            !config.dsn.isEmpty
+        guard let config = configProvider?.retrieveSentryConfig(),
+              config.isAvailable,
+              config.isReportingAllowed == true,
+              !config.dsn.isEmpty else { return false }
+        return matchesActiveRouting(config)
     }
 
     init(sentryClient: SentrySDKClient) {
@@ -135,6 +147,8 @@ class SentryManager {
         if isInitialized { return }
 
         // Start Sentry SDK with options mapped from the config
+        activeDsn = config.dsn
+        activeEnvironment = config.environment
         sentryClient.start(
             config: config,
             beforeSend: { [weak self] in self?.isReportingAllowed == true },
@@ -175,7 +189,11 @@ class SentryManager {
     /// for real errors — they are NOT sent as standalone events.
     func addBreadcrumb(message: String, category: String = "nse", level: SentryLevel = .info) {
         guard isInitialized, isReportingAllowed else { return }
-        sentryClient.addBreadcrumb(message: message, category: category, level: level)
+        sentryClient.addBreadcrumb(SentryBreadcrumbData(
+            message: message,
+            category: category,
+            level: level
+        ))
     }
 
     /// Set user context for Sentry
@@ -194,5 +212,10 @@ class SentryManager {
         guard isInitialized else { return }
         sentryClient.clearBreadcrumbs()
         sentryClient.setUser(nil)
+    }
+
+    private func matchesActiveRouting(_ config: SentryConfig) -> Bool {
+        config.dsn == activeDsn &&
+            config.environment == activeEnvironment
     }
 }

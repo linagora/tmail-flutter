@@ -18,6 +18,23 @@ import 'sentry_ecosystem_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<IOSSharingManager>()])
 
+class _RecordingIOSSharingManager extends Mock implements IOSSharingManager {
+  final savedConfigs = <SentryConfig>[];
+  int deleteCalls = 0;
+  Future<void> Function()? onSave;
+
+  @override
+  Future<void> saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
+    savedConfigs.add(sentryConfig);
+    await onSave?.call();
+  }
+
+  @override
+  Future<void> deleteSentryConfigFromKeychain() async {
+    deleteCalls++;
+  }
+}
+
 class _FakeCacheManager implements SentryConfigurationCacheManager {
   _FakeCacheManager({
     required this.configuration,
@@ -533,6 +550,112 @@ void main() {
       iosSharingManager.saveSentryConfigToKeychain(captureAny),
     ).captured.single as SentryConfig;
     expect(savedConfig.isReportingAllowed, isFalse);
+  });
+
+  test('publishes denied iOS config when setup cache cleanup fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      throwOnSaveConfiguration: true,
+      throwOnClear: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await expectLater(
+      ecosystem.setUp(ecosystemConfig),
+      throwsStateError,
+    );
+
+    final savedConfig = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.single as SentryConfig;
+    expect(savedConfig.isReportingAllowed, isFalse);
+  });
+
+  test('does not publish a setup superseded by ecosystem clearing', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    )..initUser(SentryUser(id: 'account-a'));
+
+    final setUp = ecosystem.setUp(ecosystemConfig);
+    await initializeStarted.future;
+    final clear = ecosystem.clear();
+    finishInitialize.complete();
+    await Future.wait([setUp, clear]);
+
+    expect(iosSharingManager.savedConfigs, isEmpty);
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('deletes a published config when clearing races with its Keychain write', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final saveStarted = Completer<void>();
+    final finishSave = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager()
+      ..onSave = () async {
+        saveStarted.complete();
+        await finishSave.future;
+      };
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    final setUp = ecosystem.setUp(ecosystemConfig);
+    await saveStarted.future;
+    final clear = ecosystem.clear();
+    finishSave.complete();
+    await Future.wait([setUp, clear]);
+
+    expect(iosSharingManager.savedConfigs, hasLength(1));
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('deletes the shared config when the ecosystem disables Sentry', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    )..initUser(SentryUser(id: 'account-a'));
+
+    await ecosystem.setUp(SentryConfigLinagoraEcosystem(
+      enabled: false,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+    ));
+
+    expect(iosSharingManager.savedConfigs, isEmpty);
+    expect(iosSharingManager.deleteCalls, 1);
   });
 
 }

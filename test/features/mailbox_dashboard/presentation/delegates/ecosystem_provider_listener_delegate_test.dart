@@ -22,6 +22,7 @@ class _DashboardController extends Mock
     implements MailboxDashBoardController {
   final testAccountId = Rxn<AccountId>();
   int setUpSentryCount = 0;
+  int clearSentryCount = 0;
 
   @override
   final DynamicUrlInterceptors dynamicUrlInterceptors =
@@ -41,6 +42,11 @@ class _DashboardController extends Mock
     SentryConfigLinagoraEcosystem ecosystemConfig,
   ) async {
     setUpSentryCount++;
+  }
+
+  @override
+  Future<void> clearSentry() async {
+    clearSentryCount++;
   }
 }
 
@@ -175,8 +181,12 @@ void main() {
       }));
       await tester.pump();
 
+      registry.dispatchCleared();
+      await tester.pump();
+
       expect(firstController.setUpSentryCount, 0);
       expect(secondController.setUpSentryCount, 1);
+      expect(secondController.clearSentryCount, 1);
     },
   );
 

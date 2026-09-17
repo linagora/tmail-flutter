@@ -74,10 +74,42 @@ final class SentryManagerTests: XCTestCase {
         XCTAssertEqual(sentryClient.startCalls, 0)
     }
 
-    private func makeConfig(isReportingAllowed: Bool?) throws -> SentryConfig {
+    func testRoutingChangeBlocksReportingWithoutReinitialization() throws {
+        let provider = TestSentryConfigProvider(config: try makeConfig(isReportingAllowed: true))
+        let sentryClient = TestSentrySDKClient()
+        let manager = SentryManager(sentryClient: sentryClient)
+
+        manager.configure(with: provider)
+
+        provider.config = try makeConfig(
+            isReportingAllowed: true,
+            dsn: "https://test@sentry.io/456"
+        )
+        manager.configure(with: provider)
+        manager.capture(message: "message")
+
+        provider.config = try makeConfig(
+            isReportingAllowed: true,
+            environment: "staging"
+        )
+        manager.configure(with: provider)
+        manager.capture(error: TestError.failure)
+
+        XCTAssertEqual(sentryClient.startCalls, 1)
+        XCTAssertEqual(sentryClient.messageCaptureCalls, 0)
+        XCTAssertEqual(sentryClient.errorCaptureCalls, 0)
+        XCTAssertEqual(sentryClient.beforeSend?(), false)
+        XCTAssertEqual(sentryClient.beforeBreadcrumb?(), false)
+    }
+
+    private func makeConfig(
+        isReportingAllowed: Bool?,
+        dsn: String = "https://test@sentry.io/123",
+        environment: String = "test"
+    ) throws -> SentryConfig {
         var json: [String: Any] = [
-            "dsn": "https://test@sentry.io/123",
-            "environment": "test",
+            "dsn": dsn,
+            "environment": environment,
             "release": "1.0.0",
             "tracesSampleRate": 0.1,
             "profilesSampleRate": 0.1,
@@ -142,7 +174,7 @@ private final class TestSentrySDKClient: SentrySDKClient {
 
     func flush(timeout: TimeInterval) {}
 
-    func addBreadcrumb(message: String, category: String, level: SentryLevel) {
+    func addBreadcrumb(_ data: SentryBreadcrumbData) {
         breadcrumbCalls += 1
     }
 
