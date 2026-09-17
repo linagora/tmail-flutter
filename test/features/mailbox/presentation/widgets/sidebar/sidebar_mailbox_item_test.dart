@@ -59,7 +59,6 @@ void main() {
     _testKeepsActionRequiredMailboxOutOfDropTargets();
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
-    _testLeavesVirtualFolderLongPressToTheRow();
     _testKeepsDotsTriggerActiveUntilMenuCloses();
     _testUsesConfirmPopoverForClean();
     _testCleanPopoverUsesPrimaryConfirmInDarkRtl();
@@ -435,50 +434,6 @@ void _testForwardsMailboxLongPressOnMobile() {
 
     expect(longPressedMailbox, same(mailboxNode));
   });
-}
-
-void _testLeavesVirtualFolderLongPressToTheRow() {
-  for (final entry in <String, Role>{
-    'Starred': PresentationMailbox.roleFavorite,
-    'Action Required': PresentationMailbox.roleActionRequired,
-  }.entries) {
-    testWidgets(
-        'leaves a mobile long press on ${entry.key} to the row itself',
-        (tester) async {
-      final mailboxNode = _mailboxNode(id: 'virtual', role: entry.value);
-      MailboxNode? longPressedMailbox;
-      MailboxNode? openedMailbox;
-
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      addTearDown(() => debugDefaultTargetPlatformOverride = null);
-
-      await _pump(
-        tester,
-        SidebarMailboxItem(
-          mailboxNode: mailboxNode,
-          imagePaths: _imagePaths,
-          isWebDesktop: false,
-          onOpenMailboxFolderClick: (mailbox) => openedMailbox = mailbox,
-          onLongPressMailboxNodeAction: (mailbox) =>
-              longPressedMailbox = mailbox,
-        ),
-      );
-      debugDefaultTargetPlatformOverride = null;
-
-      expect(
-        find.byWidgetPredicate(
-          (widget) => widget is GestureDetector && widget.onLongPress != null,
-        ),
-        findsNothing,
-      );
-
-      await tester.longPress(find.byType(LinagoraSidebarItem));
-      await tester.pumpAndSettle();
-
-      expect(longPressedMailbox, isNull);
-      expect(openedMailbox, same(mailboxNode));
-    });
-  }
 }
 
 void _testKeepsDotsTriggerActiveUntilMenuCloses() {

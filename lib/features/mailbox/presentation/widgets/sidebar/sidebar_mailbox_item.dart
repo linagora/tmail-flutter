@@ -118,20 +118,13 @@ class SidebarMailboxItem extends StatelessWidget {
   }
 
   Widget _withLongPress(Widget child, bool isWebDesktop) {
-    if (!_isLongPressActive(isWebDesktop)) return child;
+    if (onLongPressMailboxNodeAction == null || isWebDesktop) return child;
+    if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit) return child;
 
     return GestureDetector(
       onLongPress: () => onLongPressMailboxNodeAction?.call(mailboxNode),
       child: child,
     );
-  }
-
-  // A virtual folder has no context menu, and an attached long press would
-  // reject the row's tap instead of opening it.
-  bool _isLongPressActive(bool isWebDesktop) {
-    if (onLongPressMailboxNodeAction == null || isWebDesktop) return false;
-    if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit) return false;
-    return !mailboxNode.item.isVirtualFolder;
   }
 
   Widget _withTreeIndent(BuildContext context, Widget child) {
