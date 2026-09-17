@@ -24,6 +24,7 @@ Effective reporting consent controls the complete Sentry SDK lifecycle.
 
 Session Replay remains disabled because Sentry Flutter 9.8.0 cannot both stop recording and safely discard an existing Replay buffer when consent is revoked.
 Background FCM handlers read persisted consent before each event and treat missing, invalid, or unreadable values as denied.
+Timed-out background setup is invalidated and cannot later enable Sentry, while notification processing continues without telemetry.
 The iOS notification service extension follows in Part C.
 
 ## Consequences

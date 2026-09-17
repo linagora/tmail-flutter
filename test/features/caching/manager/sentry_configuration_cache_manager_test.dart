@@ -73,6 +73,22 @@ void main() {
     expect(inserted.isReportingAllowed, isFalse);
   });
 
+  test('retries a failed consent write once', () async {
+    var writeAttempts = 0;
+    when(configurationClient.getItem(configKey))
+        .thenAnswer((_) async => current);
+    when(configurationClient.insertItem(configKey, any)).thenAnswer((_) async {
+      writeAttempts++;
+      if (writeAttempts == 1) throw StateError('write failed');
+    });
+
+    final result = await manager.updateSentryReportingAllowed(false);
+
+    expect(result?.isReportingAllowed, isFalse);
+    expect(writeAttempts, 2);
+    verifyNever(configurationClient.clearAllData());
+  });
+
   test('clears both caches when an opt-out cannot be saved', () async {
     when(configurationClient.getItem(configKey))
         .thenAnswer((_) async => current);
@@ -86,21 +102,27 @@ void main() {
     final result = await manager.updateSentryReportingAllowed(false);
 
     expect(result, isNull);
+    verify(configurationClient.insertItem(configKey, any)).called(2);
     verify(configurationClient.clearAllData()).called(1);
     verify(userClient.clearAllData()).called(1);
   });
 
-  test('still clears the user cache when clearing the config cache fails', () async {
+  test('surfaces failed invalidation and still clears the user cache', () async {
     when(configurationClient.getItem(configKey))
-        .thenThrow(StateError('read failed'));
+        .thenAnswer((_) async => current);
+    when(configurationClient.insertItem(configKey, any))
+        .thenThrow(StateError('write failed'));
     when(configurationClient.clearAllData())
         .thenThrow(StateError('config clear failed'));
     when(userClient.clearAllData())
         .thenAnswer((_) async {});
 
-    final result = await manager.updateSentryReportingAllowed(false);
+    await expectLater(
+      manager.updateSentryReportingAllowed(false),
+      throwsStateError,
+    );
 
-    expect(result, isNull);
+    verify(configurationClient.insertItem(configKey, any)).called(2);
     verify(configurationClient.clearAllData()).called(1);
     verify(userClient.clearAllData()).called(1);
   });
@@ -112,6 +134,7 @@ void main() {
     final result = await manager.updateSentryReportingAllowed(true);
 
     expect(result, isNull);
+    verify(configurationClient.getItem(configKey)).called(2);
     verifyNever(configurationClient.clearAllData());
     verifyNever(userClient.clearAllData());
   });

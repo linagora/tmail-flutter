@@ -16,6 +16,8 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
     required this.user,
     this.throwOnSaveConfiguration = false,
     this.throwOnSaveUser = false,
+    this.throwOnClear = false,
+    this.reportingUpdateFailures = 0,
     this.onSaveUser,
   });
 
@@ -23,6 +25,8 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
   SentryUserCache user;
   final bool throwOnSaveConfiguration;
   final bool throwOnSaveUser;
+  final bool throwOnClear;
+  int reportingUpdateFailures;
   final Future<void> Function()? onSaveUser;
   final writes = <String>[];
   final reportingUpdates = <bool>[];
@@ -57,6 +61,10 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
     bool isReportingAllowed,
   ) async {
     reportingUpdates.add(isReportingAllowed);
+    if (reportingUpdateFailures > 0) {
+      reportingUpdateFailures--;
+      throw StateError('reporting update failed');
+    }
     configuration = configuration.copyWith(
       isReportingAllowed: isReportingAllowed,
     );
@@ -66,6 +74,7 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
   @override
   Future<void> clearSentryConfiguration() async {
     clearCalls++;
+    if (throwOnClear) throw StateError('clear failed');
   }
 }
 
@@ -169,6 +178,53 @@ void main() {
     expect(cacheManager.reportingUpdates, [false, true, false]);
     expect(cacheManager.configuration.isReportingAllowed, isFalse);
     expect(sentryManager.isSentryReportingAllowed, isFalse);
+  });
+
+  test('a failed consent write does not poison later persistence', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      reportingUpdateFailures: 1,
+    );
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (_) async {},
+    );
+
+    await ecosystem.setUp(ecosystemConfig);
+    await expectLater(
+      ecosystem.updateReportingConsent(false),
+      throwsA(isA<StateError>()),
+    );
+    await ecosystem.updateReportingConsent(true);
+
+    expect(cacheManager.reportingUpdates, [false, true]);
+    expect(cacheManager.configuration.isReportingAllowed, isTrue);
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
+  });
+
+  test('a failed setup write does not poison later consent persistence', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      throwOnSaveConfiguration: true,
+      throwOnClear: true,
+    );
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (_) async {},
+    );
+
+    await expectLater(
+      ecosystem.setUp(ecosystemConfig),
+      throwsStateError,
+    );
+    await ecosystem.updateReportingConsent(false);
+
+    expect(cacheManager.reportingUpdates, [false]);
+    expect(cacheManager.configuration.isReportingAllowed, isFalse);
   });
 
   test('restores the ecosystem default when explicit consent is cleared', () async {

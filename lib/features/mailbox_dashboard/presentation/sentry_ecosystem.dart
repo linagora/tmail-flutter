@@ -56,13 +56,14 @@ class SentryEcosystem {
       SentryManager.instance.isSentryReportingAllowed,
     );
     _sentryConfig = configToPersist;
-    _pendingConsentPersistence = _pendingConsentPersistence.then((_) async {
+    final pendingPersistence = _pendingConsentPersistence.then((_) async {
       await _cacheData(configToPersist, _sentryUser);
       if (PlatformInfo.isIOS) {
         await _saveSentryConfigToKeychain(configToPersist);
       }
     });
-    await _pendingConsentPersistence;
+    _pendingConsentPersistence = pendingPersistence.catchError((_) {});
+    await pendingPersistence;
   }
 
   void _applyUser() {
@@ -72,14 +73,12 @@ class SentryEcosystem {
 
   Future<void> updateReportingConsent(bool? consent) async {
     SentryManager.instance.setSentryReportingConsent(consent);
-    final pendingLifecycle =
-        SentryManager.instance.pendingLifecycleTransition;
-    final isReportingAllowed =
-        SentryManager.instance.isSentryReportingAllowed;
-    _pendingConsentPersistence = _pendingConsentPersistence.then(
+    final pendingLifecycle = SentryManager.instance.pendingLifecycleTransition;
+    final isReportingAllowed = SentryManager.instance.isSentryReportingAllowed;
+    final pendingPersistence = _pendingConsentPersistence.then(
       (_) => _persistReportingConsent(isReportingAllowed),
     );
-    final pendingPersistence = _pendingConsentPersistence;
+    _pendingConsentPersistence = pendingPersistence.catchError((_) {});
     await Future.wait([pendingLifecycle, pendingPersistence]);
   }
 
@@ -125,7 +124,7 @@ class SentryEcosystem {
         stackTrace: st,
       );
       // Clear both caches to avoid stale/inconsistent state (e.g. new config + old user PII)
-      await _cacheManager.clearSentryConfiguration().catchError((_) {});
+      await _cacheManager.clearSentryConfiguration();
     }
   }
 

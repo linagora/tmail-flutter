@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -48,6 +50,10 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
 }
 
 class _FakeSentryRuntime extends FcmSentryRuntime {
+  _FakeSentryRuntime({this.onInitialize, this.onSetReportingConsent});
+
+  final Future<void> Function()? onInitialize;
+  final Future<void> Function(bool? consent)? onSetReportingConsent;
   final consents = <bool?>[];
   final initializedConfigs = <SentryConfig>[];
   final users = <SentryUser>[];
@@ -56,11 +62,13 @@ class _FakeSentryRuntime extends FcmSentryRuntime {
   @override
   Future<void> setReportingConsent(bool? consent) async {
     consents.add(consent);
+    await onSetReportingConsent?.call(consent);
   }
 
   @override
   Future<void> initialize(SentryConfig sentryConfig) async {
     initializedConfigs.add(sentryConfig);
+    await onInitialize?.call();
   }
 
   @override
@@ -220,4 +228,119 @@ void main() {
     expect(sentryRuntime.clearUserCalls, 2);
     expect(cacheManager.userReads, 1);
   });
+
+  test('does not enable Sentry when consent changes during setup', () async {
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(
+        isAvailable: true,
+        isReportingAllowed: true,
+      ),
+      user: _user('account-a'),
+    );
+    final sentryRuntime = _FakeSentryRuntime(
+      onInitialize: () async {
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    );
+
+    final setup = FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+    await initializeStarted.future;
+    cacheManager.configuration = _configuration(
+      isAvailable: true,
+      isReportingAllowed: false,
+    );
+    finishInitialize.complete();
+    await setup;
+
+    expect(sentryRuntime.consents, [false]);
+    expect(sentryRuntime.initializedConfigs, hasLength(1));
+  });
+
+  test(
+    'does not enable Sentry when setup is cancelled during initialization',
+    () async {
+      final initializeStarted = Completer<void>();
+      final finishInitialize = Completer<void>();
+      final cacheManager = _FakeCacheManager(
+        configuration: _configuration(
+          isAvailable: true,
+          isReportingAllowed: true,
+        ),
+        user: _user('account-a'),
+      );
+      final sentryRuntime = _FakeSentryRuntime(
+        onInitialize: () async {
+          initializeStarted.complete();
+          await finishInitialize.future;
+        },
+      );
+      final cancellation = FcmSentrySetupCancellation();
+
+      final setup = FcmMessageController.instance.setUpSentryConfiguration(
+        cacheManager: cacheManager,
+        sentryRuntime: sentryRuntime,
+        cancellation: cancellation,
+      );
+      await initializeStarted.future;
+      final invalidation = FcmMessageController.instance.invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+      await invalidation;
+      finishInitialize.complete();
+      await setup;
+
+      expect(cancellation.isCancelled, isTrue);
+      expect(sentryRuntime.consents, [false, false]);
+      expect(sentryRuntime.consents.last, isFalse);
+    },
+  );
+
+  test(
+    'revokes a consent transition that completes after cancellation',
+    () async {
+      final enableStarted = Completer<void>();
+      final finishEnable = Completer<void>();
+      final cacheManager = _FakeCacheManager(
+        configuration: _configuration(
+          isAvailable: true,
+          isReportingAllowed: true,
+        ),
+        user: _user('account-a'),
+      );
+      final sentryRuntime = _FakeSentryRuntime(
+        onSetReportingConsent: (consent) async {
+          if (consent == true) {
+            enableStarted.complete();
+            await finishEnable.future;
+          }
+        },
+      );
+      final cancellation = FcmSentrySetupCancellation();
+
+      final setup = FcmMessageController.instance.setUpSentryConfiguration(
+        cacheManager: cacheManager,
+        sentryRuntime: sentryRuntime,
+        cancellation: cancellation,
+      );
+      await enableStarted.future;
+      final invalidation = FcmMessageController.instance.invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+      await invalidation;
+      finishEnable.complete();
+      await setup;
+
+      expect(sentryRuntime.consents, [false, true, false, false]);
+      expect(sentryRuntime.consents.last, isFalse);
+      expect(sentryRuntime.clearUserCalls, 3);
+    },
+  );
 }
