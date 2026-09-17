@@ -27,7 +27,8 @@ Accepted
 - A runner resolves the mode once per action, then hands it to that action.
 - An action declares whether the bridge can serve it; a declared-unsupported action goes
   straight over the bearer token, no bridge round trip.
-- A bridge failure inside an action the bridge does support still falls back to the bearer token.
+- A bridge failure is that action's failure: the bridge may have dispatched the request before
+  it failed, so the runner never replays the action over the bearer token.
 - Every request the action sends rides that one mode, so an action costs at most one exchange.
 - The bridge exists on web only, so every action on mobile resolves to the bearer token.
 - A request executor sends whatever the caller describes.
@@ -44,8 +45,7 @@ action:
 
 run(platformUrl, action):
   if action.supportsBridge and bridge supported and available:
-    try:   return action(BridgeAccessMode)
-    catch: log, fall through
+    return action(BridgeAccessMode)
   token = exchange(oidcToken)        # per action, not stored
   return action(BearerTokenAccessMode(token))
 
@@ -66,6 +66,8 @@ send(platformUrl, accessMode, method, pathSegments, query, body, headers):
 - Adding a Workplace call is a request description, not another auth flow.
 - Exchanging a token per action costs one extra round trip whenever the bridge is absent,
   which on mobile is every action.
+- A container-side bridge failure surfaces to the user instead of being retried over the bearer
+  token; `supportsBridge` is the only lever that moves an action off the bridge.
 
 ## Open questions
 
