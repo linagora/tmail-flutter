@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_la
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/sidebar_section_header_icons_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -26,6 +27,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sideba
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sidebar_category_tree_source_resolver.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/sidebar_section_header_action_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
@@ -259,14 +261,14 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
             _buildSectionHeaderAction(
               context,
               key: const Key(UiKeys.mailboxSearchButton),
-              icon: controller.imagePaths.icMagnifierNoBorder,
+              icon: controller.imagePaths.sidebarSearchIcon,
               semanticLabel: appLocalizations.searchForFolders,
               onTap: () => controller.openSearchViewAction(context),
             ),
             _buildSectionHeaderAction(
               context,
               key: const Key(UiKeys.addNewFolderButton),
-              icon: controller.imagePaths.icPlusNoBorder,
+              icon: controller.imagePaths.sidebarAddIcon,
               semanticLabel: appLocalizations.newFolder,
               onTap: () => controller.goToCreateNewMailboxView(context),
             ),
@@ -288,6 +290,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     required VoidCallback onTap,
   }) {
     final style = LinagoraSidebarStyle.of(context);
+    final iconSize = SidebarSectionHeaderActionStyles.resolveIconSize(style);
 
     return LinagoraSidebarSectionHeaderAction(
       key: key,
@@ -295,8 +298,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       onTap: onTap,
       iconWidget: SvgPicture.asset(
         icon,
-        width: style.itemIconSize,
-        height: style.itemIconSize,
+        width: iconSize,
+        height: iconSize,
         colorFilter: style.resolvedSectionHeaderForeground.asFilter(),
         fit: BoxFit.contain,
       ),
@@ -384,7 +387,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                 _buildSectionHeaderAction(
                   context,
                   key: const Key(UiKeys.addNewLabelButton),
-                  icon: controller.imagePaths.icPlusNoBorder,
+                  icon: controller.imagePaths.sidebarAddIcon,
                   semanticLabel: appLocalizations.newLabel,
                   onTap: () => labelController.handleLabelActionType(
                     actionType: LabelActionType.create,

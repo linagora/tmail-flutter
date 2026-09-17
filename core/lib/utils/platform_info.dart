@@ -66,4 +66,7 @@ abstract class PlatformInfo {
   /// Touch devices
   static bool get isWebTouchDevice =>
       isWeb && (isWebMobile || isWebTablet);
+
+  /// Phone, tablet, or a web browser running on one.
+  static bool get isTouchPlatform => isWebTouchDevice || isMobile;
 }
