@@ -25,6 +25,9 @@ Accepted
 
 - The access mode stays a sealed pair: bridge (the container holds the session) or bearer token.
 - A runner resolves the mode once per action, then hands it to that action.
+- An action declares whether the bridge can serve it; a declared-unsupported action goes
+  straight over the bearer token, no bridge round trip.
+- A bridge failure inside an action the bridge does support still falls back to the bearer token.
 - Every request the action sends rides that one mode, so an action costs at most one exchange.
 - The bridge exists on web only, so every action on mobile resolves to the bearer token.
 - A request executor sends whatever the caller describes.
@@ -35,8 +38,12 @@ Accepted
   extension, which passes both to the runner.
 
 ```
+action:
+  supportsBridge: bool               # declared per action, not discovered by failing
+  call(accessMode)
+
 run(platformUrl, action):
-  if bridge supported and available:
+  if action.supportsBridge and bridge supported and available:
     try:   return action(BridgeAccessMode)
     catch: log, fall through
   token = exchange(oidcToken)        # per action, not stored
@@ -63,6 +70,7 @@ send(platformUrl, accessMode, method, pathSegments, query, body, headers):
 ## Open questions
 
 - Whether the container-side `fetchJSON` accepts a binary body; it ships JSON-only today.
+  The answer sets `supportsBridge` on the upload action; the transport is the same either way.
 
 ## Sources
 
