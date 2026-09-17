@@ -71,4 +71,57 @@ void main() {
       expect(_state(container), isNull);
     });
   });
+
+  group('WorkplaceFqdnNotifier precedence (userInfo vs ecosystem fallback)', () {
+    late ProviderContainer container;
+
+    setUp(() => container = _makeContainer());
+    tearDown(() => container.dispose());
+
+    test('fallback only → state is the fallback', () {
+      _notifier(container).setFallbackFqdn('fallback.example.com');
+      expect(_state(container), 'fallback.example.com');
+    });
+
+    test('userInfo only → state is the userInfo value', () {
+      _notifier(container).setFqdn('userinfo.example.com');
+      expect(_state(container), 'userinfo.example.com');
+    });
+
+    test('fallback set, then userInfo set → userInfo wins', () {
+      _notifier(container).setFallbackFqdn('fallback.example.com');
+      _notifier(container).setFqdn('userinfo.example.com');
+      expect(_state(container), 'userinfo.example.com');
+    });
+
+    test('userInfo set, then fallback set → userInfo still wins', () {
+      _notifier(container).setFqdn('userinfo.example.com');
+      _notifier(container).setFallbackFqdn('fallback.example.com');
+      expect(_state(container), 'userinfo.example.com');
+    });
+
+    test('both set, then userInfo cleared → falls back to ecosystem value', () {
+      _notifier(container).setFqdn('userinfo.example.com');
+      _notifier(container).setFallbackFqdn('fallback.example.com');
+      _notifier(container).setFqdn(null);
+      expect(_state(container), 'fallback.example.com');
+    });
+
+    test('both set, then fallback cleared → userInfo still stands', () {
+      _notifier(container).setFqdn('userinfo.example.com');
+      _notifier(container).setFallbackFqdn('fallback.example.com');
+      _notifier(container).setFallbackFqdn(null);
+      expect(_state(container), 'userinfo.example.com');
+    });
+
+    test('setFallbackFqdn trims whitespace like setFqdn', () {
+      _notifier(container).setFallbackFqdn('  fallback.example.com  ');
+      expect(_state(container), 'fallback.example.com');
+    });
+
+    test('setFallbackFqdn rejects an unparseable value like setFqdn', () {
+      _notifier(container).setFallbackFqdn(':::bad:::');
+      expect(_state(container), isNull);
+    });
+  });
 }
