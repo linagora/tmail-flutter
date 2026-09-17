@@ -214,12 +214,12 @@ void main() {
 
     test('Should return workplace FQDN fallback template when configured', () {
       final linagoraEcosystem = LinagoraEcosystem.deserialize({
-        'workplaceFqdnFallback': '{localpart}.twake.linagora.com',
+        'workplaceFqdnFallback': '{localPart}.twake.linagora.com',
       });
 
       expect(
         linagoraEcosystem.workplaceFqdnFallbackTemplate,
-        '{localpart}.twake.linagora.com',
+        '{localPart}.twake.linagora.com',
       );
     });
 
@@ -241,12 +241,12 @@ void main() {
 
     test('Should trim workplace FQDN fallback template', () {
       final linagoraEcosystem = LinagoraEcosystem.deserialize({
-        'workplaceFqdnFallback': '  {localpart}.twake.linagora.com  ',
+        'workplaceFqdnFallback': '  {localPart}.twake.linagora.com  ',
       });
 
       expect(
         linagoraEcosystem.workplaceFqdnFallbackTemplate,
-        '{localpart}.twake.linagora.com',
+        '{localPart}.twake.linagora.com',
       );
     });
 

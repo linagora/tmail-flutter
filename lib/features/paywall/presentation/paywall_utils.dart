@@ -47,9 +47,8 @@ class PaywallUtils {
 
   /// Builds a paywall URL from a template.
   ///
-  /// - Supports both raw placeholders (`{localPart}`/`{localpart}`,
-  ///   `{domainName}`/`{domainname}`) and their URL-encoded forms
-  ///   (`%7BlocalPart%7D`, `%7BdomainName%7D`, ...).
+  /// - Supports both raw placeholders (`{localPart}`, `{domainName}`)
+  ///   and their URL-encoded forms (`%7BlocalPart%7D`, `%7BdomainName%7D`).
   /// - If [localPart] or [domainName] is not provided, the placeholder
   ///   is removed.
   static String buildPaywallUrlFromTemplate({
@@ -57,13 +56,8 @@ class PaywallUtils {
     String? localPart,
     String? domainName,
   }) {
-    var result = template;
-    for (final name in const ['localPart', 'localpart']) {
-      result = _replacePlaceholder(result, name, localPart);
-    }
-    for (final name in const ['domainName', 'domainname']) {
-      result = _replacePlaceholder(result, name, domainName);
-    }
+    var result = _replacePlaceholder(template, 'localPart', localPart);
+    result = _replacePlaceholder(result, 'domainName', domainName);
     return result;
   }
 
