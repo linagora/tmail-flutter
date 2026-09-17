@@ -1,4 +1,4 @@
-# 108. Workplace call transport and oversize attachment recovery
+# 108. Workplace call transport
 
 Date: 2026-09-16
 
@@ -8,19 +8,17 @@ Accepted
 
 ## Context
 
-- An attachment that exceeds the server size cap goes to Drive instead of a dead-end dialog.
-- That upload needs the same auth the Drive picker already uses.
+- A Workplace call needs the same auth the Drive picker already uses.
 - Bridge `fetchJSON` when the container app exposes it, otherwise an exchanged bearer token.
 - Today that flow is private to the picker's composer extension, and hardcoded to `POST /intents`.
-- This decision covers the preparation only; the upload call itself lands after.
+- A second caller is coming, so the flow lives outside the extension.
 
 ## Decision
 
 ### Scope
 
-- Prepared here: a reusable Workplace transport, a recovery seam on the oversize path,
-  a source-agnostic file body reader.
-- Not here: the upload request, the magic folder, the link in the body.
+- Prepared here: a reusable Workplace transport.
+- Not here: any new call sent over it.
 - Nothing a user can see changes.
 
 ### One transport for every Workplace call
@@ -51,54 +49,20 @@ send(platformUrl, accessMode, method, pathSegments, query, body, headers):
 
 - The bridge body widens from a JSON map to any payload, so binary can ride the same path.
 
-### One file body reader for both destinations
-
-- A picked file is read the same way whatever uploads it.
-- It streams from the file's path when the platform has a file system.
-- It reads from the file's bytes otherwise, which on web is always.
-- A file carrying neither is an error, not a silently empty body.
-- It is lifted out of the JMAP uploader's body builder, so both destinations share one reader.
-
-### Recovery before the failure dialog
-
-- A rejected upload may be handed to a recovery first; the dialog is the fallback.
-- A recovery that takes over owns every user-visible outcome, failure toasts included.
-- It never falls back to the dialog.
-- The validation request carries the picked files, so a recovery knows what to act on.
-
-```
-on ValidationRejected(failure):
-  if recovery?.recover(failure, request) == true:
-    return false                     # recovery owns the UX from here
-  feedback.showFailure(failure)      # today's dialog
-  return false
-```
-
-- A recovery is registered as one optional builder argument on the upload validation service,
-  built per rejection from the composer's context; no builder argument means today's dialog.
-- No recovery is registered yet, so the dialog is still what every rejection shows.
-- Drive availability for the oversize path is the same gate as the Drive picker button:
-  workplace FQDN, ecosystem flag, user preference.
-- Unavailable means today's dialog.
-
 ### Module boundary
 
-- `workplace` owns the transport; the main app owns the composer wiring, the recovery,
-  and the file body reader.
+- `workplace` owns the transport; the main app owns the composer wiring.
 - Unchanged from ADR-0095 and ADR-0105.
 
 ## Consequences
 
 - Adding a Workplace call is a request description, not another auth flow.
-- Adding an alternative to a blocking upload dialog is one class plus one builder argument.
 - Exchanging a token per action costs one extra round trip whenever the bridge is absent,
   which on mobile is every action.
 
 ## Open questions
 
-- How the uploaded file's shareable link is obtained.
 - Whether the container-side `fetchJSON` accepts a binary body; it ships JSON-only today.
-- The magic-folder `POST /files` contract is not merged yet.
 
 ## Sources
 
@@ -106,4 +70,4 @@ on ValidationRejected(failure):
 - [ADR-0095: External drive file picker integration](0095-external-drive-file-picker-integration.md)
 - [ADR-0105: Attach drive file via JMAP-mediated upload](0105-attach-drive-file-via-jmap-mediated-upload.md)
 - [ADR-0107: Workplace OIDC refresh via shared interceptor](0107-workplace-oidc-refresh-via-shared-interceptor.md)
-- [cozy-stack#4921](https://github.com/linagora/cozy-stack/pull/4921): `magic_folder` on `POST /files`
+- [ADR-0109: Oversize attachment recovery seam](0109-oversize-attachment-recovery-seam.md)
