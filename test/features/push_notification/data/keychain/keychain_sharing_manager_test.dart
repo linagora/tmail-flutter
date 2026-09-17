@@ -60,6 +60,26 @@ void main() {
       expect(decoded['isReportingAllowed'], isFalse);
     });
 
+    test('WHEN deleting Sentry config \n'
+        'THEN removes only the Sentry configuration key', () async {
+      const accountKey = 'account-id';
+      FlutterSecureStorage.setMockInitialValues({
+        SentryConfig.sentryConfigKeyChain: 'sentry-config',
+        accountKey: 'account-session',
+      });
+
+      await keychainSharingManager.deleteSentryConfig();
+
+      expect(
+        await flutterSecureStorage.read(key: SentryConfig.sentryConfigKeyChain),
+        isNull,
+      );
+      expect(
+        await flutterSecureStorage.read(key: accountKey),
+        'account-session',
+      );
+    });
+
     test('WHEN SentryConfig has no dist \n'
         'THEN toJson does not include dist key', () {
       final config = SentryConfig(

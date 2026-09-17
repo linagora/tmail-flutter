@@ -19,6 +19,7 @@ class SentryEcosystem {
   SentryUser? _sentryUser;
   SentryConfig? _sentryConfig;
   Future<void> _pendingConsentPersistence = Future.value();
+  int _configurationGeneration = 0;
 
   SentryEcosystem(
     this._cacheManager,
@@ -28,10 +29,12 @@ class SentryEcosystem {
             SentryManager.instance.initializeWithSentryConfig;
 
   void initUser(SentryUser? user) {
+    _configurationGeneration++;
     _sentryUser = user;
   }
 
   Future<void> setUp(SentryConfigLinagoraEcosystem ecosystemConfig) async {
+    final configurationGeneration = ++_configurationGeneration;
     final dsn = ecosystemConfig.dsn?.trimmed;
     final env = ecosystemConfig.environment?.trimmed;
     final isValid = ecosystemConfig.enabled == true
@@ -43,51 +46,59 @@ class SentryEcosystem {
         'SentryEcosystem::setUp: config invalid '
         '(enabled=${ecosystemConfig.enabled}, dsn=${dsn?.isNotEmpty}, env=${env?.isNotEmpty})',
       );
+      await clear(clearUser: false);
       return;
     }
 
+    final sentryUser = _sentryUser;
     final sentryConfig = await ecosystemConfig.toSentryConfig();
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
 
     await _initializeSentry(sentryConfig);
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
 
-    _applyUser();
+    _applyUser(sentryUser);
 
     final configToPersist = sentryConfig.withReportingAllowed(
       SentryManager.instance.isSentryReportingAllowed,
     );
     _sentryConfig = configToPersist;
-    final pendingPersistence = _pendingConsentPersistence.then((_) async {
-      final isReportingAllowedPersisted =
-          await _cacheData(configToPersist, _sentryUser);
-      final configToShare = _withLiveReportingConsent(
-        configToPersist.withReportingAllowed(isReportingAllowedPersisted),
-      );
-      _sentryConfig = configToShare;
-      if (PlatformInfo.isIOS) {
-        await _saveSentryConfigToKeychain(configToShare);
-      }
-    });
+    final pendingPersistence = _pendingConsentPersistence.then(
+      (_) => _persistSetupConfiguration(
+        configToPersist,
+        sentryUser,
+        configurationGeneration,
+      ),
+    );
     _pendingConsentPersistence = pendingPersistence.catchError((_) {});
     await pendingPersistence;
   }
 
-  void _applyUser() {
-    if (_sentryUser == null) return;
-    SentryManager.instance.setUser(_sentryUser!);
+  void _applyUser(SentryUser? sentryUser) {
+    if (sentryUser == null) return;
+    SentryManager.instance.setUser(sentryUser);
   }
 
   Future<void> updateReportingConsent(bool? consent) async {
     SentryManager.instance.setSentryReportingConsent(consent);
     final pendingLifecycle = SentryManager.instance.pendingLifecycleTransition;
     final isReportingAllowed = SentryManager.instance.isSentryReportingAllowed;
+    final configurationGeneration = _configurationGeneration;
     final pendingPersistence = _pendingConsentPersistence.then(
-      (_) => _persistReportingConsent(isReportingAllowed),
+      (_) => _persistReportingConsent(
+        isReportingAllowed,
+        configurationGeneration,
+      ),
     );
     _pendingConsentPersistence = pendingPersistence.catchError((_) {});
     await Future.wait([pendingLifecycle, pendingPersistence]);
   }
 
-  Future<void> _persistReportingConsent(bool isReportingAllowed) async {
+  Future<void> _persistReportingConsent(
+    bool isReportingAllowed,
+    int configurationGeneration,
+  ) async {
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
     // Before setUp completes, the cache still belongs to the previous account.
     // Leave its fail-closed value untouched; setUp will publish this account's
     // config and identity together.
@@ -107,18 +118,47 @@ class SentryEcosystem {
         stackTrace: st,
       );
       final configToShare = currentConfig.withReportingAllowed(false);
-      _sentryConfig = configToShare;
-      if (PlatformInfo.isIOS) {
-        await _saveSentryConfigToKeychain(configToShare);
-      }
+      await _publishSentryConfig(
+        configToShare,
+        configurationGeneration,
+      );
       Error.throwWithStackTrace(e, st);
     }
 
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
     final configToShare = _withLiveReportingConsent(updatedConfig);
-    _sentryConfig = configToShare;
-    if (PlatformInfo.isIOS) {
-      await _saveSentryConfigToKeychain(configToShare);
+    await _publishSentryConfig(
+      configToShare,
+      configurationGeneration,
+    );
+  }
+
+  Future<void> _persistSetupConfiguration(
+    SentryConfig configToPersist,
+    SentryUser? sentryUser,
+    int configurationGeneration,
+  ) async {
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
+    bool isReportingAllowedPersisted;
+    try {
+      isReportingAllowedPersisted =
+          await _cacheData(configToPersist, sentryUser);
+    } catch (e, st) {
+      await _publishSentryConfig(
+        configToPersist.withReportingAllowed(false),
+        configurationGeneration,
+      );
+      Error.throwWithStackTrace(e, st);
     }
+
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
+    final configToShare = _withLiveReportingConsent(
+      configToPersist.withReportingAllowed(isReportingAllowedPersisted),
+    );
+    await _publishSentryConfig(
+      configToShare,
+      configurationGeneration,
+    );
   }
 
   Future<bool> _cacheData(SentryConfig sentryConfig, SentryUser? sentryUser) async {
@@ -161,7 +201,39 @@ class SentryEcosystem {
     );
   }
 
+  bool _isCurrentConfiguration(int configurationGeneration) =>
+      configurationGeneration == _configurationGeneration;
+
+  Future<void> _publishSentryConfig(
+    SentryConfig sentryConfig,
+    int configurationGeneration,
+  ) async {
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
+    if (PlatformInfo.isIOS) {
+      await _saveSentryConfigToKeychain(sentryConfig);
+    }
+    if (_isCurrentConfiguration(configurationGeneration)) {
+      _sentryConfig = sentryConfig;
+    }
+  }
+
   Future<void> _saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
     await _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
+  }
+
+  Future<void> clear({bool clearUser = true}) {
+    _configurationGeneration++;
+    _sentryConfig = null;
+    if (clearUser) {
+      _sentryUser = null;
+    }
+
+    final pendingClear = _pendingConsentPersistence.then((_) async {
+      if (PlatformInfo.isIOS) {
+        await _iosSharingManager?.deleteSentryConfigFromKeychain();
+      }
+    });
+    _pendingConsentPersistence = pendingClear.catchError((_) {});
+    return pendingClear;
   }
 }
