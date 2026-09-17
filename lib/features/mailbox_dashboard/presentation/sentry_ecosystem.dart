@@ -59,9 +59,8 @@ class SentryEcosystem {
     final pendingPersistence = _pendingConsentPersistence.then((_) async {
       final isReportingAllowedPersisted =
           await _cacheData(configToPersist, _sentryUser);
-      final configToShare = configToPersist.withReportingAllowed(
-        isReportingAllowedPersisted &&
-            SentryManager.instance.isSentryReportingAllowed,
+      final configToShare = _withLiveReportingConsent(
+        configToPersist.withReportingAllowed(isReportingAllowedPersisted),
       );
       _sentryConfig = configToShare;
       if (PlatformInfo.isIOS) {
@@ -115,9 +114,10 @@ class SentryEcosystem {
       Error.throwWithStackTrace(e, st);
     }
 
-    _sentryConfig = updatedConfig;
+    final configToShare = _withLiveReportingConsent(updatedConfig);
+    _sentryConfig = configToShare;
     if (PlatformInfo.isIOS) {
-      await _saveSentryConfigToKeychain(updatedConfig);
+      await _saveSentryConfigToKeychain(configToShare);
     }
   }
 
@@ -152,6 +152,13 @@ class SentryEcosystem {
       await _cacheManager.clearSentryConfiguration();
     }
     return false;
+  }
+
+  SentryConfig _withLiveReportingConsent(SentryConfig sentryConfig) {
+    return sentryConfig.withReportingAllowed(
+      sentryConfig.isReportingAllowed &&
+          SentryManager.instance.isSentryReportingAllowed,
+    );
   }
 
   Future<void> _saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
