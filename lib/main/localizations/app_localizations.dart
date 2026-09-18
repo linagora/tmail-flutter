@@ -3261,6 +3261,30 @@ class AppLocalizations {
       name: 'organizer');
   }
 
+  String get attending {
+    return Intl.message(
+      'Attending?',
+      name: 'attending');
+  }
+
+  String get joinTheVideoConference {
+    return Intl.message(
+      'Join the video conference',
+      name: 'joinTheVideoConference');
+  }
+
+  String get copyLink {
+    return Intl.message(
+      'Copy link',
+      name: 'copyLink');
+  }
+
+  String get linkCopiedToClipboard {
+    return Intl.message(
+      'Link copied to clipboard',
+      name: 'linkCopiedToClipboard');
+  }
+
   String get time {
     return Intl.message(
       'Time',
