@@ -2,7 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/workplace_fqdn_ecosystem_handler.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 /// Exposes the [Ref] a provider is built with, mirroring how
 /// `LinagoraEcosystemHandlerRegistry.ref` is sourced in production.
@@ -90,7 +91,7 @@ void main() {
     });
 
     test('does not override an already-set userInfo value', () {
-      container.read(workplaceFqdnProvider.notifier).setFqdn('userinfo.example.com');
+      container.read(workplaceFqdnUserInfoProvider.notifier).setFqdn('userinfo.example.com');
 
       expect(
         _loadAndReadState(
@@ -102,8 +103,8 @@ void main() {
       );
     });
 
-    test('onEcosystemCleared clears only the fallback', () {
-      container.read(workplaceFqdnProvider.notifier).setFqdn('userinfo.example.com');
+    test('onEcosystemCleared clears only the ecosystem source', () {
+      container.read(workplaceFqdnUserInfoProvider.notifier).setFqdn('userinfo.example.com');
       final handler = WorkplaceFqdnEcosystemHandler(
         ref: container.read(_refProvider),
         resolveOwnerEmail: () => 'alice@example.com',

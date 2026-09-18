@@ -2,12 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_ecosystem_notifier.dart';
 
 typedef ResolveOwnerEmail = String? Function();
 
-/// Feeds the ecosystem FQDN template into the provider so deployments without
-/// an OIDC `workplaceFqdn` claim still reach their Workplace.
+/// Feeds the ecosystem FQDN template into the ecosystem FQDN source so
+/// deployments without an OIDC `workplaceFqdn` claim still reach their
+/// Workplace.
 ///
 /// Takes the registry's own provider-scoped [Ref] (see
 /// `LinagoraEcosystemHandlerRegistry.ref`), not a [WidgetRef] — the registry
@@ -25,11 +26,11 @@ class WorkplaceFqdnEcosystemHandler implements LinagoraEcosystemHandler {
 
   @override
   void onEcosystemLoaded(LinagoraEcosystem ecosystem) {
-    _setFallback(_resolveFallbackFqdn(ecosystem));
+    _setEcosystemFqdn(_resolveFallbackFqdn(ecosystem));
   }
 
   @override
-  void onEcosystemCleared() => _setFallback(null);
+  void onEcosystemCleared() => _setEcosystemFqdn(null);
 
   String? _resolveFallbackFqdn(LinagoraEcosystem ecosystem) {
     final template = ecosystem.workplaceFqdnFallbackTemplate;
@@ -43,7 +44,7 @@ class WorkplaceFqdnEcosystemHandler implements LinagoraEcosystemHandler {
     return resolved.isEmpty ? null : resolved;
   }
 
-  void _setFallback(String? fqdn) {
-    _ref.read(workplaceFqdnProvider.notifier).setFallbackFqdn(fqdn);
+  void _setEcosystemFqdn(String? fqdn) {
+    _ref.read(workplaceFqdnEcosystemProvider.notifier).setFqdn(fqdn);
   }
 }

@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/drive_attachment_preference_option.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 import '../../../../../../fixtures/preference_option_fixtures.dart';
 
@@ -115,4 +115,4 @@ void _setDriveAttachmentEnabled(bool? enabled) => appProviderContainer
     .setEnabled(enabled);
 
 void _setWorkplaceFqdn(String? fqdn) =>
-    appProviderContainer.read(workplaceFqdnProvider.notifier).setFqdn(fqdn);
+    appProviderContainer.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(fqdn);

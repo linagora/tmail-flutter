@@ -1,0 +1,21 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Reads one source's Workplace FQDN off [ref], or null when that source has
+/// nothing to offer. Implementations call `ref.watch(someSourceProvider)` so
+/// the resolver keeps tracking that source as a dependency.
+typedef WorkplaceFqdnSourceReader = String? Function(Ref ref);
+
+/// One source of the Workplace FQDN. Every source exposes the same API so
+/// [workplaceFqdnProvider] can rank them purely by list position.
+abstract interface class WorkplaceFqdnSource {
+  void setFqdn(String? rawFqdn);
+}
+
+/// Trims and validates a raw FQDN; returns null when it is unusable.
+String? normalizeWorkplaceFqdn(String? rawFqdn) {
+  final fqdn = rawFqdn?.trim();
+  if (fqdn == null || fqdn.isEmpty) return null;
+  final uri = Uri.tryParse(fqdn.startsWith('http') ? fqdn : 'https://$fqdn');
+  return uri != null && (uri.scheme == 'https' || kDebugMode) ? fqdn : null;
+}

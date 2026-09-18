@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_lin
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 void main() {
   group('ecosystem request caching', _ecosystemCachingTests);
@@ -272,7 +272,7 @@ void _premiumCtaDestinationTests() {
     final repository = _succeedingRepository();
     final container = _createContainer(repository);
     container
-        .read(workplaceFqdnProvider.notifier)
+        .read(workplaceFqdnUserInfoProvider.notifier)
         .setFqdn('workplace.domain.tld');
 
     expect(
@@ -288,7 +288,7 @@ void _premiumCtaDestinationTests() {
       () async {
     final repository = _succeedingRepository();
     final container = _createContainer(repository);
-    container.read(workplaceFqdnProvider.notifier).setFqdn('localhost');
+    container.read(workplaceFqdnUserInfoProvider.notifier).setFqdn('localhost');
     final context = _upgradableContext(_firstTarget);
     _keepPremiumCtaAlive(container, context);
 
@@ -392,7 +392,7 @@ void _premiumCtaGatingTests() {
     final repository = _succeedingRepository();
     final container = _createContainer(repository);
     container
-        .read(workplaceFqdnProvider.notifier)
+        .read(workplaceFqdnUserInfoProvider.notifier)
         .setFqdn('workplace.domain.tld');
     final upgradableContext = _premiumContext(
       _firstTarget,

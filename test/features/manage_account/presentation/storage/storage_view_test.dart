@@ -34,7 +34,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -186,7 +186,7 @@ void main() {
       expect(find.byType(UpgradeStorageWidget), findsNothing);
 
       container
-          .read(workplaceFqdnProvider.notifier)
+          .read(workplaceFqdnUserInfoProvider.notifier)
           .setFqdn('workplace.domain.tld');
       await tester.pump();
 
@@ -202,7 +202,7 @@ void main() {
         Uri.parse('https://workplace.domain.tld/settings/premium'),
       );
 
-      container.read(workplaceFqdnProvider.notifier).setFqdn(null);
+      container.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(null);
       await tester.pump();
 
       expect(find.byType(UpgradeStorageWidget), findsNothing);
@@ -218,7 +218,7 @@ void main() {
       // assertion below can only pass because of the platform gate.
       final container = await pumpStorageView(tester);
       container
-          .read(workplaceFqdnProvider.notifier)
+          .read(workplaceFqdnUserInfoProvider.notifier)
           .setFqdn('workplace.domain.tld');
       await tester.pump();
 
