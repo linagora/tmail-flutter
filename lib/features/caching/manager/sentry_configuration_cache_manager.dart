@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exceptio
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 
 class SentryConfigurationCacheManager {
+  static const int _maxReportingConsentUpdateAttempts = 2;
+
   final SentryConfigurationCacheClient _configurationCacheClient;
   final SentryUserCacheClient _userCacheClient;
   final String _configurationCacheKey =
@@ -33,6 +35,33 @@ class SentryConfigurationCacheManager {
     );
   }
 
+  Future<SentryConfigurationCache?> updateSentryReportingAllowed(
+    bool isReportingAllowed,
+  ) async {
+    for (var attempt = 1;
+        attempt <= _maxReportingConsentUpdateAttempts;
+        attempt++) {
+      try {
+        final current = await getSentryConfiguration();
+        final updated = current.copyWith(
+          isReportingAllowed: isReportingAllowed,
+        );
+        await saveSentryConfiguration(updated);
+        return updated;
+      } catch (e) {
+        logWarning(
+          'SentryConfigurationCacheManager::updateSentryReportingAllowed: '
+          'attempt $attempt failed: $e',
+        );
+      }
+    }
+
+    if (isReportingAllowed) return null;
+
+    await clearSentryConfiguration();
+    return null;
+  }
+
   Future<SentryUserCache> getSentryUser() async {
     final cache = await _userCacheClient.getItem(_userCacheKey);
     if (cache == null) throw const NotFoundSentryUserException();
@@ -46,9 +75,13 @@ class SentryConfigurationCacheManager {
   }
 
   Future<void> clearSentryConfiguration() async {
+    Object? configurationClearError;
+    StackTrace? configurationClearStackTrace;
     try {
       await _configurationCacheClient.clearAllData();
     } catch (e, st) {
+      configurationClearError = e;
+      configurationClearStackTrace = st;
       logError(
         'SentryConfigurationCacheManager::clearSentryConfiguration: Failed to clear config cache',
         exception: e,
@@ -62,6 +95,14 @@ class SentryConfigurationCacheManager {
         'SentryConfigurationCacheManager::clearSentryConfiguration: Failed to clear user cache',
         exception: e,
         stackTrace: st,
+      );
+    }
+
+    if (configurationClearError != null &&
+        configurationClearStackTrace != null) {
+      Error.throwWithStackTrace(
+        configurationClearError,
+        configurationClearStackTrace,
       );
     }
   }
