@@ -468,13 +468,13 @@ void main() {
 
   group('CalendarEventCardMapper::conference', () {
     test('SHOULD omit the block WHEN the event carries no link', () {
-      expect(_mapper(event: _event()).conference, isNull);
+      expect(_mapper(event: _event()).cardData.conference, isNull);
     });
 
     test('SHOULD omit the block WHEN the event link is blank', () {
       final mapper = _mapper(event: _event(conferenceLink: '   '));
 
-      expect(mapper.conference, isNull);
+      expect(mapper.cardData.conference, isNull);
     });
 
     test('SHOULD join and copy the conference link', () {
@@ -485,7 +485,7 @@ void main() {
         actions: _actions(
           links: (open: opened.add, copy: copied.add),
         ),
-      ).conference!;
+      ).cardData.conference!;
 
       conference.join!.onPressed!();
       conference.onCopyLink!();
@@ -679,57 +679,129 @@ void main() {
       });
     });
 
-    test('SHOULD use the attendee fallback WHEN a reply name is blank', () {
-      final mapper = _mapper(
-        event: _event(
-          method: EventMethod.reply,
-          attendees: [
-            _attendee(
-              '   ',
-              'jordan.blake@example.invalid',
-              participationStatus: 'ACCEPTED',
-            ),
-          ],
-        ),
-        viewState: _viewState(
-          listEmailAddressSender: const ['jordan.blake@example.invalid'],
-        ),
-      );
-
-      expect(mapper.actorName, appLocalizations.anAttendee);
-      expect(mapper.hasActivity, isTrue);
-    });
-
     test('SHOULD show no badge WHEN the method carries no message', () {
       expect(_mapper(event: _event(method: EventMethod.publish)).hasActivity, isFalse);
     });
 
-    test('SHOULD colour a cancellation as cancelled', () {
-      expect(
-        _mapper(event: _event(method: EventMethod.cancel)).activityState,
-        EventActivityBadgeState.canceled,
-      );
-    });
-
-    for (final entry in _replyStates.entries) {
-      test('SHOULD colour a ${entry.key} reply accordingly', () {
-        final mapper = _mapper(
-          event: _event(
-            method: EventMethod.reply,
-            attendees: [
-              _attendee(
-                'Jordan Blake',
-                'jordan.blake@example.invalid',
-                participationStatus: entry.key,
-              ),
-            ],
-          ),
-          viewState: _viewState(
-            listEmailAddressSender: const ['jordan.blake@example.invalid'],
-          ),
+    for (final entry in _methodActivityStates.entries) {
+      test('SHOULD preserve the ${entry.key.name} activity state', () {
+        expect(
+          _mapper(event: _event(method: entry.key)).activityState,
+          entry.value,
         );
+      });
+    }
 
-        expect(mapper.activityState, entry.value);
+    final replyActivityCases = <_ReplyActivityCase>[
+      (
+        description: 'map an accepted reply',
+        attendeeName: 'Jordan Blake',
+        participationStatus: 'ACCEPTED',
+        senderMatches: true,
+        expectedActorName: 'Jordan Blake',
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeAccepted,
+        expectedState: EventActivityBadgeState.accepted,
+      ),
+      (
+        description: 'map a tentative reply',
+        attendeeName: 'Jordan Blake',
+        participationStatus: 'TENTATIVE',
+        senderMatches: true,
+        expectedActorName: 'Jordan Blake',
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeTentative,
+        expectedState: EventActivityBadgeState.maybe,
+      ),
+      (
+        description: 'map a declined reply',
+        attendeeName: 'Jordan Blake',
+        participationStatus: 'DECLINED',
+        senderMatches: true,
+        expectedActorName: 'Jordan Blake',
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeDeclined,
+        expectedState: EventActivityBadgeState.canceled,
+      ),
+      (
+        description: 'trim the attendee name',
+        attendeeName: '  Jordan Blake  ',
+        participationStatus: 'ACCEPTED',
+        senderMatches: true,
+        expectedActorName: 'Jordan Blake',
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeAccepted,
+        expectedState: EventActivityBadgeState.accepted,
+      ),
+      (
+        description: 'use the fallback for a missing attendee name',
+        attendeeName: null,
+        participationStatus: 'ACCEPTED',
+        senderMatches: true,
+        expectedActorName: appLocalizations.anAttendee,
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeAccepted,
+        expectedState: EventActivityBadgeState.accepted,
+      ),
+      (
+        description: 'use the fallback for an empty attendee name',
+        attendeeName: '',
+        participationStatus: 'ACCEPTED',
+        senderMatches: true,
+        expectedActorName: appLocalizations.anAttendee,
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeAccepted,
+        expectedState: EventActivityBadgeState.accepted,
+      ),
+      (
+        description: 'use the fallback for a blank attendee name',
+        attendeeName: '   ',
+        participationStatus: 'ACCEPTED',
+        senderMatches: true,
+        expectedActorName: appLocalizations.anAttendee,
+        expectedActivity:
+            appLocalizations.messageEventActionBannerAttendeeAccepted,
+        expectedState: EventActivityBadgeState.accepted,
+      ),
+      (
+        description: 'hide the badge when no attendee matches the sender',
+        attendeeName: 'Jordan Blake',
+        participationStatus: 'ACCEPTED',
+        senderMatches: false,
+        expectedActorName: appLocalizations.anAttendee,
+        expectedActivity: null,
+        expectedState: EventActivityBadgeState.created,
+      ),
+      (
+        description: 'hide the badge for an unsupported reply status',
+        attendeeName: 'Jordan Blake',
+        participationStatus: 'NEEDS-ACTION',
+        senderMatches: true,
+        expectedActorName: 'Jordan Blake',
+        expectedActivity: null,
+        expectedState: EventActivityBadgeState.created,
+      ),
+    ];
+
+    for (final testCase in replyActivityCases) {
+      test('SHOULD ${testCase.description}', () {
+        final mapper = _replyMapper(testCase);
+
+        expect({
+          'actorName': mapper.actorName,
+          'cardActorName': mapper.cardData.actorName,
+          'activity': mapper.cardData.activity,
+          'hasActivity': mapper.hasActivity,
+          'activityState': mapper.activityState,
+        }, {
+          'actorName': testCase.expectedActorName,
+          'cardActorName': testCase.expectedActivity == null
+              ? null
+              : testCase.expectedActorName,
+          'activity': testCase.expectedActivity,
+          'hasActivity': testCase.expectedActivity != null,
+          'activityState': testCase.expectedState,
+        });
       });
     }
   });
@@ -737,11 +809,26 @@ void main() {
 
 const _ownEmailAddress = 'reader@example.invalid';
 
-const _replyStates = <String, EventActivityBadgeState>{
-  'ACCEPTED': EventActivityBadgeState.accepted,
-  'TENTATIVE': EventActivityBadgeState.updated,
-  'DECLINED': EventActivityBadgeState.canceled,
+const _methodActivityStates = <EventMethod, EventActivityBadgeState>{
+  EventMethod.request: EventActivityBadgeState.created,
+  EventMethod.add: EventActivityBadgeState.created,
+  EventMethod.refresh: EventActivityBadgeState.updated,
+  EventMethod.counter: EventActivityBadgeState.updated,
+  EventMethod.cancel: EventActivityBadgeState.canceled,
+  EventMethod.declineCounter: EventActivityBadgeState.canceled,
 };
+
+const _replyAttendeeAddress = 'jordan.blake@example.invalid';
+
+typedef _ReplyActivityCase = ({
+  String description,
+  String? attendeeName,
+  String participationStatus,
+  bool senderMatches,
+  String expectedActorName,
+  String? expectedActivity,
+  EventActivityBadgeState expectedState,
+});
 
 const _settledResponses = [
   (
@@ -769,6 +856,34 @@ CalendarEventCardMapper _mapper({
     viewState: viewState ?? _viewState(),
     actions: actions ?? _actions(),
     options: options ?? _mappingOptions(),
+  );
+}
+
+CalendarEventCardMapper _replyMapper(_ReplyActivityCase testCase) {
+  return _mapper(
+    event: _event(
+      method: EventMethod.reply,
+      attendees: [
+        CalendarAttendee(
+          name: testCase.attendeeName == null
+              ? null
+              : CalendarAttendeeName(testCase.attendeeName!),
+          mailto: CalendarAttendeeMailTo(
+            MailAddress(_replyAttendeeAddress),
+          ),
+          participationStatus: CalendarAttendeeParticipationStatus(
+            testCase.participationStatus,
+          ),
+        ),
+      ],
+    ),
+    viewState: _viewState(
+      listEmailAddressSender: [
+        testCase.senderMatches
+            ? _replyAttendeeAddress
+            : 'different@example.invalid',
+      ],
+    ),
   );
 }
 

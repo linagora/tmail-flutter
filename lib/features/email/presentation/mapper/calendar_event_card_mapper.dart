@@ -130,7 +130,7 @@ class CalendarEventCardMapper {
       CalendarEventExtension.acceptedParticipationStatus =>
         EventActivityBadgeState.accepted,
       CalendarEventExtension.tentativeParticipationStatus =>
-        EventActivityBadgeState.updated,
+        EventActivityBadgeState.maybe,
       CalendarEventExtension.declinedParticipationStatus =>
         EventActivityBadgeState.canceled,
       _ => EventActivityBadgeState.created,
@@ -153,8 +153,6 @@ class CalendarEventCardMapper {
         ),
     ];
   }
-
-  LinagoraEventConference? get conference => conferences.firstOrNull;
 
   LinagoraEventConference _conference(String link, {required String label}) {
     final onOpenLink = actions.onOpenLink;

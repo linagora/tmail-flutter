@@ -1441,7 +1441,7 @@ packages:
     description:
       path: "."
       ref: "fix/event-card-text-alignment"
-      resolved-ref: "05ef427b862c4abb4cb572a287e9b35fd4019b8f"
+      resolved-ref: df49a7dfe07c501255f68f160a725744eb2250ce
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.3.2"

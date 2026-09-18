@@ -1,6 +1,5 @@
 
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EventActionType {
@@ -38,18 +37,4 @@ enum EventActionType {
         return '';
     }
   }
-}
-
-class EventAction with EquatableMixin {
-  final EventActionType actionType;
-  final String link;
-
-  EventAction(this.actionType, this.link);
-
-  factory EventAction.mailToAttendees() {
-    return EventAction(EventActionType.mailToAttendees, '');
-  }
-
-  @override
-  List<Object?> get props => [actionType, link];
 }
