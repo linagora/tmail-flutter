@@ -34,6 +34,10 @@ Accepted
 
 - `FileInfo` carries `openRead`, a function returning a fresh `Stream<List<int>>`.
 - A factory, not a stream: every caller opens its own body, so a replay always has one.
+- Mobile opens from the file path ADR-0106 pins as its replay source: the picker's
+  `readAsByteStream()` is `xFile.openRead()` on Android and Darwin, a fresh read per call. A
+  single-use stream exists only in the web implementation, and only when a read stream is asked
+  for at pick time, which this decision never does.
 - It is excluded from equality — a function has no value.
 - `FileInfo.readBytes()` collects a whole file into memory. Only inline images use it, and they
   are small by construction. A picked attachment is streamed and never collected.
@@ -106,6 +110,10 @@ Accepted
   revisited when that is upgraded.
 - The memory test measures the VM's adapter. It proves the uploader holds nothing, not that the
   browser does; the web claim rests on manual measurement per browser.
+- The web 401 replay stays covered by VM tests: the retry path no longer branches on platform, so
+  the same test drives it with the web flag set, including the case where no body can be rebuilt.
+  What a VM cannot drive is the blob adapter's `xhr.send(blob)` and its re-resolve on replay; that
+  step is verified manually per browser, like the memory claim above it.
 - The platform interface instance is the seam for a test double, and the picked-file type is
   abstract, so a fake implements it rather than constructing one.
 - share_plus 13 replaces the top-level share call with an instance taking a parameters object;
