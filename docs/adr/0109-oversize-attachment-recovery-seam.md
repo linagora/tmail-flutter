@@ -30,14 +30,25 @@ Accepted
 
 ### Recovery before the failure dialog
 
-- A rejected upload may be handed to a recovery first; the dialog is the fallback.
+- A recovery is an alternative ending for a rejection.
+- It takes the rejected files somewhere else and tells the user what happened.
+- The first one, landing later, uploads the oversize files to Drive and links them in the body.
+- The dialog is what shows whenever no recovery runs:
+  - none is registered,
+  - the rejection carries no files to act on,
+  - or the registered recovery declines that failure.
 - A recovery that takes over owns every user-visible outcome, failure toasts included.
 - It never falls back to the dialog.
+
+- Only a rejection on picked files reaches a recovery.
+- `validateFiles` carries the picked files, so a recovery has the bytes to upload.
+- `validateAttachment` re-attaches an existing JMAP attachment with no file behind it,
+  so its rejections go straight to the dialog.
 - The validation request carries the picked files, so a recovery knows what to act on.
 
 ```
 on ValidationRejected(failure):
-  if recovery?.recover(failure, request) == true:
+  if request.files.isNotEmpty and recovery?.recover(failure, request) == true:
     return false                     # recovery owns the UX from here
   feedback.showFailure(failure)      # today's dialog
   return false
