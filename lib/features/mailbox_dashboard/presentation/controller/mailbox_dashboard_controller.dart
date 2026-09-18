@@ -440,6 +440,8 @@ class MailboxDashBoardController extends ReloadableController
   Future<void> setUpSentry(SentryConfigLinagoraEcosystem ecosystemConfig) async =>
       _sentryEcosystem?.setUp(ecosystemConfig);
 
+  Future<void> clearSentry() async => _sentryEcosystem?.clear();
+
   @override
   void onReady() {
     if (PlatformInfo.isWeb) {
@@ -3471,6 +3473,13 @@ class MailboxDashBoardController extends ReloadableController
     outboxMailbox = null;
     sessionCurrent = null;
     SentryManager.instance.clearUser();
+    unawaited(clearSentry().catchError((e, st) {
+      logError(
+        'MailboxDashBoardController::onClose: Cannot clear Sentry configuration',
+        exception: e,
+        stackTrace: st,
+      );
+    }));
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();

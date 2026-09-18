@@ -2,13 +2,38 @@ import 'dart:async';
 
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_user_cache.dart';
 import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
+
+import 'sentry_ecosystem_test.mocks.dart';
+
+@GenerateNiceMocks([MockSpec<IOSSharingManager>()])
+
+class _RecordingIOSSharingManager extends Mock implements IOSSharingManager {
+  final savedConfigs = <SentryConfig>[];
+  int deleteCalls = 0;
+  Future<void> Function()? onSave;
+
+  @override
+  Future<void> saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
+    savedConfigs.add(sentryConfig);
+    await onSave?.call();
+  }
+
+  @override
+  Future<void> deleteSentryConfigFromKeychain() async {
+    deleteCalls++;
+  }
+}
 
 class _FakeCacheManager implements SentryConfigurationCacheManager {
   _FakeCacheManager({
@@ -19,6 +44,9 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
     this.throwOnClear = false,
     this.reportingUpdateFailures = 0,
     this.onSaveUser,
+    this.onUpdate,
+    this.returnNullOnUpdate = false,
+    this.throwOnUpdate = false,
   });
 
   SentryConfigurationCache configuration;
@@ -28,6 +56,9 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
   final bool throwOnClear;
   int reportingUpdateFailures;
   final Future<void> Function()? onSaveUser;
+  final Future<void> Function()? onUpdate;
+  final bool returnNullOnUpdate;
+  final bool throwOnUpdate;
   final writes = <String>[];
   final reportingUpdates = <bool>[];
   int clearCalls = 0;
@@ -65,9 +96,12 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
       reportingUpdateFailures--;
       throw StateError('reporting update failed');
     }
+    if (throwOnUpdate) throw StateError('update failed');
+    if (returnNullOnUpdate) return null;
     configuration = configuration.copyWith(
       isReportingAllowed: isReportingAllowed,
     );
+    await onUpdate?.call();
     return configuration;
   }
 
@@ -114,10 +148,15 @@ void main() {
   );
 
   setUp(() {
+    debugDefaultTargetPlatformOverride = null;
     sentryManager
       ..clearUser()
       ..setSentryReportingConsent(null)
       ..setSentryReportingDefault(true);
+  });
+
+  tearDown(() {
+    debugDefaultTargetPlatformOverride = null;
   });
 
   test('persists the latest consent when it changes while Sentry initializes', () async {
@@ -319,6 +358,304 @@ void main() {
 
     expect(cacheManager.clearCalls, 1);
     expect(cacheManager.writes, ['config:false']);
+  });
+
+  test('updates iOS Keychain when reporting consent changes', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.updateReportingConsent(false);
+
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(savedConfigs.map((config) => config.isReportingAllowed), [true, false]);
+  });
+
+  test('persists fail-closed iOS config when cache update fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      returnNullOnUpdate: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.updateReportingConsent(false);
+
+    expect(cacheManager.reportingUpdates, [false]);
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(savedConfigs.last.isReportingAllowed, isFalse);
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+  });
+
+  test('does not enable iOS Keychain when opt-in cache update fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      returnNullOnUpdate: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+    sentryManager.setSentryReportingConsent(false);
+
+    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.updateReportingConsent(true);
+
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(savedConfigs.map((config) => config.isReportingAllowed), [false, false]);
+  });
+
+  test('does not enable iOS Keychain when cache update throws', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      throwOnUpdate: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+    sentryManager.setSentryReportingConsent(false);
+
+    await ecosystem.setUp(ecosystemConfig);
+
+    await expectLater(
+      ecosystem.updateReportingConsent(true),
+      throwsA(isA<StateError>()),
+    );
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(savedConfigs.map((config) => config.isReportingAllowed), [false, false]);
+  });
+
+  test('does not publish allowed iOS config after consent is revoked during setup', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final userSaveStarted = Completer<void>();
+    final finishUserSave = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      onSaveUser: () async {
+        userSaveStarted.complete();
+        await finishUserSave.future;
+      },
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    )..initUser(SentryUser(id: 'account-b'));
+
+    final setUp = ecosystem.setUp(ecosystemConfig);
+    await userSaveStarted.future;
+    final optOut = ecosystem.updateReportingConsent(false);
+    finishUserSave.complete();
+    await Future.wait([setUp, optOut]);
+
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(
+      savedConfigs.map((config) => config.isReportingAllowed),
+      everyElement(isFalse),
+    );
+  });
+
+  test('does not publish allowed iOS config when opt-in is superseded by opt-out', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final updateStarted = Completer<void>();
+    final finishUpdate = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      onUpdate: () async {
+        if (!updateStarted.isCompleted) {
+          updateStarted.complete();
+        }
+        await finishUpdate.future;
+      },
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+    sentryManager.setSentryReportingConsent(false);
+
+    await ecosystem.setUp(ecosystemConfig);
+    final optIn = ecosystem.updateReportingConsent(true);
+    await updateStarted.future;
+    final optOut = ecosystem.updateReportingConsent(false);
+    finishUpdate.complete();
+    await Future.wait([optIn, optOut]);
+
+    final savedConfigs = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.cast<SentryConfig>();
+    expect(
+      savedConfigs.map((config) => config.isReportingAllowed),
+      everyElement(isFalse),
+    );
+  });
+
+  test('does not enable iOS Keychain when setup cache commit fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+      throwOnSaveConfiguration: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await ecosystem.setUp(ecosystemConfig);
+
+    final savedConfig = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.single as SentryConfig;
+    expect(savedConfig.isReportingAllowed, isFalse);
+  });
+
+  test('publishes denied iOS config when setup cache cleanup fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      throwOnSaveConfiguration: true,
+      throwOnClear: true,
+    );
+    final iosSharingManager = MockIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await expectLater(
+      ecosystem.setUp(ecosystemConfig),
+      throwsStateError,
+    );
+
+    final savedConfig = verify(
+      iosSharingManager.saveSentryConfigToKeychain(captureAny),
+    ).captured.single as SentryConfig;
+    expect(savedConfig.isReportingAllowed, isFalse);
+  });
+
+  test('does not publish a setup superseded by ecosystem clearing', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    )..initUser(SentryUser(id: 'account-a'));
+
+    final setUp = ecosystem.setUp(ecosystemConfig);
+    await initializeStarted.future;
+    final clear = ecosystem.clear();
+    finishInitialize.complete();
+    await Future.wait([setUp, clear]);
+
+    expect(iosSharingManager.savedConfigs, isEmpty);
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('deletes a published config when clearing races with its Keychain write', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final saveStarted = Completer<void>();
+    final finishSave = Completer<void>();
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager()
+      ..onSave = () async {
+        saveStarted.complete();
+        await finishSave.future;
+      };
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    final setUp = ecosystem.setUp(ecosystemConfig);
+    await saveStarted.future;
+    final clear = ecosystem.clear();
+    finishSave.complete();
+    await Future.wait([setUp, clear]);
+
+    expect(iosSharingManager.savedConfigs, hasLength(1));
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('deletes the shared config when the ecosystem disables Sentry', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    )..initUser(SentryUser(id: 'account-a'));
+
+    await ecosystem.setUp(SentryConfigLinagoraEcosystem(
+      enabled: false,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+    ));
+
+    expect(iosSharingManager.savedConfigs, isEmpty);
+    expect(iosSharingManager.deleteCalls, 1);
   });
 
 }
