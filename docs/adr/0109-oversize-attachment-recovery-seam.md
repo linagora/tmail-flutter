@@ -25,6 +25,10 @@ Accepted
 - A picked file is read the same way whatever uploads it.
 - It streams from the file's path when the platform has a file system.
 - It reads from the file's bytes otherwise, which on web is always.
+- Streaming keeps a multi-gigabyte file off the heap, so mobile can attach one.
+- On web the picker materialises the whole file before any reader runs
+  (`withData: PlatformInfo.isWeb` in `local_file_picker_interactor.dart`).
+- So the web ceiling is the browser heap, and lifting it is a picker change.
 - A file carrying neither is an error, not a silently empty body.
 - It is lifted out of the JMAP uploader's body builder, so both destinations share one reader.
 
@@ -70,6 +74,7 @@ on ValidationRejected(failure):
 
 - Adding an alternative to a blocking upload dialog is one class plus one builder argument.
 - A recovery that takes over is alone responsible for telling the user what happened.
+- On web an oversize file must fit in the browser heap; only the mobile path streams.
 
 ## Open questions
 
