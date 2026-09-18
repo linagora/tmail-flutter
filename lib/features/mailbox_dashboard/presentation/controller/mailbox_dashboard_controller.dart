@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -2577,7 +2578,13 @@ class MailboxDashBoardController extends ReloadableController
     }
     final exception = failure.exception;
     logWarning('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
-    if (exception is SetMethodException) {
+    if (exception is InvalidRecipientsException) {
+      _showToastSendMessageFailure(
+        AppLocalizations.of(currentContext!).sendMessageFailureWithInvalidRecipients(
+          exception.invalidRecipients.join(', '),
+        ),
+      );
+    } else if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
       if (!toastSuccess) {

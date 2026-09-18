@@ -11,12 +11,20 @@ class RecipientsCollapsedComposerWidget extends StatelessWidget {
   final VoidCallback onShowAllRecipientsAction;
   final EdgeInsetsGeometry? margin;
 
+  /// Lower-cased addresses the server reported as `invalidRecipients` on the
+  /// last send attempt.
+  final Set<String> invalidRecipients;
+
   const RecipientsCollapsedComposerWidget({
     super.key,
     required this.listEmailAddress,
     required this.onShowAllRecipientsAction,
+    this.invalidRecipients = const {},
     this.margin,
   });
+
+  bool _isRejectedByServer(EmailAddress emailAddress) =>
+      invalidRecipients.contains(emailAddress.emailAddress.toLowerCase());
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +43,7 @@ class RecipientsCollapsedComposerWidget extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(end: spacing),
               child: RecipientCollapsedItemWidget(
                 emailAddress: listEmailAddress.first,
+                isRejectedByServer: _isRejectedByServer(listEmailAddress.first),
               ),
             ),
           );
@@ -50,7 +59,10 @@ class RecipientsCollapsedComposerWidget extends StatelessWidget {
             visibleChips.add(
               Padding(
                 padding: const EdgeInsetsDirectional.only(end: spacing),
-                child: RecipientCollapsedItemWidget(emailAddress: emailAddress),
+                child: RecipientCollapsedItemWidget(
+                  emailAddress: emailAddress,
+                  isRejectedByServer: _isRejectedByServer(emailAddress),
+                ),
               ),
             );
           }
