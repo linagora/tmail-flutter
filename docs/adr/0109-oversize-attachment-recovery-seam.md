@@ -17,6 +17,7 @@ Accepted
 ### Scope
 
 - Prepared here: a recovery seam on the oversize path, a source-agnostic file body reader.
+- The validation request widens to carry the picked files, which today it drops.
 - Not here: the upload request, the magic folder, the link in the body.
 - Nothing a user can see changes.
 
@@ -36,7 +37,7 @@ Accepted
 
 - A recovery is an alternative ending for a rejection.
 - It takes the rejected files somewhere else and tells the user what happened.
-- The first one, landing later, uploads the oversize files to Drive and links them in the body.
+- The first one, landing later, uploads the rejected files to Drive and links them in the body.
 - The dialog is what shows whenever no recovery runs:
   - none is registered,
   - the rejection carries no files to act on,
@@ -49,10 +50,15 @@ Accepted
 - `validateAttachment` re-attaches an existing JMAP attachment with no file behind it,
   so its rejections go straight to the dialog.
 - The validation request carries the picked files, so a recovery knows what to act on.
+- The rule rejects on the running total, so a rejected batch can hold no oversize file at all:
+  24 MB already attached plus a 2 MB file under a 25 MB cap.
+- A recovery therefore takes the whole rejected batch, not the files over the cap.
+- Inline files are excluded: a pasted screenshot stays in the body, never becomes a link.
+- A batch with no regular file carries nothing to act on, so it shows the dialog.
 
 ```
 on ValidationRejected(failure):
-  if request.files.isNotEmpty and recovery?.recover(failure, request) == true:
+  if request.regularFiles.isNotEmpty and recovery?.recover(failure, request) == true:
     return false                     # recovery owns the UX from here
   feedback.showFailure(failure)      # today's dialog
   return false
