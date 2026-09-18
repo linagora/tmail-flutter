@@ -50,6 +50,11 @@ final _localPartResolutionCases = [
     ownerEmail: '   ',
     expected: null,
   ),
+  (
+    description: 'leaves the provider null when the username is not an address',
+    ownerEmail: 'alice',
+    expected: null,
+  ),
 ];
 
 void main() {
@@ -72,16 +77,18 @@ void main() {
       });
     }
 
-    test('stores the template verbatim when it has no placeholder', () {
-      expect(
-        _loadAndReadState(
-          container,
-          template: 'workplace.example.com',
-          ownerEmail: 'alice@example.com',
-        ),
-        'workplace.example.com',
-      );
-    });
+    for (final ownerEmail in const ['alice@example.com', null]) {
+      test('stores a literal template regardless of owner email ($ownerEmail)', () {
+        expect(
+          _loadAndReadState(
+            container,
+            template: 'workplace.example.com',
+            ownerEmail: ownerEmail,
+          ),
+          'workplace.example.com',
+        );
+      });
+    }
 
     test('leaves the provider null when the key is absent', () {
       expect(

@@ -36,12 +36,10 @@ class WorkplaceFqdnEcosystemHandler implements LinagoraEcosystemHandler {
     final template = ecosystem.workplaceFqdnFallbackTemplate;
     if (template == null) return null;
 
-    final ownerEmail = _resolveOwnerEmail()?.trim();
-    if (ownerEmail == null || ownerEmail.isEmpty) return null;
-
-    final resolved =
-        PaywallUrlPattern(template).getQualifiedUrl(ownerEmail: ownerEmail).trim();
-    return resolved.isEmpty ? null : resolved;
+    final resolved = PaywallUrlPattern(template)
+        .resolveQualifiedUrl(ownerEmail: _resolveOwnerEmail()?.trim() ?? '')
+        ?.trim();
+    return (resolved == null || resolved.isEmpty) ? null : resolved;
   }
 
   void _setEcosystemFqdn(String? fqdn) {
