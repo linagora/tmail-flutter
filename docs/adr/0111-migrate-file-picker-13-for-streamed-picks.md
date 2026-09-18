@@ -36,7 +36,11 @@ Accepted
 - A factory, not a stream: every caller opens its own body, so a replay always has one.
 - It is excluded from equality — a function has no value.
 - `FileInfo.readBytes()` collects a whole file into memory. Only inline images use it, and they
-  are small by construction. An attachment is streamed and never collected.
+  are small by construction. A picked attachment is streamed and never collected.
+- The guarantee is scoped to source-backed files. An attachment that arrives as bytes instead — a
+  web dropzone drop, an inline image, a Drive re-attach — has no source to open, so it stays
+  resident exactly as it does today. Those paths are small by construction; the picker was the one
+  that was not.
 
 ### One upload body path
 
@@ -91,8 +95,9 @@ Accepted
 
 ## Consequences
 
-- A large web attachment uploads with flat resident memory: nothing is read at pick time, and the
-  browser streams the blob into the request at send time.
+- A large picked web attachment uploads with flat resident memory: nothing is read at pick time,
+  and the browser streams the blob into the request at send time. A dropped file carries no source
+  URL, takes the byte path and keeps the cost it has today.
 - Rejecting an oversize file costs nothing: the size comes from the file handle, not from bytes.
   That is the path issue #4827 takes, and it never reaches the network layer at all.
 - A 401 mid-upload can now be replayed on web, which the previous web path could not do.
@@ -107,8 +112,11 @@ Accepted
   trace log export follows it.
 - Two pubspec entries point at fork branches, so the app builds from a moving ref until those
   merge and the entries return to their default branches.
-- The object URL is still never revoked. It now holds a handle rather than a copy of the bytes,
-  so the cost is bounded and no longer scales with file size.
+- The object URL is deliberately never revoked. The factory re-fetches that URL on every read, so
+  revoking it would break the 401 replay and any later preview; ownership would have to be shared
+  between the uploader, the retry path and the composer, and none of them can know it is last.
+  Retention is one registry handle per pick, held until the tab closes — bounded, and no longer
+  scaling with file size the way the old byte copy did.
 
 ## Open questions
 
