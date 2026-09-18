@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_mail_to.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_name.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_participation_status.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_extension_fields.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
@@ -24,9 +25,17 @@ import '../../../../../fixtures/widget_fixtures.dart';
 
 void main() {
   _registerEventDetailTests();
+  _registerActivityTests();
   _registerRenderingTests();
   _registerConferenceTests();
   _registerResponseTests();
+}
+
+void _registerActivityTests() {
+  testWidgets(
+    'SHOULD show the maybe banner colour WHEN an attendee replies tentative',
+    _showMaybeBannerForTentativeReply,
+  );
 }
 
 void _registerEventDetailTests() {
@@ -147,6 +156,45 @@ Future<void> _showConflictIndicatorForBusyReader(WidgetTester tester) async {
               AppLocalizations().youHaveAnotherEventAtThatSameTime,
     ),
     findsOneWidget,
+  );
+}
+
+Future<void> _showMaybeBannerForTentativeReply(WidgetTester tester) async {
+  const attendeeAddress = 'attendee@example.invalid';
+  await tester.pumpWidget(_testableCard(
+    event: CalendarEvent(
+      method: EventMethod.reply,
+      participants: [
+        _attendee(
+          'Attendee',
+          attendeeAddress,
+          participationStatus: 'TENTATIVE',
+        ),
+        _attendee('Reader', 'reader@example.invalid'),
+      ],
+    ),
+    viewState: _viewState(
+      listEmailAddressSender: const [attendeeAddress],
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  final badge = find.byType(EventActivityBadge);
+  expect(
+    tester.widget<EventActivityBadge>(badge).state,
+    EventActivityBadgeState.maybe,
+  );
+  final badgeContainer = tester.widget<Container>(
+    find.descendant(
+      of: badge,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Container && widget.decoration is BoxDecoration,
+      ),
+    ),
+  );
+  expect(
+    (badgeContainer.decoration! as BoxDecoration).color,
+    EventActivityBadge.warningBackground,
   );
 }
 
@@ -676,12 +724,14 @@ CalendarEventCardViewState _viewState({
   bool hasScheduleConflict = false,
   AttendanceStatus? attendanceStatus,
   bool replying = false,
+  List<String> listEmailAddressSender = const [],
 }) {
   return CalendarEventCardViewState(
     ownEmailAddress: 'reader@example.invalid',
     hasScheduleConflict: hasScheduleConflict,
     attendanceStatus: attendanceStatus,
     replying: replying,
+    listEmailAddressSender: listEmailAddressSender,
   );
 }
 
@@ -695,10 +745,17 @@ CalendarEvent _invitation() {
   );
 }
 
-CalendarAttendee _attendee(String name, String address) {
+CalendarAttendee _attendee(
+  String name,
+  String address, {
+  String? participationStatus,
+}) {
   return CalendarAttendee(
     name: CalendarAttendeeName(name),
     mailto: CalendarAttendeeMailTo(MailAddress(address)),
+    participationStatus: participationStatus == null
+        ? null
+        : CalendarAttendeeParticipationStatus(participationStatus),
   );
 }
 

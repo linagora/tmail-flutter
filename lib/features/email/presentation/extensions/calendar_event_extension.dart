@@ -82,15 +82,13 @@ extension CalendarEventExtension on CalendarEvent {
     AppLocalizations appLocalizations,
     List<String> listEmailAddressSender,
   ) {
-    final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
-    if (matchedAttendee != null) {
-      final name = matchedAttendee.name?.name.trim();
-      return name?.isNotEmpty == true
-          ? name!
-          : appLocalizations.anAttendee;
-    } else {
-      return appLocalizations.anAttendee;
-    }
+    final attendeeName = findAttendeeHasUpdatedStatus(listEmailAddressSender)
+        ?.name
+        ?.name
+        .trim();
+    return attendeeName?.isNotEmpty == true
+        ? attendeeName!
+        : appLocalizations.anAttendee;
   }
 
   CalendarAttendee? findAttendeeHasUpdatedStatus(List<String> listEmailAddressSender) {
@@ -240,16 +238,6 @@ extension CalendarEventExtension on CalendarEvent {
     } else {
       return '$dateStart - $dateEnd ($timeZone)';
     }
-  }
-
-  String getDateTimeEvent({
-    required date_format.DateLocale dateLocale,
-    required String timeZone
-  }) {
-    return getDateTimeParts(
-      dateLocale: dateLocale,
-      timeZone: timeZone,
-    ).joined;
   }
 
   /// The `When` line with its day separated from its clock time, so each half

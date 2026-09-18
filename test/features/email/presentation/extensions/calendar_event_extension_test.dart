@@ -45,43 +45,6 @@ void main() {
     });
   });
 
-  group('calendar_event_extension::dateTimeEventAsString::test', () {
-    void expectAllDayEvent({
-      required DateTime endDate,
-      required String expectedFormattedDateString,
-    }) {
-      final startDate = DateTime(2021, 10, 10, 00, 00, 00, 00, 00);
-      final calendarEvent = CalendarEvent(
-        startDate: startDate,
-        endDate: endDate,
-        startUtcDate: UTCDate(startDate),
-        endUtcDate: UTCDate(endDate),
-      );
-
-      final formattedDateString = calendarEvent.getDateTimeEvent(
-        timeZone: 'GMT+0',
-        dateLocale: const EnglishDateLocale(),
-      );
-
-      expect(formattedDateString, expectedFormattedDateString);
-    }
-
-    test('dateTimeEventAsString should return string with format start date - end date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for many days', () {
-      expectAllDayEvent(
-        endDate: DateTime(2021, 10, 25, 00, 00, 00, 00, 00),
-        expectedFormattedDateString:
-            'Sunday, October 10, 2021 - Sunday, October 24, 2021 (GMT+0)',
-      );
-    });
-
-    test('dateTimeEventAsString should return string with format date (timezone offset) and date formatted as DD, MM dd, YYYY for all-day event for one day', () {
-      expectAllDayEvent(
-        endDate: DateTime(2021, 10, 11, 00, 00, 00, 00, 00),
-        expectedFormattedDateString: 'Sunday, October 10, 2021 (GMT+0)',
-      );
-    });
-  });
-
   group('calendar_event_extension::getDateTimeParts::test', () {
     CalendarEvent buildEvent(DateTime start, DateTime end) => CalendarEvent(
       startDate: start,
@@ -104,14 +67,30 @@ void main() {
       expect(parts.time, '08:00 AM - 09:00 AM');
     });
 
-    test('SHOULD keep an all-day event whole', () {
-      final parts = partsOf(
-        buildEvent(DateTime(2021, 10, 10), DateTime(2021, 10, 11)),
-      );
+    final allDayCases = [
+      (
+        description: 'keep a one-day all-day event whole',
+        endDate: DateTime(2021, 10, 11),
+        expectedDate: 'Sunday, October 10, 2021 (GMT+0)',
+      ),
+      (
+        description: 'keep a multi-day all-day event whole',
+        endDate: DateTime(2021, 10, 25),
+        expectedDate:
+            'Sunday, October 10, 2021 - Sunday, October 24, 2021 (GMT+0)',
+      ),
+    ];
 
-      expect(parts.date, 'Sunday, October 10, 2021 (GMT+0)');
-      expect(parts.time, isNull);
-    });
+    for (final testCase in allDayCases) {
+      test('SHOULD ${testCase.description}', () {
+        final parts = partsOf(
+          buildEvent(DateTime(2021, 10, 10), testCase.endDate),
+        );
+
+        expect(parts.date, testCase.expectedDate);
+        expect(parts.time, isNull);
+      });
+    }
 
     test('SHOULD keep a range spanning several days whole', () {
       final parts = partsOf(
@@ -122,8 +101,7 @@ void main() {
       expect(parts.date, contains(' - '));
     });
 
-    // An event can carry a duration instead of an end date, leaving one side
-    // of the range empty.
+    // Preserve the previous formatter's fallback when one boundary is absent.
     test('SHOULD split an event that carries only a start date', () {
       final start = DateTime(2021, 10, 10, 8);
       final parts = partsOf(CalendarEvent(
@@ -144,21 +122,6 @@ void main() {
 
       expect(parts.date, 'Sunday, October 10, 2021');
       expect(parts.time, '09:00 AM');
-    });
-
-    test('SHOULD read as the line it replaces', () {
-      final event = buildEvent(
-        DateTime(2021, 10, 10, 8),
-        DateTime(2021, 10, 10, 9),
-      );
-
-      expect(
-        partsOf(event).joined,
-        event.getDateTimeEvent(
-          timeZone: 'GMT+0',
-          dateLocale: const EnglishDateLocale(),
-        ),
-      );
     });
   });
 
@@ -252,8 +215,10 @@ void main() {
       );
     }
 
-    test('Should returns yes/maybe/no + mailToAttendees when method is request and user is in participants', () {
-      expectActions(
+    final actionCases = [
+      (
+        description:
+            'return yes/maybe/no + mailToAttendees for a request to the user',
         method: EventMethod.request,
         participants: [matchingParticipant],
         expectedActions: [
@@ -262,35 +227,41 @@ void main() {
           EventActionType.no,
           EventActionType.mailToAttendees,
         ],
-      );
-    });
-
-    test('Should returns acceptCounter + mailToAttendees when method is counter and user is in participants', () {
-      expectActions(
+      ),
+      (
+        description:
+            'return acceptCounter + mailToAttendees for a counter to the user',
         method: EventMethod.counter,
         participants: [matchingParticipant],
         expectedActions: [
           EventActionType.acceptCounter,
           EventActionType.mailToAttendees,
         ],
-      );
-    });
-
-    test('Should returns only mailToAttendees when method is not repliable but organizer is present', () {
-      expectActions(
+      ),
+      (
+        description: 'return only mailToAttendees for a non-repliable method',
         method: EventMethod.cancel,
         participants: [matchingParticipant],
         expectedActions: [EventActionType.mailToAttendees],
-      );
-    });
-
-    test('Should returns only mailToAttendees when user is NOT in participants but organizer is present', () {
-      expectActions(
+      ),
+      (
+        description:
+            'return only mailToAttendees when the user is not a participant',
         method: EventMethod.request,
         participants: [nonMatchingParticipant],
         expectedActions: [EventActionType.mailToAttendees],
-      );
-    });
+      ),
+    ];
+
+    for (final testCase in actionCases) {
+      test('SHOULD ${testCase.description}', () {
+        expectActions(
+          method: testCase.method,
+          participants: testCase.participants,
+          expectedActions: testCase.expectedActions,
+        );
+      });
+    }
 
     test('Should returns empty list when no organizer and no participants', () {
       final event = CalendarEvent(

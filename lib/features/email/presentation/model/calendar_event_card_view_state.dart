@@ -1,8 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
 
 /// Where the reader stands with an invitation.
-class CalendarEventCardViewState with EquatableMixin {
+class CalendarEventCardViewState {
   /// The address the card answers on behalf of.
   final String ownEmailAddress;
 
@@ -26,13 +25,4 @@ class CalendarEventCardViewState with EquatableMixin {
     this.replying = false,
     this.hasScheduleConflict = false,
   });
-
-  @override
-  List<Object?> get props => [
-    ownEmailAddress,
-    listEmailAddressSender,
-    attendanceStatus,
-    replying,
-    hasScheduleConflict,
-  ];
 }
