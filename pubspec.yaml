@@ -325,7 +325,7 @@ dependency_overrides:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      ref: fix/event-card-text-alignment
+      ref: master
 
   ### Original dependency is abandoned, so we use fork
   intl_generator:
