@@ -44,6 +44,8 @@ Accepted
   - or the registered recovery declines that failure.
 - A recovery that takes over owns every user-visible outcome, failure toasts included.
 - It never falls back to the dialog.
+- `recover` returns `Future<bool>`: true means it took over, false means the dialog runs.
+- The gate awaits it, as it already awaits the dialog.
 
 - Only a rejection on picked files reaches a recovery.
 - `validateFiles` carries the picked files, so a recovery has the bytes to upload.
@@ -58,7 +60,7 @@ Accepted
 
 ```
 on ValidationRejected(failure):
-  if request.regularFiles.isNotEmpty and recovery?.recover(failure, request) == true:
+  if request.regularFiles.isNotEmpty and await recovery?.recover(failure, request) == true:
     return false                     # recovery owns the UX from here
   feedback.showFailure(failure)      # today's dialog
   return false
