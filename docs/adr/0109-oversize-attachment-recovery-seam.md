@@ -79,11 +79,9 @@ on ValidationRejected(failure):
 ## Open questions
 
 - How the uploaded file's shareable link is obtained.
-- The magic-folder `POST /files` contract is not merged yet.
 
 ## Sources
 
 - [tmail-flutter#4827](https://github.com/linagora/tmail-flutter/issues/4827): attach too big file
 - [ADR-0105: Attach drive file via JMAP-mediated upload](0105-attach-drive-file-via-jmap-mediated-upload.md)
 - [ADR-0108: Workplace call transport](0108-workplace-call-transport.md)
-- [cozy-stack#4921](https://github.com/linagora/cozy-stack/pull/4921): `magic_folder` on `POST /files`
