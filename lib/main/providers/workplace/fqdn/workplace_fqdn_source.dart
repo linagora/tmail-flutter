@@ -17,5 +17,15 @@ String? normalizeWorkplaceFqdn(String? rawFqdn) {
   final fqdn = rawFqdn?.trim();
   if (fqdn == null || fqdn.isEmpty) return null;
   final uri = Uri.tryParse(fqdn.startsWith('http') ? fqdn : 'https://$fqdn');
-  return uri != null && (uri.scheme == 'https' || kDebugMode) ? fqdn : null;
+  return uri != null && _isUsableWorkplaceUri(uri) ? fqdn : null;
 }
+
+/// A bare host, no path/query/fragment, https outside debug builds.
+bool _isUsableWorkplaceUri(Uri uri) {
+  if (uri.host.isEmpty) return false;
+  if (!_isBareUri(uri)) return false;
+  return uri.scheme == 'https' || kDebugMode;
+}
+
+bool _isBareUri(Uri uri) =>
+    uri.path.isEmpty && !uri.hasQuery && !uri.hasFragment;

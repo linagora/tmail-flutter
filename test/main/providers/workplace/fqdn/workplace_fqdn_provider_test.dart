@@ -66,6 +66,20 @@ void main() {
       expect(_state(container), isNull);
     });
 
+    test('hostless URI → state null', () {
+      _userInfo(container).setFqdn('https://');
+      expect(_state(container), isNull);
+      _userInfo(container).setFqdn('https:workplace.example.com');
+      expect(_state(container), isNull);
+    });
+
+    test('URI carrying a path or query → state null', () {
+      _userInfo(container).setFqdn('https://workplace.example.com/path');
+      expect(_state(container), isNull);
+      _userInfo(container).setFqdn('workplace.example.com?q=1');
+      expect(_state(container), isNull);
+    });
+
     test('calling setFqdn twice: second call overwrites first', () {
       _userInfo(container).setFqdn('first.example.com');
       _userInfo(container).setFqdn('second.example.com');

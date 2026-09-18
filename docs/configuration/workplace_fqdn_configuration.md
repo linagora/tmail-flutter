@@ -30,6 +30,7 @@
 - A missing, blank, or unresolvable template is ignored — the app behaves as if no fallback were configured.
 - The resolved value must be an `https` host; anything else is discarded.
 - A non-`https` value is accepted in debug builds only.
+- A value carrying a path, query, or fragment is discarded — the host alone is configured.
 
 ### 3. Verification
 - With the claim absent and the template set: the paywall CTA and Drive attachment resolve to the template's host.
