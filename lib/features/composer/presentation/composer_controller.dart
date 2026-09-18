@@ -800,13 +800,13 @@ class ComposerController extends BaseController
       default:
         break;
     }
-    _dropInvalidRecipientsNoLongerListed();
+    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
   /// Clears the server-side invalid mark of the addresses the user removed or
   /// edited, keeping it on the ones still present.
-  void _dropInvalidRecipientsNoLongerListed() {
+  void dropInvalidRecipientsNoLongerListed() {
     if (invalidRecipients.value.isEmpty) return;
 
     final remainingAddresses = allListEmailAddressWithoutReplyTo
@@ -1834,7 +1834,7 @@ class ComposerController extends BaseController
     } else {
       listBccEmailAddress = listEmailAddress.toList();
     }
-    _dropInvalidRecipientsNoLongerListed();
+    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
@@ -1845,7 +1845,7 @@ class ComposerController extends BaseController
     if (listBccEmailAddress.isEmpty) {
       bccRecipientState.value = PrefixRecipientState.disabled;
     }
-    _dropInvalidRecipientsNoLongerListed();
+    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 

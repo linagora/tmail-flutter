@@ -49,6 +49,7 @@ extension RemoveDraggableEmailAddressBetweenRecipientFieldsExtension on Composer
       default:
         break;
     }
+    controller.dropInvalidRecipientsNoLongerListed();
     controller.isInitialRecipient.value = true;
     controller.isInitialRecipient.refresh();
     controller.updateStatusEmailSendButton();
