@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
@@ -83,6 +84,40 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(RecipientTagItemWidget), findsNWidgets(2));
+    });
+
+    Color tagBorderColor(WidgetTester tester, int index) {
+      final Container tagContainer = tester.widget(
+        find.byKey(Key('recipient_tag_item_${prefix.name}_$index')),
+      );
+      final decoration = tagContainer.decoration as BoxDecoration;
+      return (decoration.border as Border).top.color;
+    }
+
+    testWidgets('WHEN the server reported an address as an invalid recipient\n'
+        'RecipientTagItemWidget should only mark that address as invalid', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress(null, 'Rejected@dev.com'),
+        EmailAddress(null, 'accepted@dev.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          invalidRecipients: const {'rejected@dev.com'},
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      expect(tagBorderColor(tester, 0), AppColor.colorBorderEmailAddressInvalid);
+      expect(tagBorderColor(tester, 1), AppColor.grayBackgroundColor);
     });
 
     testWidgets('RecipientTagItemWidget should have a `maxWidth` equal to the default `maxWidth`', (tester) async {

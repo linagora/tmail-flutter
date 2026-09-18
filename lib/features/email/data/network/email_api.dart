@@ -57,11 +57,13 @@ import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mix
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/email/data/extensions/response_object_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -275,7 +277,13 @@ class EmailAPI
     ]);
 
     if (emailCreated == null || mapErrors.isNotEmpty) {
-      throw SetMethodException(mapErrors);
+      final invalidRecipients = response.parseInvalidRecipients(
+        setEmailSubmissionInvocation.methodCallId,
+      );
+
+      throw invalidRecipients.isEmpty
+          ? SetMethodException(mapErrors)
+          : InvalidRecipientsException(mapErrors, invalidRecipients);
     }
   }
 

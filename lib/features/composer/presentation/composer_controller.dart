@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/set_method_exception_description_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
@@ -172,6 +173,10 @@ class ComposerController extends BaseController
   final replyToRecipientState = PrefixRecipientState.disabled.obs;
   final recipientsCollapsedState = PrefixRecipientState.disabled.obs;
   final prefixRootState = PrefixEmailAddress.to.obs;
+
+  /// Lower-cased addresses the server reported as `invalidRecipients` on the
+  /// last send attempt, highlighted as invalid until the user fixes them.
+  final invalidRecipients = Rx<Set<String>>({});
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -795,7 +800,24 @@ class ComposerController extends BaseController
       default:
         break;
     }
+    _dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
+  }
+
+  /// Clears the server-side invalid mark of the addresses the user removed or
+  /// edited, keeping it on the ones still present.
+  void _dropInvalidRecipientsNoLongerListed() {
+    if (invalidRecipients.value.isEmpty) return;
+
+    final remainingAddresses = allListEmailAddressWithoutReplyTo
+        .map((emailAddress) => emailAddress.emailAddress.toLowerCase())
+        .toSet();
+    final remainingInvalidRecipients =
+        invalidRecipients.value.intersection(remainingAddresses);
+
+    if (remainingInvalidRecipients.length != invalidRecipients.value.length) {
+      invalidRecipients.value = remainingInvalidRecipients;
+    }
   }
 
   void updateStatusEmailSendButton() {
@@ -1006,9 +1028,13 @@ class ComposerController extends BaseController
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure ||
         resultState is GenerateEmailFailure) {
-      if (resultState.exception is BadCredentialsException) {
+      final exception = resultState.exception;
+      if (exception is BadCredentialsException) {
         _sendButtonState = ButtonState.enabled;
         handleBadCredentialsException();
+      } else if (exception is InvalidRecipientsException) {
+        _sendButtonState = ButtonState.enabled;
+        _handleInvalidRecipientsFailure(exception.invalidRecipients);
       } else if (context.mounted) {
         await _showConfirmDialogWhenSendMessageFailure(
           context: context,
@@ -1162,6 +1188,24 @@ class ComposerController extends BaseController
         : childWidget,
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
+  }
+
+  /// Keeps the composer open on an `invalidRecipients` SetError: the rejected
+  /// addresses are highlighted in the recipient fields and named in a toast so
+  /// the user can fix them and send again.
+  void _handleInvalidRecipientsFailure(List<String> rejectedAddresses) {
+    invalidRecipients.value = rejectedAddresses
+        .map((address) => address.toLowerCase())
+        .toSet();
+    showFullRecipients();
+
+    if (currentOverlayContext == null || currentContext == null) return;
+
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      AppLocalizations.of(currentContext!)
+          .sendMessageFailureWithInvalidRecipients(rejectedAddresses.join(', ')),
     );
   }
 

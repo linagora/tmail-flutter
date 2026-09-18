@@ -2825,6 +2825,14 @@ class AppLocalizations {
     );
   }
 
+  String sendMessageFailureWithInvalidRecipients(String invalidRecipients) {
+    return Intl.message(
+      'Failure to send your message, because these recipients are invalid: $invalidRecipients',
+      name: 'sendMessageFailureWithInvalidRecipients',
+      args: [invalidRecipients],
+    );
+  }
+
   String get saveEmailAsDraftFailure {
     return Intl.message(
       'Failure to save your message as drafts.',

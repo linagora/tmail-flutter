@@ -139,6 +139,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
                                   return RecipientsCollapsedComposerWidget(
                                     listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
+                                    invalidRecipients: controller.invalidRecipients.value,
                                     margin: ComposerStyle.mobileRecipientMargin,
                                     onShowAllRecipientsAction: controller.showFullRecipients,
                                   );
@@ -328,6 +329,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
                               return RecipientsCollapsedComposerWidget(
                                 listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
+                                invalidRecipients: controller.invalidRecipients.value,
                                 margin: ComposerStyle.mobileRecipientMargin,
                                 onShowAllRecipientsAction: controller.showFullRecipients,
                               );
@@ -542,6 +544,7 @@ class ComposerView extends GetWidget<ComposerController> {
       bccState: controller.bccRecipientState.value,
       replyToState: controller.replyToRecipientState.value,
       listEmailAddress: listEmailAddress,
+      invalidRecipients: controller.invalidRecipients.value,
       imagePaths: controller.imagePaths,
       maxWidth: maxWidth,
       minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
