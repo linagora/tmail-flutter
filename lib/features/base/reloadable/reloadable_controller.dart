@@ -24,7 +24,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
@@ -51,7 +51,7 @@ abstract class ReloadableController extends BaseController {
         apiUrl: failure.apiUrl);
     } else if (failure is GetOidcUserInfoFailure) {
       twakeAppManager.clearOidcUserInfo();
-      appProviderContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
+      appProviderContainer.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(null);
       appProviderContainer.read(driveAttachmentEnabledProvider.notifier).setEnabled(null);
     } else {
       super.handleFailureViewState(failure);
@@ -80,7 +80,7 @@ abstract class ReloadableController extends BaseController {
       log('$runtimeType::handleSuccessViewState:GetOidcUserInfoSuccess: OidcUserInfo = ${success.oidcUserInfo.toJson().toString()}');
       twakeAppManager.setOidcUserInfo(success.oidcUserInfo);
       appProviderContainer
-          .read(workplaceFqdnProvider.notifier)
+          .read(workplaceFqdnUserInfoProvider.notifier)
           .setFqdn(success.oidcUserInfo.workplaceFqdn);
     } else {
       super.handleSuccessViewState(success);

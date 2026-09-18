@@ -141,7 +141,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -463,7 +463,7 @@ void main() {
       tester.element(find.byType(MailboxView)),
     );
     currentTestProviderContainer = providerContainer;
-    providerContainer.read(workplaceFqdnProvider.notifier).setFqdn(null);
+    providerContainer.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(null);
     await tester.pump();
     return providerContainer;
   }
@@ -705,13 +705,13 @@ void main() {
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
 
         container
-            .read(workplaceFqdnProvider.notifier)
+            .read(workplaceFqdnUserInfoProvider.notifier)
             .setFqdn('workplace.domain.tld');
         await tester.pump();
 
         expect(find.text(manageMyStorageLabel(tester)), findsOneWidget);
 
-        container.read(workplaceFqdnProvider.notifier).setFqdn(null);
+        container.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(null);
         await tester.pump();
 
         expect(find.text(manageMyStorageLabel(tester)), findsNothing);
@@ -1613,14 +1613,14 @@ void main() {
           final providerContainer = await pumpWebMailbox(tester);
 
           providerContainer
-              .read(workplaceFqdnProvider.notifier)
+              .read(workplaceFqdnUserInfoProvider.notifier)
               .setFqdn('workplace.domain.tld');
           await tester.pumpAndSettle();
 
           expect(find.byType(LinagoraSidebarUpsellButton), findsOneWidget);
 
           providerContainer
-              .read(workplaceFqdnProvider.notifier)
+              .read(workplaceFqdnUserInfoProvider.notifier)
               .setFqdn(null);
           await tester.pump();
 

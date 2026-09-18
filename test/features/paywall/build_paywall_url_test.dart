@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
 
 void main() {
@@ -165,6 +166,40 @@ void main() {
         domainName: 'combo.net',
       );
       expect(url, 'https://mix.combo.net/mix-combo.net/paywall');
+    });
+
+    test('workplace FQDN fallback template resolves {localPart} only', () {
+      const template = '{localPart}.twake.linagora.com';
+      final url = PaywallUtils.buildPaywallUrlFromTemplate(
+        template: template,
+        localPart: 'alice',
+      );
+      expect(url, 'alice.twake.linagora.com');
+    });
+  });
+
+  group('PaywallUrlPattern.resolveQualifiedUrl', () {
+    test('returns null when a placeholder cannot be filled', () {
+      expect(
+        PaywallUrlPattern('{localPart}.twake.linagora.com')
+            .resolveQualifiedUrl(ownerEmail: 'alice'),
+        isNull,
+      );
+    });
+
+    test('resolves a literal pattern without a usable owner email', () {
+      expect(
+        PaywallUrlPattern('workplace.example.com').resolveQualifiedUrl(ownerEmail: ''),
+        'workplace.example.com',
+      );
+    });
+
+    test('fills the placeholder from a parseable address', () {
+      expect(
+        PaywallUrlPattern('{localPart}.twake.linagora.com')
+            .resolveQualifiedUrl(ownerEmail: 'john.doe@corp.tld'),
+        'johndoe.twake.linagora.com',
+      );
     });
   });
 }

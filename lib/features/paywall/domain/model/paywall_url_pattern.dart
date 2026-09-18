@@ -18,6 +18,16 @@ class PaywallUrlPattern with EquatableMixin {
     );
   }
 
+  /// Resolves [pattern], or null when a placeholder cannot be filled from
+  /// [ownerEmail] — a half-filled URL points at the wrong host.
+  String? resolveQualifiedUrl({required String ownerEmail}) {
+    if (_getMailAddress(ownerEmail: ownerEmail) == null &&
+        PaywallUtils.hasPlaceholder(pattern)) {
+      return null;
+    }
+    return getQualifiedUrl(ownerEmail: ownerEmail);
+  }
+
   MailAddress? _getMailAddress({required String ownerEmail}) {
     try {
       return MailAddress.validateAddress(ownerEmail);

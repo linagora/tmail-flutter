@@ -5,6 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_handler.dart';
@@ -15,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 
@@ -22,6 +26,9 @@ class _DashboardController extends Mock
     implements MailboxDashBoardController {
   final testAccountId = Rxn<AccountId>();
   int setUpSentryCount = 0;
+
+  @override
+  Session? sessionCurrent;
 
   @override
   final DynamicUrlInterceptors dynamicUrlInterceptors =
@@ -89,7 +96,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => registry..attachRef(ref),
+            ),
             activeEcosystemProvider.overrideWith(
               (ref, _) => ref.watch(_ecosystemStateProvider),
             ),
@@ -151,7 +160,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => registry..attachRef(ref),
+            ),
             activeEcosystemProvider.overrideWith(
               (ref, _) => ref.watch(_ecosystemStateProvider),
             ),
@@ -281,6 +292,29 @@ void main() {
       expect(dashboardController.setUpSentryCount, 0);
     },
   );
+
+  // The delegate is the only thing registering the Workplace FQDN handler.
+  testWidgets(
+    'registers the Workplace FQDN handler',
+    (tester) async {
+      final uri = Uri.parse('https://www.google.com');
+      _registerDashboardController('first').sessionCurrent = Session(
+          {}, {}, {}, UserName('alice@example.com'), uri, uri, uri, uri, jmap.State('1'));
+
+      final container = await _pumpDelegate(
+        tester,
+        LinagoraEcosystemHandlerRegistry(),
+      );
+      container.read(_ecosystemStateProvider.notifier).setState(
+            EcosystemAvailable(LinagoraEcosystem.deserialize({
+              'workplaceFqdnFallback': '{localPart}.twake.linagora.com',
+            })),
+          );
+      await tester.pump();
+
+      expect(container.read(workplaceFqdnProvider), 'alice.twake.linagora.com');
+    },
+  );
 }
 
 _DashboardController _registerDashboardController(String accountId) {
@@ -302,7 +336,9 @@ Future<ProviderContainer> _pumpDelegate(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        linagoraEcosystemHandlerRegistryProvider.overrideWithValue(registry),
+        linagoraEcosystemHandlerRegistryProvider.overrideWith(
+          (ref) => registry..attachRef(ref),
+        ),
         activeEcosystemProvider.overrideWith((ref, args) {
           observedKeys?.add(args);
           return ref.watch(_ecosystemStateProvider);

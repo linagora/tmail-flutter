@@ -70,4 +70,12 @@ class PaywallUtils {
 
     return result;
   }
+
+  static final _placeholderRegExp = RegExp(
+    r'\{(localPart|domainName)\}|%7B(localPart|domainName)%7D',
+  );
+
+  /// Whether [template] carries a placeholder [buildPaywallUrlFromTemplate] fills.
+  static bool hasPlaceholder(String template) =>
+      _placeholderRegExp.hasMatch(template);
 }

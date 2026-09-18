@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/m
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
 
 class DriveAttachmentPreferenceOption extends LocalPreferenceOption {
   DriveAttachmentPreferenceOption(super.updateLocalSettingsInteractor);
