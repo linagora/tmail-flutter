@@ -1834,6 +1834,7 @@ class ComposerController extends BaseController
     } else {
       listBccEmailAddress = listEmailAddress.toList();
     }
+    _dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
@@ -1844,6 +1845,7 @@ class ComposerController extends BaseController
     if (listBccEmailAddress.isEmpty) {
       bccRecipientState.value = PrefixRecipientState.disabled;
     }
+    _dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
