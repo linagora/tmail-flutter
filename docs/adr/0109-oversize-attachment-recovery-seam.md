@@ -72,6 +72,8 @@ on ValidationRejected(failure):
 - Drive availability for the oversize path is the same gate as the Drive picker button:
   workplace FQDN, ecosystem flag, user preference.
 - Unavailable means today's dialog.
+- That preference reads as the picker button's switch and governs this upload too:
+  off means today's dialog.
 
 ### Module boundary
 
