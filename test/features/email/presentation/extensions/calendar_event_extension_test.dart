@@ -122,6 +122,30 @@ void main() {
       expect(parts.date, contains(' - '));
     });
 
+    // An event can carry a duration instead of an end date, leaving one side
+    // of the range empty.
+    test('SHOULD split an event that carries only a start date', () {
+      final start = DateTime(2021, 10, 10, 8);
+      final parts = partsOf(CalendarEvent(
+        startDate: start,
+        startUtcDate: UTCDate(start),
+      ));
+
+      expect(parts.date, 'Sunday, October 10, 2021');
+      expect(parts.time, '08:00 AM');
+    });
+
+    test('SHOULD split an event that carries only an end date', () {
+      final end = DateTime(2021, 10, 10, 9);
+      final parts = partsOf(CalendarEvent(
+        endDate: end,
+        endUtcDate: UTCDate(end),
+      ));
+
+      expect(parts.date, 'Sunday, October 10, 2021');
+      expect(parts.time, '09:00 AM');
+    });
+
     test('SHOULD read as the line it replaces', () {
       final event = buildEvent(
         DateTime(2021, 10, 10, 8),
