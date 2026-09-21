@@ -9,7 +9,7 @@ class PaywallUrlPattern with EquatableMixin {
 
   PaywallUrlPattern(this.pattern);
 
-  String getQualifiedUrl({required String ownerEmail, String? domainName}) {
+  String _getQualifiedUrl({required String ownerEmail, String? domainName}) {
     final values = _resolveValues(ownerEmail: ownerEmail, domainName: domainName);
     return PaywallUtils.buildPaywallUrlFromTemplate(
       template: pattern,
@@ -26,7 +26,7 @@ class PaywallUrlPattern with EquatableMixin {
         _isPlaceholderUnfilled('domainName', values.domainName)) {
       return null;
     }
-    return getQualifiedUrl(ownerEmail: ownerEmail, domainName: domainName);
+    return _getQualifiedUrl(ownerEmail: ownerEmail, domainName: domainName);
   }
 
   ({String? localPart, String? domainName}) _resolveValues({
