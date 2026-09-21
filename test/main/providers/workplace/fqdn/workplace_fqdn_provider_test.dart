@@ -189,4 +189,36 @@ void main() {
       expect(_state(reordered), 'fallback.example.com');
     });
   });
+
+  group('normalizeWorkplaceFqdn scheme rule', () {
+    test('http rejected when the insecure scheme is not allowed', () {
+      expect(
+        normalizeWorkplaceFqdn(
+          'http://workplace.example.com',
+          allowInsecureScheme: false,
+        ),
+        isNull,
+      );
+    });
+
+    test('http accepted when the insecure scheme is allowed', () {
+      expect(
+        normalizeWorkplaceFqdn(
+          'http://workplace.example.com',
+          allowInsecureScheme: true,
+        ),
+        'http://workplace.example.com',
+      );
+    });
+
+    test('https accepted either way', () {
+      expect(
+        normalizeWorkplaceFqdn(
+          'https://workplace.example.com',
+          allowInsecureScheme: false,
+        ),
+        'https://workplace.example.com',
+      );
+    });
+  });
 }

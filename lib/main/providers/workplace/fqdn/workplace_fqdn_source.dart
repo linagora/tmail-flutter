@@ -20,20 +20,27 @@ Uri? parseWorkplaceFqdnUri(String fqdn) =>
     Uri.tryParse(_schemeRegExp.hasMatch(fqdn) ? fqdn : 'https://$fqdn');
 
 /// Trims and validates a raw FQDN; returns null when it is unusable.
-String? normalizeWorkplaceFqdn(String? rawFqdn) {
+/// [allowInsecureScheme] defaults to [kDebugMode] so tests can drive the
+/// release rule, which a compile-time const cannot express.
+String? normalizeWorkplaceFqdn(
+  String? rawFqdn, {
+  bool allowInsecureScheme = kDebugMode,
+}) {
   final fqdn = rawFqdn?.trim();
   if (fqdn == null || fqdn.isEmpty) return null;
   final uri = parseWorkplaceFqdnUri(fqdn);
-  if (uri == null || !_isUsableWorkplaceUri(uri)) return null;
+  if (uri == null || !_isUsableWorkplaceUri(uri, allowInsecureScheme)) {
+    return null;
+  }
   // A trailing slash is the same host, so keep the value canonical.
   return fqdn.endsWith('/') ? fqdn.substring(0, fqdn.length - 1) : fqdn;
 }
 
-/// A bare host, no path/query/fragment, https outside debug builds.
-bool _isUsableWorkplaceUri(Uri uri) {
+/// A bare host, no path/query/fragment, https unless [allowInsecureScheme].
+bool _isUsableWorkplaceUri(Uri uri, bool allowInsecureScheme) {
   if (uri.host.isEmpty) return false;
   if (!_isBareUri(uri)) return false;
-  return uri.scheme == 'https' || kDebugMode;
+  return uri.scheme == 'https' || allowInsecureScheme;
 }
 
 bool _isBareUri(Uri uri) =>
