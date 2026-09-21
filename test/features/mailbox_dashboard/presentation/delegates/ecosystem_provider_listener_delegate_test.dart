@@ -88,31 +88,12 @@ void main() {
       addTearDown(Get.reset);
       final dashboardController = _DashboardController();
       dashboardController.testAccountId.value = AccountId(Id('first'));
-      final registry = LinagoraEcosystemHandlerRegistry();
       final recordingHandler = _RecordingEcosystemHandler();
-      registry.register(recordingHandler);
       Get.put<MailboxDashBoardController>(dashboardController);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWith(
-              (ref) => registry..attachRef(ref),
-            ),
-            activeEcosystemProvider.overrideWith(
-              (ref, _) => ref.watch(_ecosystemStateProvider),
-            ),
-          ],
-          child: const MaterialApp(
-            home: MailboxDashboardProviderListenerWidget(
-              delegateFactories: [EcosystemProviderListenerDelegate.new],
-              child: SizedBox(),
-            ),
-          ),
-        ),
-      );
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(MailboxDashboardProviderListenerWidget)),
+      final container = await _pumpDelegate(
+        tester,
+        handlers: [recordingHandler],
       );
       final ecosystem = LinagoraEcosystem.deserialize({
         'paywallUrlTemplate': 'https://domain.tld/premium',
@@ -154,27 +135,10 @@ void main() {
       addTearDown(Get.reset);
       final firstController = _DashboardController();
       firstController.testAccountId.value = AccountId(Id('first'));
-      final registry = LinagoraEcosystemHandlerRegistry();
       Get.put<MailboxDashBoardController>(firstController);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            linagoraEcosystemHandlerRegistryProvider.overrideWith(
-              (ref) => registry..attachRef(ref),
-            ),
-            activeEcosystemProvider.overrideWith(
-              (ref, _) => ref.watch(_ecosystemStateProvider),
-            ),
-          ],
-          child: const MaterialApp(
-            home: MailboxDashboardProviderListenerWidget(
-              delegateFactories: [EcosystemProviderListenerDelegate.new],
-              child: SizedBox(),
-            ),
-          ),
-        ),
-      );
+      final container = await _pumpDelegate(tester);
+      final registry = container.read(linagoraEcosystemHandlerRegistryProvider);
 
       final secondController = _DashboardController();
       secondController.testAccountId.value = AccountId(Id('second'));
@@ -197,11 +161,12 @@ void main() {
     'clears handlers when the ecosystem becomes unavailable',
     (tester) async {
       final dashboardController = _registerDashboardController('first');
-      final registry = LinagoraEcosystemHandlerRegistry();
       final recordingHandler = _RecordingEcosystemHandler();
-      registry.register(recordingHandler);
 
-      final container = await _pumpDelegate(tester, registry);
+      final container = await _pumpDelegate(
+        tester,
+        handlers: [recordingHandler],
+      );
       final ecosystem = LinagoraEcosystem.deserialize({
         'paywallUrlTemplate': 'https://domain.tld/premium',
       });
@@ -230,11 +195,13 @@ void main() {
     'keys the ecosystem subscription on the account and JMAP URL',
     (tester) async {
       final dashboardController = _registerDashboardController('first');
-      final registry = LinagoraEcosystemHandlerRegistry();
-      registry.register(_RecordingEcosystemHandler());
       final observedKeys = <(AccountId?, String?)>[];
 
-      await _pumpDelegate(tester, registry, observedKeys: observedKeys);
+      await _pumpDelegate(
+        tester,
+        handlers: [_RecordingEcosystemHandler()],
+        observedKeys: observedKeys,
+      );
 
       final jmapUrl = dashboardController.dynamicUrlInterceptors.jmapUrl;
       expect(observedKeys, [(AccountId(Id('first')), jmapUrl)]);
@@ -254,12 +221,14 @@ void main() {
     (tester) async {
       Get.testMode = true;
       addTearDown(Get.reset);
-      final registry = LinagoraEcosystemHandlerRegistry();
       final recordingHandler = _RecordingEcosystemHandler();
-      registry.register(recordingHandler);
       final observedKeys = <(AccountId?, String?)>[];
 
-      await _pumpDelegate(tester, registry, observedKeys: observedKeys);
+      await _pumpDelegate(
+        tester,
+        handlers: [recordingHandler],
+        observedKeys: observedKeys,
+      );
       await tester.pumpWidget(const SizedBox());
 
       expect(observedKeys, isEmpty);
@@ -274,11 +243,12 @@ void main() {
     'does not add default handlers to a populated registry',
     (tester) async {
       final dashboardController = _registerDashboardController('first');
-      final registry = LinagoraEcosystemHandlerRegistry();
       final recordingHandler = _RecordingEcosystemHandler();
-      registry.register(recordingHandler);
 
-      final container = await _pumpDelegate(tester, registry);
+      final container = await _pumpDelegate(
+        tester,
+        handlers: [recordingHandler],
+      );
       final ecosystem = LinagoraEcosystem.deserialize({
         'sentry': {'enabled': false},
       });
@@ -301,10 +271,7 @@ void main() {
       _registerDashboardController('first').sessionCurrent = Session(
           {}, {}, {}, UserName('alice@example.com'), uri, uri, uri, uri, jmap.State('1'));
 
-      final container = await _pumpDelegate(
-        tester,
-        LinagoraEcosystemHandlerRegistry(),
-      );
+      final container = await _pumpDelegate(tester);
       container.read(_ecosystemStateProvider.notifier).setState(
             EcosystemAvailable(LinagoraEcosystem.deserialize({
               'workplaceFqdnFallback': '{localPart}.twake.linagora.com',
@@ -326,19 +293,21 @@ _DashboardController _registerDashboardController(String accountId) {
   return dashboardController;
 }
 
-/// Mounts the delegate over [registry], recording into [observedKeys] the
-/// ecosystem family arguments it subscribes with.
+/// Mounts the delegate over a registry seeded with [handlers], recording into
+/// [observedKeys] the ecosystem family arguments it subscribes with.
 Future<ProviderContainer> _pumpDelegate(
-  WidgetTester tester,
-  LinagoraEcosystemHandlerRegistry registry, {
+  WidgetTester tester, {
+  List<LinagoraEcosystemHandler> handlers = const [],
   List<(AccountId?, String?)>? observedKeys,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        linagoraEcosystemHandlerRegistryProvider.overrideWith(
-          (ref) => registry..attachRef(ref),
-        ),
+        linagoraEcosystemHandlerRegistryProvider.overrideWith((ref) {
+          final registry = LinagoraEcosystemHandlerRegistry(ref);
+          handlers.forEach(registry.register);
+          return registry;
+        }),
         activeEcosystemProvider.overrideWith((ref, args) {
           observedKeys?.add(args);
           return ref.watch(_ecosystemStateProvider);
