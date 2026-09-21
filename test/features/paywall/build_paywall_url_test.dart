@@ -201,5 +201,22 @@ void main() {
         'johndoe.twake.linagora.com',
       );
     });
+
+    test('fills {domainName} from the explicit domain when given', () {
+      expect(
+        PaywallUrlPattern('https://paywall.domain.tld/{localPart}/{domainName}')
+            .resolveQualifiedUrl(
+                ownerEmail: 'alice@corp.tld', domainName: 'other.tld'),
+        'https://paywall.domain.tld/alice/other.tld',
+      );
+    });
+
+    test('returns null when the owner email cannot fill {localPart}', () {
+      expect(
+        PaywallUrlPattern('https://paywall.domain.tld/{localPart}/{domainName}')
+            .resolveQualifiedUrl(ownerEmail: '', domainName: 'domain.tld'),
+        isNull,
+      );
+    });
   });
 }

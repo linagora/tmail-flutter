@@ -241,13 +241,6 @@ const _destinationCases = <_DestinationCase>[
     ownerEmail: 'alice.smith@domain.tld',
     expectedUrl: 'https://paywall.domain.tld/alicesmith/domain.tld',
   ),
-  // Pins the fallback: an owner email the session could not provide drops the
-  // {localPart} placeholder instead of blocking the CTA.
-  (
-    name: 'drops the local part when the owner email is empty',
-    ownerEmail: '',
-    expectedUrl: 'https://paywall.domain.tld//domain.tld',
-  ),
 ];
 
 void _premiumCtaDestinationTests() {
@@ -267,6 +260,23 @@ void _premiumCtaDestinationTests() {
       expect(state, _availableCta(Uri.parse(destinationCase.expectedUrl)));
     });
   }
+
+  // An owner email the session could not provide leaves {localPart} unfilled,
+  // which would point the CTA at the wrong URL.
+  test('blocks the CTA when a placeholder cannot be filled', () async {
+    final state = await _resolveCtaForTemplate(
+      _destinationTemplate,
+      context: _upgradableContext(
+        _firstTarget,
+        owner: const PremiumCtaOwner(email: '', domainName: 'domain.tld'),
+      ),
+    );
+
+    expect(
+      state,
+      _unavailableCta(PremiumCtaUnavailableReason.invalidDestination),
+    );
+  });
 
   test('prefers Workplace destination without fetching ecosystem', () {
     final repository = _succeedingRepository();

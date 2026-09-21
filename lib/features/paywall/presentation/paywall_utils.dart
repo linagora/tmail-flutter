@@ -71,11 +71,9 @@ class PaywallUtils {
     return result;
   }
 
-  static final _placeholderRegExp = RegExp(
-    r'\{(localPart|domainName)\}|%7B(localPart|domainName)%7D',
-  );
-
-  /// Whether [template] carries a placeholder [buildPaywallUrlFromTemplate] fills.
-  static bool hasPlaceholder(String template) =>
-      _placeholderRegExp.hasMatch(template);
+  /// Whether [template] carries `{name}` (raw or URL-encoded), the placeholder
+  /// [buildPaywallUrlFromTemplate] fills.
+  static bool usesPlaceholder(String template, String name) =>
+      template.contains('{$name}') ||
+      template.contains(Uri.encodeComponent('{$name}'));
 }

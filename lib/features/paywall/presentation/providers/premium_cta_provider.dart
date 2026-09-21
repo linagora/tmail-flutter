@@ -185,11 +185,11 @@ PremiumCtaState _resolveEcosystemPaywall(
       PremiumCtaUnavailableReason.paywallNotConfigured,
     );
   }
-  final resolvedUrl = PaywallUrlPattern(template).getQualifiedUrl(
+  final resolvedUrl = PaywallUrlPattern(template).resolveQualifiedUrl(
     ownerEmail: context.owner.email,
     domainName: context.owner.domainName,
   );
-  if (!PaywallUtils.isValidPaywallUrl(resolvedUrl)) {
+  if (resolvedUrl == null || !PaywallUtils.isValidPaywallUrl(resolvedUrl)) {
     logWarning('premiumCtaProvider: paywall template resolves to an unsafe URL');
     return const PremiumCtaUnavailable(
       PremiumCtaUnavailableReason.invalidDestination,
