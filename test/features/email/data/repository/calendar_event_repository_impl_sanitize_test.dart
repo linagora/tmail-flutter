@@ -1,5 +1,6 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/video_conference_section_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -18,8 +19,7 @@ void main() {
   );
   final blobId = Id('blobId');
   final transformConfiguration = TransformConfiguration.forCalendarEvent();
-  const separator =
-      '-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-';
+  const separator = VideoConferenceSectionUtils.separator;
   const visioSection =
       '$separator\n'
       'Participer via Visio : https://meet.linagora.com/apw-gxwg-naw\n'

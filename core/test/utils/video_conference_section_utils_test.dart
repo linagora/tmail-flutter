@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'redos_test_utils.dart';
 
 void main() {
-  const separator = VideoConferenceSectionUtils.separator;
+  const separator = '-_-_-_-_-_-_-_-';
   const visioSection =
       '$separator\n'
       'Participer via Visio : https://meet.linagora.com/apw-gxwg-naw\n'
