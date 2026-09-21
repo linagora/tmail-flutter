@@ -32,7 +32,8 @@ Accepted
 
 ### A picked file is a source that can be opened, not bytes that were read
 
-- `FileInfo` carries `openRead`, a function returning a fresh `Stream<List<int>>`.
+- `FileInfo` carries `openRead`, a function taking an optional byte range and returning a fresh
+  `Stream<List<int>>` over it. No range means the whole file.
 - A factory, not a stream: every caller opens its own body, so a replay always has one.
 - Mobile opens from the file path ADR-0106 pins as its replay source: the picker's
   `readAsByteStream()` is `xFile.openRead()` on Android and Darwin, a fresh read per call. A
@@ -43,7 +44,8 @@ Accepted
   are small by construction. A picked attachment is streamed and never collected.
 - A dropped file is source-backed too. The drop event carries an object URL over the browser's own
   file handle and the size alongside it, so a drop converts to `FileInfo` without a read, exactly
-  as a pick does.
+  as a pick does. On web that URL lands in the same source URL field a pick fills, so a drop takes
+  the blob send path below rather than the byte-stream fallback.
 - The guarantee is scoped to source-backed files. An attachment that arrives as bytes — an inline
   image, a Drive re-attach — has no source to open and stays fully resident. Those two are small by
   construction.
@@ -71,8 +73,8 @@ Accepted
 
 ### Web reads nothing at pick time
 
-- Web picking is configured to request neither bytes nor a read stream, chosen through a
-  conditional import so non-web platforms carry no web configuration at all.
+- Web picking passes `FilePickerWebOptions(withData: false, withReadStream: false)`, chosen through
+  a conditional import so non-web platforms carry no web configuration at all.
 - file_picker then keeps an object URL over the browser's own file handle. Nothing is resident at
   pick time, and each read re-opens that URL, which is what makes a replay possible.
 
