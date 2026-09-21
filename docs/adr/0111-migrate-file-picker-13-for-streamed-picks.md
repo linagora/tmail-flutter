@@ -41,10 +41,12 @@ Accepted
 - It is excluded from equality — a function has no value.
 - `FileInfo.readBytes()` collects a whole file into memory. Only inline images use it, and they
   are small by construction. A picked attachment is streamed and never collected.
-- The guarantee is scoped to source-backed files. An attachment that arrives as bytes instead — a
-  web dropzone drop, an inline image, a Drive re-attach — has no source to open, so it stays
-  resident exactly as it does today. Those paths are small by construction; the picker was the one
-  that was not.
+- A dropped file is source-backed too. The drop event carries an object URL over the browser's own
+  file handle and the size alongside it, so a drop converts to `FileInfo` without a read, exactly
+  as a pick does.
+- The guarantee is scoped to source-backed files. An attachment that arrives as bytes — an inline
+  image, a Drive re-attach — has no source to open and stays fully resident. Those two are small by
+  construction.
 
 ### One upload body path
 
@@ -56,8 +58,9 @@ Accepted
   original request options, which keeps the progress callback, cancel token, timeouts and
   response type. No body means the attachment fails loudly rather than storing a zero-byte blob
   under its name.
-- Charset detection opens its own body, takes a 256 KiB head and stops, so probing a 1 GB text
-  attachment costs one short read rather than a second full pass.
+- Charset detection opens its own body and asks it for a 256 KiB head: a blob slices, a file seeks,
+  and any other source is cut off at the same bound. Probing a 1 GB text attachment costs one
+  short read rather than a second full pass, whatever the source.
 
 ### file_picker types stop at the picker boundary
 
@@ -99,9 +102,8 @@ Accepted
 
 ## Consequences
 
-- A large picked web attachment uploads with flat resident memory: nothing is read at pick time,
-  and the browser streams the blob into the request at send time. A dropped file carries no source
-  URL, takes the byte path and keeps the cost it has today.
+- A large web attachment uploads with flat resident memory whether it was picked or dropped:
+  nothing is read at that point, and the browser streams the blob into the request at send time.
 - Rejecting an oversize file costs nothing: the size comes from the file handle, not from bytes.
   That is the path issue #4827 takes, and it never reaches the network layer at all.
 - A 401 mid-upload can now be replayed on web, which the previous web path could not do.
