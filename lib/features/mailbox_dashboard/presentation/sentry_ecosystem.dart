@@ -122,7 +122,7 @@ class SentryEcosystem {
         configToShare,
         configurationGeneration,
       );
-      Error.throwWithStackTrace(e, st);
+      rethrow;
     }
 
     if (!_isCurrentConfiguration(configurationGeneration)) return;
@@ -148,7 +148,7 @@ class SentryEcosystem {
         configToPersist.withReportingAllowed(false),
         configurationGeneration,
       );
-      Error.throwWithStackTrace(e, st);
+      rethrow;
     }
 
     if (!_isCurrentConfiguration(configurationGeneration)) return;

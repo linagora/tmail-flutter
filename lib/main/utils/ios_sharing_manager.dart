@@ -262,7 +262,7 @@ class IOSSharingManager {
           stackTrace: deleteStackTrace,
         );
       }
-      Error.throwWithStackTrace(e, st);
+      rethrow;
     }
   }
 
@@ -275,7 +275,7 @@ class IOSSharingManager {
         exception: e,
         stackTrace: st,
       );
-      Error.throwWithStackTrace(e, st);
+      rethrow;
     }
   }
 }
