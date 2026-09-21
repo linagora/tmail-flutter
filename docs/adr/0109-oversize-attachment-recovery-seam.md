@@ -42,10 +42,14 @@ Accepted
   - none is registered,
   - the rejection carries no files to act on,
   - or the registered recovery declines that failure.
+  - or the registered recovery throws.
 - A recovery that takes over owns every user-visible outcome, failure toasts included.
 - It never falls back to the dialog.
 - `recover` returns `Future<bool>`: true means it took over, false means the dialog runs.
 - The gate awaits it, as it already awaits the dialog.
+- It completes at takeover, not at upload completion: a recovery starts the upload and returns
+  true, so the composer is never held for the transfer.
+- A throw is a decline: the gate catches it and shows the dialog.
 
 - Only a rejection on picked files reaches a recovery.
 - `validateFiles` carries the picked files, so a recovery has the bytes to upload.
@@ -60,9 +64,13 @@ Accepted
 
 ```
 on ValidationRejected(failure):
-  if request.regularFiles.isNotEmpty and await recovery?.recover(failure, request) == true:
-    return false                     # recovery owns the UX from here
-  feedback.showFailure(failure)      # today's dialog
+  if request.regularFiles.isNotEmpty:
+    try:
+      if await recovery?.recover(failure, request) == true:
+        return false               # recovery owns the UX from here
+    catch:
+      pass                         # a throw is a decline
+  feedback.showFailure(failure)    # today's dialog
   return false
 ```
 
