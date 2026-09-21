@@ -16,9 +16,7 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import 'sentry_ecosystem_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<IOSSharingManager>()])
-
-class _RecordingIOSSharingManager extends Mock implements IOSSharingManager {
+class _RecordingIOSSharingManager implements IOSSharingManager {
   final savedConfigs = <SentryConfig>[];
   int deleteCalls = 0;
   Future<void> Function()? onSave;
@@ -33,6 +31,9 @@ class _RecordingIOSSharingManager extends Mock implements IOSSharingManager {
   Future<void> deleteSentryConfigFromKeychain() async {
     deleteCalls++;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeCacheManager implements SentryConfigurationCacheManager {
@@ -139,6 +140,7 @@ SentryUserCache _user(String id) => SentryUserCache(
       email: '',
     );
 
+@GenerateNiceMocks([MockSpec<IOSSharingManager>()])
 void main() {
   final sentryManager = SentryManager.instance;
   final ecosystemConfig = SentryConfigLinagoraEcosystem(
