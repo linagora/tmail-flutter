@@ -80,6 +80,18 @@ void main() {
       expect(_state(container), isNull);
     });
 
+    test('trailing slash tolerated and stripped', () {
+      _userInfo(container).setFqdn('https://workplace.example.com/');
+      expect(_state(container), 'https://workplace.example.com');
+      _userInfo(container).setFqdn('workplace.example.com/');
+      expect(_state(container), 'workplace.example.com');
+    });
+
+    test('bare host starting with "http" is not read as schemed', () {
+      _userInfo(container).setFqdn('httpadmin.twake.linagora.com');
+      expect(_state(container), 'httpadmin.twake.linagora.com');
+    });
+
     test('calling setFqdn twice: second call overwrites first', () {
       _userInfo(container).setFqdn('first.example.com');
       _userInfo(container).setFqdn('second.example.com');

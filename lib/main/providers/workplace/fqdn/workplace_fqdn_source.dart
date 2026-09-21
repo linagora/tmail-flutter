@@ -12,12 +12,17 @@ abstract interface class WorkplaceFqdnSource {
   void setFqdn(String? rawFqdn);
 }
 
+final _schemeRegExp = RegExp(r'^https?://', caseSensitive: false);
+
 /// Trims and validates a raw FQDN; returns null when it is unusable.
 String? normalizeWorkplaceFqdn(String? rawFqdn) {
   final fqdn = rawFqdn?.trim();
   if (fqdn == null || fqdn.isEmpty) return null;
-  final uri = Uri.tryParse(fqdn.startsWith('http') ? fqdn : 'https://$fqdn');
-  return uri != null && _isUsableWorkplaceUri(uri) ? fqdn : null;
+  final uri =
+      Uri.tryParse(_schemeRegExp.hasMatch(fqdn) ? fqdn : 'https://$fqdn');
+  if (uri == null || !_isUsableWorkplaceUri(uri)) return null;
+  // A trailing slash is the same host, so keep the value canonical.
+  return fqdn.endsWith('/') ? fqdn.substring(0, fqdn.length - 1) : fqdn;
 }
 
 /// A bare host, no path/query/fragment, https outside debug builds.
@@ -28,4 +33,4 @@ bool _isUsableWorkplaceUri(Uri uri) {
 }
 
 bool _isBareUri(Uri uri) =>
-    uri.path.isEmpty && !uri.hasQuery && !uri.hasFragment;
+    (uri.path.isEmpty || uri.path == '/') && !uri.hasQuery && !uri.hasFragment;
