@@ -48,13 +48,8 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
     return listAppLinagoraEcosystem.where((app) => app.isAppAndroidEnabled).toList();
   }
 
-  String? get paywallUrlTemplate {
-    final property = properties?[LinagoraEcosystemIdentifier.paywallURL];
-    if (property is! ApiUrlLinagoraEcosystem) return null;
-
-    final template = property.value.trim();
-    return template.isEmpty ? null : template;
-  }
+  String? get paywallUrlTemplate =>
+      _apiUrlTemplate(LinagoraEcosystemIdentifier.paywallURL);
 
   String? get scribePromptUrl =>
       (properties?[LinagoraEcosystemIdentifier.scribePromptUrl] as ApiUrlLinagoraEcosystem?)?.value;
@@ -68,8 +63,11 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
     return value is DriveAttachmentLinagoraEcosystem ? value : null;
   }
 
-  String? get workplaceFqdnFallbackTemplate {
-    final property = properties?[LinagoraEcosystemIdentifier.workplaceFqdnFallback];
+  String? get workplaceFqdnFallbackTemplate =>
+      _apiUrlTemplate(LinagoraEcosystemIdentifier.workplaceFqdnFallback);
+
+  String? _apiUrlTemplate(LinagoraEcosystemIdentifier identifier) {
+    final property = properties?[identifier];
     if (property is! ApiUrlLinagoraEcosystem) return null;
 
     final template = property.value.trim();
