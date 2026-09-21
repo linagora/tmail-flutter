@@ -4,11 +4,11 @@ import 'dart:math';
 /// descriptions, delimited by [separator]:
 ///
 /// ```
-/// -::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-
+/// -_-_-_-_-_-_-_-
 /// Join visio : https://meet.example.com/abc-defg-hij
 ///
 /// Please do not edit this section.
-/// -::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-
+/// -_-_-_-_-_-_-_-
 /// ```
 ///
 /// The meeting link is already rendered by the invitation email body, so the
@@ -17,8 +17,7 @@ import 'dart:math';
 class VideoConferenceSectionUtils {
   VideoConferenceSectionUtils._();
 
-  static const String separator =
-      '-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-';
+  static const String separator = '-_-_-_-_-_-_-_-';
 
   static String removeSection(String description) =>
       _EventDescription(description).withoutVideoConferenceSections();
