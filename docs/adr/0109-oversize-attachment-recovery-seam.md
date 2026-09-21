@@ -49,7 +49,10 @@ Accepted
 - The gate awaits it, as it already awaits the dialog.
 - It completes at takeover, not at upload completion: a recovery starts the upload and returns
   true, so the composer is never held for the transfer.
+- A recovery registers a pending attachment chip before it returns true.
+- Send is blocked while any chip is pending, so an email cannot go out before the link lands.
 - A throw is a decline: the gate catches it and shows the dialog.
+- The gate logs the caught error, so a transport failure is not read as a plain decline.
 
 - Only a rejection on picked files reaches a recovery.
 - `validateFiles` carries the picked files, so a recovery has the bytes to upload.
