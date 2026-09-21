@@ -14,12 +14,16 @@ abstract interface class WorkplaceFqdnSource {
 
 final _schemeRegExp = RegExp(r'^https?://', caseSensitive: false);
 
+/// The one way a Workplace FQDN becomes a URI: an explicit http(s) scheme
+/// wins, a bare host is https.
+Uri? parseWorkplaceFqdnUri(String fqdn) =>
+    Uri.tryParse(_schemeRegExp.hasMatch(fqdn) ? fqdn : 'https://$fqdn');
+
 /// Trims and validates a raw FQDN; returns null when it is unusable.
 String? normalizeWorkplaceFqdn(String? rawFqdn) {
   final fqdn = rawFqdn?.trim();
   if (fqdn == null || fqdn.isEmpty) return null;
-  final uri =
-      Uri.tryParse(_schemeRegExp.hasMatch(fqdn) ? fqdn : 'https://$fqdn');
+  final uri = parseWorkplaceFqdnUri(fqdn);
   if (uri == null || !_isUsableWorkplaceUri(uri)) return null;
   // A trailing slash is the same host, so keep the value canonical.
   return fqdn.endsWith('/') ? fqdn.substring(0, fqdn.length - 1) : fqdn;

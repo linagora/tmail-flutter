@@ -92,6 +92,11 @@ void main() {
       expect(_state(container), 'httpadmin.twake.linagora.com');
     });
 
+    test('uppercase scheme accepted', () {
+      _userInfo(container).setFqdn('HTTPS://workplace.example.com');
+      expect(_state(container), 'HTTPS://workplace.example.com');
+    });
+
     test('calling setFqdn twice: second call overwrites first', () {
       _userInfo(container).setFqdn('first.example.com');
       _userInfo(container).setFqdn('second.example.com');

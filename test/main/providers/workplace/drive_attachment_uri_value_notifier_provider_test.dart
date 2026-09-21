@@ -158,5 +158,14 @@ void main() {
       _setUserPref(container, false);
       expect(_isNullUri(_currentUri(container)), isTrue);
     });
+
+    test('uppercase scheme resolves to the real host', () {
+      container = _makeContainer(
+        enabledDefault: true,
+        fqdnDefault: 'HTTPS://workplace.example.com',
+        userPreferenceDefault: true,
+      );
+      expect(_currentUri(container)?.host, 'workplace.example.com');
+    });
   });
 }

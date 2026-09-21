@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_source.dart';
 
 part 'drive_attachment_uri_value_notifier_provider.g.dart';
 
@@ -24,8 +25,7 @@ Uri? _computeUri(Ref ref) {
   if (!_canBuildUri(enabled: enabled, fqdn: fqdn, userPref: userPref)) {
     return null;
   }
-  final hasScheme = fqdn!.startsWith('http://') || fqdn.startsWith('https://');
-  return Uri.tryParse(hasScheme ? fqdn : 'https://$fqdn');
+  return parseWorkplaceFqdnUri(fqdn!);
 }
 
 @Riverpod(keepAlive: true)
