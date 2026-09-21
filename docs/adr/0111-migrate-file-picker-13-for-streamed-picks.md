@@ -84,12 +84,17 @@ Accepted
   URL; elsewhere it is absent.
 - A web-only HTTP adapter recognises an upload carrying that URL, resolves it back to the blob and
   hands the blob to the request directly. The body stream is never read, so nothing accumulates.
+- A stream body cannot do this on web: the HTTP client's browser adapter collects a request body
+  stream into one `Uint8List` before `send`, so a stream never leaves the browser as a stream. A
+  blob does.
 - Every other request on web keeps the default adapter's behaviour: the override falls through to
   it whenever the marker is absent.
 - Upload progress is unaffected — it is reported by the request's own upload events, which a blob
   body raises exactly as a byte body does.
 - A 401 replay re-sends the same request description; the adapter resolves the URL again, so there
   is nothing to rebuild.
+- The URL is never revoked; ownership and the replay that depends on it are covered under
+  Consequences.
 - The byte-stream path stays as the fallback for any web upload with no source URL, and is the only
   path on mobile.
 
