@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_enabled_notifier.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 ProviderContainer _makeContainer({
   bool enabledDefault = false,
@@ -17,7 +17,7 @@ ProviderContainer _makeContainer({
         driveAttachmentEnabledProvider.overrideWith(
           () => _StubEnabledNotifier(enabledDefault),
         ),
-        workplaceFqdnProvider.overrideWith(
+        workplaceFqdnUserInfoProvider.overrideWith(
           () => _StubFqdnNotifier(fqdnDefault),
         ),
         localSettingsProvider.overrideWith(
@@ -42,7 +42,7 @@ void _setEnabled(ProviderContainer c, bool? value) =>
     c.read(driveAttachmentEnabledProvider.notifier).setEnabled(value);
 
 void _setFqdn(ProviderContainer c, String? value) =>
-    c.read(workplaceFqdnProvider.notifier).setFqdn(value);
+    c.read(workplaceFqdnUserInfoProvider.notifier).setFqdn(value);
 
 void _setUserPref(ProviderContainer c, bool value) =>
     c.read(localSettingsProvider.notifier).update(
@@ -58,7 +58,7 @@ class _StubEnabledNotifier extends DriveAttachmentEnabledNotifier {
   void setEnabled(bool? value) => state = value ?? true;
 }
 
-class _StubFqdnNotifier extends WorkplaceFqdnNotifier {
+class _StubFqdnNotifier extends WorkplaceFqdnUserInfoNotifier {
   _StubFqdnNotifier(this._initial);
   final String? _initial;
   @override
@@ -157,6 +157,15 @@ void main() {
       expect(_isRealUri(_currentUri(container)), isTrue);
       _setUserPref(container, false);
       expect(_isNullUri(_currentUri(container)), isTrue);
+    });
+
+    test('uppercase scheme resolves to the real host', () {
+      container = _makeContainer(
+        enabledDefault: true,
+        fqdnDefault: 'HTTPS://workplace.example.com',
+        userPreferenceDefault: true,
+      );
+      expect(_currentUri(container)?.host, 'workplace.example.com');
     });
   });
 }

@@ -1,0 +1,47 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Reads one source's Workplace FQDN off [ref], or null when that source has
+/// nothing to offer. Implementations call `ref.watch(someSourceProvider)` so
+/// the resolver keeps tracking that source as a dependency.
+typedef WorkplaceFqdnSourceReader = String? Function(Ref ref);
+
+/// One source of the Workplace FQDN. Every source exposes the same API so
+/// [workplaceFqdnProvider] can rank them purely by list position.
+abstract interface class WorkplaceFqdnSource {
+  void setFqdn(String? rawFqdn);
+}
+
+final _schemeRegExp = RegExp(r'^https?://', caseSensitive: false);
+
+/// The one way a Workplace FQDN becomes a URI: an explicit http(s) scheme
+/// wins, a bare host is https.
+Uri? parseWorkplaceFqdnUri(String fqdn) =>
+    Uri.tryParse(_schemeRegExp.hasMatch(fqdn) ? fqdn : 'https://$fqdn');
+
+/// Trims and validates a raw FQDN; returns null when it is unusable.
+/// [allowInsecureScheme] defaults to [kDebugMode] so tests can drive the
+/// release rule, which a compile-time const cannot express.
+String? normalizeWorkplaceFqdn(
+  String? rawFqdn, {
+  bool allowInsecureScheme = kDebugMode,
+}) {
+  final fqdn = rawFqdn?.trim();
+  if (fqdn == null || fqdn.isEmpty) return null;
+  final uri = parseWorkplaceFqdnUri(fqdn);
+  if (uri == null || !_isUsableWorkplaceUri(uri, allowInsecureScheme)) {
+    return null;
+  }
+  // A trailing slash is the same host, so keep the value canonical.
+  return fqdn.endsWith('/') ? fqdn.substring(0, fqdn.length - 1) : fqdn;
+}
+
+/// A bare host, no path/query/fragment, https unless [allowInsecureScheme].
+bool _isUsableWorkplaceUri(Uri uri, bool allowInsecureScheme) {
+  if (uri.host.isEmpty) return false;
+  if (!_isBareUri(uri)) return false;
+  return uri.scheme == 'https' || allowInsecureScheme;
+}
+
+bool _isBareUri(Uri uri) =>
+    (uri.path.isEmpty || uri.path == '/') && !uri.hasQuery && !uri.hasFragment;

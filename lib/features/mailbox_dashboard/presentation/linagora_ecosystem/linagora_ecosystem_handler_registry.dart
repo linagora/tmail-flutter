@@ -5,7 +5,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 part 'linagora_ecosystem_handler_registry.g.dart';
 
 class LinagoraEcosystemHandlerRegistry {
+  /// Provider-scoped [Ref], safe to read from another widget's `dispose()`
+  /// unlike a [WidgetRef] captured from a widget that may unmount.
+  final Ref ref;
+
   final List<LinagoraEcosystemHandler> _handlers = [];
+
+  LinagoraEcosystemHandlerRegistry(this.ref);
 
   bool get hasHandlers => _handlers.isNotEmpty;
 
@@ -28,4 +34,4 @@ class LinagoraEcosystemHandlerRegistry {
 /// dashboard being rebuilt.
 @Riverpod(keepAlive: true)
 LinagoraEcosystemHandlerRegistry linagoraEcosystemHandlerRegistry(Ref ref) =>
-    LinagoraEcosystemHandlerRegistry();
+    LinagoraEcosystemHandlerRegistry(ref);

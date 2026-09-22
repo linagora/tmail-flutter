@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
-import 'package:tmail_ui_user/main/providers/workplace/workplace_fqdn_notifier.dart';
+import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
 
 part 'premium_cta_provider.g.dart';
 
@@ -185,11 +185,11 @@ PremiumCtaState _resolveEcosystemPaywall(
       PremiumCtaUnavailableReason.paywallNotConfigured,
     );
   }
-  final resolvedUrl = PaywallUrlPattern(template).getQualifiedUrl(
+  final resolvedUrl = PaywallUrlPattern(template).resolveQualifiedUrl(
     ownerEmail: context.owner.email,
     domainName: context.owner.domainName,
   );
-  if (!PaywallUtils.isValidPaywallUrl(resolvedUrl)) {
+  if (resolvedUrl == null || !PaywallUtils.isValidPaywallUrl(resolvedUrl)) {
     logWarning('premiumCtaProvider: paywall template resolves to an unsafe URL');
     return const PremiumCtaUnavailable(
       PremiumCtaUnavailableReason.invalidDestination,

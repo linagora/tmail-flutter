@@ -70,4 +70,10 @@ class PaywallUtils {
 
     return result;
   }
+
+  /// Whether [template] carries `{name}` (raw or URL-encoded), the placeholder
+  /// [buildPaywallUrlFromTemplate] fills.
+  static bool usesPlaceholder(String template, String name) =>
+      template.contains('{$name}') ||
+      template.contains(Uri.encodeComponent('{$name}'));
 }

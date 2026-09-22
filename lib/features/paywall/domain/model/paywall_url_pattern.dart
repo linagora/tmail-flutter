@@ -9,14 +9,40 @@ class PaywallUrlPattern with EquatableMixin {
 
   PaywallUrlPattern(this.pattern);
 
-  String getQualifiedUrl({required String ownerEmail, String? domainName}) {
-    final mailAddress = _getMailAddress(ownerEmail: ownerEmail);
+  String _getQualifiedUrl({required String ownerEmail, String? domainName}) {
+    final values = _resolveValues(ownerEmail: ownerEmail, domainName: domainName);
     return PaywallUtils.buildPaywallUrlFromTemplate(
       template: pattern,
+      localPart: values.localPart,
+      domainName: values.domainName,
+    );
+  }
+
+  /// Resolves [pattern], or null when a placeholder cannot be filled — a
+  /// half-filled URL points at the wrong host.
+  String? resolveQualifiedUrl({required String ownerEmail, String? domainName}) {
+    final values = _resolveValues(ownerEmail: ownerEmail, domainName: domainName);
+    if (_isPlaceholderUnfilled('localPart', values.localPart) ||
+        _isPlaceholderUnfilled('domainName', values.domainName)) {
+      return null;
+    }
+    return _getQualifiedUrl(ownerEmail: ownerEmail, domainName: domainName);
+  }
+
+  ({String? localPart, String? domainName}) _resolveValues({
+    required String ownerEmail,
+    String? domainName,
+  }) {
+    final mailAddress = _getMailAddress(ownerEmail: ownerEmail);
+    return (
       localPart: mailAddress?.localPart.replaceAll('.', ''),
       domainName: domainName ?? mailAddress?.domain.domainName,
     );
   }
+
+  bool _isPlaceholderUnfilled(String name, String? value) =>
+      PaywallUtils.usesPlaceholder(pattern, name) &&
+      (value == null || value.isEmpty);
 
   MailAddress? _getMailAddress({required String ownerEmail}) {
     try {
