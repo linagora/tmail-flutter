@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
@@ -11,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_participation_status.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_extension_fields.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/mail_address.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
@@ -29,6 +31,7 @@ void main() {
   _registerRenderingTests();
   _registerConferenceTests();
   _registerResponseTests();
+  _registerCalendarActionTests();
 }
 
 void _registerActivityTests() {
@@ -118,6 +121,29 @@ void _registerResponseTests() {
   );
 }
 
+void _registerCalendarActionTests() {
+  testWidgets(
+    'SHOULD open the calendar event WHEN localhost ends with events and two slashes',
+    _openCalendarEventForInvitedReader,
+  );
+  testWidgets(
+    'SHOULD hide the calendar action WHEN the reader is not invited',
+    _hideCalendarActionForUninvitedReader,
+  );
+  testWidgets(
+    'SHOULD hide the calendar action WHEN the calendar URL is invalid',
+    _hideCalendarActionForInvalidUrl,
+  );
+  testWidgets(
+    'SHOULD hide the calendar action WHEN the event UID is missing',
+    _hideCalendarActionWithoutEventUid,
+  );
+  testWidgets(
+    'SHOULD hide the calendar action WHEN opening links is unsupported',
+    _hideCalendarActionWithoutOpenLink,
+  );
+}
+
 Future<void> _showWarningForUninvitedReader(WidgetTester tester) async {
   await tester.pumpWidget(_testableCard(
     event: CalendarEvent(
@@ -136,6 +162,90 @@ Future<void> _showWarningForUninvitedReader(WidgetTester tester) async {
     ),
     findsOneWidget,
   );
+}
+
+Future<void> _openCalendarEventForInvitedReader(WidgetTester tester) async {
+  final openedLinks = <String>[];
+  await tester.pumpWidget(_testableCard(
+    event: _invitation(eventId: EventId('event/42')),
+    calendarUrl: 'localhost:3000/events//',
+    actions: CalendarEventCardActions(
+      onReply: (_) {},
+      onMailToAttendees: () {},
+      onOpenLink: openedLinks.add,
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  final calendarAction = find.text(AppLocalizations().seeInYourCalendar);
+  expect(calendarAction, findsOneWidget);
+  final calendarButton = tester.widget<LinagoraButton>(
+    find.widgetWithText(
+      LinagoraButton,
+      AppLocalizations().seeInYourCalendar,
+    ),
+  );
+  expect(calendarButton.iconWidget, isA<SvgPicture>());
+
+  await tester.tap(calendarAction);
+  await tester.pump();
+
+  expect(
+    openedLinks,
+    ['http://localhost:3000/events/event%2F42'],
+  );
+}
+
+Future<void> _hideCalendarActionForUninvitedReader(
+  WidgetTester tester,
+) async {
+  await tester.pumpWidget(_testableCard(
+    event: CalendarEvent(
+      eventId: EventId('event-42'),
+      organizer: CalendarOrganizer(
+        mailto: MailAddress('organizer@example.invalid'),
+      ),
+      participants: [_attendee('Guest', 'guest@example.invalid')],
+    ),
+    calendarUrl: 'https://calendar.example.invalid',
+  ));
+  await tester.pumpAndSettle();
+
+  expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
+}
+
+Future<void> _hideCalendarActionForInvalidUrl(WidgetTester tester) async {
+  await tester.pumpWidget(_testableCard(
+    event: _invitation(eventId: EventId('event-42')),
+    calendarUrl: 'javascript:alert(1)',
+  ));
+  await tester.pumpAndSettle();
+
+  expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
+}
+
+Future<void> _hideCalendarActionWithoutEventUid(WidgetTester tester) async {
+  await tester.pumpWidget(_testableCard(
+    event: _invitation(),
+    calendarUrl: 'https://calendar.example.invalid',
+  ));
+  await tester.pumpAndSettle();
+
+  expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
+}
+
+Future<void> _hideCalendarActionWithoutOpenLink(WidgetTester tester) async {
+  await tester.pumpWidget(_testableCard(
+    event: _invitation(eventId: EventId('event-42')),
+    calendarUrl: 'https://calendar.example.invalid',
+    actions: CalendarEventCardActions(
+      onReply: (_) {},
+      onMailToAttendees: () {},
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
 }
 
 Future<void> _showConflictIndicatorForBusyReader(WidgetTester tester) async {
@@ -674,11 +784,15 @@ Future<void> _pumpAtWidth(
 Widget _testableCard({
   required CalendarEvent event,
   CalendarEventCardViewState? viewState,
+  CalendarEventCardActions? actions,
+  String? calendarUrl,
 }) {
   return WidgetFixtures.makeTestableWidget(
     child: _card(
       event: event,
       viewState: viewState,
+      actions: actions,
+      calendarUrl: calendarUrl,
     ),
   );
 }
@@ -688,6 +802,7 @@ Widget _card({
   CalendarEventCardViewState? viewState,
   CalendarEventCardActions? actions,
   LinagoraEventCardLayout layout = LinagoraEventCardLayout.adaptive,
+  String? calendarUrl,
 }) {
   return CalendarEventCardWidget(
     calendarEvent: event,
@@ -699,6 +814,7 @@ Widget _card({
       onCopyLink: (_) {},
     ),
     layout: layout,
+    calendarUrl: calendarUrl,
   );
 }
 
@@ -735,8 +851,9 @@ CalendarEventCardViewState _viewState({
   );
 }
 
-CalendarEvent _invitation() {
+CalendarEvent _invitation({EventId? eventId}) {
   return CalendarEvent(
+    eventId: eventId,
     method: EventMethod.request,
     organizer: CalendarOrganizer(
       mailto: MailAddress('organizer@example.invalid'),

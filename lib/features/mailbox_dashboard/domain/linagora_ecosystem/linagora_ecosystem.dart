@@ -66,6 +66,9 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
   String? get workplaceFqdnFallbackTemplate =>
       _apiUrlTemplate(LinagoraEcosystemIdentifier.workplaceFqdnFallback);
 
+  String? get calendarUrl =>
+      _apiUrlTemplate(LinagoraEcosystemIdentifier.calendarUrl);
+
   String? _apiUrlTemplate(LinagoraEcosystemIdentifier identifier) {
     final property = properties?[identifier];
     if (property is! ApiUrlLinagoraEcosystem) return null;

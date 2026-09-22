@@ -32,7 +32,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_action_rea
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/calendar_event_card_actions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/calendar_event_card_view_state.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_card_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/ecosystem_calendar_event_card_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_attachments_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -373,7 +373,9 @@ class EmailView extends GetWidget<SingleEmailController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Obx(() => CalendarEventCardWidget(
+              Obx(() => EcosystemCalendarEventCardWidget(
+                accountId: controller.accountId,
+                jmapUrl: controller.dynamicUrlInterceptors.jmapUrl,
                 calendarEvent: calendarEvent,
                 viewState: CalendarEventCardViewState(
                   ownEmailAddress: controller.ownEmailAddress,

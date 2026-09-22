@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/mobile_apps_linagora_ecosystem.dart';
 
 const _apiUrl = 'https://example.com/api';
+const _calendarUrl = 'https://calendar.example.com';
 const _logoUrl = 'https://xyz';
 const _androidPackageId = 'com.example.android';
 const _iosUrlScheme = 'app.scheme';
@@ -34,6 +35,7 @@ Map<String, dynamic> _allPropertiesPayload() => {
   'linToApiUrl': _apiUrl,
   'linToApiKey': 'apiKey',
   'twakeApiUrl': _apiUrl,
+  'calendarUrl': _calendarUrl,
   'Twake Drive': {
     'appName': 'Twake Drive',
     'logoURL': _logoUrl,
@@ -75,6 +77,8 @@ LinagoraEcosystem _expectedEcosystem({
   LinagoraEcosystemIdentifier.linToApiKey:
       ApiKeyLinagoraEcosystem('apiKey'),
   LinagoraEcosystemIdentifier.twakeApiUrl: ApiUrlLinagoraEcosystem(_apiUrl),
+  LinagoraEcosystemIdentifier.calendarUrl:
+      ApiUrlLinagoraEcosystem(_calendarUrl),
   LinagoraEcosystemIdentifier.twakeDrive: twakeDrive,
   LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystem({
     LinagoraEcosystemIdentifier.twakeChat:
@@ -211,6 +215,33 @@ void main() {
       expect(() => linagoraEcosystem.paywallUrlTemplate, returnsNormally);
       expect(linagoraEcosystem.paywallUrlTemplate, isNull);
     });
+
+    test('Should return a trimmed calendar URL when configured', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'calendarUrl': '  https://calendar.domain.tld  ',
+      });
+
+      expect(linagoraEcosystem.calendarUrl, 'https://calendar.domain.tld');
+    });
+
+    final unavailableCalendarUrlCases = [
+      (description: 'missing', payload: <String, dynamic>{}),
+      (description: 'null', payload: <String, dynamic>{'calendarUrl': null}),
+      (description: 'blank', payload: <String, dynamic>{'calendarUrl': '   '}),
+      (
+        description: 'an invalid type',
+        payload: <String, dynamic>{'calendarUrl': {'url': 'invalid'}},
+      ),
+    ];
+
+    for (final testCase in unavailableCalendarUrlCases) {
+      test('Should return null when calendar URL is ${testCase.description}', () {
+        final linagoraEcosystem = LinagoraEcosystem.deserialize(testCase.payload);
+
+        expect(() => linagoraEcosystem.calendarUrl, returnsNormally);
+        expect(linagoraEcosystem.calendarUrl, isNull);
+      });
+    }
 
     test('Should return workplace FQDN fallback template when configured', () {
       final linagoraEcosystem = LinagoraEcosystem.deserialize({
