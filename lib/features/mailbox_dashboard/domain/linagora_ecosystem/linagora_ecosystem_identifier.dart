@@ -16,6 +16,7 @@ class LinagoraEcosystemIdentifier with EquatableMixin {
   static final sentryConfig = LinagoraEcosystemIdentifier('sentry');
   static final driveAttachment = LinagoraEcosystemIdentifier('driveAttachment');
   static final workplaceFqdnFallback = LinagoraEcosystemIdentifier('workplaceFqdnFallback');
+  static final calendarUrl = LinagoraEcosystemIdentifier('calendarUrl');
 
   final String value;
 
