@@ -41,3 +41,9 @@ Consumers keep reading a single `String?` and are unaware of how many sources ex
 Adding an env-config or deep-link source later touches no existing source and no consumer.
 
 Priority is expressed in exactly one place, so a reordering is a one-line change.
+
+Every source provider is `keepAlive`, so a source's state survives logout. Each source
+must be explicitly reset (or overwritten) on logout and on sign-in for a new account,
+otherwise a stale higher-priority value from the previous account keeps winning. This
+reset, plus a regression test for account switching, is a required follow-up for whichever
+PR wires the source providers into the logout/sign-in flow.
