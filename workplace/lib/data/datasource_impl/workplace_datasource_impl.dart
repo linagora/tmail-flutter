@@ -8,14 +8,17 @@ import '../datasource/workplace_datasource.dart';
 import '../model/workplace_enums.dart';
 import '../model/workplace_intent_request.dart';
 import '../model/workplace_intent_response.dart';
-import '../bridge/cozy_bridge.dart';
 import '../workplace_dio.dart';
+import 'workplace_request_executor.dart';
 import '../../domain/entity/workplace_intent.dart';
 import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
-  WorkplaceDataSourceImpl();
+  WorkplaceDataSourceImpl({WorkplaceRequestExecutor? executor})
+      : _executor = executor ?? const WorkplaceRequestExecutor();
+
+  final WorkplaceRequestExecutor _executor;
 
   Map<String, dynamic> _asJsonMap(dynamic data) {
     if (data is Map<String, dynamic>) return data;
@@ -31,53 +34,18 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     required WorkplaceAccessMode accessMode,
     required WorkplaceIntentConfig config,
   }) async {
-    final body = _buildIntentRequest(config);
-
-    return switch (accessMode) {
-      BridgeAccessMode() => _createIntentViaBridge(body),
-      BearerTokenAccessMode(:final accessToken) =>
-        _createIntentViaBearerToken(platformUrl, accessToken, body),
-    };
-  }
-
-  // No token: the container app already holds the stack session.
-  Future<WorkplaceIntent> _createIntentViaBridge(
-    Map<String, dynamic> body,
-  ) async {
-    final data = await CozyBridge.fetchJson(
-      method: 'POST',
-      path: '/intents',
-      body: body,
+    final data = await _executor.send(
+      context: WorkplaceRequestContext(
+        platformUrl: platformUrl,
+        accessMode: accessMode,
+      ),
+      route: const WorkplaceRequestRoute(
+        method: 'POST',
+        pathSegments: ['intents'],
+      ),
+      body: WorkplaceRequestBody(data: _buildIntentRequest(config)),
     );
     return parseIntentResponse(data);
-  }
-
-  Future<WorkplaceIntent> _createIntentViaBearerToken(
-    Uri platformUrl,
-    String accessToken,
-    Map<String, dynamic> body,
-  ) async {
-    // Fail fast instead of sending a malformed Authorization header.
-    if (accessToken.trim().isEmpty) {
-      throw StateError('Access token is empty');
-    }
-    final response = await WorkplaceDio.instance.post(
-      platformUrl.replace(
-        pathSegments: [
-          ...platformUrl.pathSegments.where((segment) => segment.isNotEmpty),
-          'intents',
-        ],
-        queryParameters: {
-          ...platformUrl.queryParameters,
-          'force_session_id': 'true',
-        },
-      ).toString(),
-      options: Options(
-        headers: {'Authorization': 'Bearer $accessToken'},
-      ),
-      data: body,
-    );
-    return parseIntentResponse(response.data);
   }
 
   WorkplaceIntent parseIntentResponse(
