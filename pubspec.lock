@@ -1440,11 +1440,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/tf-4672-add-calendar-event-action"
-      resolved-ref: d58094c9fc5dd8f387b9024e1a5f6c7e74b68229
+      ref: master
+      resolved-ref: "0d402e4f5a371cd88fb1a0671e2c7d902aaa2918"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
-    version: "0.3.2"
+    version: "0.3.3"
   linkify:
     dependency: transitive
     description:
