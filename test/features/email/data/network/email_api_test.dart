@@ -1262,7 +1262,7 @@ void main() {
           throwsA(isA<InvalidRecipientsException>().having(
             (exception) => exception.invalidRecipients,
             'invalidRecipients',
-            ['rejected@linagora.com'],
+            {'rejected@linagora.com'},
           )),
         );
       });

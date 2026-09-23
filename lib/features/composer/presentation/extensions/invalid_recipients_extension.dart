@@ -24,7 +24,7 @@ extension InvalidRecipientsExtension on ComposerController {
   /// Keeps the composer open on an `invalidRecipients` SetError: the rejected
   /// addresses are highlighted in the recipient fields and named in a toast so
   /// the user can fix them and send again.
-  void handleInvalidRecipientsFailure(List<String> rejectedAddresses) {
+  void handleInvalidRecipientsFailure(Set<String> rejectedAddresses) {
     invalidRecipients.value = rejectedAddresses
         .map((address) => address.toLowerCase())
         .toSet();

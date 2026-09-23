@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exc
 /// `SetError` does not model that property, so it is read back from the raw
 /// method response and carried here for the composer to highlight.
 class InvalidRecipientsException extends SetMethodException {
-  final List<String> invalidRecipients;
+  final Set<String> invalidRecipients;
 
   InvalidRecipientsException(super.mapErrors, this.invalidRecipients);
 

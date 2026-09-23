@@ -42,7 +42,7 @@ void main() {
     });
   }
 
-  group('ResponseObjectExtension::parseInvalidRecipients', () {
+  group('EmailSubmissionResponseExtension::parseInvalidRecipients', () {
     expectParsedRecipients(
       'should return the addresses listed by an invalidRecipients SetError',
       <String, dynamic>{
@@ -54,7 +54,7 @@ void main() {
           },
         },
       },
-      ['alice@invalid', 'bob@invalid'],
+      {'alice@invalid', 'bob@invalid'},
     );
 
     expectParsedRecipients(
@@ -71,7 +71,7 @@ void main() {
           },
         },
       },
-      ['alice@invalid', 'bob@invalid'],
+      {'alice@invalid', 'bob@invalid'},
     );
 
     expectParsedRecipients(
