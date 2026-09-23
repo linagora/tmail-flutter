@@ -41,7 +41,7 @@ sealed class UploadBody {
   static bool _hasLocalFilePath(FileInfo fileInfo) =>
       !PlatformInfo.isWeb && fileInfo.filePath?.isNotEmpty == true;
 
-  static Stream<List<int>> Function([int?, int?])? _dartOpen(FileInfo fileInfo) {
+  static FileOpenRead? _dartOpen(FileInfo fileInfo) {
     final openRead = fileInfo.openRead;
     if (openRead != null) return openRead;
     if (_hasLocalFilePath(fileInfo)) {
@@ -62,7 +62,7 @@ sealed class UploadBody {
 
 /// Mobile file, dropped file, retained bytes, inline image — read by dio itself.
 final class StreamUploadBody extends UploadBody {
-  final Stream<List<int>> Function([int?, int?]) _open;
+  final FileOpenRead _open;
 
   const StreamUploadBody(this._open);
 
@@ -82,7 +82,7 @@ final class StreamUploadBody extends UploadBody {
 /// Web's `blob:` handle — sent verbatim by the adapter, nothing buffered here.
 final class HandleUploadBody extends UploadBody {
   final String sourceUrl;
-  final Stream<List<int>> Function([int?, int?])? _open;
+  final FileOpenRead? _open;
 
   const HandleUploadBody(this.sourceUrl, this._open);
 
