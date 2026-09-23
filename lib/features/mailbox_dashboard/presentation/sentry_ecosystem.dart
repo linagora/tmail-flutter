@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -11,6 +13,17 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 typedef InitializeSentry = Future<void> Function(SentryConfig sentryConfig);
+
+void applySentryReportingConsent(
+  SentryEcosystem? sentryEcosystem,
+  bool? consent,
+) {
+  if (sentryEcosystem != null) {
+    unawaited(sentryEcosystem.updateReportingConsent(consent));
+    return;
+  }
+  SentryManager.instance.setSentryReportingConsent(consent);
+}
 
 class SentryEcosystem implements SentrySessionCleanup {
   final SentryConfigurationCacheManager? _cacheManager;
