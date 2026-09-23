@@ -49,7 +49,9 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -58,6 +60,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_e
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
@@ -1320,6 +1323,51 @@ void main() {
         // Future.delayed from _setTextAndFocus so no timer is left pending.
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 200));
+      });
+
+      test(
+        'Should clear the invalid mark of an address removed via drag-removal',
+      () {
+        composerController?.listToEmailAddress = [rejectedAddress, keptAddress];
+        composerController?.invalidRecipients.value = {
+          rejectedAddress.emailAddress.toLowerCase(),
+          keptAddress.emailAddress.toLowerCase(),
+        };
+
+        composerController?.removeDraggableEmailAddress(
+          DraggableEmailAddress(
+            emailAddress: rejectedAddress,
+            filterField: FilterField.to,
+          ),
+        );
+
+        expect(
+          composerController?.invalidRecipients.value,
+          {keptAddress.emailAddress.toLowerCase()},
+        );
+      });
+
+      test(
+        'Should clear the invalid mark of a Bcc address dropped by an identity switch\n'
+        'AND keep it for addresses still listed',
+      () async {
+        final identityWithBcc = Identity(bcc: {rejectedAddress});
+        final identityWithoutBcc = Identity();
+
+        composerController?.listToEmailAddress = [keptAddress];
+        await composerController?.selectIdentity(identityWithBcc);
+
+        composerController?.invalidRecipients.value = {
+          rejectedAddress.emailAddress.toLowerCase(),
+          keptAddress.emailAddress.toLowerCase(),
+        };
+
+        await composerController?.selectIdentity(identityWithoutBcc);
+
+        expect(
+          composerController?.invalidRecipients.value,
+          {keptAddress.emailAddress.toLowerCase()},
+        );
       });
     });
 
