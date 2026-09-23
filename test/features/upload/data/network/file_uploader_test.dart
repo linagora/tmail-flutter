@@ -515,6 +515,30 @@ void main() {
         containsAll(['aaaa', 'bbbb']),
       );
     });
+
+    test('samples the charset from openRead when bytes are also set', () async {
+      final streamBytes = Uint8List.fromList(utf8.encode('from openRead'));
+      final staleBytes = Uint8List.fromList(utf8.encode('from bytes'));
+      final receivedBodies = <List<int>>[];
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
+      final server = await startRecordingUploadServer(receivedBodies);
+
+      await FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
+        const UploadTaskId('upload-bytes-and-stream'),
+        FileInfo(
+          fileName: 'note.txt',
+          fileSize: streamBytes.length,
+          bytes: staleBytes,
+          openRead: ([start, end]) => Stream<List<int>>.fromIterable([streamBytes]),
+          type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+        ),
+        Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+      ).timeout(const Duration(seconds: 30));
+
+      // The probe must sample the same source the body was sent from.
+      expect(receivedBodies.single, streamBytes);
+      expect(fileUtils.probedSamples.single, streamBytes);
+    });
   });
 
   test('resolves the charset of a text/plain attachment read from disk', () async {
