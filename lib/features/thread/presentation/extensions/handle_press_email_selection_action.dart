@@ -35,14 +35,6 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
     bool isLabelAvailable,
   ) {
     return <EmailSelectionActionType>[
-      if (selectedMailbox?.isDeletePermanentlyEnabled != true)
-        EmailSelectionActionType.moveToTrash,
-      if (emails.isArchiveMessageEnabled(
-        mailboxDashBoardController.mapMailboxById,
-      ))
-        EmailSelectionActionType.archiveMessage,
-      if (selectedMailbox?.isDeletePermanentlyEnabled == true)
-        EmailSelectionActionType.deletePermanently,
       if (emails.isAllEmailRead)
         EmailSelectionActionType.markAsUnread
       else
@@ -54,10 +46,18 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
       EmailSelectionActionType.moveToFolder,
       if (isLabelAvailable)
         EmailSelectionActionType.labelAs,
+      if (selectedMailbox?.isDeletePermanentlyEnabled != true)
+        EmailSelectionActionType.moveToTrash,
       if (selectedMailbox?.isSpam == true)
         EmailSelectionActionType.markAsNotSpam
       else
         EmailSelectionActionType.markAsSpam,
+      if (emails.isArchiveMessageEnabled(
+        mailboxDashBoardController.mapMailboxById,
+      ))
+        EmailSelectionActionType.archiveMessage,
+      if (selectedMailbox?.isDeletePermanentlyEnabled == true)
+        EmailSelectionActionType.deletePermanently,
     ];
   }
 
