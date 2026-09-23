@@ -809,9 +809,8 @@ class ComposerController extends BaseController
   void dropInvalidRecipientsNoLongerListed() {
     if (invalidRecipients.value.isEmpty) return;
 
-    final remainingAddresses = allListEmailAddressWithoutReplyTo
-        .map((emailAddress) => emailAddress.emailAddress.toLowerCase())
-        .toSet();
+    final remainingAddresses =
+        allListEmailAddressWithoutReplyTo.toNormalizedEmailSet();
     final remainingInvalidRecipients =
         invalidRecipients.value.intersection(remainingAddresses);
 
