@@ -9,16 +9,21 @@ import '../model/workplace_enums.dart';
 import '../model/workplace_intent_request.dart';
 import '../model/workplace_intent_response.dart';
 import '../workplace_dio.dart';
+import 'workplace_drive_file_gateway.dart';
 import 'workplace_request_executor.dart';
+import '../../domain/entity/drive_uploaded_file.dart';
 import '../../domain/entity/workplace_intent.dart';
 import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
+import '../../domain/entity/workplace_upload_file_spec.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   WorkplaceDataSourceImpl({WorkplaceRequestExecutor? executor})
-      : _executor = executor ?? const WorkplaceRequestExecutor();
+      : _executor = executor ?? const WorkplaceRequestExecutor(),
+        _driveFiles = WorkplaceDriveFileGateway(executor ?? const WorkplaceRequestExecutor());
 
   final WorkplaceRequestExecutor _executor;
+  final WorkplaceDriveFileGateway _driveFiles;
 
   Map<String, dynamic> _asJsonMap(dynamic data) {
     if (data is Map<String, dynamic>) return data;
@@ -112,4 +117,11 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
     final accessToken = data.accessToken;
     return accessToken;
   }
+
+  @override
+  Future<DriveUploadedFile> uploadFile({
+    required WorkplaceRequestContext context,
+    required WorkplaceUploadFileSpec spec,
+    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+  }) => _driveFiles.uploadFile(context: context, spec: spec, transfer: transfer);
 }
