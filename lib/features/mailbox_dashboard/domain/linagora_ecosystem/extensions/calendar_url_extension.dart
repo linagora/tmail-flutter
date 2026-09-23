@@ -55,6 +55,8 @@ Uri? _tryParseCalendarBaseUri(String baseUrl) {
 String? _tryDecodeCalendarBaseUrl(String baseUrl) {
   try {
     return Uri.decodeComponent(baseUrl);
+  } on FormatException {
+    return null;
   } on ArgumentError {
     return null;
   }
