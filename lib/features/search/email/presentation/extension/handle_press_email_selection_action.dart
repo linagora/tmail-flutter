@@ -40,12 +40,6 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
     bool isLabelAvailable,
   ) {
     return <EmailSelectionActionType>[
-      if (emails.isDeletePermanentlyDisabled(mapMailboxById))
-        EmailSelectionActionType.moveToTrash,
-      if (emails.isArchiveMessageEnabled(mapMailboxById))
-        EmailSelectionActionType.archiveMessage,
-      if (!emails.isDeletePermanentlyDisabled(mapMailboxById))
-        EmailSelectionActionType.deletePermanently,
       if (emails.isAllEmailRead)
         EmailSelectionActionType.markAsUnread
       else
@@ -57,10 +51,16 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
       EmailSelectionActionType.moveToFolder,
       if (isLabelAvailable)
         EmailSelectionActionType.labelAs,
+      if (emails.isDeletePermanentlyDisabled(mapMailboxById))
+        EmailSelectionActionType.moveToTrash,
       if (emails.isMarkAsSpamEnabled(mapMailboxById))
         EmailSelectionActionType.markAsSpam
       else
         EmailSelectionActionType.markAsNotSpam,
+      if (emails.isArchiveMessageEnabled(mapMailboxById))
+        EmailSelectionActionType.archiveMessage,
+      if (!emails.isDeletePermanentlyDisabled(mapMailboxById))
+        EmailSelectionActionType.deletePermanently,
     ];
   }
 
