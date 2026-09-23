@@ -680,4 +680,44 @@ void main() {
     expect(iosSharingManager.deleteCalls, 1);
   });
 
+  test('session cleanup does not carry an opt-in over to the next account', () async {
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (_) async {},
+    );
+    sentryManager
+      ..setSentryReportingDefault(false)
+      ..setSentryReportingConsent(true);
+
+    await ecosystem.clearForSessionEnd();
+
+    expect(
+      sentryManager.isSentryReportingAllowed,
+      isFalse,
+      reason: 'the next account has not chosen yet, so the instance default '
+          'must apply, as on a cold start',
+    );
+  });
+
+  test('session cleanup does not carry an opt-out over to the next account', () async {
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (_) async {},
+    );
+    sentryManager
+      ..setSentryReportingDefault(true)
+      ..setSentryReportingConsent(false);
+
+    await ecosystem.clearForSessionEnd();
+
+    expect(
+      sentryManager.isSentryReportingAllowed,
+      isTrue,
+      reason: 'the next account has not chosen yet, so the instance default '
+          'must apply, as on a cold start',
+    );
+  });
+
 }
