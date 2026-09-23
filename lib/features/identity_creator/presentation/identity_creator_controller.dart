@@ -63,10 +63,9 @@ import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_i
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bindings.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_platform_file_extensions.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -687,13 +686,15 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
     final filePickerResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
-      withData: PlatformInfo.isWeb
+      withData: PlatformInfo.isWeb,
     );
+    final fileInfo = filePickerResult?.files.isNotEmpty == true
+        ? filePickerResult!.files.first.toFileInfo()
+        : null;
 
     if (context.mounted) {
-      if (filePickerResult?.files.isNotEmpty == true) {
-        final platformFile = filePickerResult!.files.first;
-        _insertInlineImage(context, platformFile, _getMaxWidthInlineImage(context).toInt());
+      if (fileInfo != null) {
+        _insertInlineImage(context, fileInfo, _getMaxWidthInlineImage(context).toInt());
       } else {
         appToast.showToastErrorMessage(
           context,
@@ -711,19 +712,19 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   Future<void> _insertInlineImage(
     BuildContext context,
-    PlatformFile platformFile,
+    FileInfo fileInfo,
     int maxWidth,
-    {PlatformFile? compressedFile}
+    {FileInfo? compressedFile}
   ) async {
-    final PlatformFile? file;
+    final FileInfo? file;
     if (compressedFile != null) {
       file = compressedFile;
     } else {
-      file = await _compressFileAction(context, originalFile: platformFile, maxWidth: maxWidth);
+      file = await _compressFileAction(context, originalFile: fileInfo, maxWidth: maxWidth);
     }
     if (file == null) return;
 
-    if (_isExceedMaxUploadSize(file.size)) {
+    if (_isExceedMaxUploadSize(file.fileSize)) {
       if (context.mounted) {
         appToast.showToastErrorMessage(
           context,
@@ -738,12 +739,12 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       publicAssetController!.uploadFileToBlob(file);
     } else {
       if (PlatformInfo.isWeb) {
-        richTextWebController?.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
+        richTextWebController?.insertImageAsBase64(fileInfo: file, maxWidth: maxWidth);
       } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController?.insertImageData(platformFile: file, maxWidth: maxWidth);
-        if (file.path != null) {
+        richTextMobileTabletController?.insertImageData(fileInfo: file, maxWidth: maxWidth);
+        if (file is FilePathInfo) {
           getBinding<FileUtils>()?.deleteCompressedFileOnMobile(
-            file.path!,
+            file.filePath,
             pathContains: IdentityCreatorConstants.prefixCompressedInlineImageTemp);
         }
       } else {
@@ -752,10 +753,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     }
   }
 
-  Future<PlatformFile?> _compressFileAction(
+  Future<FileInfo?> _compressFileAction(
     BuildContext context,
     {
-      required PlatformFile originalFile,
+      required FileInfo originalFile,
       required int maxWidth
     }
   ) async {
@@ -776,24 +777,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     }
   }
 
-  Future<PlatformFile> _compressImage(PlatformFile originalFile, int maxWidthCompressedImage) async {
-    if (originalFile.size <= maxSizeUploadByBytes) {
+  Future<FileInfo> _compressImage(FileInfo originalFile, int maxWidthCompressedImage) async {
+    if (originalFile.fileSize <= maxSizeUploadByBytes) {
       return originalFile;
     }
-    
-    final Uint8List? fileBytes;
 
-    if (PlatformInfo.isWeb) {
-      fileBytes = originalFile.bytes;
-    } else if (originalFile.path == null) {
-      log('IdentityCreatorController::_compressImage: path is null');
-      return originalFile;
-    } else {
-      fileBytes = await File(originalFile.path!).readAsBytes();
-    }
-
-    if (fileBytes == null || fileBytes.isEmpty) {
-      log('IdentityCreatorController::_compressImage: fileBytes is null or empty');
+    final fileBytes = await originalFile.readBytes();
+    if (fileBytes.isEmpty) {
+      log('IdentityCreatorController::_compressImage: fileBytes is empty');
       return originalFile;
     }
 
@@ -805,24 +796,24 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     );
     log('IdentityCreatorController::_compressImage: AFTER_COMPRESS: bytesData: ${compressedBytes.lengthInBytes}');
 
-    final PlatformFile compressedFile;
+    final FileInfo compressedFile;
 
     if (PlatformInfo.isWeb) {
-      compressedFile = PlatformFile(
-        name: originalFile.name,
-        size: compressedBytes.lengthInBytes,
+      compressedFile = FileBytesInfo(
+        fileName: originalFile.fileName,
+        fileSize: compressedBytes.lengthInBytes,
         bytes: compressedBytes,
       );
     } else {
-      final compressedFilePath = await _saveCompressedFileOnMobile(compressedBytes, originalFile.name);
-      compressedFile = PlatformFile(
-        name: originalFile.name,
-        size: compressedBytes.lengthInBytes,
-        path: compressedFilePath,
+      final compressedFilePath = await _saveCompressedFileOnMobile(compressedBytes, originalFile.fileName);
+      compressedFile = FilePathInfo(
+        fileName: originalFile.fileName,
+        fileSize: compressedBytes.lengthInBytes,
+        filePath: compressedFilePath,
       );
     }
 
-    log('IdentityCreatorController::_compressImage: compressedSize: ${compressedFile.size}');
+    log('IdentityCreatorController::_compressImage: compressedSize: ${compressedFile.fileSize}');
     return compressedFile;
   }
 
@@ -928,11 +919,11 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       final listCompressedImages = await Future.wait(
         listImages.map((fileInfo) => _compressFileAction(
           context,
-          originalFile: fileInfo.toPlatformFile(),
+          originalFile: fileInfo,
           maxWidth: maxWidth.toInt()))
-      ).then((listPlatformFiles) => listPlatformFiles.nonNulls.toList());
+      ).then((listFileInfo) => listFileInfo.nonNulls.toList());
 
-      if (_isExceedMaxUploadSize(listCompressedImages.totalFilesSize)) {
+      if (_isExceedMaxUploadSize(listCompressedImages.totalSize.toInt())) {
         if (context.mounted) {
           appToast.showToastErrorMessage(
             context,

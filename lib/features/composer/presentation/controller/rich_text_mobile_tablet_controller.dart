@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -60,13 +60,13 @@ class RichTextMobileTabletController extends GetxController {
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
   }
 
-  void insertImageData({required PlatformFile platformFile, int? maxWidth}) async {
+  void insertImageData({required FileInfo fileInfo, int? maxWidth}) async {
     try {
-      if (platformFile.path?.isNotEmpty == true) {
-        final bytesData = await File(platformFile.path!).readAsBytes();
+      if (fileInfo is FilePathInfo) {
+        final bytesData = await File(fileInfo.filePath).readAsBytes();
         await htmlEditorApi?.insertImageData(
           bytesData,
-          HtmlUtils.validateHtmlImageResourceMimeType('image/${platformFile.extension}'),
+          HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}'),
           maxWidth: maxWidth
         );
       } else {
