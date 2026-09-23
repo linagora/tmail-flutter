@@ -53,6 +53,7 @@ void main() {
 
     var bytesProduced = 0;
     var maxOutstandingBytes = 0;
+    var progressEventCount = 0;
 
     // Yields the same 1 MB buffer [chunkCount] times: the producer holds one
     // chunk, not the whole file, mirroring how a real read stream is sliced.
@@ -68,6 +69,7 @@ void main() {
     final subscription = onSendController.stream.listen((either) {
       either.fold((_) {}, (success) {
         if (success is UploadingAttachmentUploadState) {
+          progressEventCount++;
           final outstanding = bytesProduced - success.progress;
           if (outstanding > maxOutstandingBytes) {
             maxOutstandingBytes = outstanding;
@@ -92,6 +94,8 @@ void main() {
     await onSendController.close();
 
     expect(totalBytesReceived, [chunkSize * chunkCount]);
+    // Without samples the bound below holds vacuously.
+    expect(progressEventCount, greaterThan(0));
     // A regression that re-materialises the body into one buffer would let the
     // producer race arbitrarily far ahead of what dio has actually sent —
     // outstanding bytes would approach the full 256 MiB. A genuinely streamed
