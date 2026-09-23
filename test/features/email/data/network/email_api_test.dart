@@ -1234,11 +1234,8 @@ void main() {
               "c0"
             ],
             [
-              // Server tags the EmailSubmission/set response with the
-              // Email/set method name (onSuccessUpdateEmail side effect);
-              // ResponseObject.parse checks against that name, not
-              // "EmailSubmission/set".
-              "Email/set",
+              // The submission failure belongs to the EmailSubmission/set response.
+              "EmailSubmission/set",
               <String, dynamic>{
                 "accountId": AccountFixtures.aliceAccountId.asString,
                 "oldState": "state-1",

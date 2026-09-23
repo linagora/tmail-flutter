@@ -261,7 +261,7 @@ class EmailAPI
     final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
       setEmailSubmissionInvocation.methodCallId,
       SetEmailSubmissionResponse.deserialize,
-      methodName: setEmailInvocation.methodName);
+      methodName: setEmailSubmissionInvocation.methodName);
 
     if (markAsAnsweredOrForwardedInvocation != null) {
       markAsAnsweredOrForwardedSetResponse = response.parse<SetEmailResponse>(
