@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -260,10 +261,20 @@ void main() {
       FileUploader(DioClient(buildUploadDio()), FileUtils())
           .uploadAttachment(const UploadTaskId('upload-401-gone'), fileInfo, uploadUri)
           .timeout(const Duration(seconds: 30)),
-      throwsA(isA<DioException>()),
+      throwsA(
+        isA<DioException>().having(
+          (exception) => exception.error,
+          'error',
+          isA<MissingAttachmentSourceException>(),
+        ),
+      ),
     );
 
     // No empty replay reached the server — it failed before a body was sent.
     expect(receivedBodies.length, 1);
+    // Replay was actually attempted: one open for the original request, one
+    // for the 401 retry that then threw.
+    expect(openReadCalls, 2);
+    expectRefreshedExactlyOnce();
   });
 }
