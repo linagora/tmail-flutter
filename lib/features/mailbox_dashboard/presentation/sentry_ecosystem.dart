@@ -143,7 +143,7 @@ class SentryEcosystem {
     try {
       isReportingAllowedPersisted =
           await _cacheData(configToPersist, sentryUser);
-    } catch (e, st) {
+    } catch (_) {
       await _publishSentryConfig(
         configToPersist.withReportingAllowed(false),
         configurationGeneration,

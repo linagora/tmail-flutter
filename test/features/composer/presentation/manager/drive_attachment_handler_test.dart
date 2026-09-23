@@ -306,7 +306,7 @@ void main() {
       'AND it records whether sharing/download links were present',
       () async {
         const sensitiveName = 'SENSITIVE-PAYSLIP-2026.pdf';
-        final droppedDoc = DriveDocument(
+        const droppedDoc = DriveDocument(
           id: 'drop-1',
           name: sensitiveName,
           size: 0,
