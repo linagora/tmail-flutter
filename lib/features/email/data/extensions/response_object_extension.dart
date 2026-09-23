@@ -6,6 +6,10 @@ import 'package:jmap_dart_client/jmap/core/response/response_object.dart';
 /// least one address the server cannot send to.
 const _invalidRecipientsErrorType = 'invalidRecipients';
 
+/// String[] property RFC 8621 mandates on that SetError, listing the rejected
+/// addresses. Spelled like the error type, but a separate part of the shape.
+const _invalidRecipientsProperty = 'invalidRecipients';
+
 extension ResponseObjectExtension on ResponseObject {
   /// Collects the addresses listed by the `invalidRecipients` SetErrors of the
   /// `notCreated` map of the method response identified by [methodCallId].
@@ -28,7 +32,7 @@ extension ResponseObjectExtension on ResponseObject {
     return notCreated.values
         .whereType<Map<String, dynamic>>()
         .where((setError) => setError['type'] == _invalidRecipientsErrorType)
-        .map((setError) => setError[_invalidRecipientsErrorType])
+        .map((setError) => setError[_invalidRecipientsProperty])
         .whereType<List>()
         .expand((recipients) => recipients.whereType<String>())
         .toSet()
