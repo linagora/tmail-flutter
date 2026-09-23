@@ -1,0 +1,73 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cross_file/cross_file.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/x_file_extension.dart';
+
+void main() {
+  late Directory tempDir;
+
+  setUp(() async {
+    tempDir = await Directory.systemTemp.createTemp('x_file_extension_test');
+  });
+
+  tearDown(() async {
+    if (tempDir.existsSync()) await tempDir.delete(recursive: true);
+  });
+
+  Future<File> writeFile(String name, String content) async {
+    final file = File('${tempDir.path}/$name');
+    await file.writeAsString(content);
+    return file;
+  }
+
+  group('XFileExtension::toFileInfo', () {
+    test('maps name and size without reading bytes', () async {
+      final file = await writeFile('note.txt', 'hello drop');
+
+      final fileInfo = await XFile(file.path, mimeType: 'text/plain').toFileInfo();
+
+      expect(fileInfo.fileName, 'note.txt');
+      expect(fileInfo.fileSize, 'hello drop'.length);
+      expect(fileInfo, isA<FilePathInfo>());
+      expect(fileInfo.type, 'text/plain');
+    });
+
+    test('openRead streams the file content and can be reopened', () async {
+      final file = await writeFile('note.txt', 'hello drop');
+
+      final fileInfo = await XFile(file.path).toFileInfo();
+
+      expect(await utf8.decodeStream(fileInfo.openRead()), 'hello drop');
+      expect(await utf8.decodeStream(fileInfo.openRead()), 'hello drop');
+    });
+
+    test('openRead honours a byte range', () async {
+      final file = await writeFile('note.txt', 'hello drop');
+
+      final fileInfo = await XFile(file.path).toFileInfo();
+
+      expect(await utf8.decodeStream(fileInfo.openRead(0, 5)), 'hello');
+    });
+
+    test('keeps the local path and no source url off web', () async {
+      final file = await writeFile('note.txt', 'hello drop');
+
+      final fileInfo = await XFile(file.path).toFileInfo();
+
+      expect((fileInfo as FilePathInfo).filePath, file.path);
+    });
+
+    test('marks an image mime type as inline', () async {
+      final file = await writeFile('photo.png', 'x');
+
+      final image = await XFile(file.path, mimeType: 'image/png').toFileInfo();
+      final text = await XFile(file.path, mimeType: 'text/plain').toFileInfo();
+
+      expect(image.isInline, isTrue);
+      expect(text.isInline, isFalse);
+    });
+  });
+}

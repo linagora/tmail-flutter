@@ -243,6 +243,8 @@ dependencies:
 
   desktop_drop: 0.4.4
 
+  cross_file: ^0.3.5
+
   future_loading_dialog: 0.3.0
 
   file_picker: 13.1.0
