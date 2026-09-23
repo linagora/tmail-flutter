@@ -2,15 +2,11 @@ import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:workplace/data/bridge/cozy_bridge.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
-import 'package:workplace/data/model/workplace_enums.dart';
+import 'package:workplace/data/model/workplace_enums.dart' hide WorkplaceAction;
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
@@ -19,19 +15,21 @@ import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
+import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/model/drive_picker_session.dart';
-import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
+import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
+import 'package:workplace/domain/usecase/workplace_action.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
+export 'package:workplace/domain/usecase/workplace_access_mode_runner.dart'
+    show OidcRefreshTrigger;
+
 typedef OnDrivePickStateChanged =
     Future<void> Function(String? composerId, DrivePickState state);
-
-/// Triggers the host app's OIDC refresh; returns the refreshed id token.
-typedef OidcRefreshTrigger = Future<String?> Function();
 
 class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
@@ -52,8 +50,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     WorkplaceDriveDataSourceImpl(),
   );
   late final _createIntentInteractor = CreateDriveIntentInteractor(_repository);
-  late final _exchangeTokenInteractor = ExchangeDriveTokenInteractor(
-    _repository,
+  late final _accessModeRunner = WorkplaceAccessModeRunner(
+    exchangeTokenInteractor: ExchangeDriveTokenInteractor(_repository),
+    oidcTokenGetter: oidcTokenGetter,
+    oidcRefreshTrigger: oidcRefreshTrigger,
   );
 
   WorkplaceComposerAttachmentExtension({
@@ -69,120 +69,16 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Future<WorkplaceIntent> _fetchIntent(
     Uri platformUrl, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
-  }) async {
-    // Try the bridge first; any failure falls back to the bearer-token flow.
-    if (CozyBridge.isSupported && CozyBridge.isAvailable) {
-      try {
-        return await _createIntent(
-          platformUrl,
-          const BridgeAccessMode(),
-          filePickerConfig: filePickerConfig,
-        );
-      } catch (_) {
-        // fall through to the bearer-token flow below
-        logWarning(
-          'WorkplaceComposerAttachmentExtension::_fetchIntent: Cozy bridge createIntent failed, falling back to bearer-token flow',
-          webConsoleEnabled: true,
-        );
-      }
-    }
-
-    final oidcToken = oidcTokenGetter();
-    if (oidcToken == null) throw StateError('OIDC token is unavailable');
-    final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
-    if (accessToken == null) throw StateError('Drive access token exchange failed');
-    return _createIntent(
-      platformUrl,
-      BearerTokenAccessMode(accessToken),
-      filePickerConfig: filePickerConfig,
-    );
-  }
-
-  Future<String?> _exchangeAccessToken(
-    Uri platformUrl,
-    String oidcToken, {
-    bool refreshAttempted = false,
-  }) async {
-    final result = await _requestAccessToken(platformUrl, oidcToken);
-    return result.fold(
-      (failure) => _triggerRefreshOIDCToken(
-        platformUrl: platformUrl,
-        failedToken: oidcToken,
-        failure: failure,
-        refreshAttempted: refreshAttempted,
-      ),
-      (accessToken) => accessToken,
-    );
-  }
-
-  Future<Either<Object, String?>> _requestAccessToken(
-    Uri platformUrl,
-    String oidcToken,
-  ) async {
-    String? accessToken;
-    Object? caughtFailure;
-    await for (final either in _exchangeTokenInteractor.execute(
-      platformUrl,
-      oidcToken,
-    )) {
-      either.fold(
-        // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
-        (failure) => caughtFailure =
-            failure is FeatureFailure ? failure.exception : WorkplaceExchangeTokenException(),
-        (success) {
-          if (success is ExchangeWorkplaceTokenSuccess) {
-            accessToken = success.accessToken;
-          }
-        },
+  }) => _accessModeRunner.run(
+        platformUrl,
+        _CreateIntentAction(
+          (accessMode) => _createIntent(
+            platformUrl,
+            accessMode,
+            filePickerConfig: filePickerConfig,
+          ),
+        ),
       );
-    }
-    return caughtFailure == null ? Right(accessToken) : Left(caughtFailure!);
-  }
-
-  /// Retries once on a stale-token response with the current token if another
-  /// request already refreshed it, else with a freshly refreshed one
-  /// (Workplace's Dio has no refresh interceptor of its own).
-  Future<String?> _triggerRefreshOIDCToken({
-    required Uri platformUrl,
-    required String failedToken,
-    required Object failure,
-    required bool refreshAttempted,
-  }) async {
-    if (refreshAttempted || !_isStaleSubjectToken(failure)) {
-      throw failure;
-    }
-
-    // Mirrors AuthorizationInterceptors.validateToRetryTheRequestWithNewToken.
-    final currentToken = oidcTokenGetter();
-    if (currentToken != null && currentToken != failedToken) {
-      return _exchangeAccessToken(platformUrl, currentToken, refreshAttempted: true);
-    }
-
-    final refreshedToken = await oidcRefreshTrigger();
-    // Trace level so this rides into Sentry as a breadcrumb on the _failWith
-    // event; warning reaches the console only.
-    logTrace(
-      'WorkplaceComposerAttachmentExtension::_triggerRefreshOIDCToken',
-      extras: {
-        'refreshReturnedToken': refreshedToken != null,
-        'refreshReturnedSameToken': refreshedToken == failedToken,
-      },
-      webConsoleEnabled: true,
-    );
-    // The IdP may omit id_token on refresh, in which case the current one is
-    // kept — retrying would re-send the token that just 401'd.
-    if (refreshedToken == null || refreshedToken == failedToken) throw failure;
-
-    return _exchangeAccessToken(platformUrl, refreshedToken, refreshAttempted: true);
-  }
-
-  // RFC 8693 says 400 invalid_grant for a bad subject_token; token_exchange has
-  // also been seen answering 401. Both mean the id token needs refreshing.
-  bool _isStaleSubjectToken(Object failure) {
-    if (failure is! DioException) return false;
-    final statusCode = failure.response?.statusCode;
-    return statusCode == 400 || statusCode == 401;
-  }
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
@@ -275,4 +171,17 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           filePickerConfig: filePickerConfig,
         ),
       );
+}
+
+/// cozy-stack `POST /intents` is served by the bridge.
+class _CreateIntentAction extends WorkplaceAction<WorkplaceIntent> {
+  final Future<WorkplaceIntent> Function(WorkplaceAccessMode accessMode) _createIntent;
+
+  const _CreateIntentAction(this._createIntent);
+
+  @override
+  bool get supportsBridge => true;
+
+  @override
+  Future<WorkplaceIntent> call(WorkplaceAccessMode accessMode) => _createIntent(accessMode);
 }
