@@ -9,4 +9,9 @@ abstract class WorkplaceDriveDataSource {
     required WorkplaceUploadFileSpec spec,
     WorkplaceUploadTransfer transfer,
   });
+
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  });
 }

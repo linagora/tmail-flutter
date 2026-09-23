@@ -12,7 +12,9 @@ enum WorkplacePermission {
 
 enum WorkplaceDataRequestType {
   @JsonValue('io.cozy.intents')
-  intents;
+  intents,
+  @JsonValue('io.cozy.permissions')
+  permissions;
 }
 
 /// `Type=` on the upload route.
