@@ -127,6 +127,7 @@ class FileUploader {
       final missing = _charsetSampleMaxBytes - sample.length;
       if (missing <= 0) break;
       sample.add(chunk.length <= missing ? chunk : chunk.sublist(0, missing));
+      if (sample.length == _charsetSampleMaxBytes) break;
     }
     return sample.isEmpty ? null : sample.toBytes();
   }
@@ -139,15 +140,10 @@ class FileUploader {
     }
 
     try {
-      final bytes = fileInfo.bytes;
-      final Uint8List? sample;
-      if (bytes != null) {
-        sample = bytes.length > _charsetSampleMaxBytes
-            ? Uint8List.sublistView(bytes, 0, _charsetSampleMaxBytes)
-            : bytes;
-      } else {
-        sample = await _readHeadSample(body.open(0, _charsetSampleMaxBytes));
-      }
+      // Always read through `body` so the probe samples the same source
+      // `UploadBody.of` chose for the request, never a shortcut that can
+      // disagree with it.
+      final sample = await _readHeadSample(body.open(0, _charsetSampleMaxBytes));
       if (sample == null) {
         return null;
       }
