@@ -2912,6 +2912,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attending": "Présence ?",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "Rejoindre la conférence vidéo",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "Copier le lien",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "Lien copié dans le presse-papier",
+  "@linkCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "where": "Où",
   "@where": {
     "type": "text",

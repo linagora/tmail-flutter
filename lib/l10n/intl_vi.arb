@@ -2786,6 +2786,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attending": "Tham dự?",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "Tham gia hội nghị video",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "Sao chép liên kết",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "Liên kết đã được sao chép",
+  "@linkCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "where": "Ở đâu",
   "@where": {
     "type": "text",

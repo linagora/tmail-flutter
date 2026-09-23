@@ -3031,6 +3031,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attending": "Оролцох уу?",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "Видео хуралд нэгдэх",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "Холбоосыг хуулах",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "Холбоос хуулагдлаа",
+  "@linkCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "time": "Цаг",
   "@time": {
     "type": "text",
