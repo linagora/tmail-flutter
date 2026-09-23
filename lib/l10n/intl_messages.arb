@@ -5342,6 +5342,52 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attachingFileTitle": "Attaching file",
+  "@attachingFileTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeDialogMessage": "Your file is larger than {maxSize}. It will be uploaded to Twake Drive and attached as ",
+  "@driveOversizeDialogMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "driveOversizeDialogMessageEmphasis": "a link",
+  "@driveOversizeDialogMessageEmphasis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowDone": "Done",
+  "@driveUploadRowDone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowFailed": "Failed",
+  "@driveUploadRowFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowCancelled": "Canceled",
+  "@driveUploadRowCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadFailed": "Some files could not be uploaded to Drive.",
+  "@driveOversizeUploadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveNoValidAttachment": "No valid attachment",
   "@driveNoValidAttachment": {
     "type": "text",
