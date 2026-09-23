@@ -40,6 +40,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class FcmSentryRuntime {
   const FcmSentryRuntime();
 
+  bool get isAvailable => SentryManager.instance.isSentryAvailable;
+
   Future<void> setReportingConsent(bool? consent) async {
     SentryManager.instance.setSentryReportingConsent(consent);
     await SentryManager.instance.pendingLifecycleTransition;
@@ -71,6 +73,7 @@ class FcmMessageController extends PushBaseController {
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  SentryConfigurationCache? _appliedSentryConfiguration;
 
   FcmMessageController._internal();
 
@@ -187,30 +190,62 @@ class FcmMessageController extends PushBaseController {
     required FcmSentryRuntime sentryRuntime,
     required FcmSentrySetupCancellation cancellation,
   }) async {
-    await _resetSentryRuntime(sentryRuntime);
-    if (cancellation.isCancelled) return;
+    if (await _invalidateSentrySetupIfCancelled(
+      cancellation,
+      sentryRuntime,
+    )) {
+      return;
+    }
     if (cacheManager == null) {
       logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfigurationCacheManager is null');
+      await invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
       return;
     }
 
     final configCache = await _loadAllowedSentryConfiguration(cacheManager);
-    if (configCache == null || cancellation.isCancelled) return;
+    if (configCache == null || cancellation.isCancelled) {
+      await invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+      return;
+    }
 
+    final canReuseSentryRuntime = sentryRuntime.isAvailable &&
+        _appliedSentryConfiguration == configCache;
+    if (canReuseSentryRuntime) {
+      await _refreshRunningSentrySetup(
+        cacheManager,
+        configCache,
+        sentryRuntime,
+        cancellation,
+      );
+      return;
+    }
+
+    await _applySentryConfiguration(
+      cacheManager,
+      configCache,
+      sentryRuntime,
+      cancellation,
+    );
+  }
+
+  Future<void> _refreshRunningSentrySetup(
+    SentryConfigurationCacheManager cacheManager,
+    SentryConfigurationCache configCache,
+    FcmSentryRuntime sentryRuntime,
+    FcmSentrySetupCancellation cancellation,
+  ) async {
     await _restoreSentryUser(cacheManager, sentryRuntime, cancellation);
-    if (cancellation.isCancelled) return;
-
-    await sentryRuntime.initialize(configCache.toSentryConfig());
-    if (!await _canEnableSentry(
+    if (!await _isSentryConfigurationStillAllowed(
       cacheManager,
       configCache,
       cancellation,
     )) {
-      return;
-    }
-
-    await sentryRuntime.setReportingConsent(true);
-    if (cancellation.isCancelled) {
       await invalidateSentrySetup(
         cancellation,
         sentryRuntime: sentryRuntime,
@@ -218,9 +253,64 @@ class FcmMessageController extends PushBaseController {
     }
   }
 
-  Future<void> _resetSentryRuntime(FcmSentryRuntime sentryRuntime) async {
+  Future<void> _applySentryConfiguration(
+    SentryConfigurationCacheManager cacheManager,
+    SentryConfigurationCache configCache,
+    FcmSentryRuntime sentryRuntime,
+    FcmSentrySetupCancellation cancellation,
+  ) async {
     await sentryRuntime.setReportingConsent(false);
-    sentryRuntime.clearUser();
+    _appliedSentryConfiguration = null;
+    if (await _invalidateSentrySetupIfCancelled(
+      cancellation,
+      sentryRuntime,
+    )) {
+      return;
+    }
+
+    await _restoreSentryUser(cacheManager, sentryRuntime, cancellation);
+    if (await _invalidateSentrySetupIfCancelled(
+      cancellation,
+      sentryRuntime,
+    )) {
+      return;
+    }
+
+    await sentryRuntime.initialize(configCache.toSentryConfig());
+    if (!await _isSentryConfigurationStillAllowed(
+      cacheManager,
+      configCache,
+      cancellation,
+    )) {
+      await invalidateSentrySetup(
+        cancellation,
+        sentryRuntime: sentryRuntime,
+      );
+      return;
+    }
+
+    await sentryRuntime.setReportingConsent(true);
+    if (await _invalidateSentrySetupIfCancelled(
+      cancellation,
+      sentryRuntime,
+    )) {
+      return;
+    }
+    if (sentryRuntime.isAvailable) {
+      _appliedSentryConfiguration = configCache;
+    }
+  }
+
+  Future<bool> _invalidateSentrySetupIfCancelled(
+    FcmSentrySetupCancellation cancellation,
+    FcmSentryRuntime sentryRuntime,
+  ) async {
+    if (!cancellation.isCancelled) return false;
+    await invalidateSentrySetup(
+      cancellation,
+      sentryRuntime: sentryRuntime,
+    );
+    return true;
   }
 
   Future<SentryConfigurationCache?> _loadAllowedSentryConfiguration(
@@ -250,6 +340,7 @@ class FcmMessageController extends PushBaseController {
     FcmSentryRuntime sentryRuntime,
     FcmSentrySetupCancellation cancellation,
   ) async {
+    sentryRuntime.clearUser();
     try {
       final userCache = await cacheManager.getSentryUser();
       if (!cancellation.isCancelled) {
@@ -261,7 +352,7 @@ class FcmMessageController extends PushBaseController {
     }
   }
 
-  Future<bool> _canEnableSentry(
+  Future<bool> _isSentryConfigurationStillAllowed(
     SentryConfigurationCacheManager cacheManager,
     SentryConfigurationCache expectedConfig,
     FcmSentrySetupCancellation cancellation,
@@ -269,6 +360,7 @@ class FcmMessageController extends PushBaseController {
     if (cancellation.isCancelled) return false;
     final latestConfig = await cacheManager.getSentryConfiguration();
     if (cancellation.isCancelled) return false;
+    if (!latestConfig.isAvailable) return false;
     if (!latestConfig.isReportingAllowed) return false;
     return latestConfig == expectedConfig;
   }
@@ -303,6 +395,7 @@ class FcmMessageController extends PushBaseController {
     FcmSentryRuntime sentryRuntime = const FcmSentryRuntime(),
   }) {
     cancellation.cancel();
+    _appliedSentryConfiguration = null;
     sentryRuntime.clearUser();
     return sentryRuntime.setReportingConsent(false);
   }
