@@ -37,11 +37,13 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/upload/data/network/blob_upload_adapter.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workplace/data/workplace_dio.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -69,6 +71,10 @@ class NetworkBindings extends Bindings {
 
   void _bindingDio() {
     Get.put(Dio(Get.find<BaseOptions>()));
+    installBlobUploadAdapter(Get.find<Dio>());
+    // Drive uploads (#4827) ride this Dio too; without the adapter, web
+    // buffers the whole file again exactly like the JMAP path did pre-fix.
+    installBlobUploadAdapter(WorkplaceDio.instance);
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(const FlutterAppAuth());
     Get.put(AppAuthWebPlugin());
