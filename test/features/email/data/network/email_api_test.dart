@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -13,6 +14,8 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -1193,6 +1196,77 @@ void main() {
             properties,
           ),
           throwsA(isA<NotFoundEmailException>()),
+        );
+      });
+    });
+
+    group('sendEmail::test', () {
+      final emailRequest = EmailRequest(
+        email: Email(
+          mailboxIds: {MailboxId(Id('outbox')): true},
+          from: {EmailAddress(null, 'alice@linagora.com')},
+          to: {EmailAddress(null, 'rejected@linagora.com')},
+        ),
+        emailActionType: EmailActionType.compose,
+      );
+
+      test(
+        'SHOULD throw InvalidRecipientsException with the rejected addresses '
+        'WHEN EmailSubmission/set reports an invalidRecipients SetError\n'
+        'AND the addresses are read from the EmailSubmission/set response, not Email/set',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "sessionState": "state-1",
+          "methodResponses": [
+            [
+              "Email/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "created": <String, dynamic>{},
+              },
+              "c0"
+            ],
+            [
+              // Server tags the EmailSubmission/set response with the
+              // Email/set method name (onSuccessUpdateEmail side effect);
+              // ResponseObject.parse checks against that name, not
+              // "EmailSubmission/set".
+              "Email/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "notCreated": <String, dynamic>{
+                  "draft-1": <String, dynamic>{
+                    "type": "invalidRecipients",
+                    "description": "Invalid recipients",
+                    "invalidRecipients": ["rejected@linagora.com"],
+                  },
+                },
+              },
+              "c1"
+            ]
+          ]
+        });
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(isA<InvalidRecipientsException>().having(
+            (exception) => exception.invalidRecipients,
+            'invalidRecipients',
+            ['rejected@linagora.com'],
+          )),
         );
       });
     });
