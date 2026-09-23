@@ -1,3 +1,13 @@
+## [0.38.0] - 2026-09-23
+### Fixed
+- #4802 Update Twake Calendar footer separator
+- #4838 Resolve Workplace FQDN from the Linagora ecosystem fallback
+- #4678 Fix sidebar header icon sizing and long-press on touch platforms
+
+### Changed
+- #4623 Integrate design system event card invitation
+- Translate vi, ru, fr, mn
+
 ## [0.37.2] - 2026-09-15
 ### Added
 - Allow workplace to refresh jmap token
