@@ -660,4 +660,24 @@ void main() {
     expect(iosSharingManager.deleteCalls, 1);
   });
 
+  test('session cleanup clears user and Keychain before Sentry setup', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+    sentryManager.setUser(SentryUser(id: 'account-a'));
+
+    await ecosystem.clearForSessionEnd();
+
+    expect(sentryManager.userForScope, isNull);
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
 }
