@@ -28,8 +28,10 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
@@ -523,6 +525,28 @@ void main() {
           leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
           backgroundColor: anyNamed('backgroundColor'),
           textColor: anyNamed('textColor'),
+        ),
+      ).called(1);
+    });
+  });
+
+  group('send email failure toast:', () {
+    testWidgets('names the rejected addresses on an InvalidRecipientsException',
+        (tester) async {
+      await pumpLocalizedApp(tester);
+      clearInteractions(appToast);
+
+      mailboxDashboardController.handleFailureViewState(
+        SendEmailFailure(
+          exception: InvalidRecipientsException({}, {'bad@linagora.com'}),
+        ),
+      );
+
+      verify(
+        appToast.showToastErrorMessage(
+          any,
+          argThat(contains('bad@linagora.com')),
+          leadingSVGIcon: anyNamed('leadingSVGIcon'),
         ),
       ).called(1);
     });
