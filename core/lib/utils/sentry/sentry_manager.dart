@@ -400,6 +400,18 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     _syncUserScope();
   }
 
+  /// Clears account-owned Sentry state while preserving the instance default.
+  Future<void> clearSessionContext() async {
+    _sentryUser = null;
+    _userSentryReportingConsent = null;
+    _onReportingPermissionChanged();
+
+    await Future.wait([
+      _pendingScopeSync,
+      _pendingLifecycleTransition,
+    ]);
+  }
+
   /// Keeps the scope's user in step with the identity and the consent.
   ///
   /// The identity is remembered rather than dropped when reporting is off, so

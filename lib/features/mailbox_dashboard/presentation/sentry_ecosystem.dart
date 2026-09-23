@@ -240,7 +240,9 @@ class SentryEcosystem implements SentrySessionCleanup {
 
   @override
   Future<void> clearForSessionEnd() async {
-    SentryManager.instance.clearUser();
-    await clear();
+    await Future.wait([
+      SentryManager.instance.clearSessionContext(),
+      clear(),
+    ]);
   }
 }
