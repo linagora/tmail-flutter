@@ -7,7 +7,8 @@ abstract final class CozyBridge {
   static Future<dynamic> fetchJson({
     required String method,
     required String path,
-    required Map<String, dynamic> body,
+    Object? body,
+    Map<String, String>? headers,
   }) =>
       throw UnsupportedError('Cozy bridge is only available on web');
 }
