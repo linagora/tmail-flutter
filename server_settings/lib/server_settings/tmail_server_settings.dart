@@ -43,11 +43,18 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'ai.label-categorization.enabled')
   final bool? aiLabelCategorizationEnabled;
 
+  /// User opt-in for sending error reports to Sentry.
+  /// Tri-state: `null` means never chosen, so the instance-wide
+  /// `userOptInByDefault` from the Linagora ecosystem config applies.
+  @JsonKey(name: 'sentry.user-opt-in')
+  final bool? sentryUserOptIn;
+
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
     this.aiLabelCategorizationEnabled,
+    this.sentryUserOptIn,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -66,6 +73,17 @@ class TMailServerSettingOptions with EquatableMixin {
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
       aiLabelCategorizationEnabled: aiLabelCategorizationEnabled ?? this.aiLabelCategorizationEnabled,
+      sentryUserOptIn: sentryUserOptIn,
+    );
+  }
+
+  TMailServerSettingOptions withSentryUserOptIn(bool value) {
+    return TMailServerSettingOptions(
+      alwaysReadReceipts: alwaysReadReceipts,
+      displaySenderPriority: displaySenderPriority,
+      language: language,
+      aiLabelCategorizationEnabled: aiLabelCategorizationEnabled,
+      sentryUserOptIn: value,
     );
   }
 
@@ -75,5 +93,6 @@ class TMailServerSettingOptions with EquatableMixin {
     displaySenderPriority,
     language,
     aiLabelCategorizationEnabled,
+    sentryUserOptIn,
   ];
 }

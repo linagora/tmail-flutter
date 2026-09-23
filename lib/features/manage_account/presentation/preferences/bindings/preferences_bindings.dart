@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
@@ -6,7 +7,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/b
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/drive_attachment_preference_option.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/sentry_reporting_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
 
@@ -37,6 +40,7 @@ class PreferencesBindings extends Bindings {
         AILabelCategorizationPreferenceOption(updateServer),
         LabelPreferenceOption(updateLocal),
         DriveAttachmentPreferenceOption(updateLocal),
+        SentryReportingPreferenceOption(updateServer),
       ]);
     });
 
@@ -44,6 +48,10 @@ class PreferencesBindings extends Bindings {
       Get.find<GetServerSettingInteractor>(),
       Get.find<GetLocalSettingsInteractor>(),
       Get.find<PreferenceOptionRegistry>(),
+      sentryEcosystem: PlatformInfo.isMobile &&
+              Get.isRegistered<SentryEcosystem>()
+          ? Get.find<SentryEcosystem>()
+          : null,
     ));
   }
 }
