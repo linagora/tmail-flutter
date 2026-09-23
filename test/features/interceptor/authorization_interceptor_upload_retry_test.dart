@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -181,7 +182,7 @@ void main() {
         : null,
     extra: <String, dynamic>{
       FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
-        FileUploader.openReadExtraKey:
+        UploadRequestExtra.openReadKey:
             () => BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
       },
     },
@@ -193,7 +194,7 @@ void main() {
     },
     extra: <String, dynamic>{
       FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
-        FileUploader.openReadExtraKey: () => File(filePath).openRead(),
+        UploadRequestExtra.openReadKey: () => File(filePath).openRead(),
       },
     },
   );

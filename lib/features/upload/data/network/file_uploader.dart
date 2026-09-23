@@ -22,10 +22,8 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 
 class FileUploader {
 
-  /// Aliases of [UploadRequestExtra] for existing callers of this class.
+  /// Alias of [UploadRequestExtra.uploadAttachmentKey] for existing callers of this class.
   static const String uploadAttachmentExtraKey = UploadRequestExtra.uploadAttachmentKey;
-  static const String openReadExtraKey = UploadRequestExtra.openReadKey;
-  static const String sourceUrlExtraKey = UploadRequestExtra.sourceUrlKey;
 
   /// Charset detection only needs a prefix of the file, so an attachment is
   /// never fully materialised on the root isolate just to sniff its encoding.

@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 
@@ -326,7 +327,7 @@ void main() {
       // A bytes-backed FileInfo used to store one single-subscription stream,
       // so a second 401 replay would throw "already listened to". A factory
       // fixes that for every source, bytes included.
-      final openRead = capturedUploadExtra[FileUploader.openReadExtraKey]
+      final openRead = capturedUploadExtra[UploadRequestExtra.openReadKey]
           as Stream<List<int>> Function();
       expect(await openRead().toList(), [sourceBytes]);
       expect(await openRead().toList(), [sourceBytes]);
