@@ -1,1 +1,232 @@
-{}
+{
+  "loginInputUrlMessage": "Giriş yapmak ve mesajlarınıza erişmek için lütfen JMAP sunucunuza bağlanın.",
+  "@loginInputUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputCredentialMessage": "Oturum açmak için giriş bilgilerinizi girin",
+  "@loginInputCredentialMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "badCredentials": "Hatalı giriş bilgileri",
+  "@badCredentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "next": "İleri",
+  "@next": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_https": "https://",
+  "@prefix_https": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email": "e-posta",
+  "@email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "password": "şifre",
+  "@password": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login": "Giriş",
+  "@login": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signIn": "Giriş yap",
+  "@signIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredEmail": "E-posta adresi gereklidir",
+  "@requiredEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredPassword": "Şifre gereklidir",
+  "@requiredPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredUrl": "Sunucu adresi gereklidir",
+  "@requiredUrl": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapStandard": "JMAP standardı",
+  "@jmapStandard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "encryptedMailbox": "Şifrelenmiş posta kutusu",
+  "@encryptedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageEmailAsATeam": "E-postaları ekip olarak yönetin",
+  "@manageEmailAsATeam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "multipleIntegrations": "Birden fazla entegrasyon",
+  "@multipleIntegrations": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unknownError": "Bilinmeyen bir hata oluştu, lütfen tekrar deneyin",
+  "@unknownError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unexpectedError": "Beklenmeyen hata: {errorMessage}",
+  "@unexpectedError": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "handshakeException": "İstemcide bağlantı kurulurken hata oluştu: {errorMessage}",
+  "@handshakeException": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "personalFolders": "Kişisel klasörler",
+  "@personalFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder": "Yeni klasör",
+  "@new_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply": "Yanıtla",
+  "@reply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forward": "İlet",
+  "@forward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_mail_selected": "Hiçbir e-posta seçilmedi",
+  "@no_mail_selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "from_email_address_prefix": "Kimden",
+  "@from_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to_email_address_prefix": "Kime",
+  "@to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread_email_notification": "yeni",
+  "@unread_email_notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_text_email_address": "Ad veya e-posta adresi",
+  "@hint_text_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject_email": "Konu",
+  "@subject_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_content_email_composer": "E-postanızı buraya yazmaya başlayın",
+  "@hint_content_email_composer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_email_being_sent": "E-postanız gönderiliyor...",
+  "@your_email_being_sent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_recipient": "E-postanızın en az bir alıcısı olmalıdır",
+  "@message_dialog_send_email_without_recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_unread": "Okunmamış olarak işaretle",
+  "@mark_as_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_read": "Okundu olarak işaretle",
+  "@mark_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_trash": "Çöp kutusuna taşı",
+  "@move_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_spam": "İstenmeyen klasörüne taşı",
+  "@move_to_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "an_error_occurred": "Hata! Bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+  "@an_error_occurred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
