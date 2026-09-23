@@ -346,6 +346,8 @@ void main() {
       Get.put<SentrySessionCleanup>(sentrySessionCleanup);
       addTearDown(() => Get.delete<SentrySessionCleanup>());
       clearInteractions(mockTwakeAppManager);
+      clearInteractions(mockCachingManager);
+      clearInteractions(mockLanguageCacheManager);
       clearInteractions(mockDeleteAuthorityOidcInteractor);
       clearInteractions(mockDeleteCredentialInteractor);
       when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer(
