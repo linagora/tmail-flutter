@@ -1029,6 +1029,11 @@ class ComposerController extends BaseController
     } else if (resultState is SendEmailFailure ||
         resultState is GenerateEmailFailure) {
       final exception = resultState.exception;
+      // Drops marks from a prior invalidRecipients failure so they do not
+      // linger on addresses this failure says nothing about.
+      if (exception is! InvalidRecipientsException) {
+        invalidRecipients.value = {};
+      }
       if (exception is BadCredentialsException) {
         _sendButtonState = ButtonState.enabled;
         handleBadCredentialsException();

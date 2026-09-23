@@ -96,6 +96,7 @@ extension HandleEditRecipientExtension on ComposerController {
       default:
         break;
     }
+    dropInvalidRecipientsNoLongerListed();
   }
 
   void _setTextAndFocus({
