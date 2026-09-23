@@ -19,4 +19,9 @@ abstract class WorkplaceRepository {
     required WorkplaceUploadFileSpec spec,
     WorkplaceUploadTransfer transfer,
   });
+
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  });
 }
