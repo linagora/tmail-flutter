@@ -1,7 +1,6 @@
 @TestOn('chrome')
 library;
 
-import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:core/presentation/resources/image_paths.dart';
@@ -18,12 +17,9 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 
 import '../../test_utils/cozy_bridge_test_helper.dart';
 
-// Queues responses per HTTP request; used only by the bearer-token fallback.
-class _SequentialAdapter implements HttpClientAdapter {
-  final List<dynamic> _queue;
-  int _index = 0;
-
-  _SequentialAdapter(this._queue);
+// Throws a network DioException and records whether it was ever hit.
+class _ErrorAdapter implements HttpClientAdapter {
+  bool called = false;
 
   @override
   Future<ResponseBody> fetch(
@@ -31,50 +27,18 @@ class _SequentialAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future? cancelFuture,
   ) async {
-    return ResponseBody.fromString(
-      jsonEncode(_queue[_index++]),
-      200,
-      headers: {
-        Headers.contentTypeHeader: ['application/json; charset=utf-8'],
-      },
-    );
+    called = true;
+    throw DioException(requestOptions: options, message: 'Network error');
   }
 
   @override
   void close({bool force = false}) {}
 }
 
-class _ErrorAdapter implements HttpClientAdapter {
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future? cancelFuture,
-  ) async =>
-      throw DioException(requestOptions: options, message: 'Network error');
-
-  @override
-  void close({bool force = false}) {}
-}
-
 final _platformUri = Uri.parse('https://platform.example.com');
-final _tokenResponse = {'access_token': 'drive-access-token'};
 final _bridgeIntentResponse = {
   'data': {
     'id': 'intent-bridge',
-    'attributes': {
-      'action': 'PICK',
-      'type': 'files',
-      'permissions': ['GET'],
-      'services': [
-        {'href': 'https://drive.example.com/pick'},
-      ],
-    },
-  },
-};
-final _bearerIntentResponse = {
-  'data': {
-    'id': 'intent-bearer',
     'attributes': {
       'action': 'PICK',
       'type': 'files',
@@ -145,35 +109,22 @@ void main() {
       expect(result!.intentId, equals('intent-bridge'));
     });
 
-    testWidgets('falls back to bearer-token flow when the bridge call throws', (tester) async {
+    testWidgets('propagates the bridge error directly, no bearer fallback', (tester) async {
+      // The bridge may already have dispatched the request, so a bridge
+      // failure is never retried over bearer.
       installCozyBridge((_) => throw StateError('bridge rejected'));
-      WorkplaceDio.setInstance(
-        Dio()..httpClientAdapter = _SequentialAdapter([_tokenResponse, _bearerIntentResponse]),
-      );
+      final adapter = _ErrorAdapter();
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       final ext = _makeExtension(ValueNotifier<Uri?>(_platformUri));
       final callback = await extractCallback(tester, ext);
 
-      final result = await tester.runAsync(
-        () => callback(filePickerConfig: _filePickerConfig),
-      );
-
-      expect(result!.intentId, equals('intent-bearer'));
-    });
-
-    testWidgets('propagates the bearer-flow error when both the bridge and the fallback fail', (tester) async {
-      installCozyBridge((_) => throw StateError('bridge rejected'));
-      WorkplaceDio.setInstance(Dio()..httpClientAdapter = _ErrorAdapter());
-
-      final ext = _makeExtension(ValueNotifier<Uri?>(_platformUri));
-      final callback = await extractCallback(tester, ext);
-
+      // The bridge error crosses a JS Promise boundary, so its Dart type
+      // isn't preserved — assert it throws, not what it throws.
       await tester.runAsync(() async {
-        await expectLater(
-          callback(filePickerConfig: _filePickerConfig),
-          throwsA(isA<DioException>()),
-        );
+        await expectLater(callback(filePickerConfig: _filePickerConfig), throwsA(anything));
       });
+      expect(adapter.called, isFalse);
     });
   });
 }
