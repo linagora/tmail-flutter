@@ -27,9 +27,25 @@ void main() {
     );
   }
 
+  void expectParsedRecipients(
+    String description,
+    Map<String, dynamic> submissionArguments,
+    Object expected, {
+    MethodCallId? methodCallId,
+  }) {
+    test(description, () {
+      final responseObject = responseObjectWith(submissionArguments);
+      expect(
+        responseObject.parseInvalidRecipients(methodCallId ?? submissionMethodCallId),
+        expected,
+      );
+    });
+  }
+
   group('ResponseObjectExtension::parseInvalidRecipients', () {
-    test('should return the addresses listed by an invalidRecipients SetError', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should return the addresses listed by an invalidRecipients SetError',
+      <String, dynamic>{
         'notCreated': <String, dynamic>{
           'create-1': <String, dynamic>{
             'type': 'invalidRecipients',
@@ -37,16 +53,13 @@ void main() {
             'invalidRecipients': ['alice@invalid', 'bob@invalid'],
           },
         },
-      });
+      },
+      ['alice@invalid', 'bob@invalid'],
+    );
 
-      expect(
-        responseObject.parseInvalidRecipients(submissionMethodCallId),
-        ['alice@invalid', 'bob@invalid'],
-      );
-    });
-
-    test('should deduplicate addresses reported by several SetErrors', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should deduplicate addresses reported by several SetErrors',
+      <String, dynamic>{
         'notCreated': <String, dynamic>{
           'create-1': <String, dynamic>{
             'type': 'invalidRecipients',
@@ -57,68 +70,53 @@ void main() {
             'invalidRecipients': ['alice@invalid', 'bob@invalid'],
           },
         },
-      });
+      },
+      ['alice@invalid', 'bob@invalid'],
+    );
 
-      expect(
-        responseObject.parseInvalidRecipients(submissionMethodCallId),
-        ['alice@invalid', 'bob@invalid'],
-      );
-    });
-
-    test('should return empty when the SetError is of another type', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should return empty when the SetError is of another type',
+      <String, dynamic>{
         'notCreated': <String, dynamic>{
           'create-1': <String, dynamic>{
             'type': 'overQuota',
             'description': 'Over quota',
           },
         },
-      });
+      },
+      isEmpty,
+    );
 
-      expect(
-        responseObject.parseInvalidRecipients(submissionMethodCallId),
-        isEmpty,
-      );
-    });
-
-    test('should return empty when the SetError omits the invalidRecipients property', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should return empty when the SetError omits the invalidRecipients property',
+      <String, dynamic>{
         'notCreated': <String, dynamic>{
           'create-1': <String, dynamic>{'type': 'invalidRecipients'},
         },
-      });
+      },
+      isEmpty,
+    );
 
-      expect(
-        responseObject.parseInvalidRecipients(submissionMethodCallId),
-        isEmpty,
-      );
-    });
-
-    test('should return empty when the response has no notCreated map', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should return empty when the response has no notCreated map',
+      <String, dynamic>{
         'created': <String, dynamic>{'create-1': <String, dynamic>{}},
-      });
+      },
+      isEmpty,
+    );
 
-      expect(
-        responseObject.parseInvalidRecipients(submissionMethodCallId),
-        isEmpty,
-      );
-    });
-
-    test('should return empty when no response matches the method call id', () {
-      final responseObject = responseObjectWith(<String, dynamic>{
+    expectParsedRecipients(
+      'should return empty when no response matches the method call id',
+      <String, dynamic>{
         'notCreated': <String, dynamic>{
           'create-1': <String, dynamic>{
             'type': 'invalidRecipients',
             'invalidRecipients': ['alice@invalid'],
           },
         },
-      });
-
-      expect(
-        responseObject.parseInvalidRecipients(MethodCallId('unknown')),
-        isEmpty,
-      );
-    });
+      },
+      isEmpty,
+      methodCallId: MethodCallId('unknown'),
+    );
   });
 }
