@@ -6,10 +6,10 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
@@ -313,16 +313,17 @@ class RichTextWebController extends GetxController {
     menuOrderListController.hideMenu();
   }
 
-  void insertImageAsBase64({required PlatformFile platformFile, int? maxWidth}) {
-    if (platformFile.bytes != null) {
-      final base64Data = base64Encode(platformFile.bytes!);
-      final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${platformFile.extension}');
-      editorController.insertHtml(
-        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
-      );
-    } else {
-      logWarning("RichTextWebController::insertImageAsBase64: bytes is null");
+  void insertImageAsBase64({required FileInfo fileInfo, int? maxWidth}) async {
+    final bytes = await fileInfo.readBytes();
+    if (bytes.isEmpty) {
+      logWarning("RichTextWebController::insertImageAsBase64: bytes is empty");
+      return;
     }
+    final base64Data = base64Encode(bytes);
+    final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}');
+    editorController.insertHtml(
+      '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${fileInfo.fileName}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
+    );
   }
 
   void toggleFormattingOptions() {

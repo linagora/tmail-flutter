@@ -8,7 +8,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -27,7 +26,6 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/identity_cr
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -226,15 +224,14 @@ class PublicAssetController extends BaseController {
     newlyPickedPublicAssetIds = publicAssetIds;
   }
 
-  void uploadFileToBlob(PlatformFile platformFile) {
+  void uploadFileToBlob(FileInfo fileInfo) {
     isUploading.value = true;
-    _uploadFileToBlobAction(platformFile);
+    _uploadFileToBlobAction(fileInfo);
   }
 
-  void _uploadFileToBlobAction(PlatformFile platformFile) {
+  void _uploadFileToBlobAction(FileInfo fileInfo) {
     if (session == null || accountId == null) return;
 
-    final fileInfo = platformFile.toFileInfo();
     try {
       final uploadUri = session!.getUploadUri(accountId!, jmapUrl: dynamicUrlInterceptors.jmapUrl);
       consumeState(_uploadAttachmentInteractor.execute(fileInfo, uploadUri));
