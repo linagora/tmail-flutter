@@ -6,14 +6,14 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_size_snapshot.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/validation_decision.dart';
 
-const _request = AttachmentUploadRequest(
-  sizes: AttachmentUploadSizeSnapshot(
+final _request = AttachmentUploadRequest(
+  sizes: const AttachmentUploadSizeSnapshot(
     currentAllAttachmentBytes: 0,
     proposedAllAttachmentBytes: 0,
     currentRegularAttachmentBytes: 0,
     proposedRegularAttachmentBytes: 0,
   ),
-  limits: AttachmentUploadLimits(warningLimitBytes: 1000000000),
+  limits: const AttachmentUploadLimits(warningLimitBytes: 1000000000),
 );
 
 class _StubAttachmentUploadRule implements AttachmentUploadRule {

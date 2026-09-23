@@ -25,6 +25,7 @@ final class AttachmentUploadRequestFactory {
         proposedRegularAttachmentBytes: proposedRegularBytes,
       ),
       limits: _limitsOf(state),
+      files: candidate,
     );
   }
 
