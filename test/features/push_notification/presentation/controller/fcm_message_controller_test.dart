@@ -50,19 +50,30 @@ class _FakeCacheManager implements SentryConfigurationCacheManager {
 }
 
 class _FakeSentryRuntime extends FcmSentryRuntime {
-  _FakeSentryRuntime({this.onInitialize, this.onSetReportingConsent});
+  _FakeSentryRuntime({
+    this.onInitialize,
+    this.onSetReportingConsent,
+    bool isAvailable = false,
+  }) : _isAvailable = isAvailable;
 
   final Future<void> Function()? onInitialize;
   final Future<void> Function(bool? consent)? onSetReportingConsent;
+  bool _isAvailable;
   final consents = <bool?>[];
   final initializedConfigs = <SentryConfig>[];
   final users = <SentryUser>[];
+  SentryUser? currentUser;
   int clearUserCalls = 0;
+
+  @override
+  bool get isAvailable => _isAvailable;
 
   @override
   Future<void> setReportingConsent(bool? consent) async {
     consents.add(consent);
+    if (consent == false) _isAvailable = false;
     await onSetReportingConsent?.call(consent);
+    if (consent == true) _isAvailable = true;
   }
 
   @override
@@ -73,11 +84,13 @@ class _FakeSentryRuntime extends FcmSentryRuntime {
 
   @override
   void setUser(SentryUser user) {
+    currentUser = user;
     users.add(user);
   }
 
   @override
   void clearUser() {
+    currentUser = null;
     clearUserCalls++;
   }
 }
@@ -85,11 +98,12 @@ class _FakeSentryRuntime extends FcmSentryRuntime {
 SentryConfigurationCache _configuration({
   required bool isAvailable,
   required bool isReportingAllowed,
+  String release = '1.0.0',
 }) =>
     SentryConfigurationCache(
       dsn: 'https://test@sentry.io/123',
       environment: 'test',
-      release: '1.0.0',
+      release: release,
       tracesSampleRate: 0.1,
       profilesSampleRate: 0.1,
       enableLogs: true,
@@ -148,6 +162,114 @@ void main() {
     expect(sentryRuntime.initializedConfigs, hasLength(1));
     expect(sentryRuntime.initializedConfigs.single.isReportingAllowed, isTrue);
     expect(sentryRuntime.users.single.id, 'account-a');
+  });
+
+  test('reuses a running Sentry SDK when the cached config is unchanged', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(
+        isAvailable: true,
+        isReportingAllowed: true,
+      ),
+      user: _user('account-a'),
+    );
+    final sentryRuntime = _FakeSentryRuntime();
+
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+
+    expect(sentryRuntime.consents, [false, true]);
+    expect(sentryRuntime.initializedConfigs, hasLength(1));
+    expect(sentryRuntime.clearUserCalls, 2);
+    expect(cacheManager.userReads, 2);
+  });
+
+  test('reinitializes a running Sentry SDK when the cached config changes', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(
+        isAvailable: true,
+        isReportingAllowed: true,
+      ),
+      user: _user('account-a'),
+    );
+    final sentryRuntime = _FakeSentryRuntime();
+
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+    cacheManager.configuration = _configuration(
+      isAvailable: true,
+      isReportingAllowed: true,
+      release: '2.0.0',
+    );
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+
+    expect(sentryRuntime.consents, [false, true, false, true]);
+    expect(
+      sentryRuntime.initializedConfigs.map((config) => config.release),
+      ['1.0.0', '2.0.0'],
+    );
+  });
+
+  test('clears a stale user without restarting an unchanged running SDK', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(
+        isAvailable: true,
+        isReportingAllowed: true,
+      ),
+      user: _user('account-a'),
+    );
+    final sentryRuntime = _FakeSentryRuntime();
+
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+    cacheManager.user = null;
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+
+    expect(sentryRuntime.consents, [false, true]);
+    expect(sentryRuntime.initializedConfigs, hasLength(1));
+    expect(sentryRuntime.clearUserCalls, 2);
+    expect(sentryRuntime.users, hasLength(1));
+    expect(sentryRuntime.currentUser, isNull);
+  });
+
+  test('closes a running Sentry SDK when the cached config becomes unreadable', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(
+        isAvailable: true,
+        isReportingAllowed: true,
+      ),
+      user: _user('account-a'),
+    );
+    final sentryRuntime = _FakeSentryRuntime();
+
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+    cacheManager.configuration = null;
+    await FcmMessageController.instance.setUpSentryConfiguration(
+      cacheManager: cacheManager,
+      sentryRuntime: sentryRuntime,
+    );
+
+    expect(sentryRuntime.consents, [false, true, false]);
+    expect(sentryRuntime.initializedConfigs, hasLength(1));
+    expect(sentryRuntime.isAvailable, isFalse);
   });
 
   test('does not initialize Sentry when the cached config is unavailable', () async {
@@ -258,7 +380,7 @@ void main() {
     finishInitialize.complete();
     await setup;
 
-    expect(sentryRuntime.consents, [false]);
+    expect(sentryRuntime.consents, [false, false]);
     expect(sentryRuntime.initializedConfigs, hasLength(1));
   });
 
@@ -297,7 +419,7 @@ void main() {
       await setup;
 
       expect(cancellation.isCancelled, isTrue);
-      expect(sentryRuntime.consents, [false, false]);
+      expect(sentryRuntime.consents, [false, false, false]);
       expect(sentryRuntime.consents.last, isFalse);
     },
   );
