@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/default_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/empty_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/extensions/calendar_url_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
@@ -241,6 +242,45 @@ void main() {
         expect(() => linagoraEcosystem.calendarUrl, returnsNormally);
         expect(linagoraEcosystem.calendarUrl, isNull);
       });
+    }
+
+    final malformedCalendarUrlCases = [
+      (
+        description: 'the scheme separator is missing',
+        calendarUrl: 'https//calendar.domain.tld',
+      ),
+      (
+        description: 'the host is missing',
+        calendarUrl: 'https://',
+      ),
+      (
+        description: 'user info is present',
+        calendarUrl: 'https://user@calendar.domain.tld',
+      ),
+      (
+        description: 'the port is malformed',
+        calendarUrl: 'https://calendar.domain.tld:invalid',
+      ),
+      (
+        description: 'the port is out of range',
+        calendarUrl: 'https://calendar.domain.tld:65536',
+      ),
+    ];
+
+    for (final testCase in malformedCalendarUrlCases) {
+      test(
+        'Should not resolve a calendar URL when ${testCase.description}',
+        () {
+          final linagoraEcosystem = LinagoraEcosystem.deserialize({
+            'calendarUrl': testCase.calendarUrl,
+          });
+
+          expect(
+            linagoraEcosystem.calendarUrl.resolveCalendarEventUrl('event-42'),
+            isNull,
+          );
+        },
+      );
     }
 
     test('Should return workplace FQDN fallback template when configured', () {
