@@ -141,6 +141,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:workplace/domain/entity/drive_document.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/drive_oversize_attachment_recovery.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/concurrency_gate.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -203,6 +204,10 @@ class ComposerController extends BaseController
         stateSource: ComposerAttachmentUploadStateSource.fromServerCapability(
           uploadController: uploadController,
           maxSizeAttachmentsPerEmail: () => mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value,
+        ),
+        recoveryBuilder: (context) => DriveOversizeAttachmentRecovery(
+          context: context,
+          insertHtml: insertHtmlIntoEditor,
         ),
       );
 
@@ -1022,24 +1027,31 @@ class ComposerController extends BaseController
     }
   }
 
+  Future<bool> insertHtmlIntoEditor(String html) async {
+    if (PlatformInfo.isWeb) {
+      final editorController = richTextWebController?.editorController;
+      if (editorController == null) return false;
+      editorController.insertHtml(html);
+      // insertHtml posts to the iframe and returns immediately; getText() shares
+      // an uncorrelated message channel with other callers (e.g.
+      // displayScreenTypeComposerAction), so it can't safely confirm the insert
+      // landed. endOfFrame mirrors the mobile branch below instead.
+      await SchedulerBinding.instance.endOfFrame;
+      return true;
+    }
+    final editorApi = htmlEditorApi;
+    if (editorApi == null) return false;
+    await richTextMobileTabletController?.restoreMobileEditorFocus();
+    await editorApi.insertHtml(html);
+    await SchedulerBinding.instance.endOfFrame;
+    return true;
+  }
+
   Future<void> handleDrivePickResult(List<DriveDocument> result) async {
     try {
       await Get.find<DriveAttachmentHandler>().handleDrivePickResult(
         result,
-        insertHtml: (html) async {
-          if (PlatformInfo.isWeb) {
-            final editorController = richTextWebController?.editorController;
-            if (editorController == null) return false;
-            editorController.insertHtml(html);
-            return true;
-          }
-          final editorApi = htmlEditorApi;
-          if (editorApi == null) return false;
-          await richTextMobileTabletController?.restoreMobileEditorFocus();
-          await editorApi.insertHtml(html);
-          await SchedulerBinding.instance.endOfFrame;
-          return true;
-        },
+        insertHtml: insertHtmlIntoEditor,
         transferDriveDocuments: (docs) => _transferDriveDocuments(docs),
         appLocalizations: currentContext != null ? AppLocalizations.of(currentContext!) : null,
       );
