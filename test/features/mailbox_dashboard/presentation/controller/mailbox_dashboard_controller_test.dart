@@ -25,6 +25,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
@@ -97,6 +98,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -528,6 +530,35 @@ void main() {
         ),
       ).called(1);
     });
+  });
+
+  testWidgets('applies explicit Sentry opt-in and opt-out from server settings', (tester) async {
+    await pumpLocalizedApp(tester);
+    await tester.pumpAndSettle();
+    final sentryManager = SentryManager.instance
+      ..setSentryReportingDefault(false)
+      ..setSentryReportingConsent(null);
+    addTearDown(() {
+      sentryManager
+        ..setSentryReportingConsent(null)
+        ..setSentryReportingDefault(true);
+    });
+
+    mailboxDashboardController.handleSuccessViewState(
+      GetServerSettingSuccess(
+        TMailServerSettingOptions(sentryUserOptIn: true),
+      ),
+    );
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
+    await tester.pumpAndSettle();
+
+    mailboxDashboardController.handleSuccessViewState(
+      GetServerSettingSuccess(
+        TMailServerSettingOptions(sentryUserOptIn: false),
+      ),
+    );
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    await tester.pumpAndSettle();
   });
 
   group('search/sort/filter feature:', () {

@@ -557,6 +557,7 @@ class MailboxDashBoardController extends ReloadableController
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
       setupAINeedsActionSetting(options: success.settingOption);
       initializeAppLanguage(success);
+      applySentryReportingConsent(_sentryEcosystem, success.settingOption.sentryUserOptIn);
     } else if (success is ClearMailboxSuccess) {
       clearMailboxSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
