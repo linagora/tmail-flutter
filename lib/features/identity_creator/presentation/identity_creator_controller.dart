@@ -66,6 +66,7 @@ import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_co
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/web_pick_options.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -684,11 +685,11 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   void pickImage(BuildContext context) async {
     clearFocusEditor(context);
 
-    final filePickerResult = await FilePicker.platform.pickFiles(
+    final pickedFile = await FilePicker.pickFile(
       type: FileType.image,
-      withData: PlatformInfo.isWeb,
+      webOptions: lazyWebPickOptions(),
     );
-    final fileInfo = filePickerResult?.files.firstOrNull?.toFileInfo();
+    final fileInfo = await pickedFile?.toFileInfo();
 
     if (context.mounted) {
       if (fileInfo != null && fileInfo is! FilePlaceholderInfo) {

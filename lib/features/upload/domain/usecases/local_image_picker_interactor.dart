@@ -1,11 +1,11 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_state.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/web_pick_options.dart';
 
 class LocalImagePickerInteractor {
 
@@ -15,15 +15,13 @@ class LocalImagePickerInteractor {
     try {
       yield Right<Failure, Success>(LocalImagePickerLoading());
 
-      final filePickerResult = await FilePicker.platform.pickFiles(
+      final pickedFile = await FilePicker.pickFile(
         type: FileType.image,
-        allowMultiple: false,
-        withReadStream: PlatformInfo.isMobile,
-        withData: PlatformInfo.isWeb
+        webOptions: lazyWebPickOptions(),
       );
 
-      if (filePickerResult?.files.isNotEmpty == true) {
-        final fileInfo = filePickerResult!.files.first.toFileInfo();
+      if (pickedFile != null) {
+        final fileInfo = await pickedFile.toFileInfo();
         yield Right<Failure, Success>(LocalImagePickerSuccess(fileInfo));
       } else {
         yield Left<Failure, Success>(LocalImagePickerFailure(const PickFileCanceledException()));
