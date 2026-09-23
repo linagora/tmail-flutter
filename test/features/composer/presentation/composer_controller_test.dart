@@ -37,9 +37,11 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart' show UpdateTemplateEmailSuccess;
@@ -211,6 +213,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   bool isAIScribeEndpointAvailable({Session? session, AccountId? accountId}) {
     return false;
   }
+
+  @override
+  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(dynamic failure) => false;
 
   @override
   LabelController get labelController => MockLabelController();
@@ -1368,6 +1373,58 @@ void main() {
           composerController?.invalidRecipients.value,
           {keptAddress.emailAddress.toLowerCase()},
         );
+      });
+    });
+
+    group('handleSendMessageResult test:', () {
+      Future<BuildContext> pumpContext(WidgetTester tester) async {
+        late BuildContext capturedContext;
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+          child: Builder(builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          }),
+        ));
+        await tester.pump();
+        return capturedContext;
+      }
+
+      testWidgets(
+        'Should mark and toast the rejected addresses\n'
+        'When sending fails with InvalidRecipientsException',
+      (tester) async {
+        final context = await pumpContext(tester);
+        composerController?.invalidRecipients.value = {'stale@linagora.com'};
+
+        await composerController?.handleSendMessageResult(
+          context: context,
+          resultState: SendEmailFailure(
+            exception: InvalidRecipientsException({}, {'Bad@Linagora.com'}),
+          ),
+        );
+
+        expect(composerController?.invalidRecipients.value, {'bad@linagora.com'});
+        verify(mockAppToast.showToastErrorMessage(
+          any,
+          argThat(contains('Bad@Linagora.com')),
+        )).called(1);
+      });
+
+      testWidgets(
+        'Should clear the invalid marks\n'
+        'When sending fails with an exception other than InvalidRecipientsException',
+      (tester) async {
+        final context = await pumpContext(tester);
+        // Unmounted context skips the generic confirm dialog.
+        await tester.pumpWidget(const SizedBox.shrink());
+        composerController?.invalidRecipients.value = {'bad@linagora.com'};
+
+        await composerController?.handleSendMessageResult(
+          context: context,
+          resultState: SendEmailFailure(exception: SetMethodException({})),
+        );
+
+        expect(composerController?.invalidRecipients.value, isEmpty);
       });
     });
 

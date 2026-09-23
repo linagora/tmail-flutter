@@ -1006,6 +1006,16 @@ class ComposerController extends BaseController
       uploadUri: uploadUri,
     );
 
+    // handleSendMessageResult only uses context after its own mounted check.
+    // ignore: use_build_context_synchronously
+    await handleSendMessageResult(context: context, resultState: resultState);
+  }
+
+  @visibleForTesting
+  Future<void> handleSendMessageResult({
+    required BuildContext context,
+    required dynamic resultState,
+  }) async {
     if (resultState is SendEmailSuccess ||
         mailboxDashBoardController
             .validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
