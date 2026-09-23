@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/invalid_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
