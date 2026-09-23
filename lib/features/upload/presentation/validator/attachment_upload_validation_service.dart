@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_request_factory.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_state_source.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_gate.dart';
+import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_recovery.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_validation_feedback.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_validation_feedback_impl.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -29,15 +30,18 @@ class AttachmentUploadValidationService {
   final AttachmentUploadStateSource _stateSource;
   final AttachmentUploadGate _gate;
   final AttachmentValidationFeedbackBuilder _feedbackBuilder;
+  final AttachmentUploadRecoveryBuilder? _recoveryBuilder;
 
   AttachmentUploadValidationService({
     required AttachmentUploadStateSource stateSource,
     AttachmentUploadValidator? validator,
     AttachmentValidationFeedbackBuilder? feedbackBuilder,
+    AttachmentUploadRecoveryBuilder? recoveryBuilder,
   })  : _stateSource = stateSource,
         _gate = AttachmentUploadGate(
             validator ?? AttachmentUploadValidator([const AttachmentSizeLimitRule()])),
-        _feedbackBuilder = feedbackBuilder ?? AttachmentValidationFeedbackImpl.new;
+        _feedbackBuilder = feedbackBuilder ?? AttachmentValidationFeedbackImpl.new,
+        _recoveryBuilder = recoveryBuilder;
 
   /// Bytes still attachable under the server cap, `null` when it advertises none.
   int? get remainingCapacityBytes {
@@ -103,6 +107,12 @@ class AttachmentUploadValidationService {
       feedbackFactory: () {
         final resolvedContext = context ?? currentContext;
         return resolvedContext == null ? null : _feedbackBuilder(resolvedContext);
+      },
+      recoveryFactory: () {
+        final resolvedContext = context ?? currentContext;
+        return resolvedContext == null || _recoveryBuilder == null
+            ? null
+            : _recoveryBuilder(resolvedContext);
       },
     );
     if (allowed) {

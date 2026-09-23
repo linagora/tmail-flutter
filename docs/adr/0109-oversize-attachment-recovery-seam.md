@@ -62,12 +62,12 @@ Accepted
 - The rule rejects on the running total, so a rejected batch can hold no oversize file at all:
   24 MB already attached plus a 2 MB file under a 25 MB cap.
 - A recovery therefore takes the whole rejected batch, not the files over the cap.
-- Inline files are excluded: a pasted screenshot stays in the body, never becomes a link.
-- A batch with no regular file carries nothing to act on, so it shows the dialog.
+- Inline files are included: an oversize pasted image reaches the recovery like any picked file.
+- A recovery that does not handle a batch returns false, so the dialog shows.
 
 ```
 on ValidationRejected(failure):
-  if request.regularFiles.isNotEmpty:
+  if request.files.isNotEmpty:
     try:
       if await recovery?.recover(failure, request) == true:
         return false               # recovery owns the UX from here
