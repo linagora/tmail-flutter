@@ -36,4 +36,10 @@ class WorkplaceRepositoryImpl implements WorkplaceRepository {
     required WorkplaceUploadFileSpec spec,
     WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) => _driveDataSource.uploadFile(context: context, spec: spec, transfer: transfer);
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) => _driveDataSource.createShareLink(context: context, fileId: fileId);
 }

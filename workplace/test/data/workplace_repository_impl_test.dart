@@ -36,6 +36,12 @@ class _RecordingDriveDataSource implements WorkplaceDriveDataSource {
     this.transfer = transfer;
     return const DriveUploadedFile(fileId: 'file-1', name: 'report.pdf');
   }
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) => throw UnimplementedError();
 }
 
 void main() {

@@ -4,12 +4,14 @@ import 'package:dio/dio.dart';
 import '../model/workplace_enums.dart';
 import '../model/workplace_file_response.dart';
 import '../datasource/workplace_drive_datasource.dart';
+import '../model/workplace_permission_request.dart';
+import '../model/workplace_permission_response.dart';
 import 'workplace_request_executor.dart';
 import '../../domain/entity/drive_uploaded_file.dart';
 import '../../domain/entity/workplace_upload_file_spec.dart';
 import '../../domain/entity/workplace_upload_transfer.dart';
 
-/// Writes a file to the Mail magic folder.
+/// Writes a file to the Mail magic folder and mints its public share link.
 class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
   WorkplaceDriveDataSourceImpl({WorkplaceRequestExecutor? executor})
       : _executor = executor ?? const WorkplaceRequestExecutor();
@@ -97,5 +99,61 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
       throw StateError('Upload response contains no file id');
     }
     return DriveUploadedFile(fileId: doc.id, name: doc.attributes?.name ?? '');
+  }
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) async {
+    final data = await _executor.send(
+      context: context,
+      route: const WorkplaceRequestRoute(
+        method: 'POST',
+        pathSegments: ['permissions'],
+        queryParameters: {'codes': 'code'},
+      ),
+      body: WorkplaceRequestBody(
+        headers: const {'Content-Type': 'application/json'},
+        data: _buildPermissionRequest(fileId),
+      ),
+    );
+    final shareCode = _parseShareCode(data);
+    return _driveAppUrl(context.platformUrl).replace(
+      path: '/public',
+      queryParameters: {'sharecode': shareCode},
+    );
+  }
+
+  Map<String, dynamic> _buildPermissionRequest(String fileId) => WorkplacePermissionRequest(
+        data: WorkplacePermissionDataRequest(
+          type: WorkplaceDataRequestType.permissions,
+          attributes: WorkplacePermissionAttributesRequest(
+            permissions: WorkplacePermissionSetRequest(
+              file: WorkplacePermissionRuleRequest(
+                type: WorkplaceDocType.files,
+                verbs: const [WorkplacePermission.get],
+                values: [fileId],
+              ),
+            ),
+          ),
+        ),
+      ).toJson();
+
+  String _parseShareCode(dynamic data) {
+    final parsed = WorkplacePermissionResponse.fromJson(_asJsonMap(data));
+    final code = parsed.data.attributes.shortcodes?.code;
+    if (code == null || code.isEmpty) {
+      throw StateError('Permission response contains no share code');
+    }
+    return code;
+  }
+
+  /// Drive lives on the flat app subdomain: `user.example.com` → `user-drive.example.com`.
+  static Uri _driveAppUrl(Uri platformUrl) {
+    final host = platformUrl.host;
+    final dot = host.indexOf('.');
+    final flat = dot <= 0 ? '$host-drive' : '${host.substring(0, dot)}-drive${host.substring(dot)}';
+    return platformUrl.replace(host: flat, path: '', query: '');
   }
 }
