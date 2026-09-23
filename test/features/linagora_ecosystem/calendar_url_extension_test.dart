@@ -95,6 +95,11 @@ void main() {
         uid: 'event-42',
       ),
       (
+        description: 'calendar URL contains malformed UTF-8',
+        calendarUrl: '%FF',
+        uid: 'event-42',
+      ),
+      (
         description: 'calendar URL contains a query',
         calendarUrl: 'https://calendar.example.com?tenant=one',
         uid: 'event-42',

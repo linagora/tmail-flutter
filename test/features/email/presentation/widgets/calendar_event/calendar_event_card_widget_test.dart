@@ -130,10 +130,18 @@ void _registerCalendarActionTests() {
     'SHOULD hide the calendar action WHEN the reader is not invited',
     _hideCalendarActionForUninvitedReader,
   );
-  testWidgets(
-    'SHOULD hide the calendar action WHEN the calendar URL is invalid',
-    _hideCalendarActionForInvalidUrl,
-  );
+  for (final invalidCalendarUrl in {
+    'an unsafe scheme': 'javascript:alert(1)',
+    'malformed UTF-8': '%FF',
+  }.entries) {
+    testWidgets(
+      'SHOULD hide the calendar action WHEN the calendar URL has ${invalidCalendarUrl.key}',
+      (tester) => _hideCalendarActionForInvalidUrl(
+        tester,
+        invalidCalendarUrl.value,
+      ),
+    );
+  }
   testWidgets(
     'SHOULD hide the calendar action WHEN the event UID is missing',
     _hideCalendarActionWithoutEventUid,
@@ -214,10 +222,13 @@ Future<void> _hideCalendarActionForUninvitedReader(
   expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
 }
 
-Future<void> _hideCalendarActionForInvalidUrl(WidgetTester tester) async {
+Future<void> _hideCalendarActionForInvalidUrl(
+  WidgetTester tester,
+  String calendarUrl,
+) async {
   await tester.pumpWidget(_testableCard(
     event: _invitation(eventId: EventId('event-42')),
-    calendarUrl: 'javascript:alert(1)',
+    calendarUrl: calendarUrl,
   ));
   await tester.pumpAndSettle();
 
