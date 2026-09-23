@@ -5,11 +5,14 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_size_limit_rule.dart';
+import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_failure.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_limits.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_size_snapshot.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_gate.dart';
+import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_recovery.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_validation_feedback_impl.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -19,6 +22,7 @@ AttachmentUploadRequest _request({
   int proposedAllAttachmentBytes = 0,
   int proposedRegularAttachmentBytes = 0,
   int? hardLimitBytes,
+  List<FileInfo> files = const [],
 }) {
   return AttachmentUploadRequest(
     sizes: AttachmentUploadSizeSnapshot(
@@ -28,7 +32,24 @@ AttachmentUploadRequest _request({
       proposedRegularAttachmentBytes: proposedRegularAttachmentBytes,
     ),
     limits: AttachmentUploadLimits(warningLimitBytes: 1000000, hardLimitBytes: hardLimitBytes),
+    files: files,
   );
+}
+
+const _oversizeFile = FilePlaceholderInfo(fileName: 'big.zip', fileSize: 200);
+const _oversizeInlineFile = FilePlaceholderInfo(fileName: 'shot.png', fileSize: 200, isInline: true);
+
+class _StubRecovery implements AttachmentUploadRecovery {
+  final Future<bool> Function(AttachmentUploadFailure failure, AttachmentUploadRequest request) onRecover;
+  bool called = false;
+
+  _StubRecovery(this.onRecover);
+
+  @override
+  Future<bool> recover(AttachmentUploadFailure failure, AttachmentUploadRequest request) {
+    called = true;
+    return onRecover(failure, request);
+  }
 }
 
 void main() {
@@ -115,6 +136,122 @@ void main() {
       await tester.tap(closeButton);
       await tester.pumpAndSettle();
 
+      expect(await future, isFalse);
+    });
+  });
+
+  group('AttachmentUploadGate.permits with recovery', () {
+    testWidgets('no builder shows the failure dialog', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+
+      final future = gate.permits(
+        request: _request(
+          proposedAllAttachmentBytes: 200, hardLimitBytes: 100, files: [_oversizeFile]),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('confirm_dialog_action')), findsOneWidget);
+      await tester.tap(find.text(AppLocalizations.of(context).got_it));
+      await tester.pumpAndSettle();
+      expect(await future, isFalse);
+    });
+
+    testWidgets('recovery returning true skips the dialog and returns false', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+      final recovery = _StubRecovery((_, __) async => true);
+
+      final allowed = await gate.permits(
+        request: _request(
+          proposedAllAttachmentBytes: 200, hardLimitBytes: 100, files: [_oversizeFile]),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+        recoveryFactory: () => recovery,
+      );
+
+      expect(recovery.called, isTrue);
+      expect(allowed, isFalse);
+      expect(find.byKey(const Key('confirm_dialog_action')), findsNothing);
+    });
+
+    testWidgets('recovery returning false falls back to the dialog', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+      final recovery = _StubRecovery((_, __) async => false);
+
+      final future = gate.permits(
+        request: _request(
+          proposedAllAttachmentBytes: 200, hardLimitBytes: 100, files: [_oversizeFile]),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+        recoveryFactory: () => recovery,
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('confirm_dialog_action')), findsOneWidget);
+      await tester.tap(find.text(AppLocalizations.of(context).got_it));
+      await tester.pumpAndSettle();
+      expect(await future, isFalse);
+    });
+
+    testWidgets('recovery throwing falls back to the dialog', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+      final recovery = _StubRecovery((_, __) async => throw Exception('declined'));
+
+      final future = gate.permits(
+        request: _request(
+          proposedAllAttachmentBytes: 200, hardLimitBytes: 100, files: [_oversizeFile]),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+        recoveryFactory: () => recovery,
+      );
+      await tester.pump();
+
+      expect(find.byKey(const Key('confirm_dialog_action')), findsOneWidget);
+      await tester.tap(find.text(AppLocalizations.of(context).got_it));
+      await tester.pumpAndSettle();
+      expect(await future, isFalse);
+    });
+
+    testWidgets('inline-only files reach the recovery', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+      final recovery = _StubRecovery((_, __) async => true);
+
+      final allowed = await gate.permits(
+        request: _request(
+          proposedAllAttachmentBytes: 200, hardLimitBytes: 100, files: [_oversizeInlineFile]),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+        recoveryFactory: () => recovery,
+      );
+
+      expect(recovery.called, isTrue);
+      expect(allowed, isFalse);
+      expect(find.byKey(const Key('confirm_dialog_action')), findsNothing);
+    });
+
+    testWidgets('rejection without files skips the recovery', (tester) async {
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(child: const SizedBox.shrink()));
+      await tester.pump();
+      final context = tester.element(find.byType(SizedBox));
+      final recovery = _StubRecovery((_, __) async => true);
+
+      final future = gate.permits(
+        request: _request(proposedAllAttachmentBytes: 200, hardLimitBytes: 100),
+        feedbackFactory: () => AttachmentValidationFeedbackImpl(context),
+        recoveryFactory: () => recovery,
+      );
+      await tester.pump();
+
+      expect(recovery.called, isFalse);
+      expect(find.byKey(const Key('confirm_dialog_action')), findsOneWidget);
+      await tester.tap(find.text(AppLocalizations.of(context).got_it));
+      await tester.pumpAndSettle();
       expect(await future, isFalse);
     });
   });
