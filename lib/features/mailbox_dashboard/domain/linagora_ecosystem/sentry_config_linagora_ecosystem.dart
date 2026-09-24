@@ -8,6 +8,8 @@ part 'sentry_config_linagora_ecosystem.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
+  /// Whether this deployment provides a usable Sentry integration. Reporting
+  /// still depends on the effective user consent default below.
   @JsonKey(fromJson: _parseBool)
   final bool? enabled;
   final String? dsn;
@@ -47,7 +49,10 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     }
   }
 
-  bool get isUserOptedInByDefault => userOptInByDefault ?? enabled ?? false;
+  /// Effective instance-wide reporting default. Consumers should use this
+  /// value instead of reading the nullable [userOptInByDefault] JSON field.
+  bool get isSentryReportingAllowedByDefault =>
+      userOptInByDefault ?? enabled ?? false;
 
   @override
   List<Object?> get props => [enabled, dsn, environment, userOptInByDefault];
