@@ -65,8 +65,9 @@ class SentryEcosystem implements SentrySessionCleanup {
     }
 
     final sentryUser = _sentryUser;
-    SentryManager.instance
-        .setSentryReportingDefault(ecosystemConfig.isUserOptedInByDefault);
+    SentryManager.instance.setSentryReportingDefault(
+      ecosystemConfig.isSentryReportingAllowedByDefault,
+    );
 
     final sentryConfig = await ecosystemConfig.toSentryConfig(
       isReportingAllowed:
@@ -80,8 +81,9 @@ class SentryEcosystem implements SentrySessionCleanup {
     // The SDK initializer receives the effective consent so it can start or
     // stay stopped, but that value must not replace the instance default.
     // Otherwise clearing an explicit user choice cannot restore the default.
-    SentryManager.instance
-        .setSentryReportingDefault(ecosystemConfig.isUserOptedInByDefault);
+    SentryManager.instance.setSentryReportingDefault(
+      ecosystemConfig.isSentryReportingAllowedByDefault,
+    );
 
     _applyUser(sentryUser);
 
