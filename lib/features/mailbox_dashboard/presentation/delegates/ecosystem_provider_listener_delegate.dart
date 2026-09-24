@@ -53,6 +53,9 @@ class EcosystemProviderListenerDelegate
         setUpSentry: (config) async {
           await getBinding<MailboxDashBoardController>()?.setUpSentry(config);
         },
+        clearSentry: () async {
+          await getBinding<MailboxDashBoardController>()?.clearSentry();
+        },
       ));
   }
 

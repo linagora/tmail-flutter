@@ -989,12 +989,12 @@ void main() {
 
     test(
       'WHEN the dashboard closes\n'
-      'THEN clears the Sentry identity from the previous account',
+      'THEN keeps the Sentry identity until the session is cleared',
       () {
         final sentryManager = SentryManager.instance
           ..setSentryReportingDefault(true)
           ..setSentryReportingConsent(true)
-          ..setUser(SentryUser(id: 'departed-account'));
+          ..setUser(SentryUser(id: 'active-account'));
         addTearDown(() {
           sentryManager
             ..clearUser()
@@ -1004,7 +1004,7 @@ void main() {
 
         mailboxDashboardController.onClose();
 
-        expect(sentryManager.userForScope, isNull);
+        expect(sentryManager.userForScope?.id, 'active-account');
       },
     );
 

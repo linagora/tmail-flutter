@@ -9,7 +9,7 @@ enum KeychainControllerService: String {
     }
 }
 
-class KeychainController: KeychainControllerDelegate {
+class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
     private let keychain: Keychain
     
     init(service: KeychainControllerService,

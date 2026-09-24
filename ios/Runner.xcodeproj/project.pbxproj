@@ -13,6 +13,10 @@
 		756BBC4C51FCB44047AB39E4 /* Pods_TeamMailShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 143BD7B2CF181BA69CDE351A /* Pods_TeamMailShareExtension.framework */; };
 		84EC933C2F236E8300A0EDC7 /* SentryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */; };
 		84EC933E2F23705E00A0EDC7 /* SentryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933D2F23705D00A0EDC7 /* SentryManager.swift */; };
+		A14E00012F6E000000000001 /* SentryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14E00022F6E000000000002 /* SentryManagerTests.swift */; };
+		A14E00032F6E000000000003 /* SentryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */; };
+		A14E00042F6E000000000004 /* SentryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933D2F23705D00A0EDC7 /* SentryManager.swift */; };
+		A14E00052F6E000000000005 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -138,6 +142,7 @@
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryConfig.swift; sourceTree = "<group>"; };
 		84EC933D2F23705D00A0EDC7 /* SentryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryManager.swift; sourceTree = "<group>"; };
+		A14E00022F6E000000000002 /* SentryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryManagerTests.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -391,6 +396,7 @@
 			children = (
 				F55114CE2BFBACFA00E41E93 /* DateConversionTests.swift */,
 				F522E87E2C0EE23400DDA35B /* AuthenticationSSOTests.swift */,
+				A14E00022F6E000000000002 /* SentryManagerTests.swift */,
 			);
 			path = TwakeMailTests;
 			sourceTree = "<group>";
@@ -861,6 +867,10 @@
 				F55114CF2BFBACFA00E41E93 /* DateConversionTests.swift in Sources */,
 				F522E8882C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
 				F522E87F2C0EE23400DDA35B /* AuthenticationSSOTests.swift in Sources */,
+				A14E00012F6E000000000001 /* SentryManagerTests.swift in Sources */,
+				A14E00032F6E000000000003 /* SentryConfig.swift in Sources */,
+				A14E00042F6E000000000004 /* SentryManager.swift in Sources */,
+				A14E00052F6E000000000005 /* TwakeLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1372,6 +1382,12 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1379,6 +1395,11 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Sentry,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1411,12 +1432,23 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Sentry,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1447,12 +1479,23 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
+					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Sentry,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

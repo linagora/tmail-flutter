@@ -70,6 +70,56 @@ void main() {
           reason: 'the next account must not inherit the previous opt-in');
     });
 
+    test('session cleanup waits for scope and lifecycle reset', () async {
+      final finishScopeSync = Completer<void>();
+      final finishSdkClose = Completer<void>();
+      var blockScopeSync = false;
+      ({String? userId, bool clearBreadcrumbs})? blockedScope;
+      final manager = SentryManager.forTesting(
+        synchronizeScope: (user, {required clearBreadcrumbs}) {
+          if (!blockScopeSync) return Future.value();
+          blockedScope = (
+            userId: user?.id,
+            clearBreadcrumbs: clearBreadcrumbs,
+          );
+          return finishScopeSync.future;
+        },
+        closeSentrySdk: () => finishSdkClose.future,
+      );
+      manager.setSentryReportingConsent(true);
+      await manager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://public@example.com/1',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: false,
+      ));
+      manager.setUser(SentryUser(id: 'account-a'));
+      await manager.pendingScopeSync;
+      blockScopeSync = true;
+      var cleanupCompleted = false;
+
+      final cleanup = manager.clearSessionContext().then((_) {
+        cleanupCompleted = true;
+      });
+      await Future<void>.delayed(Duration.zero);
+
+      expect(manager.isSentryReportingAllowed, isFalse);
+      expect(manager.userForScope, isNull);
+      expect(blockedScope, (userId: null, clearBreadcrumbs: true));
+      expect(cleanupCompleted, isFalse);
+
+      finishScopeSync.complete();
+      await Future<void>.delayed(Duration.zero);
+      expect(cleanupCompleted, isFalse);
+
+      finishSdkClose.complete();
+      await cleanup;
+
+      expect(manager.isSentryAvailable, isFalse);
+      expect(cleanupCompleted, isTrue);
+    });
+
     test('reports nothing while Sentry itself never started', () {
       sentryManager.setSentryReportingConsent(true);
 
