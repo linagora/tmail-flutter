@@ -101,7 +101,7 @@ void main() {
         _expectTryParse(
           testCase.value,
           testCase.expected,
-          inferMissingScheme: true,
+          options: const WebUriParseOptions(inferMissingScheme: true),
         );
       });
     }
@@ -110,7 +110,7 @@ void main() {
       _expectTryParse(
         'http://localhost:3000/path',
         'http://localhost:3000/path',
-        allowHttpLocalhost: true,
+        options: const WebUriParseOptions(allowHttpLocalhost: true),
       );
     });
 
@@ -118,8 +118,10 @@ void main() {
       _expectTryParse(
         'LOCALHOST:3000/path',
         'http://localhost:3000/path',
-        inferMissingScheme: true,
-        allowHttpLocalhost: true,
+        options: const WebUriParseOptions(
+          inferMissingScheme: true,
+          allowHttpLocalhost: true,
+        ),
       );
     });
 
@@ -154,8 +156,10 @@ void main() {
         _expectTryParse(
           testCase.value,
           isNull,
-          inferMissingScheme: true,
-          allowHttpLocalhost: true,
+          options: const WebUriParseOptions(
+            inferMissingScheme: true,
+            allowHttpLocalhost: true,
+          ),
         );
       });
     }
@@ -180,7 +184,7 @@ void main() {
         _expectTryParse(
           '$label.example',
           testCase.matcher,
-          inferMissingScheme: true,
+          options: const WebUriParseOptions(inferMissingScheme: true),
         );
       });
     }
@@ -193,7 +197,7 @@ void main() {
       _expectTryParse(
         host,
         isNull,
-        inferMissingScheme: true,
+        options: const WebUriParseOptions(inferMissingScheme: true),
       );
     });
   });
@@ -202,14 +206,12 @@ void main() {
 void _expectTryParse(
   String? value,
   Object? matcher, {
-  bool inferMissingScheme = false,
-  bool allowHttpLocalhost = false,
+  WebUriParseOptions options = const WebUriParseOptions(),
 }) {
   expect(
     WebUriParser.tryParse(
       value,
-      inferMissingScheme: inferMissingScheme,
-      allowHttpLocalhost: allowHttpLocalhost,
+      options: options,
     )?.toString(),
     matcher,
   );
