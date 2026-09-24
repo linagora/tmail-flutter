@@ -439,7 +439,7 @@ class MailboxDashBoardController extends ReloadableController
       // Web keeps its runtime config (DSN, environment, release) from env.
       // The shared ecosystem only owns the instance-wide consent default.
       SentryManager.instance.setSentryReportingDefault(
-        ecosystemConfig.isUserOptedInByDefault,
+        ecosystemConfig.isSentryReportingAllowedByDefault,
       );
       return;
     }
