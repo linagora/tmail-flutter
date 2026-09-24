@@ -153,6 +153,9 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   Future<void> _pendingLifecycleTransition = Future.value();
 
   @override
+  bool get isSentryConfigured => _sentryConfig != null;
+
+  @override
   bool get isSentryAvailable => _isSentryAvailable;
 
   @override
