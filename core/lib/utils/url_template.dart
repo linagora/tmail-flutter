@@ -24,7 +24,7 @@ class UrlTemplate {
     required Map<String, String?> variables,
     Set<String> caseInsensitiveVariables = const {},
   }) {
-    if (!_parsedTemplate.isWellFormed) return _value;
+    if (!_parsedTemplate.isWellFormed) return null;
     if (_parsedTemplate.placeholderNames.isEmpty) return _value;
 
     final output = StringBuffer();
