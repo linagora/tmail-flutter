@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 void main() {
   const taskId = UploadTaskId('task-1');
 
-  FileInfo localFile({required int fileSize}) => FileInfo(
+  FileInfo localFile({required int fileSize}) => FilePathInfo(
         fileName: 'file-$fileSize',
         filePath: '/tmp/file-$fileSize',
         fileSize: fileSize,

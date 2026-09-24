@@ -11,7 +11,7 @@ class WebCommonRobot extends MobileCommonRobot {
   @override
   Future<FileInfo> prepareTxtFile(String content) async {
     final bytes = utf8.encode(content);
-    return FileInfo(fileName: 'test.txt', fileSize: bytes.length, bytes: bytes);
+    return FileBytesInfo(fileName: 'test.txt', fileSize: bytes.length, bytes: bytes);
   }
 
   @override

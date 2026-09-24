@@ -52,7 +52,7 @@ void main() {
 
     late CapturingLogHandler logHandler;
 
-    final fileInfo = FileInfo(
+    const fileInfo = FilePlaceholderInfo(
       fileName: sensitiveName,
       fileSize: 100,
       type: 'application/pdf',
@@ -237,7 +237,7 @@ void main() {
     const uploadTaskId = UploadTaskId('upload-cancel');
     final uploadAttachment = UploadAttachment(
       uploadTaskId,
-      FileInfo(fileName: 'a.pdf', fileSize: sourceBytes.length, filePath: file.path),
+      FilePathInfo(fileName: 'a.pdf', fileSize: sourceBytes.length, filePath: file.path),
       Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
       FileUploader(DioClient(Dio()), FileUtils()),
       _RethrowingExceptionThrower(),
@@ -272,7 +272,7 @@ void main() {
       uploadTaskId,
       // Neither a usable path nor bytes: the upload must fail as an error state
       // rather than silently succeeding with an empty attachment.
-      FileInfo(fileName: 'a.pdf', fileSize: 0, filePath: '', type: 'application/pdf'),
+      const FilePlaceholderInfo(fileName: 'a.pdf', fileSize: 0, type: 'application/pdf'),
       Uri.parse('http://127.0.0.1:1/upload/account-id'),
       FileUploader(DioClient(Dio()), FileUtils()),
       _RethrowingExceptionThrower(),
@@ -300,7 +300,7 @@ void main() {
     final server = await startSuccessfulUploadServer();
     final uploadAttachment = buildUploadAttachment(
       uploadTaskId: uploadTaskId,
-      fileInfo: FileInfo(
+      fileInfo: FileBytesInfo(
         fileName: 'a.pdf',
         fileSize: 3,
         bytes: Uint8List.fromList(<int>[1, 2, 3]),
@@ -328,7 +328,7 @@ void main() {
     final server = await startSuccessfulUploadServer();
     final uploadAttachment = buildUploadAttachment(
       uploadTaskId: uploadTaskId,
-      fileInfo: FileInfo(
+      fileInfo: FileBytesInfo(
         fileName: 'a.pdf',
         fileSize: sourceBytes.length,
         bytes: sourceBytes,
@@ -354,7 +354,7 @@ void main() {
     final server = await startFailingUploadServer();
     final uploadAttachment = buildUploadAttachment(
       uploadTaskId: uploadTaskId,
-      fileInfo: FileInfo(
+      fileInfo: FileBytesInfo(
         fileName: 'a.pdf',
         fileSize: 3,
         bytes: Uint8List.fromList(<int>[1, 2, 3]),

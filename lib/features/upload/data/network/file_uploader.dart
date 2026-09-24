@@ -9,7 +9,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
@@ -112,33 +111,22 @@ class FileUploader {
     }
   }
 
-  /// Web has no `dart:io` file system, so an attachment there is always
-  /// uploaded from its bytes even if a path happens to be carried along.
-  bool _hasLocalFilePath(FileInfo fileInfo) =>
-      !PlatformInfo.isWeb && fileInfo.filePath?.isNotEmpty == true;
-
   Map<String, dynamic> _buildUploadExtra(FileInfo fileInfo) {
-    final bytes = fileInfo.bytes;
     return <String, dynamic>{
       uploadAttachmentExtraKey: {
-        if (_hasLocalFilePath(fileInfo))
+        if (fileInfo is FilePathInfo)
           filePathExtraKey: fileInfo.filePath
-        else if (bytes != null)
-          streamDataExtraKey: BodyBytesStream.fromBytes(bytes),
+        else if (fileInfo is FileBytesInfo)
+          streamDataExtraKey: BodyBytesStream.fromBytes(fileInfo.bytes),
       }
     };
   }
 
-  Stream<List<int>> _buildRequestBody(FileInfo fileInfo) {
-    if (_hasLocalFilePath(fileInfo)) {
-      return File(fileInfo.filePath!).openRead();
-    }
-    final bytes = fileInfo.bytes;
-    if (bytes == null) {
-      throw const MissingAttachmentSourceException();
-    }
-    return BodyBytesStream.fromBytes(bytes);
-  }
+  Stream<List<int>> _buildRequestBody(FileInfo fileInfo) => switch (fileInfo) {
+    FilePathInfo(:final filePath) => File(filePath).openRead(),
+    FileBytesInfo(:final bytes) => BodyBytesStream.fromBytes(bytes),
+    FilePlaceholderInfo() => throw const MissingAttachmentSourceException(),
+  };
 
   /// Runs after the server already stored the blob, so a probe failure degrades
   /// to an unknown charset instead of discarding a completed upload.
@@ -148,15 +136,13 @@ class FileUploader {
     }
 
     try {
-      final Uint8List? charsetSample;
-      if (_hasLocalFilePath(fileInfo)) {
-        charsetSample = await _readCharsetSample(fileInfo.filePath!);
-      } else {
-        final bytes = fileInfo.bytes;
-        charsetSample = bytes != null && bytes.length > _charsetSampleMaxBytes
+      final Uint8List? charsetSample = switch (fileInfo) {
+        FilePathInfo(:final filePath) => await _readCharsetSample(filePath),
+        FileBytesInfo(:final bytes) => bytes.length > _charsetSampleMaxBytes
             ? Uint8List.sublistView(bytes, 0, _charsetSampleMaxBytes)
-            : bytes;
-      }
+            : bytes,
+        FilePlaceholderInfo() => null,
+      };
       if (charsetSample == null) {
         return null;
       }
