@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:contact/contact/model/autocomplete_capability.dart';
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -19,6 +21,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -78,6 +81,20 @@ class SomeOtherException extends RemoteException {
 
   @override
   String get exceptionName => 'SomeOtherException';
+}
+
+class _TestSentrySessionCleanup implements SentrySessionCleanup {
+  int calls = 0;
+  Future<void>? pendingCleanup;
+  Object? error;
+
+  @override
+  Future<void> clearForSessionEnd() async {
+    calls++;
+    final cleanupError = error;
+    if (cleanupError != null) throw cleanupError;
+    await pendingCleanup;
+  }
 }
 
 @GenerateNiceMocks([
@@ -322,8 +339,15 @@ void main() {
   });
 
   group('BaseController::clearAllData', () {
+    late _TestSentrySessionCleanup sentrySessionCleanup;
+
     setUp(() {
+      sentrySessionCleanup = _TestSentrySessionCleanup();
+      Get.put<SentrySessionCleanup>(sentrySessionCleanup);
+      addTearDown(() => Get.delete<SentrySessionCleanup>());
       clearInteractions(mockTwakeAppManager);
+      clearInteractions(mockCachingManager);
+      clearInteractions(mockLanguageCacheManager);
       clearInteractions(mockDeleteAuthorityOidcInteractor);
       clearInteractions(mockDeleteCredentialInteractor);
       when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer(
@@ -337,6 +361,38 @@ void main() {
 
       verify(mockDeleteAuthorityOidcInteractor.execute()).called(1);
       verifyNever(mockDeleteCredentialInteractor.execute());
+    });
+
+    test('waits for Sentry session cleanup before clearing account data', () async {
+      final cleanupCompleter = Completer<void>();
+      sentrySessionCleanup.pendingCleanup = cleanupCompleter.future;
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      final clearAllData = mockBaseController.clearAllData();
+      await pumpEventQueue();
+
+      expect(sentrySessionCleanup.calls, 1);
+      verifyNever(mockDeleteCredentialInteractor.execute());
+      verifyNever(mockCachingManager.clearAll());
+
+      cleanupCompleter.complete();
+      await clearAllData;
+
+      verify(mockDeleteCredentialInteractor.execute()).called(1);
+      verify(mockCachingManager.clearAll()).called(1);
+    });
+
+    test('continues clearing account data when Sentry cleanup fails', () async {
+      sentrySessionCleanup.error = StateError('cleanup failed');
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData();
+
+      expect(sentrySessionCleanup.calls, 1);
+      verify(mockDeleteCredentialInteractor.execute()).called(1);
+      verify(mockCachingManager.clearAll()).called(1);
     });
 
     test('basic session: deletes via deleteCredentialInteractor, not deleteAuthorityOidcInteractor', () async {

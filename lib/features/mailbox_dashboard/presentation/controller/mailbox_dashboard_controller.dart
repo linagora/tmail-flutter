@@ -156,7 +156,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
-import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -235,7 +234,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
-import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -408,10 +406,7 @@ class MailboxDashBoardController extends ReloadableController
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
-      _sentryEcosystem = SentryEcosystem(
-        getBinding<SentryConfigurationCacheManager>(),
-        getBinding<IOSSharingManager>(),
-      );
+      _sentryEcosystem = getBinding<SentryEcosystem>();
       _registerReceivingFileSharingStream();
       _registerDeepLinks();
     }
@@ -439,6 +434,8 @@ class MailboxDashBoardController extends ReloadableController
 
   Future<void> setUpSentry(SentryConfigLinagoraEcosystem ecosystemConfig) async =>
       _sentryEcosystem?.setUp(ecosystemConfig);
+
+  Future<void> clearSentry() async => _sentryEcosystem?.clear();
 
   @override
   void onReady() {
@@ -3470,7 +3467,6 @@ class MailboxDashBoardController extends ReloadableController
     _identities = null;
     outboxMailbox = null;
     sessionCurrent = null;
-    SentryManager.instance.clearUser();
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();

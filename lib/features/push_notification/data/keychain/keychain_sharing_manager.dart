@@ -22,6 +22,10 @@ class KeychainSharingManager {
     value: jsonEncode(sentryConfig.toJson()),
   );
 
+  Future<void> deleteSentryConfig() => _secureStorage.delete(
+    key: SentryConfig.sentryConfigKeyChain,
+  );
+
   Future<bool> isSessionExist(AccountId accountId) =>
     _secureStorage.containsKey(key: accountId.asString);
 

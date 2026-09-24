@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
@@ -633,7 +634,6 @@ abstract class BaseController extends GetxController
       '$runtimeType::clearDataAndGoToLoginPage: clearing data then routing to login',
       webConsoleEnabled: true,
     );
-    SentryManager.instance.clearUser();
     await clearAllData();
     log(
       '$runtimeType::clearDataAndGoToLoginPage: data cleared, calling removeAllPageAndGoToLogin',
@@ -648,6 +648,7 @@ abstract class BaseController extends GetxController
   Future<void> clearAllData() => twakeAppManager.runClearDataOnce(_clearAllData);
 
   Future<void> _clearAllData() async {
+    await _clearSentryForSessionEnd();
     try {
       // Read before clear() flips it to none.
       final wasAuthenticatedWithOidc = isAuthenticatedWithOidc;
@@ -666,6 +667,23 @@ abstract class BaseController extends GetxController
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
     } finally {
       AttachmentKeywordConfigManager().clearCache();
+    }
+  }
+
+  Future<void> _clearSentryForSessionEnd() async {
+    try {
+      final sentrySessionCleanup = getBinding<SentrySessionCleanup>();
+      if (sentrySessionCleanup == null) {
+        SentryManager.instance.clearUser();
+        return;
+      }
+      await sentrySessionCleanup.clearForSessionEnd();
+    } catch (e, st) {
+      logError(
+        'BaseController::_clearSentryForSessionEnd: Cannot clear Sentry session',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 

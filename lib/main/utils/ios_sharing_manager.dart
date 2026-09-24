@@ -247,8 +247,35 @@ class IOSSharingManager {
     try {
       await _keychainSharingManager.saveSentryConfig(sentryConfig);
       log('IOSSharingManager::saveSentryConfigToKeychain: COMPLETED');
-    } catch (e) {
-      logWarning('IOSSharingManager::saveSentryConfigToKeychain: Exception: $e');
+    } catch (e, st) {
+      logError(
+        'IOSSharingManager::saveSentryConfigToKeychain: Cannot save Sentry config',
+        exception: e,
+        stackTrace: st,
+      );
+      try {
+        await _keychainSharingManager.deleteSentryConfig();
+      } catch (deleteError, deleteStackTrace) {
+        logError(
+          'IOSSharingManager::saveSentryConfigToKeychain: Cannot invalidate stale Sentry config',
+          exception: deleteError,
+          stackTrace: deleteStackTrace,
+        );
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSentryConfigFromKeychain() async {
+    try {
+      await _keychainSharingManager.deleteSentryConfig();
+    } catch (e, st) {
+      logError(
+        'IOSSharingManager::deleteSentryConfigFromKeychain: Cannot delete Sentry config',
+        exception: e,
+        stackTrace: st,
+      );
+      rethrow;
     }
   }
 }
