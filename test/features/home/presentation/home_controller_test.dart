@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
@@ -176,5 +180,69 @@ void main() {
       verifyNever(mockAppToast.showToastMessage(any, any));
       verifyNever(mockAppToast.showToastErrorMessage(any, any));
     });
+  });
+
+  group('HomeController::onReady startup timing', () {
+    late HomeController startupController;
+
+    setUp(() {
+      clearInteractions(mockCachingManager);
+      // Stop before migrations so these tests only observe startup timing.
+      when(
+        mockCachingManager.getLatestVersion(),
+      ).thenAnswer((_) => Completer<int?>().future);
+      startupController = HomeController(
+        cleanupEmailCacheInteractor,
+        emailReceiveManager,
+        cleanupRecentLoginUrlCacheInteractor,
+        cleanupRecentLoginUsernameCacheInteractor,
+        checkOIDCIsAvailableInteractor,
+        getOIDCConfigurationInteractor,
+        authenticateOidcOnBrowserInteractor,
+        removeAuthDestinationUrlInteractor,
+      );
+    });
+
+    tearDown(() {
+      startupController.onClose();
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    testWidgets(
+      'starts immediately on Android',
+      (tester) async {
+        startupController.onReady();
+        await tester.pump();
+
+        verify(mockCachingManager.getLatestVersion()).called(1);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'starts immediately on the web, including iOS browsers',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+
+        startupController.onReady();
+        await tester.pump();
+
+        verify(mockCachingManager.getLatestVersion()).called(1);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
+
+    testWidgets(
+      'preserves the two-second iOS welcome animation',
+      (tester) async {
+        startupController.onReady();
+        await tester.pump(const Duration(milliseconds: 1999));
+        verifyNever(mockCachingManager.getLatestVersion());
+
+        await tester.pump(const Duration(milliseconds: 1));
+        verify(mockCachingManager.getLatestVersion()).called(1);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
   });
 }
