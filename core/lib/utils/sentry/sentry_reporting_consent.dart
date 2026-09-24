@@ -1,6 +1,10 @@
 /// Whether Sentry is allowed to transmit. The runtime starts or closes the SDK
 /// when this effective permission changes.
 abstract interface class SentryReportingConsent {
+  /// Whether a valid runtime configuration is available. This remains true
+  /// while an opted-out user has the SDK stopped.
+  bool get isSentryConfigured;
+
   /// Whether the SDK started successfully.
   bool get isSentryAvailable;
 
