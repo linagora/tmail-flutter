@@ -36,15 +36,16 @@ class SentryReportingPreferenceOption extends ServerPreferenceOption {
       context.serverOptions?.sentryUserOptIn ??
       _sentryReportingConsent.isSentryReportingAllowed;
 
-  /// Hidden until Sentry actually initialised — with no SDK running the toggle
-  /// would have nothing to turn on or off.
+  /// Hidden until Sentry has a valid runtime configuration. The SDK itself can
+  /// legitimately be stopped when the instance opts users out by default; the
+  /// toggle must remain available so an explicit opt-in can start it.
   ///
   /// Decided here rather than by leaving the option out of the registry: the
   /// registry is built once and cached, so a user opening this screen before
   /// Sentry finishes starting would never see the toggle again.
   @override
   bool isAvailable(PreferencesContext context) =>
-      context.serverOptions != null && _sentryReportingConsent.isSentryAvailable;
+      context.serverOptions != null && _sentryReportingConsent.isSentryConfigured;
 
   @override
   TMailServerSettingOptions applyTo(
