@@ -1,14 +1,8 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:core/utils/platform_info.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 
-/// How a picked file's bytes reach a request — resolves [FileInfo]'s source
-/// precedence once, so every consumer reads the same decision.
+/// How a picked file's bytes reach a request — one shape per [FileInfo] subtype.
 sealed class UploadBody {
   const UploadBody();
 
@@ -25,39 +19,11 @@ sealed class UploadBody {
   /// Opens a fresh stream, bounded by [start]/[end], for the charset head probe.
   Stream<List<int>> open([int? start, int? end]);
 
-  factory UploadBody.of(FileInfo fileInfo) {
-    final dartOpen = _dartOpen(fileInfo);
-    final sourceUrl = fileInfo.sourceUrl;
-    if (sourceUrl != null) {
-      return HandleUploadBody(sourceUrl, dartOpen);
-    }
-    if (dartOpen != null) {
-      return StreamUploadBody(dartOpen);
-    }
-    throw const MissingAttachmentSourceException();
-  }
-
-  /// Web has no `dart:io` file system.
-  static bool _hasLocalFilePath(FileInfo fileInfo) =>
-      !PlatformInfo.isWeb && fileInfo.filePath?.isNotEmpty == true;
-
-  static FileOpenRead? _dartOpen(FileInfo fileInfo) {
-    final openRead = fileInfo.openRead;
-    if (openRead != null) return openRead;
-    if (_hasLocalFilePath(fileInfo)) {
-      return ([start, end]) => File(fileInfo.filePath!).openRead(start, end);
-    }
-    final bytes = fileInfo.bytes;
-    if (bytes != null) {
-      return ([start, end]) => BodyBytesStream.fromBytes(_slice(bytes, start, end));
-    }
-    return null;
-  }
-
-  static Uint8List _slice(Uint8List bytes, int? start, int? end) {
-    if (start == null && end == null) return bytes;
-    return bytes.sublist(start ?? 0, (end ?? bytes.length).clamp(0, bytes.length));
-  }
+  factory UploadBody.of(FileInfo fileInfo) => switch (fileInfo) {
+    FileBlobInfo() => HandleUploadBody(fileInfo.sourceUrl, fileInfo.openRead),
+    FilePathInfo() || FileBytesInfo() => StreamUploadBody(fileInfo.openRead),
+    FilePlaceholderInfo() => throw const MissingAttachmentSourceException(),
+  };
 }
 
 /// Mobile file, dropped file, retained bytes, inline image — read by dio itself.
@@ -82,7 +48,7 @@ final class StreamUploadBody extends UploadBody {
 /// Web's `blob:` handle — sent verbatim by the adapter, nothing buffered here.
 final class HandleUploadBody extends UploadBody {
   final String sourceUrl;
-  final FileOpenRead? _open;
+  final FileOpenRead _open;
 
   const HandleUploadBody(this.sourceUrl, this._open);
 
@@ -93,13 +59,9 @@ final class HandleUploadBody extends UploadBody {
   Map<String, dynamic> get requestExtra => <String, dynamic>{
     // Lets the blob adapter re-resolve the source on replay and recognise this request.
     UploadRequestExtra.sourceUrlKey: sourceUrl,
-    if (_open != null) UploadRequestExtra.openReadKey: () => _open(),
+    UploadRequestExtra.openReadKey: () => _open(),
   };
 
   @override
-  Stream<List<int>> open([int? start, int? end]) {
-    final open = _open;
-    if (open == null) throw const MissingAttachmentSourceException();
-    return open(start, end);
-  }
+  Stream<List<int>> open([int? start, int? end]) => _open(start, end);
 }

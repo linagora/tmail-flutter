@@ -15,6 +15,8 @@ import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 
+import 'scripted_read_file.dart';
+
 void main() {
   Future<HttpServer> startConcurrentUploadServer(List<List<int>> receivedBodies) async {
     final secondRequestStarted = Completer<void>();
@@ -148,20 +150,23 @@ void main() {
     void Function()? onOpenRead,
   }) async {
     final server = await startRecordingUploadServer(receivedBodies);
+    final scriptedPath = '/scripted/$fileName';
 
-    return FileUploader(DioClient(Dio()), fileUtils ?? FileUtils()).uploadAttachment(
+    return withScriptedFiles({
+      scriptedPath: ([start, end]) {
+        onOpenRead?.call();
+        return Stream<List<int>>.fromIterable(chunks);
+      },
+    }, () => FileUploader(DioClient(Dio()), fileUtils ?? FileUtils()).uploadAttachment(
       UploadTaskId('upload-$fileName'),
-      FileInfo(
+      FilePathInfo(
         fileName: fileName,
         fileSize: fileSize,
-        openRead: ([start, end]) {
-          onOpenRead?.call();
-          return Stream<List<int>>.fromIterable(chunks);
-        },
+        filePath: scriptedPath,
         type: type,
       ),
       Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(const Duration(seconds: 30)));
   }
 
   test('streams local attachment uploads concurrently on the root client', () async {
@@ -433,19 +438,22 @@ void main() {
       final fileUtils = _RecordingFileUtils('Shift_JIS');
       final server = await startRecordingUploadServer(receivedBodies);
 
-      await FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
+      const scriptedPath = '/scripted/note.txt';
+      await withScriptedFiles({
+        scriptedPath: ([start, end]) {
+          ranges.add([start, end]);
+          return Stream<List<int>>.fromIterable([sourceBytes]);
+        },
+      }, () => FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
         const UploadTaskId('upload-range'),
-        FileInfo(
+        FilePathInfo(
           fileName: 'note.txt',
           fileSize: sourceBytes.length,
+          filePath: scriptedPath,
           type: FileUtils.TEXT_PLAIN_MIME_TYPE,
-          openRead: ([start, end]) {
-            ranges.add([start, end]);
-            return Stream<List<int>>.fromIterable([sourceBytes]);
-          },
         ),
         Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 30)));
 
       // The body opens unbounded; only the probe carries a range.
       expect(ranges, [
@@ -486,28 +494,31 @@ void main() {
       final uploader = FileUploader(DioClient(Dio()), fileUtils);
       final uploadUri = Uri.parse('http://${server.address.address}:${server.port}/upload/account-id');
 
-      final attachments = await Future.wait([
+      final attachments = await withScriptedFiles({
+        '/scripted/a.txt': ([start, end]) => Stream<List<int>>.fromIterable([sourceA]),
+        '/scripted/b.txt': ([start, end]) => Stream<List<int>>.fromIterable([sourceB]),
+      }, () => Future.wait([
         uploader.uploadAttachment(
           const UploadTaskId('upload-stream-a'),
-          FileInfo(
+          FilePathInfo(
             fileName: 'a.txt',
             fileSize: sourceA.length,
-            openRead: ([start, end]) => Stream<List<int>>.fromIterable([sourceA]),
+            filePath: '/scripted/a.txt',
             type: FileUtils.TEXT_PLAIN_MIME_TYPE,
           ),
           uploadUri,
         ),
         uploader.uploadAttachment(
           const UploadTaskId('upload-stream-b'),
-          FileInfo(
+          FilePathInfo(
             fileName: 'b.txt',
             fileSize: sourceB.length,
-            openRead: ([start, end]) => Stream<List<int>>.fromIterable([sourceB]),
+            filePath: '/scripted/b.txt',
             type: FileUtils.TEXT_PLAIN_MIME_TYPE,
           ),
           uploadUri,
         ),
-      ]).timeout(const Duration(seconds: 30));
+      ])).timeout(const Duration(seconds: 30));
 
       expect(attachments.map((attachment) => attachment.charset), everyElement('shift_jis'));
       expect(
@@ -516,29 +527,6 @@ void main() {
       );
     });
 
-    test('samples the charset from openRead when bytes are also set', () async {
-      final streamBytes = Uint8List.fromList(utf8.encode('from openRead'));
-      final staleBytes = Uint8List.fromList(utf8.encode('from bytes'));
-      final receivedBodies = <List<int>>[];
-      final fileUtils = _RecordingFileUtils('Shift_JIS');
-      final server = await startRecordingUploadServer(receivedBodies);
-
-      await FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
-        const UploadTaskId('upload-bytes-and-stream'),
-        FileInfo(
-          fileName: 'note.txt',
-          fileSize: streamBytes.length,
-          bytes: staleBytes,
-          openRead: ([start, end]) => Stream<List<int>>.fromIterable([streamBytes]),
-          type: FileUtils.TEXT_PLAIN_MIME_TYPE,
-        ),
-        Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
-      ).timeout(const Duration(seconds: 30));
-
-      // The probe must sample the same source the body was sent from.
-      expect(receivedBodies.single, streamBytes);
-      expect(fileUtils.probedSamples.single, streamBytes);
-    });
   });
 
   test('resolves the charset of a text/plain attachment read from disk', () async {

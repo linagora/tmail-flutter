@@ -6,17 +6,18 @@ import 'package:model/upload/file_info.dart';
 
 void main() {
   group('FileInfo.readBytes', () {
-    test('returns existing bytes', () async {
+    test('returns the bytes of a FileBytesInfo as is', () async {
       final bytes = Uint8List.fromList([1, 2, 3]);
-      final fileInfo = FileInfo(fileName: 'file.bin', fileSize: 3, bytes: bytes);
+      final fileInfo = FileBytesInfo(bytes: bytes, fileName: 'file.bin');
 
       expect(await fileInfo.readBytes(), same(bytes));
     });
 
-    test('collects bytes from openRead', () async {
-      final fileInfo = FileInfo(
+    test('collects the stream of a FileBlobInfo', () async {
+      final fileInfo = FileBlobInfo(
         fileName: 'file.bin',
         fileSize: 3,
+        sourceUrl: 'blob:x',
         openRead: ([start, end]) => Stream<List<int>>.fromIterable([
           [1, 2],
           [3],
@@ -26,10 +27,18 @@ void main() {
       expect(await fileInfo.readBytes(), [1, 2, 3]);
     });
 
-    test('throws when neither bytes nor openRead is available', () async {
-      final fileInfo = FileInfo(fileName: 'file.bin', fileSize: 3);
+    test('throws for a FilePlaceholderInfo', () async {
+      const fileInfo = FilePlaceholderInfo(fileName: 'file.bin', fileSize: 3);
 
       await expectLater(fileInfo.readBytes(), throwsStateError);
+    });
+
+    test('FileBytesInfo.openRead honours a byte range', () async {
+      final fileInfo = FileBytesInfo(bytes: Uint8List.fromList([1, 2, 3, 4]));
+
+      expect(await fileInfo.openRead(1, 3).toList(), [
+        [2, 3],
+      ]);
     });
   });
 }

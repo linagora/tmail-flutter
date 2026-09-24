@@ -15,6 +15,8 @@ import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 
+import 'scripted_read_file.dart';
+
 /// Own file so this test's assertions are not shared with the rest of the
 /// upload test suite.
 void main() {
@@ -78,17 +80,20 @@ void main() {
       });
     });
 
-    await uploader.uploadAttachment(
+    const scriptedPath = '/scripted/big.pdf';
+    await withScriptedFiles({
+      scriptedPath: ([start, end]) => trackedChunks(chunkCount),
+    }, () => uploader.uploadAttachment(
       const UploadTaskId('upload-memory'),
-      FileInfo(
+      const FilePathInfo(
         fileName: 'big.pdf',
         fileSize: chunkSize * chunkCount,
-        openRead: ([start, end]) => trackedChunks(chunkCount),
+        filePath: scriptedPath,
         type: 'application/pdf',
       ),
       uploadUri,
       onSendController: onSendController,
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(const Duration(seconds: 30)));
 
     await subscription.cancel();
     await onSendController.close();

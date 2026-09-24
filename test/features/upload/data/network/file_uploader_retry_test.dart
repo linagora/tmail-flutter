@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/oidc_fixtures.dart';
 import 'file_uploader_retry_test.mocks.dart';
+import 'scripted_read_file.dart';
 
 /// Proves `FileUploader.uploadAttachment` end-to-end through a real 401 →
 /// refresh → replay: the interceptor test builds `extra` by hand, and
@@ -155,19 +156,22 @@ void main() {
     var openReadCalls = 0;
     final sourceBytes = List<int>.generate(4096, (index) => index % 256);
 
-    final fileInfo = FileInfo(
+    const scriptedPath = '/scripted/a.pdf';
+    final fileInfo = FilePathInfo(
       fileName: 'a.pdf',
       fileSize: sourceBytes.length,
+      filePath: scriptedPath,
       type: 'application/pdf',
-      openRead: ([start, end]) {
+    );
+
+    final attachment = await withScriptedFiles({
+      scriptedPath: ([start, end]) {
         openReadCalls++;
         return Stream<List<int>>.fromIterable([sourceBytes]);
       },
-    );
-
-    final attachment = await FileUploader(DioClient(buildUploadDio()), FileUtils())
+    }, () => FileUploader(DioClient(buildUploadDio()), FileUtils())
         .uploadAttachment(const UploadTaskId('upload-401-stream'), fileInfo, uploadUri)
-        .timeout(const Duration(seconds: 30));
+        .timeout(const Duration(seconds: 30)));
 
     expect(attachment.name, 'a.pdf');
     // Once for the rejected attempt, once for the replay — a reused drained
@@ -195,7 +199,7 @@ void main() {
     final server = await startTokenGatedUploadServer(receivedBodies, authHeaders);
     final uploadUri = Uri.parse('http://${server.address.address}:${server.port}/upload/account-id');
 
-    final fileInfo = FileInfo(
+    final fileInfo = FilePathInfo(
       fileName: 'a.pdf',
       fileSize: sourceBytes.length,
       filePath: file.path,
@@ -220,7 +224,7 @@ void main() {
 
     // The regression the openRead factory exists for: a single stored
     // BodyBytesStream would fail the replay with "already listened to".
-    final fileInfo = FileInfo(
+    final fileInfo = FileBytesInfo(
       fileName: 'a.pdf',
       fileSize: sourceBytes.length,
       bytes: sourceBytes,
@@ -244,20 +248,23 @@ void main() {
     final sourceBytes = List<int>.generate(1024, (index) => index % 256);
     var openReadCalls = 0;
 
-    final fileInfo = FileInfo(
+    const scriptedPath = '/scripted/a.pdf';
+    final fileInfo = FilePathInfo(
       fileName: 'a.pdf',
       fileSize: sourceBytes.length,
+      filePath: scriptedPath,
       type: 'application/pdf',
-      openRead: ([start, end]) {
+    );
+
+    await withScriptedFiles({
+      scriptedPath: ([start, end]) {
         openReadCalls++;
         if (openReadCalls == 2) {
           throw const FileSystemException('source gone before replay');
         }
         return Stream<List<int>>.fromIterable([sourceBytes]);
       },
-    );
-
-    await expectLater(
+    }, () => expectLater(
       FileUploader(DioClient(buildUploadDio()), FileUtils())
           .uploadAttachment(const UploadTaskId('upload-401-gone'), fileInfo, uploadUri)
           .timeout(const Duration(seconds: 30)),
@@ -268,7 +275,7 @@ void main() {
           isA<MissingAttachmentSourceException>(),
         ),
       ),
-    );
+    ));
 
     // No empty replay reached the server — it failed before a body was sent.
     expect(receivedBodies.length, 1);

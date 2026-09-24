@@ -6,7 +6,7 @@ void main() {
   test('withInline keeps the openRead and sourceUrl byte sources', () async {
     const sourceBytes = [1, 2, 3];
     const sourceUrl = 'blob:https://example.com/image-id';
-    final inline = FileInfo(
+    final inline = FileBlobInfo(
       fileName: 'image.png',
       fileSize: sourceBytes.length,
       openRead: ([start, end]) => Stream<List<int>>.value(sourceBytes),
@@ -14,8 +14,9 @@ void main() {
       type: 'image/png',
     ).withInline();
 
+    expect(inline, isA<FileBlobInfo>());
     expect(inline.isInline, isTrue);
-    expect(inline.sourceUrl, sourceUrl);
-    expect(await inline.openRead!().toList(), [sourceBytes]);
+    expect((inline as FileBlobInfo).sourceUrl, sourceUrl);
+    expect(await inline.openRead().toList(), [sourceBytes]);
   });
 }
