@@ -5,52 +5,97 @@ final _domainLabelPattern = RegExp(
 final _asciiLetterPattern = RegExp('[a-z]', caseSensitive: false);
 const _maximumPort = 65535;
 
+final class WebUriParseOptions {
+  final bool inferMissingScheme;
+  final bool allowHttpLocalhost;
+
+  const WebUriParseOptions({
+    this.inferMissingScheme = false,
+    this.allowHttpLocalhost = false,
+  });
+}
+
 abstract final class WebUriParser {
   static Uri? tryParse(
     String? value, {
-    bool inferMissingScheme = false,
-    bool allowHttpLocalhost = false,
+    WebUriParseOptions options = const WebUriParseOptions(),
   }) {
-    final normalizedValue = _normalize(value);
+    final normalizedValue = value._normalizedWebUri;
     if (normalizedValue == null) return null;
-    if (!_hasValidPercentEscapes(normalizedValue)) return null;
+    if (!normalizedValue._hasValidPercentEscapes) return null;
 
-    final candidate = inferMissingScheme
-        ? _withSupportedScheme(normalizedValue)
+    final candidate = options.inferMissingScheme
+        ? normalizedValue._withSupportedScheme
         : normalizedValue;
     final uri = Uri.tryParse(candidate);
     if (uri == null) return null;
     if (!_hasValidAuthority(uri)) return null;
-    if (!_hasSupportedScheme(uri, allowHttpLocalhost)) return null;
+    if (!_hasSupportedScheme(uri, options)) return null;
     return uri;
   }
 }
 
-String? _normalize(String? value) {
-  if (value == null) return null;
+extension on String? {
+  String? get _normalizedWebUri {
+    final value = this;
+    if (value == null) return null;
 
-  final normalizedValue = value.trim();
-  if (normalizedValue.isEmpty) return null;
-  return normalizedValue;
-}
-
-bool _hasValidPercentEscapes(String value) {
-  for (var index = 0; index < value.length; index++) {
-    if (value.codeUnitAt(index) != 0x25) continue;
-    if (index + 2 >= value.length) return false;
-    if (!_isHexDigit(value.codeUnitAt(index + 1)) ||
-        !_isHexDigit(value.codeUnitAt(index + 2))) {
-      return false;
-    }
-    index += 2;
+    final normalizedValue = value.trim();
+    if (normalizedValue.isEmpty) return null;
+    return normalizedValue;
   }
-  return true;
 }
 
-bool _isHexDigit(int codeUnit) =>
-    codeUnit >= 0x30 && codeUnit <= 0x39 ||
-    codeUnit >= 0x41 && codeUnit <= 0x46 ||
-    codeUnit >= 0x61 && codeUnit <= 0x66;
+extension on String {
+  bool get _hasValidPercentEscapes {
+    for (var index = 0; index < length; index++) {
+      if (codeUnitAt(index) != 0x25) continue;
+      if (index + 2 >= length) return false;
+      if (!codeUnitAt(index + 1)._isHexDigit ||
+          !codeUnitAt(index + 2)._isHexDigit) {
+        return false;
+      }
+      index += 2;
+    }
+    return true;
+  }
+
+  String get _withSupportedScheme {
+    if (toLowerCase().startsWith('localhost')) return 'http://$this';
+
+    final inferredValue = _withHttpsScheme;
+    if (Uri.tryParse(inferredValue)._hasQualifiedDomain) return inferredValue;
+    return this;
+  }
+
+  String get _withHttpsScheme =>
+      startsWith('//') ? 'https:$this' : 'https://$this';
+
+  bool get _isQualifiedDomain {
+    if (length > 253) return false;
+
+    final labels = split('.');
+    if (labels.length <= 1) return false;
+    if (!labels.every(_domainLabelPattern.hasMatch)) return false;
+    return _asciiLetterPattern.hasMatch(labels.last);
+  }
+}
+
+extension on int {
+  bool get _isHexDigit =>
+      this >= 0x30 && this <= 0x39 ||
+      this >= 0x41 && this <= 0x46 ||
+      this >= 0x61 && this <= 0x66;
+}
+
+extension on Uri? {
+  bool get _hasQualifiedDomain {
+    final uri = this;
+    if (uri == null) return false;
+    if (uri.userInfo.isNotEmpty) return false;
+    return uri.host._isQualifiedDomain;
+  }
+}
 
 bool _hasValidAuthority(Uri uri) {
   if (uri.host.isEmpty) return false;
@@ -59,48 +104,14 @@ bool _hasValidAuthority(Uri uri) {
   return uri.port <= _maximumPort;
 }
 
-bool _hasSupportedScheme(Uri uri, bool allowHttpLocalhost) {
+bool _hasSupportedScheme(Uri uri, WebUriParseOptions options) {
   switch (uri.scheme.toLowerCase()) {
     case 'https':
       return true;
     case 'http':
-      return _isAllowedHttpUri(uri, allowHttpLocalhost);
+      return options.allowHttpLocalhost &&
+          uri.host.toLowerCase() == 'localhost';
     default:
       return false;
   }
-}
-
-bool _isAllowedHttpUri(Uri uri, bool allowHttpLocalhost) {
-  if (!allowHttpLocalhost) return false;
-  return uri.host.toLowerCase() == 'localhost';
-}
-
-String _withSupportedScheme(String value) {
-  if (value.toLowerCase().startsWith('localhost')) {
-    return 'http://$value';
-  }
-
-  final inferredValue = _withHttpsScheme(value);
-  if (_hasQualifiedDomain(Uri.tryParse(inferredValue))) return inferredValue;
-  return value;
-}
-
-String _withHttpsScheme(String value) {
-  if (value.startsWith('//')) return 'https:$value';
-  return 'https://$value';
-}
-
-bool _hasQualifiedDomain(Uri? uri) {
-  if (uri == null) return false;
-  if (uri.userInfo.isNotEmpty) return false;
-  return _isQualifiedDomain(uri.host);
-}
-
-bool _isQualifiedDomain(String host) {
-  if (host.length > 253) return false;
-
-  final labels = host.split('.');
-  if (labels.length <= 1) return false;
-  if (!labels.every(_domainLabelPattern.hasMatch)) return false;
-  return _asciiLetterPattern.hasMatch(labels.last);
 }

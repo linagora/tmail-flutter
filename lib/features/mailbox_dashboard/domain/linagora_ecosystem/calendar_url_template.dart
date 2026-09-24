@@ -86,8 +86,10 @@ extension on String? {
 extension on String {
   Uri? get _calendarUri => WebUriParser.tryParse(
     this,
-    inferMissingScheme: true,
-    allowHttpLocalhost: true,
+    options: const WebUriParseOptions(
+      inferMissingScheme: true,
+      allowHttpLocalhost: true,
+    ),
   );
 }
 
