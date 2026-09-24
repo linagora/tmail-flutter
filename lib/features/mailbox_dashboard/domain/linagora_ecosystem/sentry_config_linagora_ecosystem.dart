@@ -26,15 +26,8 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     this.userOptInByDefault,
   });
 
-  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) {
-    final generated = _$SentryConfigLinagoraEcosystemFromJson(json);
-    return SentryConfigLinagoraEcosystem(
-      enabled: generated.enabled,
-      dsn: generated.dsn,
-      environment: generated.environment,
-      userOptInByDefault: _parseBool(json['userOptInByDefault']),
-    );
-  }
+  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) =>
+      _$SentryConfigLinagoraEcosystemFromJson(json);
 
   static bool? _parseBool(dynamic value) {
     if (value == null) return null;
@@ -43,13 +36,8 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     return null;
   }
 
-  Map<String, dynamic> toJson() {
-    final json = _$SentryConfigLinagoraEcosystemToJson(this);
-    if (userOptInByDefault != null) {
-      json['userOptInByDefault'] = userOptInByDefault;
-    }
-    return json;
-  }
+  Map<String, dynamic> toJson() =>
+      _$SentryConfigLinagoraEcosystemToJson(this);
 
   static LinagoraEcosystemProperties? deserialize(dynamic json) {
     if (json is Map<String, dynamic>) {
