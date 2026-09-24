@@ -147,7 +147,7 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> addAttachmentFromBytes(Uint8List bytes, String fileName) async {
     final controller = findComposerController()!;
-    final fileInfo = FileInfo.fromBytes(bytes: bytes, name: fileName);
+    final fileInfo = FileBytesInfo(bytes: bytes, fileName: fileName);
     _uploadAttachment(controller, fileInfo);
   }
 
@@ -169,7 +169,7 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> addInlineFromBytes(Uint8List bytes, String fileName) async {
     final controller = findComposerController()!;
-    final fileInfo = FileInfo.fromBytes(bytes: bytes, name: fileName, isInline: true);
+    final fileInfo = FileBytesInfo(bytes: bytes, fileName: fileName, isInline: true);
     await _addInlineFromFileInfo(controller, fileInfo);
   }
 

@@ -10,6 +10,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -57,6 +58,10 @@ typedef OnPreviewOrDownloadAttachmentAction = void Function(
   Attachment attachment,
   bool isPreviewSupported,
 );
+
+/// The already-uploaded bytes of [uploadFile], if it carries any.
+Uint8List? _uploadedFileBytes(UploadFileState uploadFile) =>
+    switch (uploadFile.file) { FileBytesInfo(:final bytes) => bytes, _ => null };
 
 extension PreviewAttachmentDownloadControllerExtension on DownloadController {
   void previewAttachment({
@@ -145,7 +150,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
     }
 
     if (attachment.isHTMLFile == true) {
-      if (uploadFile.file?.bytes != null) {
+      if (_uploadedFileBytes(uploadFile) != null) {
         _preparePreviewHtmlFileByUploadFile(
           appLocalizations: appLocalizations,
           uploadFile: uploadFile,
@@ -165,10 +170,10 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
       return;
     }
 
-    if (attachment.isImage == true && uploadFile.file?.bytes != null) {
+    if (attachment.isImage == true && _uploadedFileBytes(uploadFile) != null) {
       previewImageFile(
         fileName: attachment.generateFileName(),
-        imageBytes: uploadFile.file!.bytes!,
+        imageBytes: _uploadedFileBytes(uploadFile)!,
         context: context,
         onDownloadWebFileAction: (fileName, fileBytes) => downloadFileWeb(
           fileName: fileName,
@@ -179,10 +184,10 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
     }
 
     if ((attachment.isText == true || attachment.isJson == true) &&
-        uploadFile.file?.bytes != null) {
+        _uploadedFileBytes(uploadFile) != null) {
       previewPlainTextFile(
         fileName: attachment.generateFileName(),
-        fileBytes: uploadFile.file!.bytes!,
+        fileBytes: _uploadedFileBytes(uploadFile)!,
         context: context,
         onDownloadWebFileAction: (fileName, fileBytes) => downloadFileWeb(
           fileName: fileName,
@@ -192,10 +197,10 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
       return;
     }
 
-    if (uploadFile.file?.bytes != null) {
+    if (_uploadedFileBytes(uploadFile) != null) {
       downloadFileWeb(
         fileName: attachment.generateFileName(),
-        fileBytes: uploadFile.file!.bytes!,
+        fileBytes: _uploadedFileBytes(uploadFile)!,
       );
       return;
     }

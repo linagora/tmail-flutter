@@ -198,9 +198,9 @@ class HtmlAnalyzer {
       final imageBytes = StringConvert.convertBase64ImageTagToBytes(base64ImageTag);
       final mediaType = StringConvert.getMediaTypeFromBase64ImageTag(base64ImageTag);
       log('HtmlAnalyzer::_retrieveAttachmentFromUpload: mimeType = ${mediaType?.mimeType} | imageBytesLength = ${imageBytes.length}');
-      final fileInfo = FileInfo.fromBytes(
+      final fileInfo = FileBytesInfo(
         bytes: imageBytes,
-        name: '$taskId.${mediaType?.subtype ?? 'png'}',
+        fileName: '$taskId.${mediaType?.subtype ?? 'png'}',
         type: mediaType?.mimeType,
       );
 

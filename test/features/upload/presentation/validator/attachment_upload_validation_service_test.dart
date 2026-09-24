@@ -67,7 +67,7 @@ class _RecordingFeedback implements AttachmentValidationFeedback {
   }
 }
 
-FileInfo _file({required int fileSize, bool isInline = false}) => FileInfo(
+FileInfo _file({required int fileSize, bool isInline = false}) => FilePathInfo(
       fileName: 'file-$fileSize',
       filePath: '/tmp/file-$fileSize',
       fileSize: fileSize,

@@ -22,10 +22,10 @@ extension FileUploadExtension on FileUpload {
 
   FileInfo? toFileInfo() {
     if (base64Data != null) {
-      return FileInfo.fromBytes(
+      return FileBytesInfo(
         bytes: convert.base64Decode(base64Data!),
-        name: name,
-        size: size,
+        fileName: name,
+        fileSize: size,
         type: type,
         isInline: true
       );

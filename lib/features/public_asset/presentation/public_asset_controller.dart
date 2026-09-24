@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
@@ -73,10 +74,10 @@ class PublicAssetController extends BaseController {
       (success) {
         log('PublicAssetController::handleUploadState::success::$success');
         if (success is SuccessAttachmentUploadState) {
-          final filePath = success.fileInfo.filePath;
-          if (PlatformInfo.isMobile && filePath != null) {
+          final uploadedFile = success.fileInfo;
+          if (PlatformInfo.isMobile && uploadedFile is FilePathInfo) {
             getBinding<FileUtils>()?.deleteCompressedFileOnMobile(
-              filePath,
+              uploadedFile.filePath,
               pathContains: IdentityCreatorConstants.prefixCompressedInlineImageTemp);
           }
 

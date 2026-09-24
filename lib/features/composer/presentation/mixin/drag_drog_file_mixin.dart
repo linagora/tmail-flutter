@@ -38,7 +38,7 @@ mixin DragDropFileMixin {
     final listFileInfo = <FileInfo>[];
     for (var i = 0; i < bytesList.result!.length; i++) {
       listFileInfo.add(
-        FileInfo(
+        FileBytesInfo(
           bytes: bytesList.result![i],
           fileName: details.files[i].name,
           type: details.files[i].mimeType,

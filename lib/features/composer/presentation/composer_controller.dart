@@ -1894,7 +1894,7 @@ class ComposerController extends BaseController
         imageUrl,
         uploadState.attachment.cid!,
         uploadState.fileInfo,
-        maxWidth: maxWithEditor,
+        options: (maxWidth: maxWithEditor, compress: null),
       ));
     } else {
       log('ComposerController::_handleUploadInlineFailure(): baseDownloadUrl: $baseDownloadUrl, accountId: $accountId');
