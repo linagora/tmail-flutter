@@ -21,13 +21,12 @@ sealed class FileInfo with EquatableMixin {
 
   String get fileExtension => fileName.split('.').last;
 
-  String get mimeType {
+  String get mimeType => _resolveMimeType(fileName);
+
+  String _resolveMimeType(String lookupPath, {Uint8List? headerBytes}) {
     if (type?.isNotEmpty == true) {
       return type!;
     }
-    final self = this;
-    final lookupPath = self is FilePathInfo && self.filePath.isNotEmpty ? self.filePath : fileName;
-    final headerBytes = self is FileBytesInfo ? self.bytes : null;
     return lookupMimeType(lookupPath, headerBytes: headerBytes) ?? 'application/octet-stream';
   }
 
@@ -49,6 +48,9 @@ final class FilePathInfo extends FileInfo {
   });
 
   @override
+  String get mimeType => _resolveMimeType(filePath.isNotEmpty ? filePath : fileName);
+
+  @override
   List<Object?> get props => [...super.props, filePath];
 }
 
@@ -64,6 +66,9 @@ final class FileBytesInfo extends FileInfo {
     super.isInline,
     super.isShared,
   }) : super(fileName: fileName ?? '', fileSize: fileSize ?? bytes.length);
+
+  @override
+  String get mimeType => _resolveMimeType(fileName, headerBytes: bytes);
 
   @override
   List<Object?> get props => [...super.props, bytes];
