@@ -117,6 +117,13 @@ void main() {
           expected: 'https://johndoe.example.com/events/event-42',
         ),
         (
+          description: 'resolve the encoded domainPart alias',
+          template: 'https://%7BlocalPart%7D.%7BdomainPart%7D/events/{UID}',
+          ownerEmail: 'john.doe@example.com',
+          domainName: null,
+          expected: 'https://johndoe.example.com/events/event-42',
+        ),
+        (
           description: 'resolve the encoded lowercase localPart placeholder',
           template:
               'https://%7Blocalpart%7D-calendar.example.com/events/{UID}',

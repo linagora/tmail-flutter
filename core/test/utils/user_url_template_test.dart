@@ -21,8 +21,18 @@ void main() {
           expected: 'https://calendar.example.com/events',
         ),
         (
+          description: 'domainPart only',
+          parts: {_TemplatePart.domainPart},
+          expected: 'https://calendar.example.com/events',
+        ),
+        (
           description: 'localPart and domainName',
           parts: {_TemplatePart.localPart, _TemplatePart.domainName},
+          expected: 'https://johndoe.example.com/events',
+        ),
+        (
+          description: 'localPart and domainPart',
+          parts: {_TemplatePart.localPart, _TemplatePart.domainPart},
           expected: 'https://johndoe.example.com/events',
         ),
       ];
@@ -163,7 +173,7 @@ void main() {
 
 enum _PlaceholderSyntax { raw, encoded }
 
-enum _TemplatePart { localPart, domainName }
+enum _TemplatePart { localPart, domainName, domainPart }
 
 String _userUrlTemplate(
   _PlaceholderSyntax syntax,
@@ -172,10 +182,12 @@ String _userUrlTemplate(
   final localPart = parts.contains(_TemplatePart.localPart)
       ? '${_placeholder(UserUrlTemplateVariables.localPart, syntax)}.'
       : 'calendar.';
-  final domainName = parts.contains(_TemplatePart.domainName)
+  final domain = parts.contains(_TemplatePart.domainName)
       ? _placeholder(UserUrlTemplateVariables.domainName, syntax)
-      : 'example.com';
-  return 'https://$localPart$domainName/events';
+      : parts.contains(_TemplatePart.domainPart)
+          ? _placeholder(UserUrlTemplateVariables.domainPart, syntax)
+          : 'example.com';
+  return 'https://$localPart$domain/events';
 }
 
 String _placeholder(String name, _PlaceholderSyntax syntax) =>
