@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 abstract final class UserUrlTemplateVariables {
   static const localPart = 'localPart';
   static const domainName = 'domainName';
-  static const names = {localPart, domainName};
+  static const domainPart = 'domainPart';
+  static const domainNames = {domainName, domainPart};
+  static const names = {localPart, ...domainNames};
 }
 
 /// Adds user identity variables shared by URL templates.
@@ -29,20 +31,21 @@ class UserUrlTemplate {
           caseInsensitiveVariables,
         ) ||
         domainName == null &&
-            _usesPlaceholder(
-              UserUrlTemplateVariables.domainName,
-              caseInsensitiveVariables,
+            UserUrlTemplateVariables.domainNames.any(
+              (name) => _usesPlaceholder(name, caseInsensitiveVariables),
             );
     final mailAddress = needsMailAddress
         ? _getMailAddress(ownerEmail?.trim() ?? '')
         : null;
     final resolvedDomain = domainName ?? mailAddress?.domain.domainName;
+    final domainValue =
+        resolvedDomain?.isEmpty == true ? null : resolvedDomain;
     return _template.resolve(
       variables: {
         UserUrlTemplateVariables.localPart:
             mailAddress?.localPart.replaceAll('.', ''),
-        UserUrlTemplateVariables.domainName:
-            resolvedDomain?.isEmpty == true ? null : resolvedDomain,
+        UserUrlTemplateVariables.domainName: domainValue,
+        UserUrlTemplateVariables.domainPart: domainValue,
         ...variables,
       },
       caseInsensitiveVariables: caseInsensitiveVariables,
