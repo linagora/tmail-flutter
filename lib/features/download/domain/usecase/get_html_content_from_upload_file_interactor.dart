@@ -9,6 +9,7 @@ import 'package:core/utils/string_convert.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/download/domain/state/get_html_content_from_upload_file_state.dart';
 import 'package:tmail_ui_user/features/download/domain/repository/download_repository.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
@@ -27,7 +28,7 @@ class GetHtmlContentFromUploadFileInteractor {
       yield Right(GettingHtmlContentFromUploadFile());
 
       final htmlContent = StringConvert.decodeFromBytes(
-        uploadFile.file!.bytes!,
+        (uploadFile.file! as FileBytesInfo).bytes,
         charset: uploadFile.attachment!.charset,
         isHtml: true,
       );

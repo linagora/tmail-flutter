@@ -127,7 +127,7 @@ void main() {
 
     return FileUploader(DioClient(Dio()), fileUtils ?? FileUtils()).uploadAttachment(
       UploadTaskId('upload-$fileName'),
-      FileInfo(
+      FilePathInfo(
         fileName: fileName,
         fileSize: await file.length(),
         filePath: file.path,
@@ -160,12 +160,12 @@ void main() {
     final attachments = await Future.wait([
       uploader.uploadAttachment(
         const UploadTaskId('upload-a'),
-        FileInfo(fileName: 'a.pdf', fileSize: sourceA.length, filePath: fileA.path),
+        FilePathInfo(fileName: 'a.pdf', fileSize: sourceA.length, filePath: fileA.path),
         uploadUri,
       ),
       uploader.uploadAttachment(
         const UploadTaskId('upload-b'),
-        FileInfo(fileName: 'b.pdf', fileSize: sourceB.length, filePath: fileB.path),
+        FilePathInfo(fileName: 'b.pdf', fileSize: sourceB.length, filePath: fileB.path),
         uploadUri,
       ),
     ]).timeout(const Duration(seconds: 30));
@@ -198,7 +198,7 @@ void main() {
 
     final uploadFuture = uploader.uploadAttachment(
       const UploadTaskId('upload-cancel'),
-      FileInfo(fileName: 'a.pdf', fileSize: sourceBytes.length, filePath: file.path),
+      FilePathInfo(fileName: 'a.pdf', fileSize: sourceBytes.length, filePath: file.path),
       Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
       cancelToken: cancelToken,
     );
@@ -225,7 +225,7 @@ void main() {
     try {
       await FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
         const UploadTaskId('upload-fail'),
-        FileInfo(
+        FileBytesInfo(
           fileName: 'a.pdf',
           fileSize: sourceBytes.length,
           bytes: sourceBytes,
@@ -252,7 +252,7 @@ void main() {
     setUp(() => PlatformInfo.isTestingForWeb = true);
     tearDown(() => PlatformInfo.isTestingForWeb = false);
 
-    test('uploads from bytes and never reads a local path, even when one is set', () async {
+    test('uploads from bytes on web', () async {
       final sourceBytes = Uint8List.fromList(List<int>.generate(512, (index) => index % 256));
       final receivedBodies = <List<int>>[];
       final server = await startRecordingUploadServer(receivedBodies);
@@ -260,11 +260,9 @@ void main() {
 
       final attachment = await uploader.uploadAttachment(
         const UploadTaskId('upload-web'),
-        FileInfo(
+        FileBytesInfo(
           fileName: 'a.pdf',
           fileSize: sourceBytes.length,
-          // A path that does not exist on disk: on web it must never be opened.
-          filePath: '/definitely/not/on/disk/a.pdf',
           bytes: sourceBytes,
           type: 'application/pdf',
         ),
@@ -290,10 +288,9 @@ void main() {
 
       await FileUploader(DioClient(dio), FileUtils()).uploadAttachment(
         const UploadTaskId('upload-web-extra'),
-        FileInfo(
+        FileBytesInfo(
           fileName: 'a.pdf',
           fileSize: sourceBytes.length,
-          filePath: '/definitely/not/on/disk/a.pdf',
           bytes: sourceBytes,
           type: 'application/pdf',
         ),
@@ -317,7 +314,7 @@ void main() {
         fileUtils,
       ).uploadAttachment(
         const UploadTaskId('upload-web-charset'),
-        FileInfo(
+        FileBytesInfo(
           fileName: 'note.txt',
           fileSize: sourceBytes.length,
           bytes: sourceBytes,
@@ -338,7 +335,7 @@ void main() {
       await expectLater(
         FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
           const UploadTaskId('upload-web-empty'),
-          FileInfo(fileName: 'a.pdf', fileSize: 0, filePath: '', type: 'application/pdf'),
+          const FilePlaceholderInfo(fileName: 'a.pdf', fileSize: 0, type: 'application/pdf'),
           Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
         ),
         throwsA(isA<MissingAttachmentSourceException>()),
@@ -392,7 +389,7 @@ void main() {
 
     final attachment = await FileUploader(DioClient(Dio()), FileUtils()).uploadAttachment(
       const UploadTaskId('upload-binary'),
-      FileInfo(
+      FileBytesInfo(
         fileName: 'a.pdf',
         fileSize: 3,
         bytes: Uint8List.fromList(<int>[1, 2, 3]),
@@ -424,7 +421,7 @@ void main() {
     final fileUtils = _RecordingFileUtils('Shift_JIS');
     final uploadFuture = FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
       const UploadTaskId('upload-charset-gone'),
-      FileInfo(
+      FilePathInfo(
         fileName: 'note.txt',
         fileSize: await file.length(),
         filePath: file.path,
@@ -459,7 +456,7 @@ void main() {
       _ThrowingFileUtils(),
     ).uploadAttachment(
       const UploadTaskId('upload-charset-detector-failure'),
-      FileInfo(
+      FileBytesInfo(
         fileName: 'note.txt',
         fileSize: sourceBytes.length,
         bytes: sourceBytes,

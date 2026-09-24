@@ -219,7 +219,7 @@ class UploadController extends BaseController {
     if (placeholders.isEmpty) return;
     _uploadingStateFiles.addAll(placeholders.map((placeholder) => UploadFileState(
       placeholder.taskId,
-      file: FileInfo(
+      file: FilePlaceholderInfo(
         fileName: placeholder.fileName,
         fileSize: placeholder.fileSize,
         type: placeholder.mimeType,

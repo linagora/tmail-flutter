@@ -21,7 +21,7 @@ class _FakeStateSource implements AttachmentUploadStateSource {
   int get warningLimitBytes => 0;
 }
 
-FileInfo _file({required int fileSize, bool? isInline}) => FileInfo(
+FileInfo _file({required int fileSize, bool? isInline}) => FilePathInfo(
       fileName: 'file-$fileSize',
       filePath: '/tmp/file-$fileSize',
       fileSize: fileSize,

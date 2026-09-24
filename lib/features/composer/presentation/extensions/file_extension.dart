@@ -8,7 +8,7 @@ extension FileExtension on File {
     bool? isInline,
     bool? isShared
   }) {
-    return FileInfo(
+    return FilePathInfo(
       fileName: path.split('/').last,
       fileSize: existsSync() ? lengthSync() : 0,
       filePath: path,

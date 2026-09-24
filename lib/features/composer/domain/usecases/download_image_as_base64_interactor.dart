@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/image_download_options.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 
@@ -13,10 +14,7 @@ class DownloadImageAsBase64Interactor {
     String url,
     String cid,
     FileInfo fileInfo,
-    {
-      double? maxWidth,
-      bool? compress,
-    }
+    {ImageDownloadOptions? options}
   ) async* {
     try {
       yield Right<Failure, Success>(DownloadingImageAsBase64());
@@ -24,8 +22,7 @@ class DownloadImageAsBase64Interactor {
         url,
         cid,
         fileInfo,
-        maxWidth: maxWidth,
-        compress: compress
+        options: options,
       );
       if (result?.isNotEmpty == true) {
         yield Right<Failure, Success>(DownloadImageAsBase64Success(
