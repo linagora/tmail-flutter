@@ -21,13 +21,13 @@ class CalendarEventCardMappingOptions {
   final AppLocalizations appLocalizations;
   final date_format.DateLocale dateLocale;
   final String timeZone;
-  final String? calendarUrl;
+  final String? calendarUrlTemplate;
 
   const CalendarEventCardMappingOptions({
     required this.appLocalizations,
     required this.dateLocale,
     required this.timeZone,
-    this.calendarUrl,
+    this.calendarUrlTemplate,
   });
 }
 
@@ -340,8 +340,9 @@ class CalendarEventCardMapper {
   LinagoraEventAction? get calendarAction {
     if (event.isDisplayedWarningMessage(viewState.ownEmailAddress)) return null;
 
-    final eventUrl = options.calendarUrl.resolveCalendarEventUrl(
+    final eventUrl = options.calendarUrlTemplate.resolveCalendarEventUrl(
       event.eventId?.id,
+      ownerEmail: viewState.ownEmailAddress,
     );
     final onOpenLink = actions.onOpenLink;
     if (eventUrl == null || onOpenLink == null) return null;

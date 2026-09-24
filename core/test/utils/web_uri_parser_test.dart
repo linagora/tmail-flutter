@@ -29,6 +29,11 @@ void main() {
         value: 'https://192.168.1.10/path',
         expected: 'https://192.168.1.10/path',
       ),
+      (
+        description: 'an HTTPS URL with valid mixed-case percent escapes',
+        value: 'https://calendar.example.com/%7Bevent%7d',
+        expected: 'https://calendar.example.com/%7Bevent%7D',
+      ),
     ];
 
     for (final testCase in validAbsoluteCases) {
@@ -51,6 +56,18 @@ void main() {
       (
         description: 'the URL contains an out-of-range port',
         value: 'https://calendar.example.com:65536',
+      ),
+      (
+        description: 'the URL contains an incomplete percent escape',
+        value: 'https://calendar.example.com/%',
+      ),
+      (
+        description: 'the URL contains a non-hex first escape digit',
+        value: 'https://calendar.example.com/%G0',
+      ),
+      (
+        description: 'the URL contains a non-hex second escape digit',
+        value: 'https://calendar.example.com/%0G',
       ),
       (description: 'the URL has no host', value: 'https://'),
     ];

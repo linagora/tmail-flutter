@@ -22,45 +22,69 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import '../../../../../fixtures/widget_fixtures.dart';
 
 void main() {
-  testWidgets(
-    'SHOULD use the active ecosystem calendar URL to open the event',
-    (tester) async {
-      final accountId = AccountId(Id('account-id'));
-      const jmapUrl = 'https://jmap.example.invalid';
-      final observedKeys = <(AccountId?, String?)>[];
-      final openedLinks = <String>[];
-      final container = ProviderContainer(overrides: [
-        activeEcosystemProvider.overrideWith((ref, args) {
-          observedKeys.add(args);
-          return EcosystemAvailable(LinagoraEcosystem({
-            LinagoraEcosystemIdentifier.calendarUrl:
-                ApiUrlLinagoraEcosystem('https://calendar.example.invalid/app'),
-          }));
-        }),
-      ]);
-      addTearDown(container.dispose);
+  _registerAvailableEcosystemTests();
+  _registerUnavailableEcosystemTest();
+}
 
-      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
-        providerContainer: container,
-        child: _card(
-          accountId: accountId,
-          jmapUrl: jmapUrl,
-          openedLinks: openedLinks,
-        ),
-      ));
-      await tester.pumpAndSettle();
+void _registerAvailableEcosystemTests() {
+  final testCases = <_AvailableEcosystemCase>[
+    (
+      description: 'canonical calendar URL template',
+      template: 'https://calendar.{domainName}/app/events/{UID}',
+      expected: 'https://calendar.example.invalid/app/events/event-42',
+    ),
+    (
+      description: 'lowercase localPart template without a scheme',
+      template: '{localpart}-calendar.example.invalid',
+      expected: 'https://reader-calendar.example.invalid/events/event-42',
+    ),
+  ];
 
-      await tester.tap(find.text(AppLocalizations().seeInYourCalendar));
-      await tester.pump();
+  for (final testCase in testCases) {
+    testWidgets(
+      'SHOULD use ${testCase.description} to open the event',
+      (tester) => _expectCalendarUrlOpens(tester, testCase),
+    );
+  }
+}
 
-      expect(observedKeys, [(accountId, jmapUrl)]);
-      expect(
-        openedLinks,
-        ['https://calendar.example.invalid/app/events/event-42'],
-      );
-    },
-  );
+Future<void> _expectCalendarUrlOpens(
+  WidgetTester tester,
+  _AvailableEcosystemCase testCase,
+) async {
+  final accountId = AccountId(Id('account-id'));
+  const jmapUrl = 'https://jmap.example.invalid';
+  final observedKeys = <(AccountId?, String?)>[];
+  final openedLinks = <String>[];
+  final container = ProviderContainer(overrides: [
+    activeEcosystemProvider.overrideWith((ref, args) {
+      observedKeys.add(args);
+      return EcosystemAvailable(LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.calendarUrlTemplate:
+            ApiUrlLinagoraEcosystem(testCase.template),
+      }));
+    }),
+  ]);
+  addTearDown(container.dispose);
 
+  await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+    providerContainer: container,
+    child: _card(
+      accountId: accountId,
+      jmapUrl: jmapUrl,
+      openedLinks: openedLinks,
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.text(AppLocalizations().seeInYourCalendar));
+  await tester.pump();
+
+  expect(observedKeys, [(accountId, jmapUrl)]);
+  expect(openedLinks, [testCase.expected]);
+}
+
+void _registerUnavailableEcosystemTest() {
   testWidgets(
     'SHOULD hide the calendar action WHEN the active ecosystem is unavailable',
     (tester) async {
@@ -86,6 +110,12 @@ void main() {
     },
   );
 }
+
+typedef _AvailableEcosystemCase = ({
+  String description,
+  String template,
+  String expected,
+});
 
 EcosystemCalendarEventCardWidget _card({
   required AccountId accountId,

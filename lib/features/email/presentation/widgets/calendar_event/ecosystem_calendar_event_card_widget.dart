@@ -31,8 +31,8 @@ class EcosystemCalendarEventCardWidget extends ConsumerWidget {
       accountId,
       jmapUrl,
     ));
-    final calendarUrl = switch (ecosystemState) {
-      EcosystemAvailable(:final ecosystem) => ecosystem.calendarUrl,
+    final calendarUrlTemplate = switch (ecosystemState) {
+      EcosystemAvailable(:final ecosystem) => ecosystem.calendarUrlTemplate,
       _ => null,
     };
 
@@ -40,7 +40,7 @@ class EcosystemCalendarEventCardWidget extends ConsumerWidget {
       calendarEvent: calendarEvent,
       viewState: viewState,
       actions: actions,
-      calendarUrl: calendarUrl,
+      calendarUrlTemplate: calendarUrlTemplate,
     );
   }
 }

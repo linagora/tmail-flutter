@@ -1,4 +1,6 @@
 import 'package:core/utils/web_link_generator.dart';
+import 'package:core/utils/url_template.dart';
+import 'package:core/utils/user_url_template.dart';
 
 class PaywallUtils {
   const PaywallUtils._();
@@ -56,24 +58,14 @@ class PaywallUtils {
     String? localPart,
     String? domainName,
   }) {
-    final replacements = {
-      '{localPart}': localPart ?? '',
-      '{domainName}': domainName ?? '',
-      Uri.encodeComponent('{localPart}'): localPart ?? '',
-      Uri.encodeComponent('{domainName}'): domainName ?? '',
-    };
-
-    var result = template;
-    replacements.forEach((placeholder, value) {
-      result = result.replaceAll(placeholder, value);
-    });
-
-    return result;
+    return UrlTemplate(template).resolve(variables: {
+      UserUrlTemplateVariables.localPart: localPart ?? '',
+      UserUrlTemplateVariables.domainName: domainName ?? '',
+    })!;
   }
 
   /// Whether [template] carries `{name}` (raw or URL-encoded), the placeholder
   /// [buildPaywallUrlFromTemplate] fills.
   static bool usesPlaceholder(String template, String name) =>
-      template.contains('{$name}') ||
-      template.contains(Uri.encodeComponent('{$name}'));
+      UrlTemplate(template).usesPlaceholder(name);
 }

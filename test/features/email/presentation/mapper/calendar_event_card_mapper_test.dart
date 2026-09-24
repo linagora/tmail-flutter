@@ -672,7 +672,7 @@ void main() {
           links: (open: openedLinks.add, copy: null),
         ),
         options: _mappingOptions(
-          calendarUrl: 'https://calendar.example.invalid',
+          calendarUrlTemplate: 'https://calendar.example.invalid',
         ),
       ).calendarAction!;
 
@@ -694,7 +694,7 @@ void main() {
           links: (open: (_) {}, copy: null),
         ),
         options: _mappingOptions(
-          calendarUrl: 'https://calendar.example.invalid',
+          calendarUrlTemplate: 'https://calendar.example.invalid',
         ),
       );
 
@@ -712,7 +712,7 @@ void main() {
           links: (open: (_) {}, copy: null),
         ),
         options: _mappingOptions(
-          calendarUrl: 'https://calendar.example.invalid',
+          calendarUrlTemplate: 'https://calendar.example.invalid',
         ),
       );
 
@@ -724,7 +724,7 @@ void main() {
       final mapper = _mapper(
         event: _invitation(eventId: EventId('event-42')),
         options: _mappingOptions(
-          calendarUrl: 'https://calendar.example.invalid',
+          calendarUrlTemplate: 'https://calendar.example.invalid',
         ),
       );
 
@@ -959,13 +959,13 @@ CalendarEventCardMapper _replyMapper(_ReplyActivityCase testCase) {
 
 CalendarEventCardMappingOptions _mappingOptions({
   date_format.DateLocale dateLocale = const date_format.EnglishDateLocale(),
-  String? calendarUrl,
+  String? calendarUrlTemplate,
 }) {
   return CalendarEventCardMappingOptions(
     appLocalizations: AppLocalizations(),
     dateLocale: dateLocale,
     timeZone: 'UTC',
-    calendarUrl: calendarUrl,
+    calendarUrlTemplate: calendarUrlTemplate,
   );
 }
 
