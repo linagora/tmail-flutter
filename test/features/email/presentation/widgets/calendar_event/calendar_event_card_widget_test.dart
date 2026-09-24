@@ -176,7 +176,7 @@ Future<void> _openCalendarEventForInvitedReader(WidgetTester tester) async {
   final openedLinks = <String>[];
   await tester.pumpWidget(_testableCard(
     event: _invitation(eventId: EventId('event/42')),
-    calendarUrl: 'localhost:3000/events//',
+    calendarUrlTemplate: 'http://localhost:3000/events//',
     actions: CalendarEventCardActions(
       onReply: (_) {},
       onMailToAttendees: () {},
@@ -215,7 +215,7 @@ Future<void> _hideCalendarActionForUninvitedReader(
       ),
       participants: [_attendee('Guest', 'guest@example.invalid')],
     ),
-    calendarUrl: 'https://calendar.example.invalid',
+    calendarUrlTemplate: 'https://calendar.example.invalid',
   ));
   await tester.pumpAndSettle();
 
@@ -228,7 +228,7 @@ Future<void> _hideCalendarActionForInvalidUrl(
 ) async {
   await tester.pumpWidget(_testableCard(
     event: _invitation(eventId: EventId('event-42')),
-    calendarUrl: calendarUrl,
+    calendarUrlTemplate: calendarUrl,
   ));
   await tester.pumpAndSettle();
 
@@ -238,7 +238,7 @@ Future<void> _hideCalendarActionForInvalidUrl(
 Future<void> _hideCalendarActionWithoutEventUid(WidgetTester tester) async {
   await tester.pumpWidget(_testableCard(
     event: _invitation(),
-    calendarUrl: 'https://calendar.example.invalid',
+    calendarUrlTemplate: 'https://calendar.example.invalid',
   ));
   await tester.pumpAndSettle();
 
@@ -248,7 +248,7 @@ Future<void> _hideCalendarActionWithoutEventUid(WidgetTester tester) async {
 Future<void> _hideCalendarActionWithoutOpenLink(WidgetTester tester) async {
   await tester.pumpWidget(_testableCard(
     event: _invitation(eventId: EventId('event-42')),
-    calendarUrl: 'https://calendar.example.invalid',
+    calendarUrlTemplate: 'https://calendar.example.invalid',
     actions: CalendarEventCardActions(
       onReply: (_) {},
       onMailToAttendees: () {},
@@ -796,14 +796,14 @@ Widget _testableCard({
   required CalendarEvent event,
   CalendarEventCardViewState? viewState,
   CalendarEventCardActions? actions,
-  String? calendarUrl,
+  String? calendarUrlTemplate,
 }) {
   return WidgetFixtures.makeTestableWidget(
     child: _card(
       event: event,
       viewState: viewState,
       actions: actions,
-      calendarUrl: calendarUrl,
+      calendarUrlTemplate: calendarUrlTemplate,
     ),
   );
 }
@@ -813,7 +813,7 @@ Widget _card({
   CalendarEventCardViewState? viewState,
   CalendarEventCardActions? actions,
   LinagoraEventCardLayout layout = LinagoraEventCardLayout.adaptive,
-  String? calendarUrl,
+  String? calendarUrlTemplate,
 }) {
   return CalendarEventCardWidget(
     calendarEvent: event,
@@ -825,7 +825,7 @@ Widget _card({
       onCopyLink: (_) {},
     ),
     layout: layout,
-    calendarUrl: calendarUrl,
+    calendarUrlTemplate: calendarUrlTemplate,
   );
 }
 

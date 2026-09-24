@@ -13,6 +13,7 @@ abstract final class WebUriParser {
   }) {
     final normalizedValue = _normalize(value);
     if (normalizedValue == null) return null;
+    if (!_hasValidPercentEscapes(normalizedValue)) return null;
 
     final candidate = inferMissingScheme
         ? _withSupportedScheme(normalizedValue)
@@ -32,6 +33,24 @@ String? _normalize(String? value) {
   if (normalizedValue.isEmpty) return null;
   return normalizedValue;
 }
+
+bool _hasValidPercentEscapes(String value) {
+  for (var index = 0; index < value.length; index++) {
+    if (value.codeUnitAt(index) != 0x25) continue;
+    if (index + 2 >= value.length) return false;
+    if (!_isHexDigit(value.codeUnitAt(index + 1)) ||
+        !_isHexDigit(value.codeUnitAt(index + 2))) {
+      return false;
+    }
+    index += 2;
+  }
+  return true;
+}
+
+bool _isHexDigit(int codeUnit) =>
+    codeUnit >= 0x30 && codeUnit <= 0x39 ||
+    codeUnit >= 0x41 && codeUnit <= 0x46 ||
+    codeUnit >= 0x61 && codeUnit <= 0x66;
 
 bool _hasValidAuthority(Uri uri) {
   if (uri.host.isEmpty) return false;

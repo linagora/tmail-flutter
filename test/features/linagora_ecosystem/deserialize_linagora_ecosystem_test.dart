@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/mobile_apps_linagora_ecosystem.dart';
 
 const _apiUrl = 'https://example.com/api';
-const _calendarUrl = 'https://calendar.example.com';
+const _calendarUrlTemplate = 'https://calendar.example.com';
 const _logoUrl = 'https://xyz';
 const _androidPackageId = 'com.example.android';
 const _iosUrlScheme = 'app.scheme';
@@ -36,7 +36,7 @@ Map<String, dynamic> _allPropertiesPayload() => {
   'linToApiUrl': _apiUrl,
   'linToApiKey': 'apiKey',
   'twakeApiUrl': _apiUrl,
-  'calendarUrl': _calendarUrl,
+  'calendarUrlTemplate': _calendarUrlTemplate,
   'Twake Drive': {
     'appName': 'Twake Drive',
     'logoURL': _logoUrl,
@@ -78,8 +78,8 @@ LinagoraEcosystem _expectedEcosystem({
   LinagoraEcosystemIdentifier.linToApiKey:
       ApiKeyLinagoraEcosystem('apiKey'),
   LinagoraEcosystemIdentifier.twakeApiUrl: ApiUrlLinagoraEcosystem(_apiUrl),
-  LinagoraEcosystemIdentifier.calendarUrl:
-      ApiUrlLinagoraEcosystem(_calendarUrl),
+  LinagoraEcosystemIdentifier.calendarUrlTemplate:
+      ApiUrlLinagoraEcosystem(_calendarUrlTemplate),
   LinagoraEcosystemIdentifier.twakeDrive: twakeDrive,
   LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystem({
     LinagoraEcosystemIdentifier.twakeChat:
@@ -217,30 +217,41 @@ void main() {
       expect(linagoraEcosystem.paywallUrlTemplate, isNull);
     });
 
-    test('Should return a trimmed calendar URL when configured', () {
+    test('Should return a trimmed calendar URL template when configured', () {
       final linagoraEcosystem = LinagoraEcosystem.deserialize({
-        'calendarUrl': '  https://calendar.domain.tld  ',
+        'calendarUrlTemplate': '  https://calendar.domain.tld  ',
       });
 
-      expect(linagoraEcosystem.calendarUrl, 'https://calendar.domain.tld');
+      expect(
+        linagoraEcosystem.calendarUrlTemplate,
+        'https://calendar.domain.tld',
+      );
     });
 
-    final unavailableCalendarUrlCases = [
+    final unavailableCalendarUrlTemplateCases = [
       (description: 'missing', payload: <String, dynamic>{}),
-      (description: 'null', payload: <String, dynamic>{'calendarUrl': null}),
-      (description: 'blank', payload: <String, dynamic>{'calendarUrl': '   '}),
+      (
+        description: 'null',
+        payload: <String, dynamic>{'calendarUrlTemplate': null},
+      ),
+      (
+        description: 'blank',
+        payload: <String, dynamic>{'calendarUrlTemplate': '   '},
+      ),
       (
         description: 'an invalid type',
-        payload: <String, dynamic>{'calendarUrl': {'url': 'invalid'}},
+        payload: <String, dynamic>{
+          'calendarUrlTemplate': {'url': 'invalid'},
+        },
       ),
     ];
 
-    for (final testCase in unavailableCalendarUrlCases) {
-      test('Should return null when calendar URL is ${testCase.description}', () {
+    for (final testCase in unavailableCalendarUrlTemplateCases) {
+      test('Should return null when calendar URL template is ${testCase.description}', () {
         final linagoraEcosystem = LinagoraEcosystem.deserialize(testCase.payload);
 
-        expect(() => linagoraEcosystem.calendarUrl, returnsNormally);
-        expect(linagoraEcosystem.calendarUrl, isNull);
+        expect(() => linagoraEcosystem.calendarUrlTemplate, returnsNormally);
+        expect(linagoraEcosystem.calendarUrlTemplate, isNull);
       });
     }
 
@@ -272,11 +283,12 @@ void main() {
         'Should not resolve a calendar URL when ${testCase.description}',
         () {
           final linagoraEcosystem = LinagoraEcosystem.deserialize({
-            'calendarUrl': testCase.calendarUrl,
+            'calendarUrlTemplate': testCase.calendarUrl,
           });
 
           expect(
-            linagoraEcosystem.calendarUrl.resolveCalendarEventUrl('event-42'),
+            linagoraEcosystem.calendarUrlTemplate
+                .resolveCalendarEventUrl('event-42'),
             isNull,
           );
         },
