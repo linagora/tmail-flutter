@@ -102,6 +102,20 @@ void main() {
       );
     });
 
+    test('SHOULD return null WHEN the template is malformed', () {
+      for (final template in [
+        'https://calendar.example.com/events/{uid',
+        'https://calendar.example.com/events/%7Buid',
+      ]) {
+        expect(
+          UrlTemplate(template).resolve(
+            variables: const {'uid': 'event-42'},
+          ),
+          isNull,
+        );
+      }
+    });
+
     test('SHOULD scan a long malformed template without recursion', () {
       final malformedTemplate = '${List.filled(100000, 'a').join()}{';
 

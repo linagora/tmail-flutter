@@ -278,6 +278,17 @@ void _premiumCtaDestinationTests() {
     );
   });
 
+  test('blocks the CTA when the ecosystem template is malformed', () async {
+    final state = await _resolveCtaForTemplate(
+      'https://paywall.domain.tld/{localPart',
+    );
+
+    expect(
+      state,
+      _unavailableCta(PremiumCtaUnavailableReason.invalidDestination),
+    );
+  });
+
   test('prefers Workplace destination without fetching ecosystem', () {
     final repository = _succeedingRepository();
     final container = _createContainer(repository);

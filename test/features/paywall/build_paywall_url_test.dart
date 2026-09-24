@@ -117,6 +117,16 @@ void main() {
       expect(url, '');
     });
 
+    test('malformed template returns null', () {
+      expect(
+        PaywallUtils.buildPaywallUrlFromTemplate(
+          template: 'https://domain.tld/{localPart',
+          localPart: 'alice',
+        ),
+        isNull,
+      );
+    });
+
     test('template with only {localPart}', () {
       const template = '{localPart}';
       final url = PaywallUtils.buildPaywallUrlFromTemplate(
