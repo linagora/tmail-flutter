@@ -140,6 +140,8 @@ class ComposerArguments extends RouterArguments {
       attachments: classified?.attachments,
       selectedIdentityId: composerCache.email?.identityIdFromHeader,
       inlineImages: classified?.inlineImages,
+      messageId: composerCache.email?.inReplyTo,
+      references: composerCache.email?.references,
       hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
       isMarkAsImportant: composerCache.isMarkAsImportant,
@@ -148,6 +150,9 @@ class ComposerArguments extends RouterArguments {
       savedActionType: composerCache.actionType,
       savedEmailDraftId: composerCache.draftEmailId,
       savedEmailTemplateId: composerCache.templateEmailId,
+      savedDraftMailboxId: composerCache.actionType == EmailActionType.editDraft
+          ? composerCache.email?.mailboxIds?.keys.firstOrNull
+          : null,
     );
   }
 

@@ -36,6 +36,7 @@ class ComposerManager extends GetxController {
       final composerId = argument.composerId;
 
       if (composerId == null) continue;
+      if (composers.containsKey(composerId)) continue;
 
       ComposerBindings(
         composerId: composerId,
@@ -61,6 +62,13 @@ class ComposerManager extends GetxController {
     ComposerBindings(composerId: id).dispose();
 
     _arrangeComposerIfNeeded();
+  }
+
+  // Disposing each composer also cancels its beforeunload snapshot write.
+  void removeAllComposers() {
+    for (final id in composers.keys.toList()) {
+      removeComposer(id);
+    }
   }
 
   void _arrangeComposerIfNeeded() {

@@ -7,8 +7,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 extension ReopenComposerCacheExtension on MailboxDashBoardController {
 
   void handleGetAllComposerCacheSuccess(GetAllComposerCacheSuccess success) {
-    removeAllComposerCache();
-
+    // Keep the snapshots until their composers close cleanly. Clearing them
+    // here creates a data-loss window if the page reloads again while the
+    // restored editors are still initializing.
     final listComposerCacheSortByIndex = [...success.listComposerCache]
       ..sort((a, b) => (a.composerIndex ?? 0).compareTo(b.composerIndex ?? 0));
 

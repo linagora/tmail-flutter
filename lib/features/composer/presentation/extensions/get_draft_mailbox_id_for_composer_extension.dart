@@ -8,9 +8,11 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 extension GetDraftMailboxIdForComposerExtension on ComposerController {
   MailboxId? getDraftMailboxIdForComposer() {
     final savedDraftMailboxId = composerArguments.value?.savedDraftMailboxId;
+    final actionType = currentEmailActionType == EmailActionType.reopenComposerBrowser
+        ? composerArguments.value?.savedActionType
+        : currentEmailActionType;
 
-    if (currentEmailActionType == EmailActionType.editDraft &&
-        savedDraftMailboxId != null) {
+    if (actionType == EmailActionType.editDraft && savedDraftMailboxId != null) {
       return savedDraftMailboxId;
     }
 

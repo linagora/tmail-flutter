@@ -119,21 +119,22 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   }
 
   MessageIdsHeaderValue? createInReplyTo() {
-    if (emailActionType == EmailActionType.reply ||
-        emailActionType == EmailActionType.replyToList ||
-        emailActionType == EmailActionType.replyAll
-    ) {
+    if (_keepsReplyThreading) {
       return messageId;
     }
     return null;
   }
 
+  // A restored reply uses the web action type but still needs its headers.
+  bool get _keepsReplyThreading => const {
+    EmailActionType.reply,
+    EmailActionType.replyToList,
+    EmailActionType.replyAll,
+    EmailActionType.reopenComposerBrowser,
+  }.contains(emailActionType);
+
   MessageIdsHeaderValue? createReferences() {
-    if (emailActionType == EmailActionType.reply ||
-        emailActionType == EmailActionType.replyToList ||
-        emailActionType == EmailActionType.replyAll ||
-        emailActionType == EmailActionType.forward
-    ) {
+    if (_keepsReplyThreading || emailActionType == EmailActionType.forward) {
       Set<String> ids = {};
       if (messageId?.ids.isNotEmpty == true) {
         ids.addAll(messageId!.ids);
