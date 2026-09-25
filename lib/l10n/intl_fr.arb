@@ -5983,5 +5983,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "pdfPasswordRequired": "PDF protégé par mot de passe",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Mot de passe incorrect, veuillez réessayer",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "Ce PDF est protégé par mot de passe. Vous pouvez toujours le télécharger.",
+  "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -1548,6 +1548,27 @@ class AppLocalizations {
     );
   }
 
+  String get pdfPasswordRequired {
+    return Intl.message(
+      'Password-protected PDF',
+      name: 'pdfPasswordRequired',
+    );
+  }
+
+  String get incorrectPdfPassword {
+    return Intl.message(
+      'Incorrect password, please try again',
+      name: 'incorrectPdfPassword',
+    );
+  }
+
+  String get pdfPasswordNotProvided {
+    return Intl.message(
+      'This PDF is password-protected. You can still download it.',
+      name: 'pdfPasswordNotProvided',
+    );
+  }
+
   String get wrongUrlMessage {
     return Intl.message('Server URL is not valid, please try again',
         name: 'wrongUrlMessage');

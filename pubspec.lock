@@ -1782,7 +1782,7 @@ packages:
     source: hosted
     version: "1.0.4"
   pdfrx:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: pdfrx
       sha256: "7925ac63d7394ac85da084a88b4948b130f865fdf06a419fb8cc139724e1757e"
