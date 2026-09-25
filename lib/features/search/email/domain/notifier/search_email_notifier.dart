@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/search/email/domain/execution/search_exec
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_request.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_pagination_strategies.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_result.dart';
+import 'package:tmail_ui_user/features/search/email/domain/execution/search_query_key.dart';
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_request_spec.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_query_params.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
@@ -45,6 +46,9 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   /// Monotonic token; a result applies only while it is the latest.
   int _latestRequestId = 0;
 
+  /// The latest joinable request while its query is in flight.
+  _PendingSearch? _pendingSearch;
+
   /// Current result, or an empty one before the first search lands.
   SearchEmailResult get _currentResult =>
       state.value ?? SearchEmailResult.empty();
@@ -69,25 +73,40 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
       collapseThreads: collapseThreads,
       trashSpamMailboxIds: trashSpamMailboxIds,
     );
+    final query = _resolveQuery(request);
+    final pending = _pendingSearch;
+    // An identical request while the same query is still in flight joins it
+    // instead of sending a duplicate `Email/query`.
+    if (pending != null && pending.canBeJoinedBy(query.key, _latestRequestId)) {
+      return pending.result;
+    }
     final requestId = ++_latestRequestId;
-    return switch (intent) {
-      NewSearchIntent() => _runNewSearch(requestId, request),
-      LoadMoreIntent() => _runLoadMore(requestId, request),
-      RefreshChangesIntent() => _runRefresh(requestId, request),
+    final result = switch (intent) {
+      NewSearchIntent() => _runNewSearch(requestId, query.params),
+      LoadMoreIntent() => _runLoadMore(requestId, query.params),
+      RefreshChangesIntent() => _runRefresh(requestId, query.params),
     };
+    if (_isJoinable(intent)) {
+      _pendingSearch = _PendingSearch(requestId, query.key, result);
+    }
+    return result;
   }
+
+  /// A refresh is never joined: it must observe the server state that
+  /// triggered it, which an earlier in-flight query may predate.
+  bool _isJoinable(SearchExecutionIntent intent) =>
+      intent is! RefreshChangesIntent;
 
   /// New search: show a first-page spinner, then replace the list or error (a
   /// fresh search has no prior list to fall back on).
   Future<SearchExecutionResult> _runNewSearch(
     int requestId,
-    SearchExecutionRequest request,
+    SearchEmailQueryParams params,
   ) {
     state = const AsyncLoading();
     return _runGuarded(
       requestId,
       () {
-        final params = _resolveQueryParams(request);
         return _searchInteractor
             .execute(
               params.session,
@@ -114,7 +133,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   /// in [_runGuarded], which drops a superseded page — not by [LoadMoreState].
   Future<SearchExecutionResult> _runLoadMore(
     int requestId,
-    SearchExecutionRequest request,
+    SearchEmailQueryParams params,
   ) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.inProgress,
@@ -122,7 +141,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     return _runGuarded(
       requestId,
       () {
-        final params = _resolveQueryParams(request);
         return _searchMoreInteractor
             .execute(
               params.session,
@@ -154,7 +172,7 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
   /// erroring the whole result.
   Future<SearchExecutionResult> _runRefresh(
     int requestId,
-    SearchExecutionRequest request,
+    SearchEmailQueryParams params,
   ) {
     state = AsyncData(_currentResult.copyWith(
       loadMore: LoadMoreState.idle,
@@ -162,7 +180,6 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     return _runGuarded(
       requestId,
       () {
-        final params = _resolveQueryParams(request);
         return _refreshInteractor
             .execute(
               params.session,
@@ -193,15 +210,20 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     required SearchPageHandler onPageLoaded,
     required InteractorFailureHandler onFailure,
   }) async {
-    final succeeded = await consumeInteractor(
-      runInteractor,
-      isStale: () => !ref.mounted || requestId != _latestRequestId,
-      onSuccess: (success) {
-        final page = _emailsOf(success);
-        if (page != null) onPageLoaded(page); // else intermediate — keep current
-      },
-      onFailure: onFailure,
-    );
+    final bool succeeded;
+    try {
+      succeeded = await consumeInteractor(
+        runInteractor,
+        isStale: () => !ref.mounted || requestId != _latestRequestId,
+        onSuccess: (success) {
+          final page = _emailsOf(success);
+          if (page != null) onPageLoaded(page); // else intermediate — keep current
+        },
+        onFailure: onFailure,
+      );
+    } finally {
+      _releasePendingSearch(requestId);
+    }
     if (succeeded) return SearchExecutionResult.success;
     // Re-check staleness after the await: a newer execute() during the
     // interactor call advances _latestRequestId. A failure that raced a newer
@@ -212,8 +234,14 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
         : SearchExecutionResult.failure;
   }
 
-  /// Resolves the interactor args via the pagination strategies for [request].
-  SearchEmailQueryParams _resolveQueryParams(SearchExecutionRequest request) {
+  /// Once its query completes, a request can no longer be joined.
+  void _releasePendingSearch(int requestId) {
+    if (_pendingSearch?.requestId == requestId) _pendingSearch = null;
+  }
+
+  /// Resolves the interactor args via the pagination strategies for [request],
+  /// along with the key identifying the resulting query.
+  _ResolvedSearchQuery _resolveQuery(SearchExecutionRequest request) {
     final intent = request.intent;
     final committed = ref.read(searchFilterProvider);
     final context = SearchExecutionContext(
@@ -225,19 +253,33 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     final limit = intent is RefreshChangesIntent && intent.currentCount > 0
         ? UnsignedInt(intent.currentCount)
         : spec.limit;
+    final lastEmailId = intent is LoadMoreIntent ? intent.lastEmailId : null;
 
-    return SearchEmailQueryParams(
-      session: request.session,
-      accountId: request.accountId,
-      filter: spec.filter.mappingToEmailFilterCondition(
-        trashSpamMailboxIds: request.trashSpamMailboxIds,
+    return (
+      params: SearchEmailQueryParams(
+        session: request.session,
+        accountId: request.accountId,
+        filter: spec.filter.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: request.trashSpamMailboxIds,
+        ),
+        sort: spec.filter.sortOrderType.getSortOrder().toNullable(),
+        properties: request.properties,
+        collapseThreads: request.collapseThreads,
+        limit: limit,
+        position: spec.position,
+        lastEmailId: lastEmailId,
       ),
-      sort: spec.filter.sortOrderType.getSortOrder().toNullable(),
-      properties: request.properties,
-      collapseThreads: request.collapseThreads,
-      limit: limit,
-      position: spec.position,
-      lastEmailId: intent is LoadMoreIntent ? intent.lastEmailId : null,
+      key: SearchQueryKey(
+        intentType: intent.runtimeType,
+        accountId: request.accountId,
+        filter: spec.filter,
+        trashSpamMailboxIds: request.trashSpamMailboxIds,
+        properties: request.properties.value,
+        collapseThreads: request.collapseThreads,
+        limit: limit?.value,
+        position: spec.position,
+        lastEmailId: lastEmailId,
+      ),
     );
   }
 
@@ -258,4 +300,24 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
       _ => null,
     };
   }
+}
+
+/// Interactor args of one execution and the key identifying its query.
+typedef _ResolvedSearchQuery = ({
+  SearchEmailQueryParams params,
+  SearchQueryKey key,
+});
+
+/// An in-flight request that an identical later request can join.
+class _PendingSearch {
+  const _PendingSearch(this.requestId, this.key, this.result);
+
+  final int requestId;
+  final SearchQueryKey key;
+  final Future<SearchExecutionResult> result;
+
+  /// Joinable only while still the latest request: a superseded query's
+  /// result is dropped, so joining it would lose the result.
+  bool canBeJoinedBy(SearchQueryKey otherKey, int latestRequestId) =>
+      requestId == latestRequestId && key == otherKey;
 }
