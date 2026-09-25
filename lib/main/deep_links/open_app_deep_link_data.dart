@@ -26,11 +26,20 @@ class OpenAppDeepLinkData extends DeepLinkData {
     this.expiresIn,
   });
 
+  /// The deep link is reachable from any web page or email link: the servers
+  /// it points the app to must at least be absolute https URLs.
   bool isValidAuthentication() =>
       accessToken.isNotEmpty &&
       username.isNotEmpty &&
-      registrationUrl.isNotEmpty &&
-      jmapUrl.isNotEmpty;
+      _isSecureAbsoluteUrl(registrationUrl) &&
+      _isSecureAbsoluteUrl(jmapUrl);
+
+  static bool _isSecureAbsoluteUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && uri.isScheme('https') && uri.host.isNotEmpty;
+  }
+
+  String get jmapHost => Uri.tryParse(jmapUrl)?.host ?? jmapUrl;
 
   DateTime? _getExpiredTime() {
     return expiresIn != null

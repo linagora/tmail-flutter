@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_action_type.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 
 void main() {
   final deepLinkManager = DeepLinksManager();
@@ -146,6 +147,39 @@ void main() {
         expect(result, isNotNull);
         expect(result?.registrationUrl, 'https://registration.url:1000/register');
       });
+    });
+  });
+
+  group('OpenAppDeepLinkData::isValidAuthentication', () {
+    OpenAppDeepLinkData build({
+      String registrationUrl = 'https://sso.example.com',
+      String jmapUrl = 'https://jmap.example.com',
+    }) => OpenAppDeepLinkData(
+      registrationUrl: registrationUrl,
+      jmapUrl: jmapUrl,
+      username: 'alice@example.com',
+      accessToken: 'token',
+    );
+
+    test('SHOULD accept https servers', () {
+      expect(build().isValidAuthentication(), isTrue);
+    });
+
+    test('SHOULD refuse a plain http JMAP server', () {
+      expect(build(jmapUrl: 'http://jmap.example.com').isValidAuthentication(), isFalse);
+    });
+
+    test('SHOULD refuse a plain http identity provider', () {
+      expect(build(registrationUrl: 'http://sso.example.com').isValidAuthentication(), isFalse);
+    });
+
+    test('SHOULD refuse non absolute URLs', () {
+      expect(build(jmapUrl: 'jmap.example.com').isValidAuthentication(), isFalse);
+      expect(build(registrationUrl: 'javascript:alert(1)').isValidAuthentication(), isFalse);
+    });
+
+    test('SHOULD expose the JMAP host for user confirmation', () {
+      expect(build().jmapHost, 'jmap.example.com');
     });
   });
 }

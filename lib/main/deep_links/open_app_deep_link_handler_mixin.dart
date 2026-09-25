@@ -74,7 +74,7 @@ mixin OpenAppDeepLinkHandlerMixin {
       _showConfirmDialogSwitchAccount(
         context: currentContext!,
         currentUsername: username.value,
-        newUsername: openAppDeepLinkData.username,
+        newUsername: '${openAppDeepLinkData.username} (${openAppDeepLinkData.jmapHost})',
         onConfirmAction: () => onConfirmLogoutCallback?.call(openAppDeepLinkData),
         onCancelAction: () => onFailureCallback?.call()
       );
@@ -92,6 +92,12 @@ mixin OpenAppDeepLinkHandlerMixin {
     required OnAutoSignInViaDeepLinkSuccessCallback onAutoSignInSuccessCallback,
     required OnDeepLinkFailureCallback onFailureCallback,
   }) async {
+    if (!openAppDeepLinkData.isValidAuthentication()) {
+      logWarning('DeepLinksManager::autoSignInViaDeepLink: invalid or insecure deep link data');
+      onFailureCallback.call();
+      return;
+    }
+
     try {
       final autoSignInViaDeepLinkInteractor = Get.find<AutoSignInViaDeepLinkInteractor>();
 
