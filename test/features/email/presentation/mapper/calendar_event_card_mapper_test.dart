@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_participation_status.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_extension_fields.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/mail_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -662,6 +663,75 @@ void main() {
     });
   });
 
+  group('CalendarEventCardMapper::calendarAction', () {
+    test('SHOULD open the calendar event WHEN every condition is satisfied', () {
+      final openedLinks = <String>[];
+      final action = _mapper(
+        event: _invitation(eventId: EventId('event-42')),
+        actions: _actions(
+          links: (open: openedLinks.add, copy: null),
+        ),
+        options: _mappingOptions(
+          calendarUrlTemplate: 'https://calendar.example.invalid',
+        ),
+      ).calendarAction!;
+
+      action.onPressed!();
+
+      expect(action.label, appLocalizations.seeInYourCalendar);
+      expect(action.icon?.widget, isNotNull);
+      expect(openedLinks, ['https://calendar.example.invalid/events/event-42']);
+    });
+
+    test('SHOULD omit the action WHEN the reader is not invited', () {
+      final mapper = _mapper(
+        event: _event(
+          eventId: EventId('event-42'),
+          organizer: _organizer('Alex Martin', 'alex.martin@example.invalid'),
+          attendees: [_attendee('Jordan Blake', 'jordan@example.invalid')],
+        ),
+        actions: _actions(
+          links: (open: (_) {}, copy: null),
+        ),
+        options: _mappingOptions(
+          calendarUrlTemplate: 'https://calendar.example.invalid',
+        ),
+      );
+
+      expect(mapper.status, isNotNull);
+      expect(mapper.calendarAction, isNull);
+    });
+
+    test('SHOULD keep the action WHEN the reader is the organizer', () {
+      final mapper = _mapper(
+        event: _event(
+          eventId: EventId('event-42'),
+          organizer: _organizer('Reader', _ownEmailAddress),
+        ),
+        actions: _actions(
+          links: (open: (_) {}, copy: null),
+        ),
+        options: _mappingOptions(
+          calendarUrlTemplate: 'https://calendar.example.invalid',
+        ),
+      );
+
+      expect(mapper.status, isNull);
+      expect(mapper.calendarAction, isNotNull);
+    });
+
+    test('SHOULD omit the action WHEN opening links is unsupported', () {
+      final mapper = _mapper(
+        event: _invitation(eventId: EventId('event-42')),
+        options: _mappingOptions(
+          calendarUrlTemplate: 'https://calendar.example.invalid',
+        ),
+      );
+
+      expect(mapper.calendarAction, isNull);
+    });
+  });
+
   group('CalendarEventCardMapper::activity', () {
     test('SHOULD name the organiser who sent an invitation', () {
       final mapper = _mapper(event: _invitation());
@@ -889,11 +959,13 @@ CalendarEventCardMapper _replyMapper(_ReplyActivityCase testCase) {
 
 CalendarEventCardMappingOptions _mappingOptions({
   date_format.DateLocale dateLocale = const date_format.EnglishDateLocale(),
+  String? calendarUrlTemplate,
 }) {
   return CalendarEventCardMappingOptions(
     appLocalizations: AppLocalizations(),
     dateLocale: dateLocale,
     timeZone: 'UTC',
+    calendarUrlTemplate: calendarUrlTemplate,
   );
 }
 
@@ -939,6 +1011,7 @@ typedef _AddressActions = ({
 });
 
 CalendarEvent _event({
+  EventId? eventId,
   DateTime? start,
   DateTime? end,
   String? location,
@@ -950,6 +1023,7 @@ CalendarEvent _event({
   String? googleConferenceLink,
 }) {
   return CalendarEvent(
+    eventId: eventId,
     title: title,
     location: location,
     method: method,
@@ -969,8 +1043,12 @@ CalendarEvent _event({
 }
 
 /// An invitation the reader is listed in and can answer.
-CalendarEvent _invitation({EventMethod method = EventMethod.request}) {
+CalendarEvent _invitation({
+  EventMethod method = EventMethod.request,
+  EventId? eventId,
+}) {
   return _event(
+    eventId: eventId,
     method: method,
     organizer: _organizer('Alex Martin', 'alex.martin@example.invalid'),
     attendees: [_attendee('Reader', _ownEmailAddress)],

@@ -77,6 +77,17 @@ void main() {
       });
     }
 
+    test('resolves domainPart as an alias of domainName', () {
+      expect(
+        _loadAndReadState(
+          container,
+          template: '{localPart}.{domainPart}',
+          ownerEmail: 'alice@example.com',
+        ),
+        'alice.example.com',
+      );
+    });
+
     for (final ownerEmail in const ['alice@example.com', null]) {
       test('stores a literal template regardless of owner email ($ownerEmail)', () {
         expect(

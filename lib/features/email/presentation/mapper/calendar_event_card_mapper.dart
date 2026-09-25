@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_or
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/calendar_event_card_actions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/calendar_event_card_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/extensions/calendar_url_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 /// Display-specific inputs used while mapping an event card.
@@ -20,11 +21,13 @@ class CalendarEventCardMappingOptions {
   final AppLocalizations appLocalizations;
   final date_format.DateLocale dateLocale;
   final String timeZone;
+  final String? calendarUrlTemplate;
 
   const CalendarEventCardMappingOptions({
     required this.appLocalizations,
     required this.dateLocale,
     required this.timeZone,
+    this.calendarUrlTemplate,
   });
 }
 
@@ -65,6 +68,7 @@ class CalendarEventCardMapper {
       attending: attending,
       actions: cardActions,
       status: status,
+      calendarAction: calendarAction,
     );
   }
 
@@ -331,6 +335,23 @@ class CalendarEventCardMapper {
             onPressed: actions.onMailToAttendees,
           ),
     ];
+  }
+
+  LinagoraEventAction? get calendarAction {
+    if (event.isDisplayedWarningMessage(viewState.ownEmailAddress)) return null;
+
+    final eventUrl = options.calendarUrlTemplate.resolveCalendarEventUrl(
+      event.eventId?.id,
+      ownerEmail: viewState.ownEmailAddress,
+    );
+    final onOpenLink = actions.onOpenLink;
+    if (eventUrl == null || onOpenLink == null) return null;
+
+    return LinagoraEventAction.calendar(
+      id: eventUrl,
+      label: appLocalizations.seeInYourCalendar,
+      onPressed: () => onOpenLink(eventUrl.toString()),
+    );
   }
 
   LinagoraEventStatus? get status {

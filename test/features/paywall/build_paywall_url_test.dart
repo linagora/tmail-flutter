@@ -15,6 +15,16 @@ void main() {
       expect(url, 'https://alice.example.com/paywall');
     });
 
+    test('replaces raw {domainPart} as an alias of {domainName}', () {
+      const template = 'https://{localPart}.{domainPart}/paywall';
+      final url = PaywallUtils.buildPaywallUrlFromTemplate(
+        template: template,
+        localPart: 'alice',
+        domainName: 'example.com',
+      );
+      expect(url, 'https://alice.example.com/paywall');
+    });
+
     test('removes {localPart} when null', () {
       const template = 'https://{localPart}.{domainName}/paywall';
       final url = PaywallUtils.buildPaywallUrlFromTemplate(
@@ -58,14 +68,13 @@ void main() {
       expect(url, 'https://account.test.org/paywall');
     });
 
-    test('replaces both encoded placeholders', () {
-      const template = 'https://%7BlocalPart%7D.%7BdomainName%7D/paywall';
+    test('replaces encoded %7BdomainPart%7D as an alias of domainName', () {
+      const template = 'https://account.%7BdomainPart%7D/paywall';
       final url = PaywallUtils.buildPaywallUrlFromTemplate(
         template: template,
-        localPart: 'david',
-        domainName: 'mysite.com',
+        domainName: 'test.org',
       );
-      expect(url, 'https://david.mysite.com/paywall');
+      expect(url, 'https://account.test.org/paywall');
     });
 
     test('removes encoded placeholders when null', () {
@@ -117,6 +126,16 @@ void main() {
       expect(url, '');
     });
 
+    test('malformed template returns null', () {
+      expect(
+        PaywallUtils.buildPaywallUrlFromTemplate(
+          template: 'https://domain.tld/{localPart',
+          localPart: 'alice',
+        ),
+        isNull,
+      );
+    });
+
     test('template with only {localPart}', () {
       const template = '{localPart}';
       final url = PaywallUtils.buildPaywallUrlFromTemplate(
@@ -135,38 +154,57 @@ void main() {
       expect(url, 'onedomain.com');
     });
 
-    test('template with repeated placeholders', () {
-      const template =
-          'https://{localPart}.{domainName}/{localPart}-{domainName}/paywall';
-      final url = PaywallUtils.buildPaywallUrlFromTemplate(
-        template: template,
+    final multiplePlaceholderCases = <({
+      String description,
+      String template,
+      String localPart,
+      String domainName,
+      String expected,
+    })>[
+      (
+        description: 'replaces both encoded placeholders',
+        template: 'https://%7BlocalPart%7D.%7BdomainName%7D/paywall',
+        localPart: 'david',
+        domainName: 'mysite.com',
+        expected: 'https://david.mysite.com/paywall',
+      ),
+      (
+        description: 'template with repeated placeholders',
+        template:
+            'https://{localPart}.{domainName}/{localPart}-{domainName}/paywall',
         localPart: 'anna',
         domainName: 'repeat.com',
-      );
-      expect(url, 'https://anna.repeat.com/anna-repeat.com/paywall');
-    });
-
-    test('template with repeated encoded placeholders', () {
-      const template =
-          'https://%7BlocalPart%7D.%7BdomainName%7D/%7BlocalPart%7D-%7BdomainName%7D/paywall';
-      final url = PaywallUtils.buildPaywallUrlFromTemplate(
-        template: template,
+        expected: 'https://anna.repeat.com/anna-repeat.com/paywall',
+      ),
+      (
+        description: 'template with repeated encoded placeholders',
+        template:
+            'https://%7BlocalPart%7D.%7BdomainName%7D/%7BlocalPart%7D-%7BdomainName%7D/paywall',
         localPart: 'zoe',
         domainName: 'repeat.org',
-      );
-      expect(url, 'https://zoe.repeat.org/zoe-repeat.org/paywall');
-    });
-
-    test('template with mix of raw and encoded repeated placeholders', () {
-      const template =
-          'https://{localPart}.%7BdomainName%7D/{localPart}-%7BdomainName%7D/paywall';
-      final url = PaywallUtils.buildPaywallUrlFromTemplate(
-        template: template,
+        expected: 'https://zoe.repeat.org/zoe-repeat.org/paywall',
+      ),
+      (
+        description:
+            'template with mix of raw and encoded repeated placeholders',
+        template:
+            'https://{localPart}.%7BdomainName%7D/{localPart}-%7BdomainName%7D/paywall',
         localPart: 'mix',
         domainName: 'combo.net',
-      );
-      expect(url, 'https://mix.combo.net/mix-combo.net/paywall');
-    });
+        expected: 'https://mix.combo.net/mix-combo.net/paywall',
+      ),
+    ];
+
+    for (final testCase in multiplePlaceholderCases) {
+      test(testCase.description, () {
+        final url = PaywallUtils.buildPaywallUrlFromTemplate(
+          template: testCase.template,
+          localPart: testCase.localPart,
+          domainName: testCase.domainName,
+        );
+        expect(url, testCase.expected);
+      });
+    }
 
     test('workplace FQDN fallback template resolves {localPart} only', () {
       const template = '{localPart}.twake.linagora.com';
@@ -205,6 +243,15 @@ void main() {
     test('fills {domainName} from the explicit domain when given', () {
       expect(
         PaywallUrlPattern('https://paywall.domain.tld/{localPart}/{domainName}')
+            .resolveQualifiedUrl(
+                ownerEmail: 'alice@corp.tld', domainName: 'other.tld'),
+        'https://paywall.domain.tld/alice/other.tld',
+      );
+    });
+
+    test('fills {domainPart} from the explicit domain when given', () {
+      expect(
+        PaywallUrlPattern('https://paywall.domain.tld/{localPart}/{domainPart}')
             .resolveQualifiedUrl(
                 ownerEmail: 'alice@corp.tld', domainName: 'other.tld'),
         'https://paywall.domain.tld/alice/other.tld',

@@ -1,4 +1,6 @@
 import 'package:core/utils/web_link_generator.dart';
+import 'package:core/utils/url_template.dart';
+import 'package:core/utils/user_url_template.dart';
 
 class PaywallUtils {
   const PaywallUtils._();
@@ -47,33 +49,26 @@ class PaywallUtils {
 
   /// Builds a paywall URL from a template.
   ///
-  /// - Supports both raw placeholders (`{localPart}`, `{domainName}`)
-  ///   and URL-encoded placeholders (`%7BlocalPart%7D`, `%7BdomainName%7D`).
-  /// - If [localPart] or [domainName] is not provided, the placeholder
-  ///   is removed.
-  static String buildPaywallUrlFromTemplate({
+  /// - Supports raw placeholders (`{localPart}`, `{domainName}`,
+  ///   `{domainPart}`) and their URL-encoded forms. `domainPart` is an alias
+  ///   of `domainName`.
+  /// - If [localPart] or [domainName] is not provided, its placeholders are
+  ///   removed.
+  /// - Returns null when [template] contains malformed placeholder syntax.
+  static String? buildPaywallUrlFromTemplate({
     required String template,
     String? localPart,
     String? domainName,
   }) {
-    final replacements = {
-      '{localPart}': localPart ?? '',
-      '{domainName}': domainName ?? '',
-      Uri.encodeComponent('{localPart}'): localPart ?? '',
-      Uri.encodeComponent('{domainName}'): domainName ?? '',
-    };
-
-    var result = template;
-    replacements.forEach((placeholder, value) {
-      result = result.replaceAll(placeholder, value);
+    return UrlTemplate(template).resolve(variables: {
+      UserUrlTemplateVariables.localPart: localPart ?? '',
+      UserUrlTemplateVariables.domainName: domainName ?? '',
+      UserUrlTemplateVariables.domainPart: domainName ?? '',
     });
-
-    return result;
   }
 
   /// Whether [template] carries `{name}` (raw or URL-encoded), the placeholder
   /// [buildPaywallUrlFromTemplate] fills.
   static bool usesPlaceholder(String template, String name) =>
-      template.contains('{$name}') ||
-      template.contains(Uri.encodeComponent('{$name}'));
+      UrlTemplate(template).usesPlaceholder(name);
 }

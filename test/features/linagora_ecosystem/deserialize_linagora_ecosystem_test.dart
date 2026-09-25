@@ -4,12 +4,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/default_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/empty_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/extensions/calendar_url_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/mobile_apps_linagora_ecosystem.dart';
 
 const _apiUrl = 'https://example.com/api';
+const _calendarUrlTemplate = 'https://calendar.example.com';
 const _logoUrl = 'https://xyz';
 const _androidPackageId = 'com.example.android';
 const _iosUrlScheme = 'app.scheme';
@@ -34,6 +36,7 @@ Map<String, dynamic> _allPropertiesPayload() => {
   'linToApiUrl': _apiUrl,
   'linToApiKey': 'apiKey',
   'twakeApiUrl': _apiUrl,
+  'calendarUrlTemplate': _calendarUrlTemplate,
   'Twake Drive': {
     'appName': 'Twake Drive',
     'logoURL': _logoUrl,
@@ -75,6 +78,8 @@ LinagoraEcosystem _expectedEcosystem({
   LinagoraEcosystemIdentifier.linToApiKey:
       ApiKeyLinagoraEcosystem('apiKey'),
   LinagoraEcosystemIdentifier.twakeApiUrl: ApiUrlLinagoraEcosystem(_apiUrl),
+  LinagoraEcosystemIdentifier.calendarUrlTemplate:
+      ApiUrlLinagoraEcosystem(_calendarUrlTemplate),
   LinagoraEcosystemIdentifier.twakeDrive: twakeDrive,
   LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystem({
     LinagoraEcosystemIdentifier.twakeChat:
@@ -211,6 +216,84 @@ void main() {
       expect(() => linagoraEcosystem.paywallUrlTemplate, returnsNormally);
       expect(linagoraEcosystem.paywallUrlTemplate, isNull);
     });
+
+    test('Should return a trimmed calendar URL template when configured', () {
+      final linagoraEcosystem = LinagoraEcosystem.deserialize({
+        'calendarUrlTemplate': '  https://calendar.domain.tld  ',
+      });
+
+      expect(
+        linagoraEcosystem.calendarUrlTemplate,
+        'https://calendar.domain.tld',
+      );
+    });
+
+    final unavailableCalendarUrlTemplateCases = [
+      (description: 'missing', payload: <String, dynamic>{}),
+      (
+        description: 'null',
+        payload: <String, dynamic>{'calendarUrlTemplate': null},
+      ),
+      (
+        description: 'blank',
+        payload: <String, dynamic>{'calendarUrlTemplate': '   '},
+      ),
+      (
+        description: 'an invalid type',
+        payload: <String, dynamic>{
+          'calendarUrlTemplate': {'url': 'invalid'},
+        },
+      ),
+    ];
+
+    for (final testCase in unavailableCalendarUrlTemplateCases) {
+      test('Should return null when calendar URL template is ${testCase.description}', () {
+        final linagoraEcosystem = LinagoraEcosystem.deserialize(testCase.payload);
+
+        expect(() => linagoraEcosystem.calendarUrlTemplate, returnsNormally);
+        expect(linagoraEcosystem.calendarUrlTemplate, isNull);
+      });
+    }
+
+    final malformedCalendarUrlCases = [
+      (
+        description: 'the scheme separator is missing',
+        calendarUrl: 'https//calendar.domain.tld',
+      ),
+      (
+        description: 'the host is missing',
+        calendarUrl: 'https://',
+      ),
+      (
+        description: 'user info is present',
+        calendarUrl: 'https://user@calendar.domain.tld',
+      ),
+      (
+        description: 'the port is malformed',
+        calendarUrl: 'https://calendar.domain.tld:invalid',
+      ),
+      (
+        description: 'the port is out of range',
+        calendarUrl: 'https://calendar.domain.tld:65536',
+      ),
+    ];
+
+    for (final testCase in malformedCalendarUrlCases) {
+      test(
+        'Should not resolve a calendar URL when ${testCase.description}',
+        () {
+          final linagoraEcosystem = LinagoraEcosystem.deserialize({
+            'calendarUrlTemplate': testCase.calendarUrl,
+          });
+
+          expect(
+            linagoraEcosystem.calendarUrlTemplate
+                .resolveCalendarEventUrl('event-42'),
+            isNull,
+          );
+        },
+      );
+    }
 
     test('Should return workplace FQDN fallback template when configured', () {
       final linagoraEcosystem = LinagoraEcosystem.deserialize({

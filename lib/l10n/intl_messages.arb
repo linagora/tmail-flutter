@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-09-08T15:41:58.711795",
+  "@@last_modified": "2026-09-22T16:24:18.179437",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4592,6 +4592,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "You are not invited to this event. Please contact the organizer.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeInYourCalendar": "See in your Calendar",
+  "@seeInYourCalendar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
