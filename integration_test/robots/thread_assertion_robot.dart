@@ -29,6 +29,13 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
 
   @override
   Future<void> expectEmptyTrashThreadView() async {
-    await $(const Key(UiKeys.emptyThreadView)).waitUntilVisible();
+    // The empty view only appears once the post-empty-trash email reload returns.
+    // waitUntilVisible's frame-only retry loop does not yield to the browser event
+    // loop on web, so JMAP responses may never be processed; waitForCondition does.
+    final emptyThreadView = $(const Key(UiKeys.emptyThreadView));
+    await waitForCondition(() async {
+      await $.pump();
+      return emptyThreadView.visible;
+    });
   }
 }
