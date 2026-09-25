@@ -701,11 +701,20 @@ class HtmlUtils {
       int height = 600,
       bool isFullScreen = false,
       bool isCenter = true,
+      bool noOpener = false,
     }
   ) {
     try {
+      // For untrusted URLs, do not give the opened page a handle on this
+      // window (reverse tabnabbing) nor leak the referrer.
+      const noOpenerFeatures = 'noopener,noreferrer';
+
       if (isFullScreen) {
-        html.window.open(url, '_blank');
+        if (noOpener) {
+          html.window.open(url, '_blank', noOpenerFeatures);
+        } else {
+          html.window.open(url, '_blank');
+        }
 
         html.Url.revokeObjectUrl(url);
         return true;
@@ -724,7 +733,8 @@ class HtmlUtils {
         top = random.nextInt(screenHeight ~/ 2);
       }
 
-      final options = 'width=$width,height=$height,top=$top,left=$left';
+      final options = 'width=$width,height=$height,top=$top,left=$left'
+          '${noOpener ? ',$noOpenerFeatures' : ''}';
 
       html.window.open(url, '_blank', options);
 

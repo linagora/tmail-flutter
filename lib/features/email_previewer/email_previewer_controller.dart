@@ -226,6 +226,16 @@ class EmailPreviewerController extends ReloadableController {
 
   void _openNewWindowByHyperLink(Uri uri) {
     bool isEMlPreview = uri.toString().startsWith(RouteUtils.emailEMLPreviewerRoutePath);
+    final isMailto = uri.scheme == RouteUtils.mailtoPrefix;
+    final isExternalWebLink = uri.isScheme('http') || uri.isScheme('https');
+
+    // Links come from the previewed (untrusted) message: only follow the
+    // application's own EML preview route, mailto and web links.
+    if (!isEMlPreview && !isMailto && !isExternalWebLink) {
+      logWarning('EmailPreviewerController::_openNewWindowByHyperLink: blocked scheme ${uri.scheme}');
+      return;
+    }
+
     final url = _standardizeURL(uri);
     log('EmailPreviewerController::_openNewWindowByHyperLink: url = $url');
 
@@ -233,6 +243,7 @@ class EmailPreviewerController extends ReloadableController {
       url,
       isFullScreen: !isEMlPreview,
       isCenter: false,
+      noOpener: !isEMlPreview && !isMailto,
     );
 
     if (!isOpen && currentOverlayContext != null && currentContext != null) {
