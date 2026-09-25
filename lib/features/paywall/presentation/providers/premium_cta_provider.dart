@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:core/utils/app_logger.dart';
+import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -20,6 +23,7 @@ Duration? _neverRetry(int retryCount, Object error) =>
 enum PremiumCtaUnavailableReason {
   missingAccount,
   premiumNotAvailable,
+  notInsideCozy,
   highestSubscription,
   missingJmapUrl,
   ecosystemUnavailable,
@@ -131,6 +135,10 @@ EcosystemState activeEcosystem(Ref ref, AccountId? accountId, String? jmapUrl) =
       ),
     );
 
+/// Whether the app runs embedded in Cozy; resolved once per process.
+@Riverpod(keepAlive: true)
+FutureOr<bool> insideCozy(Ref ref) => CozyConfigManager().isInsideCozy;
+
 @riverpod
 PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
   if (context == null) {
@@ -148,6 +156,14 @@ PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
   if (capability?.isPremiumAvailable != true) {
     return const PremiumCtaUnavailable(
       PremiumCtaUnavailableReason.premiumNotAvailable,
+    );
+  }
+
+  final insideCozy = ref.watch(insideCozyProvider);
+  if (insideCozy.isLoading) return const PremiumCtaLoading();
+  if (insideCozy.value != true) {
+    return const PremiumCtaUnavailable(
+      PremiumCtaUnavailableReason.notInsideCozy,
     );
   }
 
