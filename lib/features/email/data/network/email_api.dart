@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
+import 'package:jmap_dart_client/jmap/core/response/response_object.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -57,11 +58,13 @@ import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mix
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/email/data/extensions/response_object_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -256,11 +259,6 @@ class EmailAPI
       setEmailInvocation.methodCallId,
       SetEmailResponse.deserialize);
 
-    final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
-      setEmailSubmissionInvocation.methodCallId,
-      SetEmailSubmissionResponse.deserialize,
-      methodName: setEmailInvocation.methodName);
-
     if (markAsAnsweredOrForwardedInvocation != null) {
       markAsAnsweredOrForwardedSetResponse = response.parse<SetEmailResponse>(
         markAsAnsweredOrForwardedInvocation.methodCallId,
@@ -268,15 +266,47 @@ class EmailAPI
     }
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final mapErrors = handleSetResponse([
-      setEmailResponse,
-      setEmailSubmissionResponse,
-      markAsAnsweredOrForwardedSetResponse
-    ]);
-
-    if (emailCreated == null || mapErrors.isNotEmpty) {
-      throw SetMethodException(mapErrors);
+    if (emailCreated == null) {
+      throw SetMethodException(handleSetResponse([setEmailResponse]));
     }
+
+    _throwIfSubmissionFailed(response, setEmailSubmissionInvocation, emailCreated.id);
+
+    final markAsAnsweredOrForwardedErrors = handleSetResponse([
+      markAsAnsweredOrForwardedSetResponse,
+    ]);
+    if (markAsAnsweredOrForwardedErrors.isNotEmpty) {
+      throw SetMethodException(markAsAnsweredOrForwardedErrors);
+    }
+  }
+
+  /// `EmailSubmission/set` is checked on its own response, not fused with
+  /// `Email/set`, so an `invalidRecipients` SetError there is never confused
+  /// with an `Email/set` failure.
+  void _throwIfSubmissionFailed(
+    ResponseObject response,
+    RequestInvocation submissionInvocation,
+    EmailId? createdEmailId,
+  ) {
+    final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
+      submissionInvocation.methodCallId,
+      SetEmailSubmissionResponse.deserialize,
+      methodName: submissionInvocation.methodName);
+
+    final submissionErrors = handleSetResponse([setEmailSubmissionResponse]);
+    if (submissionErrors.isEmpty) return;
+
+    final invalidRecipients = response.parseInvalidRecipients(
+      submissionInvocation.methodCallId,
+    );
+
+    throw invalidRecipients.isEmpty
+        ? SetMethodException(submissionErrors)
+        : InvalidRecipientsException(
+            submissionErrors,
+            invalidRecipients,
+            createdEmailId: createdEmailId,
+          );
   }
 
   Future<({

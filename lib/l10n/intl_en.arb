@@ -2645,6 +2645,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailureWithInvalidRecipients": "Failure to send your message, because these recipients are invalid: {invalidRecipients}",
+  "@sendMessageFailureWithInvalidRecipients": {
+    "type": "text",
+    "placeholders_order": [
+      "invalidRecipients"
+    ],
+    "placeholders": {
+      "invalidRecipients": {}
+    }
+  },
   "saveEmailAsDraftFailure": "Failure to save your message as drafts.",
   "@saveEmailAsDraftFailure": {
     "type": "text",

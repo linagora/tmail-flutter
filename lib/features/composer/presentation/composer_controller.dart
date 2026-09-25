@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/set_method_exception_description_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
@@ -70,6 +71,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/invalid_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_attachments_extension.dart';
@@ -172,6 +174,10 @@ class ComposerController extends BaseController
   final replyToRecipientState = PrefixRecipientState.disabled.obs;
   final recipientsCollapsedState = PrefixRecipientState.disabled.obs;
   final prefixRootState = PrefixEmailAddress.to.obs;
+
+  /// Lower-cased addresses the server reported as `invalidRecipients` on the
+  /// last send attempt, highlighted as invalid until the user fixes them.
+  final invalidRecipients = Rx<Set<String>>({});
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -999,6 +1005,16 @@ class ComposerController extends BaseController
       uploadUri: uploadUri,
     );
 
+    // handleSendMessageResult only uses context after its own mounted check.
+    // ignore: use_build_context_synchronously
+    await handleSendMessageResult(context: context, resultState: resultState);
+  }
+
+  @visibleForTesting
+  Future<void> handleSendMessageResult({
+    required BuildContext context,
+    required dynamic resultState,
+  }) async {
     if (resultState is SendEmailSuccess ||
         mailboxDashBoardController
             .validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
@@ -1006,9 +1022,18 @@ class ComposerController extends BaseController
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure ||
         resultState is GenerateEmailFailure) {
-      if (resultState.exception is BadCredentialsException) {
+      final exception = resultState.exception;
+      // Drops marks from a prior invalidRecipients failure so they do not
+      // linger on addresses this failure says nothing about.
+      if (exception is! InvalidRecipientsException) {
+        invalidRecipients.value = {};
+      }
+      if (exception is BadCredentialsException) {
         _sendButtonState = ButtonState.enabled;
         handleBadCredentialsException();
+      } else if (exception is InvalidRecipientsException) {
+        _sendButtonState = ButtonState.enabled;
+        handleInvalidRecipientsFailure(exception);
       } else if (context.mounted) {
         await _showConfirmDialogWhenSendMessageFailure(
           context: context,

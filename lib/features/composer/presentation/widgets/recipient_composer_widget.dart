@@ -82,12 +82,18 @@ class RecipientComposerWidget extends StatefulWidget {
   final String? composerId;
   final VoidCallback? onClearFocusAction;
 
+  /// Lower-cased addresses the server reported as `invalidRecipients` on the
+  /// last send attempt. They are highlighted as invalid whichever field they
+  /// belong to.
+  final Set<String> invalidRecipients;
+
   const RecipientComposerWidget({
     super.key,
     required this.prefix,
     required this.listEmailAddress,
     required this.imagePaths,
     required this.maxWidth,
+    this.invalidRecipients = const {},
     this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     @visibleForTesting this.isTestingForWeb = false,
     this.toState = PrefixRecipientState.disabled,
@@ -256,6 +262,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         currentEmailAddress: currentEmailAddress,
                         currentListEmailAddress: _currentListEmailAddress,
                         isTagFocused: _tagIndexFocused == index,
+                        isRejectedByServer: widget.invalidRecipients.contains(
+                          currentEmailAddress.emailAddress.toLowerCase(),
+                        ),
                         maxWidth: widget.maxWidth,
                         isMobile: isMobileResponsive,
                         onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),

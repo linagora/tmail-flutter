@@ -10,10 +10,12 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 
 class RecipientCollapsedItemWidget extends StatelessWidget {
   final EmailAddress emailAddress;
+  final bool isRejectedByServer;
 
   const RecipientCollapsedItemWidget({
     super.key,
     required this.emailAddress,
+    this.isRejectedByServer = false,
   });
 
   @override
@@ -50,8 +52,13 @@ class RecipientCollapsedItemWidget extends StatelessWidget {
     );
   }
 
+  /// An address is invalid when it is malformed, or when the server rejected it
+  /// as an `invalidRecipients` of the last `EmailSubmission/set`.
+  bool get _isEmailAddressValid =>
+      !isRejectedByServer && EmailUtils.isValidEmail(emailAddress.emailAddress);
+
   Color _getTagBackgroundColor() {
-    if (EmailUtils.isValidEmail(emailAddress.emailAddress)) {
+    if (_isEmailAddressValid) {
       return AppColor.grayBackgroundColor;
     } else {
       return Colors.white;
@@ -59,7 +66,7 @@ class RecipientCollapsedItemWidget extends StatelessWidget {
   }
 
   Border _getTagBorder() {
-    if (EmailUtils.isValidEmail(emailAddress.emailAddress)) {
+    if (_isEmailAddressValid) {
       return Border.all(
         width: 1,
         color: AppColor.grayBackgroundColor,

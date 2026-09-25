@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -13,6 +14,9 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -1193,6 +1197,221 @@ void main() {
             properties,
           ),
           throwsA(isA<NotFoundEmailException>()),
+        );
+      });
+    });
+
+    group('sendEmail::test', () {
+      final emailRequest = EmailRequest(
+        email: Email(
+          mailboxIds: {MailboxId(Id('outbox')): true},
+          from: {EmailAddress(null, 'alice@linagora.com')},
+          to: {EmailAddress(null, 'rejected@linagora.com')},
+        ),
+        emailActionType: EmailActionType.compose,
+      );
+
+      test(
+        'SHOULD throw InvalidRecipientsException with the rejected addresses '
+        'WHEN EmailSubmission/set reports an invalidRecipients SetError\n'
+        'AND the addresses are read from the EmailSubmission/set response, not Email/set',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "sessionState": "state-1",
+          "methodResponses": [
+            [
+              "Email/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "created": <String, dynamic>{
+                  "draft-1": <String, dynamic>{"id": "email-1"},
+                },
+              },
+              "c0"
+            ],
+            [
+              // The submission failure belongs to the EmailSubmission/set response.
+              "EmailSubmission/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "notCreated": <String, dynamic>{
+                  "draft-1": <String, dynamic>{
+                    "type": "invalidRecipients",
+                    "description": "Invalid recipients",
+                    "invalidRecipients": ["rejected@linagora.com"],
+                  },
+                },
+              },
+              "c1"
+            ]
+          ]
+        });
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(isA<InvalidRecipientsException>()
+              .having(
+                (exception) => exception.invalidRecipients,
+                'invalidRecipients',
+                {'rejected@linagora.com'},
+              )
+              .having(
+                (exception) => exception.createdEmailId,
+                'createdEmailId',
+                EmailId(Id('email-1')),
+              )),
+        );
+      });
+
+      test(
+        'SHOULD throw SetMethodException, not InvalidRecipientsException\n'
+        'WHEN Email/set does not create the email',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "sessionState": "state-1",
+          "methodResponses": [
+            [
+              "Email/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "notCreated": <String, dynamic>{
+                  "draft-1": <String, dynamic>{"type": "overQuota"},
+                },
+              },
+              "c0"
+            ],
+          ]
+        });
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(allOf(
+            isA<SetMethodException>(),
+            isNot(isA<InvalidRecipientsException>()),
+          )),
+        );
+      });
+
+      // On an accepted submission James answers EmailSubmission/set, then runs
+      // onSuccessUpdateEmail as an implicit Email/set sharing its call id.
+      Map<String, dynamic> acceptedSubmissionResponse(
+        Map<String, dynamic> implicitEmailSetResult,
+      ) => {
+        "sessionState": "state-1",
+        "methodResponses": [
+          [
+            "Email/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-1",
+              "newState": "state-2",
+              "created": <String, dynamic>{
+                "draft-1": <String, dynamic>{"id": "email-1"},
+              },
+            },
+            "c0"
+          ],
+          [
+            "EmailSubmission/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "newState": "state-1",
+              "created": <String, dynamic>{
+                "draft-1": <String, dynamic>{
+                  "id": "submission-1",
+                  "sendAt": "2026-09-25T08:53:22Z",
+                },
+              },
+            },
+            "c1"
+          ],
+          [
+            "Email/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-2",
+              "newState": "state-3",
+              ...implicitEmailSetResult,
+            },
+            "c1"
+          ],
+        ]
+      };
+
+      test(
+        'SHOULD complete\n'
+        'WHEN EmailSubmission/set creates the submission\n'
+        'AND the implicit Email/set moves the email to Sent',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => acceptedSubmissionResponse({
+          "updated": <String, dynamic>{"email-1": null},
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          completes,
+        );
+      });
+
+      test(
+        'SHOULD complete, as the email is already sent\n'
+        'WHEN EmailSubmission/set creates the submission\n'
+        'AND the implicit Email/set fails to move the email to Sent',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => acceptedSubmissionResponse({
+          "notUpdated": <String, dynamic>{
+            "email-1": <String, dynamic>{
+              "type": "notFound",
+              "description": "Mailbox not found",
+            },
+          },
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          completes,
         );
       });
     });
