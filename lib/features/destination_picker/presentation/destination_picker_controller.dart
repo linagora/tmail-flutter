@@ -107,16 +107,16 @@ class DestinationPickerController extends BaseMailboxController {
               mailboxAction.value == MailboxActions.moveFolderContent) &&
           mailboxIdSelected != null) {
         await buildTree(
-          success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
+          _filterSelectableMailboxes(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes),
           mailboxIdSelected: mailboxIdSelected);
       } else {
-        await buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+        await buildTree(_filterSelectableMailboxes(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes));
       }
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
-      await refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+      await refreshTree(_filterSelectableMailboxes(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes));
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
@@ -125,6 +125,13 @@ class DestinationPickerController extends BaseMailboxController {
     } else if (success is CreateNewMailboxSuccess) {
       _createNewMailboxSuccess(success);
     }
+  }
+
+  List<PresentationMailbox> _filterSelectableMailboxes(List<PresentationMailbox> mailboxes) {
+    if (mailboxAction.value != MailboxActions.selectForRuleAction) {
+      return mailboxes;
+    }
+    return mailboxes.where((mailbox) => mailbox.isValidRuleActionTarget).toList();
   }
 
   @override
