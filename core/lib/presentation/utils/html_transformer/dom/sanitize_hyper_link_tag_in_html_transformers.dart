@@ -33,12 +33,36 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   void _sanitizeUrlResource(Element element) {
     final url = element.attributes['href'] ?? '';
 
+    if (_isRelativeUrl(url)) {
+      // Relative links cannot be resolved against a trusted base (the email
+      // <base> is stripped), so make them inert rather than guessing a host.
+      element.attributes.remove('href');
+      return;
+    }
+
     final urlSanitized = _sanitizeUrl.process(url);
     if (urlSanitized.isEmpty) {
       return;
     }
 
     element.attributes['href'] = urlSanitized;
+  }
+
+  bool _isRelativeUrl(String url) {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.isEmpty || trimmedUrl.startsWith('#')) {
+      return false;
+    }
+    final uri = Uri.tryParse(_tryDecode(trimmedUrl));
+    return uri == null || !uri.hasScheme;
+  }
+
+  String _tryDecode(String url) {
+    try {
+      return Uri.decodeFull(url);
+    } catch (_) {
+      return url;
+    }
   }
 
   void _addBlankForTargetProperty(Element element) {
