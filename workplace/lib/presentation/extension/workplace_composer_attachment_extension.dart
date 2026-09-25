@@ -183,5 +183,8 @@ class _CreateIntentAction extends WorkplaceAction<WorkplaceIntent> {
   bool get supportsBridge => true;
 
   @override
+  bool get fallsBackToBearer => true;
+
+  @override
   Future<WorkplaceIntent> call(WorkplaceAccessMode accessMode) => _createIntent(accessMode);
 }

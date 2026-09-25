@@ -7,5 +7,8 @@ abstract class WorkplaceAction<T> {
   /// `false` skips the bridge when it has no implementation for this call.
   bool get supportsBridge;
 
+  /// `true` retries over bearer token when the bridge call throws; only for idempotent calls.
+  bool get fallsBackToBearer => false;
+
   Future<T> call(WorkplaceAccessMode accessMode);
 }
