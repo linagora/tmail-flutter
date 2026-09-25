@@ -22,10 +22,8 @@ extension PremiumCtaWidgetRefExtension on WidgetRef {
 
 /// Imperative entry points for GetX call sites.
 ///
-/// Deliberately platform-neutral: the composer over-quota dialog offers the CTA
-/// on mobile too (unchanged behaviour), while the sidebar scroll offset applies
-/// its own `PlatformInfo.isWeb` check. Only the widget-facing
-/// [PremiumCtaWidgetRefExtension.watchWebPremiumCta] is web-gated.
+/// Not web-gated here, but [premiumCtaProvider] is unavailable outside Cozy,
+/// so on mobile the composer over-quota dialog never offers the CTA.
 extension PremiumCtaContainerExtension on ProviderContainer {
   bool isPremiumCtaAvailable(PremiumCtaContext? context) =>
       read(premiumCtaProvider(context)) is PremiumCtaAvailable;
