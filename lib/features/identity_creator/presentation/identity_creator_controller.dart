@@ -688,12 +688,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       type: FileType.image,
       withData: PlatformInfo.isWeb,
     );
-    final fileInfo = filePickerResult?.files.isNotEmpty == true
-        ? filePickerResult!.files.first.toFileInfo()
-        : null;
+    final fileInfo = filePickerResult?.files.firstOrNull?.toFileInfo();
 
     if (context.mounted) {
-      if (fileInfo != null) {
+      if (fileInfo != null && fileInfo is! FilePlaceholderInfo) {
         _insertInlineImage(context, fileInfo, _getMaxWidthInlineImage(context).toInt());
       } else {
         appToast.showToastErrorMessage(
