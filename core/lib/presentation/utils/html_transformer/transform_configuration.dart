@@ -45,16 +45,30 @@ class TransformConfiguration {
     List<TextTransformer> textTransformers
   ) => TransformConfiguration([], textTransformers);
 
-  factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration.fromDomTransformers([
-    const SignatureTransformer(),
-    const RemoveCollapsedSignatureButtonTransformer(),
-    const NormalizeLineHeightInStyleTransformer(),
-  ]);
+  /// Quoted content inserted into the composer editor. The editor iframe is
+  /// same-origin with the application and its content setter evaluates
+  /// markup, so the quoted email must always go through the sanitizer: the
+  /// raw server HTML reaches this pipeline when replying to an email whose
+  /// body has not been loaded yet (e.g. a collapsed message in a thread).
+  factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration(
+    [
+      const RemoveScriptTransformer(),
+      const SignatureTransformer(),
+      const RemoveCollapsedSignatureButtonTransformer(),
+      const NormalizeLineHeightInStyleTransformer(),
+    ],
+    const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
+  );
 
-  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration.fromDomTransformers([
-    ...TransformConfiguration.forReplyForwardEmail().domTransformers,
-    const ImageTransformer(),
-  ]);
+  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration(
+    [
+      ...TransformConfiguration.forReplyForwardEmail().domTransformers,
+      const ImageTransformer(),
+    ],
+    TransformConfiguration.forReplyForwardEmail().textTransformers,
+  );
 
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [
