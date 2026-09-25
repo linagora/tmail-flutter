@@ -14,12 +14,14 @@ import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_body.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -367,6 +369,40 @@ void main() {
       receivedBodies: receivedBodies,
       authorizationHeaders: authorizationHeaders,
       expectedBodyCounts: {base64Encode(sourceBytes): 2},
+      expectedReplays: 1,
+    );
+  });
+
+  test('replays a blob-handle upload after 401 without reopening its source', () async {
+    PlatformInfo.isTestingForWeb = true;
+    final receivedBodies = <List<int>>[];
+    final authorizationHeaders = <String?>[];
+    final server = await startUploadServer(receivedBodies, authorizationHeaders);
+    final dio = buildUploadDio();
+    var openCount = 0;
+    final body = UploadBody.of(FileBlobInfo(
+      fileName: 'a.pdf',
+      fileSize: 3,
+      sourceUrl: 'blob:http://localhost/attachment',
+      openRead: ([start, end]) {
+        openCount++;
+        return Stream<List<int>>.value(const <int>[1, 2, 3]);
+      },
+    ));
+
+    final response = await dio.post(
+      'http://${server.address.address}:${server.port}/upload/account-id',
+      data: body.requestData,
+      options: Options(extra: body.dioExtra),
+    ).timeout(const Duration(seconds: 30));
+
+    // The blob adapter re-resolves sourceUrl on replay, so the interceptor must not open the source.
+    expect(response.statusCode, HttpStatus.ok);
+    expect(openCount, 0);
+    expectReplayedWithRefreshedToken(
+      receivedBodies: receivedBodies,
+      authorizationHeaders: authorizationHeaders,
+      expectedBodyCounts: {base64Encode(<int>[]): 2},
       expectedReplays: 1,
     );
   });
