@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_lin
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
+import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 void main() {
