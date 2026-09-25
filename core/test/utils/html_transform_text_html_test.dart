@@ -400,6 +400,34 @@ void main() {
         ));
       });
 
+      test('SHOULD drop relative href instead of rewriting it to a bogus host WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<base href="https://example.com/"><a href="page.html">rel-link</a>'
+            '<a href="./dir/page.html">dot-link</a>'
+            '<a href="/root.html">root-link</a>'
+            '<a href="//cdn.example.com/x">proto-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          isNot(contains('href=')),
+          isNot(contains('https://page.html')),
+          contains('rel-link'),
+          contains('dot-link'),
+          contains('root-link'),
+          contains('proto-link'),
+        ));
+      });
+
+      test('SHOULD keep fragment, mailto and absolute hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="#section">anchor</a>'
+            '<a href="mailto:support@example.com">mail</a>'
+            '<a href="https://example.com/page.html">abs</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('href="#section"'),
+          contains('href="mailto:support@example.com"'),
+          contains('href="https://example.com/page.html"'),
+        ));
+      });
+
       test('SHOULD add overflow-wrap: anywhere to td and th when only ResponsiveTableCellTransformer is used', () async {
         final out = await transformWith(
           HtmlEmailCorpus.htmlTableSimple,
