@@ -109,9 +109,9 @@ void main() {
       expect(result!.intentId, equals('intent-bridge'));
     });
 
-    testWidgets('propagates the bridge error directly, no bearer fallback', (tester) async {
-      // The bridge may already have dispatched the request, so a bridge
-      // failure is never retried over bearer.
+    testWidgets('falls back to bearer token when the bridge call throws', (tester) async {
+      // Creating an intent is idempotent, so a bridge failure retries over
+      // bearer token instead of surfacing directly.
       installCozyBridge((_) => throw StateError('bridge rejected'));
       final adapter = _ErrorAdapter();
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
@@ -119,12 +119,12 @@ void main() {
       final ext = _makeExtension(ValueNotifier<Uri?>(_platformUri));
       final callback = await extractCallback(tester, ext);
 
-      // The bridge error crosses a JS Promise boundary, so its Dart type
-      // isn't preserved — assert it throws, not what it throws.
+      // The bearer path also fails here (adapter always throws), but the
+      // adapter having been hit at all proves the fallback was attempted.
       await tester.runAsync(() async {
         await expectLater(callback(filePickerConfig: _filePickerConfig), throwsA(anything));
       });
-      expect(adapter.called, isFalse);
+      expect(adapter.called, isTrue);
     });
   });
 }
