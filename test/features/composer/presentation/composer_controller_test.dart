@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
@@ -1754,6 +1755,86 @@ void main() {
         expect(restored.selectedIdentityId, defaultIdentity.id);
         expect(restored.presentationEmail?.from?.single.email,
             'default@example.com');
+      });
+
+      test('keeps reply threading through two reload snapshots', () {
+        const composerId = 'reload-reply';
+        final messageId = MessageIdsHeaderValue({'original@example.com'});
+        final references = MessageIdsHeaderValue({'ancestor@example.com'});
+        final arguments = ComposerArguments(
+          emailActionType: EmailActionType.reply,
+          composerId: composerId,
+          messageId: messageId,
+          references: references,
+        );
+        final controller = createComposerController(
+          composerId: composerId,
+          arguments: arguments,
+        )..composerArguments.value = arguments;
+        controller.currentEmailActionType = EmailActionType.reply;
+        controller.setTextEditorWeb('<p>reply body</p>');
+        final datasource = createSessionDatasource(composerId);
+        registerReloadHandler(controller, datasource);
+
+        controller.onBeforeUnloadBrowserListener(html.Event('beforeunload'));
+        final key = cacheKeyFor(composerId);
+        final firstCache = ComposerCache.fromJson(
+          jsonDecode(browser_html.window.sessionStorage[key]!),
+        );
+        final restored = ComposerArguments.fromSessionStorageBrowser(firstCache);
+        expect(restored.messageId, messageId);
+        expect(restored.references?.ids,
+            containsAll(['original@example.com', 'ancestor@example.com']));
+
+        final reopened = createComposerController(
+          composerId: composerId,
+          arguments: restored,
+        )..composerArguments.value = restored;
+        reopened.currentEmailActionType = EmailActionType.reopenComposerBrowser;
+        reopened.savedActionType = restored.savedActionType;
+        reopened.setTextEditorWeb('<p>edited reply body</p>');
+        registerReloadHandler(reopened, datasource);
+        reopened.onBeforeUnloadBrowserListener(html.Event('beforeunload'));
+
+        final secondCache = ComposerCache.fromJson(
+          jsonDecode(browser_html.window.sessionStorage[key]!),
+        );
+        expect(secondCache.email?.inReplyTo, messageId);
+        expect(secondCache.email?.references?.ids,
+            containsAll(['original@example.com', 'ancestor@example.com']));
+      });
+
+      test('keeps the original draft mailbox when reopening an edited draft', () {
+        const composerId = 'reload-edit-draft';
+        final draftMailboxId = MailboxId(Id('original-draft-mailbox'));
+        final arguments = ComposerArguments(
+          emailActionType: EmailActionType.editDraft,
+          composerId: composerId,
+          savedDraftMailboxId: draftMailboxId,
+        );
+        final controller = createComposerController(
+          composerId: composerId,
+          arguments: arguments,
+        )..composerArguments.value = arguments;
+        controller.currentEmailActionType = EmailActionType.editDraft;
+        controller.setTextEditorWeb('<p>edited draft</p>');
+        final datasource = createSessionDatasource(composerId);
+        registerReloadHandler(controller, datasource);
+
+        controller.onBeforeUnloadBrowserListener(html.Event('beforeunload'));
+        final cache = ComposerCache.fromJson(jsonDecode(
+          browser_html.window.sessionStorage[cacheKeyFor(composerId)]!,
+        ));
+        final restored = ComposerArguments.fromSessionStorageBrowser(cache);
+        expect(restored.savedDraftMailboxId, draftMailboxId);
+        expect(restored.savedActionType, EmailActionType.editDraft);
+
+        final reopened = createComposerController(
+          composerId: composerId,
+          arguments: restored,
+        )..composerArguments.value = restored;
+        reopened.currentEmailActionType = EmailActionType.reopenComposerBrowser;
+        expect(reopened.getDraftMailboxIdForComposer(), draftMailboxId);
       });
 
       test('uses the latest saved draft hash instead of stale route arguments',

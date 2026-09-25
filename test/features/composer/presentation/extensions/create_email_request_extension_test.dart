@@ -31,6 +31,31 @@ void main() {
   );
 
   group('create email request extension test:', () {
+    test('restored reply keeps threading headers when generating the email', () {
+      final messageId = MessageIdsHeaderValue({'original@example.com'});
+      final request = CreateEmailRequest(
+        session: SessionFixtures.aliceSession,
+        accountId: AccountFixtures.aliceAccountId,
+        emailActionType: EmailActionType.reopenComposerBrowser,
+        ownEmailAddress: 'alice@example.com',
+        subject: 'Re: subject',
+        emailContent: '<p>reply</p>',
+        messageId: messageId,
+        references: MessageIdsHeaderValue({'ancestor@example.com'}),
+      );
+
+      final email = request.generateEmail(
+        newEmailContent: request.emailContent,
+        newEmailAttachments: {},
+        userAgent: '',
+        partId: PartId('reply-body'),
+      );
+
+      expect(email.inReplyTo, messageId);
+      expect(email.references?.ids,
+          containsAll(['original@example.com', 'ancestor@example.com']));
+    });
+
     test(
       'should return email with identity header '
       'when generateEmail is called '
