@@ -123,13 +123,19 @@ class TransformConfiguration {
     ],
   );
 
-  factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([
-    const RemoveLazyLoadingForBackgroundImageTransformer(),
-    const RemoveLazyLoadingImageTransformer(),
-    const RemoveCollapsedSignatureButtonTransformer(),
-    const RemoveStyleTagOutsideTransformer(),
-    const RemoveMaxWidthInImageStyleTransformer(),
-  ]);
+  /// The printed document is opened in a same-origin blob tab: sanitize it
+  /// even though callers are expected to pass already-sanitized content.
+  factory TransformConfiguration.forPrintEmail() => TransformConfiguration(
+    [
+      const RemoveScriptTransformer(),
+      const RemoveLazyLoadingForBackgroundImageTransformer(),
+      const RemoveLazyLoadingImageTransformer(),
+      const RemoveCollapsedSignatureButtonTransformer(),
+      const RemoveStyleTagOutsideTransformer(),
+      const RemoveMaxWidthInImageStyleTransformer(),
+    ],
+    const [StandardizeHtmlSanitizingTransformers()],
+  );
 
    factory TransformConfiguration.forSignatureIdentity() => TransformConfiguration.create(
      customDomTransformers: [
