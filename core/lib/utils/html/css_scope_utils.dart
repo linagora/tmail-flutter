@@ -93,14 +93,11 @@ class _CssBlockConfiner {
   bool _consumeToken() {
     final current = _codeUnits[_index];
 
-    if (current == CssScopeUtils._slash && _at(_index + 1) == CssScopeUtils._asterisk) {
+    if (_isCommentStart(_index)) {
       _skipComment();
-    } else if (current == CssScopeUtils._doubleQuote || current == CssScopeUtils._singleQuote) {
+    } else if (_isQuote(current)) {
       _skipString(current);
-    } else if (current == CssScopeUtils._numberSign && _isHashStart(_index + 1)) {
-      _index++;
-      _consumeName();
-    } else if (current == CssScopeUtils._at && _wouldStartIdentifier(_index + 1)) {
+    } else if (_isPrefixedNameStart(_index)) {
       _index++;
       _consumeName();
     } else if (_wouldStartNumber(_index)) {
@@ -109,22 +106,48 @@ class _CssBlockConfiner {
       return _skipUnicodeRange();
     } else if (_wouldStartIdentifier(_index)) {
       _skipIdentLike();
-    } else if (CssScopeUtils._closingOf.containsKey(current)) {
-      _expectedClosings.add(CssScopeUtils._closingOf[current]!);
-      _index++;
-    } else if (_expectedClosings.isNotEmpty && _expectedClosings.last == current) {
-      _expectedClosings.removeLast();
-      _index++;
     } else {
-      if (current == CssScopeUtils._closeBrace && _expectedClosings.isEmpty) {
-        _codeUnits[_index] = CssScopeUtils._space;
-      }
-      _index++;
+      _consumeDelimiter(current);
     }
     return true;
   }
 
+  /// Tracks nested blocks and neutralizes any `}` that would close the
+  /// enclosing `@scope` block.
+  void _consumeDelimiter(int current) {
+    final closing = CssScopeUtils._closingOf[current];
+    if (closing != null) {
+      _expectedClosings.add(closing);
+    } else if (_isExpectedClosing(current)) {
+      _expectedClosings.removeLast();
+    } else if (_isUnmatchedCloseBrace(current)) {
+      _codeUnits[_index] = CssScopeUtils._space;
+    }
+    _index++;
+  }
+
+  bool _isExpectedClosing(int codeUnit) =>
+      _expectedClosings.isNotEmpty && _expectedClosings.last == codeUnit;
+
+  bool _isUnmatchedCloseBrace(int codeUnit) =>
+      codeUnit == CssScopeUtils._closeBrace && _expectedClosings.isEmpty;
+
   int? _at(int index) => index < _codeUnits.length ? _codeUnits[index] : null;
+
+  bool _isCommentStart(int index) =>
+      _at(index) == CssScopeUtils._slash && _at(index + 1) == CssScopeUtils._asterisk;
+
+  /// `#name` (hash token) or `@name` (at-keyword token).
+  bool _isPrefixedNameStart(int index) {
+    final current = _at(index);
+    if (current == CssScopeUtils._numberSign) {
+      return _isHashStart(index + 1);
+    }
+    return current == CssScopeUtils._at && _wouldStartIdentifier(index + 1);
+  }
+
+  static bool _isQuote(int codeUnit) =>
+      codeUnit == CssScopeUtils._doubleQuote || codeUnit == CssScopeUtils._singleQuote;
 
   void _skipComment() {
     _index += 2;
@@ -209,9 +232,10 @@ class _CssBlockConfiner {
       _index++;
       length++;
     }
-    while (allowQuestionMarks
-        && length < CssScopeUtils._maxHexDigitsInUnicodeRange
-        && _at(_index) == CssScopeUtils._questionMark) {
+    if (!allowQuestionMarks) {
+      return;
+    }
+    while (length < CssScopeUtils._maxHexDigitsInUnicodeRange && _at(_index) == CssScopeUtils._questionMark) {
       _index++;
       length++;
     }
