@@ -3220,6 +3220,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "folderNameContainsForbiddenCharacters": "Tên thư mục không được bắt đầu bằng \"#\" hoặc chứa \".\", \"%\", \"*\" hay ký tự xuống dòng",
+  "@folderNameContainsForbiddenCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "createNewFolderFailure": "Tạo thư mục mới thất bại",
   "@createNewFolderFailure": {
     "type": "text",
