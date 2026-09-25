@@ -13,7 +13,8 @@ class LocalizedFileSizeFormatter {
 
   const LocalizedFileSizeFormatter._();
 
-  static String format(int size, {int fractionDigits = 2, String? locale}) {
+  static String format(num bytes, {int fractionDigits = 2, String? locale}) {
+    final size = bytes.toInt();
     final resolvedLocale = _resolveLocale(locale ?? Intl.getCurrentLocale());
     final units = _unitsFor(resolvedLocale);
 
