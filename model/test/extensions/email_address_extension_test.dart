@@ -6,7 +6,7 @@ void main() {
   group('EmailAddressExtension::asFullStringWithLtGtCharacter::', () {
     test('Should returns displayName and emailAddress formatted correctly', () {
       final emailAddress = EmailAddress(
-        'john doe',
+        'John Doe',
         'john.doe@example.com',
       );
       expect(
@@ -15,12 +15,23 @@ void main() {
       );
     });
 
-    test('Should returns displayName capitalized when emailAddress is empty', () {
+    test('Should returns displayName as is when emailAddress is empty', () {
       final emailAddress = EmailAddress(
-        'jane doe',
+        'Jane Doe',
         '',
       );
       expect(emailAddress.asFullStringWithLtGtCharacter(), 'Jane Doe');
+    });
+
+    test('Should not re-case displayName', () {
+      final emailAddress = EmailAddress(
+        'Test BTELLIER',
+        'btellier@example.com',
+      );
+      expect(
+        emailAddress.asFullStringWithLtGtCharacter(),
+        'Test BTELLIER <btellier@example.com>',
+      );
     });
 
     test('Should returns emailAddress enclosed in <> when displayName is empty', () {
