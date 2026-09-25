@@ -96,7 +96,20 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isOutgoingMailbox => isSent || isDrafts || isOutbox;
 
-  bool get isValidRuleActionTarget => !isOutbox && !isDrafts && !isTemplates;
+  static const List<String> _ruleActionForbiddenTeamSystemFolders = [
+    PresentationMailbox.outboxRole,
+    PresentationMailbox.draftsRole,
+    PresentationMailbox.templatesRole,
+  ];
+
+  bool isValidRuleActionTarget(Map<MailboxId, PresentationMailbox> mailboxMap) {
+    if (isPersonal) {
+      return !isOutbox && !isDrafts && !isTemplates;
+    }
+    return role != PresentationMailbox.roleOutbox &&
+        !_ruleActionForbiddenTeamSystemFolders
+            .any((folder) => isFirstLevelTeamSystemFolder(mailboxMap, folder));
+  }
 
   bool get isArchive => role == PresentationMailbox.roleArchive;
 
