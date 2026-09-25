@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
@@ -92,15 +93,17 @@ final class FileBytesInfo extends FileInfo {
   String get mimeType => _resolveMimeType(fileName, headerBytes: bytes);
 
   @override
-  Stream<List<int>> openRead([int? start, int? end]) => Stream<List<int>>.value(_slice(start, end));
+  Stream<List<int>> openRead([int? start, int? end]) {
+    final from = start ?? 0;
+    if (from < 0) return Stream<List<int>>.error(RangeError('Bad start position: $from'));
+    if (end != null && end < from) return Stream<List<int>>.error(RangeError('Bad end position: $end'));
+    final to = min(end ?? bytes.length, bytes.length);
+    if (from >= to) return const Stream<List<int>>.empty();
+    return Stream<List<int>>.value(from == 0 && to == bytes.length ? bytes : bytes.sublist(from, to));
+  }
 
   @override
   Future<Uint8List> readBytes() async => bytes;
-
-  Uint8List _slice(int? start, int? end) {
-    if (start == null && end == null) return bytes;
-    return bytes.sublist(start ?? 0, (end ?? bytes.length).clamp(0, bytes.length));
-  }
 
   @override
   List<Object?> get props => [...super.props, bytes];
