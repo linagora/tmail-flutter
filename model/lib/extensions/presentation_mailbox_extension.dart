@@ -96,6 +96,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isOutgoingMailbox => isSent || isDrafts || isOutbox;
 
+  bool get isValidRuleActionTarget => !isOutbox && !isDrafts && !isTemplates;
+
   bool get isArchive => role == PresentationMailbox.roleArchive;
 
   bool get isRecovered => role == PresentationMailbox.roleRecovered;
