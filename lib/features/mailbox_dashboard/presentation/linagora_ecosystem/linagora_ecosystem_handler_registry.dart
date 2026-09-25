@@ -22,6 +22,15 @@ class LinagoraEcosystemHandlerRegistry {
       handler.onEcosystemCleared();
     }
   }
+
+  void dispatchAccountChanged() {
+    for (final handler in _handlers) {
+      handler.onEcosystemCleared();
+      if (handler is AccountAwareLinagoraEcosystemHandler) {
+        (handler as AccountAwareLinagoraEcosystemHandler).onAccountChanged();
+      }
+    }
+  }
 }
 
 /// App-lifetime registry: handlers are registered once and must survive the
