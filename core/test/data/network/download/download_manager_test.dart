@@ -6,22 +6,18 @@ import 'dart:typed_data';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/download_manager.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'download_manager_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<DownloadClient>(), MockSpec<DeviceInfoPlugin>()])
+@GenerateNiceMocks([MockSpec<DownloadClient>()])
 void main() {
   late DownloadManager downloadManager;
 
   setUp(() {
-    downloadManager = DownloadManager(
-      MockDownloadClient(),
-      MockDeviceInfoPlugin(),
-    );
+    downloadManager = DownloadManager(MockDownloadClient());
   });
 
   group('DownloadManager::createAnchorElementDownloadFileWeb', () {

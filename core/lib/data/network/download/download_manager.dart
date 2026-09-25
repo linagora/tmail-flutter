@@ -7,8 +7,6 @@ import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/html/html_utils.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
@@ -17,9 +15,8 @@ import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
   final DownloadClient _downloadClient;
-  final DeviceInfoPlugin _deviceInfoPlugin;
 
-  DownloadManager(this._downloadClient, this._deviceInfoPlugin);
+  DownloadManager(this._downloadClient);
 
   Future<DownloadedResponse> downloadFile(
       String downloadUrl,
@@ -117,46 +114,6 @@ class DownloadManager {
     } catch (exception) {
       log('DownloadManager::_detectMimeType(): ERROR: $exception');
       return Constant.octetStreamMimeType;
-    }
-  }
-
-  Future<void> openDownloadedFileWeb(
-    Uint8List bytes,
-    String? mimeType,
-    String? fileName
-  ) async {
-    try {
-      fileName ??= 'unknown.pdf';
-      final deviceInfo = await _deviceInfoPlugin.deviceInfo;
-      log('DownloadManager::openDownloadedFileWeb: TYPE = ${deviceInfo.runtimeType} | ${deviceInfo.data}');
-      if (deviceInfo is WebBrowserInfo) {
-        switch(deviceInfo.browserName) {
-          case BrowserName.chrome:
-          case BrowserName.edge:
-          case BrowserName.opera:
-            HtmlUtils.openNewTabHtmlDocument(HtmlUtils.chromePdfViewer(bytes, fileName));
-            break;
-          case BrowserName.safari:
-            HtmlUtils.openNewTabHtmlDocument(HtmlUtils.safariPdfViewer(bytes, fileName));
-            break;
-          default:
-            HtmlUtils.openFileViewer(
-              bytes: bytes,
-              fileName: fileName,
-              mimeType: mimeType
-            );
-            break;
-        }
-      } else {
-        HtmlUtils.openFileViewer(
-          bytes: bytes,
-          fileName: fileName,
-          mimeType: mimeType
-        );
-      }
-    } catch (exception) {
-      logWarning('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
-      rethrow;
     }
   }
 
