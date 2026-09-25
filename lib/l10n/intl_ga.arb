@@ -5724,5 +5724,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "languageBrazilianPortuguese": "Portaingéilis (an Bhrasaíl)",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attending": "An mbeidh tú i láthair?",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "Glac páirt sa físchomhdháil",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "Cóipeáil an nasc",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "Cóipeáladh an nasc chuig an ngearrthaisce",
+  "@linkCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentAddedSuccessfully": "Comhaid ceangailte ó Drive.",
+  "@driveAttachmentAddedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentTransferFailed": "Theip ar cheangal comhad ó Drive.",
+  "@driveAttachmentTransferFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
