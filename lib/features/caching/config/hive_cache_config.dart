@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v10.dart';
@@ -41,6 +42,32 @@ class HiveCacheConfig {
   bool _regularAdaptersRegistered = false;
 
   int _closeGeneration = 0;
+
+  /// On mobile the Hive encryption key lives in the platform secure storage
+  /// (Android Keystore / iOS Keychain), not in a Hive box next to the data it
+  /// protects. The Keychain item stays readable after first unlock so that
+  /// push notifications can be processed while the device is locked, and is
+  /// never migrated to another device.
+  static const String secureEncryptionKeyName = 'tmail_hive_encryption_key';
+
+  FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
+
+  Uint8List? _cachedEncryptionKey;
+
+  @visibleForTesting
+  set secureStorage(FlutterSecureStorage storage) {
+    _secureStorage = storage;
+    _cachedEncryptionKey = null;
+  }
+
+  @visibleForTesting
+  bool? useSecureStorageForTesting;
+
+  bool get _useSecureStorage => useSecureStorageForTesting ?? PlatformInfo.isMobile;
 
   /// Bumped by every deliberate [closeHive], so an operation that started
   /// before one can tell it happened underneath.
@@ -103,16 +130,83 @@ class HiveCacheConfig {
       log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
       return;
     }
+
+    if (_useSecureStorage) {
+      await _initializeSecureEncryptionKey(encryptionKeyCacheManager);
+      return;
+    }
+
     final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
       final secureKey = Hive.generateSecureKey();
       final secureKeyEncode = base64Encode(secureKey);
-      log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
+      log('HiveCacheConfig::_initializeEncryptionKey(): new encryption key generated');
       await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
     }
   }
 
+  /// Ensures the key is in secure storage, migrating the legacy key stored in
+  /// the EncryptionKeyCache box (same key, so no data has to be re-encrypted).
+  /// The legacy copy is only deleted once the secure copy has been read back.
+  Future<void> _initializeSecureEncryptionKey(
+    EncryptionKeyCacheManager encryptionKeyCacheManager,
+  ) async {
+    if (await _readSecureEncryptionKey() != null) {
+      final legacyKey = await encryptionKeyCacheManager.getEncryptionKeyStored();
+      if (legacyKey != null) {
+        await encryptionKeyCacheManager.deleteEncryptionKeyStored();
+      }
+      return;
+    }
+
+    final legacyKey = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    final keyValue = legacyKey?.value ?? base64Encode(Hive.generateSecureKey());
+
+    if (await _writeSecureEncryptionKey(keyValue)) {
+      log('HiveCacheConfig::_initializeSecureEncryptionKey(): key stored in secure storage (migrated: ${legacyKey != null})');
+      if (legacyKey != null) {
+        await encryptionKeyCacheManager.deleteEncryptionKeyStored();
+      }
+    } else if (legacyKey == null) {
+      // Secure storage unavailable: keep the previous behaviour rather than
+      // leaving the encrypted boxes without a key.
+      logWarning('HiveCacheConfig::_initializeSecureEncryptionKey(): secure storage unavailable, falling back to Hive');
+      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(keyValue));
+    }
+  }
+
+  Future<String?> _readSecureEncryptionKey() async {
+    try {
+      final value = await _secureStorage.read(key: secureEncryptionKeyName);
+      return value?.isNotEmpty == true ? value : null;
+    } catch (e) {
+      logWarning('HiveCacheConfig::_readSecureEncryptionKey(): $e');
+      return null;
+    }
+  }
+
+  Future<bool> _writeSecureEncryptionKey(String value) async {
+    try {
+      await _secureStorage.write(key: secureEncryptionKeyName, value: value);
+      return await _readSecureEncryptionKey() == value;
+    } catch (e) {
+      logWarning('HiveCacheConfig::_writeSecureEncryptionKey(): $e');
+      return false;
+    }
+  }
+
   Future<Uint8List?> getEncryptionKey() async {
+    if (_cachedEncryptionKey != null) return _cachedEncryptionKey;
+
+    if (_useSecureStorage) {
+      final secureKey = await _readSecureEncryptionKey();
+      if (secureKey != null) {
+        return _cachedEncryptionKey = base64Decode(secureKey);
+      }
+      // Not migrated yet (e.g. a push handled in background right after an
+      // update): fall back to the legacy key below.
+    }
+
     final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
       // No key → an encrypted box (incl. the OIDC token box) opens without a
