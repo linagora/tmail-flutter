@@ -7,15 +7,14 @@
     const CODE_VERIFIER_KEY = "auth_code_verifier";
     window.onload = function () {
         try {
+            sessionStorage.removeItem(AUTH_RESPONSE_KEY);
+            sessionStorage.removeItem(CODE_VERIFIER_KEY);
             localStorage.removeItem(AUTH_RESPONSE_KEY);
             localStorage.removeItem(CODE_VERIFIER_KEY);
-            const params = new URLSearchParams(window.location.search)
-            if (params.has('redirect_uri')) {
-                const redirect = params.get('redirect_uri');
-                window.location.replace(redirect);
-            } else {
-                window.location.assign("/");
-            }
+            // Never follow a caller-supplied redirect: an attacker-crafted
+            // link could otherwise navigate to a javascript: URL or a
+            // phishing page from the application origin.
+            window.location.replace("/");
         } catch (error) {
           console.error("[Logout Auth Redirect] Redirection failed:", error);
           window.location.assign("/");
