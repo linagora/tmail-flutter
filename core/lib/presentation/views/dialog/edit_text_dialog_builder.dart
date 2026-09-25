@@ -17,6 +17,8 @@ class EditTextDialogBuilder extends StatefulWidget {
   final String positiveText;
   final String negativeText;
   final String? closeIcon;
+  final bool obscureText;
+  final String? initialError;
   final OnInputDialogPositiveButtonAction onPositiveButtonAction;
   final OnInputDialogNegativeButtonAction? onNegativeButtonAction;
   final OnInputDialogInputErrorChangedAction? onInputErrorChanged;
@@ -33,6 +35,8 @@ class EditTextDialogBuilder extends StatefulWidget {
     this.onInputErrorChanged,
     this.closeIcon,
     this.onCloseButtonAction,
+    this.obscureText = false,
+    this.initialError,
   });
 
   @override
@@ -43,6 +47,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
   late TextEditingController _textController;
   late FocusNode _focusNode;
   String? _error;
+  String? _initialError;
   Timer? _debounce;
 
   @override
@@ -54,6 +59,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
         extentOffset: widget.value.length,
       );
     _focusNode = FocusNode();
+    _initialError = widget.initialError;
   }
 
   @override
@@ -124,6 +130,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                       focusNode: _focusNode,
                       autoFocus: true,
                       maxLines: 1,
+                      obscureText: widget.obscureText,
                       textStyle: ThemeUtils.textStyleBodyBody3(
                         color: AppColor.m3SurfaceBackground,
                       ),
@@ -145,7 +152,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                         errorStyle: ThemeUtils.textStyleBodyBody3(
                           color: AppColor.colorErrorState,
                         ),
-                        errorText: _error,
+                        errorText: _error ?? _initialError,
                       ),
                     ),
                   ),
@@ -201,6 +208,9 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
       );
 
   void _onTextChanged(String value) {
+    if (_initialError != null) {
+      setState(() => _initialError = null);
+    }
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;

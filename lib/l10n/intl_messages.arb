@@ -5631,5 +5631,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "pdfPasswordRequired": "Password-protected PDF",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Incorrect password, please try again",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "This PDF is password-protected. You can still download it.",
+  "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
