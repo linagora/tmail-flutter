@@ -16,6 +16,7 @@ import 'package:core/presentation/utils/html_transformer/dom/autolink_text_node_
 import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_outside_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_nested_style_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
@@ -53,6 +54,7 @@ class TransformConfiguration {
   factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration(
     [
       const RemoveScriptTransformer(),
+      const SanitizeNestedStyleTransformer(),
       const SignatureTransformer(),
       const RemoveCollapsedSignatureButtonTransformer(),
       const NormalizeLineHeightInStyleTransformer(),
@@ -95,6 +97,7 @@ class TransformConfiguration {
   factory TransformConfiguration.forPreviewEmailOnWeb() => TransformConfiguration.create(
     customDomTransformers: [
       const RemoveScriptTransformer(),
+      const SanitizeNestedStyleTransformer(),
       const BlockQuotedTransformer(),
       const BlockCodeTransformer(),
       SanitizeHyperLinkTagInHtmlTransformer(),
@@ -140,6 +143,7 @@ class TransformConfiguration {
    factory TransformConfiguration.forSignatureIdentity() => TransformConfiguration.create(
      customDomTransformers: [
        const RemoveScriptTransformer(),
+       const SanitizeNestedStyleTransformer(),
        const BlockQuotedTransformer(),
        const BlockCodeTransformer(),
        SanitizeHyperLinkTagInHtmlTransformer(),
@@ -197,6 +201,7 @@ class TransformConfiguration {
 
   static List<DomTransformer> standardDomTransformers = [
     const RemoveScriptTransformer(),
+    const SanitizeNestedStyleTransformer(),
     const BlockQuotedTransformer(),
     const BlockCodeTransformer(),
     SanitizeHyperLinkTagInHtmlTransformer(),
