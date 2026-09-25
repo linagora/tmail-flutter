@@ -53,6 +53,50 @@ class _BridgeOnlyAction extends WorkplaceAction<String> {
   Future<String> call(WorkplaceAccessMode accessMode) => throw StateError('bridge rejected');
 }
 
+// Succeeds only over bearer token; a bridge attempt always throws first.
+class _FallsBackToBearerAction extends WorkplaceAction<String> {
+  final List<WorkplaceAccessMode> calls = [];
+
+  @override
+  bool get supportsBridge => true;
+
+  @override
+  bool get fallsBackToBearer => true;
+
+  @override
+  Future<String> call(WorkplaceAccessMode accessMode) {
+    calls.add(accessMode);
+    if (accessMode is BridgeAccessMode) throw StateError('bridge rejected');
+    return Future.value('bearer-result');
+  }
+}
+
+// A String succeeds; the exchange interactor is never expected to run here.
+class _FakeWorkplaceRepository implements WorkplaceRepository {
+  @override
+  Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async => 'access-token';
+
+  @override
+  Future<WorkplaceIntent> createIntent({
+    required Uri platformUrl,
+    required WorkplaceAccessMode accessMode,
+    required WorkplaceIntentConfig config,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<DriveUploadedFile> uploadFile({
+    required WorkplaceRequestContext context,
+    required WorkplaceUploadFileSpec spec,
+    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+  }) => throw UnimplementedError();
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) => throw UnimplementedError();
+}
+
 void main() {
   tearDown(removeCozyBridge);
 
@@ -69,5 +113,21 @@ void main() {
       runner.run(Uri.parse('https://platform.example.com'), const _BridgeOnlyAction()),
       throwsA(isA<StateError>().having((e) => e.message, 'message', 'bridge rejected')),
     );
+  });
+
+  test('fallsBackToBearer: true retries over bearer token when the bridge call throws', () async {
+    installCozyBridge((_) => throw StateError('bridge rejected'));
+    final repository = _FakeWorkplaceRepository();
+    final runner = WorkplaceAccessModeRunner(
+      exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
+      oidcTokenGetter: () => 'oidc-token',
+      oidcRefreshTrigger: () async => null,
+    );
+    final action = _FallsBackToBearerAction();
+
+    final result = await runner.run(Uri.parse('https://platform.example.com'), action);
+
+    expect(result, 'bearer-result');
+    expect(action.calls, [isA<BridgeAccessMode>(), isA<BearerTokenAccessMode>()]);
   });
 }

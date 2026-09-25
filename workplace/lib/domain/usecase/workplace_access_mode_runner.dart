@@ -29,9 +29,17 @@ class WorkplaceAccessModeRunner {
   final OidcRefreshTrigger _oidcRefreshTrigger;
 
   Future<T> run<T>(Uri platformUrl, WorkplaceAction<T> action) async {
-    // No bearer retry on bridge failure — it may have already dispatched.
     if (_canUseBridge(action)) {
-      return action(const BridgeAccessMode());
+      // No bearer retry for non-idempotent actions — the bridge may have already dispatched.
+      if (!action.fallsBackToBearer) return action(const BridgeAccessMode());
+      try {
+        return await action(const BridgeAccessMode());
+      } catch (error) {
+        logWarning(
+          'WorkplaceAccessModeRunner::run: bridge failed, falling back to bearer token: $error',
+          webConsoleEnabled: true,
+        );
+      }
     }
     final oidcToken = _oidcTokenGetter();
     if (oidcToken == null) throw StateError('OIDC token is unavailable');
