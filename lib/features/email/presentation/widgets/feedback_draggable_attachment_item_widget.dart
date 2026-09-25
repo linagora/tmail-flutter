@@ -46,6 +46,7 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
             child: MiddleEllipsisText(
               attachment.name ?? '',
               style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
+              preserveFileExtension: true,
             ),
           )
         ],
