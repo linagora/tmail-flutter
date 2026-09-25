@@ -3220,6 +3220,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "folderNameContainsForbiddenCharacters": "Название папки не может начинаться с \"#\" или содержать \".\", \"%\", \"*\" и переносы строк",
+  "@folderNameContainsForbiddenCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "createNewFolderFailure": "Не удалось создать папку",
   "@createNewFolderFailure": {
     "type": "text",

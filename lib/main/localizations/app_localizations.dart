@@ -662,6 +662,13 @@ class AppLocalizations {
     );
   }
 
+  String get folderNameContainsForbiddenCharacters {
+    return Intl.message(
+      'Folder name cannot start with "#" nor contain ".", "%", "*" or line breaks',
+      name: 'folderNameContainsForbiddenCharacters',
+    );
+  }
+
   String get this_folder_name_is_already_taken {
     return Intl.message(
       'This folder name is already taken',

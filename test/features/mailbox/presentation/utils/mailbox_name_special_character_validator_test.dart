@@ -20,6 +20,10 @@ void main() {
       expect('hello*world'.isValid, isFalse);
     });
 
+    test('should return false for a string containing .', () {
+      expect('QA.dot'.isValid, isFalse);
+    });
+
     test('should return false for a string containing \\n', () {
       expect('hello\nworld'.isValid, isFalse);
     });
