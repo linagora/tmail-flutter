@@ -5,7 +5,7 @@ extension MailboxNameSpecialCharacterValidatorExtension on String {
       return false;
     }
 
-    final forbiddenChars = RegExp(r'[%*\r\n]');
+    final forbiddenChars = RegExp(r'[.%*\r\n]');
     if (forbiddenChars.hasMatch(this)) {
       return false;
     }
