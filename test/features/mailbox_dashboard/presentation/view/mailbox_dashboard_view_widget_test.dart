@@ -362,6 +362,7 @@ void main() {
     return ProviderScope(
       overrides: [
         paywallLauncherProvider.overrideWithValue(testPaywallLauncher),
+        insideCozyProvider.overrideWith((ref) => true),
         activeEcosystemProvider.overrideWith((ref, _) {
           final ecosystem = ref.watch(testEcosystemProvider);
           return ecosystem == null

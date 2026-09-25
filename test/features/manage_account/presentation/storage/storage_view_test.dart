@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/widgets/upgrade_storage_widget.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -128,6 +129,7 @@ void main() {
         ProviderScope(
           overrides: [
             paywallLauncherProvider.overrideWithValue(paywallLauncher),
+            insideCozyProvider.overrideWith((ref) => true),
           ],
           child: const GetMaterialApp(
             locale: LocalizationService.defaultLocale,
