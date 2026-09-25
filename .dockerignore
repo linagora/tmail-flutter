@@ -1,0 +1,10 @@
+# Keep the build context minimal: never send VCS metadata (it may hold the
+# CI checkout token) or unrelated material into the image build.
+.git
+.github
+.dart_tool
+build
+backend-docker
+provisioning
+patchs
+security_review.md
