@@ -1435,7 +1435,9 @@ class ComposerController extends BaseController
     final oldSavedDraftHash = composerArguments.value?.savedDraftHash;
 
     if (currentEmailActionType == EmailActionType.compose ||
-        currentEmailActionType == EmailActionType.editDraft) {
+        currentEmailActionType == EmailActionType.editDraft ||
+        currentEmailActionType == EmailActionType.forward ||
+        currentEmailActionType == EmailActionType.editAsNewEmail) {
       _savedEmailDraftHash = currentDraftHash;
     } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
       _savedEmailDraftHash = oldSavedDraftHash;
