@@ -241,9 +241,17 @@ class AppLocalizations {
 
   String header_email_quoted(String sentDate, String emailAddress) {
     return Intl.message(
-        'On $sentDate, from $emailAddress',
+        'On $sentDate, $emailAddress wrote:',
         name: 'header_email_quoted',
         args: [sentDate, emailAddress]
+    );
+  }
+
+  String header_email_quoted_date_time(String date, String time) {
+    return Intl.message(
+        '$date at $time',
+        name: 'header_email_quoted_date_time',
+        args: [date, time]
     );
   }
 

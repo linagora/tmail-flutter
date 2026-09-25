@@ -236,7 +236,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "On {sentDate}, from {emailAddress}",
+  "header_email_quoted": "On {sentDate}, {emailAddress} wrote:",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -246,6 +246,18 @@
     "placeholders": {
       "sentDate": {},
       "emailAddress": {}
+    }
+  },
+  "header_email_quoted_date_time": "{date} at {time}",
+  "@header_email_quoted_date_time": {
+    "type": "text",
+    "placeholders_order": [
+      "date",
+      "time"
+    ],
+    "placeholders": {
+      "date": {},
+      "time": {}
     }
   },
   "prefix_reply_email": "Re:",
