@@ -23,7 +23,10 @@ class LocalNotificationConfig {
         NOTIFICATION_CHANNEL,
         NOTIFICATION_CHANNEL,
         groupKey: groupId,
-        visibility: NotificationVisibility.public,
+        // Email subject, sender and preview are attacker-controlled and
+        // confidential: honour the "hide sensitive content" lock screen
+        // setting instead of forcing full display.
+        visibility: NotificationVisibility.private,
         importance: Importance.max,
         priority: Priority.high,
         setAsGroupSummary: setAsGroup,

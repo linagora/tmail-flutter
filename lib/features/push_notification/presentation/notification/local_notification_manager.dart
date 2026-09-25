@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
@@ -138,12 +139,18 @@ class LocalNotificationManager {
     String? payload,
     String? groupId,
   }) async {
+    // Subject, preview and sender come from the received email: escape them
+    // before they are rendered as HTML, and show the sender address next to
+    // the display name so that a spoofed name is visible.
+    const htmlEscape = HtmlEscape();
     final inboxStyleInformation = InboxStyleInformation(
-      [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
+      [message != null
+          ? htmlEscape.convert(message).addBlockTag('p', attribute: 'style="color:#6D7885;"')
+          : ''],
       htmlFormatLines: true,
-      contentTitle: title,
+      contentTitle: htmlEscape.convert(title),
       htmlFormatContentTitle: true,
-      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
+      summaryText: htmlEscape.convert(emailAddress?.asFullString() ?? '').addBlockTag('b'),
       htmlFormatSummaryText: true);
 
     await _localNotificationsPlugin.show(
