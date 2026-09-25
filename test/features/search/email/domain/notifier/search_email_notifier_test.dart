@@ -783,7 +783,9 @@ void main() {
     });
 
     test('a stale response never overwrites a newer result', () async {
-      final container = containerForSort(EmailSortOrderType.relevance);
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final filterNotifier = container.read(searchFilterProvider.notifier);
       final oldResult = Completer<Either<Failure, Success>>();
       final newResult = Completer<Either<Failure, Success>>();
       final responses = [
@@ -793,7 +795,9 @@ void main() {
       var call = 0;
       answerSearch((_) => responses[call++]);
 
+      filterNotifier.set(SearchEmailFilter(subject: 'old'));
       final first = runExecute(container, const NewSearchIntent());
+      filterNotifier.set(SearchEmailFilter(subject: 'new'));
       final second = runExecute(container, const NewSearchIntent());
 
       // Newer request (2nd) resolves first, then the stale earlier one (1st).
@@ -805,6 +809,138 @@ void main() {
         container.read(searchEmailProvider).value!.emails.map((e) => e.id),
         [EmailId(Id('new'))],
       );
+    });
+  });
+
+  group('identical in-flight requests', () {
+    int searchCallCount() => verify(searchInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+          needRefreshSearchState: anyNamed('needRefreshSearchState'),
+        )).callCount;
+
+    int searchMoreCallCount() => verify(searchMoreInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          position: anyNamed('position'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
+          lastEmailId: anyNamed('lastEmailId'),
+        )).callCount;
+
+    int refreshCallCount() => verify(refreshInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
+          properties: anyNamed('properties'),
+        )).callCount;
+
+    test('two identical new searches send a single query', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearch((_) => Stream.fromFuture(pending.future));
+
+      final first = runExecute(container, const NewSearchIntent());
+      final second = runExecute(container, const NewSearchIntent());
+      pending.complete(Right(SearchEmailSuccess([emailWith('e1')])));
+      await Future.wait([first, second]);
+
+      expect(searchCallCount(), 1);
+      expect(
+        container.read(searchEmailProvider).value?.emails.map((e) => e.id),
+        [EmailId(Id('e1'))],
+      );
+    });
+
+    test('an identical new search after completion queries again', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+
+      await runExecute(container, const NewSearchIntent());
+      await runExecute(container, const NewSearchIntent());
+
+      expect(searchCallCount(), 2);
+    });
+
+    test('a new search with another filter is not joined', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final filterNotifier = container.read(searchFilterProvider.notifier);
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearch((_) => Stream.fromFuture(pending.future));
+
+      filterNotifier.set(SearchEmailFilter(subject: 'alpha'));
+      final first = runExecute(container, const NewSearchIntent());
+      filterNotifier.set(SearchEmailFilter(subject: 'beta'));
+      final second = runExecute(container, const NewSearchIntent());
+      pending.complete(Right(SearchEmailSuccess([emailWith('e1')])));
+      await Future.wait([first, second]);
+
+      expect(searchCallCount(), 2);
+    });
+
+    test('two identical load-mores send a single query', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      stubSearch([emailWith('e1')]);
+      await runExecute(container, const NewSearchIntent());
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearchMore((_) => Stream.fromFuture(pending.future));
+
+      final first = runLoadMore(container);
+      final second = runLoadMore(container);
+      pending.complete(Right(SearchMoreEmailSuccess([emailWith('e2')])));
+      await Future.wait([first, second]);
+
+      expect(searchMoreCallCount(), 1);
+      expect(
+        container.read(searchEmailProvider).value?.emails.map((e) => e.id),
+        [EmailId(Id('e1')), EmailId(Id('e2'))],
+      );
+    });
+
+    test('a refresh never joins an in-flight query', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      final pending = Completer<Either<Failure, Success>>();
+      answerRefresh((_) => Stream.fromFuture(pending.future));
+
+      final first = runExecute(
+        container,
+        const RefreshChangesIntent(currentCount: 0),
+      );
+      final second = runExecute(
+        container,
+        const RefreshChangesIntent(currentCount: 0),
+      );
+      pending.complete(Right(RefreshChangesSearchEmailSuccess([])));
+      await Future.wait([first, second]);
+
+      expect(refreshCallCount(), 2);
+    });
+
+    test('a new search superseded by a refresh is not joined', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearch((_) => Stream.fromFuture(pending.future));
+
+      final first = runExecute(container, const NewSearchIntent());
+      await runExecute(container, const RefreshChangesIntent(currentCount: 0));
+      final second = runExecute(container, const NewSearchIntent());
+      pending.complete(Right(SearchEmailSuccess([emailWith('e1')])));
+      await Future.wait([first, second]);
+
+      expect(searchCallCount(), 2);
     });
   });
 
