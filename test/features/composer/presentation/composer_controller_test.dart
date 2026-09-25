@@ -1500,6 +1500,38 @@ void main() {
       });
 
       test(
+        'Should save the latest draft hash instead of the stale route one\n'
+        'When the draft hash changed after the composer opened',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.composerArguments.value =
+            ComposerArguments(savedDraftHash: 123);
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => emailContent);
+        when(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        )).thenAnswer((_) async => Right(UIState.idle));
+        await composerController?.initEmailDraftHash();
+        final latestHash = composerController?.savedEmailDraftHash;
+        expect(latestHash, isNot(123));
+
+        await composerController?.onBeforeReconnect();
+
+        final request = verify(mockSaveComposerCacheInteractor.execute(
+          createEmailRequest: captureAnyNamed('createEmailRequest'),
+          isPersistent: anyNamed('isPersistent'),
+        )).captured.single as CreateEmailRequest;
+        expect(request.savedDraftHash, latestHash);
+      });
+
+      test(
         'Should do nothing\n'
         'When platform is not web',
       () async {

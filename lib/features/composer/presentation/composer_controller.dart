@@ -604,7 +604,7 @@ class ComposerController extends BaseController
       uploadUri: uploadUri,
       composerIndex: composerIndex,
       composerId: composerId,
-      savedDraftHash: arguments.savedDraftHash ?? _savedEmailDraftHash,
+      savedDraftHash: _savedEmailDraftHash ?? arguments.savedDraftHash,
       savedActionType: savedActionType ?? currentEmailActionType,
       savedEmailDraftId: emailIdEditing,
       templateEmailId: currentTemplateEmailId,
