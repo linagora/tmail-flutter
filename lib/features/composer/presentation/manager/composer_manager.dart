@@ -64,6 +64,13 @@ class ComposerManager extends GetxController {
     _arrangeComposerIfNeeded();
   }
 
+  // Disposing each composer also cancels its beforeunload snapshot write.
+  void removeAllComposers() {
+    for (final id in composers.keys.toList()) {
+      removeComposer(id);
+    }
+  }
+
   void _arrangeComposerIfNeeded() {
     if (currentContext != null && composerIdsQueue.isNotEmpty) {
       arrangeComposerWhenComposerQueueChanged(
