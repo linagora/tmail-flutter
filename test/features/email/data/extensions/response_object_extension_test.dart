@@ -14,7 +14,11 @@ void main() {
       [
         ResponseInvocation(
           MethodName('Email/set'),
-          ResponseArguments(<String, dynamic>{'created': <String, dynamic>{}}),
+          ResponseArguments(<String, dynamic>{
+            'created': <String, dynamic>{
+              'create-1': <String, dynamic>{'id': 'email-1'},
+            },
+          }),
           otherMethodCallId,
         ),
         ResponseInvocation(

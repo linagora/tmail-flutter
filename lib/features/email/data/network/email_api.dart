@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
+import 'package:jmap_dart_client/jmap/core/response/response_object.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -258,11 +259,6 @@ class EmailAPI
       setEmailInvocation.methodCallId,
       SetEmailResponse.deserialize);
 
-    final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
-      setEmailSubmissionInvocation.methodCallId,
-      SetEmailSubmissionResponse.deserialize,
-      methodName: setEmailSubmissionInvocation.methodName);
-
     if (markAsAnsweredOrForwardedInvocation != null) {
       markAsAnsweredOrForwardedSetResponse = response.parse<SetEmailResponse>(
         markAsAnsweredOrForwardedInvocation.methodCallId,
@@ -270,21 +266,42 @@ class EmailAPI
     }
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final mapErrors = handleSetResponse([
-      setEmailResponse,
-      setEmailSubmissionResponse,
-      markAsAnsweredOrForwardedSetResponse
-    ]);
-
-    if (emailCreated == null || mapErrors.isNotEmpty) {
-      final invalidRecipients = response.parseInvalidRecipients(
-        setEmailSubmissionInvocation.methodCallId,
-      );
-
-      throw invalidRecipients.isEmpty
-          ? SetMethodException(mapErrors)
-          : InvalidRecipientsException(mapErrors, invalidRecipients);
+    if (emailCreated == null) {
+      throw SetMethodException(handleSetResponse([setEmailResponse]));
     }
+
+    _throwIfSubmissionFailed(response, setEmailSubmissionInvocation);
+
+    final markAsAnsweredOrForwardedErrors = handleSetResponse([
+      markAsAnsweredOrForwardedSetResponse,
+    ]);
+    if (markAsAnsweredOrForwardedErrors.isNotEmpty) {
+      throw SetMethodException(markAsAnsweredOrForwardedErrors);
+    }
+  }
+
+  /// `EmailSubmission/set` is checked on its own response, not fused with
+  /// `Email/set`, so an `invalidRecipients` SetError there is never confused
+  /// with an `Email/set` failure.
+  void _throwIfSubmissionFailed(
+    ResponseObject response,
+    RequestInvocation submissionInvocation,
+  ) {
+    final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
+      submissionInvocation.methodCallId,
+      SetEmailSubmissionResponse.deserialize,
+      methodName: submissionInvocation.methodName);
+
+    final submissionErrors = handleSetResponse([setEmailSubmissionResponse]);
+    if (submissionErrors.isEmpty) return;
+
+    final invalidRecipients = response.parseInvalidRecipients(
+      submissionInvocation.methodCallId,
+    );
+
+    throw invalidRecipients.isEmpty
+        ? SetMethodException(submissionErrors)
+        : InvalidRecipientsException(submissionErrors, invalidRecipients);
   }
 
   Future<({

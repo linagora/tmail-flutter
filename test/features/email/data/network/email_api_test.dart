@@ -15,6 +15,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -1265,6 +1266,46 @@ void main() {
             (exception) => exception.invalidRecipients,
             'invalidRecipients',
             {'rejected@linagora.com'},
+          )),
+        );
+      });
+
+      test(
+        'SHOULD throw SetMethodException, not InvalidRecipientsException\n'
+        'WHEN Email/set does not create the email',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "sessionState": "state-1",
+          "methodResponses": [
+            [
+              "Email/set",
+              <String, dynamic>{
+                "accountId": AccountFixtures.aliceAccountId.asString,
+                "oldState": "state-1",
+                "newState": "state-1",
+                "notCreated": <String, dynamic>{
+                  "draft-1": <String, dynamic>{"type": "overQuota"},
+                },
+              },
+              "c0"
+            ],
+          ]
+        });
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(allOf(
+            isA<SetMethodException>(),
+            isNot(isA<InvalidRecipientsException>()),
           )),
         );
       });
