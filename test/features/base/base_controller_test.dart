@@ -6,8 +6,10 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -33,8 +35,14 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:tmail_ui_user/features/base/extensions/discard_web_composers_on_logout_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
 class MockBaseController extends BaseController {
@@ -70,6 +78,21 @@ class MockBaseController extends BaseController {
   void handleUrgentException({Failure? failure, Exception? exception}) {
     super.handleUrgentException(failure: failure, exception: exception);
     isUrgentExceptionEnable = true;
+  }
+}
+
+class FakeComposerCacheRepository extends Fake implements ComposerCacheRepository {
+  FakeComposerCacheRepository(this.events, {this.error});
+
+  final List<String> events;
+  final Object? error;
+  ({AccountId accountId, UserName userName})? removedFor;
+
+  @override
+  Future<void> removeAllComposerCache(AccountId accountId, UserName userName) async {
+    events.add('removeAllComposerCache');
+    removedFor = (accountId: accountId, userName: userName);
+    if (error != null) throw error!;
   }
 }
 
@@ -463,6 +486,117 @@ void main() {
 
       // Assert
       expect(result, AppConfig.defaultMinInputLengthAutocomplete);
+    });
+  });
+  group('BaseController::discardWebComposersOnLogout', () {
+    late ComposerManager composerManager;
+
+    setUp(() {
+      mockBaseController.resetState();
+      clearInteractions(mockTwakeAppManager);
+      composerManager = ComposerManager();
+      composerManager.composers['1'] = const ComposerView(key: Key('1'), composerId: '1');
+      composerManager.composerIdsQueue.add('1');
+      Get.put<ComposerManager>(composerManager);
+      addTearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        Get.delete<ComposerManager>(force: true);
+        Get.delete<RemoveAllComposerCacheInteractor>(force: true);
+      });
+    });
+
+    FakeComposerCacheRepository registerCacheRemoval({Object? error}) {
+      final repository = FakeComposerCacheRepository(mockBaseController.events, error: error);
+      Get.put(RemoveAllComposerCacheInteractor(repository));
+      return repository;
+    }
+
+    test('web: closes composers, clears hasComposer and removes the account snapshots', () async {
+      PlatformInfo.isTestingForWeb = true;
+      final repository = registerCacheRemoval();
+      final session = SessionFixtures.aliceSession;
+
+      await mockBaseController.discardWebComposersOnLogout(session, AccountFixtures.aliceAccountId);
+
+      expect(composerManager.composers, isEmpty);
+      expect(composerManager.composerIdsQueue, isEmpty);
+      verify(mockTwakeAppManager.setHasComposer(false)).called(1);
+      expect(repository.removedFor?.accountId, AccountFixtures.aliceAccountId);
+      expect(repository.removedFor?.userName, session.username);
+    });
+
+    test('mobile: leaves composers and cache untouched', () async {
+      final repository = registerCacheRemoval();
+
+      await mockBaseController.discardWebComposersOnLogout(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+      );
+
+      expect(composerManager.composers.keys, ['1']);
+      verifyNever(mockTwakeAppManager.setHasComposer(any));
+      expect(repository.removedFor, isNull);
+    });
+
+    test('web without the cache interactor: still closes composers without throwing', () async {
+      PlatformInfo.isTestingForWeb = true;
+
+      await mockBaseController.discardWebComposersOnLogout(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+      );
+
+      expect(composerManager.composers, isEmpty);
+    });
+
+    test('web: a storage failure does not break logout', () async {
+      PlatformInfo.isTestingForWeb = true;
+      registerCacheRemoval(error: Exception('storage disabled'));
+
+      await expectLater(
+        mockBaseController.discardWebComposersOnLogout(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+        ),
+        completes,
+      );
+      expect(composerManager.composers, isEmpty);
+    });
+
+    for (final (name, exception) in [
+      ('401', const BadCredentialsException()),
+      ('refresh token failure', RefreshTokenFailedException()),
+    ]) {
+      test('web $name with a composer open: keeps composers and snapshots for re-login', () async {
+        PlatformInfo.isTestingForWeb = true;
+        when(mockTwakeAppManager.hasComposer).thenReturn(true);
+        final repository = registerCacheRemoval();
+
+        mockBaseController.handleUrgentException(exception: exception);
+        await pumpEventQueue();
+
+        expect(mockBaseController.logoutCalls, 1);
+        expect(composerManager.composers.keys, ['1']);
+        expect(repository.removedFor, isNull);
+        verifyNever(mockTwakeAppManager.setHasComposer(false));
+      });
+    }
+
+    testWidgets('web logout removes the snapshots before clearing data', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      registerCacheRemoval();
+      await tester.pumpWidget(const SizedBox());
+
+      mockBaseController.logout(
+        tester.element(find.byType(SizedBox)),
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        'alice@example.com',
+      );
+      await tester.pumpAndSettle();
+
+      expect(mockBaseController.events, ['removeAllComposerCache', 'logout']);
     });
   });
 }

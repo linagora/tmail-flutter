@@ -17,6 +17,7 @@ import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
+import 'package:tmail_ui_user/features/base/extensions/discard_web_composers_on_logout_extension.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
@@ -524,6 +525,7 @@ abstract class BaseController extends GetxController
       return;
     }
 
+    await discardWebComposersOnLogout(session, accountId);
     await cachingManager.clearMailDataCached();
 
     _isFcmEnabled = _isFcmActivated(session, accountId);
