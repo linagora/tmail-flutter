@@ -66,6 +66,7 @@ class AttachmentItemWidget extends StatelessWidget {
         style: ThemeUtils.textStyleM3LabelLarge(
           color: AppColor.m3SurfaceBackground,
         ),
+        preserveFileExtension: true,
       );
 
       final bodyItemWidget = Row(

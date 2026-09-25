@@ -7,11 +7,15 @@ class MiddleEllipsisText extends StatefulWidget {
   /// Ratio of characters to keep at the start (0–1). Default = 0.5
   final double keepStartFraction;
 
+  /// When true, the file extension (e.g. `.pdf`) is always kept visible.
+  final bool preserveFileExtension;
+
   const MiddleEllipsisText(
     this.text, {
     super.key,
     this.style,
     this.keepStartFraction = 0.5,
+    this.preserveFileExtension = false,
   });
 
   @override
@@ -24,6 +28,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
   String? _cachedStyleKey;
   double? _cachedWidth;
   String? _cachedResult;
+  bool? _cachedPreserveFileExtension;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +43,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         // Use cached result if nothing changed
         if (_cachedText == widget.text &&
             _cachedStyleKey == styleKey &&
+            _cachedPreserveFileExtension == widget.preserveFileExtension &&
             _cachedWidth == maxWidth) {
           return Text(
             _cachedResult!,
@@ -53,6 +59,9 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
           style,
           textDir: textDir,
           keepStartFraction: widget.keepStartFraction,
+          minEndLength: widget.preserveFileExtension
+              ? _fileExtensionLength(widget.text)
+              : 0,
         );
 
         // Update cache
@@ -60,6 +69,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         _cachedStyleKey = styleKey;
         _cachedWidth = maxWidth;
         _cachedResult = truncated;
+        _cachedPreserveFileExtension = widget.preserveFileExtension;
 
         return Text(
           truncated,
@@ -77,6 +87,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
     TextStyle style, {
     required TextDirection textDir,
     double keepStartFraction = 0.5,
+    int minEndLength = 0,
   }) {
     final painter = TextPainter(
       textDirection: textDir,
@@ -112,6 +123,10 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
       final k = (lo + hi) ~/ 2;
       int leftLen = (k * f).round().clamp(0, text.length);
       int rightLen = (k - leftLen).clamp(0, text.length - leftLen);
+      if (rightLen < minEndLength && k >= minEndLength) {
+        rightLen = minEndLength;
+        leftLen = k - rightLen;
+      }
 
       final candidate = text.substring(0, leftLen) +
           ellipsis +
@@ -127,6 +142,13 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
     }
 
     return best;
+  }
+
+  /// Length of the extension including the dot, or 0 when there is none.
+  int _fileExtensionLength(String text) {
+    final dotIndex = text.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex == text.length - 1) return 0;
+    return text.length - dotIndex;
   }
 
   // Cache key based on style properties
