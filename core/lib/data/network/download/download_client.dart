@@ -119,7 +119,8 @@ class DownloadClient {
       fileName = fileName.split('.').first;
     }
     mimeType = HtmlUtils.validateHtmlImageResourceMimeType(mimeType);
-    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" style="max-width:$maxWidth;" data-mimetype="$mimeType" id="cid:$cid" />';
+    const attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="${attributeEscape.convert(fileName)}" style="max-width:$maxWidth;" data-mimetype="$mimeType" id="cid:${attributeEscape.convert('$cid')}" />';
     return base64Uri;
   }
 }

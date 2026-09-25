@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:core/data/model/print_attachment.dart';
@@ -80,9 +81,9 @@ class PrintUtils {
         <tbody>
           <tr>
             <td>
-              <font size="-1">$fromPrefix: <b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
+              <font size="-1">$fromPrefix: <b>$senderName </b>&lt;${const HtmlEscape().convert(senderEmailAddress)}&gt;</font>
             </td>
-            <td align="right"><font size="-1">$dateTime</font></td>
+            <td align="right"><font size="-1">${const HtmlEscape().convert(dateTime)}</font></td>
           </tr>
         </tbody>
       </table>
