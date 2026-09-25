@@ -270,7 +270,7 @@ class EmailAPI
       throw SetMethodException(handleSetResponse([setEmailResponse]));
     }
 
-    _throwIfSubmissionFailed(response, setEmailSubmissionInvocation);
+    _throwIfSubmissionFailed(response, setEmailSubmissionInvocation, emailCreated.id);
 
     final markAsAnsweredOrForwardedErrors = handleSetResponse([
       markAsAnsweredOrForwardedSetResponse,
@@ -286,6 +286,7 @@ class EmailAPI
   void _throwIfSubmissionFailed(
     ResponseObject response,
     RequestInvocation submissionInvocation,
+    EmailId? createdEmailId,
   ) {
     final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
       submissionInvocation.methodCallId,
@@ -301,7 +302,11 @@ class EmailAPI
 
     throw invalidRecipients.isEmpty
         ? SetMethodException(submissionErrors)
-        : InvalidRecipientsException(submissionErrors, invalidRecipients);
+        : InvalidRecipientsException(
+            submissionErrors,
+            invalidRecipients,
+            createdEmailId: createdEmailId,
+          );
   }
 
   Future<({

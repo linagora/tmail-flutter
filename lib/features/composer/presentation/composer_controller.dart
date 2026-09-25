@@ -1033,7 +1033,7 @@ class ComposerController extends BaseController
         handleBadCredentialsException();
       } else if (exception is InvalidRecipientsException) {
         _sendButtonState = ButtonState.enabled;
-        handleInvalidRecipientsFailure(exception.invalidRecipients);
+        handleInvalidRecipientsFailure(exception);
       } else if (context.mounted) {
         await _showConfirmDialogWhenSendMessageFailure(
           context: context,

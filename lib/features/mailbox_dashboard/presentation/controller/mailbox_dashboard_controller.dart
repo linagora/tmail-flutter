@@ -1256,6 +1256,17 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  /// Fire-and-forget; the interactor maps every error to a Failure.
+  void deleteEmailPermanentlyInBackground(EmailId? emailId) {
+    final currentAccountId = accountId.value;
+    final session = sessionCurrent;
+    if (emailId == null || currentAccountId == null || session == null) return;
+
+    unawaited(_deleteEmailPermanentlyInteractor
+      .execute(session, currentAccountId, emailId, null)
+      .drain<void>());
+  }
+
   void _deleteEmailPermanentlySuccess(DeleteEmailPermanentlySuccess success) {
     handleDeleteEmailsInMailbox(
       emailIds: [success.emailId],
@@ -2572,11 +2583,14 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isMobile) {
       storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
+    final exception = failure.exception;
+    if (exception is InvalidRecipientsException) {
+      deleteEmailPermanentlyInBackground(exception.createdEmailId);
+    }
     if (currentContext == null) {
       clearState();
       return;
     }
-    final exception = failure.exception;
     logWarning('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
     if (exception is InvalidRecipientsException) {
       _showToastSendMessageFailure(

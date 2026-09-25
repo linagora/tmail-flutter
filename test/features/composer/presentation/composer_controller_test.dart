@@ -1291,7 +1291,11 @@ void main() {
         await composerController?.handleSendMessageResult(
           context: context,
           resultState: SendEmailFailure(
-            exception: InvalidRecipientsException({}, {'Bad@Linagora.com'}),
+            exception: InvalidRecipientsException(
+              {},
+              {'Bad@Linagora.com'},
+              createdEmailId: EmailId(Id('email-1')),
+            ),
           ),
         );
 
@@ -1300,6 +1304,9 @@ void main() {
           any,
           argThat(contains('Bad@Linagora.com')),
         )).called(1);
+        verify(mockMailboxDashBoardController
+            .deleteEmailPermanentlyInBackground(EmailId(Id('email-1'))))
+            .called(1);
       });
 
       testWidgets(

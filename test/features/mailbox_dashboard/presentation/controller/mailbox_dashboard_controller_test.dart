@@ -535,10 +535,18 @@ void main() {
         (tester) async {
       await pumpLocalizedApp(tester);
       clearInteractions(appToast);
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+      when(deleteEmailPermanentlyInteractor.execute(any, any, any, any))
+          .thenAnswer((_) => const Stream.empty());
 
       mailboxDashboardController.handleFailureViewState(
         SendEmailFailure(
-          exception: InvalidRecipientsException({}, {'bad@linagora.com'}),
+          exception: InvalidRecipientsException(
+            {},
+            {'bad@linagora.com'},
+            createdEmailId: EmailId(Id('email-1')),
+          ),
         ),
       );
 
@@ -549,6 +557,12 @@ void main() {
           leadingSVGIcon: anyNamed('leadingSVGIcon'),
         ),
       ).called(1);
+      verify(deleteEmailPermanentlyInteractor.execute(
+        testSession,
+        testAccountId,
+        EmailId(Id('email-1')),
+        null,
+      )).called(1);
     });
   });
 

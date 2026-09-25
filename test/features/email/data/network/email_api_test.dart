@@ -1262,11 +1262,17 @@ void main() {
             AccountFixtures.aliceAccountId,
             emailRequest,
           ),
-          throwsA(isA<InvalidRecipientsException>().having(
-            (exception) => exception.invalidRecipients,
-            'invalidRecipients',
-            {'rejected@linagora.com'},
-          )),
+          throwsA(isA<InvalidRecipientsException>()
+              .having(
+                (exception) => exception.invalidRecipients,
+                'invalidRecipients',
+                {'rejected@linagora.com'},
+              )
+              .having(
+                (exception) => exception.createdEmailId,
+                'createdEmailId',
+                EmailId(Id('email-1')),
+              )),
         );
       });
 

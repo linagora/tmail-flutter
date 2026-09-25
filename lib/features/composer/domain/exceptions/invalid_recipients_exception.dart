@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 
 /// `EmailSubmission/set` refused the envelope because it targets addresses the
@@ -15,11 +16,19 @@ import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exc
 class InvalidRecipientsException extends SetMethodException {
   final Set<String> invalidRecipients;
 
-  InvalidRecipientsException(super.mapErrors, this.invalidRecipients);
+  /// Email/set created it before the submission was refused; the composer
+  /// deletes it in the background so a resend does not leave a duplicate.
+  final EmailId? createdEmailId;
+
+  InvalidRecipientsException(
+    super.mapErrors,
+    this.invalidRecipients, {
+    this.createdEmailId,
+  });
 
   @override
   String get exceptionName => 'InvalidRecipientsException';
 
   @override
-  List<Object?> get props => [...super.props, invalidRecipients];
+  List<Object?> get props => [...super.props, invalidRecipients, createdEmailId];
 }
