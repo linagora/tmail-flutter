@@ -9,8 +9,9 @@ extension SetupSelectedIdentityExtension on ComposerController {
 
   Future<void> setupSelectedIdentity() async {
     if (identitySelected.value != null) {
-      if (PlatformInfo.isMobile &&
-          currentEmailActionType == EmailActionType.editDraft) {
+      if (currentEmailActionType == EmailActionType.editAsNewEmail ||
+          (PlatformInfo.isMobile &&
+              currentEmailActionType == EmailActionType.editDraft)) {
         onCompleteSetupComposer();
       }
       return;
