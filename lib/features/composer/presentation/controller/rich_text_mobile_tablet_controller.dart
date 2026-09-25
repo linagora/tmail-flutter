@@ -60,7 +60,7 @@ class RichTextMobileTabletController extends GetxController {
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
   }
 
-  void insertImageData({required FileInfo fileInfo, int? maxWidth}) async {
+  Future<void> insertImageData({required FileInfo fileInfo, int? maxWidth}) async {
     try {
       if (fileInfo is FilePathInfo) {
         final bytesData = await File(fileInfo.filePath).readAsBytes();

@@ -313,17 +313,21 @@ class RichTextWebController extends GetxController {
     menuOrderListController.hideMenu();
   }
 
-  void insertImageAsBase64({required FileInfo fileInfo, int? maxWidth}) async {
-    final bytes = await fileInfo.readBytes();
-    if (bytes.isEmpty) {
-      logWarning("RichTextWebController::insertImageAsBase64: bytes is empty");
-      return;
+  Future<void> insertImageAsBase64({required FileInfo fileInfo, int? maxWidth}) async {
+    try {
+      final bytes = await fileInfo.readBytes();
+      if (bytes.isEmpty) {
+        logWarning("RichTextWebController::insertImageAsBase64: bytes is empty");
+        return;
+      }
+      final base64Data = base64Encode(bytes);
+      final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}');
+      editorController.insertHtml(
+        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${fileInfo.fileName}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
+      );
+    } catch (e) {
+      logWarning('RichTextWebController::insertImageAsBase64:Exception: $e');
     }
-    final base64Data = base64Encode(bytes);
-    final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}');
-    editorController.insertHtml(
-      '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${fileInfo.fileName}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
-    );
   }
 
   void toggleFormattingOptions() {
