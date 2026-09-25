@@ -72,6 +72,10 @@ class Attachment with EquatableMixin {
     return downloadUri;
   }
 
+  static final RegExp _bidiAndControlCharacters = RegExp(
+    r'[\u0000-\u001F\u007F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]',
+  );
+
   String generateFileName() {
     final rawName = (name?.trim().isNotEmpty == true)
         ? name!.trim()
@@ -81,7 +85,12 @@ class Attachment with EquatableMixin {
                 : blobId!.value)
             : _defaultName);
 
-    final sanitized = rawName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_').trim();
+    final sanitized = rawName
+        // Bidirectional overrides/isolates and control characters can
+        // disguise the real extension (e.g. "invoice\u202Efdp.exe").
+        .replaceAll(_bidiAndControlCharacters, '')
+        .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+        .trim();
     // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
     return sanitized.contains(RegExp(r'[^_\s]')) ? sanitized : _defaultName;
   }

@@ -66,6 +66,30 @@ void main() {
 
     group('generateFileName:', () {
       test(
+        'should strip bidirectional override and control characters',
+      () {
+        final attachment = Attachment(
+          blobId: Id('some-blob-id'),
+          name: 'invoice\u202Efdp.exe',
+          type: MediaType.parse('application/octet-stream'),
+        );
+
+        expect(attachment.generateFileName(), 'invoicefdp.exe');
+      });
+
+      test(
+        'should strip isolates, marks and C0 controls',
+      () {
+        final attachment = Attachment(
+          blobId: Id('some-blob-id'),
+          name: 'rep\u2066ort\u200F\u0007.pdf',
+          type: MediaType.parse('application/pdf'),
+        );
+
+        expect(attachment.generateFileName(), 'report.pdf');
+      });
+
+      test(
         'should return name when name is not empty',
       () {
         final attachment = Attachment(
