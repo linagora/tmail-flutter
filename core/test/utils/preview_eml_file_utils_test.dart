@@ -12,6 +12,7 @@ void main() {
     String senderEmailAddress = 'bob@example.com',
     String? toAddress,
     String dateTime = 'today',
+    String emailContent = '<p>Body</p>',
     List<PreviewAttachment>? listAttachment,
   }) {
     return PreviewEmlFileUtils().generatePreviewEml(
@@ -19,7 +20,7 @@ void main() {
       ownEmailAddress: 'alice@example.com',
       subjectPrefix: 'Subject',
       subject: subject,
-      emailContent: '<p>Body</p>',
+      emailContent: emailContent,
       senderName: senderName,
       senderEmailAddress: senderEmailAddress,
       dateTime: dateTime,
@@ -110,6 +111,39 @@ void main() {
       final link = document.querySelector('a.attachment-item')!;
       expect(link.attributes.containsKey('onmouseover'), isFalse);
       expect(link.attributes['href'], 'https://example.com/x" onmouseover="alert(1)');
+    });
+  });
+
+  group('PreviewEmlFileUtils.generatePreviewEml — mail style scoping', () {
+    test('should scope the email styles to the email body', () {
+      final document = parse(generate(
+        emailContent: '<style>* { font-family: "Comic Sans MS" !important }</style><div>Hi</div>',
+      ));
+
+      final emailStyles = document.querySelectorAll('.email-body style');
+
+      expect(emailStyles, hasLength(1));
+      expect(
+        emailStyles.single.text,
+        '@scope (.email-body) {\n* { font-family: "Comic Sans MS" !important }\n}',
+      );
+    });
+
+    test('should prevent the email styles from escaping the email body scope', () {
+      final document = parse(generate(
+        emailContent: '<style>} .sender-email { display: none }</style>',
+      ));
+
+      expect(
+        document.querySelector('.email-body style')!.text,
+        '@scope (.email-body) {\n  .sender-email { display: none }\n}',
+      );
+    });
+
+    test('should keep the app styles unscoped', () {
+      final document = parse(generate(emailContent: '<div>Hi</div>'));
+
+      expect(document.head!.querySelector('style')!.text, isNot(contains('@scope')));
     });
   });
 }
