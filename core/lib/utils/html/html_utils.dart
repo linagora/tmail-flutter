@@ -600,11 +600,30 @@ class HtmlUtils {
     double fontSize = 14,
     TextDirection? direction,
     double? contentPadding,
+    bool restrictScriptsToNonce = false,
   }) {
+    // When enabled, only the scripts passed in [javaScripts] (the
+    // application's own) may run: any script or inline event handler that
+    // would survive sanitization of the untrusted [content] is blocked by
+    // the browser. Plugins, forms and <base> are disabled as well.
+    String? cspMeta;
+    var scripts = javaScripts;
+    if (restrictScriptsToNonce) {
+      final nonce = generateCspNonce();
+      scripts = javaScripts?.replaceAll(
+        RegExp(r'<script(?=[\s>])', caseSensitive: false),
+        '<script nonce="$nonce"',
+      );
+      cspMeta = '<meta http-equiv="Content-Security-Policy" content="'
+          "script-src 'nonce-$nonce'; object-src 'none'; base-uri 'none'; form-action 'none'"
+          '">';
+    }
+
     return '''
       <!DOCTYPE html>
       <html>
       <head>
+      ${cspMeta ?? ''}
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <style>
@@ -661,10 +680,16 @@ class HtmlUtils {
       <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden; ${contentPadding != null ? 'margin: $contentPadding;' : ''}";>
       <div class="tmail-content">$content</div>
       <style>html, body { height: auto !important; }</style>
-      ${javaScripts ?? ''}
+      ${scripts ?? ''}
       </body>
       </html> 
     ''';
+  }
+
+  static String generateCspNonce() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    return base64Url.encode(bytes).replaceAll('=', '');
   }
 
   static String createTemplateHtmlDocument({String? title}) {

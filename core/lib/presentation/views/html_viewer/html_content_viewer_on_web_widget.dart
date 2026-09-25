@@ -552,6 +552,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       contentPadding: widget.contentPadding,
       useDefaultFontStyle: widget.useDefaultFontStyle,
       fontSize: widget.fontSize,
+      restrictScriptsToNonce: true,
     );
 
     return htmlTemplate;
