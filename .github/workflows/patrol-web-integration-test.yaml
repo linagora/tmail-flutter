@@ -8,6 +8,10 @@ on:
       - "Jenkinsfile"
       - "**/*.md"
 
+
+permissions:
+  contents: read
+  id-token: write
 jobs:
   web_integration_test:
     uses: ./.github/workflows/reusable-web-integration-test.yaml

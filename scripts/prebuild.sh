@@ -3,8 +3,14 @@
 set -e
 echo "Prebuild started..."
 
-# Single pub get resolves the entire workspace (Dart pub workspaces)
-flutter pub get > /dev/null
+# Single pub get resolves the entire workspace (Dart pub workspaces).
+# In CI, refuse to silently re-resolve dependencies (e.g. a force-pushed git
+# dependency branch): the committed pubspec.lock must be used as is.
+if [ -n "${CI:-}" ]; then
+  flutter pub get --enforce-lockfile > /dev/null
+else
+  flutter pub get > /dev/null
+fi
 echo "[workspace] pub get done."
 
 # Run build_runner across all workspace members in a single invocation

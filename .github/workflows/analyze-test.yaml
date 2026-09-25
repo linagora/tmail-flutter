@@ -24,6 +24,9 @@ env:
     workplace/test/presentation/extension/workplace_composer_attachment_extension_web_test.dart
     core/test/presentation/utils/web_selection/platform_web_selection_dom_adapter_browser_test.dart
 
+
+permissions:
+  contents: read
 jobs:
   analyze-test:
     runs-on: ubuntu-latest
@@ -44,10 +47,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
@@ -64,7 +67,7 @@ jobs:
         run: ./scripts/prebuild.sh
 
       - name: Analyze
-        uses: zgosalvez/github-actions-analyze-dart@v1
+        uses: zgosalvez/github-actions-analyze-dart@d9d6a56518f87b85b5f6ea3664c360e3c361a54f # v1
 
       - name: Test
         env:
@@ -83,7 +86,7 @@ jobs:
 
       - name: Upload test reports
         if: success() || failure() # Always upload report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-reports-${{ matrix.modules }}
           path: test-report*.json

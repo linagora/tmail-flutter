@@ -23,7 +23,7 @@ ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_RELEASE=$SENTRY_RELEASE
 
 RUN --mount=type=secret,id=sentry_auth_token \
-    ./scripts/prebuild.sh && \
+    CI=true ./scripts/prebuild.sh && \
     ./scripts/configure-sentry.sh && \
     flutter build web --release --source-maps --no-web-resources-cdn \
     --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE \
