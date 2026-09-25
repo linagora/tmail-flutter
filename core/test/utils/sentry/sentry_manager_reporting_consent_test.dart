@@ -11,6 +11,7 @@ void main() {
   // The manager is a singleton; reset both inputs so ordering between tests
   // cannot leak.
   setUp(() {
+    sentryManager.resumeSentryReporting();
     sentryManager.setSentryReportingDefault(true);
     sentryManager.setSentryReportingConsent(null);
   });
@@ -57,6 +58,98 @@ void main() {
       sentryManager.setSentryReportingConsent(null);
 
       expect(sentryManager.isSentryReportingAllowed, isFalse);
+    });
+
+    test('falls back to the runtime configuration when the ecosystem default is cleared', () async {
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async => true,
+        closeSentrySdk: () async {},
+      );
+      await manager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://public@example.com/1',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: true,
+      ));
+
+      manager.setSentryReportingDefault(false);
+      expect(manager.isSentryReportingAllowed, isFalse);
+
+      manager.clearSentryReportingDefault();
+      await manager.pendingLifecycleTransition;
+
+      expect(manager.isSentryReportingAllowed, isTrue);
+    });
+
+    test('suspends the SDK without changing the effective user consent', () async {
+      var starts = 0;
+      var closes = 0;
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async {
+          starts++;
+          return true;
+        },
+        closeSentrySdk: () async {
+          closes++;
+        },
+      );
+      await manager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://public@example.com/1',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: true,
+      ));
+      manager.setSentryReportingConsent(true);
+
+      manager.suspendSentryReporting();
+      await manager.pendingLifecycleTransition;
+
+      expect(manager.isSentryReportingAllowed, isTrue);
+      expect(manager.isSentryAvailable, isFalse);
+      expect(manager.isSentryReportingReady, isFalse);
+      expect(closes, 1);
+
+      manager.resumeSentryReporting();
+      await manager.pendingLifecycleTransition;
+
+      expect(manager.isSentryAvailable, isTrue);
+      expect(manager.isSentryReportingReady, isTrue);
+      expect(starts, 2);
+    });
+
+    test('reports configured only while ecosystem ownership is resolved',
+        () async {
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async => true,
+        closeSentrySdk: () async {},
+      );
+      await manager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://public@example.com/1',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: false,
+      ));
+
+      expect(manager.isSentryConfigured, isTrue);
+
+      manager.suspendSentryReporting();
+      await manager.pendingLifecycleTransition;
+
+      expect(manager.isSentryConfigured, isFalse);
+
+      manager.resumeSentryReporting();
+      await manager.pendingLifecycleTransition;
+
+      expect(manager.isSentryConfigured, isTrue);
     });
 
     test('a cleared choice falls back to the default, not to the last choice', () {

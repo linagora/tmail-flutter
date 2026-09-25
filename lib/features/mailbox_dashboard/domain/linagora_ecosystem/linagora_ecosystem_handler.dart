@@ -4,3 +4,7 @@ abstract class LinagoraEcosystemHandler {
   void onEcosystemLoaded(LinagoraEcosystem ecosystem);
   void onEcosystemCleared() {}
 }
+
+abstract interface class AccountAwareLinagoraEcosystemHandler {
+  void onAccountChanged();
+}

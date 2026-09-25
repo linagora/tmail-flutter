@@ -17,7 +17,7 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
 
   /// Starting position of the per-user reporting toggle, not a master switch:
   /// on-prem serves `false` so nothing is sent until a user opts in.
-  /// Falls back to [enabled] so deployments without this key are unaffected.
+  /// Missing consent defaults to `false`; [enabled] only controls availability.
   @JsonKey(fromJson: _parseBool)
   final bool? userOptInByDefault;
 
@@ -52,7 +52,7 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
   /// Effective instance-wide reporting default. Consumers should use this
   /// value instead of reading the nullable [userOptInByDefault] JSON field.
   bool get isSentryReportingAllowedByDefault =>
-      userOptInByDefault ?? enabled ?? false;
+      userOptInByDefault ?? false;
 
   @override
   List<Object?> get props => [enabled, dsn, environment, userOptInByDefault];
