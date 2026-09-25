@@ -739,9 +739,9 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       publicAssetController!.uploadFileToBlob(file);
     } else {
       if (PlatformInfo.isWeb) {
-        richTextWebController?.insertImageAsBase64(fileInfo: file, maxWidth: maxWidth);
+        await richTextWebController?.insertImageAsBase64(fileInfo: file, maxWidth: maxWidth);
       } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController?.insertImageData(fileInfo: file, maxWidth: maxWidth);
+        await richTextMobileTabletController?.insertImageData(fileInfo: file, maxWidth: maxWidth);
         if (file is FilePathInfo) {
           getBinding<FileUtils>()?.deleteCompressedFileOnMobile(
             file.filePath,
