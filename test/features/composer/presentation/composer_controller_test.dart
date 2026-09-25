@@ -1083,6 +1083,70 @@ void main() {
           );
         });
       });
+
+      for (final actionType in [
+        EmailActionType.forward,
+        EmailActionType.editAsNewEmail,
+      ]) {
+        group('email action type is $actionType:', () {
+          test(
+            'Should update _savedEmailDraftHash\n'
+            'And not mark email as changed\n'
+            'When composer setup completes without user modification',
+          () async {
+            // arrange
+            final composerArguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.minimize,
+              identities: [identity],
+              selectedIdentityId: identity.id,
+            );
+            composerController?.composerArguments.value = composerArguments;
+            composerController?.richTextMobileTabletController = mockRichTextMobileTabletController;
+            composerController?.subjectEmail.value = emailSubject;
+            composerController?.listToEmailAddress = [toRecipient];
+            composerController?.listCcEmailAddress = [ccRecipient];
+            composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
+            composerController?.hasRequestReadReceipt.value = alwaysReadReceiptEnabled;
+            composerController?.isMarkAsImportant.value = isMarkAsImportant;
+            composerController?.screenDisplayMode.value = composerArguments.displayMode;
+            composerController?.currentEmailActionType = composerArguments.emailActionType;
+            composerController?.listFromIdentities.value = composerArguments.identities!;
+
+            when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(mockHtmlEditorApi);
+            when(mockHtmlEditorApi.getText()).thenAnswer((_) async => emailContent);
+            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+              emailContent: anyNamed('emailContent'),
+            )).thenAnswer((_) async => emailContent);
+
+            final savedEmailDraft = SavedComposingEmail(
+              content: emailContent,
+              subject: emailSubject,
+              toRecipients: {toRecipient},
+              ccRecipients: {ccRecipient},
+              bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
+              identity: identity,
+              attachments: [attachment],
+              hasReadReceipt: alwaysReadReceiptEnabled,
+              isMarkAsImportant: isMarkAsImportant,
+            );
+
+            // act
+            await composerController?.setupSelectedIdentityWithoutApplySignature();
+            await composerController?.initEmailDraftHash();
+
+            // assert
+            expect(
+              composerController?.savedEmailDraftHash,
+              equals(savedEmailDraft.asString().hashCode),
+            );
+            expect(composerController?.isEmailChanged.value, isFalse);
+          });
+        });
+      }
     });
 
     group('applySignature test:', () {
