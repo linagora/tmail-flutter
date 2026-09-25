@@ -24,7 +24,7 @@ void main() {
       'and status code is 404',
     () {
       // arrange
-      when(dioClient.get(any)).thenThrow(DioException(
+      when(dioClient.get(any, options: anyNamed('options'))).thenThrow(DioException(
         requestOptions: requestOptions,
         response: Response(requestOptions: requestOptions, statusCode: 404)));
 
@@ -41,7 +41,7 @@ void main() {
       'and status code is not 404',
     () {
       // arrange
-      when(dioClient.get(any)).thenThrow(DioException(
+      when(dioClient.get(any, options: anyNamed('options'))).thenThrow(DioException(
         requestOptions: requestOptions,
         response: Response(requestOptions: requestOptions, statusCode: 403)));
 
@@ -57,7 +57,7 @@ void main() {
       'and dioClient throw exception that is not DioException',
     () {
       // arrange
-      when(dioClient.get(any)).thenThrow(Exception());
+      when(dioClient.get(any, options: anyNamed('options'))).thenThrow(Exception());
 
       // assert
       expect(
