@@ -27,7 +27,10 @@ class RichTextWebController extends GetxController {
   static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
   static const int fontSizeDefault = 16;
 
-  final editorController = HtmlEditorController();
+  final HtmlEditorController editorController;
+
+  RichTextWebController({HtmlEditorController? editorController})
+    : editorController = editorController ?? HtmlEditorController();
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
