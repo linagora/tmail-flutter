@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,9 +92,10 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
       return NavigationActionPolicy.CANCEL;
     }
 
-    if (await launcher.canLaunchUrl(Uri.parse(url))) {
+    if (ExternalLinkPolicy.canLaunchFromContent(requestUri) &&
+        await launcher.canLaunchUrl(requestUri)) {
       await launcher.launchUrl(
-        Uri.parse(url),
+        requestUri,
         mode: LaunchMode.externalApplication
       );
     }
