@@ -75,6 +75,16 @@ void main() {
     expect(composerManager.getComposerIndex('1'), 0);
   });
 
+  testWidgets('removeAllComposers disposes every open composer', (tester) async {
+    composerManager.removeAllComposers();
+
+    expect(composerManager.composers, isEmpty);
+    expect(composerManager.composerIdsQueue, isEmpty);
+    expect(Get.isRegistered<ComposerController>(tag: '1'), isFalse);
+    expect(Get.isRegistered<ComposerController>(tag: '2'), isFalse);
+    expect(Get.isRegistered<ComposerController>(tag: '3'), isFalse);
+  });
+
   // Only test for desktop with minWidth = 1200
   group('ComposerManager::arrangeComposerWhenComposerQueueChanged::', () {
     test('Should keep all hidden composers unchanged when screen width changes', () {
