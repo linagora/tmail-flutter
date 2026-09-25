@@ -108,7 +108,6 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
@@ -147,6 +146,8 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
+typedef ComposerReloadCacheAction = void Function();
+
 class ComposerController extends BaseController
     with
         DragDropFileMixin,
@@ -184,7 +185,6 @@ class ComposerController extends BaseController
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
-  final RemoveComposerCacheByIdInteractor _removeComposerCacheByIdInteractor;
   final SaveComposerCacheInteractor _saveComposerCacheInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
@@ -250,6 +250,7 @@ class ComposerController extends BaseController
   StreamSubscription<html.Event>? _subscriptionOnDrop;
   StreamSubscription<html.Event>? _subscriptionOnBlur;
   StreamSubscription<String>? _composerCacheListener;
+  ComposerReloadCacheAction? _reloadCacheAction;
 
   RichTextMobileTabletController? richTextMobileTabletController;
   RichTextWebController? richTextWebController;
@@ -283,7 +284,6 @@ class ComposerController extends BaseController
   Timer? inactiveGuardTimer;
   bool isRestoringFromCache = false;
 
-  @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   GetEmailContentInteractor get getEmailContentInteractor => _getEmailContentInteractor;
@@ -309,13 +309,15 @@ class ComposerController extends BaseController
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
 
+  void registerReloadCacheAction(ComposerReloadCacheAction action) =>
+      _reloadCacheAction = action;
+
   ComposerController(
     this._localFilePickerInteractor,
     this._localImagePickerInteractor,
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
-    this._removeComposerCacheByIdInteractor,
     this._saveComposerCacheInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
@@ -368,6 +370,7 @@ class ComposerController extends BaseController
 
   @override
   void onClose() {
+    _reloadCacheAction = null;
     _textEditorWeb = null;
     savedActionType = null;
     _savedEmailDraftHash = null;
@@ -471,18 +474,9 @@ class ComposerController extends BaseController
   }
 
   @override
-  Future<void> onUnloadBrowserListener(html.Event event) async {
-    if (!PlatformInfo.isWeb) return;
-    final username = mailboxDashBoardController.sessionCurrent?.username;
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (composerId != null && username != null && accountId != null) {
-      await _removeComposerCacheByIdInteractor.execute(
-        accountId,
-        username,
-        composerId!,
-      );
-    }
-    await _saveComposerSessionCache();
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) {
+    _reloadCacheAction?.call();
+    return Future.value();
   }
 
   void _listenStreamEvent() {
