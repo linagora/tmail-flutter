@@ -1,3 +1,5 @@
+import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/scribe_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/sentry_ecosystem_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/web_sentry_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -28,7 +31,12 @@ class EcosystemProviderListenerDelegate
     _registerHandlers(registry);
     _accountIdWorker = ever(
       dashboardController.accountId,
-      (_) => _listen(ref, registry, dashboardController),
+      (_) => _listen(
+        ref,
+        registry,
+        dashboardController,
+        accountChanged: true,
+      ),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_isDisposed || _subscription != null) return;
@@ -42,37 +50,51 @@ class EcosystemProviderListenerDelegate
     if (registry.hasHandlers) return;
     registry
       ..register(DriveAttachmentEcosystemHandler())
-      ..register(ScribeEcosystemHandler())
-      ..register(SentryEcosystemHandler(
+      ..register(ScribeEcosystemHandler());
+    if (PlatformInfo.isWeb) {
+      registry.register(WebSentryEcosystemHandler());
+    } else {
+      registry.register(SentryEcosystemHandler(
         setUpSentry: (config) async {
           await getBinding<MailboxDashBoardController>()?.setUpSentry(config);
         },
         clearSentry: () async {
           await getBinding<MailboxDashBoardController>()?.clearSentry();
         },
+        resetSentryReportingConsent: () {
+          SentryManager.instance.setSentryReportingConsent(null);
+        },
       ));
+    }
   }
 
   void _listen(
     WidgetRef ref,
     LinagoraEcosystemHandlerRegistry registry,
-    MailboxDashBoardController dashboardController,
-  ) {
+    MailboxDashBoardController dashboardController, {
+    bool accountChanged = false,
+  }) {
     _subscription?.close();
-    registry.dispatchCleared();
+    if (accountChanged) {
+      registry.dispatchAccountChanged();
+    } else {
+      registry.dispatchCleared();
+    }
     _subscription = ref.listenManual(
       activeEcosystemProvider(
         dashboardController.accountId.value,
         dashboardController.dynamicUrlInterceptors.jmapUrl,
       ),
-      (_, state) {
+      (previousState, state) {
         switch (state) {
           case EcosystemAvailable(:final ecosystem):
             registry.dispatchLoaded(ecosystem);
           case EcosystemUnavailable():
             registry.dispatchCleared();
           case EcosystemLoading():
-            break;
+            if (previousState != null && previousState is! EcosystemLoading) {
+              registry.dispatchCleared();
+            }
         }
       },
       fireImmediately: true,

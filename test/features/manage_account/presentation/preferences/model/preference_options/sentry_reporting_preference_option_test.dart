@@ -9,9 +9,13 @@ import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_se
 
 class _FakeSentryReportingConsent implements SentryReportingConsent {
   _FakeSentryReportingConsent({
+    this.isSentryConfigured = true,
     this.isSentryAvailable = true,
     bool reportingDefault = false,
   }) : _reportingDefault = reportingDefault;
+
+  @override
+  final bool isSentryConfigured;
 
   @override
   final bool isSentryAvailable;
@@ -48,13 +52,13 @@ void main() {
   setUp(() => updateServerSetting = _MockUpdateServerSettingInteractor());
 
   SentryReportingPreferenceOption buildOption({
-    bool isSentryAvailable = true,
+    bool isSentryConfigured = true,
     bool reportingDefault = false,
   }) =>
       SentryReportingPreferenceOption(
         updateServerSetting,
         sentryReportingConsent: _FakeSentryReportingConsent(
-          isSentryAvailable: isSentryAvailable,
+          isSentryConfigured: isSentryConfigured,
           reportingDefault: reportingDefault,
         ),
       );
@@ -96,13 +100,27 @@ void main() {
         expect(buildOption().isAvailable(_context()), isFalse);
       });
 
-      test('stays hidden while Sentry has not started, and appears once it has', () {
+      test('stays hidden until Sentry has a valid runtime configuration', () {
         final context = _context(serverOptions: TMailServerSettingOptions());
 
         // The registry is built once and cached, so this must not be decided
         // at registration time.
-        expect(buildOption(isSentryAvailable: false).isAvailable(context), isFalse);
-        expect(buildOption(isSentryAvailable: true).isAvailable(context), isTrue);
+        expect(buildOption(isSentryConfigured: false).isAvailable(context), isFalse);
+        expect(buildOption(isSentryConfigured: true).isAvailable(context), isTrue);
+      });
+
+      test('is shown while an opted-out instance has the SDK stopped', () {
+        final context = _context(serverOptions: TMailServerSettingOptions());
+        final option = SentryReportingPreferenceOption(
+          updateServerSetting,
+          sentryReportingConsent: _FakeSentryReportingConsent(
+            isSentryConfigured: true,
+            isSentryAvailable: false,
+            reportingDefault: false,
+          ),
+        );
+
+        expect(option.isAvailable(context), isTrue);
       });
 
       test('is shown once server settings are known', () {

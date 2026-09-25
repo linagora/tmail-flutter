@@ -8,12 +8,25 @@ part 'sentry_config_linagora_ecosystem.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
+  /// Whether this deployment provides a usable Sentry integration. Reporting
+  /// still depends on the effective user consent default below.
   @JsonKey(fromJson: _parseBool)
   final bool? enabled;
   final String? dsn;
   final String? environment;
 
-  SentryConfigLinagoraEcosystem({this.enabled, this.dsn, this.environment});
+  /// Starting position of the per-user reporting toggle, not a master switch:
+  /// on-prem serves `false` so nothing is sent until a user opts in.
+  /// Missing consent defaults to `false`; [enabled] only controls availability.
+  @JsonKey(fromJson: _parseBool)
+  final bool? userOptInByDefault;
+
+  SentryConfigLinagoraEcosystem({
+    this.enabled,
+    this.dsn,
+    this.environment,
+    this.userOptInByDefault,
+  });
 
   factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) =>
       _$SentryConfigLinagoraEcosystemFromJson(json);
@@ -25,7 +38,8 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     return null;
   }
 
-  Map<String, dynamic> toJson() => _$SentryConfigLinagoraEcosystemToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SentryConfigLinagoraEcosystemToJson(this);
 
   static LinagoraEcosystemProperties? deserialize(dynamic json) {
     if (json is Map<String, dynamic>) {
@@ -35,12 +49,19 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     }
   }
 
+  /// Effective instance-wide reporting default. Consumers should use this
+  /// value instead of reading the nullable [userOptInByDefault] JSON field.
+  bool get isSentryReportingAllowedByDefault =>
+      userOptInByDefault ?? false;
+
   @override
-  List<Object?> get props => [enabled, dsn, environment];
+  List<Object?> get props => [enabled, dsn, environment, userOptInByDefault];
 }
 
 extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosystem {
-  Future<SentryConfig> toSentryConfig() async {
+  Future<SentryConfig> toSentryConfig({
+    bool isReportingAllowed = false,
+  }) async {
     const dartDefineRelease = String.fromEnvironment('SENTRY_RELEASE');
     final release = dartDefineRelease.isNotEmpty
         ? dartDefineRelease
@@ -51,6 +72,7 @@ extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosyste
       environment: environment ?? '',
       release: release,
       isAvailable: enabled ?? false,
+      isReportingAllowed: isReportingAllowed,
     );
   }
 }

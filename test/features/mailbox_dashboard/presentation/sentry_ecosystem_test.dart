@@ -147,11 +147,13 @@ void main() {
     enabled: true,
     dsn: 'https://test@sentry.io/123',
     environment: 'test',
+    userOptInByDefault: false,
   );
 
   setUp(() {
     debugDefaultTargetPlatformOverride = null;
     sentryManager
+      ..resumeSentryReporting()
       ..clearUser()
       ..setSentryReportingConsent(null)
       ..setSentryReportingDefault(true);
@@ -162,6 +164,88 @@ void main() {
   });
 
   test('persists the latest consent when it changes while Sentry initializes', () async {
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+    );
+    SentryConfig? initializedConfig;
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (config) async {
+        initializedConfig = config;
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    )..initUser(SentryUser(id: 'account-b'));
+
+    final setUp = ecosystem.setUp(optedInByDefaultConfig);
+    await initializeStarted.future;
+    expect(sentryManager.isSentryReportingReady, isFalse);
+    await ecosystem.updateReportingConsent(false);
+
+    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.user.id, 'account-a');
+
+    finishInitialize.complete();
+    await setUp;
+
+    expect(initializedConfig?.isReportingAllowed, isTrue);
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(cacheManager.user.id, 'account-b');
+    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.writes, [
+      'config:false',
+      'user:account-b',
+    ]);
+  });
+
+  test('persists the latest user when it changes while Sentry initializes',
+      () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: false),
+      user: _user('account-a'),
+    );
+    final initializeStarted = Completer<void>();
+    final finishInitialize = Completer<void>();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (_) async {
+        initializeStarted.complete();
+        await finishInitialize.future;
+      },
+    )..initUser(SentryUser(id: 'account-a'));
+
+    final setUp = ecosystem.setUp(SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    ));
+    await initializeStarted.future;
+
+    ecosystem.initUser(SentryUser(id: 'account-b'));
+    finishInitialize.complete();
+    await setUp;
+
+    expect(cacheManager.user.id, 'account-b');
+    expect(cacheManager.writes, [
+      'config:false',
+      'user:account-b',
+      'config:true',
+    ]);
+  });
+
+  test('persists an opt-in that arrives while opted-out Sentry initializes', () async {
     final cacheManager = _FakeCacheManager(
       configuration: _configuration(isReportingAllowed: false),
       user: _user('account-a'),
@@ -181,7 +265,7 @@ void main() {
 
     final setUp = ecosystem.setUp(ecosystemConfig);
     await initializeStarted.future;
-    await ecosystem.updateReportingConsent(false);
+    await ecosystem.updateReportingConsent(true);
 
     expect(cacheManager.configuration.isReportingAllowed, isFalse);
     expect(cacheManager.user.id, 'account-a');
@@ -189,13 +273,14 @@ void main() {
     finishInitialize.complete();
     await setUp;
 
-    expect(initializedConfig?.isReportingAllowed, isTrue);
-    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(initializedConfig?.isReportingAllowed, isFalse);
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
     expect(cacheManager.user.id, 'account-b');
-    expect(cacheManager.configuration.isReportingAllowed, isFalse);
+    expect(cacheManager.configuration.isReportingAllowed, isTrue);
     expect(cacheManager.writes, [
       'config:false',
       'user:account-b',
+      'config:true',
     ]);
   });
 
@@ -269,6 +354,12 @@ void main() {
   });
 
   test('restores the ecosystem default when explicit consent is cleared', () async {
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
     final cacheManager = _FakeCacheManager(
       configuration: _configuration(isReportingAllowed: false),
       user: _user('account-a'),
@@ -284,9 +375,9 @@ void main() {
     );
     sentryManager.setSentryReportingConsent(false);
 
-    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.setUp(optedInByDefaultConfig);
 
-    expect(initializedConfig?.isReportingAllowed, isTrue);
+    expect(initializedConfig?.isReportingAllowed, isFalse);
     expect(sentryManager.isSentryReportingAllowed, isFalse);
     expect(cacheManager.configuration.isReportingAllowed, isFalse);
 
@@ -294,6 +385,48 @@ void main() {
 
     expect(sentryManager.isSentryReportingAllowed, isTrue);
     expect(cacheManager.configuration.isReportingAllowed, isTrue);
+  });
+
+  test('defaults to denied when ecosystem and server consent are absent',
+      () async {
+    SentryConfig? initializedConfig;
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (config) async {
+        initializedConfig = config;
+      },
+    );
+
+    await ecosystem.setUp(SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+    ));
+
+    expect(initializedConfig?.isReportingAllowed, isFalse);
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+  });
+
+  test('server opt-in overrides an absent ecosystem default', () async {
+    SentryConfig? initializedConfig;
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (config) async {
+        initializedConfig = config;
+      },
+    );
+    sentryManager.setSentryReportingConsent(true);
+
+    await ecosystem.setUp(SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+    ));
+
+    expect(initializedConfig?.isReportingAllowed, isTrue);
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
   });
 
   test('does not publish allowed setup data after consent is revoked', () async {
@@ -362,8 +495,32 @@ void main() {
     expect(cacheManager.writes, ['config:false']);
   });
 
+  test('uses the ecosystem default while the user has not chosen', () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-b'),
+    );
+    SentryConfig? initializedConfig;
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (config) async => initializedConfig = config,
+    )..initUser(SentryUser(id: 'account-b'));
+
+    await ecosystem.setUp(ecosystemConfig);
+
+    expect(sentryManager.isSentryReportingAllowed, isFalse);
+    expect(initializedConfig?.isReportingAllowed, isFalse);
+  });
+
   test('updates iOS Keychain when reporting consent changes', () async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
     final cacheManager = _FakeCacheManager(
       configuration: _configuration(isReportingAllowed: true),
       user: _user('account-a'),
@@ -375,7 +532,7 @@ void main() {
       initializeSentry: (_) async {},
     );
 
-    await ecosystem.setUp(ecosystemConfig);
+    await ecosystem.setUp(optedInByDefaultConfig);
     await ecosystem.updateReportingConsent(false);
 
     final savedConfigs = verify(
@@ -658,6 +815,78 @@ void main() {
 
     expect(iosSharingManager.savedConfigs, isEmpty);
     expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('suspends reporting until a valid ecosystem config is set up', () async {
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (_) async {},
+    );
+    final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
+      enabled: true,
+      dsn: 'https://test@sentry.io/123',
+      environment: 'test',
+      userOptInByDefault: true,
+    );
+
+    await ecosystem.clear();
+
+    expect(sentryManager.isSentryReportingReady, isFalse);
+
+    await ecosystem.setUp(optedInByDefaultConfig);
+
+    expect(sentryManager.isSentryReportingReady, isTrue);
+  });
+
+  test('invalidates cached background reporting when ecosystem is cleared',
+      () async {
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+    );
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      null,
+      initializeSentry: (_) async {},
+    );
+
+    await ecosystem.clear();
+
+    expect(cacheManager.clearCalls, 1);
+  });
+
+  test('deletes shared config when cache invalidation fails', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final cacheManager = _FakeCacheManager(
+      configuration: _configuration(isReportingAllowed: true),
+      user: _user('account-a'),
+      throwOnClear: true,
+    );
+    final iosSharingManager = _RecordingIOSSharingManager();
+    final ecosystem = SentryEcosystem(
+      cacheManager,
+      iosSharingManager,
+      initializeSentry: (_) async {},
+    );
+
+    await expectLater(ecosystem.clear(), throwsStateError);
+
+    expect(iosSharingManager.deleteCalls, 1);
+  });
+
+  test('forgets the previous user when the ecosystem is cleared', () async {
+    final ecosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (_) async {},
+    )..initUser(SentryUser(id: 'account-a'));
+    sentryManager.setUser(SentryUser(id: 'account-a'));
+
+    await ecosystem.clear();
+    sentryManager.resumeSentryReporting();
+
+    expect(sentryManager.userForScope, isNull);
   });
 
   test('session cleanup clears user and Keychain before Sentry setup', () async {

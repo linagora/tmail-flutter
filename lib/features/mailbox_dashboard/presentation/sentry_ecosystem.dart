@@ -43,7 +43,6 @@ class SentryEcosystem implements SentrySessionCleanup {
             SentryManager.instance.initializeWithSentryConfig;
 
   void initUser(SentryUser? user) {
-    _configurationGeneration++;
     _sentryUser = user;
   }
 
@@ -64,14 +63,32 @@ class SentryEcosystem implements SentrySessionCleanup {
       return;
     }
 
-    final sentryUser = _sentryUser;
-    final sentryConfig = await ecosystemConfig.toSentryConfig();
+    SentryManager.instance.suspendSentryReporting();
+    SentryManager.instance.setSentryReportingDefault(
+      ecosystemConfig.isSentryReportingAllowedByDefault,
+    );
+
+    final sentryConfig = await ecosystemConfig.toSentryConfig(
+      isReportingAllowed:
+          SentryManager.instance.isSentryReportingAllowed,
+    );
     if (!_isCurrentConfiguration(configurationGeneration)) return;
 
     await _initializeSentry(sentryConfig);
     if (!_isCurrentConfiguration(configurationGeneration)) return;
 
+    // The SDK initializer receives the effective consent so it can start or
+    // stay stopped, but that value must not replace the instance default.
+    // Otherwise clearing an explicit user choice cannot restore the default.
+    SentryManager.instance.setSentryReportingDefault(
+      ecosystemConfig.isSentryReportingAllowedByDefault,
+    );
+
+    final sentryUser = _sentryUser;
     _applyUser(sentryUser);
+    SentryManager.instance.resumeSentryReporting();
+    await SentryManager.instance.pendingLifecycleTransition;
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
 
     final configToPersist = sentryConfig.withReportingAllowed(
       SentryManager.instance.isSentryReportingAllowed,
@@ -235,27 +252,39 @@ class SentryEcosystem implements SentrySessionCleanup {
     await _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
   }
 
-  Future<void> clear({bool clearUser = true}) {
+  Future<void> clear({bool clearUser = true}) async {
     _configurationGeneration++;
     _sentryConfig = null;
     if (clearUser) {
       _sentryUser = null;
+      SentryManager.instance.clearUser();
     }
+    SentryManager.instance.suspendSentryReporting();
+    final pendingLifecycleTransition =
+        SentryManager.instance.pendingLifecycleTransition;
 
     final pendingClear = _pendingConsentPersistence.then((_) async {
-      if (PlatformInfo.isIOS) {
-        await _iosSharingManager?.deleteSentryConfigFromKeychain();
-      }
+      await Future.wait([
+        if (_cacheManager != null)
+          _cacheManager.clearSentryConfiguration(),
+        if (PlatformInfo.isIOS && _iosSharingManager != null)
+          _iosSharingManager.deleteSentryConfigFromKeychain(),
+      ]);
     });
     _pendingConsentPersistence = pendingClear.catchError((_) {});
-    return pendingClear;
+    await Future.wait([
+      pendingClear,
+      pendingLifecycleTransition,
+    ]);
   }
 
   @override
   Future<void> clearForSessionEnd() async {
+    _sentryUser = null;
+    SentryManager.instance.suspendSentryReporting();
     await Future.wait([
       SentryManager.instance.clearSessionContext(),
-      clear(),
+      clear(clearUser: false),
     ]);
   }
 }

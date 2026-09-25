@@ -1,4 +1,7 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +15,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/web_sentry_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
@@ -184,9 +188,103 @@ void main() {
       registry.dispatchCleared();
       await tester.pump();
 
+      registry.dispatchLoaded(LinagoraEcosystem.deserialize({
+        'paywallUrlTemplate': 'https://domain.tld/premium',
+      }));
+      await tester.pump();
+
       expect(firstController.setUpSentryCount, 0);
       expect(secondController.setUpSentryCount, 1);
-      expect(secondController.clearSentryCount, 1);
+      expect(secondController.clearSentryCount, 2);
+    },
+  );
+
+  testWidgets(
+    'registers the web Sentry handler without invoking non-web setup',
+    (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      final sentryManager = SentryManager.instance
+        ..resumeSentryReporting()
+        ..setSentryReportingConsent(null)
+        ..setSentryReportingDefault(true)
+        ..clearSentryReportingDefault();
+      addTearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        sentryManager
+          ..resumeSentryReporting()
+          ..setSentryReportingConsent(null)
+          ..setSentryReportingDefault(true);
+      });
+      final dashboardController = _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry();
+
+      await _pumpDelegate(tester, registry);
+
+      registry.dispatchLoaded(LinagoraEcosystem.deserialize({
+        'sentry': {
+          'enabled': true,
+          'userOptInByDefault': false,
+        },
+      }));
+      await sentryManager.pendingLifecycleTransition;
+
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
+
+      registry.dispatchLoaded(LinagoraEcosystem.deserialize({
+        'paywallUrlTemplate': 'https://domain.tld/premium',
+      }));
+      await sentryManager.pendingLifecycleTransition;
+
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
+
+      registry.dispatchCleared();
+      await sentryManager.pendingLifecycleTransition;
+
+      expect(sentryManager.isSentryReportingReady, isFalse);
+      expect(dashboardController.setUpSentryCount, 0);
+      expect(dashboardController.clearSentryCount, 0);
+    },
+  );
+
+  testWidgets(
+    'does not carry server Sentry consent to another account',
+    (tester) async {
+      final sentryManager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async => true,
+        closeSentrySdk: () async {},
+      );
+      await sentryManager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://env@sentry.io/123',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: false,
+      ));
+      final dashboardController = _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry()
+        ..register(WebSentryEcosystemHandler(sentryManager: sentryManager));
+      final ecosystem = LinagoraEcosystem.deserialize({
+        'sentry': {
+          'enabled': true,
+          'userOptInByDefault': false,
+        },
+      });
+
+      await _pumpDelegate(tester, registry);
+      registry.dispatchLoaded(ecosystem);
+      sentryManager.setSentryReportingConsent(true);
+      await sentryManager.pendingLifecycleTransition;
+
+      expect(sentryManager.isSentryReportingAllowed, isTrue);
+
+      dashboardController.testAccountId.value = AccountId(Id('second'));
+      await tester.pump();
+      registry.dispatchLoaded(ecosystem);
+      await sentryManager.pendingLifecycleTransition;
+
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
     },
   );
 
@@ -220,6 +318,29 @@ void main() {
       expect(recordingHandler.clearedCount, 2);
       expect(recordingHandler.loaded, [ecosystem]);
       expect(dashboardController.setUpSentryCount, 0);
+    },
+  );
+
+  testWidgets(
+    'clears handlers when an available ecosystem starts reloading',
+    (tester) async {
+      _registerDashboardController('first');
+      final registry = LinagoraEcosystemHandlerRegistry();
+      final recordingHandler = _RecordingEcosystemHandler();
+      registry.register(recordingHandler);
+
+      final container = await _pumpDelegate(tester, registry);
+      final notifier = container.read(_ecosystemStateProvider.notifier);
+      notifier.setState(EcosystemAvailable(LinagoraEcosystem.deserialize({
+        'paywallUrlTemplate': 'https://domain.tld/premium',
+      })));
+      await tester.pump();
+
+      notifier.setState(const EcosystemLoading());
+      await tester.pump();
+
+      expect(recordingHandler.clearedCount, 2);
+      expect(recordingHandler.loaded, hasLength(1));
     },
   );
 
@@ -287,7 +408,7 @@ void main() {
       await tester.pump();
 
       expect(recordingHandler.loaded, [ecosystem]);
-      // The default SentryEcosystemHandler would have forwarded this config.
+      // The default non-web Sentry handler would have forwarded this config.
       expect(dashboardController.setUpSentryCount, 0);
     },
   );

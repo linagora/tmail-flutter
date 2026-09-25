@@ -1,0 +1,54 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
+
+void main() {
+  group('SentryConfigLinagoraEcosystem.isSentryReportingAllowedByDefault', () {
+    test('uses userOptInByDefault when the instance serves it', () {
+      final config = SentryConfigLinagoraEcosystem.fromJson({
+        'enabled': 'true',
+        'userOptInByDefault': 'false',
+      });
+
+      expect(config.isSentryReportingAllowedByDefault, isFalse);
+    });
+
+    test('opts users in when the instance serves userOptInByDefault true', () {
+      final config = SentryConfigLinagoraEcosystem.fromJson({
+        'enabled': 'true',
+        'userOptInByDefault': 'true',
+      });
+
+      expect(config.isSentryReportingAllowedByDefault, isTrue);
+    });
+
+    test('does not treat technical availability as reporting consent', () {
+      final config = SentryConfigLinagoraEcosystem.fromJson({'enabled': 'true'});
+
+      expect(config.isSentryReportingAllowedByDefault, isFalse);
+    });
+
+    test('defaults to opted out when neither key is served', () {
+      final config = SentryConfigLinagoraEcosystem.fromJson({});
+
+      expect(config.isSentryReportingAllowedByDefault, isFalse);
+    });
+
+    test('accepts booleans as well as strings', () {
+      final config = SentryConfigLinagoraEcosystem.fromJson({
+        'enabled': true,
+        'userOptInByDefault': false,
+      });
+
+      expect(config.isSentryReportingAllowedByDefault, isFalse);
+    });
+
+    test('serializes userOptInByDefault when it is served', () {
+      final config = SentryConfigLinagoraEcosystem(
+        enabled: true,
+        userOptInByDefault: false,
+      );
+
+      expect(config.toJson()['userOptInByDefault'], isFalse);
+    });
+  });
+}
