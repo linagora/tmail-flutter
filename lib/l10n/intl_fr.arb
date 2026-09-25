@@ -3078,7 +3078,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaStateLabel": "{used} sur {limit} utilisé",
+  "quotaStateLabel": "{used} sur {limit} utilisés",
   "@quotaStateLabel": {
     "type": "text",
     "placeholders_order": [
@@ -5304,7 +5304,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storageUsedMessage": "sur {limit} utilisé",
+  "storageUsedMessage": "sur {limit} utilisés",
   "@storageUsedMessage": {
     "type": "text",
     "placeholders_order": [
