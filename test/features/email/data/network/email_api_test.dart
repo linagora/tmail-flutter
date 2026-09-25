@@ -1229,7 +1229,9 @@ void main() {
                 "accountId": AccountFixtures.aliceAccountId.asString,
                 "oldState": "state-1",
                 "newState": "state-1",
-                "created": <String, dynamic>{},
+                "created": <String, dynamic>{
+                  "draft-1": <String, dynamic>{"id": "email-1"},
+                },
               },
               "c0"
             ],
