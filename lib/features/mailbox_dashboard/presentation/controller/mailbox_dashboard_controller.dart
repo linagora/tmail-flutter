@@ -432,27 +432,10 @@ class MailboxDashBoardController extends ReloadableController
 
   void initSentryUser(SentryUser? user) => _sentryEcosystem?.initUser(user);
 
-  Future<void> setUpSentry(
-    SentryConfigLinagoraEcosystem ecosystemConfig,
-  ) async {
-    if (PlatformInfo.isWeb) {
-      // Web keeps its runtime config (DSN, environment, release) from env.
-      // The shared ecosystem only owns the instance-wide consent default.
-      SentryManager.instance.setSentryReportingDefault(
-        ecosystemConfig.isSentryReportingAllowedByDefault,
-      );
-      return;
-    }
-    await _sentryEcosystem?.setUp(ecosystemConfig);
-  }
+  Future<void> setUpSentry(SentryConfigLinagoraEcosystem ecosystemConfig) async =>
+      _sentryEcosystem?.setUp(ecosystemConfig);
 
-  Future<void> clearSentry() async {
-    if (PlatformInfo.isWeb) {
-      SentryManager.instance.setSentryReportingDefault(false);
-      return;
-    }
-    await _sentryEcosystem?.clear();
-  }
+  Future<void> clearSentry() async => _sentryEcosystem?.clear();
 
   @override
   void onReady() {

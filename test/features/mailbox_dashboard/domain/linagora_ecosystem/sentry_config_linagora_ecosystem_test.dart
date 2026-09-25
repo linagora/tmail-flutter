@@ -21,10 +21,10 @@ void main() {
       expect(config.isSentryReportingAllowedByDefault, isTrue);
     });
 
-    test('falls back to enabled so deployments without the key are unaffected', () {
+    test('does not treat technical availability as reporting consent', () {
       final config = SentryConfigLinagoraEcosystem.fromJson({'enabled': 'true'});
 
-      expect(config.isSentryReportingAllowedByDefault, isTrue);
+      expect(config.isSentryReportingAllowedByDefault, isFalse);
     });
 
     test('defaults to opted out when neither key is served', () {

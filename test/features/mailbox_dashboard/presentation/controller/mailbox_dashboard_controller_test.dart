@@ -87,7 +87,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -560,34 +559,6 @@ void main() {
     );
     expect(sentryManager.isSentryReportingAllowed, isFalse);
     await tester.pumpAndSettle();
-  });
-
-  test('web uses ecosystem only for the Sentry reporting default', () async {
-    PlatformInfo.isTestingForWeb = true;
-    final sentryManager = SentryManager.instance
-      ..setSentryReportingDefault(false)
-      ..setSentryReportingConsent(null);
-    addTearDown(() {
-      PlatformInfo.isTestingForWeb = false;
-      sentryManager
-        ..setSentryReportingConsent(null)
-        ..setSentryReportingDefault(true);
-    });
-
-    await mailboxDashboardController.setUpSentry(
-      SentryConfigLinagoraEcosystem(
-        enabled: true,
-        dsn: 'https://test@sentry.io/123',
-        environment: 'test',
-        userOptInByDefault: true,
-      ),
-    );
-
-    expect(sentryManager.isSentryReportingAllowed, isTrue);
-
-    await mailboxDashboardController.clearSentry();
-
-    expect(sentryManager.isSentryReportingAllowed, isFalse);
   });
 
   group('search/sort/filter feature:', () {

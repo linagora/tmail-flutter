@@ -7,16 +7,29 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 
 typedef SetUpSentry = Future<void> Function(SentryConfigLinagoraEcosystem);
 typedef ClearSentry = Future<void> Function();
+typedef ResetSentryReportingConsent = void Function();
 
-class SentryEcosystemHandler implements LinagoraEcosystemHandler {
+/// Handles ecosystem-owned Sentry configuration on non-web platforms.
+class SentryEcosystemHandler
+    implements
+        LinagoraEcosystemHandler,
+        AccountAwareLinagoraEcosystemHandler {
   final SetUpSentry _setUpSentry;
   final ClearSentry _clearSentry;
+  final ResetSentryReportingConsent _resetSentryReportingConsent;
 
   const SentryEcosystemHandler({
     required SetUpSentry setUpSentry,
     required ClearSentry clearSentry,
+    required ResetSentryReportingConsent resetSentryReportingConsent,
   })  : _setUpSentry = setUpSentry,
-        _clearSentry = clearSentry;
+        _clearSentry = clearSentry,
+        _resetSentryReportingConsent = resetSentryReportingConsent;
+
+  @override
+  void onAccountChanged() {
+    _resetSentryReportingConsent();
+  }
 
   @override
   void onEcosystemCleared() {
@@ -41,7 +54,9 @@ class SentryEcosystemHandler implements LinagoraEcosystemHandler {
         );
       }));
     } else {
-      logWarning('SentryEcosystemHandler::onEcosystemLoaded: Sentry config is null');
+      logTrace(
+        'SentryEcosystemHandler::onEcosystemLoaded: Sentry config is not provided',
+      );
       onEcosystemCleared();
     }
   }

@@ -43,7 +43,6 @@ class SentryEcosystem implements SentrySessionCleanup {
             SentryManager.instance.initializeWithSentryConfig;
 
   void initUser(SentryUser? user) {
-    _configurationGeneration++;
     _sentryUser = user;
   }
 
@@ -64,7 +63,7 @@ class SentryEcosystem implements SentrySessionCleanup {
       return;
     }
 
-    final sentryUser = _sentryUser;
+    SentryManager.instance.suspendSentryReporting();
     SentryManager.instance.setSentryReportingDefault(
       ecosystemConfig.isSentryReportingAllowedByDefault,
     );
@@ -85,7 +84,11 @@ class SentryEcosystem implements SentrySessionCleanup {
       ecosystemConfig.isSentryReportingAllowedByDefault,
     );
 
+    final sentryUser = _sentryUser;
     _applyUser(sentryUser);
+    SentryManager.instance.resumeSentryReporting();
+    await SentryManager.instance.pendingLifecycleTransition;
+    if (!_isCurrentConfiguration(configurationGeneration)) return;
 
     final configToPersist = sentryConfig.withReportingAllowed(
       SentryManager.instance.isSentryReportingAllowed,
@@ -249,27 +252,39 @@ class SentryEcosystem implements SentrySessionCleanup {
     await _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
   }
 
-  Future<void> clear({bool clearUser = true}) {
+  Future<void> clear({bool clearUser = true}) async {
     _configurationGeneration++;
     _sentryConfig = null;
     if (clearUser) {
       _sentryUser = null;
+      SentryManager.instance.clearUser();
     }
+    SentryManager.instance.suspendSentryReporting();
+    final pendingLifecycleTransition =
+        SentryManager.instance.pendingLifecycleTransition;
 
     final pendingClear = _pendingConsentPersistence.then((_) async {
-      if (PlatformInfo.isIOS) {
-        await _iosSharingManager?.deleteSentryConfigFromKeychain();
-      }
+      await Future.wait([
+        if (_cacheManager != null)
+          _cacheManager.clearSentryConfiguration(),
+        if (PlatformInfo.isIOS && _iosSharingManager != null)
+          _iosSharingManager.deleteSentryConfigFromKeychain(),
+      ]);
     });
     _pendingConsentPersistence = pendingClear.catchError((_) {});
-    return pendingClear;
+    await Future.wait([
+      pendingClear,
+      pendingLifecycleTransition,
+    ]);
   }
 
   @override
   Future<void> clearForSessionEnd() async {
+    _sentryUser = null;
+    SentryManager.instance.suspendSentryReporting();
     await Future.wait([
       SentryManager.instance.clearSessionContext(),
-      clear(),
+      clear(clearUser: false),
     ]);
   }
 }
