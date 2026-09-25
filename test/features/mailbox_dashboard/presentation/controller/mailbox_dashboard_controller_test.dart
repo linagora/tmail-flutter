@@ -76,6 +76,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
@@ -121,6 +123,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -1265,6 +1268,37 @@ void main() {
         ]);
 
         verifyNever(composerManager.addComposer(any));
+      },
+    );
+  });
+
+  group('handleGetAllComposerCacheSuccess:', () {
+    setUp(() {
+      when(mockTwakeAppManager.hasComposer).thenReturn(false);
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+      clearInteractions(composerManager);
+      clearInteractions(removeAllComposerCacheInteractor);
+      clearInteractions(removeComposerCacheByIdInteractor);
+    });
+
+    test(
+      'reopens the cached composers by index and keeps their snapshots, so a '
+      'second reload during restore does not lose them',
+      () {
+        mailboxDashboardController.handleGetAllComposerCacheSuccess(
+          GetAllComposerCacheSuccess([
+            ComposerCache(composerId: 'second', composerIndex: 1),
+            ComposerCache(composerId: 'first', composerIndex: 0),
+          ]),
+        );
+
+        final reopened = verify(composerManager.addListComposer(captureAny))
+            .captured
+            .single as List<ComposerArguments>;
+        expect(reopened.map((arguments) => arguments.composerId), ['first', 'second']);
+        verifyNever(removeAllComposerCacheInteractor.execute(any, any));
+        verifyNever(removeComposerCacheByIdInteractor.execute(any, any, any));
       },
     );
   });

@@ -5,8 +5,14 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mobile_composer_bindings.dart';
+import 'package:tmail_ui_user/features/composer/presentation/web_composer_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 
 class _MockComposerController extends Mock implements ComposerController {
+  ComposerReloadCacheAction? registeredReloadCacheAction;
+
   @override
   InternalFinalCallback<void> get onStart =>
       InternalFinalCallback<void>(callback: () {});
@@ -14,6 +20,11 @@ class _MockComposerController extends Mock implements ComposerController {
   @override
   InternalFinalCallback<void> get onDelete =>
       InternalFinalCallback<void>(callback: () {});
+
+  @override
+  void registerReloadCacheAction(ComposerReloadCacheAction action) {
+    registeredReloadCacheAction = action;
+  }
 }
 
 class _TestComposerView extends ComposerView {
@@ -53,4 +64,22 @@ void main() {
       expect(view.controller, same(controller));
     },
   );
+
+  test('registers reload cache handler only from web bindings', () {
+    const webComposerId = 'web-composer';
+    final webController = _MockComposerController();
+    final mobileController = _MockComposerController();
+    Get.put<ComposerSessionCacheDatasourceImpl>(
+      ComposerSessionCacheDatasourceImpl(CacheExceptionThrower()),
+      tag: webComposerId,
+    );
+
+    WebComposerBindings(composerId: webComposerId)
+        .registerPlatformReloadCacheHandler(webController);
+    MobileComposerBindings(composerId: 'mobile-composer')
+        .registerPlatformReloadCacheHandler(mobileController);
+
+    expect(webController.registeredReloadCacheAction, isNotNull);
+    expect(mobileController.registeredReloadCacheAction, isNull);
+  });
 }

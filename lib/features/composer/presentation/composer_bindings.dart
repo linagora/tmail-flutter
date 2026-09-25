@@ -54,7 +54,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
@@ -108,6 +107,7 @@ abstract class ComposerBindings extends BaseBindings {
   void bindPlatformCacheDatasourceImpl();
   void bindPlatformComposerCacheDatasource();
   void bindPlatformRichTextController();
+  void registerPlatformReloadCacheHandler(ComposerController controller) {}
   void disposePlatformRichTextController();
   void disposePlatformCacheImpl();
 
@@ -291,10 +291,6 @@ abstract class ComposerBindings extends BaseBindings {
       () => GetEmailContentInteractor(Get.find<EmailRepository>(tag: composerId)),
       tag: composerId,
     );
-    Get.lazyPut(
-      () => RemoveComposerCacheByIdInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
-      tag: composerId,
-    );
     Get.lazyPut(() => SaveComposerCacheInteractor(
       Get.find<ComposerCacheRepository>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
@@ -348,13 +344,12 @@ abstract class ComposerBindings extends BaseBindings {
       () => UploadController(Get.find<UploadAttachmentInteractor>(tag: composerId)),
       tag: composerId,
     );
-    Get.lazyPut(() => ComposerController(
+    Get.lazyPut(() => _withPlatformReloadCache(ComposerController(
       Get.find<LocalFilePickerInteractor>(tag: composerId),
       Get.find<LocalImagePickerInteractor>(tag: composerId),
       Get.find<GetEmailContentInteractor>(tag: composerId),
       Get.find<GetAllIdentitiesInteractor>(tag: composerId),
       Get.find<UploadController>(tag: composerId),
-      Get.find<RemoveComposerCacheByIdInteractor>(tag: composerId),
       Get.find<SaveComposerCacheInteractor>(tag: composerId),
       Get.find<DownloadImageAsBase64Interactor>(tag: composerId),
       Get.find<TransformHtmlEmailContentInteractor>(tag: composerId),
@@ -367,7 +362,12 @@ abstract class ComposerBindings extends BaseBindings {
       composerId: composerId,
       autoSaveComposerId: _autoSaveComposerId,
       composerArgs: composerArguments,
-    ), tag: composerId);
+    )), tag: composerId);
+  }
+
+  ComposerController _withPlatformReloadCache(ComposerController controller) {
+    registerPlatformReloadCacheHandler(controller);
+    return controller;
   }
 
   void dispose() {
@@ -415,7 +415,6 @@ abstract class ComposerBindings extends BaseBindings {
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
-    Get.delete<RemoveComposerCacheByIdInteractor>(tag: composerId);
     Get.delete<SaveComposerCacheInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);

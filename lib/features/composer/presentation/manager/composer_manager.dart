@@ -36,6 +36,7 @@ class ComposerManager extends GetxController {
       final composerId = argument.composerId;
 
       if (composerId == null) continue;
+      if (composers.containsKey(composerId)) continue;
 
       ComposerBindings(
         composerId: composerId,

@@ -16,6 +16,7 @@ import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/inline_image_cid_extension.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:uuid/uuid.dart';
@@ -115,14 +116,9 @@ class HtmlAnalyzer {
   }) async {
     final idImg = attributes['id'];
 
-    if (idImg?.startsWith(cidPrefixKey) == true) {
-      final cid = idImg!.substring(cidPrefixKey.length).trim();
-      final attachment = inlineAttachments[cid];
-      if (attachment != null) {
-        attributes['src'] = '$cidPrefixKey$cid';
-        attributes.remove('id');
-        return attachment.toEmailBodyPart(charset: Constant.base64Charset);
-      }
+    final uploadedImage = inlineAttachments.resolveUploadedImage(attributes);
+    if (uploadedImage != null) {
+      return uploadedImage.toEmailBodyPart(charset: Constant.base64Charset);
     }
 
     if (uploadUri == null) return null;
@@ -157,14 +153,8 @@ class HtmlAnalyzer {
     required Map<String, Attachment> inlineAttachments,
     required Set<EmailBodyPart> inlineAttachmentsSet,
   }) {
-    for (final img in cidImgTags) {
-      final src = img.attributes['src'];
-      if (src == null) continue;
-      final cid = src.substring(cidPrefixKey.length).trim();
-      final attachment = inlineAttachments[cid];
-      if (attachment != null) {
-        inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
-      }
+    for (final attachment in inlineAttachments.referencedBy(cidImgTags)) {
+      inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
     }
   }
 
