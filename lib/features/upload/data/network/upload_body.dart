@@ -59,7 +59,6 @@ final class HandleUploadBody extends UploadBody {
   Map<String, dynamic> get requestExtra => <String, dynamic>{
     // Lets the blob adapter re-resolve the source on replay and recognise this request.
     UploadRequestExtra.sourceUrlKey: sourceUrl,
-    UploadRequestExtra.openReadKey: () => _open(),
   };
 
   @override

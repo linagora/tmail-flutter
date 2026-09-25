@@ -37,13 +37,9 @@ void main() {
       expect(uploadExtra(blobBody())[UploadRequestExtra.sourceUrlKey], sourceUrl);
     });
 
-    test('carries an openRead factory that opens a fresh source per call', () async {
-      final openRead = uploadExtra(blobBody())[UploadRequestExtra.openReadKey]
-          as Stream<List<int>> Function();
-
-      expect(await openRead().toList(), [sourceBytes]);
-      expect(await openRead().toList(), [sourceBytes]);
-      expect(opens, [(null, null), (null, null)]);
+    test('carries no openRead factory since the blob adapter re-resolves sourceUrl', () {
+      expect(uploadExtra(blobBody()).containsKey(UploadRequestExtra.openReadKey), isFalse);
+      expect(opens, isEmpty);
     });
 
     test('forwards the charset probe range to the source', () async {

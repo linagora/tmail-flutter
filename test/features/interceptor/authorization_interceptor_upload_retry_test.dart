@@ -379,6 +379,9 @@ void main() {
     final authorizationHeaders = <String?>[];
     final server = await startUploadServer(receivedBodies, authorizationHeaders);
     final dio = buildUploadDio();
+    // Retry Dio reuses this adapter, so it records the replay too.
+    final recorder = _RecordingAdapter(dio.httpClientAdapter);
+    dio.httpClientAdapter = recorder;
     var openCount = 0;
     final body = UploadBody.of(FileBlobInfo(
       fileName: 'a.pdf',
@@ -399,11 +402,16 @@ void main() {
     // The blob adapter re-resolves sourceUrl on replay, so the interceptor must not open the source.
     expect(response.statusCode, HttpStatus.ok);
     expect(openCount, 0);
-    expectReplayedWithRefreshedToken(
-      receivedBodies: receivedBodies,
-      authorizationHeaders: authorizationHeaders,
-      expectedBodyCounts: {base64Encode(<int>[]): 2},
-      expectedReplays: 1,
+    expect(recorder.requests, hasLength(2));
+    final replay = recorder.requests.last;
+    expect(replay.data, isNull);
+    expect(
+      (replay.extra[UploadRequestExtra.uploadAttachmentKey] as Map)[UploadRequestExtra.sourceUrlKey],
+      'blob:http://localhost/attachment',
+    );
+    expect(
+      replay.headers[HttpHeaders.authorizationHeader],
+      'Bearer ${OIDCFixtures.newTokenOidc.token}',
     );
   });
 
@@ -523,4 +531,25 @@ void main() {
       )),
     );
   });
+}
+
+/// Records every request's options, then delegates to the real adapter.
+class _RecordingAdapter implements HttpClientAdapter {
+  _RecordingAdapter(this._inner);
+
+  final HttpClientAdapter _inner;
+  final List<RequestOptions> requests = <RequestOptions>[];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    requests.add(options);
+    return _inner.fetch(options, requestStream, cancelFuture);
+  }
+
+  @override
+  void close({bool force = false}) => _inner.close(force: force);
 }
