@@ -131,7 +131,10 @@ class DestinationPickerController extends BaseMailboxController {
     if (mailboxAction.value != MailboxActions.selectForRuleAction) {
       return mailboxes;
     }
-    return mailboxes.where((mailbox) => mailbox.isValidRuleActionTarget).toList();
+    final mailboxMap = {for (final mailbox in mailboxes) mailbox.id: mailbox};
+    return mailboxes
+        .where((mailbox) => mailbox.isValidRuleActionTarget(mailboxMap))
+        .toList();
   }
 
   @override
