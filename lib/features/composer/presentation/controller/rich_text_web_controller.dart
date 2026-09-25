@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -261,6 +262,15 @@ class RichTextWebController extends GetxController {
 
   void toggleCodeView() async {
     final isActivated = await isActivatedCodeView;
+    if (isActivated) {
+      // Leaving the HTML code view: summernote renders the raw HTML typed or
+      // pasted by the user into the same-origin editor iframe, which runs
+      // scripts and event handlers. While the code view is active, reading
+      // and writing the content only touches the code view textarea, so the
+      // HTML can be sanitized before it is rendered.
+      final rawHtml = await editorController.getText();
+      editorController.setText(EditorHtmlSanitizer.sanitize(rawHtml));
+    }
     final newCodeViewState = isActivated ? CodeViewState.disabled : CodeViewState.enabled;
     codeViewState.value = newCodeViewState;
     editorController.toggleCodeView();
