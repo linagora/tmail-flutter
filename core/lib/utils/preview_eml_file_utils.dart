@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
@@ -8,6 +10,13 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 class PreviewEmlFileUtils {
+  static const HtmlEscape _textEscape = HtmlEscape();
+  static const HtmlEscape _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+
+  /// Header values (addresses, display names, dates) come from the
+  /// attacker-controlled message and are interpolated into markup: escape them.
+  String _escapeText(String? value) => _textEscape.convert(value ?? '');
+
   Element? _createEmailElement({
     required String subjectPrefix,
     required String fromPrefix,
@@ -42,7 +51,7 @@ class PreviewEmlFileUtils {
             <!-- Email information -->
             <div class="email-info">
               <div class="sender">
-                 ${senderName ?? ''} <span class="sender-email">&lt;${senderEmailAddress ?? ''}&gt;</span>
+                 ${senderName ?? ''} <span class="sender-email">&lt;${_escapeText(senderEmailAddress)}&gt;</span>
               </div>
                ${replyToAddress?.isNotEmpty == true ? _createRecipientHtmlTag(replyToPrefix, replyToAddress!) : ''}
                ${toAddress?.isNotEmpty == true ? _createRecipientHtmlTag(toPrefix, toAddress!) : ''}
@@ -53,7 +62,7 @@ class PreviewEmlFileUtils {
             <!-- Email metadata -->
             <div class="email-meta">
               ${attachmentIcon?.isNotEmpty == true ? '<img width="16" height="16" src="${HtmlUtils.generateSVGImageData(attachmentIcon!)}" alt="Attachment Icon" class="attachment-icon">' : ''}
-              ${dateTime?.isNotEmpty == true ? '<div class="email-date">$dateTime</div>' : ''}
+              ${dateTime?.isNotEmpty == true ? '<div class="email-date">${_escapeText(dateTime)}</div>' : ''}
             </div>
           </div>
       
@@ -74,7 +83,7 @@ class PreviewEmlFileUtils {
     try {
       return '''
         <div class="recipients">
-          $prefix: $emailAddress
+          $prefix: ${_escapeText(emailAddress)}
         </div>
       ''';
     } catch (e) {
@@ -87,7 +96,7 @@ class PreviewEmlFileUtils {
     return '''
       ${previewAttachment.link?.isNotEmpty == true
           ? '''
-              <a href="${previewAttachment.link}" class="attachment-item">
+              <a href="${_attributeEscape.convert(previewAttachment.link!)}" class="attachment-item">
                 <div class="icon">
                   <img width="16" height="16" src="${HtmlUtils.generateSVGImageData(previewAttachment.iconBase64Data)}"  alt="attachment-icon"/>
                 </div>
