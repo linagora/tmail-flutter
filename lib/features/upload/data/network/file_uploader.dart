@@ -22,16 +22,13 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 
 class FileUploader {
 
-  /// Alias of [UploadRequestExtra.uploadAttachmentKey] for existing callers of this class.
-  static const String uploadAttachmentExtraKey = UploadRequestExtra.uploadAttachmentKey;
-
   /// Charset detection only needs a prefix of the file, so an attachment is
   /// never fully materialised on the root isolate just to sniff its encoding.
   static const int _charsetSampleMaxBytes = 256 * 1024;
 
   static RequestOptions _sanitizeUploadRequestOptions(RequestOptions requestOptions) {
     final scrubbedExtra = Map<String, dynamic>.from(requestOptions.extra)
-      ..remove(uploadAttachmentExtraKey);
+      ..remove(UploadRequestExtra.uploadAttachmentKey);
     return requestOptions.copyWith(data: '', extra: scrubbedExtra);
   }
 

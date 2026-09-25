@@ -269,12 +269,12 @@ void main() {
     } on DioException catch (exception) {
       expect(exception.requestOptions.data, '');
       expect(
-        exception.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        exception.requestOptions.extra.containsKey(UploadRequestExtra.uploadAttachmentKey),
         isFalse,
       );
       expect(exception.response?.requestOptions.data, '');
       expect(
-        exception.response?.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        exception.response?.requestOptions.extra.containsKey(UploadRequestExtra.uploadAttachmentKey),
         isFalse,
       );
     }
@@ -314,7 +314,7 @@ void main() {
       final dio = Dio();
       dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
         capturedUploadExtra =
-            options.extra[FileUploader.uploadAttachmentExtraKey] as Map<dynamic, dynamic>;
+            options.extra[UploadRequestExtra.uploadAttachmentKey] as Map<dynamic, dynamic>;
         handler.next(options);
       }));
 

@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
-import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_body.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
@@ -183,7 +182,7 @@ void main() {
         ? <String, dynamic>{HttpHeaders.contentLengthHeader: sourceBytes.length}
         : null,
     extra: <String, dynamic>{
-      FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
+      UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{
         UploadRequestExtra.openReadKey:
             () => BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
       },
@@ -195,7 +194,7 @@ void main() {
       HttpHeaders.contentLengthHeader: fileSize,
     },
     extra: <String, dynamic>{
-      FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
+      UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{
         UploadRequestExtra.openReadKey: () => File(filePath).openRead(),
       },
     },
@@ -453,7 +452,7 @@ void main() {
         data: Stream<List<int>>.value(sourceBytes),
         options: Options(
           extra: <String, dynamic>{
-            FileUploader.uploadAttachmentExtraKey: <String, dynamic>{},
+            UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{},
           },
         ),
       ).timeout(const Duration(seconds: 30)),
