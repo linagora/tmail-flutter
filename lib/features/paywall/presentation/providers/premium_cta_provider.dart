@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -13,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
+import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
 
 part 'premium_cta_provider.g.dart';
@@ -134,10 +134,6 @@ EcosystemState activeEcosystem(Ref ref, AccountId? accountId, String? jmapUrl) =
         ecosystemProvider(accountId, jmapUrl),
       ),
     );
-
-/// Whether the app runs embedded in Cozy; resolved once per process.
-@Riverpod(keepAlive: true)
-FutureOr<bool> insideCozy(Ref ref) => CozyConfigManager().isInsideCozy;
 
 @riverpod
 PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
