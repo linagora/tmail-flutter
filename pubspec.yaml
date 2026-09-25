@@ -267,6 +267,8 @@ dependencies:
       url: https://github.com/chibenwa/twake-previewer-flutter.git
       ref: pdf-clickable-links
 
+  pdfrx: 2.1.5
+
   lottie_native: 0.1.2
 
   flutter_custom_tab_bar: 1.2.1

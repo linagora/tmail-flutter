@@ -4,11 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const invalidNameError = 'Invalid name';
+  const initialError = 'Incorrect password';
 
   String? validateName(String value) =>
       value.contains('.') ? invalidNameError : null;
 
-  Future<List<String>> pumpDialog(WidgetTester tester) async {
+  Future<List<String>> pumpDialog(
+    WidgetTester tester, {
+    bool obscureText = false,
+    String? error,
+  }) async {
     final submittedValues = <String>[];
 
     await tester.pumpWidget(
@@ -19,6 +24,8 @@ void main() {
             value: 'Inbox',
             positiveText: 'Rename',
             negativeText: 'Cancel',
+            obscureText: obscureText,
+            initialError: error,
             onPositiveButtonAction: submittedValues.add,
             onInputErrorChanged: validateName,
           ),
@@ -56,6 +63,38 @@ void main() {
 
       expect(submittedValues, ['a/b']);
       expect(find.text(invalidNameError), findsNothing);
+    });
+
+    testWidgets('should not obscure text by default', (tester) async {
+      await pumpDialog(tester);
+
+      expect(tester.widget<TextField>(find.byType(TextField)).obscureText, isFalse);
+    });
+
+    testWidgets('should obscure text when obscureText is true', (tester) async {
+      await pumpDialog(tester, obscureText: true);
+
+      expect(tester.widget<TextField>(find.byType(TextField)).obscureText, isTrue);
+    });
+
+    testWidgets('should display initial error until the text changes', (tester) async {
+      await pumpDialog(tester, error: initialError);
+      expect(find.text(initialError), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'secret');
+      await tester.pump();
+
+      expect(find.text(initialError), findsNothing);
+      await tester.pump(const Duration(milliseconds: 600));
+    });
+
+    testWidgets('should allow submitting while initial error is displayed', (tester) async {
+      final submittedValues = await pumpDialog(tester, error: initialError);
+
+      await tester.tap(find.text('Rename'));
+      await tester.pump();
+
+      expect(submittedValues, ['Inbox']);
     });
   });
 }
