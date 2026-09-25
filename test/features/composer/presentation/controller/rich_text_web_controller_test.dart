@@ -1,25 +1,44 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 
+import 'rich_text_web_controller_test.mocks.dart';
+
+@GenerateNiceMocks([MockSpec<HtmlEditorController>()])
 void main() {
   group('RichTextWebController::insertImageAsBase64', () {
+    late MockHtmlEditorController editorController;
     late RichTextWebController controller;
 
-    setUp(() => controller = RichTextWebController());
+    setUp(() {
+      editorController = MockHtmlEditorController();
+      controller = RichTextWebController(editorController: editorController);
+    });
 
-    test('completes without throwing when the file has no readable bytes', () async {
+    test('does not insert an image when the file has no readable bytes', () async {
       const fileInfo = FilePlaceholderInfo(fileName: 'a.png', fileSize: 3);
 
       await expectLater(controller.insertImageAsBase64(fileInfo: fileInfo), completes);
+      verifyNever(editorController.insertHtml(any));
     });
 
-    test('completes without throwing when the file bytes are empty', () async {
+    test('does not insert an image when the file bytes are empty', () async {
       final fileInfo = FileBytesInfo(bytes: Uint8List(0), fileName: 'a.png');
 
       await expectLater(controller.insertImageAsBase64(fileInfo: fileInfo), completes);
+      verifyNever(editorController.insertHtml(any));
+    });
+
+    test('inserts an image when the file has bytes', () async {
+      final fileInfo = FileBytesInfo(bytes: Uint8List.fromList([1, 2, 3]), fileName: 'a.png');
+
+      await controller.insertImageAsBase64(fileInfo: fileInfo);
+      verify(editorController.insertHtml(argThat(contains('data-filename="a.png"')))).called(1);
     });
   });
 }
