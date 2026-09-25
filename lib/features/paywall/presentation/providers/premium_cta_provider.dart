@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_utils.dart';
+import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_provider.dart';
 
 part 'premium_cta_provider.g.dart';
@@ -20,6 +23,7 @@ Duration? _neverRetry(int retryCount, Object error) =>
 enum PremiumCtaUnavailableReason {
   missingAccount,
   premiumNotAvailable,
+  notInsideCozy,
   highestSubscription,
   missingJmapUrl,
   ecosystemUnavailable,
@@ -148,6 +152,14 @@ PremiumCtaState premiumCta(Ref ref, PremiumCtaContext? context) {
   if (capability?.isPremiumAvailable != true) {
     return const PremiumCtaUnavailable(
       PremiumCtaUnavailableReason.premiumNotAvailable,
+    );
+  }
+
+  final insideCozy = ref.watch(insideCozyProvider);
+  if (insideCozy.isLoading) return const PremiumCtaLoading();
+  if (insideCozy.value != true) {
+    return const PremiumCtaUnavailable(
+      PremiumCtaUnavailableReason.notInsideCozy,
     );
   }
 

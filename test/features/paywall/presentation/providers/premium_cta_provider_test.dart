@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_lin
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
+import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
 void main() {
@@ -427,6 +428,28 @@ void _premiumCtaGatingTests() {
   test('does not fetch ecosystem without session and account context', () {
     _expectCtaWithoutFetch(null, PremiumCtaUnavailableReason.missingAccount);
   });
+
+  test('ignores the Workplace FQDN outside Cozy', () {
+    final repository = _succeedingRepository();
+    final container = _createContainer(repository, insideCozy: false);
+    container
+        .read(workplaceFqdnUserInfoProvider.notifier)
+        .setFqdn('workplace.domain.tld');
+
+    expect(
+      container.read(premiumCtaProvider(_upgradableContext(_firstTarget))),
+      _unavailableCta(PremiumCtaUnavailableReason.notInsideCozy),
+    );
+    expect(repository.callCount, 0);
+  });
+
+  test('ignores the ecosystem paywall template outside Cozy', () {
+    _expectCtaWithoutFetch(
+      _upgradableContext(_firstTarget),
+      PremiumCtaUnavailableReason.notInsideCozy,
+      insideCozy: false,
+    );
+  });
 }
 
 void _urgentFailureRoutingTests() {
@@ -527,7 +550,9 @@ void _degradedInputTests() {
 
 void _missingDependenciesTests() {
   test('fails closed when the ecosystem interactor is unavailable', () {
-    final container = ProviderContainer();
+    final container = ProviderContainer(overrides: [
+      insideCozyProvider.overrideWith((ref) => true),
+    ]);
     addTearDown(container.dispose);
 
     expect(
@@ -619,11 +644,13 @@ PremiumCtaContext _upgradableContext(
 ProviderContainer _createContainer(
   _EcosystemRepository repository, {
   GetLinagoraEcosystemInteractor? interactor,
+  FutureOr<bool> insideCozy = true,
 }) {
   final container = ProviderContainer(overrides: [
     getLinagoraEcosystemInteractorProvider.overrideWithValue(
       interactor ?? GetLinagoraEcosystemInteractor(repository),
     ),
+    insideCozyProvider.overrideWith((ref) => insideCozy),
   ]);
   addTearDown(container.dispose);
   return container;
@@ -727,10 +754,11 @@ void _expectEcosystemWithoutFetch(
 
 void _expectCtaWithoutFetch(
   PremiumCtaContext? context,
-  PremiumCtaUnavailableReason reason,
-) {
+  PremiumCtaUnavailableReason reason, {
+  bool insideCozy = true,
+}) {
   final repository = _succeedingRepository();
-  final container = _createContainer(repository);
+  final container = _createContainer(repository, insideCozy: insideCozy);
 
   expect(container.read(premiumCtaProvider(context)), _unavailableCta(reason));
   expect(repository.callCount, 0);

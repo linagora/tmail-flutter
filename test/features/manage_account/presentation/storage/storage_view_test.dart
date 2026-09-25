@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -128,6 +129,7 @@ void main() {
         ProviderScope(
           overrides: [
             paywallLauncherProvider.overrideWithValue(paywallLauncher),
+            insideCozyProvider.overrideWith((ref) => true),
           ],
           child: const GetMaterialApp(
             locale: LocalizationService.defaultLocale,
