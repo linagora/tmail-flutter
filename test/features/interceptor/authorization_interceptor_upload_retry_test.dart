@@ -14,12 +14,14 @@ import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
-import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_body.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -172,15 +174,17 @@ void main() {
   }
 
   /// Mirrors the byte-backed request `FileUploader` builds. `contentLength` is
-  /// what makes Dio emit send progress, so it is opt-in per test.
+  /// what makes Dio emit send progress, so it is opt-in per test. The factory
+  /// mints a fresh `BodyBytesStream` per call, so a replay never reuses an
+  /// already-consumed stream.
   Options uploadOptions(List<int> sourceBytes, {bool withContentLength = false}) => Options(
     headers: withContentLength
         ? <String, dynamic>{HttpHeaders.contentLengthHeader: sourceBytes.length}
         : null,
     extra: <String, dynamic>{
-      FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
-        FileUploader.streamDataExtraKey:
-            BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
+      UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{
+        UploadRequestExtra.openReadKey:
+            () => BodyBytesStream.fromBytes(Uint8List.fromList(sourceBytes)),
       },
     },
   );
@@ -190,8 +194,8 @@ void main() {
       HttpHeaders.contentLengthHeader: fileSize,
     },
     extra: <String, dynamic>{
-      FileUploader.uploadAttachmentExtraKey: <String, dynamic>{
-        FileUploader.filePathExtraKey: filePath,
+      UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{
+        UploadRequestExtra.openReadKey: () => File(filePath).openRead(),
       },
     },
   );
@@ -343,7 +347,7 @@ void main() {
     );
   });
 
-  test('replays the attachment body on web after 401 through the legacy retry path', () async {
+  test('replays the attachment body on web after 401 through the same path as mobile', () async {
     PlatformInfo.isTestingForWeb = true;
     final receivedBodies = <List<int>>[];
     final authorizationHeaders = <String?>[];
@@ -357,14 +361,56 @@ void main() {
       options: uploadOptions(sourceBytes),
     ).timeout(const Duration(seconds: 30));
 
-    // Web keeps master's `retryDio.request(...)` path; it must still rebuild the
-    // consumed body from streamData rather than replaying an empty request.
+    // Web no longer has a retry branch of its own: it rebuilds the body from
+    // the same source factory mobile uses, through the same retryDio.fetch call.
     expect(response.statusCode, HttpStatus.ok);
     expectReplayedWithRefreshedToken(
       receivedBodies: receivedBodies,
       authorizationHeaders: authorizationHeaders,
       expectedBodyCounts: {base64Encode(sourceBytes): 2},
       expectedReplays: 1,
+    );
+  });
+
+  test('replays a blob-handle upload after 401 without reopening its source', () async {
+    PlatformInfo.isTestingForWeb = true;
+    final receivedBodies = <List<int>>[];
+    final authorizationHeaders = <String?>[];
+    final server = await startUploadServer(receivedBodies, authorizationHeaders);
+    final dio = buildUploadDio();
+    // Retry Dio reuses this adapter, so it records the replay too.
+    final recorder = _RecordingAdapter(dio.httpClientAdapter);
+    dio.httpClientAdapter = recorder;
+    var openCount = 0;
+    final body = UploadBody.of(FileBlobInfo(
+      fileName: 'a.pdf',
+      fileSize: 3,
+      sourceUrl: 'blob:http://localhost/attachment',
+      openRead: ([start, end]) {
+        openCount++;
+        return Stream<List<int>>.value(const <int>[1, 2, 3]);
+      },
+    ));
+
+    final response = await dio.post(
+      'http://${server.address.address}:${server.port}/upload/account-id',
+      data: body.requestData,
+      options: Options(extra: body.dioExtra),
+    ).timeout(const Duration(seconds: 30));
+
+    // The blob adapter re-resolves sourceUrl on replay, so the interceptor must not open the source.
+    expect(response.statusCode, HttpStatus.ok);
+    expect(openCount, 0);
+    expect(recorder.requests, hasLength(2));
+    final replay = recorder.requests.last;
+    expect(replay.data, isNull);
+    expect(
+      (replay.extra[UploadRequestExtra.uploadAttachmentKey] as Map)[UploadRequestExtra.sourceUrlKey],
+      'blob:http://localhost/attachment',
+    );
+    expect(
+      replay.headers[HttpHeaders.authorizationHeader],
+      'Bearer ${OIDCFixtures.newTokenOidc.token}',
     );
   });
 
@@ -390,23 +436,23 @@ void main() {
     expectRefreshedExactlyOnce();
   });
 
-  test('fails plainly when the mobile replay body cannot be rebuilt', () async {
+  // Malformed extras: neither a path nor a stream, so the replay body is null.
+  // The already-consumed original stream cannot be resent, and sending no body
+  // at all would store a zero-byte blob under the attachment's name.
+  Future<void> expectReplayFailsWithNoRebuildableBody() async {
     final sourceBytes = <int>[1, 2, 3];
     final receivedBodies = <List<int>>[];
     final authorizationHeaders = <String?>[];
     final server = await startUploadServer(receivedBodies, authorizationHeaders);
     final dio = buildUploadDio();
 
-    // Malformed extras: neither a path nor a stream, so the replay body is null.
-    // The already-consumed original stream cannot be resent, and sending no body
-    // at all would store a zero-byte blob under the attachment's name.
     await expectLater(
       dio.post(
         'http://${server.address.address}:${server.port}/upload/account-id',
         data: Stream<List<int>>.value(sourceBytes),
         options: Options(
           extra: <String, dynamic>{
-            FileUploader.uploadAttachmentExtraKey: <String, dynamic>{},
+            UploadRequestExtra.uploadAttachmentKey: <String, dynamic>{},
           },
         ),
       ).timeout(const Duration(seconds: 30)),
@@ -419,6 +465,17 @@ void main() {
 
     // Only the original request reached the server; no empty replay followed it.
     expect(receivedBodies, [sourceBytes]);
+  }
+
+  test('fails plainly when the mobile replay body cannot be rebuilt', () async {
+    await expectReplayFailsWithNoRebuildableBody();
+  });
+
+  test('fails plainly when the web replay body cannot be rebuilt', () async {
+    // The replay path no longer branches on platform; this proves that stays
+    // true by repeating the mobile case with the web flag set.
+    PlatformInfo.isTestingForWeb = true;
+    await expectReplayFailsWithNoRebuildableBody();
   });
 
   // A mobile attachment with bytes but no file path (Drive, inline image)
@@ -473,4 +530,25 @@ void main() {
       )),
     );
   });
+}
+
+/// Records every request's options, then delegates to the real adapter.
+class _RecordingAdapter implements HttpClientAdapter {
+  _RecordingAdapter(this._inner);
+
+  final HttpClientAdapter _inner;
+  final List<RequestOptions> requests = <RequestOptions>[];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    requests.add(options);
+    return _inner.fetch(options, requestStream, cancelFuture);
+  }
+
+  @override
+  void close({bool force = false}) => _inner.close(force: force);
 }

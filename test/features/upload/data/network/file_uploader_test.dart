@@ -11,8 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
+
+import 'scripted_read_file.dart';
 
 void main() {
   Future<HttpServer> startConcurrentUploadServer(List<List<int>> receivedBodies) async {
@@ -137,6 +140,35 @@ void main() {
     ).timeout(const Duration(seconds: 30));
   }
 
+  Future<Attachment> uploadStreamedChunks({
+    required String fileName,
+    required List<List<int>> chunks,
+    required int fileSize,
+    required List<List<int>> receivedBodies,
+    String? type,
+    FileUtils? fileUtils,
+    void Function()? onOpenRead,
+  }) async {
+    final server = await startRecordingUploadServer(receivedBodies);
+    final scriptedPath = '/scripted/$fileName';
+
+    return withScriptedFiles({
+      scriptedPath: ([start, end]) {
+        onOpenRead?.call();
+        return Stream<List<int>>.fromIterable(chunks);
+      },
+    }, () => FileUploader(DioClient(Dio()), fileUtils ?? FileUtils()).uploadAttachment(
+      UploadTaskId('upload-$fileName'),
+      FilePathInfo(
+        fileName: fileName,
+        fileSize: fileSize,
+        filePath: scriptedPath,
+        type: type,
+      ),
+      Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+    ).timeout(const Duration(seconds: 30)));
+  }
+
   test('streams local attachment uploads concurrently on the root client', () async {
     final sourceA = <int>[1, 2, 3];
     final sourceB = <int>[4, 5, 6];
@@ -237,12 +269,12 @@ void main() {
     } on DioException catch (exception) {
       expect(exception.requestOptions.data, '');
       expect(
-        exception.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        exception.requestOptions.extra.containsKey(UploadRequestExtra.uploadAttachmentKey),
         isFalse,
       );
       expect(exception.response?.requestOptions.data, '');
       expect(
-        exception.response?.requestOptions.extra.containsKey(FileUploader.uploadAttachmentExtraKey),
+        exception.response?.requestOptions.extra.containsKey(UploadRequestExtra.uploadAttachmentKey),
         isFalse,
       );
     }
@@ -273,7 +305,7 @@ void main() {
       expect(receivedBodies.single, sourceBytes);
     });
 
-    test('replays from streamData, so the 401 retry never needs the file system', () async {
+    test('carries a source factory that a 401 retry can call more than once', () async {
       final sourceBytes = Uint8List.fromList(<int>[9, 8, 7]);
       final receivedBodies = <List<int>>[];
       final server = await startRecordingUploadServer(receivedBodies);
@@ -282,7 +314,7 @@ void main() {
       final dio = Dio();
       dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
         capturedUploadExtra =
-            options.extra[FileUploader.uploadAttachmentExtraKey] as Map<dynamic, dynamic>;
+            options.extra[UploadRequestExtra.uploadAttachmentKey] as Map<dynamic, dynamic>;
         handler.next(options);
       }));
 
@@ -297,8 +329,13 @@ void main() {
         Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
       ).timeout(const Duration(seconds: 30));
 
-      expect(capturedUploadExtra.containsKey(FileUploader.filePathExtraKey), isFalse);
-      expect(capturedUploadExtra[FileUploader.streamDataExtraKey], isA<Stream<List<int>>>());
+      // A bytes-backed FileInfo used to store one single-subscription stream,
+      // so a second 401 replay would throw "already listened to". A factory
+      // fixes that for every source, bytes included.
+      final openRead = capturedUploadExtra[UploadRequestExtra.openReadKey]
+          as Stream<List<int>> Function();
+      expect(await openRead().toList(), [sourceBytes]);
+      expect(await openRead().toList(), [sourceBytes]);
     });
 
     test('resolves the charset of a text/plain attachment from bytes', () async {
@@ -343,6 +380,153 @@ void main() {
       // It must fail loudly instead of silently uploading a 0-byte attachment.
       expect(receivedBodies, isEmpty);
     });
+  });
+
+  group('stream-backed uploads (web readStream)', () {
+    test('uploads exactly the streamed bytes when only a readStream is set', () async {
+      final sourceBytes = Uint8List.fromList(List<int>.generate(512, (index) => index % 256));
+      final receivedBodies = <List<int>>[];
+
+      final attachment = await uploadStreamedChunks(
+        fileName: 'a.pdf',
+        chunks: [sourceBytes],
+        fileSize: sourceBytes.length,
+        type: 'application/pdf',
+        receivedBodies: receivedBodies,
+      );
+
+      expect(attachment.name, 'a.pdf');
+      expect(receivedBodies.single, sourceBytes);
+    });
+
+    test('probes the charset by re-opening the source, without truncating the body', () async {
+      const sampleMaxBytes = 256 * 1024;
+      final chunks = List<Uint8List>.generate(80, (chunkIndex) {
+        return Uint8List.fromList(
+          List<int>.generate(4096, (index) => 0x41 + ((chunkIndex + index) % 26)));
+      });
+      final expectedBytes = chunks.expand((element) => element).toList();
+      expect(expectedBytes.length, greaterThan(sampleMaxBytes));
+      final receivedBodies = <List<int>>[];
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
+      var openReadCallCount = 0;
+
+      final attachment = await uploadStreamedChunks(
+        fileName: 'note.txt',
+        chunks: chunks,
+        fileSize: expectedBytes.length,
+        type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+        receivedBodies: receivedBodies,
+        fileUtils: fileUtils,
+        onOpenRead: () => openReadCallCount++,
+      );
+
+      // The body reaching the server must be complete, byte for byte: proof
+      // probing the charset opens its own read rather than diverting the body's.
+      expect(receivedBodies.single, expectedBytes);
+      expect(attachment.charset, 'shift_jis');
+      expect(fileUtils.probedSamples.single, expectedBytes.sublist(0, sampleMaxBytes));
+      // Once for the request body, once for the charset probe.
+      expect(openReadCallCount, 2);
+    });
+
+    test('asks the source for a bounded head when probing the charset', () async {
+      const sampleMaxBytes = 256 * 1024;
+      final sourceBytes = Uint8List.fromList(utf8.encode('hello charset range'));
+      final ranges = <List<int?>>[];
+      final receivedBodies = <List<int>>[];
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
+      final server = await startRecordingUploadServer(receivedBodies);
+
+      const scriptedPath = '/scripted/note.txt';
+      await withScriptedFiles({
+        scriptedPath: ([start, end]) {
+          ranges.add([start, end]);
+          return Stream<List<int>>.fromIterable([sourceBytes]);
+        },
+      }, () => FileUploader(DioClient(Dio()), fileUtils).uploadAttachment(
+        const UploadTaskId('upload-range'),
+        FilePathInfo(
+          fileName: 'note.txt',
+          fileSize: sourceBytes.length,
+          filePath: scriptedPath,
+          type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+        ),
+        Uri.parse('http://${server.address.address}:${server.port}/upload/account-id'),
+      ).timeout(const Duration(seconds: 30)));
+
+      // The body opens unbounded; only the probe carries a range.
+      expect(ranges, [
+        [null, null],
+        [0, sampleMaxBytes],
+      ]);
+      expect(receivedBodies.single, sourceBytes);
+    });
+
+    test('uses the whole stream as the sample when it is shorter than the cap', () async {
+      const content = 'hello streamed charset';
+      final sourceBytes = Uint8List.fromList(utf8.encode(content));
+      final receivedBodies = <List<int>>[];
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
+
+      final attachment = await uploadStreamedChunks(
+        fileName: 'note.txt',
+        chunks: [sourceBytes],
+        fileSize: sourceBytes.length,
+        type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+        receivedBodies: receivedBodies,
+        fileUtils: fileUtils,
+      );
+
+      expect(attachment.charset, 'shift_jis');
+      expect(fileUtils.probedSamples.single, sourceBytes);
+      expect(receivedBodies.single, sourceBytes);
+    });
+
+    test('keeps each concurrent stream-backed upload on its own charset sample', () async {
+      // FileUploader is a single shared instance (Get.put), so the sample must
+      // be a local per call rather than a field two uploads could clobber.
+      final sourceA = Uint8List.fromList(utf8.encode('aaaa'));
+      final sourceB = Uint8List.fromList(utf8.encode('bbbb'));
+      final receivedBodies = <List<int>>[];
+      final server = await startConcurrentUploadServer(receivedBodies);
+      final fileUtils = _RecordingFileUtils('Shift_JIS');
+      final uploader = FileUploader(DioClient(Dio()), fileUtils);
+      final uploadUri = Uri.parse('http://${server.address.address}:${server.port}/upload/account-id');
+
+      final attachments = await withScriptedFiles({
+        '/scripted/a.txt': ([start, end]) => Stream<List<int>>.fromIterable([sourceA]),
+        '/scripted/b.txt': ([start, end]) => Stream<List<int>>.fromIterable([sourceB]),
+      }, () => Future.wait([
+        uploader.uploadAttachment(
+          const UploadTaskId('upload-stream-a'),
+          FilePathInfo(
+            fileName: 'a.txt',
+            fileSize: sourceA.length,
+            filePath: '/scripted/a.txt',
+            type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+          ),
+          uploadUri,
+        ),
+        uploader.uploadAttachment(
+          const UploadTaskId('upload-stream-b'),
+          FilePathInfo(
+            fileName: 'b.txt',
+            fileSize: sourceB.length,
+            filePath: '/scripted/b.txt',
+            type: FileUtils.TEXT_PLAIN_MIME_TYPE,
+          ),
+          uploadUri,
+        ),
+      ])).timeout(const Duration(seconds: 30));
+
+      expect(attachments.map((attachment) => attachment.charset), everyElement('shift_jis'));
+      expect(
+        fileUtils.probedSamples.map((sample) => utf8.decode(sample)),
+        containsAll(['aaaa', 'bbbb']),
+      );
+    });
+
   });
 
   test('resolves the charset of a text/plain attachment read from disk', () async {
