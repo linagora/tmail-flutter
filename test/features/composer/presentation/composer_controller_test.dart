@@ -1963,13 +1963,13 @@ void main() {
         });
 
         test(
-          'Should set textEditorWeb to body content\n'
+          'Should set textEditorWeb to the body as escaped plain text\n'
           'When $actionType with non-empty body',
         () async {
           PlatformInfo.isTestingForWeb = true;
           try {
             composerController?.currentEmailActionType = actionType;
-            const body = '<p>Hello from mailto body</p>';
+            const body = 'Hello from mailto body\nSecond line';
             final arguments = ComposerArguments(
               emailActionType: actionType,
               displayMode: ScreenDisplayMode.normal,
@@ -1978,7 +1978,32 @@ void main() {
 
             await composerController?.setupEmailContent(arguments);
 
-            expect(composerController?.textEditorWeb, equals(body));
+            expect(
+              composerController?.textEditorWeb,
+              equals('<div>Hello from mailto body<br>Second line</div>'),
+            );
+          } finally {
+            PlatformInfo.isTestingForWeb = false;
+          }
+        });
+
+        test(
+          'Should NOT interpret markup from the mailto body\n'
+          'When $actionType with a body containing HTML',
+        () async {
+          PlatformInfo.isTestingForWeb = true;
+          try {
+            composerController?.currentEmailActionType = actionType;
+            final arguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.normal,
+              body: '<img src=x onerror="alert(1)">',
+            );
+
+            await composerController?.setupEmailContent(arguments);
+
+            expect(composerController?.textEditorWeb, isNot(contains('<img')));
+            expect(composerController?.textEditorWeb, contains('&lt;img'));
           } finally {
             PlatformInfo.isTestingForWeb = false;
           }
