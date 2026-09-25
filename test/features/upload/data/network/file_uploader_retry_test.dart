@@ -240,7 +240,7 @@ void main() {
     expectRefreshedExactlyOnce();
   });
 
-  test('fails plainly when the attachment source is gone by replay time', () async {
+  test('fails plainly when reopening the source throws on replay', () async {
     final receivedBodies = <List<int>>[];
     final authHeaders = <String?>[];
     final server = await startTokenGatedUploadServer(receivedBodies, authHeaders);
@@ -259,8 +259,9 @@ void main() {
     await withScriptedFiles({
       scriptedPath: ([start, end]) {
         openReadCalls++;
+        // A real File.openRead errors on listen, never here; this covers a factory that throws.
         if (openReadCalls == 2) {
-          throw const FileSystemException('source gone before replay');
+          throw StateError('reopen failed');
         }
         return Stream<List<int>>.fromIterable([sourceBytes]);
       },
