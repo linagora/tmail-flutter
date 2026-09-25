@@ -1315,6 +1315,105 @@ void main() {
           )),
         );
       });
+
+      // On an accepted submission James answers EmailSubmission/set, then runs
+      // onSuccessUpdateEmail as an implicit Email/set sharing its call id.
+      Map<String, dynamic> acceptedSubmissionResponse(
+        Map<String, dynamic> implicitEmailSetResult,
+      ) => {
+        "sessionState": "state-1",
+        "methodResponses": [
+          [
+            "Email/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-1",
+              "newState": "state-2",
+              "created": <String, dynamic>{
+                "draft-1": <String, dynamic>{"id": "email-1"},
+              },
+            },
+            "c0"
+          ],
+          [
+            "EmailSubmission/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "newState": "state-1",
+              "created": <String, dynamic>{
+                "draft-1": <String, dynamic>{
+                  "id": "submission-1",
+                  "sendAt": "2026-09-25T08:53:22Z",
+                },
+              },
+            },
+            "c1"
+          ],
+          [
+            "Email/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-2",
+              "newState": "state-3",
+              ...implicitEmailSetResult,
+            },
+            "c1"
+          ],
+        ]
+      };
+
+      test(
+        'SHOULD complete\n'
+        'WHEN EmailSubmission/set creates the submission\n'
+        'AND the implicit Email/set moves the email to Sent',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => acceptedSubmissionResponse({
+          "updated": <String, dynamic>{"email-1": null},
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          completes,
+        );
+      });
+
+      test(
+        'SHOULD complete, as the email is already sent\n'
+        'WHEN EmailSubmission/set creates the submission\n'
+        'AND the implicit Email/set fails to move the email to Sent',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => acceptedSubmissionResponse({
+          "notUpdated": <String, dynamic>{
+            "email-1": <String, dynamic>{
+              "type": "notFound",
+              "description": "Mailbox not found",
+            },
+          },
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          completes,
+        );
+      });
     });
   });
 }
