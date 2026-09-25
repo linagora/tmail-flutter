@@ -801,7 +801,6 @@ class ComposerController extends BaseController
       default:
         break;
     }
-    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
@@ -1816,7 +1815,6 @@ class ComposerController extends BaseController
     } else {
       listBccEmailAddress = listEmailAddress.toList();
     }
-    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 
@@ -1827,7 +1825,6 @@ class ComposerController extends BaseController
     if (listBccEmailAddress.isEmpty) {
       bccRecipientState.value = PrefixRecipientState.disabled;
     }
-    dropInvalidRecipientsNoLongerListed();
     updateStatusEmailSendButton();
   }
 

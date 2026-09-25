@@ -1,7 +1,6 @@
 
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/invalid_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 
 extension RemoveDraggableEmailAddressBetweenRecipientFieldsExtension on ComposerController {
@@ -50,7 +49,6 @@ extension RemoveDraggableEmailAddressBetweenRecipientFieldsExtension on Composer
       default:
         break;
     }
-    controller.dropInvalidRecipientsNoLongerListed();
     controller.isInitialRecipient.value = true;
     controller.isInitialRecipient.refresh();
     controller.updateStatusEmailSendButton();
