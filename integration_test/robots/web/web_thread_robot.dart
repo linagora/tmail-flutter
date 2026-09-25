@@ -1,16 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../abstract/abstract_thread_robot.dart';
 import '../thread_empty_trash_robot.dart';
 import '../thread_robot.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import 'web_fire_on_tap.dart';
 
@@ -45,6 +48,7 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
       : super($, emptyTrashRobot: WebThreadEmptyTrashRobot($));
 
   static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
+  static const Duration _emailListRefreshInterval = Duration(seconds: 5);
 
   @override
   Future<void> openAppGrid() async {
@@ -98,10 +102,24 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   Future<void> _openEmailTile(PatrolFinder emailFinder) async {
     // Web XHR callbacks need an event-loop yield, which waitUntilVisible's
     // frame-only retry loop does not provide.
-    await waitForCondition(() async {
-      await $.pump();
-      return emailFinder.evaluate().isNotEmpty;
-    });
+    //
+    // Provisioned emails go through asynchronous server-side delivery: the single
+    // refresh issued right after provisioning may run before the email lands in
+    // the mailbox, and nothing else is guaranteed to reload the list. Periodically
+    // re-query the email list until the tile shows up.
+    final sinceLastRefresh = Stopwatch()..start();
+    await waitForCondition(
+      () async {
+        await $.pump();
+        if (emailFinder.evaluate().isNotEmpty) return true;
+        if (sinceLastRefresh.elapsed >= _emailListRefreshInterval) {
+          sinceLastRefresh.reset();
+          await Get.find<ThreadController>().refreshAllEmail();
+        }
+        return false;
+      },
+      timeout: TestTimeouts.long,
+    );
     await emailFinder.tap();
     await $.pump(_emailOpenPumpDuration);
   }
