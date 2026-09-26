@@ -1203,6 +1203,7 @@ void main() {
       });
 
       for (final actionType in [
+        EmailActionType.compose,
         EmailActionType.reply,
         EmailActionType.replyAll,
         EmailActionType.replyToList,
@@ -1219,8 +1220,7 @@ void main() {
           addTearDown(() => PlatformInfo.isTestingForWeb = false);
 
           const contentWithSignature = '$emailContent'
-              '<div class="tmail-signature-button"></div>'
-              '<div class="tmail-signature">signature</div>';
+              '<div class="tmail-signature" style="clear: both; display: block;">signature</div>';
 
           composerController?.composerArguments.value = ComposerArguments(
             emailActionType: actionType,
@@ -1264,6 +1264,44 @@ void main() {
           expect(composerController?.isEmailChanged.value, isFalse);
         });
       }
+
+      test(
+        'Should not resynchronize _savedEmailDraftHash on web\n'
+        'When the only signature is nested in quoted content',
+      () async {
+        // arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        const contentWithQuotedSignature = '$emailContent'
+            '<blockquote><div class="tmail-signature">quoted signature</div></blockquote>';
+
+        composerController?.composerArguments.value = ComposerArguments(
+          emailActionType: EmailActionType.reply,
+          identities: [identity],
+        );
+        composerController?.currentEmailActionType = EmailActionType.reply;
+        composerController?.identitySelected.value = identity;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.subjectEmail.value = emailSubject;
+
+        when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((invocation) async =>
+            invocation.namedArguments[#emailContent] as String);
+
+        await composerController?.initEmailDraftHash();
+        final initialDraftHash = composerController?.savedEmailDraftHash;
+
+        // act
+        composerController?.onChangeTextEditorWeb(contentWithQuotedSignature);
+        await Future.delayed(Duration.zero);
+
+        // assert
+        expect(composerController?.savedEmailDraftHash, equals(initialDraftHash));
+        expect(composerController?.synchronizeInitDraftHash, isFalse);
+      });
     });
 
     group('applySignature test:', () {

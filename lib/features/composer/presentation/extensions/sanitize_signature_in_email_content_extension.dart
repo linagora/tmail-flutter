@@ -25,8 +25,11 @@ extension SanitizeSignatureInEmailContentExtension on ComposerController {
   void synchronizeInitEmailDraftHash(String? emailContent) {
     try {
       final emailDocument = parse(emailContent);
-      final signatureButton = emailDocument.querySelector('.tmail-signature-button');
-      if (signatureButton == null) return;
+      // The editor inserts the identity signature as a top-level `.tmail-signature`
+      // (no collapsible button since signatures are always expanded). Signatures
+      // nested in quoted content must not trigger the synchronization.
+      final insertedSignature = emailDocument.querySelector('body > .tmail-signature');
+      if (insertedSignature == null) return;
 
       restoringSignatureButton = false;
       synchronizeInitDraftHash = true;
