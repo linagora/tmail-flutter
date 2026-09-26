@@ -1440,10 +1440,7 @@ class ComposerController extends BaseController
 
     final oldSavedDraftHash = composerArguments.value?.savedDraftHash;
 
-    if (currentEmailActionType == EmailActionType.compose ||
-        currentEmailActionType == EmailActionType.editDraft ||
-        currentEmailActionType == EmailActionType.forward ||
-        currentEmailActionType == EmailActionType.editAsNewEmail) {
+    if (_isNewComposition || currentEmailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = currentDraftHash;
     } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
       _savedEmailDraftHash = oldSavedDraftHash;
@@ -1452,6 +1449,15 @@ class ComposerController extends BaseController
 
     isEmailChanged.value = currentDraftHash != _savedEmailDraftHash;
   }
+
+  bool get _isNewComposition => const {
+    EmailActionType.compose,
+    EmailActionType.reply,
+    EmailActionType.replyAll,
+    EmailActionType.replyToList,
+    EmailActionType.forward,
+    EmailActionType.editAsNewEmail,
+  }.contains(currentEmailActionType);
 
   void handleClickSaveAsDraftsButton(BuildContext context) async {
     if (_saveToDraftButtonState == ButtonState.disabled) {
@@ -2152,7 +2158,7 @@ class ComposerController extends BaseController
     _textEditorWeb = text;
 
     if (restoringSignatureButton ||
-        (currentEmailActionType == EmailActionType.compose && !synchronizeInitDraftHash)) {
+        (_isNewComposition && !synchronizeInitDraftHash)) {
       synchronizeInitEmailDraftHash(text);
     }
   }

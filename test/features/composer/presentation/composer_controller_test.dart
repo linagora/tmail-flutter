@@ -1085,6 +1085,9 @@ void main() {
       });
 
       for (final actionType in [
+        EmailActionType.reply,
+        EmailActionType.replyAll,
+        EmailActionType.replyToList,
         EmailActionType.forward,
         EmailActionType.editAsNewEmail,
       ]) {
@@ -1198,6 +1201,69 @@ void main() {
         );
         expect(composerController?.isEmailChanged.value, isFalse);
       });
+
+      for (final actionType in [
+        EmailActionType.reply,
+        EmailActionType.replyAll,
+        EmailActionType.replyToList,
+        EmailActionType.forward,
+        EmailActionType.editAsNewEmail,
+      ]) {
+        test(
+          'Should resynchronize _savedEmailDraftHash on web\n'
+          'When email action type is $actionType\n'
+          'And the signature is inserted after the initial hash',
+        () async {
+          // arrange
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          const contentWithSignature = '$emailContent'
+              '<div class="tmail-signature-button"></div>'
+              '<div class="tmail-signature">signature</div>';
+
+          composerController?.composerArguments.value = ComposerArguments(
+            emailActionType: actionType,
+            identities: [identity],
+          );
+          composerController?.currentEmailActionType = actionType;
+          composerController?.identitySelected.value = identity;
+          composerController?.setTextEditorWeb(emailContent);
+          composerController?.subjectEmail.value = emailSubject;
+
+          when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+          when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+            emailContent: anyNamed('emailContent'),
+          )).thenAnswer((invocation) async =>
+              invocation.namedArguments[#emailContent] as String);
+
+          await composerController?.initEmailDraftHash();
+
+          final savedEmailDraft = SavedComposingEmail(
+            content: contentWithSignature,
+            subject: emailSubject,
+            toRecipients: {},
+            ccRecipients: {},
+            bccRecipients: {},
+            replyToRecipients: {},
+            identity: identity,
+            attachments: [attachment],
+            hasReadReceipt: false,
+            isMarkAsImportant: false,
+          );
+
+          // act
+          composerController?.onChangeTextEditorWeb(contentWithSignature);
+          await Future.delayed(Duration.zero);
+
+          // assert
+          expect(
+            composerController?.savedEmailDraftHash,
+            equals(savedEmailDraft.asString().hashCode),
+          );
+          expect(composerController?.isEmailChanged.value, isFalse);
+        });
+      }
     });
 
     group('applySignature test:', () {
