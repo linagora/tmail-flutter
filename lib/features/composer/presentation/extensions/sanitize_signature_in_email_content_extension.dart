@@ -12,6 +12,11 @@ extension SanitizeSignatureInEmailContentExtension on ComposerController {
       final existedSignatureButton = emailDocument.querySelector('.tmail-signature-button');
       if (existedSignatureButton != null) return;
 
+      // A top-level signature is already expanded: re-applying it would consume
+      // the one-shot draft hash synchronization meant for the identity signature.
+      final expandedSignature = emailDocument.querySelector('body > .tmail-signature');
+      if (expandedSignature != null) return;
+
       final signature = emailDocument.querySelector('.tmail-signature');
       if (signature == null) return;
 
