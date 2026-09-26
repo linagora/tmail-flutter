@@ -155,11 +155,14 @@ class TransformConfiguration {
   /// Signature HTML inserted into the composer editor. Kept minimal — only
   /// degenerate `line-height` values are stripped — because the inserted
   /// signature becomes part of the email that is sent and must not be
-  /// rewritten by display-only transformers.
+  /// rewritten by display-only transformers. It is still sanitized: identity
+  /// signatures are stored raw on the server (other clients, provisioning)
+  /// and the editor iframe is same-origin with the application.
   factory TransformConfiguration.forComposerSignature() =>
-      TransformConfiguration.fromDomTransformers([
-        const NormalizeLineHeightInStyleTransformer(),
-      ]);
+      const TransformConfiguration(
+        [NormalizeLineHeightInStyleTransformer()],
+        [StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable'])],
+      );
 
   factory TransformConfiguration.forCalendarEvent() => TransformConfiguration.create(
     customTextTransformers: const [

@@ -7,9 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 /// same-origin tab or the composer editor must sanitize its input: email
 /// content is attacker-controlled.
 ///
-/// forComposerSignature is deliberately absent: it only processes the
-/// user's own identity signature, which was sanitized when saved
-/// (forSignatureIdentity) and must be sent unmodified.
 void main() {
   final configurations = <String, TransformConfiguration Function()>{
     'standardConfiguration': () => TransformConfiguration.standardConfiguration,
@@ -22,6 +19,7 @@ void main() {
     'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
     'forPrintEmail': TransformConfiguration.forPrintEmail,
     'forSignatureIdentity': TransformConfiguration.forSignatureIdentity,
+    'forComposerSignature': TransformConfiguration.forComposerSignature,
     'forCalendarEvent': TransformConfiguration.forCalendarEvent,
   };
 

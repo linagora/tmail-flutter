@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -172,6 +174,12 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget {
           direction: AppUtils.getCurrentDirection(context),
         ),
         customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
+        webInitialScripts: UnmodifiableListView([
+          html_editor_browser.WebScript(
+            name: HtmlUtils.sanitizeInsertHtml.name,
+            script: HtmlUtils.sanitizeInsertHtml.script,
+          ),
+        ]),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
         toolbarType: html_editor_browser.ToolbarType.hide,
@@ -187,6 +195,9 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget {
           }
         },
         onInit: () {
+          richTextWebController.editorController.evaluateJavascriptWeb(
+            HtmlUtils.sanitizeInsertHtml.name,
+          );
           richTextWebController.editorController.setOnDragDropEvent();
           richTextWebController.editorController.setFullScreen();
           controller.updateContentHtmlEditor(initContent);

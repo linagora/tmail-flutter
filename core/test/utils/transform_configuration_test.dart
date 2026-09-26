@@ -1,6 +1,7 @@
 import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_negative_margin_float_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -151,7 +152,13 @@ void main() {
         _hasNormalizeLineHeightTransformer(configuration.domTransformers),
         isTrue,
       );
-      expect(configuration.textTransformers, isEmpty);
+      expect(configuration.textTransformers, hasLength(1));
+      expect(
+        configuration.textTransformers.single,
+        isA<StandardizeHtmlSanitizingTransformers>(),
+        reason: 'Stored signatures are raw and must be sanitized before '
+            'reaching the same-origin editor',
+      );
     });
   });
 }

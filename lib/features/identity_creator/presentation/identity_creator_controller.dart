@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/list_nullable_extensions.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -319,9 +320,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     errorNameIdentity.value = '';
 
     if (identity?.signatureAsString.isNotEmpty == true) {
-      updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
+      // The stored signature may come from another client or from
+      // provisioning: sanitize it before the editor renders it.
+      final signature = EditorHtmlSanitizer.sanitize(
+        arguments?.identity?.signatureAsString ?? '',
+      );
+      updateContentHtmlEditor(signature);
       if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
+        richTextWebController?.editorController.setText(signature);
       }
     }
     _initPublicAssetController();
@@ -522,9 +528,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     Identity identity,
     PublicAssetsInIdentityArguments publicAssetsInIdentityArguments
   })> _generateIdentityAndPublicAssetArguments({bool forCache = false}) async {
-    final signatureHtmlText = PlatformInfo.isWeb
-        ? contentHtmlEditor
-        : await _getSignatureHtmlText();
+    // The signature is inserted into every composed email: store it clean.
+    final signatureHtmlText = EditorHtmlSanitizer.sanitize(
+      PlatformInfo.isWeb ? contentHtmlEditor : await _getSignatureHtmlText(),
+    );
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
         ? {bccOfIdentity.value!}
         : <EmailAddress>{};
