@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -1082,6 +1083,243 @@ void main() {
             equals(savedEmailDraft.asString().hashCode),
           );
         });
+      });
+
+      for (final actionType in [
+        EmailActionType.reply,
+        EmailActionType.replyAll,
+        EmailActionType.replyToList,
+        EmailActionType.forward,
+        EmailActionType.editAsNewEmail,
+      ]) {
+        group('email action type is $actionType:', () {
+          test(
+            'Should update _savedEmailDraftHash\n'
+            'And not mark email as changed\n'
+            'When composer setup completes without user modification',
+          () async {
+            // arrange
+            final composerArguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.minimize,
+              identities: [identity],
+              selectedIdentityId: identity.id,
+            );
+            composerController?.composerArguments.value = composerArguments;
+            composerController?.richTextMobileTabletController = mockRichTextMobileTabletController;
+            composerController?.subjectEmail.value = emailSubject;
+            composerController?.listToEmailAddress = [toRecipient];
+            composerController?.listCcEmailAddress = [ccRecipient];
+            composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
+            composerController?.hasRequestReadReceipt.value = alwaysReadReceiptEnabled;
+            composerController?.isMarkAsImportant.value = isMarkAsImportant;
+            composerController?.screenDisplayMode.value = composerArguments.displayMode;
+            composerController?.currentEmailActionType = composerArguments.emailActionType;
+            composerController?.listFromIdentities.value = composerArguments.identities!;
+
+            when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(mockHtmlEditorApi);
+            when(mockHtmlEditorApi.getText()).thenAnswer((_) async => emailContent);
+            when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+            when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+              emailContent: anyNamed('emailContent'),
+            )).thenAnswer((_) async => emailContent);
+
+            final savedEmailDraft = SavedComposingEmail(
+              content: emailContent,
+              subject: emailSubject,
+              toRecipients: {toRecipient},
+              ccRecipients: {ccRecipient},
+              bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
+              identity: identity,
+              attachments: [attachment],
+              hasReadReceipt: alwaysReadReceiptEnabled,
+              isMarkAsImportant: isMarkAsImportant,
+            );
+
+            // act
+            await composerController?.setupSelectedIdentityWithoutApplySignature();
+            await composerController?.initEmailDraftHash();
+
+            // assert
+            expect(
+              composerController?.savedEmailDraftHash,
+              equals(savedEmailDraft.asString().hashCode),
+            );
+            expect(composerController?.isEmailChanged.value, isFalse);
+          });
+        });
+      }
+
+      test(
+        'Should update _savedEmailDraftHash on web\n'
+        'When email action type is editAsNewEmail\n'
+        'And identity is already selected from the email header',
+      () async {
+        // arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        composerController?.composerArguments.value = ComposerArguments(
+          emailActionType: EmailActionType.editAsNewEmail,
+          identities: [identity],
+        );
+        composerController?.currentEmailActionType = EmailActionType.editAsNewEmail;
+        composerController?.identitySelected.value = identity;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.subjectEmail.value = emailSubject;
+
+        when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => emailContent);
+
+        final savedEmailDraft = SavedComposingEmail(
+          content: emailContent,
+          subject: emailSubject,
+          toRecipients: {},
+          ccRecipients: {},
+          bccRecipients: {},
+          replyToRecipients: {},
+          identity: identity,
+          attachments: [attachment],
+          hasReadReceipt: false,
+          isMarkAsImportant: false,
+        );
+
+        // act
+        await composerController?.setupSelectedIdentity();
+        await untilCalled(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        ));
+        await Future.delayed(Duration.zero);
+
+        // assert
+        expect(
+          composerController?.savedEmailDraftHash,
+          equals(savedEmailDraft.asString().hashCode),
+        );
+        expect(composerController?.isEmailChanged.value, isFalse);
+      });
+
+      for (final actionType in [
+        EmailActionType.compose,
+        EmailActionType.reply,
+        EmailActionType.replyAll,
+        EmailActionType.replyToList,
+        EmailActionType.forward,
+        EmailActionType.editAsNewEmail,
+      ]) {
+        test(
+          'Should resynchronize _savedEmailDraftHash on web\n'
+          'When email action type is $actionType\n'
+          'And the signature is inserted after the initial hash',
+        () async {
+          // arrange
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          const contentWithSignature = '$emailContent'
+              '<div class="tmail-signature" style="clear: both; display: block;">signature</div>';
+
+          composerController?.composerArguments.value = ComposerArguments(
+            emailActionType: actionType,
+            identities: [identity],
+          );
+          composerController?.currentEmailActionType = actionType;
+          composerController?.identitySelected.value = identity;
+          composerController?.setTextEditorWeb(emailContent);
+          composerController?.subjectEmail.value = emailSubject;
+
+          when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+          when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+            emailContent: anyNamed('emailContent'),
+          )).thenAnswer((invocation) async =>
+              invocation.namedArguments[#emailContent] as String);
+
+          await composerController?.initEmailDraftHash();
+
+          final savedEmailDraft = SavedComposingEmail(
+            content: contentWithSignature,
+            subject: emailSubject,
+            toRecipients: {},
+            ccRecipients: {},
+            bccRecipients: {},
+            replyToRecipients: {},
+            identity: identity,
+            attachments: [attachment],
+            hasReadReceipt: false,
+            isMarkAsImportant: false,
+          );
+
+          // act
+          composerController?.onChangeTextEditorWeb(contentWithSignature);
+          await Future.delayed(Duration.zero);
+
+          // assert
+          expect(
+            composerController?.savedEmailDraftHash,
+            equals(savedEmailDraft.asString().hashCode),
+          );
+          expect(composerController?.isEmailChanged.value, isFalse);
+        });
+      }
+
+      test(
+        'Should not resynchronize _savedEmailDraftHash on web\n'
+        'When the only signature is nested in quoted content',
+      () async {
+        // arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        const contentWithQuotedSignature = '$emailContent'
+            '<blockquote><div class="tmail-signature">quoted signature</div></blockquote>';
+
+        composerController?.composerArguments.value = ComposerArguments(
+          emailActionType: EmailActionType.reply,
+          identities: [identity],
+        );
+        composerController?.currentEmailActionType = EmailActionType.reply;
+        composerController?.identitySelected.value = identity;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.subjectEmail.value = emailSubject;
+
+        when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((invocation) async =>
+            invocation.namedArguments[#emailContent] as String);
+
+        await composerController?.initEmailDraftHash();
+        final initialDraftHash = composerController?.savedEmailDraftHash;
+
+        // act
+        composerController?.onChangeTextEditorWeb(contentWithQuotedSignature);
+        await Future.delayed(Duration.zero);
+
+        // assert
+        expect(composerController?.savedEmailDraftHash, equals(initialDraftHash));
+        expect(composerController?.synchronizeInitDraftHash, isFalse);
+      });
+
+      test(
+        'Should not restore the signature\n'
+        'When the loaded content already contains a top-level signature',
+      () async {
+        // arrange
+        const contentWithExpandedSignature = '$emailContent'
+            '<div class="tmail-signature">signature</div>';
+
+        // act
+        await composerController?.restoreCollapsibleSignatureButton(
+          contentWithExpandedSignature,
+        );
+
+        // assert
+        expect(composerController?.restoringSignatureButton, isFalse);
+        expect(composerController?.synchronizeInitDraftHash, isFalse);
       });
     });
 
