@@ -51,15 +51,15 @@ class TransformConfiguration {
   /// markup, so the quoted email must always go through the sanitizer: the
   /// raw server HTML reaches this pipeline when replying to an email whose
   /// body has not been loaded yet (e.g. a collapsed message in a thread).
-  factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration(
+  factory TransformConfiguration.forReplyForwardEmail() => const TransformConfiguration(
     [
-      const RemoveScriptTransformer(),
-      const SanitizeNestedStyleTransformer(),
-      const SignatureTransformer(),
-      const RemoveCollapsedSignatureButtonTransformer(),
-      const NormalizeLineHeightInStyleTransformer(),
+      RemoveScriptTransformer(),
+      SanitizeNestedStyleTransformer(),
+      SignatureTransformer(),
+      RemoveCollapsedSignatureButtonTransformer(),
+      NormalizeLineHeightInStyleTransformer(),
     ],
-    const [
+    [
       StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
     ],
   );
@@ -128,16 +128,16 @@ class TransformConfiguration {
 
   /// The printed document is opened in a same-origin blob tab: sanitize it
   /// even though callers are expected to pass already-sanitized content.
-  factory TransformConfiguration.forPrintEmail() => TransformConfiguration(
+  factory TransformConfiguration.forPrintEmail() => const TransformConfiguration(
     [
-      const RemoveScriptTransformer(),
-      const RemoveLazyLoadingForBackgroundImageTransformer(),
-      const RemoveLazyLoadingImageTransformer(),
-      const RemoveCollapsedSignatureButtonTransformer(),
-      const RemoveStyleTagOutsideTransformer(),
-      const RemoveMaxWidthInImageStyleTransformer(),
+      RemoveScriptTransformer(),
+      RemoveLazyLoadingForBackgroundImageTransformer(),
+      RemoveLazyLoadingImageTransformer(),
+      RemoveCollapsedSignatureButtonTransformer(),
+      RemoveStyleTagOutsideTransformer(),
+      RemoveMaxWidthInImageStyleTransformer(),
     ],
-    const [StandardizeHtmlSanitizingTransformers()],
+    [StandardizeHtmlSanitizingTransformers()],
   );
 
    factory TransformConfiguration.forSignatureIdentity() => TransformConfiguration.create(
