@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -1300,6 +1301,24 @@ void main() {
 
         // assert
         expect(composerController?.savedEmailDraftHash, equals(initialDraftHash));
+        expect(composerController?.synchronizeInitDraftHash, isFalse);
+      });
+
+      test(
+        'Should not restore the signature\n'
+        'When the loaded content already contains a top-level signature',
+      () async {
+        // arrange
+        const contentWithExpandedSignature = '$emailContent'
+            '<div class="tmail-signature">signature</div>';
+
+        // act
+        await composerController?.restoreCollapsibleSignatureButton(
+          contentWithExpandedSignature,
+        );
+
+        // assert
+        expect(composerController?.restoringSignatureButton, isFalse);
         expect(composerController?.synchronizeInitDraftHash, isFalse);
       });
     });
