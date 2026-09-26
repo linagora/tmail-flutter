@@ -1,6 +1,7 @@
 import 'package:core/data/constants/constant.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/html/active_html_content_stripper.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -69,6 +70,11 @@ class ComposerRepositoryImpl extends ComposerRepository {
     }
 
     emailContent = await removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
+
+    // Content composed through the HTML code view, pasted or inserted by
+    // other means is sent as is otherwise: never originate a mail carrying
+    // scripts, event handlers or script URLs.
+    emailContent = ActiveHtmlContentStripper.strip(emailContent);
 
     emailContent = HtmlUtils.wrapPlainTextLinks(emailContent);
 
