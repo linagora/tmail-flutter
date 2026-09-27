@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
@@ -304,6 +305,11 @@ class MailboxController extends BaseMailboxController
     );
 
     ever(mailboxDashBoardController.mailboxUIAction, _handleMailboxUIAction);
+
+    ever<List<Label>>(
+      mailboxDashBoardController.labelController.labels,
+      _switchBackToMailboxDefaultIfSelectedLabelRemoved,
+    );
 
     ever(mailboxDashBoardController.viewState, (viewState) {
       final reactionState = viewState.getOrElse(() => UIState.idle);
@@ -1099,6 +1105,12 @@ class MailboxController extends BaseMailboxController
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
     _replaceBrowserHistory();
     _autoScrollToTopMailboxList();
+  }
+
+  void _switchBackToMailboxDefaultIfSelectedLabelRemoved(List<Label> labels) {
+    if (selectedMailbox?.isLabelMailboxRemovedFrom(labels) == true) {
+      _switchBackToMailboxDefault();
+    }
   }
 
   /// Returns to the inbox on a system Back, restoring its list. A search run
