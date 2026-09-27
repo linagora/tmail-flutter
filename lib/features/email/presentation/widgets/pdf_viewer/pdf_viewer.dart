@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/download/domain/state/download_attachment
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/loading_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
@@ -186,6 +187,7 @@ class _PDFViewerState extends State<PDFViewer> {
                 text: progressText,
               ),
               onTapOutside: _closeView,
+              onLinkTap: (uri) => AppUtils.launchLink(uri.toString()),
               topBarOptions: TopBarOptions(
                 title: title,
                 onDownload: bytes != null 
