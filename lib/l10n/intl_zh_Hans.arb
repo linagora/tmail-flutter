@@ -5718,5 +5718,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "languageBrazilianPortuguese": "葡萄牙语（巴西）",
+  "@languageBrazilianPortuguese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attending": "参加吗？",
+  "@attending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "joinTheVideoConference": "加入视频会议",
+  "@joinTheVideoConference": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copyLink": "复制链接",
+  "@copyLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkCopiedToClipboard": "链接已复制到剪贴板",
+  "@linkCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentAddedSuccessfully": "已从云盘附加文件。",
+  "@driveAttachmentAddedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveAttachmentTransferFailed": "无法从云盘附加文件。",
+  "@driveAttachmentTransferFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
