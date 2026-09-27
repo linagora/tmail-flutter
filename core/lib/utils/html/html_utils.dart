@@ -744,11 +744,24 @@ class HtmlUtils {
     return base64Url.encode(bytes).replaceAll('=', '');
   }
 
+  /// A base document for rendering static email content (EML preview,
+  /// "view entire message", print). These documents never carry the
+  /// application's own scripts, and some of them are rendered directly in a
+  /// same-origin blob tab or a mobile WebView (not through the nonce-CSP
+  /// wrapper of the inline viewer), so embed a strict CSP that blocks any
+  /// script, plugin, frame or form that email content might smuggle in while
+  /// still allowing the inline styles and images the render needs.
+  static const String _staticEmailDocumentCsp =
+      "default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; "
+      "img-src data: blob: https: http:; font-src data:; media-src data: blob: https: http:; "
+      "object-src 'none'; base-uri 'none'; form-action 'none'";
+
   static String createTemplateHtmlDocument({String? title}) {
     return '''
       <!DOCTYPE html>
       <html>
         <head>
+          <meta http-equiv="Content-Security-Policy" content="$_staticEmailDocumentCsp">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
