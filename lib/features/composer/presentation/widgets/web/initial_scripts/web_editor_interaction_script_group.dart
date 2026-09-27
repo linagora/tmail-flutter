@@ -1,3 +1,4 @@
+import 'package:core/utils/html/editor_script/list_keyboard_handler_script.dart';
 import 'package:core/utils/html/editor_script/quoted_reply_enter_handler_script.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/initial_scripts/web_editor_script_adapter.dart';
@@ -24,6 +25,10 @@ final class WebEditorInteractionScriptGroup
     ),
     adapter.fromDefinition(
       const QuotedReplyEnterHandlerScript(),
+      runOnInit: true,
+    ),
+    adapter.fromDefinition(
+      const ListKeyboardHandlerScript(),
       runOnInit: true,
     ),
     adapter.fromHtmlUtils(
