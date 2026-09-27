@@ -6018,4 +6018,11 @@ class AppLocalizations {
       name: 'messageDialogSendEmailContentLoading',
     );
   }
+
+  String get messageDialogSendEmailContentLoadFailed {
+    return Intl.message(
+      'Your message could not be sent because its content failed to load. Please close the composer and open the email again.',
+      name: 'messageDialogSendEmailContentLoadFailed',
+    );
+  }
 }
