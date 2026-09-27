@@ -186,7 +186,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   void _onTapMailboxAction() {
-    if (widget.presentationMailbox.allowedToDisplay) {
+    if (widget.presentationMailbox.allowedToDisplay &&
+        !widget.presentationMailbox.isTeamMailboxes) {
       widget.onClickOpenMailboxAction?.call(widget.presentationMailbox);
     }
   }

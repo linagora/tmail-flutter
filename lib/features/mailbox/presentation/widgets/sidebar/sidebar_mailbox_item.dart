@@ -72,7 +72,7 @@ class SidebarMailboxItem extends StatelessWidget {
         : null,
       scrollIntoViewOnExpand: hasChildren,
       active: _isActive,
-      onTap: () => onOpenMailboxFolderClick?.call(mailboxNode),
+      onTap: _onTap,
     );
 
     return _withTreeIndent(
@@ -82,6 +82,16 @@ class SidebarMailboxItem extends StatelessWidget {
         isWebDesktop,
       ),
     );
+  }
+
+  /// A team mailbox root is a container: its mails live in its children
+  /// (INBOX, ...), so tapping it toggles the folder instead of opening it.
+  void _onTap() {
+    if (!mailboxNode.item.isTeamMailboxes) {
+      onOpenMailboxFolderClick?.call(mailboxNode);
+    } else if (mailboxNode.hasChildren()) {
+      onExpandFolderActionClick?.call(mailboxNode);
+    }
   }
 
   Widget _buildLeadingIcon(BuildContext context, ImagePaths imagePaths) {
@@ -155,7 +165,8 @@ class SidebarMailboxItem extends StatelessWidget {
   bool _canAcceptDrop(bool isWebDesktop) =>
       isWebDesktop &&
       onDragItemAccepted != null &&
-      !mailboxNode.item.isActionRequired;
+      !mailboxNode.item.isActionRequired &&
+      !mailboxNode.item.isTeamMailboxes;
 
   bool get _isSelected => mailboxNodeSelected?.id == mailboxNode.item.id;
 
