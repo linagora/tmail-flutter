@@ -98,6 +98,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -939,11 +940,21 @@ class ComposerController extends BaseController
   }
 
   bool get isEditedEmailContentLoadFailed {
-    final isEditingExistingEmail = currentEmailActionType == EmailActionType.editDraft
-      || currentEmailActionType == EmailActionType.editAsNewEmail;
-    final isContentLoadFailed = emailContentsViewState.value?.isLeft() ?? false;
+    final isEditingExistingEmail = const {
+      EmailActionType.editDraft,
+      EmailActionType.editAsNewEmail,
+      EmailActionType.reopenComposerBrowser,
+      EmailActionType.restoreComposerFromPersistentCache,
+    }.contains(currentEmailActionType);
+    final isContentLoadFailed = emailContentsViewState.value?.fold(
+      (failure) => !_isEmptyEmailContentFailure(failure),
+      (_) => false,
+    ) ?? false;
     return isEditingExistingEmail && isContentLoadFailed;
   }
+
+  bool _isEmptyEmailContentFailure(Failure failure) =>
+    failure is GetEmailContentFailure && failure.exception is EmptyEmailContentException;
 
   Future<String> getContentInEditor() async {
     try {
