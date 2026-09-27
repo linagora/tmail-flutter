@@ -53,7 +53,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   @override
   Widget build(BuildContext context) {
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && !widget.presentationMailbox.isTeamMailboxes) {
       return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
         onAcceptWithDetails: (emails) {
