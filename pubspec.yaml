@@ -152,7 +152,6 @@ dependencies:
 
   uuid: 3.0.7
 
-  external_path: 2.2.0
 
   path_provider: 2.1.5
 
