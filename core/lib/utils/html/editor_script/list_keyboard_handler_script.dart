@@ -44,12 +44,13 @@ abstract final class ListKeyboardHandlerSource {
   static const domLookup = r'''
         function findListItem(node) {
           let element = node && node.nodeType === 3 ? node.parentElement : node;
+          let listItem = null;
           while (element && element !== root) {
             if (element.tagName === 'TD' || element.tagName === 'TH') return null;
-            if (element.tagName === 'LI') return element;
+            if (!listItem && element.tagName === 'LI') listItem = element;
             element = element.parentElement;
           }
-          return null;
+          return listItem;
         }
 
         function isNestedListItem(item) {
