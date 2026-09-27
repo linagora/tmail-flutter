@@ -1726,7 +1726,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourFilterHasBeenUpdated": "Votre filtre a été créé",
+  "yourFilterHasBeenUpdated": "Votre filtre a été mis à jour",
   "@yourFilterHasBeenUpdated": {
     "type": "text",
     "placeholders_order": [],
