@@ -52,16 +52,26 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   String getDisplayNameWithoutContext(AppLocalizations l10n) {
     if (isLabelMailbox) return (this as PresentationLabelMailbox).label.safeDisplayName;
-    if (isDefault) {
-      final nameResolver = _systemFolderDisplayNameMap[role!.value.toLowerCase()];
+    final systemFolderKey = _systemFolderKey;
+    if (systemFolderKey != null) {
+      final nameResolver = _systemFolderDisplayNameMap[systemFolderKey];
       if (nameResolver != null) return nameResolver(l10n);
     }
     return name?.name ?? '';
   }
 
+  String? get _systemFolderKey {
+    if (isDefault) return role!.value.toLowerCase();
+    if (_isTeamMailboxSystemFolder) return name?.name.toLowerCase();
+    return null;
+  }
+
+  bool get _isTeamMailboxSystemFolder =>
+      isChildOfTeamMailboxes && myRights?.mayDelete == false;
+
   String getMailboxIcon(ImagePaths imagePaths) {
     if (hasRole()) return _resolveSystemFolderIcon(role!.value, imagePaths);
-    if (isChildOfTeamMailboxes && myRights?.mayDelete == false) {
+    if (_isTeamMailboxSystemFolder) {
       final nameKey = name?.name.toLowerCase();
       if (nameKey != null) {
         return _resolveSystemFolderIcon(nameKey, imagePaths);
