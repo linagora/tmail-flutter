@@ -5,6 +5,18 @@ import 'package:flutter/material.dart';
 
 extension StringExtension on String {
 
+  static final RegExp _bidiAndControlCharacters = RegExp(
+    r'[\u0000-\u001F\u007F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]',
+  );
+
+  /// Removes bidirectional overrides/isolates and control characters so a
+  /// crafted file/display name cannot visually reorder its extension
+  /// (e.g. "invoice\u202Efdp.exe" shown as "invoiceexe.pdf"). Unlike a
+  /// filesystem-safe name, punctuation is preserved for readability.
+  String get sanitizedBidiForDisplay =>
+      replaceAll(_bidiAndControlCharacters, '');
+
+
   String get firstLetterToUpperCase {
     try {
       final listWord = split(' ');

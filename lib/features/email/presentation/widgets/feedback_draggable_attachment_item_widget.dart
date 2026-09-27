@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:flutter/material.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
@@ -44,7 +45,7 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
           const SizedBox(width: FeedbackDraggableAttachmentItemWidgetStyle.space),
           Flexible(
             child: MiddleEllipsisText(
-              attachment.name ?? '',
+              (attachment.name ?? '').sanitizedBidiForDisplay,
               style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
             ),
           )
