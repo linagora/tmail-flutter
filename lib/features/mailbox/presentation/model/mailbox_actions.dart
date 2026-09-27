@@ -197,4 +197,15 @@ extension MailboxActionsExtension on MailboxActions {
         return false;
     }
   }
+
+  bool canPickTeamMailboxes() {
+    switch(this) {
+      case MailboxActions.moveEmail:
+      case MailboxActions.moveFolderContent:
+      case MailboxActions.select:
+        return true;
+      default:
+        return false;
+    }
+  }
 }

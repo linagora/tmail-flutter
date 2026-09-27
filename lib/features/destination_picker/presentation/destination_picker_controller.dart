@@ -262,8 +262,7 @@ class DestinationPickerController extends BaseMailboxController {
   void searchMailbox(BuildContext context, String value) {
     searchQuery.value = SearchQuery(value);
     final searchableMailboxList =
-        mailboxAction.value == MailboxActions.moveEmail ||
-                mailboxAction.value == MailboxActions.moveFolderContent
+        mailboxAction.value?.canPickTeamMailboxes() == true
             ? allMailboxes
             : allMailboxes.listPersonalMailboxes;
 
