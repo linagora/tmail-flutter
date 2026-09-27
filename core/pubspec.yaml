@@ -35,7 +35,7 @@ dependencies:
   sanitize_html:
     git:
       url: https://github.com/linagora/dart-neats.git
-      ref: support_mail
+      ref: 8ca32f013de5d7c9973209651498fddc7d1b6299 # support_mail
       path: sanitize_html
 
   linagora_design_flutter:

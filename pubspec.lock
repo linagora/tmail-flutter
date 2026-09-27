@@ -301,7 +301,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
+      ref: db61bece7ba0b543fdc4af68cfb7c2c958887418
       resolved-ref: db61bece7ba0b543fdc4af68cfb7c2c958887418
       url: "https://github.com/linagora/flutter_contacts.git"
     source: git
@@ -684,7 +684,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-flutter-appauth
+      ref: "0952346bf781bd87b93b8c61619f81a264be52db"
       resolved-ref: "0952346bf781bd87b93b8c61619f81a264be52db"
       url: "https://github.com/linagora/flutter_appauth_web.git"
     source: git
@@ -749,7 +749,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "860803b73cf48c7a28b3b67d05a13b3a4adbe249"
       resolved-ref: "860803b73cf48c7a28b3b67d05a13b3a4adbe249"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
@@ -1253,7 +1253,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "388c756491955c77aee56f2153cd726eafe7a985"
       resolved-ref: "388c756491955c77aee56f2153cd726eafe7a985"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
@@ -1342,7 +1342,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
+      ref: "0585f29af985ab3290aaa467e01936f166a5ba5e"
       resolved-ref: "0585f29af985ab3290aaa467e01936f166a5ba5e"
       url: "https://github.com/linagora/intl_generator.git"
     source: git
@@ -1367,7 +1367,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: fd1be98c3e7cf7d13c0d7b59274d264f1b14596f
       resolved-ref: fd1be98c3e7cf7d13c0d7b59274d264f1b14596f
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
@@ -1432,7 +1432,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
+      ref: "69ab9d2ae5fafcbd304e8f5d78b42d355bf8a8ba"
       resolved-ref: "69ab9d2ae5fafcbd304e8f5d78b42d355bf8a8ba"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
@@ -2009,7 +2009,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: b388eb837bd1256a9623a8cd0a62cfc21e9f51cf
       resolved-ref: b388eb837bd1256a9623a8cd0a62cfc21e9f51cf
       url: "https://github.com/linagora/receive_sharing_intent.git"
     source: git
@@ -2018,7 +2018,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: fad6dc0102d07589c1cc6af97f1d8092749d1185
       resolved-ref: fad6dc0102d07589c1cc6af97f1d8092749d1185
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
@@ -2075,7 +2075,7 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: support_mail
+      ref: "8ca32f013de5d7c9973209651498fddc7d1b6299"
       resolved-ref: "8ca32f013de5d7c9973209651498fddc7d1b6299"
       url: "https://github.com/linagora/dart-neats.git"
     source: git
@@ -2441,7 +2441,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: fdfc1813a3a263446a18becc795c45fbae4d8f3b
       resolved-ref: fdfc1813a3a263446a18becc795c45fbae4d8f3b
       url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
