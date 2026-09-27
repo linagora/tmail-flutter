@@ -41,6 +41,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  flutter_web_plugins:
+    sdk: flutter
+
   core:
     path: core
 
@@ -225,7 +228,6 @@ dependencies:
 
   flutter_slidable: 3.1.2
 
-  url_strategy: 0.2.0
 
   dotted_border: 2.1.0
 
