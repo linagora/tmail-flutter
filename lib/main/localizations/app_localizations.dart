@@ -6122,4 +6122,11 @@ class AppLocalizations {
       name: 'linkTypeNotAllowed',
     );
   }
+
+  String get messageDialogSendEmailContentLoading {
+    return Intl.message(
+      'Your message could not be sent because its content is still loading. Please wait and try again.',
+      name: 'messageDialogSendEmailContentLoading',
+    );
+  }
 }
