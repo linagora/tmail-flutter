@@ -531,14 +531,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.3"
-  external_path:
-    dependency: "direct main"
-    description:
-      name: external_path
-      sha256: "68a18a2aa51ec012d7013ea2a80305dc5372f3577a2bbcc7dcc5550b25a5a73b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   fading_edge_scrollview:
     dependency: "direct main"
     description:
@@ -1149,7 +1141,7 @@ packages:
     source: hosted
     version: "4.1.0"
   flutter_web_plugins:
-    dependency: transitive
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -2550,14 +2542,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-  url_strategy:
-    dependency: "direct main"
-    description:
-      name: url_strategy
-      sha256: "42b68b42a9864c4d710401add17ad06e28f1c1d5500c93b98c431f6b0ea4ab87"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   uuid:
     dependency: "direct main"
     description:
