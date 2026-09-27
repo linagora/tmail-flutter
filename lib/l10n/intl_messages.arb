@@ -5667,5 +5667,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoading": "Your message could not be sent because its content is still loading. Please wait and try again.",
+  "@messageDialogSendEmailContentLoading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

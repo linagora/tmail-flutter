@@ -826,6 +826,19 @@ class ComposerController extends BaseController
 
     final appLocalizations = AppLocalizations.of(context);
 
+    if (isEmailBodyNotReady) {
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.messageDialogSendEmailContentLoading,
+        appLocalizations.got_it,
+        title: appLocalizations.sending_failed,
+        showAsBottomSheet: true,
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
+      return;
+    }
+
     if (!isEnableEmailSendButton.value) {
       MessageDialogActionManager().showConfirmDialogAction(context,
         appLocalizations.message_dialog_send_email_without_recipient,
@@ -893,6 +906,17 @@ class ComposerController extends BaseController
     }
 
     _prepareToSendMessages(context);
+  }
+
+  bool get isEmailBodyNotReady {
+    final isContentLoading = emailContentsViewState.value?.fold(
+      (_) => false,
+      (success) => success is GetEmailContentLoading,
+    ) ?? false;
+    final isEditorNotLoaded = PlatformInfo.isWeb
+      ? !_isEmailBodyLoaded && !screenDisplayMode.value.isNotContentVisible()
+      : !_isEmailBodyLoaded;
+    return isContentLoading || isEditorNotLoaded;
   }
 
   Future<String> getContentInEditor() async {
