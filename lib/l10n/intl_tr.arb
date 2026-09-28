@@ -228,5 +228,749 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "initializing_data": "Veriler hazırlanıyor...",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login_text_slogan": "Twake Mail",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapBasedMailSolution": "JMAP tabanlı\nekip çalışmasına uygun e-posta çözümü",
+  "@jmapBasedMailSolution": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_folder": "Klasörde ara",
+  "@search_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_all": "Tümünü yanıtla",
+  "@reply_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_email_address_prefix": "Bcc",
+  "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_email_address_prefix": "Yanıtla",
+  "@reply_to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cc_email_address_prefix": "Cc",
+  "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "header_email_quoted": "{sentDate} tarihinde, {emailAddress} tarafından",
+  "@header_email_quoted": {
+    "type": "text",
+    "placeholders_order": [
+      "sentDate",
+      "emailAddress"
+    ],
+    "placeholders": {
+      "sentDate": {},
+      "emailAddress": {}
+    }
+  },
+  "prefix_reply_email": "Ynt:",
+  "@prefix_reply_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_forward_email": "İlt:",
+  "@prefix_forward_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "count_email_selected": "{count} seçildi",
+  "@count_email_selected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mark_as_starred": "Yıldızlı olarak işaretle",
+  "@mark_as_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_multiple_item_as_read": "{count} öğe okundu olarak işaretlendi",
+  "@marked_multiple_item_as_read": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "marked_multiple_item_as_unread": "{count} öğe okunmadı olarak işaretlendi",
+  "@marked_multiple_item_as_unread": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "attachment_download_failed": "Ek indirilemedi",
+  "@attachment_download_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloading_file": "{fileName} indiriliyor",
+  "@downloading_file": {
+    "type": "text",
+    "placeholders_order": [
+      "fileName"
+    ],
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "preparing_to_export": "Dışa aktarma hazırlanıyor",
+  "@preparing_to_export": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cancel": "İptal",
+  "@cancel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "user_cancel_download_file": "Kullanıcı dosya indirmeyi iptal etti",
+  "@user_cancel_download_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_need_to_grant_files_permission_to_download_attachments": "Ekleri indirmek için dosya erişim izni vermeniz gerekiyor",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleHeaderAttachment": "{count} Ek ({totalSize})",
+  "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "singularAttachmentTitleHeader": "{count} Ek ({totalSize})",
+  "@singularAttachmentTitleHeader": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "attach_file_prepare_text": "Dosya eklenmeye hazırlanıyor...",
+  "@attach_file_prepare_text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "can_not_upload_this_file_as_attachments": "Bu dosya ek olarak yüklenemiyor",
+  "@can_not_upload_this_file_as_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments_uploaded_successfully": "Ekler başarıyla yüklendi",
+  "@attachments_uploaded_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pick_attachments": "Ekleri seç",
+  "@pick_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "photos_and_videos": "Fotoğraflar ve Videolar",
+  "@photos_and_videos": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "browse": "Gözat",
+  "@browse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "movedToFolder": "{destinationMailboxPath} klasörüne taşındı",
+  "@movedToFolder": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationMailboxPath"
+    ],
+    "placeholders": {
+      "destinationMailboxPath": {}
+    }
+  },
+  "undo": "Geri al",
+  "@undo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_star_multiple_item": "{count} öğe yıldızlandı",
+  "@marked_star_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "marked_unstar_multiple_item": "{count} öğenin yıldızı kaldırıldı",
+  "@marked_unstar_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "search_mail": "E-postalarda ara",
+  "@search_mail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_suggestion_search": "Şunu ara",
+  "@prefix_suggestion_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_emails_matching_your_search": "Aramanızla eşleşen e-posta bulunamadı",
+  "@no_emails_matching_your_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "results": "Sonuçlar",
+  "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "Düzenle",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_emails": "E-posta ve dosyalarda ara",
+  "@hint_search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose": "Yeni e-posta yaz",
+  "@compose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete": "Sil",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "Taşı",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spam": "Spam",
+  "@spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "flag": "İşaretle",
+  "@flag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "read": "Okundu",
+  "@read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread": "Okunmadı",
+  "@unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "the_feature_is_under_development": "Bu özellik geliştirme aşamasındadır.",
+  "@the_feature_is_under_development": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_message_toast": "Mesajları \"{action}\" olarak işaretlediniz",
+  "@marked_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "folders": "Klasörler",
+  "@folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sign_out": "Çıkış yap",
+  "@sign_out": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSearchFolders": "Klasörlerde ara",
+  "@hintSearchFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_attachments": "Ek içerenler",
+  "@with_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starred": "Yıldızlı",
+  "@starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "Mesajları \"{filterOption}\" filtresine göre filtrelediniz",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "disable_filter_message_toast": "Mesaj filtresini devre dışı bıraktınız",
+  "@disable_filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_unread": "Okunmamışlar",
+  "@with_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_starred": "Yıldızlılar",
+  "@with_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_has_been_sent_successfully": "Mesaj başarıyla gönderildi",
+  "@message_has_been_sent_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "done": "Tamam",
+  "@done": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newFolder": "Yeni klasör",
+  "@newFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOfFolderIsRequired": "Klasör adı gereklidir",
+  "@nameOfFolderIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderNameCannotContainSpecialCharacters": "Klasör adı özel karakterler içeremez",
+  "@folderNameCannotContainSpecialCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_folder_name_is_already_taken": "Bu klasör adı zaten kullanılıyor",
+  "@this_folder_name_is_already_taken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder_is_created": "{nameMailbox} oluşturuldu",
+  "@new_folder_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "createNewFolderFailure": "Yeni klasör oluşturulamadı",
+  "@createNewFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "drafts_saved": "Taslak kaydedildi",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discard": "Vazgeç",
+  "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "skip": "Atla",
+  "@skip": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputCreateNewFolder": "Klasör adını girin",
+  "@hintInputCreateNewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "Yeniden adlandır",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersSuccessfully": "Klasörler başarıyla silindi",
+  "@deleteFoldersSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersFailure": "Klasörler silinemedi",
+  "@deleteFoldersFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolders": "Klasörleri sil",
+  "@deleteFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_folder": "\"{nameMailbox}\" klasörü, tüm alt klasörleri ve içerdiği mesajlarla birlikte kalıcı olarak silinecek ve geri alınamayacaktır. Silme işlemine devam etmek istiyor musunuz?",
+  "@message_confirmation_dialog_delete_folder": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "message_confirmation_dialog_allow_subaddressing": "Şu adresi kullanarak herkesin doğrudan \"{nameMailbox}\" klasörünüze e-posta göndermesine izin vermek üzeresiniz:",
+  "@message_confirmation_dialog_allow_subaddressing": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "message_confirmation_dialog_allow_subaddressing_mobile": "<{address}> adresini kullanarak herkesin doğrudan \"{nameMailbox}\" klasörünüze e-posta göndermesine izin vermek üzeresiniz",
+  "@message_confirmation_dialog_allow_subaddressing_mobile": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox",
+      "address"
+    ],
+    "placeholders": {
+      "nameMailbox": {},
+      "address": {}
+    }
+  },
+  "renameFolder": "Klasörü yeniden adlandır",
+  "@renameFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "Klasör yeniden adlandırılamadı",
+  "@renameFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_field_cannot_be_blank": "Bu alan boş bırakılamaz",
+  "@this_field_cannot_be_blank": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "there_is_already_folder_with_the_same_name": "Aynı ada sahip bir klasör zaten mevcut",
+  "@there_is_already_folder_with_the_same_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_is_not_in_the_correct_format": "E-posta adresi doğru formatta değil",
+  "@email_address_is_not_in_the_correct_format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preparing_to_save": "Kaydedilmeye hazırlanıyor",
+  "@preparing_to_save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_message": "Yeni mesaj",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hide": "Gizle",
+  "@hide": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "E-posta yaz",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_copied_to_clipboard": "E-posta adresi panoya kopyalandı",
+  "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailSubaddressCopiedToClipboard": "E-posta alt adresi panoya kopyalandı",
+  "@emailSubaddressCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "minimize": "Simge durumuna küçült",
+  "@minimize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fullscreen": "Tam ekran",
+  "@fullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "Kapat",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "Gönder",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments": "Ekler",
+  "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment": "Ek",
+  "@attachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showAll": "Tümünü gör",
+  "@showAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_a_subject": "Mesajı konu olmadan göndermek istediğinizden emin misiniz?",
+  "@message_dialog_send_email_without_a_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Twake Mail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "E-postalarda ara",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "Tümünü seç",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_messages": "Mesajları filtrele",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "not_starred": "Yıldızsız",
+  "@not_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "Seç",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "Seçildi",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Seçilmedi",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "Daha fazla",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "Geri",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "expand": "Genişlet",
+  "@expand": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapse": "Daralt",
+  "@collapse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "Taslaklara kaydet",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_compose_email": "Mesajınızı yazmaya başlayın...",
+  "@hint_compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file": "Dosya ekle",
+  "@attach_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "Göster",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "Alıcı ekle",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
