@@ -28,17 +28,8 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     this.userOptInByDefault,
   });
 
-  // Keep consent in the handwritten path so an older generated serializer
-  // cannot silently drop the instance default.
-  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) {
-    final config = _$SentryConfigLinagoraEcosystemFromJson(json);
-    return SentryConfigLinagoraEcosystem(
-      enabled: config.enabled,
-      dsn: config.dsn,
-      environment: config.environment,
-      userOptInByDefault: _parseBool(json['userOptInByDefault']),
-    );
-  }
+  factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) =>
+      _$SentryConfigLinagoraEcosystemFromJson(json);
 
   static bool? _parseBool(dynamic value) {
     if (value == null) return null;
@@ -47,11 +38,7 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
     return null;
   }
 
-  Map<String, dynamic> toJson() => {
-        ..._$SentryConfigLinagoraEcosystemToJson(this),
-        if (userOptInByDefault != null)
-          'userOptInByDefault': userOptInByDefault,
-      };
+  Map<String, dynamic> toJson() => _$SentryConfigLinagoraEcosystemToJson(this);
 
   static LinagoraEcosystemProperties? deserialize(dynamic json) {
     if (json is Map<String, dynamic>) {
