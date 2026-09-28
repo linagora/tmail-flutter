@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,11 +15,19 @@ class AppUtils {
 
   static void launchLink(String url, {bool isNewTab = true}) {
     log('AppUtils::launchLink: url = $url');
+    final uri = Uri.tryParse(url);
+    if (uri == null || !ExternalLinkPolicy.canLaunchFromContent(uri)) {
+      logWarning('AppUtils::launchLink: refused, scheme not allowed: $url');
+      return;
+    }
     if (PlatformInfo.isWeb && HtmlUtils.isSafariBelow17()) {
-      html.window.open(url, isNewTab ? '_blank' : '_self');
+      // url_launcher_web blocks javascript: and always passes
+      // noopener,noreferrer; this branch bypasses that library entirely, so
+      // restore both properties here.
+      html.window.open(url, isNewTab ? '_blank' : '_self', 'noopener,noreferrer');
     } else {
       launchUrl(
-        Uri.parse(url),
+        uri,
         webOnlyWindowName: isNewTab ? '_blank' : '_self',
         mode: LaunchMode.externalApplication,
       );

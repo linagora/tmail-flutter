@@ -8,6 +8,7 @@ void main() {
       'http://example.com/path',
       'HTTPS://EXAMPLE.COM',
       'tel:+33123456789',
+      'mailto:someone@example.com',
     ]) {
       test('SHOULD allow $url', () {
         expect(ExternalLinkPolicy.canLaunchFromContent(Uri.parse(url)), isTrue);

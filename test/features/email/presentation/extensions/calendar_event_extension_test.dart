@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_mail_to.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_extension_fields.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/mail_address.dart';
@@ -273,6 +274,40 @@ void main() {
       final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
 
       expect(actions, []);
+    });
+  });
+
+  group('calendar_event_extension::videoConferences::test', () {
+    test('drops a conference link whose scheme is not http, https or tel', () {
+      final event = CalendarEvent(
+        extensionFields: CalendarExtensionFields({
+          'X-OPENPAAS-VIDEOCONFERENCE': ['javascript:alert(1)', 'https://meet.example/room'],
+        }),
+      );
+
+      expect(event.videoConferences, equals(['https://meet.example/room']));
+    });
+
+    test('drops a link that reaches the application own deep-link scheme', () {
+      final event = CalendarEvent(
+        extensionFields: CalendarExtensionFields({
+          'X-OPENPAAS-VIDEOCONFERENCE': [
+            'twakemail.mobile://openApp?jmapUrl=https://evil.example',
+          ],
+        }),
+      );
+
+      expect(event.videoConferences, isEmpty);
+    });
+
+    test('keeps http, https and tel conference links', () {
+      final event = CalendarEvent(
+        extensionFields: CalendarExtensionFields({
+          'X-GOOGLE-CONFERENCE': ['https://meet.example/a', 'tel:+15551234567'],
+        }),
+      );
+
+      expect(event.videoConferences, equals(['https://meet.example/a', 'tel:+15551234567']));
     });
   });
 }
