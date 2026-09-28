@@ -6,10 +6,10 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
@@ -27,7 +27,10 @@ class RichTextWebController extends GetxController {
   static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
   static const int fontSizeDefault = 16;
 
-  final editorController = HtmlEditorController();
+  final HtmlEditorController editorController;
+
+  RichTextWebController({HtmlEditorController? editorController})
+    : editorController = editorController ?? HtmlEditorController();
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
@@ -313,15 +316,20 @@ class RichTextWebController extends GetxController {
     menuOrderListController.hideMenu();
   }
 
-  void insertImageAsBase64({required PlatformFile platformFile, int? maxWidth}) {
-    if (platformFile.bytes != null) {
-      final base64Data = base64Encode(platformFile.bytes!);
-      final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${platformFile.extension}');
+  Future<void> insertImageAsBase64({required FileInfo fileInfo, int? maxWidth}) async {
+    try {
+      final bytes = await fileInfo.readBytes();
+      if (bytes.isEmpty) {
+        logWarning("RichTextWebController::insertImageAsBase64: bytes is empty");
+        return;
+      }
+      final base64Data = base64Encode(bytes);
+      final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}');
       editorController.insertHtml(
-        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
+        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${fileInfo.fileName}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
       );
-    } else {
-      logWarning("RichTextWebController::insertImageAsBase64: bytes is null");
+    } catch (e) {
+      logWarning('RichTextWebController::insertImageAsBase64:Exception: $e');
     }
   }
 
