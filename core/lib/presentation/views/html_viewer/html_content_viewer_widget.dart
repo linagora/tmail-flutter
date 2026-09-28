@@ -4,6 +4,7 @@ import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_configuration.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -562,6 +563,10 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   }
 
   Future<void> _launchExternalUrl(Uri requestUri) async {
+    if (!ExternalLinkPolicy.canLaunchFromContent(requestUri)) {
+      logWarning('_HtmlContentViewState::_launchExternalUrl: blocked scheme ${requestUri.scheme}');
+      return;
+    }
     if (!await launcher.canLaunchUrl(requestUri)) return;
 
     await launcher.launchUrl(
