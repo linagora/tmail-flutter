@@ -53,6 +53,58 @@ class HtmlUtils {
       });''',
     name: 'removeLineHeight1px');
 
+  /// Editor script (summernote iframe): sanitizes every `insertHTML`
+  /// command. The editor inserts pasted and dropped HTML with
+  /// `document.execCommand('insertHTML', ...)` instead of the browser's
+  /// native, sanitizing paste, and the editor iframe is same-origin with the
+  /// application: pasted scripts, event handlers or `javascript:` links would
+  /// run with its privileges. The markup is parsed in an inert document,
+  /// active content is removed, then the native command runs.
+  static const sanitizeInsertHtml = (
+    script: r"""
+      if (!document.__tmailInsertHtmlSanitized) {
+        document.__tmailInsertHtmlSanitized = true;
+        const blockedTags = 'script,iframe,frame,frameset,object,embed,applet,meta,base,link,'
+          + 'form,input,button,textarea,select,option,noscript,template,xmp,noembed,noframes,'
+          + 'plaintext,title,style,svg,math,portal';
+        const urlAttributes = ['href', 'src', 'xlink:href', 'action', 'formaction', 'background',
+          'poster', 'data', 'codebase', 'cite', 'longdesc', 'usemap', 'lowsrc', 'dynsrc'];
+        const isSafeUrl = (name, value) => {
+          const url = String(value).replace(/[\u0000- \u007f-\u009f]/g, '').toLowerCase();
+          if (/^(javascript|vbscript|livescript|mocha):/.test(url)) return false;
+          if (url.startsWith('data:')) {
+            return name === 'src' && /^data:image\/(png|jpe?g|gif|webp|bmp);/.test(url);
+          }
+          return true;
+        };
+        const sanitizeHtml = (html) => {
+          const doc = new DOMParser().parseFromString(String(html), 'text/html');
+          doc.querySelectorAll(blockedTags).forEach((node) => node.remove());
+          doc.querySelectorAll('*').forEach((element) => {
+            for (const attribute of Array.from(element.attributes)) {
+              const name = attribute.name.toLowerCase();
+              if (name.startsWith('on') || name === 'srcdoc' || name === 'srcset' || name === 'is'
+                  || (urlAttributes.includes(name) && !isSafeUrl(name, attribute.value))) {
+                element.removeAttribute(attribute.name);
+              }
+            }
+            const position = element.style && element.style.position;
+            if (position === 'fixed' || position === 'absolute' || position === 'sticky') {
+              element.style.removeProperty('position');
+            }
+          });
+          return doc.body ? doc.body.innerHTML : '';
+        };
+        const nativeExecCommand = document.execCommand.bind(document);
+        document.execCommand = function (command, showUI, value) {
+          if (typeof command === 'string' && command.toLowerCase() === 'inserthtml') {
+            value = sanitizeHtml(value);
+          }
+          return nativeExecCommand(command, showUI, value);
+        };
+      }""",
+    name: 'sanitizeInsertHtml');
+
   static const registerDropListener = (
     script: '''
       document.querySelector(".note-editable").addEventListener(
