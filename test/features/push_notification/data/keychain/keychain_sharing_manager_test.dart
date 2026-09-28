@@ -21,12 +21,13 @@ void main() {
       FlutterSecureStorage.setMockInitialValues({});
     });
 
-    test('WHEN saveSentryConfig called \n'
-        'THEN stores JSON under sentryConfigKeyChain key', () async {
+    test('WHEN explicitly allowed Sentry config is saved \n'
+        'THEN stores allowed JSON under sentryConfigKeyChain key', () async {
       final config = SentryConfig(
         dsn: 'https://test@sentry.io/123',
         environment: 'production',
         release: '1.0.0',
+        isReportingAllowed: true,
       );
 
       await keychainSharingManager.saveSentryConfig(config);
@@ -42,13 +43,12 @@ void main() {
       expect(decoded['isReportingAllowed'], isTrue);
     });
 
-    test('WHEN reporting is not allowed \n'
-        'THEN stores the denied state for the notification extension', () async {
+    test('WHEN reporting consent is not available \n'
+        'THEN stores the denied default for the notification extension', () async {
       final config = SentryConfig(
         dsn: 'https://test@sentry.io/123',
         environment: 'production',
         release: '1.0.0',
-        isReportingAllowed: false,
       );
 
       await keychainSharingManager.saveSentryConfig(config);
