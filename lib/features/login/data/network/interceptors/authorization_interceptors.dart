@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/web_refresh_token_error_classifier.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
-import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -508,13 +508,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   Stream<List<int>>? _getDataUploadRequest(dynamic mapUploadExtra) {
     try {
       if (mapUploadExtra is! Map) return null;
-      final filePath = mapUploadExtra[FileUploader.filePathExtraKey] as String?;
-      if (filePath?.isNotEmpty == true) {
-        return File(filePath!).openRead();
-      } else {
-        return mapUploadExtra[FileUploader.streamDataExtraKey] as Stream<List<int>>?;
-      }
-    } catch(e) {
+      final openRead = mapUploadExtra[UploadRequestExtra.openReadKey]
+          as Stream<List<int>> Function()?;
+      return openRead?.call();
+    } catch (e) {
       logWarning(
         'AuthorizationInterceptors::_getDataUploadRequest: Exception = $e',
       );
@@ -729,13 +726,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
     final retryDio = _createRetryDio();
 
-    if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
+    if (extraInRequest.containsKey(UploadRequestExtra.uploadAttachmentKey)) {
       log('AuthorizationInterceptors::_retryRequest: '
           'Retry upload request with TokenId = ${_token?.tokenIdHash}');
       return _retryUploadRequest(
         retryDio,
         requestOptions,
-        extraInRequest[FileUploader.uploadAttachmentExtraKey],
+        extraInRequest[UploadRequestExtra.uploadAttachmentKey],
       );
     }
 
@@ -744,41 +741,37 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return retryDio.fetch(requestOptions);
   }
 
-  /// The failed attempt already consumed the body stream, so a replay has to
-  /// rebuild it from the file path or the retained bytes.
+  /// The failed attempt drained the body stream, so a replay opens a new one
+  /// from the source factory the request carried.
   Future<Response> _retryUploadRequest(
     Dio retryDio,
     RequestOptions requestOptions,
     dynamic uploadExtra,
   ) {
-    if (PlatformInfo.isMobile) {
-      final uploadBody = _getDataUploadRequest(uploadExtra);
-
-      // Without a rebuilt body the replay would send an empty one, so fail
-      // plainly instead of storing a zero-byte blob under the attachment's name.
-      if (uploadBody == null) {
-        throw const MissingAttachmentSourceException();
-      }
-
-      // Replaying the original options keeps `onSendProgress`, `CancelToken`,
-      // the timeouts and the response type, all of which rebuilding an
-      // `Options` from scratch drops.
-      return retryDio.fetch(requestOptions.copyWith(data: uploadBody));
+    if (_hasBlobSource(uploadExtra)) {
+      // `requestOptions.data` was already null for a blob upload — the web
+      // blob adapter resolves the URL in `extra` again on this replay, so
+      // there is no body to rebuild here.
+      return retryDio.fetch(requestOptions);
     }
 
-    // Web keeps the retry path it already had. It works today, and this fix is
-    // scoped to the mobile isolate regression.
-    return retryDio.request(
-      requestOptions.path,
-      data: _getDataUploadRequest(uploadExtra),
-      queryParameters: requestOptions.queryParameters,
-      options: Options(
-        method: requestOptions.method,
-        headers: requestOptions.headers,
-        extra: requestOptions.extra,
-      ),
-    );
+    final uploadBody = _getDataUploadRequest(uploadExtra);
+
+    // Without a rebuilt body the replay would send an empty one, so fail
+    // plainly instead of storing a zero-byte blob under the attachment's name.
+    if (uploadBody == null) {
+      throw const MissingAttachmentSourceException();
+    }
+
+    // Replaying the original options keeps `onSendProgress`, `CancelToken`,
+    // the timeouts and the response type, all of which rebuilding an
+    // `Options` from scratch drops.
+    return retryDio.fetch(requestOptions.copyWith(data: uploadBody));
   }
+
+  bool _hasBlobSource(dynamic mapUploadExtra) =>
+      mapUploadExtra is Map &&
+      mapUploadExtra[UploadRequestExtra.sourceUrlKey] != null;
 
   /// Creates a separate Dio instance without interceptors for retry requests.
   /// This avoids deadlock when retrying inside [onError] of [QueuedInterceptorsWrapper].
