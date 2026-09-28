@@ -19,8 +19,21 @@ void main() {
       expect(policy.isAllowed, isFalse);
     });
 
-    test('suspends reporting without changing the resolved permission', () {
+    test('starts denied until ecosystem or server consent is supplied', () {
       final policy = SentryReportingPolicy();
+
+      expect(policy.isAllowed, isFalse);
+      expect(policy.shouldRun, isFalse);
+
+      policy.setDefaultOverride(true);
+      expect(policy.shouldRun, isTrue);
+
+      policy.clearDefaultOverride();
+      expect(policy.shouldRun, isFalse);
+    });
+
+    test('suspends reporting without changing the resolved permission', () {
+      final policy = SentryReportingPolicy(isAllowedByConfiguration: true);
 
       expect(policy.isAllowed, isTrue);
       expect(policy.shouldRun, isTrue);

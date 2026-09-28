@@ -216,6 +216,7 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     required FutureOr<void> Function() appRunner,
     required FutureOr<void> Function() fallBackRunner,
   }) async {
+    var appRunnerAttempted = false;
     if (_isSentryAvailable) {
       log('[SentryManager] Already initialized.');
       await appRunner();
@@ -234,7 +235,10 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
       );
 
       if (!_shouldRunSentry) {
-        await fallBackRunner();
+        // Keep the env-configured web widget integrations mounted for a later
+        // consent grant without starting the SDK or running the app twice.
+        appRunnerAttempted = true;
+        await appRunner();
         return;
       }
 
@@ -250,6 +254,7 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
         log('[SentryManager] Sentry active.');
       }
     } catch (e) {
+      if (appRunnerAttempted) rethrow;
       logWarning('[SentryManager] Init failed. Exception $e');
       await fallBackRunner();
     }

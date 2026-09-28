@@ -1,6 +1,7 @@
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/web_sentry_ecosystem_handler.dart';
 
@@ -135,4 +136,117 @@ void main() {
 
     expect(sentryManager.isSentryReportingAllowed, isFalse);
   });
+
+  test(
+    'clears the old account identity before applying a new ecosystem',
+    () async {
+      sentryManager.setUser(SentryUser(id: 'old-account'));
+      sentryManager.setSentryReportingConsent(true);
+      await sentryManager.pendingScopeSync;
+
+      handler.onEcosystemCleared();
+      handler.onAccountChanged();
+      handler.onEcosystemLoaded(
+        LinagoraEcosystem.deserialize({
+          'sentry': {'enabled': true, 'userOptInByDefault': true},
+        }),
+      );
+      await sentryManager.pendingLifecycleTransition;
+      await sentryManager.pendingScopeSync;
+
+      expect(sentryManager.userForScope, isNull);
+    },
+  );
+
+  test(
+    'env SDK starts only with consent and pauses during ecosystem reload',
+    () async {
+      final startedConfigs = <SentryConfig>[];
+      var closes = 0;
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async {
+          startedConfigs.add(sentryConfig!);
+          return true;
+        },
+        closeSentrySdk: () async {
+          closes++;
+        },
+      );
+      await manager.initializeWithSentryConfig(
+        SentryConfig(
+          dsn: 'https://env@sentry.io/123',
+          environment: 'test',
+          release: '1.0.0',
+          isAvailable: true,
+        ),
+      );
+      final webHandler = WebSentryEcosystemHandler(sentryManager: manager);
+      manager.setUser(SentryUser(id: 'current-account'));
+      await manager.pendingScopeSync;
+
+      expect(startedConfigs, isEmpty);
+      expect(manager.isSentryReportingAllowed, isFalse);
+
+      webHandler.onEcosystemLoaded(
+        LinagoraEcosystem.deserialize({
+          'sentry': {'enabled': true, 'userOptInByDefault': true},
+        }),
+      );
+      expect(manager.isSentryReportingAllowed, isTrue);
+      await manager.pendingLifecycleTransition;
+      await manager.pendingScopeSync;
+
+      expect(startedConfigs, hasLength(1));
+      expect(startedConfigs.single.dsn, 'https://env@sentry.io/123');
+      expect(manager.userForScope?.id, 'current-account');
+
+      manager.setSentryReportingConsent(false);
+      await manager.pendingLifecycleTransition;
+
+      expect(closes, 1);
+      expect(manager.isSentryAvailable, isFalse);
+
+      webHandler.onEcosystemCleared();
+      await manager.pendingLifecycleTransition;
+      webHandler.onEcosystemLoaded(
+        LinagoraEcosystem.deserialize({
+          'sentry': {'enabled': true, 'userOptInByDefault': true},
+        }),
+      );
+      await manager.pendingLifecycleTransition;
+
+      expect(
+        startedConfigs,
+        hasLength(1),
+        reason: 'server opt-out still overrides the reloaded default',
+      );
+
+      manager.setSentryReportingConsent(null);
+      await manager.pendingLifecycleTransition;
+
+      expect(startedConfigs, hasLength(2));
+      expect(manager.isSentryAvailable, isTrue);
+
+      webHandler.onEcosystemCleared();
+      await manager.pendingLifecycleTransition;
+
+      expect(closes, 2);
+      expect(manager.isSentryReportingAllowed, isTrue);
+      expect(manager.isSentryReportingReady, isFalse);
+      expect(manager.userForScope, isNull);
+
+      webHandler.onEcosystemLoaded(
+        LinagoraEcosystem.deserialize({
+          'sentry': {'enabled': true, 'userOptInByDefault': true},
+        }),
+      );
+      await manager.pendingLifecycleTransition;
+      await manager.pendingScopeSync;
+
+      expect(startedConfigs, hasLength(3));
+      expect(manager.userForScope?.id, 'current-account');
+    },
+  );
 }

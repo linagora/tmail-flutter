@@ -5,6 +5,7 @@ import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/linagora_ecosystem_handler_registry.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/web_sentry_ecosystem_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
@@ -82,6 +84,26 @@ class _RecordingEcosystemHandler implements LinagoraEcosystemHandler {
   @override
   void onEcosystemCleared() {
     clearedCount++;
+  }
+}
+
+class _RecordingSentryEcosystem extends SentryEcosystem {
+  _RecordingSentryEcosystem()
+      : super(null, null, initializeSentry: (_) async {});
+
+  final loadedConfigs = <SentryConfigLinagoraEcosystem>[];
+  int clearCount = 0;
+  final clearUserValues = <bool>[];
+
+  @override
+  Future<void> setUp(SentryConfigLinagoraEcosystem config) async {
+    loadedConfigs.add(config);
+  }
+
+  @override
+  Future<void> clear({bool clearUser = true}) async {
+    clearCount++;
+    clearUserValues.add(clearUser);
   }
 }
 
@@ -177,6 +199,8 @@ void main() {
   testWidgets(
     'registers the web Sentry handler without invoking non-web setup',
     (tester) async {
+      dotenv.testLoad(mergeWith: {'SENTRY_ENABLED': 'false'});
+      addTearDown(dotenv.clean);
       PlatformInfo.isTestingForWeb = true;
       final sentryManager = SentryManager.instance
         ..resumeSentryReporting()
@@ -194,19 +218,20 @@ void main() {
       final container = await _pumpDelegate(tester);
       final registry = container.read(linagoraEcosystemHandlerRegistryProvider);
 
-      registry.dispatchLoaded(LinagoraEcosystem.deserialize({
-        'sentry': {
-          'enabled': true,
-          'userOptInByDefault': false,
-        },
-      }));
+      registry.dispatchLoaded(
+        LinagoraEcosystem.deserialize({
+          'sentry': {'enabled': true, 'userOptInByDefault': false},
+        }),
+      );
       await sentryManager.pendingLifecycleTransition;
 
       expect(sentryManager.isSentryReportingAllowed, isFalse);
 
-      registry.dispatchLoaded(LinagoraEcosystem.deserialize({
-        'paywallUrlTemplate': 'https://domain.tld/premium',
-      }));
+      registry.dispatchLoaded(
+        LinagoraEcosystem.deserialize({
+          'paywallUrlTemplate': 'https://domain.tld/premium',
+        }),
+      );
       await sentryManager.pendingLifecycleTransition;
 
       expect(sentryManager.isSentryReportingAllowed, isFalse);
@@ -219,6 +244,108 @@ void main() {
       expect(dashboardController.clearSentryCount, 0);
     },
   );
+
+  final webEcosystemFallbackCases =
+      <({String description, Map<String, String> env})>[
+        (description: 'absent', env: {}),
+        (
+          description: 'blank',
+          env: {
+            'SENTRY_ENABLED': '',
+            'SENTRY_DSN': ' ',
+            'SENTRY_ENVIRONMENT': '',
+          },
+        ),
+      ];
+
+  for (final testCase in webEcosystemFallbackCases) {
+    testWidgets(
+      'uses ecosystem Sentry configuration on web when env values are ${testCase.description}',
+      (tester) async {
+        dotenv.testLoad(mergeWith: testCase.env);
+        addTearDown(dotenv.clean);
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        final dashboardController = _registerDashboardController('first');
+        final sentryEcosystem = _RecordingSentryEcosystem();
+        Get.put<SentryEcosystem>(sentryEcosystem);
+        final container = await _pumpDelegate(tester);
+        final registry =
+            container.read(linagoraEcosystemHandlerRegistryProvider);
+        registry.dispatchLoaded(
+          LinagoraEcosystem.deserialize({
+            'sentry': {
+              'enabled': true,
+              'dsn': 'https://ecosystem@sentry.io/123',
+              'environment': 'test',
+              'userOptInByDefault': true,
+            },
+          }),
+        );
+        await tester.pump();
+
+        expect(sentryEcosystem.loadedConfigs, hasLength(1));
+        expect(
+          sentryEcosystem.loadedConfigs.single.dsn,
+          'https://ecosystem@sentry.io/123',
+        );
+        expect(dashboardController.setUpSentryCount, 0);
+
+        registry.dispatchCleared();
+        await tester.pump();
+        expect(sentryEcosystem.clearCount, greaterThanOrEqualTo(2));
+        expect(sentryEcosystem.clearUserValues, everyElement(isFalse));
+      },
+    );
+  }
+
+  final webEnvOwnedCases = <({String description, Map<String, String> env})>[
+    (description: 'explicitly disabled', env: {'SENTRY_ENABLED': 'false'}),
+    (description: 'only enabled', env: {'SENTRY_ENABLED': 'true'}),
+    (description: 'only DSN', env: {'SENTRY_DSN': 'https://env@sentry.io/123'}),
+    (description: 'only environment', env: {'SENTRY_ENVIRONMENT': 'test'}),
+    (
+      description: 'complete',
+      env: {
+        'SENTRY_ENABLED': 'true',
+        'SENTRY_DSN': 'https://env@sentry.io/123',
+        'SENTRY_ENVIRONMENT': 'test',
+      },
+    ),
+  ];
+
+  for (final testCase in webEnvOwnedCases) {
+    testWidgets(
+      'keeps web Sentry env-owned when env is ${testCase.description}',
+      (tester) async {
+        dotenv.testLoad(mergeWith: testCase.env);
+        addTearDown(dotenv.clean);
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        final dashboardController = _registerDashboardController('first');
+        final sentryEcosystem = _RecordingSentryEcosystem();
+        Get.put<SentryEcosystem>(sentryEcosystem);
+        final container = await _pumpDelegate(tester);
+        final registry =
+            container.read(linagoraEcosystemHandlerRegistryProvider);
+        expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+        registry.dispatchLoaded(
+          LinagoraEcosystem.deserialize({
+            'sentry': {
+              'enabled': true,
+              'dsn': 'https://ecosystem@sentry.io/123',
+              'environment': 'test',
+              'userOptInByDefault': true,
+            },
+          }),
+        );
+        await tester.pump();
+
+        expect(sentryEcosystem.loadedConfigs, isEmpty);
+        expect(dashboardController.setUpSentryCount, 0);
+      },
+    );
+  }
 
   testWidgets(
     'does not carry server Sentry consent to another account',

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +11,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_user_cache.dart';
 import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -816,6 +818,87 @@ void main() {
     expect(iosSharingManager.savedConfigs, isEmpty);
     expect(iosSharingManager.deleteCalls, 1);
   });
+
+  test('web fallback applies consent from a deserialized ecosystem', () async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    sentryManager.setSentryReportingConsent(null);
+    SentryConfig? initializedConfig;
+    final sentryEcosystem = SentryEcosystem(
+      null,
+      null,
+      initializeSentry: (config) async {
+        initializedConfig = config;
+      },
+    );
+    final ecosystem = LinagoraEcosystem.deserialize({
+      'sentry': {
+        'enabled': true,
+        'dsn': 'https://ecosystem@sentry.io/123',
+        'environment': 'test',
+        'userOptInByDefault': true,
+      },
+    });
+
+    await sentryEcosystem.setUp(ecosystem.sentryConfigEcosystem!);
+
+    expect(initializedConfig?.dsn, 'https://ecosystem@sentry.io/123');
+    expect(initializedConfig?.isReportingAllowed, isTrue);
+    expect(sentryManager.isSentryReportingAllowed, isTrue);
+  });
+
+  final invalidWebConfigs = <({
+    String description,
+    SentryConfigLinagoraEcosystem config,
+  })>[
+    (
+      description: 'disabled',
+      config: SentryConfigLinagoraEcosystem(
+        enabled: false,
+        dsn: 'https://test@sentry.io/123',
+        environment: 'test',
+        userOptInByDefault: true,
+      ),
+    ),
+    (
+      description: 'missing DSN',
+      config: SentryConfigLinagoraEcosystem(
+        enabled: true,
+        environment: 'test',
+        userOptInByDefault: true,
+      ),
+    ),
+    (
+      description: 'blank environment',
+      config: SentryConfigLinagoraEcosystem(
+        enabled: true,
+        dsn: 'https://test@sentry.io/123',
+        environment: ' ',
+        userOptInByDefault: true,
+      ),
+    ),
+  ];
+
+  for (final testCase in invalidWebConfigs) {
+    test('web fallback rejects ${testCase.description} ecosystem config',
+        () async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      final initializedConfigs = <SentryConfig>[];
+      final ecosystem = SentryEcosystem(
+        null,
+        null,
+        initializeSentry: (config) async {
+          initializedConfigs.add(config);
+        },
+      );
+
+      await ecosystem.setUp(testCase.config);
+
+      expect(initializedConfigs, isEmpty);
+      expect(sentryManager.isSentryReportingReady, isFalse);
+    });
+  }
 
   test('suspends reporting until a valid ecosystem config is set up', () async {
     final ecosystem = SentryEcosystem(

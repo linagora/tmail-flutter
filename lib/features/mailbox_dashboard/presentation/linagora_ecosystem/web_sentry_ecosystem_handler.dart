@@ -18,6 +18,7 @@ class WebSentryEcosystemHandler
   @override
   void onAccountChanged() {
     _sentryManager.setSentryReportingConsent(null);
+    _sentryManager.clearUser();
   }
 
   @override
