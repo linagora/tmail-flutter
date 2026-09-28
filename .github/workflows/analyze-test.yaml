@@ -23,7 +23,13 @@ jobs:
       - name: Discover packages with tests
         id: modules
         run: |
-          modules=$(python3 scripts/test-platforms.py matrix)
+          modules=$(git ls-files 'test/*_test.dart' '*/test/*_test.dart' \
+            | awk -F/ '$1 == "test" { print "default"; next } { print $1 }' \
+            | sort -u | jq -R . | jq -sc .)
+          if [[ "$modules" == "[]" ]]; then
+            echo "ERROR: no test found" >&2
+            exit 1
+          fi
           echo "modules=$modules" >> "$GITHUB_OUTPUT"
 
   analyze-test:
@@ -62,12 +68,12 @@ jobs:
       - name: Test
         if: ${{ !cancelled() && steps.prebuild.outcome == 'success' }}
         env:
-          MODULES: ${{ matrix.modules.path }}
+          MODULES: ${{ matrix.modules }}
         run: ./scripts/test.sh
 
       - name: Upload test reports
         if: success() || failure() # Always upload report
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports-${{ matrix.modules.id }}
+          name: test-reports-${{ matrix.modules }}
           path: test-report*.json

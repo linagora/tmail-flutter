@@ -1,54 +1,58 @@
 #!/usr/bin/env bash
+# Runs every test of one package: the VM tests, then the @TestOn('chrome') suites on Chrome.
+# MODULES is "default" for the root package, otherwise the package folder.
+#
+# CI supports exactly two platform declarations, each alone on its line: @TestOn('vm') and
+# @TestOn('chrome'). Any other platform metadata (another selector, @OnPlatform, a per-test
+# testOn/onPlatform, an import prefix) fails the run, so a test is never skipped in silence.
+# Every phase runs even if an earlier one failed; the script fails at the end.
 
 set -euo pipefail
 
-: "${MODULES:?MODULES must be set to default or a package path}"
+: "${MODULES:?MODULES must be set to default or a package folder}"
 
-has_default_tests=$(python3 scripts/test-platforms.py has-default-tests "$MODULES")
-if [[ "$has_default_tests" != "true" && "$has_default_tests" != "false" ]]; then
-    printf 'ERROR: Unexpected test discovery result for %s: %s\n' \
-        "$MODULES" "$has_default_tests" >&2
-    exit 1
+PLATFORM_METADATA='TestOn|testOn|OnPlatform|onPlatform'
+SUPPORTED_TEST_ON="@TestOn\(['\"](vm|chrome)['\"]\)$"
+CHROME_TEST_ON="^@TestOn\(['\"]chrome['\"]\)$"
+
+package_dir=$([[ "$MODULES" == "default" ]] && echo . || echo "$MODULES")
+# Write the machine-readable reports straight to files instead of redirecting stdout:
+# `flutter test` runs an implicit `pub get` first, and that output would otherwise be
+# captured into the report and invalidate the JSON. Keeping stdout free also leaves failure
+# details visible in the CI log.
+REPORT="$PWD/test-report-$MODULES.json"
+CHROME_REPORT="$PWD/test-report-$MODULES-chrome.json"
+
+guard_status=0
+unsupported=$(cd "$package_dir" && grep -rnE "$PLATFORM_METADATA" --include='*_test.dart' test \
+    | grep -vE "^[^:]+:[0-9]+:$SUPPORTED_TEST_ON" || true)
+if [[ -n "$unsupported" ]]; then
+    guard_status=1
+    printf "ERROR: unsupported platform metadata in %s. CI runs only a line that is exactly @TestOn('vm') or @TestOn('chrome'):\n%s\n" \
+        "$MODULES" "$unsupported" >&2
 fi
 
-# Write the machine-readable report straight to a file instead of redirecting
-# stdout: `flutter test` always runs an implicit `pub get` first, and that output
-# would otherwise be captured into the report and invalidate the JSON. Keeping
-# stdout free also leaves failure details visible in the CI log.
-REPORT="test-report-${MODULES//\//-}.json"
-
+vm_args=(test "--file-reporter=json:$REPORT")
+[[ "$MODULES" == "default" ]] || vm_args+=("$MODULES")
 vm_status=0
-if [[ "$has_default_tests" == "true" ]]; then
-    args=(test --no-fail-fast "--file-reporter=json:$REPORT")
-    if [[ "$MODULES" == "default" ]]; then
-        printf 'Running Flutter tests for root package\n'
-    else
-        args+=("$MODULES")
-        printf 'Running Flutter tests for package %s\n' "$MODULES"
-    fi
+printf 'Running VM tests for %s\n' "$MODULES"
+flutter "${vm_args[@]}" || vm_status=$?
 
-    if flutter "${args[@]}"; then
-        printf 'Flutter VM tests passed for %s\n' "$MODULES"
-    else
-        vm_status=$?
-        printf 'ERROR: Flutter VM tests failed for %s (exit code %d)\n' \
-            "$MODULES" "$vm_status" >&2
-    fi
-else
-    printf 'No VM tests for %s\n' "$MODULES"
+chrome_tests=()
+while IFS= read -r test_file; do
+    chrome_tests+=("$test_file")
+done < <(cd "$package_dir" && grep -rlE "$CHROME_TEST_ON" --include='*_test.dart' test | sort)
+
+chrome_status=0
+if (( ${#chrome_tests[@]} > 0 )); then
+    printf 'Running %d Chrome test file(s) for %s\n' "${#chrome_tests[@]}" "$MODULES"
+    (cd "$package_dir" && flutter test --platform chrome "--file-reporter=json:$CHROME_REPORT" "${chrome_tests[@]}") \
+        || chrome_status=$?
 fi
 
-annotated_status=0
-if python3 scripts/test-platforms.py run-annotated "$MODULES"; then
-    printf 'Annotated platform tests passed for %s\n' "$MODULES"
-else
-    annotated_status=$?
-    printf 'ERROR: Annotated platform tests failed for %s (exit code %d)\n' \
-        "$MODULES" "$annotated_status" >&2
-fi
-
-if (( vm_status != 0 || annotated_status != 0 )); then
-    printf 'ERROR: Test run failed for %s (VM exit: %d; annotated exit: %d)\n' \
-        "$MODULES" "$vm_status" "$annotated_status" >&2
+if (( guard_status != 0 || vm_status != 0 || chrome_status != 0 )); then
+    printf 'ERROR: tests failed for %s (platform metadata: %d, VM exit: %d, Chrome exit: %d)\n' \
+        "$MODULES" "$guard_status" "$vm_status" "$chrome_status" >&2
     exit 1
 fi
+printf 'All tests passed for %s\n' "$MODULES"
