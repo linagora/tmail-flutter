@@ -325,12 +325,28 @@ class RichTextWebController extends GetxController {
       }
       final base64Data = base64Encode(bytes);
       final mimeType = HtmlUtils.validateHtmlImageResourceMimeType('image/${fileInfo.fileExtension}');
-      editorController.insertHtml(
-        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${fileInfo.fileName}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
-      );
+      editorController.insertHtml(buildInlineImageHtml(
+        base64Data: base64Data,
+        mimeType: mimeType,
+        fileName: fileInfo.fileName,
+        maxWidth: maxWidth,
+      ));
     } catch (e) {
       logWarning('RichTextWebController::insertImageAsBase64:Exception: $e');
     }
+  }
+
+  /// Builds the inline `<img>` tag inserted into the signature editor.
+  /// The file name comes from the user's local file picker and is
+  /// attribute-escaped before being written into `data-filename`.
+  static String buildInlineImageHtml({
+    required String base64Data,
+    required String mimeType,
+    required String fileName,
+    int? maxWidth,
+  }) {
+    const attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+    return '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${attributeEscape.convert(fileName)}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>';
   }
 
   void toggleFormattingOptions() {
