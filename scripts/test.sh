@@ -32,11 +32,9 @@ if [[ -n "$unsupported" ]]; then
         "$MODULES" "$unsupported" >&2
 fi
 
-vm_args=(test "--file-reporter=json:$REPORT")
-[[ "$MODULES" == "default" ]] || vm_args+=("$MODULES")
 vm_status=0
 printf 'Running VM tests for %s\n' "$MODULES"
-flutter "${vm_args[@]}" || vm_status=$?
+(cd "$package_dir" && flutter test "--file-reporter=json:$REPORT") || vm_status=$?
 
 chrome_tests=()
 while IFS= read -r test_file; do
