@@ -9,7 +9,7 @@ typedef SetUpSentry = Future<void> Function(SentryConfigLinagoraEcosystem);
 typedef ClearSentry = Future<void> Function();
 typedef ResetSentryReportingConsent = void Function();
 
-/// Handles ecosystem-owned Sentry configuration on non-web platforms.
+/// Handles ecosystem-owned Sentry configuration.
 class SentryEcosystemHandler
     implements
         LinagoraEcosystemHandler,

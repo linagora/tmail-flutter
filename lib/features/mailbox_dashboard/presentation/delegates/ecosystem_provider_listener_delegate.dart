@@ -1,4 +1,5 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/sentry_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/linagora_ecosystem/web_sentry_ecosystem_handler.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -51,18 +53,30 @@ class EcosystemProviderListenerDelegate
     registry
       ..register(DriveAttachmentEcosystemHandler())
       ..register(ScribeEcosystemHandler());
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && SentryConfig.hasEnvironmentConfiguration) {
       registry.register(WebSentryEcosystemHandler());
     } else {
       registry.register(SentryEcosystemHandler(
         setUpSentry: (config) async {
-          await getBinding<MailboxDashBoardController>()?.setUpSentry(config);
+          if (PlatformInfo.isWeb) {
+            await getBinding<SentryEcosystem>()?.setUp(config);
+          } else {
+            await getBinding<MailboxDashBoardController>()?.setUpSentry(config);
+          }
         },
         clearSentry: () async {
-          await getBinding<MailboxDashBoardController>()?.clearSentry();
+          if (PlatformInfo.isWeb) {
+            await getBinding<SentryEcosystem>()?.clear(clearUser: false);
+          } else {
+            await getBinding<MailboxDashBoardController>()?.clearSentry();
+          }
         },
         resetSentryReportingConsent: () {
           SentryManager.instance.setSentryReportingConsent(null);
+          if (PlatformInfo.isWeb) {
+            getBinding<SentryEcosystem>()?.initUser(null);
+            SentryManager.instance.clearUser();
+          }
         },
       ));
     }

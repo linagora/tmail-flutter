@@ -1,8 +1,7 @@
 /// Resolves whether Sentry reporting should run from configuration, ecosystem,
 /// user consent, and temporary suspension state.
 ///
-/// Reporting defaults to allowed until the runtime configuration is loaded so
-/// platforms without an ecosystem override preserve their existing behavior.
+/// Reporting stays denied until a source explicitly supplies consent.
 class SentryReportingPolicy {
   bool _isAllowedByConfiguration;
   bool? _defaultOverride;
@@ -10,7 +9,7 @@ class SentryReportingPolicy {
   bool _isSuspended = false;
 
   SentryReportingPolicy({
-    bool isAllowedByConfiguration = true,
+    bool isAllowedByConfiguration = false,
   }) : _isAllowedByConfiguration = isAllowedByConfiguration;
 
   bool get isAllowed =>

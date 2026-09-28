@@ -1,7 +1,51 @@
 import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('runtime configuration starts with reporting denied', () {
+    final config = SentryConfig(
+      dsn: 'https://public@example.com/1',
+      environment: 'staging',
+      release: '1.2.3',
+      isAvailable: true,
+    );
+
+    expect(config.isReportingAllowed, isFalse);
+  });
+
+  test('only a non-empty Sentry env value prevents ecosystem fallback',
+      () async {
+    addTearDown(dotenv.clean);
+
+    expect(SentryConfig.hasEnvironmentConfiguration, isFalse);
+    expect(await SentryConfig.load(), isNull);
+
+    dotenv.testLoad();
+    expect(SentryConfig.hasEnvironmentConfiguration, isFalse);
+
+    dotenv.testLoad(
+      mergeWith: {
+        'SENTRY_ENABLED': '',
+        'SENTRY_DSN': '  ',
+        'SENTRY_ENVIRONMENT': '',
+      },
+    );
+    expect(SentryConfig.hasEnvironmentConfiguration, isFalse);
+
+    dotenv.testLoad(mergeWith: {'SENTRY_ENABLED': 'false'});
+    expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+    expect(await SentryConfig.load(), isNull);
+
+    dotenv.testLoad(mergeWith: {'SENTRY_DSN': 'https://env@example.com/1'});
+    expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+    expect(await SentryConfig.load(), isNull);
+
+    dotenv.testLoad(mergeWith: {'SENTRY_ENVIRONMENT': 'staging'});
+    expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+    expect(await SentryConfig.load(), isNull);
+  });
+
   test('withReportingAllowed changes only reporting consent', () {
     final config = SentryConfig(
       dsn: 'https://public@example.com/1',

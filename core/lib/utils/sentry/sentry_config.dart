@@ -65,7 +65,7 @@ class SentryConfig {
     this.isDebug = BuildUtils.isDebugMode,
     this.attachScreenshot = false,
     this.isAvailable = false,
-    this.isReportingAllowed = true,
+    this.isReportingAllowed = false,
     this.dist,
   });
 
@@ -86,9 +86,20 @@ class SentryConfig {
         dist: dist,
       );
 
+  /// An explicit but disabled or incomplete env configuration remains env-owned;
+  /// only an entirely empty set permits the web ecosystem fallback.
+  static bool get hasEnvironmentConfiguration {
+    if (!dotenv.isInitialized) return false;
+    final environment = dotenv.env;
+    return const ['SENTRY_ENABLED', 'SENTRY_DSN', 'SENTRY_ENVIRONMENT'].any(
+      (key) => environment[key]?.trim().isNotEmpty == true,
+    );
+  }
+
   /// Loads configuration from loaded environment variables.
   static Future<SentryConfig?> load() async {
     // Note: Ensure EnvLoader.loadEnvFile() is called in main.dart before this.
+    if (!dotenv.isInitialized) return null;
     final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';

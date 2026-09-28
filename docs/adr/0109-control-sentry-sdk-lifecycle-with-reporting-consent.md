@@ -6,6 +6,9 @@ Date: 2026-09-16
 
 Accepted
 
+Web startup and the initial consent default were amended by
+[ADR-0110](0110-web-sentry-ecosystem-fallback-and-denied-default.md).
+
 ## Context
 
 The Sentry reporting preference can change while the application is running.
@@ -16,19 +19,22 @@ Permanently disabling native integrations would prevent that telemetry, but woul
 
 Effective reporting consent controls the complete Sentry SDK lifecycle.
 
+- In-memory reporting consent starts denied. Technical configuration alone never permits reporting.
 - When reporting is denied, the application does not initialize Sentry or closes the running SDK with `Sentry.close()`.
-- When reporting is allowed, the application initializes Sentry with its native integrations enabled.
+- When reporting is allowed and a valid, enabled technical configuration is available, the application initializes Sentry with its platform integrations enabled.
 - Runtime capture checks and Dart `beforeSend` callbacks remain as defence in depth during asynchronous lifecycle transitions.
 - Lifecycle transitions are serialized, and an SDK initialized after consent is revoked is closed before application capture paths can use it.
 - Reinitialization never invokes the Flutter `appRunner` again.
 
 ### Platform flows
 
-| Web | Mobile |
-| --- | --- |
-| Load technical config from `env.file`<br>↓<br>Initialize Sentry before `appRunner` when the env config is valid and enabled<br>↓<br>Apply account reporting consent as it becomes available<br>↓<br>Stop reporting when neither the server nor ecosystem provides consent | Start the app without Sentry<br>↓<br>Load technical config from the ecosystem<br>↓<br>Keep Sentry stopped when the config is missing, invalid, or unavailable<br>↓<br>Initialize Sentry when the config is valid and effective consent allows reporting |
+| Step | Web | Mobile |
+| --- | --- | --- |
+| Startup | Load `env.file` and start with the SDK stopped. A valid, enabled env config mounts `SentryWidget` through the web `appRunner` while consent is resolved; missing, disabled, or incomplete env config uses `runTmail()` to mount `TMailApp` directly. End-to-end tests call `runTmail()` directly. | Start the app with Sentry stopped. |
+| Technical configuration | If any of `SENTRY_ENABLED`, `SENTRY_DSN`, or `SENTRY_ENVIRONMENT` is nonblank, use env as the source. It must have `SENTRY_ENABLED=true` and nonblank DSN and environment; a disabled or incomplete env config does not fall back. Only when all three values are absent or blank, use the validated ecosystem config. | Use the ecosystem config; it must have `enabled: true` and nonblank DSN and environment. |
+| Reporting | Initialize Sentry only when the selected config is valid and enabled and effective consent allows reporting. Suspend or close the SDK when consent is denied or ecosystem resolution becomes loading or unavailable. | Initialize Sentry only when the ecosystem config is valid and enabled and effective consent allows reporting. Suspend or close the SDK when consent is denied or ecosystem resolution becomes loading or unavailable. |
 
-Once account policy is resolved, effective consent is `server sentryUserOptIn ?? ecosystem userOptInByDefault ?? false`. A non-null server value always takes precedence, and technical availability (`enabled`, DSN, and environment) does not override this result. Reporting is suspended when ecosystem resolution starts or later becomes loading or unavailable.
+On both platforms, effective consent is `server sentryUserOptIn ?? ecosystem userOptInByDefault ?? false`. A non-null server value always takes precedence, and technical availability (`enabled`, DSN, and environment) does not override this result. The ecosystem can supply the reporting default even when env supplies web's technical config. Reporting stays suspended while ecosystem ownership is being resolved. An account change clears the previous account's consent before the new account can report.
 
 Session Replay remains disabled because Sentry Flutter 9.8.0 cannot both stop recording and safely discard an existing Replay buffer when consent is revoked.
 Background FCM handlers read persisted consent before each event and treat missing, invalid, or unreadable values as denied.
@@ -39,10 +45,11 @@ Cache cleanup failures publish a denied NSE configuration before the original er
 
 ## Consequences
 
-When consent is enabled, Dart and native reporting remain available; when it is disabled, both stop.
-Re-enabling reporting requires another SDK initialization, and errors that occur while Sentry is stopped cannot be recovered.
+With valid technical configuration and affirmative consent, supported Dart and platform telemetry can be reported. When consent is denied, the SDK stays stopped or closes.
+Resuming reporting after a stop requires another SDK initialization, and errors that occur while Sentry is stopped cannot be recovered.
 
 ### Trade-offs
 
-- Web provides earlier observability: when enabled by `env.file`, Sentry can capture supported automatic and explicit events before account consent is resolved. Events sent before a later denial cannot be recalled.
-- Mobile does not report before a valid ecosystem config initializes Sentry, so earlier events are lost. If the ecosystem default allows reporting, it may apply until server-stored user consent is loaded.
+- Events that occur before the SDK starts cannot be recovered. This includes web startup events even when `env.file` contains a valid Sentry configuration.
+- If the ecosystem default allows reporting, it can apply until the server-stored user consent is loaded. A later server value takes precedence and may stop the running SDK on either platform.
+- Web retains `SentryWidget` for a valid env configuration, including while the SDK waits for consent. Ecosystem fallback starts without it, so widget interaction breadcrumbs, tracing, and screenshot support are unavailable in that path; exception reporting still works.
