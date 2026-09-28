@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() {
@@ -17,8 +20,227 @@ void main() {
   });
 
   group('SentryManager reporting consent', () {
-    test('allows reporting by default, for platforms that publish no default', () {
-      expect(sentryManager.isSentryReportingAllowed, isTrue);
+    test(
+      'valid env config mounts the monitored app before consent arrives',
+      () async {
+        dotenv.testLoad(
+          mergeWith: {
+            'SENTRY_ENABLED': 'true',
+            'SENTRY_DSN': 'https://env@example.com/1',
+            'SENTRY_ENVIRONMENT': 'test',
+          },
+        );
+        addTearDown(dotenv.clean);
+        PackageInfo.setMockInitialValues(
+          appName: 'Twake Mail',
+          packageName: 'com.example.twake',
+          version: '1.0.0',
+          buildNumber: '1',
+          buildSignature: '',
+        );
+        ApplicationManager().clearCache();
+        addTearDown(ApplicationManager().clearCache);
+        var starts = 0;
+        var appRuns = 0;
+        var fallbackRuns = 0;
+        final manager = SentryManager.forTesting(
+          isSentryAvailable: false,
+          synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+          initializeSentrySdk: ({appRunner, sentryConfig}) async {
+            starts++;
+            return true;
+          },
+          closeSentrySdk: () async {},
+        );
+
+        await manager.initialize(
+          appRunner: () {
+            appRuns++;
+          },
+          fallBackRunner: () {
+            fallbackRuns++;
+          },
+        );
+
+        expect(manager.isSentryConfigured, isTrue);
+        expect(manager.isSentryReportingAllowed, isFalse);
+        expect(manager.isSentryAvailable, isFalse);
+        expect(starts, 0);
+        expect(appRuns, 1);
+        expect(fallbackRuns, 0);
+
+        manager.setSentryReportingDefault(true);
+        await manager.pendingLifecycleTransition;
+
+        expect(manager.isSentryAvailable, isTrue);
+        expect(starts, 1);
+        expect(appRuns, 1);
+        expect(fallbackRuns, 0);
+      },
+    );
+
+    test('disabled env config mounts only the fallback app', () async {
+      dotenv.testLoad(mergeWith: {
+        'SENTRY_ENABLED': 'false',
+        'SENTRY_DSN': 'https://env@example.com/1',
+        'SENTRY_ENVIRONMENT': 'test',
+      });
+      addTearDown(dotenv.clean);
+      var starts = 0;
+      var appRuns = 0;
+      var fallbackRuns = 0;
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+        initializeSentrySdk: ({appRunner, sentryConfig}) async {
+          starts++;
+          return true;
+        },
+      );
+
+      await manager.initialize(
+        appRunner: () {
+          appRuns++;
+        },
+        fallBackRunner: () {
+          fallbackRuns++;
+        },
+      );
+
+      expect(manager.isSentryConfigured, isFalse);
+      expect(starts, 0);
+      expect(appRuns, 0);
+      expect(fallbackRuns, 1);
+    });
+
+    test('does not retry app startup when the configured runner fails',
+        () async {
+      dotenv.testLoad(mergeWith: {
+        'SENTRY_ENABLED': 'true',
+        'SENTRY_DSN': 'https://env@example.com/1',
+        'SENTRY_ENVIRONMENT': 'test',
+      });
+      addTearDown(dotenv.clean);
+      PackageInfo.setMockInitialValues(
+        appName: 'Twake Mail',
+        packageName: 'com.example.twake',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+      ApplicationManager().clearCache();
+      addTearDown(ApplicationManager().clearCache);
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+      );
+      var appRuns = 0;
+      var fallbackRuns = 0;
+
+      await expectLater(
+        manager.initialize(
+          appRunner: () {
+            appRuns++;
+            throw StateError('preload failed');
+          },
+          fallBackRunner: () {
+            fallbackRuns++;
+          },
+        ),
+        throwsStateError,
+      );
+
+      expect(appRuns, 1);
+      expect(fallbackRuns, 0);
+      expect(manager.isSentryAvailable, isFalse);
+    });
+
+    test(
+      'empty env starts the app once and later uses ecosystem config',
+      () async {
+        dotenv.testLoad(
+          mergeWith: {
+            'SENTRY_ENABLED': '',
+            'SENTRY_DSN': ' ',
+            'SENTRY_ENVIRONMENT': '',
+          },
+        );
+        addTearDown(dotenv.clean);
+        final startedConfigs = <SentryConfig>[];
+        var closes = 0;
+        var appRuns = 0;
+        var fallbackRuns = 0;
+        final manager = SentryManager.forTesting(
+          isSentryAvailable: false,
+          synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+          initializeSentrySdk: ({appRunner, sentryConfig}) async {
+            startedConfigs.add(sentryConfig!);
+            return true;
+          },
+          closeSentrySdk: () async {
+            closes++;
+          },
+        );
+
+        await manager.initialize(
+          appRunner: () {
+            appRuns++;
+          },
+          fallBackRunner: () {
+            fallbackRuns++;
+          },
+        );
+
+        expect(fallbackRuns, 1);
+        expect(appRuns, 0);
+        expect(startedConfigs, isEmpty);
+        expect(manager.isSentryConfigured, isFalse);
+
+        await manager.initializeWithSentryConfig(
+          SentryConfig(
+            dsn: 'https://ecosystem@example.com/1',
+            environment: 'staging',
+            release: '1.0.0',
+            isAvailable: true,
+          ),
+        );
+
+        expect(manager.isSentryConfigured, isTrue);
+        expect(manager.isSentryReportingAllowed, isFalse);
+        expect(startedConfigs, isEmpty);
+
+        manager.setSentryReportingDefault(true);
+        await manager.pendingLifecycleTransition;
+
+        expect(startedConfigs, hasLength(1));
+        expect(startedConfigs.single.dsn, 'https://ecosystem@example.com/1');
+        expect(startedConfigs.single.isReportingAllowed, isTrue);
+        expect(manager.isSentryAvailable, isTrue);
+        expect(fallbackRuns, 1);
+        expect(appRuns, 0);
+
+        manager.setSentryReportingConsent(false);
+        await manager.pendingLifecycleTransition;
+
+        expect(closes, 1);
+        expect(manager.isSentryAvailable, isFalse);
+
+        manager.setSentryReportingConsent(null);
+        await manager.pendingLifecycleTransition;
+
+        expect(startedConfigs, hasLength(2));
+        expect(fallbackRuns, 1);
+        expect(appRuns, 0);
+      },
+    );
+
+    test('starts denied before either consent source is loaded', () {
+      final manager = SentryManager.forTesting(
+        isSentryAvailable: false,
+        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+      );
+
+      expect(manager.isSentryReportingAllowed, isFalse);
     });
 
     test('follows the instance default while the user has not chosen', () {
@@ -236,6 +458,9 @@ void main() {
         },
       );
 
+      manager.setSentryReportingDefault(true);
+      await manager.pendingScopeSync;
+
       manager.captureException('failure');
       manager.captureMessage('diagnostic');
       manager.addBreadcrumb('navigation');
@@ -378,15 +603,15 @@ void main() {
     test('blocks reporting until the latest account scope update completes', () async {
       final pendingSyncs = <Completer<void>>[];
       final synchronizedScopes = <({String? userId, bool clearBreadcrumbs})>[];
-      var isInitialSync = true;
+      var initialSyncs = 0;
       final manager = SentryManager.forTesting(
         synchronizeScope: (user, {required clearBreadcrumbs}) {
           synchronizedScopes.add((
             userId: user?.id,
             clearBreadcrumbs: clearBreadcrumbs,
           ));
-          if (isInitialSync) {
-            isInitialSync = false;
+          if (initialSyncs < 2) {
+            initialSyncs++;
             return Future.value();
           }
           final pendingSync = Completer<void>();
@@ -394,6 +619,9 @@ void main() {
           return pendingSync.future;
         },
       );
+
+      manager.setSentryReportingDefault(true);
+      await manager.pendingScopeSync;
 
       manager.setUser(SentryUser(id: 'alice'));
       await manager.pendingScopeSync;
@@ -417,6 +645,7 @@ void main() {
 
       expect(manager.isSentryReportingReady, isTrue);
       expect(synchronizedScopes, [
+        (userId: null, clearBreadcrumbs: false),
         (userId: 'alice', clearBreadcrumbs: false),
         (userId: null, clearBreadcrumbs: false),
         (userId: null, clearBreadcrumbs: true),
@@ -427,12 +656,21 @@ void main() {
 
     test('keeps reporting blocked after a scope failure and recovers on the next sync', () async {
       var attempts = 0;
+      var failNextSync = false;
       final manager = SentryManager.forTesting(
         synchronizeScope: (_, {required clearBreadcrumbs}) async {
           attempts++;
-          if (attempts == 1) throw StateError('scope unavailable');
+          if (failNextSync) {
+            failNextSync = false;
+            throw StateError('scope unavailable');
+          }
         },
       );
+
+      manager.setSentryReportingDefault(true);
+      await manager.pendingScopeSync;
+      attempts = 0;
+      failNextSync = true;
 
       manager.setUser(SentryUser(id: 'alice'));
       await manager.pendingScopeSync;
