@@ -41,7 +41,8 @@ Background FCM handlers read persisted consent before each event and treat missi
 Timed-out background setup is invalidated and cannot later enable Sentry, while notification processing continues without telemetry.
 The iOS notification service extension applies the same fail-closed rule from Keychain.
 It also blocks reporting when the shared DSN or environment no longer matches the active NSE SDK instance, instead of reinitializing the global SDK.
-Cache cleanup failures publish a denied NSE configuration before the original error is propagated, and shared Keychain write failures are surfaced to the caller.
+If cache cleanup during Sentry setup fails, the app attempts to publish a denied NSE configuration and rethrows the cleanup error if publication succeeds.
+Shared Keychain write failures are surfaced to the caller.
 
 ## Consequences
 
@@ -52,4 +53,7 @@ Resuming reporting after a stop requires another SDK initialization, and errors 
 
 - Events that occur before the SDK starts cannot be recovered. This includes web startup events even when `env.file` contains a valid Sentry configuration.
 - If the ecosystem default allows reporting, it can apply until the server-stored user consent is loaded. A later server value takes precedence and may stop the running SDK on either platform.
-- Web retains `SentryWidget` for a valid env configuration, including while the SDK waits for consent. Ecosystem fallback starts without it, so widget interaction breadcrumbs, tracing, and screenshot support are unavailable in that path; exception reporting still works.
+- Web retains `SentryWidget` for a valid env configuration, including while the SDK waits for consent.
+  Ecosystem fallback starts without it, so automatic user interaction breadcrumbs and user interaction tracing are unavailable in that path.
+  Automatic screenshots are disabled in both paths by the current configuration.
+  Exception reporting remains available after the SDK starts with consent.

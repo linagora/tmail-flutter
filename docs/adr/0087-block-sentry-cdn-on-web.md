@@ -82,7 +82,7 @@ If a stronger integrity posture is required in the future, a `Content-Security-P
 ```html
 <!-- index.html -->
 <script src="js/sentry-tracing.min.js?v=1.0.0"></script>   <!-- SDK bundle, populates window.Sentry -->
-<script src="js/sentry-interceptor.js?v=1.0.1"></script>   <!-- patches prototype, blocks CDN injection -->
+<script src="js/sentry-interceptor.js?v=1.0.2"></script>   <!-- patches prototype, blocks CDN injection -->
 <!-- Flutter bootstrap follows -->
 ```
 
@@ -94,3 +94,10 @@ The interceptor must activate after the SDK bundle so `window.Sentry` is already
 - Sentry initialization is resilient to CDN availability issues and third-party blockers.
 - Updating the Sentry JS bundle version requires replacing `web/js/sentry-tracing.min.js` and bumping the `?v=` query parameter in `index.html`.
 - The interceptor is version-independent: it blocks any URL matching `*.sentry-cdn.com/*/bundle.tracing.min.js`, so it does not need to be updated when the SDK version changes.
+
+## Amendment (2026-09-28): Reinitialize after reporting consent changes
+
+`sentry_flutter` clears `window.Sentry` when `Sentry.close()` stops reporting.
+The self-hosted bundle runs only once at page load, while later SDK starts still attempt to inject the CDN script.
+The interceptor must retain the self-hosted Sentry API and restore it before signaling that the blocked script loaded.
+Otherwise, the second opt-in appears to start the Dart SDK but sends no events.

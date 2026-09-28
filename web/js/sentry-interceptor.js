@@ -6,6 +6,7 @@
   window.__sentryInterceptorActive = true;
 
   const BLOCKED_PATHNAME = '/bundle.tracing.min.js';
+  const selfHostedSentry = window.Sentry;
 
   function isSentryCdnHostname(hostname) {
     return hostname === 'sentry-cdn.com' || hostname.endsWith('.sentry-cdn.com');
@@ -24,6 +25,11 @@
 
   function blockAndNotify(element, channel, urlString) {
     console.log('[Sentry Interceptor] 🛑 Blocked CDN request (' + channel + '):', urlString);
+    // sentry_flutter clears window.Sentry when consent closes the SDK. Restore
+    // the already-loaded bundle before its next init receives the load event.
+    if (!window.Sentry && selfHostedSentry) {
+      window.Sentry = selfHostedSentry;
+    }
     // Dispatch a synthetic 'load' event so the Sentry SDK's internal Promise
     // resolves cleanly instead of hanging indefinitely.
     Promise.resolve().then(() => element.dispatchEvent(new Event('load')));
