@@ -1,3 +1,7 @@
+## [0.38.1] - 2026-09-28
+### Changed
+- Gate premium CTA on being inside Cozy
+
 ## [0.38.0] - 2026-09-23
 ### Fixed
 - #4802 Update Twake Calendar footer separator
