@@ -7,7 +7,7 @@
 class ExternalLinkPolicy {
   const ExternalLinkPolicy._();
 
-  static const Set<String> _allowedSchemes = {'http', 'https', 'tel'};
+  static const Set<String> _allowedSchemes = {'http', 'https', 'tel', 'mailto'};
 
   static bool canLaunchFromContent(Uri uri) =>
       _allowedSchemes.contains(uri.scheme.toLowerCase());

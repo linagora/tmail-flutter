@@ -1,6 +1,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -293,12 +294,12 @@ extension CalendarEventExtension on CalendarEvent {
 
       final openPaasVideoConferences = extensionFields?.mapFields['X-OPENPAAS-VIDEOCONFERENCE']
         ?.nonNulls
-        .where((link) => link.isNotEmpty)
+        .where(_isLaunchableConferenceLink)
         .toList() ?? [];
       log('CalendarEventExtension::openPaasVideoConferences: $openPaasVideoConferences');
       final googleVideoConferences = extensionFields!.mapFields['X-GOOGLE-CONFERENCE']
         ?.nonNulls
-        .where((link) => link.isNotEmpty)
+        .where(_isLaunchableConferenceLink)
         .toList() ?? [];
       log('CalendarEventExtension::googleVideoConferences: $googleVideoConferences');
       if (openPaasVideoConferences.isNotEmpty) {
@@ -310,6 +311,14 @@ extension CalendarEventExtension on CalendarEvent {
       return videoConferences;
     }
     return [];
+  }
+
+  /// The invite's extension fields are attacker-controlled: only keep a
+  /// conference link whose scheme the app is willing to open externally.
+  static bool _isLaunchableConferenceLink(String link) {
+    if (link.isEmpty) return false;
+    final uri = Uri.tryParse(link);
+    return uri != null && ExternalLinkPolicy.canLaunchFromContent(uri);
   }
 
   bool isDisplayedEventReplyAction(String ownerEmailAddress) =>
