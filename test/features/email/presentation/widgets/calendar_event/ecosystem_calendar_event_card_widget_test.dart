@@ -23,7 +23,7 @@ import '../../../../../fixtures/widget_fixtures.dart';
 
 void main() {
   _registerAvailableEcosystemTests();
-  _registerUnavailableEcosystemTest();
+  _registerHiddenCalendarActionTests();
 }
 
 void _registerAvailableEcosystemTests() {
@@ -84,31 +84,55 @@ Future<void> _expectCalendarUrlOpens(
   expect(openedLinks, [testCase.expected]);
 }
 
-void _registerUnavailableEcosystemTest() {
-  testWidgets(
-    'SHOULD hide the calendar action WHEN the active ecosystem is unavailable',
-    (tester) async {
-      final container = ProviderContainer(overrides: [
-        activeEcosystemProvider.overrideWith((ref, args) =>
-            const EcosystemUnavailable(
-              EcosystemUnavailableReason.loadFailed,
-            )),
-      ]);
-      addTearDown(container.dispose);
+void _registerHiddenCalendarActionTests() {
+  final testCases = <({String description, EcosystemState state})>[
+    (
+      description: 'the active ecosystem is unavailable',
+      state: const EcosystemUnavailable(
+        EcosystemUnavailableReason.loadFailed,
+      ),
+    ),
+    (
+      description: 'the calendar URL template is missing',
+      state: EcosystemAvailable(LinagoraEcosystem({})),
+    ),
+    (
+      description: 'the calendar URL template is blank',
+      state: EcosystemAvailable(LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.calendarUrlTemplate:
+            ApiUrlLinagoraEcosystem('   '),
+      })),
+    ),
+  ];
 
-      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
-        providerContainer: container,
-        child: _card(
-          accountId: AccountId(Id('account-id')),
-          jmapUrl: 'https://jmap.example.invalid',
-          openedLinks: [],
-        ),
-      ));
-      await tester.pumpAndSettle();
+  for (final testCase in testCases) {
+    testWidgets(
+      'SHOULD hide the calendar action WHEN ${testCase.description}',
+      (tester) => _expectCalendarActionHidden(tester, testCase.state),
+    );
+  }
+}
 
-      expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
-    },
-  );
+Future<void> _expectCalendarActionHidden(
+  WidgetTester tester,
+  EcosystemState state,
+) async {
+  final container = ProviderContainer(overrides: [
+    activeEcosystemProvider.overrideWith((ref, args) => state),
+  ]);
+  addTearDown(container.dispose);
+
+  await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+    providerContainer: container,
+    child: _card(
+      accountId: AccountId(Id('account-id')),
+      jmapUrl: 'https://jmap.example.invalid',
+      openedLinks: [],
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  expect(find.text(AppLocalizations().seeInYourCalendar), findsNothing);
 }
 
 typedef _AvailableEcosystemCase = ({
