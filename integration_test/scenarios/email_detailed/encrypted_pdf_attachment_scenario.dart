@@ -25,9 +25,9 @@ abstract class EncryptedPdfAttachmentScenario extends BaseTestScenario {
           subject: subject,
           content: subject,
           fileInfos: [
-            FileInfo.fromBytes(
+            FileBytesInfo(
               bytes: base64Decode(EncryptedPdfResources.base64),
-              name: EncryptedPdfResources.fileName,
+              fileName: EncryptedPdfResources.fileName,
               type: 'application/pdf',
             ),
           ],
