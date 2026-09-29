@@ -4840,6 +4840,13 @@ class AppLocalizations {
     );
   }
 
+  String get seeInYourCalendar {
+    return Intl.message(
+      'See in your Calendar',
+      name: 'seeInYourCalendar',
+    );
+  }
+
   String countMessageInSpam(String count) {
     return Intl.message(
       '$count message in spam',
