@@ -49,10 +49,13 @@ class BlobUploadAdapter implements HttpClientAdapter {
     try {
       final response = await web.window.fetch(blobUrl.toJS).toDart;
       return await response.blob().toDart;
-    } catch (_) {
-      throw DioException.connectionError(
+    } catch (e, stackTrace) {
+      throw DioException(
         requestOptions: options,
-        reason: 'The attachment blob URL could not be resolved. '
+        type: DioExceptionType.connectionError,
+        error: e,
+        stackTrace: stackTrace,
+        message: 'The attachment blob URL could not be resolved. '
             'It may have been revoked before the upload started.',
       );
     }
