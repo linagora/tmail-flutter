@@ -1,6 +1,7 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
@@ -41,6 +42,8 @@ import 'package:tmail_ui_user/features/composer/domain/repository/composer_repos
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart' show UpdateTemplateEmailSuccess;
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
@@ -2092,6 +2095,146 @@ void main() {
           // Let the asynchronous drop processing (loading dialog/toast) settle.
           await tester.pump(const Duration(seconds: 1));
         });
+      });
+    });
+
+    group('isEmailBodyNotReady test:', () {
+      final contentLoaded = Right<Failure, Success>(
+        GetEmailContentSuccess(htmlEmailContent: 'content'),
+      );
+
+      test(
+        'Should return true\n'
+        'When email content is still loading',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return true\n'
+        'When editor is not loaded on mobile',
+      () {
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return false\n'
+        'When content is loaded and editor is loaded',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content loading failed and editor is loaded',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+
+      test(
+        'Should return true\n'
+        'When editor is not loaded on web and composer content is visible',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.screenDisplayMode.value = ScreenDisplayMode.normal;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return false\n'
+        'When editor is not loaded on web and composer is minimized',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.screenDisplayMode.value = ScreenDisplayMode.minimize;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+    });
+
+    group('isEditedEmailContentLoadFailed test:', () {
+      const editingActionTypes = [
+        EmailActionType.editDraft,
+        EmailActionType.editAsNewEmail,
+        EmailActionType.reopenComposerBrowser,
+        EmailActionType.restoreComposerFromPersistentCache,
+      ];
+
+      for (final actionType in editingActionTypes) {
+        test(
+          'Should return true\n'
+          'When email content loading failed for $actionType',
+        () {
+          composerController?.currentEmailActionType = actionType;
+          composerController?.emailContentsViewState.value =
+            Left(GetEmailContentFailure(Exception('failure')));
+
+          expect(composerController?.isEditedEmailContentLoadFailed, isTrue);
+        });
+
+        test(
+          'Should return false\n'
+          'When email content is empty (EmptyEmailContentException) for $actionType',
+        () {
+          composerController?.currentEmailActionType = actionType;
+          composerController?.emailContentsViewState.value =
+            Left(GetEmailContentFailure(EmptyEmailContentException()));
+
+          expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+        });
+      }
+
+      test(
+        'Should return false\n'
+        'When email content loading failed for a non editing action type',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.reply;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content is loaded while editing a draft',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentSuccess(htmlEmailContent: 'content'));
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content is still loading while editing a draft',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
       });
     });
   });

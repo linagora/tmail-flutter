@@ -316,6 +316,9 @@ class ComposerController extends BaseController
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
 
+  @visibleForTesting
+  set isEmailBodyLoaded(bool value) => _isEmailBodyLoaded = value;
+
   ComposerController(
     this._localFilePickerInteractor,
     this._localImagePickerInteractor,
