@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
-import 'package:tmail_ui_user/features/upload/data/network/blob_upload_adapter.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -36,9 +35,7 @@ class NetworkIsolateBindings extends Bindings {
   }
 
   void _bindingDio() {
-    final isolateDio = Dio(Get.find<BaseOptions>());
-    installBlobUploadAdapter(isolateDio);
-    Get.put(isolateDio, tag: BindingTag.isolateTag);
+    Get.put(Dio(Get.find<BaseOptions>()), tag: BindingTag.isolateTag);
     Get.put(DioClient(
       Get.find<Dio>(tag: BindingTag.isolateTag)),
       tag: BindingTag.isolateTag);
