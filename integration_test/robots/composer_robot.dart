@@ -31,6 +31,7 @@ import '../extensions/patrol_file_extensions.dart';
 import '../extensions/patrol_finder_extension.dart';
 import '../utils/blob_file_info.dart';
 import '../utils/wait_for_condition.dart';
+import '../utils/xhr_blob_send_recorder.dart';
 
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
@@ -155,6 +156,7 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> addAttachmentFromBlob(Uint8List bytes, String fileName, String mimeType) async {
+    recordXhrBlobSends();
     final controller = findComposerController()!;
     _uploadAttachment(controller, createBlobFileInfo(bytes, fileName, mimeType));
   }
@@ -172,6 +174,10 @@ class ComposerRobot extends CoreRobot {
     await $(AttachmentItemComposerWidget)
       .which<AttachmentItemComposerWidget>((widget) => widget.fileName == fileName)
       .waitUntilVisible();
+  }
+
+  Future<void> expectUploadSentAsBlob(int size) async {
+    expect(recordedXhrBlobSendSizes, [size]);
   }
 
   void _uploadAttachment(ComposerController controller, FileInfo fileInfo) {
