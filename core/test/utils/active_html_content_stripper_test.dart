@@ -64,5 +64,18 @@ void main() {
     test('SHOULD return empty content unchanged', () {
       expect(strip(''), '');
     });
+
+    test('SHOULD keep a leading style element', () {
+      final out = strip('<style>.x{color:red}</style><div class="x">Hi</div>');
+
+      expect(out, contains('<style>.x{color:red}</style>'));
+      expect(out, contains('<div class="x">Hi</div>'));
+    });
+
+    test('SHOULD keep benign HTML unchanged', () {
+      const html = '<div style="color: red"><b>Hi</b> <a href="https://example.com">x</a></div>';
+
+      expect(strip(html), html);
+    });
   });
 }
