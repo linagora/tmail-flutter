@@ -66,7 +66,6 @@ class CalendarEventCardMapper {
       additionalConferences: conferences.skip(1).toList(),
       details: details,
       attending: attending,
-      actions: cardActions,
       status: status,
       calendarAction: calendarAction,
     );
@@ -284,19 +283,29 @@ class CalendarEventCardMapper {
   List<EventActionType> get _eventActionTypes =>
       event.getEventActionTypesIsDisplayed(viewState.ownEmailAddress);
 
-  /// The mutually exclusive answers to the invitation.
+  /// The invitation answers and the optional action beside them.
   LinagoraEventAttending? get attending {
+    final actionTypes = _eventActionTypes;
     final responses = [
-      for (final actionType in _eventActionTypes)
+      for (final actionType in actionTypes)
         if (actionType != EventActionType.mailToAttendees)
           _responseAction(actionType),
     ];
-    if (responses.isEmpty) return null;
+    final canMailToAttendees = actionTypes.contains(
+      EventActionType.mailToAttendees,
+    );
+    if (responses.isEmpty && !canMailToAttendees) return null;
 
     return LinagoraEventAttending(
-      label: appLocalizations.attending,
+      label: responses.isEmpty ? null : appLocalizations.attending,
       responses: responses,
       selectedResponseId: _selectedResponseActionType,
+      secondaryAction: canMailToAttendees
+          ? LinagoraEventAction(
+              label: appLocalizations.mailToAttendees,
+              onPressed: actions.onMailToAttendees,
+            )
+          : null,
     );
   }
 
@@ -323,18 +332,6 @@ class CalendarEventCardMapper {
       AttendanceStatus.rejected => EventActionType.no,
       _ => null,
     };
-  }
-
-  /// Actions that carry no answer, such as writing to everyone invited.
-  List<LinagoraEventAction> get cardActions {
-    return [
-      for (final actionType in _eventActionTypes)
-        if (actionType == EventActionType.mailToAttendees)
-          LinagoraEventAction(
-            label: actionType.getLabelButton(appLocalizations),
-            onPressed: actions.onMailToAttendees,
-          ),
-    ];
   }
 
   LinagoraEventAction? get calendarAction {

@@ -96,6 +96,7 @@ void main() {
             data.details.first.indicator is LinagoraEventConflictIndicator,
         'responseCount': data.attending?.responses.length,
         'selectedResponseId': data.attending?.selectedResponseId,
+        'secondaryAction': data.attending?.secondaryAction?.label,
         'actionCount': data.actions.length,
         'status': data.status,
       }, {
@@ -112,7 +113,8 @@ void main() {
         'hasConflictIndicator': true,
         'responseCount': 3,
         'selectedResponseId': EventActionType.yes,
-        'actionCount': 1,
+        'secondaryAction': appLocalizations.mailToAttendees,
+        'actionCount': 0,
         'status': null,
       });
     });
@@ -533,7 +535,7 @@ void main() {
   });
 
   group('CalendarEventCardMapper::attending', () {
-    test('SHOULD omit the answers WHEN the reader was not invited', () {
+    test('SHOULD offer only mail when the reader was not invited', () {
       final mapper = _mapper(
         event: _event(
           method: EventMethod.request,
@@ -542,7 +544,12 @@ void main() {
         ),
       );
 
-      expect(mapper.attending, isNull);
+      expect(mapper.attending?.responses, isEmpty);
+      expect(mapper.attending?.label, isNull);
+      expect(
+        mapper.attending?.secondaryAction?.label,
+        appLocalizations.mailToAttendees,
+      );
       expect(mapper.status?.message, isNotEmpty);
     });
 
@@ -649,16 +656,18 @@ void main() {
       expect(answers, [EventActionType.acceptCounter]);
     });
 
-    test('SHOULD offer to write to attendees beside the answers', () {
+    test('SHOULD offer to write to attendees as a secondary action', () {
       var mailed = 0;
       final mapper = _mapper(
         event: _invitation(),
         actions: _actions(onMailToAttendees: () => mailed++),
       );
 
-      mapper.cardActions.single.onPressed!();
+      final mailAction = mapper.attending!.secondaryAction!;
+      mailAction.onPressed!();
 
-      expect(mapper.cardActions.single.label, appLocalizations.mailToAttendees);
+      expect(mailAction.label, appLocalizations.mailToAttendees);
+      expect(mapper.cardData.actions, isEmpty);
       expect(mailed, 1);
     });
   });
