@@ -1,6 +1,9 @@
+import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
   test('runtime configuration starts with reporting denied', () {
@@ -14,7 +17,7 @@ void main() {
     expect(config.isReportingAllowed, isFalse);
   });
 
-  test('only a non-empty Sentry env value prevents ecosystem fallback',
+  test('any non-empty Sentry env value prevents ecosystem fallback',
       () async {
     addTearDown(dotenv.clean);
 
@@ -37,6 +40,10 @@ void main() {
     expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
     expect(await SentryConfig.load(), isNull);
 
+    dotenv.testLoad(mergeWith: {'SENTRY_ENABLED': 'true'});
+    expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+    expect(await SentryConfig.load(), isNull);
+
     dotenv.testLoad(mergeWith: {'SENTRY_DSN': 'https://env@example.com/1'});
     expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
     expect(await SentryConfig.load(), isNull);
@@ -44,6 +51,44 @@ void main() {
     dotenv.testLoad(mergeWith: {'SENTRY_ENVIRONMENT': 'staging'});
     expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
     expect(await SentryConfig.load(), isNull);
+  });
+
+  test('web requires SENTRY_ENABLED=true with both env credentials',
+      () async {
+    _prepareWebSentryEnvironment();
+
+    dotenv.testLoad(mergeWith: {
+      SentryConfig.enabledEnvKey: 'true',
+      SentryConfig.dsnEnvKey: 'https://env@example.com/1',
+      SentryConfig.environmentEnvKey: 'staging',
+    });
+
+    final config = await SentryConfig.load();
+    expect(
+      (
+        config?.isAvailable,
+        config?.isReportingAllowed,
+        config?.dsn,
+        config?.environment,
+      ),
+      (true, true, 'https://env@example.com/1', 'staging'),
+    );
+  });
+
+  test('web rejects disabled or missing SENTRY_ENABLED with env credentials',
+      () async {
+    _prepareWebSentryEnvironment();
+
+    for (final enabled in ['false', '', null]) {
+      dotenv.testLoad(mergeWith: {
+        if (enabled != null) SentryConfig.enabledEnvKey: enabled,
+        SentryConfig.dsnEnvKey: 'https://env@example.com/1',
+        SentryConfig.environmentEnvKey: 'staging',
+      });
+
+      expect(SentryConfig.hasEnvironmentConfiguration, isTrue);
+      expect(await SentryConfig.load(), isNull);
+    }
   });
 
   test('withReportingAllowed changes only reporting consent', () {
@@ -81,4 +126,19 @@ void main() {
     expect(updated.dist, config.dist);
     expect(updated.isReportingAllowed, isFalse);
   });
+}
+
+void _prepareWebSentryEnvironment() {
+  PlatformInfo.isTestingForWeb = true;
+  addTearDown(() => PlatformInfo.isTestingForWeb = false);
+  addTearDown(dotenv.clean);
+  PackageInfo.setMockInitialValues(
+    appName: 'Twake Mail',
+    packageName: 'com.example.twake',
+    version: '1.0.0',
+    buildNumber: '1',
+    buildSignature: '',
+  );
+  ApplicationManager().clearCache();
+  addTearDown(ApplicationManager().clearCache);
 }
