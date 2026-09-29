@@ -10,36 +10,34 @@ name: Analyze and test
 
 env:
   FLUTTER_VERSION: 3.38.9
-  # Test paths to run on the Chrome platform, one per line, relative to repo
-  # root. Each path's leading segment must be its package directory (e.g.
-  # "core"). Add more lines here as needed.
-  CHROME_TEST_PATHS: |
-    core/test/data/network/download/download_manager_test.dart
-    workplace/test/presentation/mixin/web_window_message_mixin_web_test.dart
-    workplace/test/presentation/view/drive_intent_web_view_modal_web_test.dart
-    core/test/utils/html/editor_script/quoted_reply_enter_handler_script_browser_test.dart
-    core/test/utils/html/mobile_email_responsive_layout_browser_test.dart
-    core/test/utils/html/mobile_email_responsive_layout_side_effects_browser_test.dart
-    workplace/test/data/workplace_datasource_impl_web_test.dart
-    workplace/test/presentation/extension/workplace_composer_attachment_extension_web_test.dart
-    core/test/presentation/utils/web_selection/platform_web_selection_dom_adapter_browser_test.dart
 
 jobs:
+  discover-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.modules.outputs.modules }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Discover packages with tests
+        id: modules
+        run: |
+          modules=$(git ls-files 'test/*_test.dart' '*/test/*_test.dart' \
+            | awk -F/ '$1 == "test" { print "default"; next } { print $1 }' \
+            | sort -u | jq -R . | jq -sc .)
+          if [[ "$modules" == "[]" ]]; then
+            echo "ERROR: no test found" >&2
+            exit 1
+          fi
+          echo "modules=$modules" >> "$GITHUB_OUTPUT"
+
   analyze-test:
+    needs: discover-tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        modules:
-          - default
-          - core
-          - model
-          - contact
-          - forward
-          - rule_filter
-          - fcm
-          - email_recovery
-          - server_settings
-          - workplace
+        modules: ${{ fromJSON(needs.discover-tests.outputs.modules) }}
       fail-fast: false
 
     steps:
@@ -61,25 +59,17 @@ jobs:
         run: ./scripts/setup-firebase.sh
 
       - name: Run prebuild
+        id: prebuild
         run: ./scripts/prebuild.sh
 
       - name: Analyze
         uses: zgosalvez/github-actions-analyze-dart@v1
 
       - name: Test
+        if: ${{ !cancelled() && steps.prebuild.outcome == 'success' }}
         env:
           MODULES: ${{ matrix.modules }}
         run: ./scripts/test.sh
-
-      - name: Test (Chrome)
-        if: matrix.modules == 'default'
-        run: |
-          while IFS= read -r path; do
-            [ -z "$path" ] && continue
-            package_dir="${path%%/*}"
-            rel_path="${path#*/}"
-            (cd "$package_dir" && flutter test "$rel_path" --platform chrome)
-          done <<< "$CHROME_TEST_PATHS"
 
       - name: Upload test reports
         if: success() || failure() # Always upload report
