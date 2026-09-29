@@ -423,8 +423,16 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       
         function handleMessage(e) {
           if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
-            var data = JSON.parse(e.data);
-            if (data["view"].includes("$_createdViewId")) {
+            var data;
+            try {
+              data = JSON.parse(e.data);
+            } catch (error) {
+              return;
+            }
+            if (data
+                && typeof data["view"] === 'string'
+                && data["view"].includes("$_createdViewId")
+                && typeof data["type"] === 'string') {
               if (data["type"].includes("getHeight")) {
                 var height = document.body.scrollHeight;
                 window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");

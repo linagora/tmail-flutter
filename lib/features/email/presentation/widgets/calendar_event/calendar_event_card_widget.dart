@@ -17,6 +17,7 @@ class CalendarEventCardWidget extends StatelessWidget {
   final CalendarEventCardViewState viewState;
   final CalendarEventCardActions actions;
   final LinagoraEventCardLayout layout;
+  final String? calendarUrlTemplate;
 
   const CalendarEventCardWidget({
     super.key,
@@ -24,6 +25,7 @@ class CalendarEventCardWidget extends StatelessWidget {
     required this.viewState,
     required this.actions,
     this.layout = LinagoraEventCardLayout.adaptive,
+    this.calendarUrlTemplate,
   });
 
   @override
@@ -36,6 +38,7 @@ class CalendarEventCardWidget extends StatelessWidget {
         appLocalizations: AppLocalizations.of(context),
         dateLocale: AppUtils.getCurrentDateLocale(),
         timeZone: AppUtils.getTimeZone(),
+        calendarUrlTemplate: calendarUrlTemplate,
       ),
     );
 
