@@ -105,6 +105,14 @@ void _registerConferenceTests() {
 }
 
 void _registerResponseTests() {
+  testWidgets(
+    'SHOULD show Mail to attendees as a text action beside the responses',
+    _showMailToAttendeesBesideResponses,
+  );
+  testWidgets(
+    'SHOULD show Mail to attendees as a text action without responses',
+    _showMailToAttendeesWithoutResponses,
+  );
   for (final response in _successfulResponses) {
     testWidgets(
       'SHOULD disable ${response.actionType.name} after a successful reply',
@@ -119,6 +127,60 @@ void _registerResponseTests() {
     'SHOULD preserve the previous response after a failed reply',
     _preservePreviousResponseAfterFailedReply,
   );
+}
+
+Future<void> _showMailToAttendeesBesideResponses(WidgetTester tester) async {
+  var mailed = 0;
+  await tester.pumpWidget(_testableCard(
+    event: _invitation(),
+    actions: CalendarEventCardActions(
+      onReply: (_) {},
+      onMailToAttendees: () => mailed++,
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  final localizations = AppLocalizations();
+  expect(find.text(localizations.attending), findsOneWidget);
+  expect(find.text(localizations.yes), findsOneWidget);
+  _expectMailToAttendeesTextButton(tester);
+
+  await tester.tap(find.text(localizations.mailToAttendees));
+  await tester.pump();
+  expect(mailed, 1);
+}
+
+Future<void> _showMailToAttendeesWithoutResponses(WidgetTester tester) async {
+  var mailed = 0;
+  await tester.pumpWidget(_testableCard(
+    event: CalendarEvent(
+      method: EventMethod.cancel,
+      organizer: CalendarOrganizer(
+        mailto: MailAddress('organizer@example.invalid'),
+      ),
+      participants: [_attendee('Reader', 'reader@example.invalid')],
+    ),
+    actions: CalendarEventCardActions(
+      onReply: (_) {},
+      onMailToAttendees: () => mailed++,
+    ),
+  ));
+  await tester.pumpAndSettle();
+
+  final localizations = AppLocalizations();
+  expect(find.text(localizations.attending), findsNothing);
+  expect(find.text(localizations.yes), findsNothing);
+  _expectMailToAttendeesTextButton(tester);
+
+  await tester.tap(find.text(localizations.mailToAttendees));
+  await tester.pump();
+  expect(mailed, 1);
+}
+
+void _expectMailToAttendeesTextButton(WidgetTester tester) {
+  final button = _responseButton(tester, AppLocalizations().mailToAttendees);
+  expect(button.variant, LinagoraButtonVariant.text);
+  expect(button.foregroundColor, LinagoraEventInfoColors.buttonLabel);
 }
 
 void _registerCalendarActionTests() {
