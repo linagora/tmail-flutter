@@ -87,7 +87,7 @@ class SidebarMailboxItem extends StatelessWidget {
   /// A team mailbox root is a container: its mails live in its children
   /// (INBOX, ...), so tapping it toggles the folder instead of opening it.
   void _onTap() {
-    if (!mailboxNode.item.isTeamMailboxes) {
+    if (!mailboxNode.item.isTeamMailboxRoot) {
       onOpenMailboxFolderClick?.call(mailboxNode);
     } else if (mailboxNode.hasChildren()) {
       onExpandFolderActionClick?.call(mailboxNode);
@@ -166,7 +166,7 @@ class SidebarMailboxItem extends StatelessWidget {
       isWebDesktop &&
       onDragItemAccepted != null &&
       !mailboxNode.item.isActionRequired &&
-      !mailboxNode.item.isTeamMailboxes;
+      !mailboxNode.item.isTeamMailboxRoot;
 
   bool get _isSelected => mailboxNodeSelected?.id == mailboxNode.item.id;
 

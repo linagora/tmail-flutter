@@ -21,6 +21,13 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isChildOfTeamMailboxes => !isPersonal && hasParentId();
 
+  /// Root of a TMail team mailbox (namespace `TeamMailbox[...]`): a pure
+  /// container whose mails live in its children. Unlike [isTeamMailboxes], it
+  /// excludes top-level folders shared through ACL (namespace `Delegated[...]`).
+  bool get isTeamMailboxRoot =>
+      isTeamMailboxes &&
+      (namespace?.value.startsWith(teamMailboxNamespacePrefix) ?? false);
+
   String get countUnReadEmailsAsString {
     if (countUnreadEmails <= 0) return '';
     return countUnreadEmails <= 999 ? '$countUnreadEmails' : '999+';

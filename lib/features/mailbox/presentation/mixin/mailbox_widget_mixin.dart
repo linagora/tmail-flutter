@@ -87,7 +87,7 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb &&
           mailbox.isSubscribedMailbox &&
-          !mailbox.isTeamMailboxes)
+          !mailbox.isTeamMailboxRoot)
         MailboxActions.openInNewTab,
       if (mailbox.myRights?.mayCreateChild == true)
         MailboxActions.newSubfolder,

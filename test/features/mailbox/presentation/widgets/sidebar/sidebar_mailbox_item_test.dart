@@ -29,6 +29,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 final _imagePaths = ImagePaths();
+final _teamMailboxNamespace = Namespace('TeamMailbox[team@example.com]');
+final _delegatedNamespace = Namespace('Delegated[bob@example.com]');
 final _folderIconsByRole = <Role, String>{
   PresentationMailbox.roleInbox: _imagePaths.icMailboxInbox,
   PresentationMailbox.roleFavorite: _imagePaths.icMailboxFavorite,
@@ -60,6 +62,8 @@ void main() {
     _testTogglesTeamMailboxRootOnTap();
     _testUsesReleaseDropTargetForDesktopWeb();
     _testKeepsTeamMailboxRootOutOfDropTargets();
+    _testOpensSharedTopLevelFolderOnTap();
+    _testUsesSharedTopLevelFolderAsDropTarget();
     _testKeepsActionRequiredMailboxOutOfDropTargets();
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
@@ -342,7 +346,7 @@ void _testTogglesTeamMailboxRootOnTap() {
     MailboxNode? expandedMailbox;
     final mailboxNode = _mailboxNode(
       id: 'team-root',
-      namespace: Namespace('Delegated[team@example.com]'),
+      namespace: _teamMailboxNamespace,
       children: [_mailboxNode(id: 'team-inbox')],
     );
 
@@ -373,7 +377,7 @@ void _testKeepsTeamMailboxRootOutOfDropTargets() {
       SidebarMailboxItem(
         mailboxNode: _mailboxNode(
           id: 'team-root',
-          namespace: Namespace('Delegated[team@example.com]'),
+          namespace: _teamMailboxNamespace,
         ),
         imagePaths: _imagePaths,
         isWebDesktop: true,
@@ -384,6 +388,57 @@ void _testKeepsTeamMailboxRootOutOfDropTargets() {
     expect(
       find.byType(LinagoraSidebarItemDropTarget<List<PresentationEmail>>),
       findsNothing,
+    );
+  });
+}
+
+void _testOpensSharedTopLevelFolderOnTap() {
+  testWidgets('opens a top-level folder shared through ACL on tap',
+      (tester) async {
+    MailboxNode? openedMailbox;
+    final mailboxNode = _mailboxNode(
+      id: 'shared-folder',
+      namespace: _delegatedNamespace,
+      children: [_mailboxNode(id: 'shared-child')],
+    );
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: mailboxNode,
+        imagePaths: _imagePaths,
+        isWebDesktop: false,
+        onOpenMailboxFolderClick: (mailboxNode) => openedMailbox = mailboxNode,
+        onExpandFolderActionClick: (_) {},
+      ),
+    );
+
+    await tester.tap(find.byType(LinagoraSidebarItem));
+    await tester.pump();
+
+    expect(openedMailbox, same(mailboxNode));
+  });
+}
+
+void _testUsesSharedTopLevelFolderAsDropTarget() {
+  testWidgets('keeps a top-level folder shared through ACL as a drop target',
+      (tester) async {
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(
+          id: 'shared-folder',
+          namespace: _delegatedNamespace,
+        ),
+        imagePaths: _imagePaths,
+        isWebDesktop: true,
+        onDragItemAccepted: (_, __) {},
+      ),
+    );
+
+    expect(
+      find.byType(LinagoraSidebarItemDropTarget<List<PresentationEmail>>),
+      findsOneWidget,
     );
   });
 }
