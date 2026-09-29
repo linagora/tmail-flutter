@@ -1,56 +1,29 @@
-# Configuration for Sentry
+## Configuration for Sentry
 
-## Context
-- **Twake Mail** uses **Sentry** to collect and track application errors and performance issues.
-- Developers need to configure environment variables for **Sentry** service to enable monitoring and debugging.
+### Context
 
-## How to configure
+- **Twake Mail** uses **Sentry** for error and performance reporting when configuration and consent allow it.
 
-### 1. Add environment variables for Sentry service
-Edit the file [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file) with the following content:
+### How to config
 
-```bash
-SENTRY_DSN=<your_sentry_dsn>
-SENTRY_ENVIRONMENT=<environment_name>
-```
+1. Set web values in [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file).
 
-**Descriptions:**
-- `SENTRY_DSN`: The unique DSN (Data Source Name) provided by Sentry, used to identify and connect your project.
-- `SENTRY_ENVIRONMENT`: The environment name (e.g., `dev`, `staging`, `production`) to help Sentry categorize issues by deployment.
+   ```bash
+   SENTRY_ENABLED=true
+   SENTRY_DSN=<your_sentry_dsn>
+   SENTRY_ENVIRONMENT=<environment_name>
+   ```
 
-### 2. Activate Sentry in environment file
-In [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file), ensure the following line is present:
+   Web starts Sentry at startup only with `SENTRY_ENABLED=true` and nonblank DSN and environment, then sets `isReportingAllowed=true` in memory.
 
-- If you want to use Sentry:
-```bash
-SENTRY_ENABLED=true
-```
+2. Choose web fallback or disable Sentry.
 
-- If you don't want to use Sentry:
-```bash
-SENTRY_ENABLED=false
-```
-  or
-```bash
-SENTRY_ENABLED=
-```
+   Any nonblank value among the three variables selects `env.file`. `SENTRY_ENABLED=false`, `SENTRY_ENABLED=`, or a missing `SENTRY_ENABLED` prevents env startup. A selected but disabled or incomplete env config hides the reporting preference and never falls back. Set `SENTRY_ENABLED=false` to disable web Sentry regardless of the other values. Web falls back to the ecosystem only when all three values are absent or blank.
 
-### 3. Verification
-Run the app and trigger a sample error to verify that it appears in your Sentry dashboard.
+3. Configure the ecosystem and consent.
 
-### Web fallback and reporting consent
+   Web fallback and Sentry on mobile require ecosystem `enabled` set to `true`, nonblank DSN and environment, and effective consent. After ecosystem loading, consent is `server sentryUserOptIn ?? ecosystem userOptInByDefault ?? false`. If the Sentry section is missing, web env reporting defaults to `false`, while web fallback and mobile keep the SDK off.
 
-On web, removing or blanking all three `SENTRY_ENABLED`, `SENTRY_DSN`, and
-`SENTRY_ENVIRONMENT` values makes the app use the Sentry configuration served
-by the instance ecosystem. The ecosystem must provide `enabled: true`, a
-non-empty DSN, and a non-empty environment. Any non-empty Sentry env value
-keeps env as the configuration source, including `SENTRY_ENABLED=false`.
+4. Verify.
 
-Reporting starts denied. A valid configuration only makes Sentry available;
-reports are sent when the effective consent is allowed. The server setting
-`sentryUserOptIn` takes precedence over ecosystem `userOptInByDefault`, and a
-missing value from both sources means denied.
-With a valid, enabled env configuration, web retains `SentryWidget` while
-consent is resolved. Ecosystem fallback does not mount it; exception reporting
-still works, but widget interaction breadcrumbs, tracing, and screenshot
-support are unavailable in that path.
+   With valid configuration and consent, trigger a sample error and verify that it appears in Sentry.

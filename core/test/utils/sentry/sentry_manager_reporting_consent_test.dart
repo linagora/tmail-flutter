@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,9 +26,9 @@ void main() {
       () async {
         dotenv.testLoad(
           mergeWith: {
-            'SENTRY_ENABLED': 'true',
-            'SENTRY_DSN': 'https://env@example.com/1',
-            'SENTRY_ENVIRONMENT': 'test',
+            SentryConfig.enabledEnvKey: 'true',
+            SentryConfig.dsnEnvKey: 'https://env@example.com/1',
+            SentryConfig.environmentEnvKey: 'test',
           },
         );
         addTearDown(dotenv.clean);
@@ -79,46 +80,73 @@ void main() {
       },
     );
 
-    test('disabled env config mounts only the fallback app', () async {
-      dotenv.testLoad(mergeWith: {
-        'SENTRY_ENABLED': 'false',
-        'SENTRY_DSN': 'https://env@example.com/1',
-        'SENTRY_ENVIRONMENT': 'test',
-      });
-      addTearDown(dotenv.clean);
-      var starts = 0;
-      var appRuns = 0;
-      var fallbackRuns = 0;
-      final manager = SentryManager.forTesting(
-        isSentryAvailable: false,
-        synchronizeScope: (_, {required clearBreadcrumbs}) async {},
-        initializeSentrySdk: ({appRunner, sentryConfig}) async {
-          starts++;
-          return true;
-        },
-      );
+    test('web starts from env credentials when SENTRY_ENABLED is true',
+        () async {
+      _configureWebSentryEnvironment();
+      final probe = _WebEnvSentryProbe();
 
-      await manager.initialize(
-        appRunner: () {
-          appRuns++;
-        },
-        fallBackRunner: () {
-          fallbackRuns++;
-        },
-      );
+      await probe.start();
 
-      expect(manager.isSentryConfigured, isFalse);
-      expect(starts, 0);
-      expect(appRuns, 0);
-      expect(fallbackRuns, 1);
+      expect(
+        probe.snapshot,
+        (reportingAllowed: true, sdkAvailable: true, starts: 1, closes: 0),
+      );
+      expect(
+        probe.startupResult,
+        (configured: true, configAllowsReporting: true, appRuns: 1, fallbackRuns: 0),
+      );
+    });
+
+    test('web ecosystem default can stop startup reporting',
+        () async {
+      _configureWebSentryEnvironment();
+      final probe = _WebEnvSentryProbe();
+      await probe.start();
+
+      await probe.applyEcosystemDefault(false);
+
+      expect(probe.snapshot,
+          (reportingAllowed: false, sdkAvailable: false, starts: 1, closes: 1));
+    });
+
+    test('web server consent restarts and stops SDK without rerunning the app',
+        () async {
+      _configureWebSentryEnvironment();
+      final probe = _WebEnvSentryProbe();
+      await probe.start();
+      await probe.applyEcosystemDefault(false);
+
+      await probe.applyServerConsent(true);
+      final allowedState = probe.snapshot;
+      await probe.applyServerConsent(false);
+
+      expect([allowedState, probe.snapshot], [
+        (reportingAllowed: true, sdkAvailable: true, starts: 2, closes: 1),
+        (reportingAllowed: false, sdkAvailable: false, starts: 2, closes: 2),
+      ]);
+      expect(probe.appRuns, 1);
+    });
+
+    test('web disabled env stays off after ecosystem and server opt-in',
+        () async {
+      _configureWebSentryEnvironment(enabled: 'false');
+      final probe = _WebEnvSentryProbe();
+
+      await probe.start();
+      await probe.applyEcosystemDefault(true);
+      await probe.applyServerConsent(true);
+
+      expect(probe.manager.isSentryConfigured, isFalse);
+      expect(probe.startedConfigs, isEmpty);
+      expect((probe.appRuns, probe.fallbackRuns), (0, 1));
     });
 
     test('does not retry app startup when the configured runner fails',
         () async {
       dotenv.testLoad(mergeWith: {
-        'SENTRY_ENABLED': 'true',
-        'SENTRY_DSN': 'https://env@example.com/1',
-        'SENTRY_ENVIRONMENT': 'test',
+        SentryConfig.enabledEnvKey: 'true',
+        SentryConfig.dsnEnvKey: 'https://env@example.com/1',
+        SentryConfig.environmentEnvKey: 'test',
       });
       addTearDown(dotenv.clean);
       PackageInfo.setMockInitialValues(
@@ -160,9 +188,9 @@ void main() {
       () async {
         dotenv.testLoad(
           mergeWith: {
-            'SENTRY_ENABLED': '',
-            'SENTRY_DSN': ' ',
-            'SENTRY_ENVIRONMENT': '',
+            SentryConfig.enabledEnvKey: '',
+            SentryConfig.dsnEnvKey: ' ',
+            SentryConfig.environmentEnvKey: '',
           },
         );
         addTearDown(dotenv.clean);
@@ -685,4 +713,85 @@ void main() {
       expect(manager.isSentryReportingReady, isTrue);
     });
   });
+}
+
+void _configureWebSentryEnvironment({String enabled = 'true'}) {
+  PlatformInfo.isTestingForWeb = true;
+  addTearDown(() => PlatformInfo.isTestingForWeb = false);
+  dotenv.testLoad(mergeWith: {
+    SentryConfig.enabledEnvKey: enabled,
+    SentryConfig.dsnEnvKey: 'https://env@example.com/1',
+    SentryConfig.environmentEnvKey: 'test',
+  });
+  addTearDown(dotenv.clean);
+  PackageInfo.setMockInitialValues(
+    appName: 'Twake Mail',
+    packageName: 'com.example.twake',
+    version: '1.0.0',
+    buildNumber: '1',
+    buildSignature: '',
+  );
+  ApplicationManager().clearCache();
+  addTearDown(ApplicationManager().clearCache);
+}
+
+typedef _SentryLifecycleSnapshot = ({
+  bool reportingAllowed,
+  bool sdkAvailable,
+  int starts,
+  int closes,
+});
+
+class _WebEnvSentryProbe {
+  final startedConfigs = <SentryConfig>[];
+  int closes = 0;
+  int appRuns = 0;
+  int fallbackRuns = 0;
+
+  late final SentryManager manager = SentryManager.forTesting(
+    isSentryAvailable: false,
+    synchronizeScope: (_, {required clearBreadcrumbs}) async {},
+    initializeSentrySdk: ({appRunner, sentryConfig}) async {
+      startedConfigs.add(sentryConfig!);
+      await appRunner?.call();
+      return true;
+    },
+    closeSentrySdk: () async {
+      closes++;
+    },
+  );
+
+  Future<void> start() => manager.initialize(
+        appRunner: () {
+          appRuns++;
+        },
+        fallBackRunner: () {
+          fallbackRuns++;
+        },
+      );
+
+  Future<void> applyEcosystemDefault(bool allowed) async {
+    manager.setSentryReportingDefault(allowed);
+    await manager.pendingLifecycleTransition;
+  }
+
+  Future<void> applyServerConsent(bool? consent) async {
+    manager.setSentryReportingConsent(consent);
+    await manager.pendingLifecycleTransition;
+  }
+
+  _SentryLifecycleSnapshot get snapshot => (
+        reportingAllowed: manager.isSentryReportingAllowed,
+        sdkAvailable: manager.isSentryAvailable,
+        starts: startedConfigs.length,
+        closes: closes,
+      );
+
+  ({bool configured, bool configAllowsReporting, int appRuns, int fallbackRuns})
+      get startupResult => (
+            configured: manager.isSentryConfigured,
+            configAllowsReporting: startedConfigs.single.isReportingAllowed,
+            appRuns: appRuns,
+            fallbackRuns: fallbackRuns,
+          );
 }
