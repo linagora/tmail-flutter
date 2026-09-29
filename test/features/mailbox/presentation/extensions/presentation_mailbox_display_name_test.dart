@@ -7,8 +7,28 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+class _DistinctAppLocalizations extends AppLocalizations {
+  @override
+  String get inboxMailboxDisplayName => 'localized-inbox';
+
+  @override
+  String get draftsMailboxDisplayName => 'localized-drafts';
+
+  @override
+  String get outboxMailboxDisplayName => 'localized-outbox';
+
+  @override
+  String get sentMailboxDisplayName => 'localized-sent';
+
+  @override
+  String get trashMailboxDisplayName => 'localized-trash';
+
+  @override
+  String get templatesMailboxDisplayName => 'localized-templates';
+}
+
 void main() {
-  final appLocalizations = AppLocalizations();
+  final appLocalizations = _DistinctAppLocalizations();
 
   PresentationMailbox teamMailboxChild(String name, {required bool mayDelete}) =>
       PresentationMailbox(
@@ -23,12 +43,12 @@ void main() {
   group('PresentationMailboxExtension::getDisplayNameWithoutContext', () {
     test('localizes team mailbox system folders like personal ones', () {
       final expectations = <String, String>{
-        'INBOX': appLocalizations.inboxMailboxDisplayName,
-        'Drafts': appLocalizations.draftsMailboxDisplayName,
-        'Outbox': appLocalizations.outboxMailboxDisplayName,
-        'Sent': appLocalizations.sentMailboxDisplayName,
-        'Trash': appLocalizations.trashMailboxDisplayName,
-        'Templates': appLocalizations.templatesMailboxDisplayName,
+        'INBOX': 'localized-inbox',
+        'Drafts': 'localized-drafts',
+        'Outbox': 'localized-outbox',
+        'Sent': 'localized-sent',
+        'Trash': 'localized-trash',
+        'Templates': 'localized-templates',
       };
 
       expectations.forEach((name, expected) {
@@ -66,7 +86,7 @@ void main() {
 
       expect(
         inbox.getDisplayNameWithoutContext(appLocalizations),
-        appLocalizations.inboxMailboxDisplayName,
+        'localized-inbox',
       );
     });
   });
