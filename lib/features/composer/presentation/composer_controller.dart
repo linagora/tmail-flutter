@@ -319,6 +319,9 @@ class ComposerController extends BaseController
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
 
+  @visibleForTesting
+  set isEmailBodyLoaded(bool value) => _isEmailBodyLoaded = value;
+
   ComposerController(
     this._localFilePickerInteractor,
     this._localImagePickerInteractor,
