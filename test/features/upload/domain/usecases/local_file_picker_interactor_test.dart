@@ -8,6 +8,7 @@ import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/web_pick_options.dart';
 
 /// A minimal concrete [PlatformFile]: the class is abstract in file_picker
 /// 13.x, so a test double has to implement it rather than construct one.
@@ -83,10 +84,8 @@ void main() {
 
     final states = await LocalFilePickerInteractor().execute().toList();
 
-    // The web options this PR sets are asserted end-to-end in
-    // web_pick_options_web_test.dart; here we only confirm they are the ones
-    // reaching the platform call, whatever platform resolves them to.
-    expect(picker.capturedWebOptions, isNotNull);
+    // Web-specific values are asserted in web_pick_options_web_test.dart.
+    expect(picker.capturedWebOptions, same(lazyWebPickOptions()));
 
     final success = states
         .map((either) => either.fold((_) => null, (success) => success))
