@@ -79,7 +79,7 @@ void main() {
 
   group('MailboxWidgetMixin::listContextMenuItemAction::openInNewTab', () {
     final mixinHolder = _MailboxWidgetMixinHolder();
-    final teamNamespace = Namespace('Delegated[team@example.com]');
+    final teamNamespace = Namespace('TeamMailbox[team@example.com]');
 
     setUp(() => PlatformInfo.isTestingForWeb = true);
     tearDown(() => PlatformInfo.isTestingForWeb = false);
@@ -109,6 +109,22 @@ void main() {
         expect(
           actionsOf(teamMailboxRoot),
           isNot(contains(MailboxActions.openInNewTab)),
+        );
+      },
+    );
+
+    test(
+      'should offer open in new tab for a top-level folder shared through ACL',
+      () {
+        final sharedTopLevelFolder = PresentationMailbox(
+          MailboxId(Id('shared-folder')),
+          namespace: Namespace('Delegated[bob@example.com]'),
+          isSubscribed: IsSubscribed(true),
+        );
+
+        expect(
+          actionsOf(sharedTopLevelFolder),
+          contains(MailboxActions.openInNewTab),
         );
       },
     );
