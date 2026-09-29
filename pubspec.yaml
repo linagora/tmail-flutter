@@ -129,6 +129,8 @@ dependencies:
 
   dio: 5.2.0
 
+  web: 1.1.1
+
   equatable: 2.0.5
 
   shared_preferences: 2.5.3
