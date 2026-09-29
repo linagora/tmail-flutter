@@ -24,6 +24,7 @@ class BlobUploadAdapter implements HttpClientAdapter {
 
   final HttpClientAdapter _inner;
   final _xhrs = <web.XMLHttpRequest>{};
+  bool _forceClosed = false;
 
   @override
   Future<ResponseBody> fetch(
@@ -67,6 +68,13 @@ class BlobUploadAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     final blob = await _resolveBlob(options, blobUrl);
+    // A forced close during blob resolution had no XHR to abort yet.
+    if (_forceClosed) {
+      throw DioException.requestCancelled(
+        requestOptions: options,
+        reason: 'The adapter was force-closed before the upload started.',
+      );
+    }
     final xhr = web.XMLHttpRequest();
     _xhrs.add(xhr);
     final completer = Completer<ResponseBody>();
@@ -195,6 +203,7 @@ class BlobUploadAdapter implements HttpClientAdapter {
   @override
   void close({bool force = false}) {
     if (force) {
+      _forceClosed = true;
       for (final xhr in _xhrs.toList()) {
         xhr.abort();
       }
