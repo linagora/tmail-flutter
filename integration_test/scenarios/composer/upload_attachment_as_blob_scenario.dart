@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../../base/base_test_scenario.dart';
 import '../../resources/test_images.dart';
 
-/// Blob path only: without the adapter the body is empty and size would be 0.
+/// Blob path only: the upload body must reach XHR as the picked Blob, never Dart bytes.
 class UploadAttachmentAsBlobScenario extends BaseTestScenario {
   const UploadAttachmentAsBlobScenario(super.$, super.robots);
 
@@ -26,5 +26,6 @@ class UploadAttachmentAsBlobScenario extends BaseTestScenario {
       fileName: _fileName,
       size: bytes.length,
     );
+    await composerRobot.expectUploadSentAsBlob(bytes.length);
   }
 }
