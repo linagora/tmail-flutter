@@ -1,4 +1,4 @@
-@TestOn('browser')
+@TestOn('chrome')
 library;
 
 import 'dart:async';
