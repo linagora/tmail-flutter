@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_b
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_item_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
@@ -28,6 +29,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import '../base/core_robot.dart';
 import '../extensions/patrol_file_extensions.dart';
 import '../extensions/patrol_finder_extension.dart';
+import '../utils/blob_file_info.dart';
+import '../utils/wait_for_condition.dart';
 
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
@@ -149,6 +152,26 @@ class ComposerRobot extends CoreRobot {
     final controller = findComposerController()!;
     final fileInfo = FileBytesInfo(bytes: bytes, fileName: fileName);
     _uploadAttachment(controller, fileInfo);
+  }
+
+  Future<void> addAttachmentFromBlob(Uint8List bytes, String fileName, String mimeType) async {
+    final controller = findComposerController()!;
+    _uploadAttachment(controller, createBlobFileInfo(bytes, fileName, mimeType));
+  }
+
+  Future<void> waitForAttachmentsUploaded() => waitForCondition(() =>
+      findComposerController()?.uploadController.attachmentsUploaded.isNotEmpty ?? false);
+
+  Future<void> expectSingleUploadedAttachment({
+    required String fileName,
+    required int size,
+  }) async {
+    final uploaded = findComposerController()!.uploadController.attachmentsUploaded.single;
+    expect(uploaded.name, fileName);
+    expect(uploaded.size?.value, size);
+    await $(AttachmentItemComposerWidget)
+      .which<AttachmentItemComposerWidget>((widget) => widget.fileName == fileName)
+      .waitUntilVisible();
   }
 
   void _uploadAttachment(ComposerController controller, FileInfo fileInfo) {

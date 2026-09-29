@@ -20,6 +20,11 @@ abstract class AbstractComposerRobot {
   // Use bytes instead of File so these methods work on web (no dart:io / path_provider).
   Future<void> addAttachmentFromBytes(Uint8List bytes, String fileName);
   Future<void> addInlineFromBytes(Uint8List bytes, String fileName);
+  // Web only: uploads through a real `blob:` URL (FileBlobInfo).
+  Future<void> addAttachmentFromBlob(Uint8List bytes, String fileName, String mimeType);
+  Future<void> waitForAttachmentsUploaded();
+  // Size is server-computed, so it proves the bytes actually reached the server.
+  Future<void> expectSingleUploadedAttachment({required String fileName, required int size});
   Future<void> tapSaveAsDraftButton();
   Future<void> tapSaveAsTemplateButton();
   Future<void> tapDiscardChanges();
