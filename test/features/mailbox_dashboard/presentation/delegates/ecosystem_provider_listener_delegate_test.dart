@@ -224,7 +224,11 @@ void main() {
   testWidgets(
     'registers the web Sentry handler without invoking non-web setup',
     (tester) async {
-      dotenv.testLoad(mergeWith: {'SENTRY_ENABLED': 'false'});
+      dotenv.testLoad(mergeWith: {
+        SentryConfig.enabledEnvKey: 'false',
+        SentryConfig.dsnEnvKey: 'https://env@sentry.io/123',
+        SentryConfig.environmentEnvKey: 'test',
+      });
       addTearDown(dotenv.clean);
       PlatformInfo.isTestingForWeb = true;
       final sentryManager = SentryManager.instance
@@ -277,9 +281,9 @@ void main() {
         (
           description: 'blank',
           env: {
-            'SENTRY_ENABLED': '',
-            'SENTRY_DSN': ' ',
-            'SENTRY_ENVIRONMENT': '',
+            SentryConfig.enabledEnvKey: '',
+            SentryConfig.dsnEnvKey: ' ',
+            SentryConfig.environmentEnvKey: '',
           },
         ),
       ];
@@ -326,16 +330,31 @@ void main() {
   }
 
   final webEnvOwnedCases = <({String description, Map<String, String> env})>[
-    (description: 'explicitly disabled', env: {'SENTRY_ENABLED': 'false'}),
-    (description: 'only enabled', env: {'SENTRY_ENABLED': 'true'}),
-    (description: 'only DSN', env: {'SENTRY_DSN': 'https://env@sentry.io/123'}),
-    (description: 'only environment', env: {'SENTRY_ENVIRONMENT': 'test'}),
+    (description: 'only explicitly disabled', env: {SentryConfig.enabledEnvKey: 'false'}),
+    (description: 'only enabled', env: {SentryConfig.enabledEnvKey: 'true'}),
+    (description: 'only DSN', env: {SentryConfig.dsnEnvKey: 'https://env@sentry.io/123'}),
+    (description: 'only environment', env: {SentryConfig.environmentEnvKey: 'test'}),
+    (
+      description: 'complete with SENTRY_ENABLED=false',
+      env: {
+        SentryConfig.enabledEnvKey: 'false',
+        SentryConfig.dsnEnvKey: 'https://env@sentry.io/123',
+        SentryConfig.environmentEnvKey: 'test',
+      },
+    ),
+    (
+      description: 'complete without SENTRY_ENABLED',
+      env: {
+        SentryConfig.dsnEnvKey: 'https://env@sentry.io/123',
+        SentryConfig.environmentEnvKey: 'test',
+      },
+    ),
     (
       description: 'complete',
       env: {
-        'SENTRY_ENABLED': 'true',
-        'SENTRY_DSN': 'https://env@sentry.io/123',
-        'SENTRY_ENVIRONMENT': 'test',
+        SentryConfig.enabledEnvKey: 'true',
+        SentryConfig.dsnEnvKey: 'https://env@sentry.io/123',
+        SentryConfig.environmentEnvKey: 'test',
       },
     ),
   ];

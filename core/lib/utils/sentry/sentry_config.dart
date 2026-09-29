@@ -1,10 +1,15 @@
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Holds configuration values for initializing Sentry.
 class SentryConfig {
+  static const String enabledEnvKey = 'SENTRY_ENABLED';
+  static const String dsnEnvKey = 'SENTRY_DSN';
+  static const String environmentEnvKey = 'SENTRY_ENVIRONMENT';
+
   // DSN (Data Source Name) endpoint for the Sentry project
   final String dsn;
 
@@ -86,12 +91,14 @@ class SentryConfig {
         dist: dist,
       );
 
-  /// An explicit but disabled or incomplete env configuration remains env-owned;
-  /// only an entirely empty set permits the web ecosystem fallback.
+  /// Any non-empty Sentry env value keeps web configuration env-owned. A
+  /// disabled or incomplete configuration cannot initialize Sentry or use
+  /// ecosystem fallback; fallback applies only when all three values are
+  /// absent or blank.
   static bool get hasEnvironmentConfiguration {
     if (!dotenv.isInitialized) return false;
     final environment = dotenv.env;
-    return const ['SENTRY_ENABLED', 'SENTRY_DSN', 'SENTRY_ENVIRONMENT'].any(
+    return const [enabledEnvKey, dsnEnvKey, environmentEnvKey].any(
       (key) => environment[key]?.trim().isNotEmpty == true,
     );
   }
@@ -100,16 +107,17 @@ class SentryConfig {
   static Future<SentryConfig?> load() async {
     // Note: Ensure EnvLoader.loadEnvFile() is called in main.dart before this.
     if (!dotenv.isInitialized) return null;
-    final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
+    final isEnabled = dotenv.get(enabledEnvKey, fallback: 'false') == 'true';
+    if (!isEnabled) return null;
 
-    final isAvailable = sentryAvailable == 'true';
-    final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
-    final sentryEnvironment = dotenv.get('SENTRY_ENVIRONMENT', fallback: '');
+    final sentryDSN = dotenv.get(dsnEnvKey, fallback: '');
+    final sentryEnvironment = dotenv.get(environmentEnvKey, fallback: '');
 
-    final isConfigValid = isAvailable
-        && sentryDSN.trim().isNotEmpty
+    final isConfigValid = sentryDSN.trim().isNotEmpty
         && sentryEnvironment.trim().isNotEmpty;
     if (!isConfigValid) return null;
+
+    final isWeb = PlatformInfo.isWeb;
 
     final release = await _resolveRelease();
 
@@ -124,7 +132,8 @@ class SentryConfig {
       dsn: sentryDSN,
       environment: sentryEnvironment,
       release: release,
-      isAvailable: isAvailable,
+      isAvailable: true,
+      isReportingAllowed: isWeb,
       dist: sentryDist.isNotEmpty ? sentryDist : null,
     );
   }

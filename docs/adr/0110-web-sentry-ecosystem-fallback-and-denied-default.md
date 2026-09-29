@@ -1,4 +1,4 @@
-# 0110 - Web Sentry Ecosystem Fallback and Denied Reporting Default
+# 0110 - Web Sentry Ecosystem Fallback and Reporting Defaults
 
 Date: 2026-09-28
 
@@ -8,31 +8,19 @@ Accepted
 
 ## Context
 
-Web deployments previously used only `env.file` for Sentry's technical configuration.
-An instance without Sentry env values could not initialize Sentry even when its ecosystem provided a valid configuration.
-Reporting consent in memory also started as allowed before either consent source was resolved.
+Web selects a Sentry configuration source before ecosystem and server consent load.
 
 ## Decision
 
-- On web, any non-empty `SENTRY_ENABLED`, `SENTRY_DSN`, or `SENTRY_ENVIRONMENT` value makes env the technical configuration source.
-  An explicit `SENTRY_ENABLED=false` or incomplete env configuration therefore does not fall back to the ecosystem.
-- When all three env values are absent or blank, web uses the existing ecosystem Sentry setup and validation path.
-  The SDK starts only with a valid, enabled ecosystem configuration and effective reporting consent.
-- Runtime configuration and in-memory reporting policy both default to denied.
-  Env configuration alone never grants reporting consent.
-  Effective consent remains `server sentryUserOptIn ?? ecosystem userOptInByDefault ?? false`.
-- Ecosystem resolution suspends reporting.
-  A web ecosystem reload retains the current user's identity in memory for reapplication while clearing the active Sentry scope and breadcrumbs.
-  An account change clears the previous account's identity and explicit consent before the next account can report.
-- A valid, enabled web env config keeps the existing `SentryWidget` app runner, even while the SDK waits for consent.
-  With no valid env config, web mounts `TMailApp` directly through `runTmail()`; end-to-end tests also call that function directly.
-  Ecosystem fallback can start the SDK later without `SentryWidget`, so automatic user interaction breadcrumbs and user interaction tracing are unavailable in that path.
-  Automatic screenshots are disabled in both paths by the current configuration.
-  Exception reporting remains available after the SDK starts with consent.
+- Any nonblank `SENTRY_ENABLED`, `SENTRY_DSN`, or `SENTRY_ENVIRONMENT` selects `env.file`, and initialization requires `SENTRY_ENABLED=true` and nonblank DSN and environment. If env is selected but invalid or disabled, Sentry stays off without ecosystem fallback.
+- When all three env values are absent or blank, web uses ecosystem configuration and starts the SDK later only with `enabled` set to `true`, nonblank DSN and environment, and effective consent.
+- A valid env configuration starts with `isReportingAllowed=true` in memory, and after ecosystem loading consent is `server sentryUserOptIn ?? ecosystem userOptInByDefault ?? false`. A missing Sentry ecosystem section supplies `false` as the default.
+- Ecosystem loading or unavailability suspends reporting, reload retains the current identity in memory but clears the active scope, and an account change clears identity and explicit consent.
+- Valid env configuration mounts `SentryWidget`, while all other web paths mount `TMailApp` through `runTmail()`, and ecosystem fallback can start the SDK later without widget integrations.
 
 ## Consequences
 
-Web Sentry may initialize after the app starts, once ecosystem configuration and consent become available.
-Events before that point are not reported.
-Mobile keeps using its existing ecosystem configuration path.
-A deployment that wants ecosystem fallback must remove or blank all three Sentry env values.
+Valid env configuration can report startup events, while ecosystem fallback cannot recover events before its SDK starts.
+Invalid env configuration installs no runtime Sentry configuration, so the reporting preference stays hidden.
+Ecosystem fallback lacks automatic interaction breadcrumbs and tracing, while automatic screenshots are disabled in both web paths.
+Mobile continues to use ecosystem configuration.
