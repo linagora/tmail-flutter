@@ -25,6 +25,8 @@ abstract class AbstractComposerRobot {
   Future<void> waitForAttachmentsUploaded();
   // Size is server-computed, so it proves the bytes actually reached the server.
   Future<void> expectSingleUploadedAttachment({required String fileName, required int size});
+  // Web only: the XHR body must be the Blob itself, never Dart-read bytes.
+  Future<void> expectUploadSentAsBlob(int size);
   Future<void> tapSaveAsDraftButton();
   Future<void> tapSaveAsTemplateButton();
   Future<void> tapDiscardChanges();
