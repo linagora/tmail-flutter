@@ -4,6 +4,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 
 /// A minimal concrete [PlatformFile]: the class is abstract in file_picker
@@ -93,12 +94,13 @@ void main() {
     expect(platformFile.readAsBytesCallCount, 0);
   });
 
-  test('falls back to 0 when length() also reports no size', () async {
+  test('throws FileSizeUnavailableException when length() also reports no size', () async {
     final platformFile = _FakePlatformFile(name: 'a.pdf', syncSize: null, asyncSize: null);
 
-    final fileInfo = await platformFile.toFileInfo();
-
-    expect(fileInfo.fileSize, 0);
+    expect(
+      () => platformFile.toFileInfo(),
+      throwsA(isA<FileSizeUnavailableException>()),
+    );
   });
 
   test('carries openRead through as the readAsByteStream tear-off', () async {

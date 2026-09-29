@@ -689,7 +689,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       type: FileType.image,
       webOptions: lazyWebPickOptions(),
     );
-    final fileInfo = await pickedFile?.toFileInfo();
+    // toFileInfo() can throw FileSizeUnavailableException; treat that the
+    // same as no file picked instead of crashing this unguarded call site.
+    FileInfo? fileInfo;
+    try {
+      fileInfo = await pickedFile?.toFileInfo();
+    } catch (exception) {
+      logWarning("IdentityCreatorController::pickImage: toFileInfo failed: $exception");
+    }
 
     if (context.mounted) {
       if (fileInfo != null && fileInfo is! FilePlaceholderInfo) {
