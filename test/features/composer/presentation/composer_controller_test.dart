@@ -2237,5 +2237,74 @@ void main() {
         expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
       });
     });
+
+    group('handleClickSendButton guards on email body test:', () {
+      Future<BuildContext> pumpContext(WidgetTester tester) async {
+        late BuildContext capturedContext;
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+          child: Builder(builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          }),
+        ));
+        await tester.pump();
+        return capturedContext;
+      }
+
+      void arrangeOtherwiseSendableEmail() {
+        final validationService = MockAttachmentUploadValidationService();
+        when(validationService.isExceededMaxSizeAttachmentsPerEmail()).thenReturn(false);
+        when(mockUploadController.allUploadAttachmentsCompleted).thenReturn(true);
+        composerController!
+          ..attachmentUploadValidationService = validationService
+          ..isEnableEmailSendButton.value = true
+          ..subjectEmail.value = 'subject';
+      }
+
+      testWidgets(
+        'Should show the content loading dialog and not send the email\n'
+        'When send is clicked while email content is still loading',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).messageDialogSendEmailContentLoading),
+          findsOneWidget,
+        );
+        verifyNever(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        ));
+      });
+
+      testWidgets(
+        'Should show the content load failed dialog and not send the email\n'
+        'When send is clicked after draft content failed to load',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).messageDialogSendEmailContentLoadFailed),
+          findsOneWidget,
+        );
+        verifyNever(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        ));
+      });
+    });
   });
 }
