@@ -595,6 +595,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
             onMailtoDelegateAction: onMailtoAction,
             onPreviewEMLDelegateAction: onPreviewAction,
             onDownloadAttachmentDelegateAction: onDownloadAction,
+            onBlockedLinkAction: (_) => showBlockedLinkToast(),
           ),
         );
       },
@@ -615,6 +616,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
         onMailtoDelegateAction: onMailtoAction,
         onPreviewEMLDelegateAction: onPreviewAction,
         onDownloadAttachmentDelegateAction: onDownloadAction,
+        onBlockedLinkAction: (_) => showBlockedLinkToast(),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );

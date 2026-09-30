@@ -139,6 +139,9 @@ class HtmlContentViewer extends StatefulWidget {
   OnHtmlContentClippedAction? get onHtmlContentClippedAction =>
       configuration.callbacks.onContentClipped;
 
+  OnBlockedLinkAction? get onBlockedLinkAction =>
+      configuration.callbacks.onBlockedLink;
+
   @visibleForTesting
   static bool shouldApplyMobileResponsiveLayout(
     HtmlContentViewerConfiguration configuration,
@@ -565,6 +568,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   Future<void> _launchExternalUrl(Uri requestUri) async {
     if (!ExternalLinkPolicy.canLaunchFromContent(requestUri)) {
       logWarning('_HtmlContentViewState::_launchExternalUrl: blocked scheme ${requestUri.scheme}');
+      widget.onBlockedLinkAction?.call(requestUri);
       return;
     }
     if (!await launcher.canLaunchUrl(requestUri)) return;

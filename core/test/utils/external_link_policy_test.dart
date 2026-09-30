@@ -9,6 +9,9 @@ void main() {
       'HTTPS://EXAMPLE.COM',
       'tel:+33123456789',
       'mailto:someone@example.com',
+      'sms:+33123456789',
+      'webcal://calendar.example/feed.ics',
+      'geo:48.85,2.35',
     ]) {
       test('SHOULD allow $url', () {
         expect(ExternalLinkPolicy.canLaunchFromContent(Uri.parse(url)), isTrue);
@@ -21,7 +24,6 @@ void main() {
       'intent://scan/#Intent;scheme=zxing;end',
       'file:///etc/hosts',
       'javascript:alert(1)',
-      'sms:+33123456789',
       'market://details?id=x',
     ]) {
       test('SHOULD refuse $url', () {

@@ -18,6 +18,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
   final OnMailtoDelegateAction onMailtoDelegateAction;
   final OnPreviewEMLDelegateAction onPreviewEMLDelegateAction;
   final OnDownloadAttachmentDelegateAction onDownloadAttachmentDelegateAction;
+  final OnBlockedLinkAction onBlockedLinkAction;
 
   const EmailPreviewerDialogView({
     super.key,
@@ -26,6 +27,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
     required this.onMailtoDelegateAction,
     required this.onPreviewEMLDelegateAction,
     required this.onDownloadAttachmentDelegateAction,
+    required this.onBlockedLinkAction,
   });
 
   @override
@@ -75,6 +77,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
                   onMailtoDelegateAction: onMailtoDelegateAction,
                   onPreviewEMLDelegateAction: onPreviewEMLDelegateAction,
                   onDownloadAttachmentDelegateAction: onDownloadAttachmentDelegateAction,
+                  onBlockedLinkAction: onBlockedLinkAction,
                 ),
               ),
             ],
@@ -103,6 +106,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
                 onMailto: onMailtoDelegateAction,
                 onPreviewEML: onPreviewEMLDelegateAction,
                 onDownloadAttachment: onDownloadAttachmentDelegateAction,
+                onBlockedLink: onBlockedLinkAction,
               ),
             ),
           ),

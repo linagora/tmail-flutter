@@ -4276,6 +4276,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "linkCannotBeOpened": "This link can't be opened",
+  "@linkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "downloadAttachmentInEMLPreviewWarningMessage": "Downloading attachment. You can only download one file at a time.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
