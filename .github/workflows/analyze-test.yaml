@@ -25,6 +25,7 @@ env:
     core/test/presentation/utils/web_selection/platform_web_selection_dom_adapter_browser_test.dart
     ./test/features/upload/data/network/blob_upload_adapter_web_test.dart
     ./test/features/upload/domain/usecases/web_pick_options_web_test.dart
+    ./test/features/upload/domain/extensions/dropped_file_open_read_web_test.dart
 
 jobs:
   analyze-test:
