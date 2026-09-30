@@ -92,14 +92,18 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
       return NavigationActionPolicy.CANCEL;
     }
 
-    if (ExternalLinkPolicy.canLaunchFromContent(requestUri) &&
-        await launcher.canLaunchUrl(requestUri)) {
-      await launcher.launchUrl(
-        requestUri,
-        mode: LaunchMode.externalApplication
-      );
-    }
+    await _launchExternalUrl(requestUri);
 
     return NavigationActionPolicy.CANCEL;
+  }
+
+  Future<void> _launchExternalUrl(Uri requestUri) async {
+    if (!ExternalLinkPolicy.canLaunchFromContent(requestUri)) return;
+    if (!await launcher.canLaunchUrl(requestUri)) return;
+
+    await launcher.launchUrl(
+      requestUri,
+      mode: LaunchMode.externalApplication
+    );
   }
 }

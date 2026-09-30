@@ -6,6 +6,7 @@ import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -225,16 +226,15 @@ class EmailPreviewerController extends ReloadableController {
   }
 
   void _openNewWindowByHyperLink(Uri uri) {
-    bool isEMlPreview = uri.toString().startsWith(RouteUtils.emailEMLPreviewerRoutePath);
-    final isMailto = uri.scheme == RouteUtils.mailtoPrefix;
-    final isExternalWebLink = uri.isScheme('http') || uri.isScheme('https');
+    final isEMlPreview = uri.toString().startsWith(RouteUtils.emailEMLPreviewerRoutePath);
 
     // Links come from the previewed (untrusted) message: only follow the
-    // application's own EML preview route, mailto and web links.
-    if (!isEMlPreview && !isMailto && !isExternalWebLink) {
+    // application's own EML preview route and the shared allow-list.
+    if (!isEMlPreview && !ExternalLinkPolicy.canLaunchFromContent(uri)) {
       logWarning('EmailPreviewerController::_openNewWindowByHyperLink: blocked scheme ${uri.scheme}');
       return;
     }
+    final isMailto = uri.isScheme(RouteUtils.mailtoPrefix);
 
     final url = _standardizeURL(uri);
     log('EmailPreviewerController::_openNewWindowByHyperLink: url = $url');
