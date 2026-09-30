@@ -11,12 +11,11 @@
             sessionStorage.removeItem(CODE_VERIFIER_KEY);
             localStorage.removeItem(AUTH_RESPONSE_KEY);
             localStorage.removeItem(CODE_VERIFIER_KEY);
-            // A caller-supplied redirect target is never followed: always
-            // return to the application root.
-            window.location.replace("/");
+            // A caller-supplied redirect target is never followed; "./" keeps subpath (--base-href) deploys inside the app.
+            window.location.replace("./");
         } catch (error) {
           console.error("[Logout Auth Redirect] Redirection failed:", error);
-          window.location.assign("/");
+          window.location.replace("./");
         }
     }
   </script>
