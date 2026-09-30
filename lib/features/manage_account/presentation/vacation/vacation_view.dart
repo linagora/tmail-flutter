@@ -507,6 +507,7 @@ class VacationView extends GetWidget<VacationController> {
           cacheHTMLAssetOffline: true,
           initialText: controller.vacationMessageHtmlText,
           spellCheck: true,
+          disableDragAndDrop: true,
           normalizeHtmlTextWhenDropping: true,
           normalizeHtmlTextWhenPasting: true,
           customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(

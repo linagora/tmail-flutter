@@ -24,4 +24,21 @@ void main() {
 
     expect(editorsWithoutSanitizer, isEmpty);
   });
+
+  test('every editor normalizing pasted HTML disables summernote drag-and-drop', () {
+    // summernote's dropzone inserts dropped HTML with pasteHTML, bypassing the insertHTML hook.
+    final editorsWithDragAndDrop = Directory('lib')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.dart'))
+        .where((file) {
+          final source = file.readAsStringSync();
+          return source.contains('normalizeHtmlTextWhenPasting: true') &&
+              !source.contains('disableDragAndDrop: true');
+        })
+        .map((file) => file.path)
+        .toList();
+
+    expect(editorsWithDragAndDrop, isEmpty);
+  });
 }
