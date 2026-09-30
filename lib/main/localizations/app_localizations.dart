@@ -4477,6 +4477,13 @@ class AppLocalizations {
     );
   }
 
+  String get linkCannotBeOpened {
+    return Intl.message(
+      'This link can\'t be opened',
+      name: 'linkCannotBeOpened',
+    );
+  }
+
   String get downloadAttachmentInEMLPreviewWarningMessage {
     return Intl.message(
       'Downloading attachment. You can only download one file at a time.',

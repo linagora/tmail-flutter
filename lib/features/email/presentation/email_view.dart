@@ -493,6 +493,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               }),
                               callbacks: HtmlContentViewerCallbacks(
                                 onMailto: (uri) async => controller.openMailToLink(uri),
+                                onBlockedLink: (_) => controller.showBlockedLinkToast(),
                                 onContentClipped: (_) =>
                                     controller.onHtmlContentClippedAction(true),
                                 onScrollHorizontalEnd: (direction) =>
@@ -555,6 +556,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       }),
                       callbacks: HtmlContentViewerCallbacks(
                         onMailto: (uri) async => controller.openMailToLink(uri),
+                        onBlockedLink: (_) => controller.showBlockedLinkToast(),
                         onScrollHorizontalEnd: (direction) =>
                             controller.onScrollHorizontalEnd(
                               direction == HtmlContentViewerHorizontalDirection.left,

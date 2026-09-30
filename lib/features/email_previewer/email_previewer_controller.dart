@@ -232,6 +232,7 @@ class EmailPreviewerController extends ReloadableController {
     // application's own EML preview route and the shared allow-list.
     if (!isEMlPreview && !ExternalLinkPolicy.canLaunchFromContent(uri)) {
       logWarning('EmailPreviewerController::_openNewWindowByHyperLink: blocked scheme ${uri.scheme}');
+      showBlockedLinkToast();
       return;
     }
     final isMailto = uri.isScheme(RouteUtils.mailtoPrefix);

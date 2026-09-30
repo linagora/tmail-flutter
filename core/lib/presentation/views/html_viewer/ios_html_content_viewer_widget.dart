@@ -20,6 +20,7 @@ class IosHtmlContentViewerWidget extends StatefulWidget {
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final OnPreviewEMLDelegateAction? onPreviewEMLDelegateAction;
   final OnDownloadAttachmentDelegateAction? onDownloadAttachmentDelegateAction;
+  final OnBlockedLinkAction? onBlockedLinkAction;
 
   const IosHtmlContentViewerWidget({
     Key? key,
@@ -29,6 +30,7 @@ class IosHtmlContentViewerWidget extends StatefulWidget {
     this.onMailtoDelegateAction,
     this.onPreviewEMLDelegateAction,
     this.onDownloadAttachmentDelegateAction,
+    this.onBlockedLinkAction,
   }) : super(key: key);
 
   @override
@@ -98,7 +100,10 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
   }
 
   Future<void> _launchExternalUrl(Uri requestUri) async {
-    if (!ExternalLinkPolicy.canLaunchFromContent(requestUri)) return;
+    if (!ExternalLinkPolicy.canLaunchFromContent(requestUri)) {
+      widget.onBlockedLinkAction?.call(requestUri);
+      return;
+    }
     if (!await launcher.canLaunchUrl(requestUri)) return;
 
     await launcher.launchUrl(

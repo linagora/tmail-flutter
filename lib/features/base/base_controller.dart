@@ -236,6 +236,13 @@ abstract class BaseController extends GetxController
     }
   }
 
+  void showBlockedLinkToast() {
+    if (currentOverlayContext == null || currentContext == null) return;
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      AppLocalizations.of(currentContext!).linkCannotBeOpened);
+  }
+
   void _handleNotNetworkErrorException() {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastMessage(

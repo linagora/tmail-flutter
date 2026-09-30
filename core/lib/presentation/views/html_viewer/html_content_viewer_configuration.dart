@@ -41,6 +41,7 @@ typedef OnLoadWidthHtmlViewerAction = void Function(
 typedef OnMailtoDelegateAction = Future<void> Function(Uri? uri);
 typedef OnPreviewEMLDelegateAction = Future<void> Function(Uri? uri);
 typedef OnDownloadAttachmentDelegateAction = Future<void> Function(Uri? uri);
+typedef OnBlockedLinkAction = void Function(Uri uri);
 typedef OnHtmlContentClippedAction = void Function(
   HtmlContentViewerContentClipping clipping,
 );
@@ -157,6 +158,7 @@ class HtmlContentViewerCallbacks {
   final OnPreviewEMLDelegateAction? onPreviewEML;
   final OnDownloadAttachmentDelegateAction? onDownloadAttachment;
   final OnHtmlContentClippedAction? onContentClipped;
+  final OnBlockedLinkAction? onBlockedLink;
 
   const HtmlContentViewerCallbacks({
     this.onLoadWidth,
@@ -165,6 +167,7 @@ class HtmlContentViewerCallbacks {
     this.onPreviewEML,
     this.onDownloadAttachment,
     this.onContentClipped,
+    this.onBlockedLink,
   });
 }
 
