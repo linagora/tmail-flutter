@@ -98,6 +98,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -314,6 +315,9 @@ class ComposerController extends BaseController
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
+
+  @visibleForTesting
+  set isEmailBodyLoaded(bool value) => _isEmailBodyLoaded = value;
 
   ComposerController(
     this._localFilePickerInteractor,
@@ -832,6 +836,32 @@ class ComposerController extends BaseController
 
     final appLocalizations = AppLocalizations.of(context);
 
+    if (isEditedEmailContentLoadFailed) {
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.messageDialogSendEmailContentLoadFailed,
+        appLocalizations.got_it,
+        title: appLocalizations.sending_failed,
+        showAsBottomSheet: true,
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
+      return;
+    }
+
+    if (isEmailBodyNotReady) {
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.messageDialogSendEmailContentLoading,
+        appLocalizations.got_it,
+        title: appLocalizations.sending_failed,
+        showAsBottomSheet: true,
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
+      return;
+    }
+
     if (!isEnableEmailSendButton.value) {
       MessageDialogActionManager().showConfirmDialogAction(context,
         appLocalizations.message_dialog_send_email_without_recipient,
@@ -900,6 +930,34 @@ class ComposerController extends BaseController
 
     _prepareToSendMessages(context);
   }
+
+  bool get isEmailBodyNotReady {
+    final isContentLoading = emailContentsViewState.value?.fold(
+      (_) => false,
+      (success) => success is GetEmailContentLoading,
+    ) ?? false;
+    final isEditorNotLoaded = PlatformInfo.isWeb
+      ? !_isEmailBodyLoaded && !screenDisplayMode.value.isNotContentVisible()
+      : !_isEmailBodyLoaded;
+    return isContentLoading || isEditorNotLoaded;
+  }
+
+  bool get isEditedEmailContentLoadFailed {
+    final isEditingExistingEmail = const {
+      EmailActionType.editDraft,
+      EmailActionType.editAsNewEmail,
+      EmailActionType.reopenComposerBrowser,
+      EmailActionType.restoreComposerFromPersistentCache,
+    }.contains(currentEmailActionType);
+    final isContentLoadFailed = emailContentsViewState.value?.fold(
+      (failure) => !_isEmptyEmailContentFailure(failure),
+      (_) => false,
+    ) ?? false;
+    return isEditingExistingEmail && isContentLoadFailed;
+  }
+
+  bool _isEmptyEmailContentFailure(Failure failure) =>
+    failure is GetEmailContentFailure && failure.exception is EmptyEmailContentException;
 
   Future<String> getContentInEditor() async {
     try {
