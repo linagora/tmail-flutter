@@ -777,5 +777,70 @@ void main() {
 
       expect(message, 'Can not upload this file to signature');
     });
+
+    test(
+      'should sanitize a stored signature '
+      'before the editor renders it',
+    () async {
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+        identity: Identity(
+          id: IdentityId(Id('identity-1')),
+          name: 'Test Identity',
+          email: ownEmailAddress,
+          htmlSignature: Signature('<p>Sig</p><img src="https://x/a.png" onerror="alert(1)">'),
+          mayDelete: true,
+        ),
+        actionType: IdentityActionType.edit,
+      );
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => const Stream.empty());
+
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      expect(identityCreatorController.contentHtmlEditor, contains('Sig'));
+      expect(identityCreatorController.contentHtmlEditor, isNot(contains('onerror')));
+    });
+
+    test(
+      'should sanitize the signature '
+      'before saving it',
+    () async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
+      when(mockVerifyNameInteractor.execute(any, any)).thenAnswer((_) => Right(VerifyNameViewState()));
+
+      identityCreatorController.onReady();
+      identityCreatorController.updateNameIdentity(MockBuildContext(), 'test');
+      identityCreatorController.updateContentHtmlEditor(
+        '<p>Sig</p><img src="https://x/a.png" onerror="alert(1)">',
+      );
+      identityCreatorController.onUnloadBrowserListener(Event(''));
+      await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
+        any,
+        any,
+        identityCache: anyNamed('identityCache'),
+      ));
+
+      final cache = verify(mockSaveIdentityCacheOnWebInteractor.execute(
+        any,
+        any,
+        identityCache: captureAnyNamed('identityCache'),
+      )).captured.single as IdentityCache;
+      final saved = cache.identity?.htmlSignature?.value ?? '';
+      expect(saved, contains('Sig'));
+      expect(saved, isNot(contains('onerror')));
+    });
   });
 }
