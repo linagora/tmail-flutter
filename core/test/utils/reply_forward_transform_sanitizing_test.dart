@@ -15,7 +15,6 @@ void main() {
   });
 
   final configurations = <String, TransformConfiguration Function()>{
-    'forReplyForwardEmail': TransformConfiguration.forReplyForwardEmail,
     'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
   };
 
@@ -66,6 +65,41 @@ void main() {
 
         expect(out, contains('tmail-signature-blocked'));
       });
+    });
+  });
+
+  group('forReplyForwardEmail (loaded content quoted into the composer)', () {
+    test('SHOULD keep the cid id of a displayed inline image', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<img src="data:image/png;base64,iVBORw0KGgo=" id="cid:image001.png@01DA1234.5678ABCD">',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('id="cid:image001.png@01DA1234.5678ABCD"'));
+    });
+
+    test('SHOULD keep a webp data image', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<img src="data:image/webp;base64,UklGRg==">',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('src="data:image/webp;base64,UklGRg=="'));
+    });
+
+    test('SHOULD still remove script elements', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<div>Body</div><script>alert(1)</script>',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('Body'));
+      expect(out.toLowerCase(), isNot(contains('<script')));
+    });
+
+    test('SHOULD still block the quoted signature', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<div class="tmail-signature">Signature</div>',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('tmail-signature-blocked'));
     });
   });
 }

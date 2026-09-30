@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Every configuration whose output is rendered in an iframe, a WebView, a
 /// same-origin tab or the composer editor must sanitize its input: email
-/// content is attacker-controlled.
-///
+/// content is attacker-controlled. Content already sanitized for display
+/// (reply/forward quoting, print) is not sanitized again.
 void main() {
   final configurations = <String, TransformConfiguration Function()>{
     'standardConfiguration': () => TransformConfiguration.standardConfiguration,
@@ -15,9 +15,7 @@ void main() {
     'forRestoreEmail': TransformConfiguration.forRestoreEmail,
     'forDraftsEmail': TransformConfiguration.forDraftsEmail,
     'forEditDraftsEmail': TransformConfiguration.forEditDraftsEmail,
-    'forReplyForwardEmail': TransformConfiguration.forReplyForwardEmail,
     'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
-    'forPrintEmail': TransformConfiguration.forPrintEmail,
     'forSignatureIdentity': TransformConfiguration.forSignatureIdentity,
     'forComposerSignature': TransformConfiguration.forComposerSignature,
     'forCalendarEvent': TransformConfiguration.forCalendarEvent,
@@ -34,18 +32,18 @@ void main() {
       });
     });
 
-    for (final name in const [
-      'forReplyForwardEmail',
-      'forReplyForwardEmptyEmail',
-      'forPrintEmail',
-    ]) {
+    final quotedOrPrinted = <String, TransformConfiguration Function()>{
+      'forReplyForwardEmail': TransformConfiguration.forReplyForwardEmail,
+      'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
+      'forPrintEmail': TransformConfiguration.forPrintEmail,
+    };
+    quotedOrPrinted.forEach((name, create) {
       test('$name SHOULD include RemoveScriptTransformer', () {
         expect(
-          configurations[name]!().domTransformers
-              .whereType<RemoveScriptTransformer>(),
+          create().domTransformers.whereType<RemoveScriptTransformer>(),
           isNotEmpty,
         );
       });
-    }
+    });
   });
 }
