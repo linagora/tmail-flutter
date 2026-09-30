@@ -29,19 +29,17 @@ class ActiveHtmlContentStripper {
     if (html.trim().isEmpty) return html;
 
     try {
-      final document = parser.parse(html);
-      final body = document.body;
-      if (body == null) return html;
+      final fragment = parser.parseFragment(html);
 
-      for (final element in body.querySelectorAll(_activeElements)) {
+      for (final element in fragment.querySelectorAll(_activeElements)) {
         element.remove();
       }
 
-      for (final element in body.querySelectorAll('*')) {
+      for (final element in fragment.querySelectorAll('*')) {
         _stripAttributes(element);
       }
 
-      return body.innerHtml;
+      return fragment.outerHtml;
     } catch (e) {
       logWarning('ActiveHtmlContentStripper::strip: Exception = $e');
       return html;
