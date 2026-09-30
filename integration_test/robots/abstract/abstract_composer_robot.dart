@@ -5,7 +5,11 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import 'abstract_composer_reload_robot.dart';
+
 abstract class AbstractComposerRobot {
+  AbstractComposerReloadRobot? get reload;
+
   Future<void> expectComposerViewVisible();
   Future<void> grantContactPermission();
   Future<void> addRecipient(PrefixEmailAddress prefix, String email);
