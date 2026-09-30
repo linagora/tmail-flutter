@@ -52,7 +52,14 @@ void main() {
       expect(launchedUrls, isEmpty);
     });
 
-    testWidgets('refuses an unparsable URL', (tester) async {
+    testWidgets('refuses a URL that cannot be parsed', (tester) async {
+      AppUtils.launchLink('http://[::1');
+      await tester.pump();
+
+      expect(launchedUrls, isEmpty);
+    });
+
+    testWidgets('refuses a URL without a scheme', (tester) async {
       AppUtils.launchLink('not a url');
       await tester.pump();
 
