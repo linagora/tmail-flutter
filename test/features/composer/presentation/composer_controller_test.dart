@@ -1789,6 +1789,77 @@ void main() {
             'default@example.com');
       });
 
+      test(
+        'keeps the identity the user switched to, and applies its signature, '
+        'after reload',
+      () async {
+        const composerId = 'reload-switched-identity';
+        final workIdentity = Identity(
+          id: IdentityId(Id('work-identity')),
+          email: 'work@example.com',
+          htmlSignature: Signature('<p>Work signature</p>'),
+        );
+        final personalIdentity = Identity(
+          id: IdentityId(Id('personal-identity')),
+          email: 'personal@example.com',
+          htmlSignature: Signature('<p>Personal signature</p>'),
+        );
+        final arguments = ComposerArguments(
+          emailActionType: EmailActionType.compose,
+          composerId: composerId,
+          identities: [workIdentity, personalIdentity],
+          selectedIdentityId: workIdentity.id,
+        );
+        final controller = createComposerController(
+          composerId: composerId,
+          arguments: arguments,
+        )..composerArguments.value = arguments;
+        controller.currentEmailActionType = EmailActionType.compose;
+        controller.listFromIdentities.value = [workIdentity, personalIdentity];
+        // The composer opened with the default identity, then the user
+        // switched From to the personal one.
+        controller.identitySelected.value = personalIdentity;
+        controller.setTextEditorWeb('<p>draft</p><p>Personal signature</p>');
+        registerReloadHandler(controller, createSessionDatasource(composerId));
+
+        controller.onBeforeUnloadBrowserListener(html.Event('beforeunload'));
+
+        final restored = ComposerArguments.fromSessionStorageBrowser(
+          ComposerCache.fromJson(jsonDecode(
+            browser_html.window.sessionStorage[cacheKeyFor(composerId)]!,
+          )),
+        );
+        expect(restored.selectedIdentityId, personalIdentity.id);
+
+        // The default identity is still listed first after reload.
+        final reopened = createComposerController(
+          composerId: composerId,
+          arguments: restored,
+        )..composerArguments.value = restored;
+        reopened.currentEmailActionType = EmailActionType.reopenComposerBrowser;
+        reopened.savedActionType = restored.savedActionType;
+        reopened.listFromIdentities.value = [workIdentity, personalIdentity];
+        reopened.richTextWebController = mockRichTextWebController;
+        final editor =
+            mockRichTextWebController.editorController as MockHtmlEditorController;
+        clearInteractions(editor);
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(
+                Left(TransformHtmlEmailContentFailure(Exception()))));
+
+        await reopened.setupSelectedIdentity();
+
+        expect(reopened.identitySelected.value, personalIdentity);
+        verify(editor.insertSignature(
+          argThat(contains('Personal signature')),
+          allowCollapsed: false,
+        )).called(1);
+        verifyNever(editor.insertSignature(
+          argThat(contains('Work signature')),
+          allowCollapsed: anyNamed('allowCollapsed'),
+        ));
+      });
+
       test('keeps reply threading through two reload snapshots', () {
         const composerId = 'reload-reply';
         final messageId = MessageIdsHeaderValue({'original@example.com'});
