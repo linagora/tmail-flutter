@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/upload/file_info.dart';
@@ -68,6 +69,19 @@ void main() {
 
       expect(image.isInline, isTrue);
       expect(text.isInline, isFalse);
+    });
+
+    test('on web, a dropped file is a FileBlobInfo whose sourceUrl is the drop path', () async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      final file = await writeFile('photo.png', 'png');
+
+      final fileInfo = await XFile(file.path, mimeType: 'image/png').toFileInfo();
+
+      expect(fileInfo, isA<FileBlobInfo>());
+      expect((fileInfo as FileBlobInfo).sourceUrl, file.path);
+      expect(fileInfo.fileSize, 3);
+      expect(fileInfo.isInline, isTrue);
     });
   });
 }
