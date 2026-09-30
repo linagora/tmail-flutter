@@ -62,23 +62,16 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   Future<void> addInlineAtCursorPosition(File file) async {
     final controller = Get.find<ComposerController>();
     final context = $.tester.element(find.byType(ComposerView));
-    final fakeResult = FilePickerResult([
-      PlatformFile(
-        name: file.path.split('/').last,
-        size: await file.length(),
-        path: file.path,
-      ),
-    ]);
-    final original = FilePicker.platform;
+    final original = FilePickerPlatform.instance;
     try {
-      FilePicker.platform = FakeFilePicker(fakeResult);
+      FilePickerPlatform.instance = FakeFilePicker([FakePlatformFile(file)]);
       await controller.insertImage(context, 400.0);
       await controller.viewState.stream.firstWhere((state) => state.fold(
         (failure) => failure is DownloadImageAsBase64Failure,
         (success) => success is DownloadImageAsBase64Success,
       ));
     } finally {
-      FilePicker.platform = original;
+      FilePickerPlatform.instance = original;
     }
     await _waitForInlineImage(controller);
   }
