@@ -278,7 +278,7 @@ void main() {
   });
 
   group('calendar_event_extension::videoConferences::test', () {
-    test('drops a conference link whose scheme is not http, https or tel', () {
+    test('drops a conference link whose scheme is not allowed', () {
       final event = CalendarEvent(
         extensionFields: CalendarExtensionFields({
           'X-OPENPAAS-VIDEOCONFERENCE': ['javascript:alert(1)', 'https://meet.example/room'],
