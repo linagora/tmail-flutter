@@ -8,6 +8,10 @@
 /// escapes, numbers, identifiers and `url(...)` tokens) and neutralizes every
 /// `}` that would otherwise close the `@scope` block.
 ///
+/// Inside `@scope` a selector only matches elements under the scope root, so
+/// `html` and `body` type selectors would match nothing: they are rewritten
+/// to `:scope`, and `html body` to a single `:scope`.
+///
 /// Browsers without `@scope` support drop the whole block, so the untrusted
 /// CSS is ignored rather than leaked.
 class CssScopeUtils {
@@ -52,6 +56,8 @@ extension type const _CodeUnit(int value) implements int {
   static const hyphen = _CodeUnit(0x2D);
   static const fullStop = _CodeUnit(0x2E);
   static const slash = _CodeUnit(0x2F);
+  static const colon = _CodeUnit(0x3A);
+  static const semicolon = _CodeUnit(0x3B);
   static const lessThan = _CodeUnit(0x3C);
   static const questionMark = _CodeUnit(0x3F);
   static const at = _CodeUnit(0x40);
@@ -64,6 +70,7 @@ extension type const _CodeUnit(int value) implements int {
   static const lowerE = _CodeUnit(0x65);
   static const lowerU = _CodeUnit(0x75);
   static const openBrace = _CodeUnit(0x7B);
+  static const verticalLine = _CodeUnit(0x7C);
   static const closeBrace = _CodeUnit(0x7D);
 
   static const Map<_CodeUnit, _CodeUnit> closingOf = {
@@ -152,12 +159,66 @@ class _Lookahead {
           && (third.isHexDigit || third == _CodeUnit.questionMark);
 }
 
+/// An identifier token: its span in the stylesheet and its lowercase,
+/// unescaped name.
+typedef _Identifier = ({int start, int end, String name});
+
+enum _TokenKind { insignificant, atKeyword, groupingAtKeyword, openBrace, closeBrace, semicolon, other }
+
+enum _Prelude { none, selector, atRule, groupingAtRule }
+
+/// Tells a selector, where `html` and `body` must become `:scope`, from
+/// declarations and at-rule preludes.
+class _RuleContext {
+  /// One entry per open `{`: whether the block holds rules or declarations.
+  final List<bool> _blockHoldsRules = [];
+  _Prelude _prelude = _Prelude.none;
+
+  bool get _inRuleList => _blockHoldsRules.isEmpty || _blockHoldsRules.last;
+
+  bool get inSelector => _inRuleList && _prelude == _Prelude.selector;
+
+  void onToken(_TokenKind kind) {
+    switch (kind) {
+      case _TokenKind.insignificant:
+        return;
+      case _TokenKind.openBrace:
+        _blockHoldsRules.add(_inRuleList && _prelude == _Prelude.groupingAtRule);
+        _prelude = _Prelude.none;
+      case _TokenKind.closeBrace:
+        _blockHoldsRules.removeLast();
+        _prelude = _Prelude.none;
+      case _TokenKind.semicolon:
+        _prelude = _inRuleList ? _Prelude.none : _prelude;
+      case _TokenKind.atKeyword:
+        _startPrelude(_Prelude.atRule);
+      case _TokenKind.groupingAtKeyword:
+        _startPrelude(_Prelude.groupingAtRule);
+      case _TokenKind.other:
+        _startPrelude(_Prelude.selector);
+    }
+  }
+
+  void _startPrelude(_Prelude prelude) {
+    if (_prelude == _Prelude.none) {
+      _prelude = prelude;
+    }
+  }
+}
+
 class _CssBlockConfiner {
   static const int _maxHexDigits = 6;
   static const int _replacementCharacter = 0xFFFD;
+  static const String _scopeSelector = ':scope';
+  static const Set<String> _rootTypeSelectors = {'html', 'body'};
+  static const Set<String> _groupingAtRules = {
+    'media', 'supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style',
+  };
 
   final List<_CodeUnit> _codeUnits;
   final List<_CodeUnit> _expectedClosings = [];
+  final List<_Identifier> _scopeRewrites = [];
+  final _RuleContext _rules = _RuleContext();
   int _index = 0;
 
   _CssBlockConfiner(this._codeUnits);
@@ -176,7 +237,20 @@ class _CssBlockConfiner {
         return null;
       }
     }
-    return String.fromCharCodes(_codeUnits);
+    return _render();
+  }
+
+  String _render() {
+    final output = StringBuffer();
+    int position = 0;
+    for (final rewrite in _scopeRewrites) {
+      output
+        ..write(String.fromCharCodes(_codeUnits, position, rewrite.start))
+        ..write(_scopeSelector);
+      position = rewrite.end;
+    }
+    output.write(String.fromCharCodes(_codeUnits, position));
+    return output.toString();
   }
 
   /// Consumes the next token, returns false when it is ambiguous.
@@ -188,15 +262,17 @@ class _CssBlockConfiner {
     } else if (lookahead.startsCdo) {
       _index += 4;
     } else if (lookahead.first.isQuote) {
+      _rules.onToken(_TokenKind.other);
       _skipString(lookahead.first);
     } else if (lookahead.startsPrefixedName) {
-      _index++;
-      _consumeName();
+      _skipPrefixedName(lookahead.first);
     } else if (lookahead.startsNumber) {
+      _rules.onToken(_TokenKind.other);
       _skipNumeric();
     } else if (lookahead.startsUnicodeRange) {
       return _skipUnicodeRange();
     } else if (lookahead.startsIdentifier) {
+      _rules.onToken(_TokenKind.other);
       _skipIdentLike();
     } else {
       _consumeDelimiter(lookahead.first);
@@ -210,12 +286,36 @@ class _CssBlockConfiner {
     final closing = _CodeUnit.closingOf[current];
     if (closing != null) {
       _expectedClosings.add(closing);
+      _rules.onToken(current == _CodeUnit.openBrace ? _TokenKind.openBrace : _TokenKind.other);
     } else if (_isExpectedClosing(current)) {
       _expectedClosings.removeLast();
+      _rules.onToken(current == _CodeUnit.closeBrace ? _TokenKind.closeBrace : _TokenKind.other);
     } else if (_isUnmatchedCloseBrace(current)) {
       _codeUnits[_index] = _CodeUnit.space;
+    } else {
+      _rules.onToken(_otherDelimiterKind(current));
     }
     _index++;
+  }
+
+  static _TokenKind _otherDelimiterKind(_CodeUnit delimiter) {
+    if (delimiter.isWhitespace) {
+      return _TokenKind.insignificant;
+    }
+    return delimiter == _CodeUnit.semicolon ? _TokenKind.semicolon : _TokenKind.other;
+  }
+
+  /// `#name` (hash token) or `@name` (at-keyword token).
+  void _skipPrefixedName(_CodeUnit prefix) {
+    _index++;
+    final name = _consumeName().toLowerCase();
+    if (prefix != _CodeUnit.at) {
+      _rules.onToken(_TokenKind.other);
+    } else if (_groupingAtRules.contains(name)) {
+      _rules.onToken(_TokenKind.groupingAtKeyword);
+    } else {
+      _rules.onToken(_TokenKind.atKeyword);
+    }
   }
 
   bool _isExpectedClosing(_CodeUnit codeUnit) =>
@@ -327,15 +427,23 @@ class _CssBlockConfiner {
     return length;
   }
 
+  void _skipIdentLike() {
+    final start = _index;
+    final name = _consumeName().toLowerCase();
+    if (_current == _CodeUnit.openParenthesis && name == 'url') {
+      _skipUrlFunction();
+      return;
+    }
+    final identifier = (start: start, end: _index, name: name);
+    if (_isRootTypeSelector(identifier)) {
+      _addScopeRewrite(identifier);
+    }
+  }
+
   /// An identifier spelling `url` followed by `(` and an unquoted argument
   /// forms a single url token: braces, quotes and comments inside it are
   /// not interpreted.
-  void _skipIdentLike() {
-    final name = _consumeName();
-    if (_current != _CodeUnit.openParenthesis || name.toLowerCase() != 'url') {
-      return;
-    }
-
+  void _skipUrlFunction() {
     final openParenthesisIndex = _index;
     _index++;
     while (_current.isWhitespace) {
@@ -346,6 +454,38 @@ class _CssBlockConfiner {
       return;
     }
     _skipUrlArgument();
+  }
+
+  /// A type selector `html` or `body`, not part of a class, pseudo-class,
+  /// namespace, attribute selector or function.
+  bool _isRootTypeSelector(_Identifier identifier) =>
+      _rootTypeSelectors.contains(identifier.name)
+          && _rules.inSelector
+          && !_expectedClosings.contains(_CodeUnit.closeBracket)
+          && !_isQualified(identifier);
+
+  bool _isQualified(_Identifier identifier) {
+    final before = identifier.start > 0 ? _codeUnits[identifier.start - 1] : _CodeUnit.end;
+    return const {_CodeUnit.fullStop, _CodeUnit.colon, _CodeUnit.verticalLine}.contains(before)
+        || const {_CodeUnit.openParenthesis, _CodeUnit.verticalLine}.contains(_current);
+  }
+
+  /// `html body` and `html > body` name the scope root once.
+  void _addScopeRewrite(_Identifier identifier) {
+    if (_followsHtmlRewrite(identifier)) {
+      final html = _scopeRewrites.removeLast();
+      _scopeRewrites.add((start: html.start, end: identifier.end, name: identifier.name));
+      return;
+    }
+    _scopeRewrites.add(identifier);
+  }
+
+  bool _followsHtmlRewrite(_Identifier identifier) {
+    if (identifier.name != 'body' || _scopeRewrites.isEmpty || _scopeRewrites.last.name != 'html') {
+      return false;
+    }
+    final between = String.fromCharCodes(_codeUnits, _scopeRewrites.last.end, identifier.start).trim();
+    return between.isEmpty || between == '>';
   }
 
   /// Valid or not, an unquoted url token always ends at the first unescaped

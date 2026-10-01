@@ -164,6 +164,42 @@ void main() {
       expect(CssScopeUtils.scope('.a { b: u+aurl(x{) } } .c {}', root), isEmpty);
     });
 
+    test('should rewrite html and body type selectors to :scope', () {
+      expect(
+        CssScopeUtils.scope('body { background: blue } html, BODY {} body .a, body > .b {}', root),
+        scoped(':scope { background: blue } :scope, :scope {} :scope .a, :scope > .b {}'),
+      );
+    });
+
+    test('should rewrite html followed by body to a single :scope', () {
+      expect(
+        CssScopeUtils.scope('html body .a, html > body .b, html .c {}', root),
+        scoped(':scope .a, :scope .b, :scope .c {}'),
+      );
+    });
+
+    test('should rewrite html and body inside grouping at-rules and pseudo-classes', () {
+      expect(
+        CssScopeUtils.scope('@media screen { body .a {} } :not(body) {} b\\6f dy {}', root),
+        scoped('@media screen { :scope .a {} } :not(:scope) {} :scope {}'),
+      );
+    });
+
+    test('should not rewrite body when it is not a type selector', () {
+      const css = '.body, #body, a:body, [data-x=body], ns|body, body|a, body() {} '
+          '.a { font-family: body } @font-face { font-family: body } @scope (body) {} '
+          '@counter-style body {} .a { .b body {} }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should restart selector detection after a statement at-rule', () {
+      expect(
+        CssScopeUtils.scope('@charset "utf-8"; body {}', root),
+        scoped('@charset "utf-8"; :scope {}'),
+      );
+    });
+
     test('should replace NULL characters', () {
       expect(
         CssScopeUtils.scope('.a\u0000 {}', root),
