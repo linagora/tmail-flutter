@@ -49,7 +49,7 @@ void main() {
 
   group('EmailPreviewerDialogView', () {
     testWidgets(
-      'keeps the default font style and all three url delegates',
+      'keeps the default font style, the three url delegates and the blocked-link callback',
       verifyEmailPreviewerDialogDelegates,
     );
   });
@@ -149,6 +149,7 @@ Future<void> verifyEmailPreviewerDialogDelegates(WidgetTester tester) async {
   var mailto = 0;
   var previewEml = 0;
   var download = 0;
+  var blocked = 0;
 
   final viewer = await pumpAndFindViewer(
     tester,
@@ -162,6 +163,7 @@ Future<void> verifyEmailPreviewerDialogDelegates(WidgetTester tester) async {
       onMailtoDelegateAction: (_) async => mailto++,
       onPreviewEMLDelegateAction: (_) async => previewEml++,
       onDownloadAttachmentDelegateAction: (_) async => download++,
+      onBlockedLinkAction: (_) => blocked++,
     ),
   );
 
@@ -177,7 +179,8 @@ Future<void> verifyEmailPreviewerDialogDelegates(WidgetTester tester) async {
   await viewer.onMailtoDelegateAction!(null);
   await viewer.onPreviewEMLDelegateAction!(null);
   await viewer.onDownloadAttachmentDelegateAction!(null);
-  expect([mailto, previewEml, download], [1, 1, 1]);
+  viewer.onBlockedLinkAction!(Uri.parse('myapp://x'));
+  expect([mailto, previewEml, download, blocked], [1, 1, 1, 1]);
 }
 
 Future<void> verifyHtmlAttachmentPreviewerConfiguration(
