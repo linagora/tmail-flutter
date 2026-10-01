@@ -178,6 +178,13 @@ void main() {
       );
     });
 
+    test('should not join html and body separated by a non-whitespace control character', () {
+      expect(
+        CssScopeUtils.scope('html\u000Bbody {}', root),
+        scoped(':scope\u000B:scope {}'),
+      );
+    });
+
     test('should rewrite html and body inside grouping at-rules and pseudo-classes', () {
       expect(
         CssScopeUtils.scope('@media screen { body .a {} } :not(body) {} b\\6f dy {}', root),
