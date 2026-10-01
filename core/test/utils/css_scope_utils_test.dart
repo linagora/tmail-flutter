@@ -54,6 +54,13 @@ void main() {
       );
     });
 
+    test('should keep a string open across the newline swallowed by a hex escape', () {
+      expect(
+        CssScopeUtils.scope('"\\a\n(}\n} .b {}', root),
+        scoped('"\\a\n(}\n  .b {}'),
+      );
+    });
+
     test('should not treat an escaped brace as a block delimiter', () {
       expect(
         CssScopeUtils.scope('.a\\{ { color: red } \\} } .b {}', root),
