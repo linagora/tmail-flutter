@@ -19,6 +19,7 @@ class EventBodyContentWidget extends StatelessWidget {
   final ScrollController? scrollController;
   final bool isInsideThreadDetailView;
   final OnIFrameClickAction? onIFrameClickAction;
+  final OnBlockedLinkAction? onBlockedLinkAction;
 
   const EventBodyContentWidget({
     super.key,
@@ -27,6 +28,7 @@ class EventBodyContentWidget extends StatelessWidget {
     this.scrollController,
     this.isInsideThreadDetailView = false,
     this.onIFrameClickAction,
+    this.onBlockedLinkAction,
   });
 
   @override
@@ -98,6 +100,7 @@ class EventBodyContentWidget extends StatelessWidget {
                   ),
                   callbacks: HtmlContentViewerCallbacks(
                     onMailto: onMailtoDelegateAction,
+                    onBlockedLink: onBlockedLinkAction,
                   ),
                 ),
               );

@@ -24,6 +24,7 @@ class HtmlAttachmentPreviewer extends StatefulWidget {
     required this.mailToClicked,
     required this.downloadAttachmentClicked,
     required this.responsiveUtils,
+    required this.onBlockedLinkAction,
   });
 
   final String title;
@@ -31,6 +32,7 @@ class HtmlAttachmentPreviewer extends StatefulWidget {
   final OnMailtoClicked mailToClicked;
   final VoidCallback downloadAttachmentClicked;
   final ResponsiveUtils responsiveUtils;
+  final OnBlockedLinkAction onBlockedLinkAction;
 
   @override
   State<HtmlAttachmentPreviewer> createState() => _HtmlAttachmentPreviewerState();
@@ -159,6 +161,7 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
               onMailto: (uri) async {
                 widget.mailToClicked(uri);
               },
+              onBlockedLink: widget.onBlockedLinkAction,
             ),
           ),
       );

@@ -719,6 +719,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
         mailToClicked: openMailToLink,
         downloadAttachmentClicked: () => onDownloadAction(attachment),
         responsiveUtils: responsiveUtils,
+        onBlockedLinkAction: (_) => showBlockedLinkToast(),
       ),
     );
   }

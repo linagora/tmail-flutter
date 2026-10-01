@@ -25,6 +25,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final ScrollController? scrollController;
   final bool isInsideThreadDetailView;
   final OnIFrameClickAction? onIFrameClickAction;
+  final OnBlockedLinkAction? onBlockedLinkAction;
 
   const CalendarEventDetailWidget({
     super.key,
@@ -35,6 +36,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
     this.scrollController,
     this.isInsideThreadDetailView = false,
     this.onIFrameClickAction,
+    this.onBlockedLinkAction,
   });
 
   @override
@@ -75,6 +77,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 scrollController: scrollController,
                 isInsideThreadDetailView: isInsideThreadDetailView,
                 onIFrameClickAction: onIFrameClickAction,
+                onBlockedLinkAction: onBlockedLinkAction,
               )
             ),
         ],
