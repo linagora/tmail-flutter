@@ -1,5 +1,11 @@
 ARG FLUTTER_VERSION=3.38.9
 
+FROM node:20-alpine AS web-vendor
+WORKDIR /app
+COPY web-vendor/package.json web-vendor/package-lock.json web-vendor/
+COPY scripts/install-web-vendor.sh scripts/
+RUN sh scripts/install-web-vendor.sh
+
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
 ARG SENTRY_AUTH_TOKEN
@@ -12,6 +18,7 @@ ARG GITHUB_SHA
 
 WORKDIR /app
 COPY . .
+COPY --from=web-vendor /app/web/js/vendor web/js/vendor
 
 ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_ORG=$SENTRY_ORG \

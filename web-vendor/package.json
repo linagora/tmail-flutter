@@ -1,0 +1,9 @@
+{
+  "name": "tmail-web-vendor",
+  "private": true,
+  "description": "Browser libraries copied into web/js/vendor at build time by scripts/install-web-vendor.sh",
+  "dependencies": {
+    "@dotlottie/player-component": "2.7.12",
+    "pica": "10.0.3"
+  }
+}
