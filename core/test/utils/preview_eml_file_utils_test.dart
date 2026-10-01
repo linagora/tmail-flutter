@@ -80,33 +80,22 @@ void main() {
       expect(document.querySelector('.circle')!.text, '<!');
     });
 
-    test('SHOULD NOT turn the attachment name into markup', () {
-      final document = parse(generate(listAttachment: [
-        PreviewAttachment(
-          iconBase64Data: '',
-          name: injected,
-          size: '1 KB',
-          link: 'attachment:blobId?name=x',
-        ),
-      ]));
+    for (final link in <String?>['attachment:blobId?name=x', null]) {
+      test('SHOULD NOT turn the attachment name into markup WHEN link is $link', () {
+        final document = parse(generate(listAttachment: [
+          PreviewAttachment(
+            iconBase64Data: '',
+            name: injected,
+            size: '1 KB',
+            link: link,
+          ),
+        ]));
 
-      expect(document.querySelectorAll('[onerror]'), isEmpty);
-      expect(document.querySelector('.file-name')!.text, injected);
-    });
-
-    test('SHOULD NOT turn the attachment name into markup WHEN the attachment has no link', () {
-      final document = parse(generate(listAttachment: [
-        PreviewAttachment(
-          iconBase64Data: '',
-          name: injected,
-          size: '1 KB',
-        ),
-      ]));
-
-      expect(document.querySelector('a.attachment-item'), isNull);
-      expect(document.querySelectorAll('[onerror]'), isEmpty);
-      expect(document.querySelector('.file-name')!.text, injected);
-    });
+        expect(document.querySelector('a.attachment-item') != null, link != null);
+        expect(document.querySelectorAll('[onerror]'), isEmpty);
+        expect(document.querySelector('.file-name')!.text, injected);
+      });
+    }
 
     test('SHOULD NOT allow the attachment link to break out of href', () {
       final document = parse(generate(listAttachment: [
