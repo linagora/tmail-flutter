@@ -31,7 +31,8 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   }
 
   void _sanitizeUrlResource(Element element) {
-    final url = element.attributes['href'] ?? '';
+    final rawUrl = element.attributes['href'] ?? '';
+    final url = _withDefaultScheme(rawUrl);
 
     if (_isRelativeUrl(url)) {
       // Relative links cannot be resolved against a trusted base (the email
@@ -41,11 +42,22 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     }
 
     final urlSanitized = _sanitizeUrl.process(url);
-    if (urlSanitized.isEmpty) {
-      return;
+    if (urlSanitized.isNotEmpty) {
+      element.attributes['href'] = urlSanitized;
+    } else if (url != rawUrl) {
+      // Fail closed: the raw value is still relative, so the browser would
+      // resolve it (e.g. `//www.bank.com@evil.com` lands on evil.com).
+      element.attributes.remove('href');
     }
+  }
 
-    element.attributes['href'] = urlSanitized;
+  /// Only scheme-less hrefs that unambiguously name a host get `https`.
+  /// A "looks like a domain" check would turn `setup.zip` into a real host.
+  String _withDefaultScheme(String url) {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.startsWith('//')) return 'https:$trimmedUrl';
+    if (trimmedUrl.toLowerCase().startsWith('www.')) return 'https://$trimmedUrl';
+    return url;
   }
 
   bool _isRelativeUrl(String url) {
