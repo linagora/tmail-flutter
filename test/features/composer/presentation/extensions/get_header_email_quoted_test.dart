@@ -104,6 +104,32 @@ void main() {
       );
     });
 
+    testWidgets('reply uses the localized date and time joiner in de',
+        (tester) async {
+      final header = await headerFor(
+        tester,
+        const Locale('de', 'DE'),
+        EmailActionType.reply,
+        email,
+      );
+
+      expect(
+        header,
+        'Am 25. Sept. 2026 um 15:56, '
+        'von Test BTELLIER &lt;btellier@example.com&gt;',
+      );
+    });
+
+    for (final locale in LocalizationService.supportedLocales
+        .where((locale) => locale.languageCode != 'en')) {
+      testWidgets('reply does not use the English "at" joiner in $locale',
+          (tester) async {
+        final header = await headerFor(tester, locale, EmailActionType.reply, email);
+
+        expect(header, isNot(contains(' at ')));
+      });
+    }
+
     testWidgets('forward uses the localized date in fr', (tester) async {
       final header = await headerFor(tester, french, EmailActionType.forward, email);
 
