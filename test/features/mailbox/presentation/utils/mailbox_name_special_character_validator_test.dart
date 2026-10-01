@@ -24,6 +24,10 @@ void main() {
       expect('QA.dot'.isValid, isFalse);
     });
 
+    test('should return true for a string containing /', () {
+      expect('a/b'.isValid, isTrue);
+    });
+
     test('should return false for a string containing \\n', () {
       expect('hello\nworld'.isValid, isFalse);
     });
