@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
-import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
@@ -440,7 +439,7 @@ class EmailDataSourceImpl extends EmailDataSource {
 
           final previewAttachment = PreviewAttachment(
             iconBase64Data: iconBase64Data,
-            name: attachment.name.escapeLtGtHtmlString(),
+            name: attachment.name ?? '',
             size: filesize(attachment.size?.value),
             link: attachment.hyperLink,
           );
@@ -457,9 +456,9 @@ class EmailDataSourceImpl extends EmailDataSource {
         appName: appLocalizations.app_name,
         ownEmailAddress: previewEmailEMLRequest.ownEmailAddress,
         subjectPrefix: appLocalizations.subject,
-        subject: previewEmailEMLRequest.email.subject?.escapeLtGtHtmlString() ?? '',
+        subject: previewEmailEMLRequest.email.subject ?? '',
         emailContent: emailContentEscaped,
-        senderName: sender?.name.escapeLtGtHtmlString() ?? '',
+        senderName: sender?.name ?? '',
         senderEmailAddress: sender?.email ?? '',
         dateTime: receiveTime.isNotEmpty ? receiveTime : sentTime,
         fromPrefix: appLocalizations.from_email_address_prefix,

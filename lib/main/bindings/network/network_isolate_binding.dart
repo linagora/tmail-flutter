@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
@@ -74,8 +73,8 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<DioClient>(tag: BindingTag.isolateTag),
       Get.find<CompressFileUtils>()), tag: BindingTag.isolateTag);
     Get.put(DownloadManager(
-      Get.find<DownloadClient>(tag: BindingTag.isolateTag),
-      Get.find<DeviceInfoPlugin>()), tag: BindingTag.isolateTag);
+      Get.find<DownloadClient>(tag: BindingTag.isolateTag)),
+      tag: BindingTag.isolateTag);
     Get.put(ThreadAPI(
       Get.find<HttpClient>(tag: BindingTag.isolateTag)),
       tag: BindingTag.isolateTag);

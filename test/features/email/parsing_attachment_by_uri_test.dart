@@ -1,4 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 void main() {
@@ -59,5 +64,26 @@ void main() {
       expect(attachment.name, 'testfile.txt');
       expect(attachment.type, isNull);
     });
+  });
+
+  group('attachmentLink round-trip', () {
+    for (final name in ['Q&A.pdf', 'a+b.pdf', 'draft#2.pdf']) {
+      test('should parse back "$name" with its size and type', () {
+        final original = Attachment(
+          blobId: Id('blobId'),
+          name: name,
+          size: UnsignedInt(1024),
+          type: MediaType.parse('application/pdf'),
+        );
+
+        final parsed = EmailUtils.parsingAttachmentByUri(Uri.parse(original.attachmentLink));
+
+        expect(parsed, isNotNull);
+        expect(parsed!.blobId?.value, 'blobId');
+        expect(parsed.name, name);
+        expect(parsed.size?.value, 1024);
+        expect(parsed.type?.mimeType, 'application/pdf');
+      });
+    }
   });
 }

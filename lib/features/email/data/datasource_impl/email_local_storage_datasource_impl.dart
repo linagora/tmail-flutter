@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
-import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
@@ -288,7 +287,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
 
           final previewAttachment = PreviewAttachment(
             iconBase64Data: iconBase64Data,
-            name: attachment.name.escapeLtGtHtmlString(),
+            name: attachment.name ?? '',
             size: filesize(attachment.size?.value),
             link: attachment.hyperLink,
           );
@@ -305,9 +304,9 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
         appName: appLocalizations.app_name,
         ownEmailAddress: entireMessageRequest.ownEmailAddress,
         subjectPrefix: appLocalizations.subject,
-        subject: email.subject?.escapeLtGtHtmlString() ?? '',
+        subject: email.subject ?? '',
         emailContent: emailContentEscaped,
-        senderName: sender?.name.escapeLtGtHtmlString() ?? '',
+        senderName: sender?.name ?? '',
         senderEmailAddress: sender?.email ?? '',
         dateTime: receiveTime.isNotEmpty ? receiveTime : sentTime,
         fromPrefix: appLocalizations.from_email_address_prefix,
