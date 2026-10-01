@@ -79,6 +79,17 @@ void main() {
       );
     });
 
+    test('should read <!-- as one token so a following url( is a url token', () {
+      expect(
+        CssScopeUtils.scope('<!--url(x{) } .b {}', root),
+        scoped('<!--url(x{)   .b {}'),
+      );
+      expect(
+        CssScopeUtils.scope(r'<!--\75rl(x{) } .b {}', root),
+        scoped(r'<!--\75rl(x{)   .b {}'),
+      );
+    });
+
     test('should treat quoted url as a function', () {
       const css = '.a { background: url( "x{" ) } .b {}';
 
