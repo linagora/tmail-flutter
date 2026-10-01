@@ -47,6 +47,13 @@ void main() {
       );
     });
 
+    test('should end an unterminated string at a lone carriage return or form feed', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "{\r} } .b { content: "{\f} } .c {}', root),
+        scoped('.a { content: "{\n}   .b { content: "{\n}   .c {}'),
+      );
+    });
+
     test('should honor escaped newlines inside strings', () {
       expect(
         CssScopeUtils.scope('.a { content: "\\\r\n{" } } .b {}', root),
@@ -73,6 +80,12 @@ void main() {
         CssScopeUtils.scope('.a { background: url(x{) } } .b {}', root),
         scoped('.a { background: url(x{) }   .b {}'),
       );
+    });
+
+    test('should not end an unquoted url token at an escaped parenthesis', () {
+      const css = r'.a { b: url(x\) } ) } .c {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
     });
 
     test('should recognize url tokens spelled with escapes', () {
@@ -108,6 +121,25 @@ void main() {
         CssScopeUtils.scope('.a { width: 10url(x{) } }) } } .b {}', root),
         scoped('.a { width: 10url(x{) } }) }   .b {}'),
       );
+    });
+
+    test('should end a number before a full stop not followed by a digit', () {
+      expect(
+        CssScopeUtils.scope('.a { b: 1.url( ( ) } } .c {}', root),
+        scoped('.a { b: 1.url( ( ) }   .c {}'),
+      );
+    });
+
+    test('should treat a hyphen-prefixed url( as a function, not a url token', () {
+      const css = '.a { b: -url( ( ) } } .c {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should read signed, decimal, exponent and percentage numbers as one token', () {
+      const css = '.a { b: +.5e-3url( ( ) } } .c { d: 50% -1E+2px }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
     });
 
     test('should not treat a hash or an at-keyword named url as a url token', () {
