@@ -49,6 +49,13 @@ void main() {
     Map<MailboxId, PresentationMailbox> mapOf(List<PresentationMailbox> mailboxes) =>
         {for (final mailbox in mailboxes) mailbox.id: mailbox};
 
+    List<PresentationMailbox> createTeamChildrenNamedLikeSystemFolders(
+      PresentationMailbox parent,
+    ) =>
+        ['Outbox', 'outbox', 'Drafts', 'Templates']
+            .map((name) => createTeamChild(name, parent))
+            .toList();
+
     test('should be false for Outbox', () {
       expect(
         createMailbox(role: PresentationMailbox.roleOutbox).isValidRuleActionTarget({}),
@@ -92,9 +99,7 @@ void main() {
     });
 
     test('should be false for first-level team Outbox, Drafts and Templates regardless of case', () {
-      final teamSystemFolders = ['Outbox', 'outbox', 'Drafts', 'Templates']
-          .map((name) => createTeamChild(name, teamRoot))
-          .toList();
+      final teamSystemFolders = createTeamChildrenNamedLikeSystemFolders(teamRoot);
       final mailboxMap = mapOf([teamRoot, ...teamSystemFolders]);
 
       expect(
@@ -104,9 +109,7 @@ void main() {
     });
 
     test('should be true for nested team folders named Outbox, Drafts or Templates', () {
-      final nestedFolders = ['Outbox', 'outbox', 'Drafts', 'Templates']
-          .map((name) => createTeamChild(name, teamProject))
-          .toList();
+      final nestedFolders = createTeamChildrenNamedLikeSystemFolders(teamProject);
       final mailboxMap = mapOf([teamRoot, teamProject, ...nestedFolders]);
 
       expect(
