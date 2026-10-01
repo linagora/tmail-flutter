@@ -11,6 +11,8 @@ abstract class AbstractRulesFilterCreatorRobot extends CoreRobot {
 
   Future<void> tapAddActionButton();
 
+  Future<void> openMoveMessageFolderPicker();
+
   Future<void> tapCreateRuleButton();
 
   Future<void> expectWarningTextVisible(String warningText);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 
 import '../abstract/abstract_rules_filter_creator_robot.dart';
 
@@ -32,6 +34,11 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     const addActionButtonKey = ValueKey(UiKeys.addActionButton);
     await $(addActionButtonKey).scrollTo();
     await $(addActionButtonKey).tap();
+  }
+
+  @override
+  Future<void> openMoveMessageFolderPicker() async {
+    await $(RuleFilterButtonField<PresentationMailbox>).tap();
   }
 
   @override
