@@ -35,7 +35,15 @@ extension AttachmentExtension on Attachment {
   String get attachmentLink {
     if (blobId == null) return '';
 
-    return '${Constant.attachmentScheme}:${blobId!.value}?name=${name ?? ''}&size=${size?.value ?? ''}&type=${type?.mimeType ?? ''}';
+    return Uri(
+      scheme: Constant.attachmentScheme,
+      path: blobId!.value,
+      queryParameters: {
+        'name': name ?? '',
+        'size': '${size?.value ?? ''}',
+        'type': type?.mimeType ?? '',
+      },
+    ).toString();
   }
 
   DownloadTaskId get downloadTaskId => DownloadTaskId(blobId!.value);

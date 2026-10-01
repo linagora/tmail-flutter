@@ -1,16 +1,25 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:printing/printing.dart';
 
 class PrintUtils {
+  static const HtmlEscape _textEscape = HtmlEscape();
+
+  final void Function(String htmlDocument) _openHtmlDocument;
+
+  PrintUtils({@visibleForTesting void Function(String htmlDocument)? openHtmlDocument})
+      : _openHtmlDocument = openHtmlDocument ?? HtmlUtils.openNewTabHtmlDocument;
+
+  String _escapeText(String value) => _textEscape.convert(value);
 
   Future<void> printPDFFile(Uint8List bytes, String fileName) async {
     await Printing.layoutPdf(
@@ -56,7 +65,7 @@ class PrintUtils {
         <tbody>
           <tr>
             <td>
-              <font size="+1"><b>$subject</b></font><br />
+              <font size="+1"><b>${_escapeText(subject)}</b></font><br />
             </td>
           </tr>
         </tbody>
@@ -68,7 +77,8 @@ class PrintUtils {
     }
   }
 
-  Element? _createSenderElement({
+  @visibleForTesting
+  Element? createSenderElement({
     required String fromPrefix,
     required String senderName,
     required String senderEmailAddress,
@@ -80,15 +90,15 @@ class PrintUtils {
         <tbody>
           <tr>
             <td>
-              <font size="-1">$fromPrefix: <b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
+              <font size="-1">$fromPrefix: <b>${_escapeText(senderName)} </b>&lt;${_escapeText(senderEmailAddress)}&gt;</font>
             </td>
-            <td align="right"><font size="-1">$dateTime</font></td>
+            <td align="right"><font size="-1">${_escapeText(dateTime)}</font></td>
           </tr>
         </tbody>
       </table>
     ''');
     } catch (e) {
-      logWarning('PrintUtils::_createSenderElement: Exception = $e');
+      logWarning('PrintUtils::createSenderElement: Exception = $e');
       return null;
     }
   }
@@ -173,7 +183,7 @@ class PrintUtils {
                 </td>
                 <td width="7"></td>
                 <td>
-                  <b>${printAttachment.name}</b><br />
+                  <b>${_escapeText(printAttachment.name)}</b><br />
                   ${printAttachment.size}
                 </td>
               </tr>
@@ -223,7 +233,7 @@ class PrintUtils {
     String? replyToAddress,
     List<PrintAttachment>? listAttachment,
   }) async {
-    Document document = parse(HtmlUtils.createTemplateHtmlDocument(title: '$appName - $subject'));
+    Document document = parse(HtmlUtils.createTemplateHtmlDocument(title: _escapeText('$appName - $subject')));
 
     Element bodyContainerElement = Element.html('<div class="body-container"></div>');
     Element mainContentElement = Element.html('<div class="main-content"></div>');
@@ -236,7 +246,7 @@ class PrintUtils {
 
     Element? subjectElement = _createSubjectElement(subject);
 
-    Element? senderElement = _createSenderElement(
+    Element? senderElement = createSenderElement(
       fromPrefix: fromPrefix,
       senderName: senderName,
       senderEmailAddress: senderEmailAddress,
@@ -305,6 +315,6 @@ class PrintUtils {
 
     final htmlDocument = document.outerHtml;
 
-    HtmlUtils.openNewTabHtmlDocument(htmlDocument);
+    _openHtmlDocument(htmlDocument);
   }
 }
