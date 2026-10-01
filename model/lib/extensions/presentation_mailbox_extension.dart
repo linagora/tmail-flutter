@@ -102,7 +102,19 @@ extension PresentationMailboxExtension on PresentationMailbox {
     PresentationMailbox.templatesRole,
   ];
 
+  /// A subfolder of an excluded folder is excluded too: dropping only the
+  /// parent would make the tree builder show the subfolder at the root.
   bool isValidRuleActionTarget(Map<MailboxId, PresentationMailbox> mailboxMap) {
+    final visitedIds = <MailboxId>{};
+    PresentationMailbox? mailbox = this;
+    while (mailbox != null && visitedIds.add(mailbox.id)) {
+      if (!mailbox._isAllowedRuleActionFolder(mailboxMap)) return false;
+      mailbox = mailboxMap[mailbox.parentId];
+    }
+    return true;
+  }
+
+  bool _isAllowedRuleActionFolder(Map<MailboxId, PresentationMailbox> mailboxMap) {
     if (isPersonal) {
       return !isOutbox && !isDrafts && !isTemplates;
     }

@@ -123,5 +123,43 @@ void main() {
         isTrue,
       );
     });
+
+    test('should be false for subfolders of personal Outbox, Drafts and Templates', () {
+      final systemFolders = [
+        createMailbox(id: 'outbox', role: PresentationMailbox.roleOutbox),
+        createMailbox(id: 'drafts', role: PresentationMailbox.roleDrafts),
+        createMailbox(id: 'templates', role: PresentationMailbox.roleTemplates),
+      ];
+      final subfolders = systemFolders
+          .map((folder) => createMailbox(
+                id: '${folder.id.id.value}_child',
+                name: 'Invoices',
+                parentId: folder.id.id.value,
+              ))
+          .toList();
+      final mailboxMap = mapOf([...systemFolders, ...subfolders]);
+
+      expect(
+        subfolders.where((mailbox) => mailbox.isValidRuleActionTarget(mailboxMap)),
+        isEmpty,
+      );
+    });
+
+    test('should be false for every level below a first-level team Drafts', () {
+      final teamDrafts = createTeamChild('Drafts', teamRoot);
+      final archive = createTeamChild('Archive', teamDrafts);
+      final archive2026 = createTeamChild('2026', archive);
+      final mailboxMap = mapOf([teamRoot, teamDrafts, archive, archive2026]);
+
+      expect(archive.isValidRuleActionTarget(mailboxMap), isFalse);
+      expect(archive2026.isValidRuleActionTarget(mailboxMap), isFalse);
+    });
+
+    test('should stop on a parent cycle instead of looping forever', () {
+      final first = createMailbox(id: 'first', name: 'First', parentId: 'second');
+      final second = createMailbox(id: 'second', name: 'Second', parentId: 'first');
+
+      expect(first.isValidRuleActionTarget(mapOf([first, second])), isTrue);
+    });
   });
 }
