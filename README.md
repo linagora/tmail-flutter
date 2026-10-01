@@ -77,6 +77,8 @@ then run:
 ```
 flutter build web
 ```
+`scripts/prebuild.sh` downloads pinned pica/dotlottie into `web/js/vendor`; it skips the download when they are already there.
+
 or you can find our images in: https://hub.docker.com/r/linagora/tmail-web
 
 ## FAQ

@@ -7,6 +7,10 @@ echo "Prebuild started..."
 flutter pub get > /dev/null
 echo "[workspace] pub get done."
 
+# Pinned browser libs for web/index.html (web/js/vendor, gitignored)
+sh "$(dirname "$0")/fetch-web-vendor.sh"
+echo "[web/vendor] done."
+
 # Run build_runner across all workspace members in a single invocation
 dart run build_runner build --workspace > /dev/null
 echo "[workspace] build_runner done."

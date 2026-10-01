@@ -123,3 +123,6 @@ messages_*.dart
 test_bundle.dart
 playwright-report
 test-results
+
+# Browser libs downloaded by scripts/fetch-web-vendor.sh
+/web/js/vendor/
