@@ -17,10 +17,10 @@ void main() {
 
     test('Should returns displayName as is when emailAddress is empty', () {
       final emailAddress = EmailAddress(
-        'Jane Doe',
+        'jane DOE',
         '',
       );
-      expect(emailAddress.asFullStringWithLtGtCharacter(), 'Jane Doe');
+      expect(emailAddress.asFullStringWithLtGtCharacter(), 'jane DOE');
     });
 
     test('Should not re-case displayName', () {
