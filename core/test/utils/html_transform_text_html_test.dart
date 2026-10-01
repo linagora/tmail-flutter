@@ -404,13 +404,13 @@ void main() {
         const input = '<base href="https://example.com/"><a href="page.html">rel-link</a>'
             '<a href="./dir/page.html">dot-link</a>'
             '<a href="/root.html">root-link</a>'
-            '<a href="//cdn.example.com/x">proto-link</a>';
+            '<a href="setup.zip">zip-link</a>';
         final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
         expect(out, allOf(
           contains('<a target="_blank" rel="noreferrer">rel-link</a>'),
           contains('<a target="_blank" rel="noreferrer">dot-link</a>'),
           contains('<a target="_blank" rel="noreferrer">root-link</a>'),
-          contains('<a target="_blank" rel="noreferrer">proto-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">zip-link</a>'),
           isNot(contains('https://page.html')),
         ));
       });
@@ -424,6 +424,32 @@ void main() {
           contains('href="#section"'),
           contains('href="mailto:support@example.com"'),
           contains('href="https://example.com/page.html"'),
+        ));
+      });
+
+      test('SHOULD add https to www. and protocol-relative hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="www.linagora.com">www-link</a>'
+            '<a href="WWW.linagora.com/a?b=1">upper-www-link</a>'
+            '<a href="//cdn.example.com/x">proto-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a href="https://www.linagora.com" target="_blank" rel="noreferrer">www-link</a>'),
+          contains('<a href="https://WWW.linagora.com/a?b=1" target="_blank" rel="noreferrer">upper-www-link</a>'),
+          contains('<a href="https://cdn.example.com/x" target="_blank" rel="noreferrer">proto-link</a>'),
+        ));
+      });
+
+      test('SHOULD drop www. and protocol-relative hrefs that SanitizeUrl rejects WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="//www.bank.com@evil.com/">userinfo-link</a>'
+            '<a href="///evil.com">triple-slash-link</a>'
+            '<a href="www.bank.com@evil.com">www-userinfo-link</a>'
+            '<a href="/\\evil.com">backslash-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">userinfo-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">triple-slash-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">www-userinfo-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">backslash-link</a>'),
         ));
       });
 
