@@ -75,8 +75,11 @@ SERVER_URL=http://your-jmap-server.domain
 ```
 then run: 
 ```
+sh scripts/fetch-web-vendor.sh
 flutter build web
 ```
+`scripts/fetch-web-vendor.sh` downloads pinned pica/dotlottie into `web/js/vendor`; run it once before `flutter run -d chrome` too.
+
 or you can find our images in: https://hub.docker.com/r/linagora/tmail-web
 
 ## FAQ
