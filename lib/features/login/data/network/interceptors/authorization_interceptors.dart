@@ -29,6 +29,11 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   static const String _refreshAttemptedKey = '_authInterceptorRefreshAttempted';
 
+  /// Set to `true` in [RequestOptions.extra] for requests that must never
+  /// carry the user's credentials, e.g. discovery requests sent to hosts
+  /// guessed from the email address domain.
+  static const String skipAuthorizationKey = 'skipAuthorization';
+
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
@@ -153,6 +158,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    if (options.extra[skipAuthorizationKey] == true) {
+      options.headers.remove(HttpHeaders.authorizationHeader);
+      super.onRequest(options, handler);
+      return;
+    }
+
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -173,6 +184,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // Opted-out requests must never be refreshed/retried: the retry attaches the token.
+    if (err.requestOptions.extra[skipAuthorizationKey] == true) {
+      return super.onError(err, handler);
+    }
+
     logWarning(
       'AuthorizationInterceptors::onError(): DIO_ERROR = $err | '
       'statusCode=${err.response?.statusCode} | authType=$_authenticationType',

@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:core/data/model/query/query_parameter.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dio/dio.dart' show DioException;
+import 'package:dio/dio.dart' show DioException, Options;
 import 'package:get/get_connect/http/src/exceptions/exceptions.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
@@ -15,6 +15,7 @@ import 'package:model/oidc/response/oidc_user_info.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -34,7 +35,12 @@ class OIDCHttpClient {
             StringQueryParameter('resource', oidcRequest.resourceUrl),
             StringQueryParameter('rel', OIDCRequest.relUrl),
           ])
-          .generateEndpointPath()
+          .generateEndpointPath(),
+        // WebFinger is public discovery, possibly sent to hosts guessed from
+        // the email address domain: never attach the user's credentials.
+        options: Options(
+          extra: {AuthorizationInterceptors.skipAuthorizationKey: true},
+        ),
       );
       log('OIDCHttpClient::checkOIDCIsAvailable(): RESULT: $result');
       if (result is Map<String, dynamic>) {

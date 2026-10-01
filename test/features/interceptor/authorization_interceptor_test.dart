@@ -37,6 +37,27 @@ import '../../fixtures/capturing_log_handler.dart';
 import '../../fixtures/oidc_fixtures.dart';
 import 'authorization_interceptor_test.mocks.dart';
 
+/// Answers 401 to requests without Authorization, 200 otherwise; records each header.
+class _RecordingAdapter implements HttpClientAdapter {
+  final List<Object?> authHeaders = [];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    final auth = options.headers[HttpHeaders.authorizationHeader];
+    authHeaders.add(auth);
+    return ResponseBody.fromString('{}', auth == null ? 401 : 200, headers: {
+      Headers.contentTypeHeader: [Headers.jsonContentType],
+    });
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
 @GenerateMocks([
   AuthenticationClientBase,
   TokenOidcCacheManager,
@@ -499,6 +520,44 @@ void main() {
             (e) => e.response?.statusCode == responseStatusCode401,
           )),
         );
+      },
+    );
+
+    test(
+      'WHEN a skipAuthorization request gets 401\n'
+      'THEN it is neither refreshed nor retried with a token',
+      () async {
+        final adapter = _RecordingAdapter();
+        dio.httpClientAdapter = adapter;
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        await expectLater(
+          dio.get(
+            'https://autodiscover.example.org/.well-known/webfinger',
+            options: Options(
+              extra: {AuthorizationInterceptors.skipAuthorizationKey: true},
+            ),
+          ),
+          throwsA(predicate<DioException>(
+            (e) => e.response?.statusCode == responseStatusCode401,
+          )),
+        );
+
+        expect(adapter.authHeaders, [null]);
+        verifyNever(authenticationClient.refreshingTokensOIDC(
+          any, any, any, any, any,
+        ));
       },
     );
   });
