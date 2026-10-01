@@ -16,6 +16,7 @@ class CssScopeUtils {
   static const int _tab = 0x09;
   static const int _lineFeed = 0x0A;
   static const int _space = 0x20;
+  static const int _exclamationMark = 0x21;
   static const int _doubleQuote = 0x22;
   static const int _numberSign = 0x23;
   static const int _percent = 0x25;
@@ -27,6 +28,7 @@ class CssScopeUtils {
   static const int _hyphen = 0x2D;
   static const int _fullStop = 0x2E;
   static const int _slash = 0x2F;
+  static const int _lessThan = 0x3C;
   static const int _questionMark = 0x3F;
   static const int _at = 0x40;
   static const int _upperE = 0x45;
@@ -95,6 +97,8 @@ class _CssBlockConfiner {
 
     if (_isCommentStart(_index)) {
       _skipComment();
+    } else if (_isCdoStart(_index)) {
+      _index += 4;
     } else if (_isQuote(current)) {
       _skipString(current);
     } else if (_isPrefixedNameStart(_index)) {
@@ -136,6 +140,14 @@ class _CssBlockConfiner {
 
   bool _isCommentStart(int index) =>
       _at(index) == CssScopeUtils._slash && _at(index + 1) == CssScopeUtils._asterisk;
+
+  /// `<!--` is a single CDO token: reading it as `<`, `!` and an identifier
+  /// `--url` would miss that a following `url(` starts a url token.
+  bool _isCdoStart(int index) =>
+      _at(index) == CssScopeUtils._lessThan
+          && _at(index + 1) == CssScopeUtils._exclamationMark
+          && _at(index + 2) == CssScopeUtils._hyphen
+          && _at(index + 3) == CssScopeUtils._hyphen;
 
   /// `#name` (hash token) or `@name` (at-keyword token).
   bool _isPrefixedNameStart(int index) {
