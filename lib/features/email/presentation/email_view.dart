@@ -413,6 +413,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 scrollController: scrollController,
                 isInsideThreadDetailView: isInsideThreadDetailView,
                 onIFrameClickAction: controller.handleOnIFrameClick,
+                onBlockedLinkAction: (_) => controller.showBlockedLinkToast(),
               )),
             ],
           )

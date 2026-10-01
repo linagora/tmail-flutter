@@ -56,7 +56,7 @@ void main() {
 
   group('HtmlAttachmentPreviewer', () {
     testWidgets(
-      'keeps the width while loading and the plain font style',
+      'keeps the width while loading, the plain font style and the blocked-link callback',
       verifyHtmlAttachmentPreviewerConfiguration,
     );
   });
@@ -69,6 +69,10 @@ void main() {
     testWidgets(
       'caps the content height on ios',
       verifyEventBodyHeightCapOnIOS,
+    );
+    testWidgets(
+      'forwards the blocked-link callback',
+      verifyEventBodyBlockedLinkCallback,
     );
   });
 }
@@ -187,6 +191,7 @@ Future<void> verifyHtmlAttachmentPreviewerConfiguration(
   WidgetTester tester,
 ) async {
   var mailto = 0;
+  var blocked = 0;
 
   final viewer = await pumpAndFindViewer(
     tester,
@@ -196,6 +201,7 @@ Future<void> verifyHtmlAttachmentPreviewerConfiguration(
       mailToClicked: (_) => mailto++,
       downloadAttachmentClicked: () {},
       responsiveUtils: ResponsiveUtils(),
+      onBlockedLinkAction: (_) => blocked++,
     ),
   );
 
@@ -208,7 +214,8 @@ Future<void> verifyHtmlAttachmentPreviewerConfiguration(
   expect(viewer.contentPadding, isNull);
 
   await viewer.onMailtoDelegateAction!(null);
-  expect(mailto, 1);
+  viewer.onBlockedLinkAction!(Uri.parse('myapp://x'));
+  expect([mailto, blocked], [1, 1]);
 }
 
 Future<void> verifyEventBodyHeightCapOnAndroid(WidgetTester tester) =>
@@ -250,4 +257,19 @@ Future<void> _verifyEventBodyHeightCap(
   expect(viewer.initialWidth, isNotNull);
   expect(viewer.htmlContentMinHeight, ConstantsUI.htmlContentMinHeight);
   expect(viewer.maxHtmlContentHeight, expectedMaxContentHeight);
+}
+
+Future<void> verifyEventBodyBlockedLinkCallback(WidgetTester tester) async {
+  var blocked = 0;
+
+  final viewer = await pumpAndFindViewer(
+    tester,
+    EventBodyContentWidget(
+      content: '<p>Invitation</p>',
+      onBlockedLinkAction: (_) => blocked++,
+    ),
+  );
+
+  viewer.onBlockedLinkAction!(Uri.parse('zoommtg://x'));
+  expect(blocked, 1);
 }
