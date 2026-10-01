@@ -92,11 +92,15 @@ class EditTextModalSheetBuilder {
     });
   }
 
-  void _onConfirmButtonPress(BuildContext context) {
-    if (_error == null || (_error != null && _error!.isEmpty)) {
-      Get.back();
-      _onConfirmActionClick?.call(_textController.text);
+  void _onConfirmButtonPress(BuildContext context, StateSetter setState) {
+    _debounce?.cancel();
+    final error = _setErrorString?.call(_textController.text);
+    if (error?.isNotEmpty == true) {
+      setState(() => _error = error);
+      return;
     }
+    Get.back();
+    _onConfirmActionClick?.call(_textController.text);
   }
 
   void _onCancelButtonPress(BuildContext context) {
@@ -147,7 +151,7 @@ class EditTextModalSheetBuilder {
                             child: Text(_cancelText.toUpperCase(), style: ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.colorTextButton)),
                           ),
                           TextButton(
-                            onPressed: () => _onConfirmButtonPress(context),
+                            onPressed: () => _onConfirmButtonPress(context, setState),
                             child: Text(_confirmText.toUpperCase(),
                                 style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                     color: (_error == null || (_error != null && _error!.isEmpty))
