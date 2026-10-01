@@ -453,6 +453,16 @@ void main() {
         ));
       });
 
+      test('SHOULD drop badly percent-encoded www. and protocol-relative hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="//www.bank.com@evil.com/%ZZ">userinfo-bad-escape-link</a>'
+            '<a href="www.bank.com@evil.com/%ZZ">www-userinfo-bad-escape-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">userinfo-bad-escape-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">www-userinfo-bad-escape-link</a>'),
+        ));
+      });
+
       test('SHOULD keep whitespace-padded absolute href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
         const input = '<a href=" https://example.com/page.html ">padded</a>';
         final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
