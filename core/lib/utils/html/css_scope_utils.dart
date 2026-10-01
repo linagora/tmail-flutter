@@ -59,6 +59,7 @@ extension type const _CodeUnit(int value) implements int {
   static const colon = _CodeUnit(0x3A);
   static const semicolon = _CodeUnit(0x3B);
   static const lessThan = _CodeUnit(0x3C);
+  static const greaterThan = _CodeUnit(0x3E);
   static const questionMark = _CodeUnit(0x3F);
   static const at = _CodeUnit(0x40);
   static const upperE = _CodeUnit(0x45);
@@ -484,8 +485,13 @@ class _CssBlockConfiner {
     if (identifier.name != 'body' || _scopeRewrites.isEmpty || _scopeRewrites.last.name != 'html') {
       return false;
     }
-    final between = String.fromCharCodes(_codeUnits, _scopeRewrites.last.end, identifier.start).trim();
-    return between.isEmpty || between == '>';
+    // CSS whitespace only: String.trim() would also drop U+000B and join
+    // `html` and `body` into one selector the browser rejects.
+    final between = _codeUnits
+        .sublist(_scopeRewrites.last.end, identifier.start)
+        .where((codeUnit) => !codeUnit.isWhitespace)
+        .toList();
+    return between.isEmpty || (between.length == 1 && between.single == _CodeUnit.greaterThan);
   }
 
   /// Valid or not, an unquoted url token always ends at the first unescaped
