@@ -19,6 +19,7 @@ class DefaultInputFieldWidget extends StatelessWidget {
   final TextInputAction? inputAction;
   final OnTextChange? onTextChange;
   final OnTextSubmitted? onTextSubmitted;
+  final int? errorMaxLines;
 
   const DefaultInputFieldWidget({
     super.key,
@@ -34,7 +35,21 @@ class DefaultInputFieldWidget extends StatelessWidget {
     this.inputAction,
     this.onTextChange,
     this.onTextSubmitted,
+    this.errorMaxLines,
   });
+
+  bool get _wrapsErrorText => errorMaxLines != null && errorText?.isNotEmpty == true;
+
+  EdgeInsetsGeometry get _contentPadding {
+    if (_wrapsErrorText) {
+      // Dense padding gives the input the same 40px it gets under the 60px cap,
+      // while letting the error text grow below it.
+      return const EdgeInsetsDirectional.only(start: 12, end: 8, top: 10, bottom: 10);
+    }
+    return errorText?.isNotEmpty == true
+      ? const EdgeInsetsDirectional.only(start: 12, end: 8)
+      : const EdgeInsetsDirectional.only(start: 12, end: 8, top: 12, bottom: 12);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,16 +66,17 @@ class DefaultInputFieldWidget extends StatelessWidget {
       onTextSubmitted: onTextSubmitted,
       onTextChange: onTextChange,
       decoration: InputDecoration(
-        constraints: BoxConstraints(
-          maxHeight: maxHeight ?? (errorText?.isNotEmpty == true ? 60 : 40),
-        ),
+        constraints: _wrapsErrorText
+          ? null
+          : BoxConstraints(
+              maxHeight: maxHeight ?? (errorText?.isNotEmpty == true ? 60 : 40),
+            ),
+        isDense: _wrapsErrorText,
         filled: true,
         fillColor: errorText?.isNotEmpty == true
             ? AppColor.colorInputBackgroundErrorVerifyName
             : Colors.white,
-        contentPadding: errorText?.isNotEmpty == true
-          ? const EdgeInsetsDirectional.only(start: 12, end: 8)
-          : const EdgeInsetsDirectional.only(start: 12, end: 8, top: 12, bottom: 12),
+        contentPadding: _contentPadding,
         enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           borderSide: BorderSide(width: 1, color: AppColor.m3Neutral90),
@@ -84,6 +100,7 @@ class DefaultInputFieldWidget extends StatelessWidget {
         hintText: hintText,
         hintStyle: ThemeUtils.textStyleBodyBody3(color: AppColor.m3Tertiary),
         errorText: errorText,
+        errorMaxLines: errorMaxLines,
         errorStyle: ThemeUtils.textStyleBodyBody3(color: AppColor.redFF3347),
       ),
     );

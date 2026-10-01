@@ -19,6 +19,7 @@ class LabelInputFieldBuilder extends StatelessWidget {
   final TextAlignVertical? textAlignVertical;
   final TextInputAction? inputAction;
   final OnTextChange? onTextChange;
+  final int? errorMaxLines;
 
   const LabelInputFieldBuilder({
     super.key,
@@ -38,6 +39,7 @@ class LabelInputFieldBuilder extends StatelessWidget {
     this.inputFieldHeight,
     this.inputAction,
     this.onTextChange,
+    this.errorMaxLines,
   });
 
   @override
@@ -55,6 +57,7 @@ class LabelInputFieldBuilder extends StatelessWidget {
         inputAction: inputAction,
         maxHeight: inputFieldHeight,
         onTextChange: onTextChange,
+        errorMaxLines: errorMaxLines,
       ),
     );
 
