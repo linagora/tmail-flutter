@@ -184,7 +184,22 @@ class _CssBlockConfiner {
       if (current == CssScopeUtils._lineFeed) {
         return;
       }
-      _index += current == CssScopeUtils._backslash ? 2 : 1;
+      if (current == CssScopeUtils._backslash) {
+        _skipStringEscape();
+      } else {
+        _index++;
+      }
+    }
+  }
+
+  /// A hex escape also swallows one whitespace, even a newline, so the string
+  /// does not end there (`"\a` + newline + `}` keeps the `}` in the string).
+  void _skipStringEscape() {
+    _index++;
+    if (_isHexDigit(_at(_index))) {
+      _consumeEscape(StringBuffer());
+    } else {
+      _index++;
     }
   }
 
