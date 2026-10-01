@@ -24,7 +24,7 @@ class AppUtils {
       // url_launcher_web blocks javascript: and always passes
       // noopener,noreferrer; this branch bypasses that library entirely, so
       // restore both properties here.
-      html.window.open(url, isNewTab ? '_blank' : '_self', 'noopener,noreferrer');
+      html.window.open(url, isNewTab ? '_blank' : '_self', HtmlUtils.windowFeatures(noOpener: true));
     } else {
       launchUrl(
         uri,

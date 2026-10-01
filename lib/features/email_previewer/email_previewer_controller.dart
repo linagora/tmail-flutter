@@ -225,6 +225,10 @@ class EmailPreviewerController extends ReloadableController {
     }
   }
 
+  @visibleForTesting
+  static bool opensWithNoOpener(Uri uri, {required bool isEmlPreview}) =>
+      !isEmlPreview && !uri.isScheme(RouteUtils.mailtoPrefix);
+
   void _openNewWindowByHyperLink(Uri uri) {
     final isEMlPreview = uri.toString().startsWith(RouteUtils.emailEMLPreviewerRoutePath);
 
@@ -235,7 +239,6 @@ class EmailPreviewerController extends ReloadableController {
       showBlockedLinkToast();
       return;
     }
-    final isMailto = uri.isScheme(RouteUtils.mailtoPrefix);
 
     final url = _standardizeURL(uri);
     log('EmailPreviewerController::_openNewWindowByHyperLink: url = $url');
@@ -244,7 +247,7 @@ class EmailPreviewerController extends ReloadableController {
       url,
       isFullScreen: !isEMlPreview,
       isCenter: false,
-      noOpener: !isEMlPreview && !isMailto,
+      noOpener: opensWithNoOpener(uri, isEmlPreview: isEMlPreview),
     );
 
     if (!isOpen && currentOverlayContext != null && currentContext != null) {

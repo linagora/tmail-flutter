@@ -231,4 +231,25 @@ void main() {
       expect(result, isNot(contains('report_attachment.pdf')));
     });
   });
+
+  group('HtmlUtils windowFeatures', () {
+    test('adds noopener and noreferrer for an untrusted link', () {
+      expect(HtmlUtils.windowFeatures(noOpener: true), 'noopener,noreferrer');
+    });
+
+    test('keeps the size before noopener and noreferrer', () {
+      expect(
+        HtmlUtils.windowFeatures(size: 'width=800,height=600', noOpener: true),
+        'width=800,height=600,noopener,noreferrer',
+      );
+    });
+
+    test('adds nothing for a trusted link', () {
+      expect(HtmlUtils.windowFeatures(noOpener: false), '');
+      expect(
+        HtmlUtils.windowFeatures(size: 'width=800,height=600', noOpener: false),
+        'width=800,height=600',
+      );
+    });
+  });
 }
