@@ -5,10 +5,6 @@
 echo "Installing patrol CLI..."
 dart pub global activate patrol_cli 4.3.1
 
-# Pinned browser libs (web/js/vendor) must exist before patrol builds web/
-echo "Fetching web vendor libs..."
-sh scripts/fetch-web-vendor.sh || exit 1
-
 # Stop previous environment if any
 cd backend-docker
 docker compose down || true

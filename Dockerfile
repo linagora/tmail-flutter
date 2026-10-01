@@ -1,11 +1,5 @@
 ARG FLUTTER_VERSION=3.38.9
 
-FROM alpine:3.21 AS web-vendor
-RUN apk add --no-cache curl openssl
-WORKDIR /app
-COPY scripts/fetch-web-vendor.sh scripts/
-RUN sh scripts/fetch-web-vendor.sh
-
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
 ARG SENTRY_AUTH_TOKEN
@@ -18,7 +12,6 @@ ARG GITHUB_SHA
 
 WORKDIR /app
 COPY . .
-COPY --from=web-vendor /app/web/js/vendor web/js/vendor
 
 ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_ORG=$SENTRY_ORG \
