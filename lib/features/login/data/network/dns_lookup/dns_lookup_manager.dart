@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_
 /// Handles DNS SRV lookups for JMAP service discovery.
 ///
 /// The manager attempts lookups in order of priority:
-/// **System → Public UDP → Public DoH → Cloud (Google/Cloudflare)**.
+/// **Public DoH → System → Public UDP → Cloud (Google/Cloudflare)**.
 class DnsLookupManager {
   static const String _jmapServicePrefix = '_jmap._tcp';
   static const Duration _defaultTimeout = Duration(seconds: 3);

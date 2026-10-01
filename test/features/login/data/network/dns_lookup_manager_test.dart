@@ -28,9 +28,9 @@ void main() {
   });
 
   group('DnsLookupManager.lookupJmapUrl', () {
-    test('✅ should return target when system resolver succeeds', () async {
+    test('✅ should return target when DoH resolver succeeds first', () async {
       // Arrange
-      when(mockSystemClient.lookupSrv(any)).thenAnswer((_) async => [
+      when(mockDohClient.lookupSrv(any)).thenAnswer((_) async => [
             const SrvRecord(
               name: '_jmap._tcp.example.com',
               port: 443,
@@ -53,15 +53,15 @@ void main() {
 
       // Assert
       expect(result, equals('mail.example.com'));
-      verify(mockSystemClient.lookupSrv('_jmap._tcp.example.com')).called(1);
+      verify(mockDohClient.lookupSrv('_jmap._tcp.example.com')).called(1);
+      verifyNever(mockSystemClient.lookupSrv(any));
       verifyNever(mockPublicClient.lookupSrv(any));
     });
 
     test('✅ should fall back when previous resolver fails', () async {
       // Arrange
-      when(mockSystemClient.lookupSrv(any))
-          .thenThrow(Exception('System failed'));
-      when(mockPublicClient.lookupSrv(any)).thenAnswer((_) async => [
+      when(mockDohClient.lookupSrv(any)).thenThrow(Exception('DoH failed'));
+      when(mockSystemClient.lookupSrv(any)).thenAnswer((_) async => [
             const SrvRecord(
               name: '_jmap._tcp.example.com',
               port: 443,
@@ -85,19 +85,19 @@ void main() {
       // Assert
       expect(result, equals('mail-backup.example.com'));
       verifyInOrder([
+        mockDohClient.lookupSrv(any),
         mockSystemClient.lookupSrv(any),
-        mockPublicClient.lookupSrv(any),
       ]);
 
-      verifyNever(mockDohClient.lookupSrv(any));
+      verifyNever(mockPublicClient.lookupSrv(any));
       verifyNever(mockCloudClient.lookupSrv(any));
     });
 
     test('✅ should skip to next resolver when previous returns empty list',
         () async {
       // Arrange
-      when(mockSystemClient.lookupSrv(any)).thenAnswer((_) async => []);
-      when(mockPublicClient.lookupSrv(any)).thenAnswer((_) async => [
+      when(mockDohClient.lookupSrv(any)).thenAnswer((_) async => []);
+      when(mockSystemClient.lookupSrv(any)).thenAnswer((_) async => [
             const SrvRecord(
               name: '_jmap._tcp.example.com',
               port: 443,
@@ -121,11 +121,11 @@ void main() {
       // Assert
       expect(result, equals('mail-fallback.example.com'));
       verifyInOrder([
+        mockDohClient.lookupSrv(any),
         mockSystemClient.lookupSrv(any),
-        mockPublicClient.lookupSrv(any),
       ]);
 
-      verifyNever(mockDohClient.lookupSrv(any));
+      verifyNever(mockPublicClient.lookupSrv(any));
       verifyNever(mockCloudClient.lookupSrv(any));
     });
 
