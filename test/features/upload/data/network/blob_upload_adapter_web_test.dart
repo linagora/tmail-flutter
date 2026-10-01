@@ -1,7 +1,6 @@
 @TestOn('chrome')
 library;
 
-import 'dart:async';
 import 'dart:js_interop';
 import 'dart:typed_data';
 
@@ -159,8 +158,9 @@ void main() {
     return url;
   }
 
-  /// Waits until the server saw the upload with [id] cut off mid-body.
-  Future<void> expectUploadAborted(String id) async {
+  /// Waits until the server reports [expected] for the upload with [id]:
+  /// `reading` once its body started arriving, `aborted` once cut off mid-body.
+  Future<void> waitForUploadState(String id, String expected) async {
     final stateDio = Dio();
     String? state;
     for (var attempt = 0; attempt < 30; attempt++) {
@@ -169,10 +169,10 @@ void main() {
         queryParameters: {'id': id},
       );
       state = response.data;
-      if (state == 'aborted') return;
+      if (state == expected) return;
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
-    fail('Upload $id was not aborted on the wire, last state: $state');
+    fail('Upload $id never reached $expected, last state: $state');
   }
 
   Options blobUploadOptions(String blobUrl, {Map<String, dynamic>? headers}) =>
@@ -408,10 +408,11 @@ void main() {
         options: blobUploadOptions(createBlobUrl(64 * oneMegabyte)),
         cancelToken: cancelToken,
       );
-      Timer(const Duration(milliseconds: 300), cancelToken.cancel);
+      await waitForUploadState('cancel-token', 'reading');
+      cancelToken.cancel();
 
       await expectLater(upload, throwsA(_dioError(DioExceptionType.cancel)));
-      await expectUploadAborted('cancel-token');
+      await waitForUploadState('cancel-token', 'aborted');
     });
 
     test('Given a CancelToken cancelled before the blob resolves, '
@@ -439,12 +440,12 @@ void main() {
           queryParameters: {'id': 'force-close'},
           options: blobUploadOptions(createBlobUrl(64 * oneMegabyte)),
         );
-        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await waitForUploadState('force-close', 'reading');
 
         dio.httpClientAdapter.close(force: true);
 
         await expectLater(upload, throwsA(_dioError(DioExceptionType.cancel)));
-        await expectUploadAborted('force-close');
+        await waitForUploadState('force-close', 'aborted');
         expect(inner.closedWithForce, isTrue);
       },
     );
