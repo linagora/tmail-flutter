@@ -427,6 +427,22 @@ void main() {
         ));
       });
 
+      test('SHOULD keep whitespace-padded absolute href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href=" https://example.com/page.html ">padded</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, contains('<a href=" https://example.com/page.html " target="_blank" rel="noreferrer">padded</a>'));
+      });
+
+      test('SHOULD drop unparsable and badly percent-encoded href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="http://[::1">unparsable</a>'
+            '<a href="%E0%A4%A">bad-escape</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">unparsable</a>'),
+          contains('<a target="_blank" rel="noreferrer">bad-escape</a>'),
+        ));
+      });
+
       test('SHOULD add overflow-wrap: anywhere to td and th when only ResponsiveTableCellTransformer is used', () async {
         final out = await transformWith(
           HtmlEmailCorpus.htmlTableSimple,
