@@ -42,12 +42,15 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     }
 
     final urlSanitized = _sanitizeUrl.process(url);
-    if (urlSanitized.isNotEmpty) {
-      element.attributes['href'] = urlSanitized;
-    } else if (url != rawUrl) {
+    final hasAddedScheme = url != rawUrl;
+    if (hasAddedScheme && (urlSanitized.isEmpty || _tryDecode(url) == null)) {
       // Fail closed: the raw value is still relative, so the browser would
       // resolve it (e.g. `//www.bank.com@evil.com` lands on evil.com).
+      // SanitizeUrl returns its input when decoding fails, so that is a
+      // rejection too.
       element.attributes.remove('href');
+    } else if (urlSanitized.isNotEmpty) {
+      element.attributes['href'] = urlSanitized;
     }
   }
 
@@ -65,15 +68,15 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     if (trimmedUrl.isEmpty || trimmedUrl.startsWith('#')) {
       return false;
     }
-    final uri = Uri.tryParse(_tryDecode(trimmedUrl));
+    final uri = Uri.tryParse(_tryDecode(trimmedUrl) ?? trimmedUrl);
     return uri == null || !uri.hasScheme;
   }
 
-  String _tryDecode(String url) {
+  String? _tryDecode(String url) {
     try {
       return Uri.decodeFull(url);
     } catch (_) {
-      return url;
+      return null;
     }
   }
 
