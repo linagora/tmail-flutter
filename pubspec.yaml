@@ -41,6 +41,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  # Marionette MCP: lets AI agents drive the running app (debug/profile only)
+  marionette_flutter: 0.6.0
+  web: ^1.1.0
+
   core:
     path: core
 

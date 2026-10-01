@@ -7,9 +7,12 @@ import 'package:core/utils/logging/handlers/sentry_breadcrumb_handler.dart';
 import 'package:core/utils/logging/handlers/sentry_event_handler.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:tmail_ui_user/main/marionette/marionette_initializer.dart';
 import 'package:tmail_ui_user/main/runner/app_error_handlers.dart';
 
 Future<void> runAppGuarded(Future<void> Function() runner) async {
+  // Must precede the Sentry binding: only one WidgetsBinding may exist.
+  initMarionetteIfEnabled();
   SentryWidgetsFlutterBinding.ensureInitialized();
 
   setupErrorHooks();
