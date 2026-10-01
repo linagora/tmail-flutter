@@ -407,12 +407,11 @@ void main() {
             '<a href="//cdn.example.com/x">proto-link</a>';
         final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
         expect(out, allOf(
-          isNot(contains('href=')),
+          contains('<a target="_blank" rel="noreferrer">rel-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">dot-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">root-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">proto-link</a>'),
           isNot(contains('https://page.html')),
-          contains('rel-link'),
-          contains('dot-link'),
-          contains('root-link'),
-          contains('proto-link'),
         ));
       });
 
