@@ -41,6 +41,7 @@ void main() {
 
         expect(submittedValues, isEmpty);
         expect(find.text(invalidNameError), findsOneWidget);
+        expect(tester.widget<Text>(find.text(invalidNameError)).maxLines, 3);
 
         await tester.pump(const Duration(milliseconds: 500));
       },

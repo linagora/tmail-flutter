@@ -48,6 +48,7 @@ void main() {
 
         expect(submittedValues, isEmpty);
         expect(find.text(invalidNameError), findsOneWidget);
+        expect(tester.widget<Text>(find.text(invalidNameError)).maxLines, 3);
         expect(find.byKey(const Key('rename_mailbox_dialog')), findsOneWidget);
 
         await tester.pump(const Duration(milliseconds: 500));

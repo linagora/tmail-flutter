@@ -146,6 +146,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                           color: AppColor.colorErrorState,
                         ),
                         errorText: _error,
+                        errorMaxLines: 3,
                       ),
                     ),
                   ),

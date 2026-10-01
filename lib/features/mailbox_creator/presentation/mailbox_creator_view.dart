@@ -43,6 +43,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
             textEditingController: controller.nameInputController,
             focusNode: controller.nameInputFocusNode,
             errorText: controller.getErrorInputNameString(context),
+            errorMaxLines: 3,
             arrangeHorizontally: false,
             isLabelHasColon: false,
             labelStyle: ThemeUtils.textStyleInter600().copyWith(

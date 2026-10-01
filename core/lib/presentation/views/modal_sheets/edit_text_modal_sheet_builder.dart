@@ -139,6 +139,7 @@ class EditTextModalSheetBuilder {
                             controller: _textController,
                             decoration: InputDecoration(
                                 errorText: _error,
+                                errorMaxLines: 3,
                                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColor.colorDividerMailbox)),
                                 hintText: _hintText),
                           )
