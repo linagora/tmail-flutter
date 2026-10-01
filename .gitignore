@@ -124,6 +124,5 @@ test_bundle.dart
 playwright-report
 test-results
 
-# Browser libs installed by scripts/install-web-vendor.sh
-/web-vendor/node_modules/
+# Browser libs downloaded by scripts/fetch-web-vendor.sh
 /web/js/vendor/
