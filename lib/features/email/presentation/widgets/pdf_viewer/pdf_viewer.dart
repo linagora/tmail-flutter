@@ -20,6 +20,8 @@ import 'package:tmail_ui_user/features/download/domain/state/download_attachment
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/loading_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
@@ -28,6 +30,7 @@ import 'package:twake_previewer_flutter/twake_pdf_previewer/twake_pdf_previewer.
 
 typedef DownloadPDFFileAction = Function(Uint8List bytes, String fileName);
 typedef PrintPDFFileAction = Function(Uint8List bytes, String fileName);
+typedef OpenMailtoLinkAction = void Function(Uri uri);
 
 class PDFViewer extends StatefulWidget {
   final Attachment attachment;
@@ -36,6 +39,7 @@ class PDFViewer extends StatefulWidget {
   final ImagePaths imagePaths;
   final DownloadPDFFileAction? downloadAction;
   final PrintPDFFileAction? printAction;
+  final OpenMailtoLinkAction? mailtoAction;
 
   const PDFViewer({
     super.key,
@@ -45,6 +49,7 @@ class PDFViewer extends StatefulWidget {
     required this.imagePaths,
     this.downloadAction,
     this.printAction,
+    this.mailtoAction,
   });
 
   @override
@@ -186,6 +191,7 @@ class _PDFViewerState extends State<PDFViewer> {
                 text: progressText,
               ),
               onTapOutside: _closeView,
+              onLinkTap: _onLinkTap,
               topBarOptions: TopBarOptions(
                 title: title,
                 onDownload: bytes != null 
@@ -201,6 +207,16 @@ class _PDFViewerState extends State<PDFViewer> {
         );
       }
     );
+  }
+
+  void _onLinkTap(Uri uri) {
+    final mailtoAction = widget.mailtoAction;
+    if (uri.scheme == RouteUtils.mailtoPrefix && mailtoAction != null) {
+      _closeView();
+      mailtoAction(uri);
+      return;
+    }
+    AppUtils.launchLink(uri.toString());
   }
 
   void _closeView() {

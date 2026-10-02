@@ -233,6 +233,8 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
             downloadAction: (bytes, name) =>
                 downloadFileWeb(fileName: name, fileBytes: bytes),
             printAction: printUtils.printPDFFile,
+            mailtoAction: (uri) =>
+                pushDownloadUIAction(OpenComposerFromMailtoLinkAction(uri)),
           ),
         );
       },
