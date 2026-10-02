@@ -2,6 +2,7 @@ import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/html_viewer/ios_html_content_viewer_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -53,6 +54,10 @@ void main() {
     testWidgets(
       'keeps the default font style, the three url delegates and the blocked-link callback',
       verifyEmailPreviewerDialogDelegates,
+    );
+    testWidgets(
+      'forwards the blocked-link callback to the ios viewer',
+      verifyEmailPreviewerDialogBlockedLinkCallbackOnIOS,
     );
   });
 
@@ -298,5 +303,43 @@ Future<void> verifyCalendarEventDetailBlockedLinkCallback(
   );
 
   viewer.onBlockedLinkAction!(Uri.parse('zoommtg://x'));
+  expect(blocked, 1);
+}
+
+Future<void> verifyEmailPreviewerDialogBlockedLinkCallbackOnIOS(
+  WidgetTester tester,
+) async {
+  var blocked = 0;
+
+  // Reset before the body returns: the binding checks the debug variables.
+  debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+  try {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: EmailPreviewerDialogView(
+          emlPreviewer: EMLPreviewer(
+            id: 'eml-1',
+            title: 'forward.eml',
+            content: '<p>Forwarded</p>',
+          ),
+          imagePaths: ImagePaths(),
+          onMailtoDelegateAction: (_) async {},
+          onPreviewEMLDelegateAction: (_) async {},
+          onDownloadAttachmentDelegateAction: (_) async {},
+          onBlockedLinkAction: (_) => blocked++,
+        ),
+      ),
+    ));
+    await tester.pump();
+  } finally {
+    debugDefaultTargetPlatformOverride = null;
+  }
+
+  expect(tester.takeException(), isNull);
+  final viewer = tester.widget<IosHtmlContentViewerWidget>(
+    find.byType(IosHtmlContentViewerWidget),
+  );
+
+  viewer.onBlockedLinkAction!(Uri.parse('myapp://x'));
   expect(blocked, 1);
 }
