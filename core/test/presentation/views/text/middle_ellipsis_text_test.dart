@@ -82,5 +82,38 @@ void main() {
         }
       },
     );
+
+    testWidgets(
+      'should fit on one line when the system text scale is applied',
+      (tester) async {
+        for (double width = 110; width < 260; width += 10) {
+          await tester.pumpWidget(
+            MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+              child: buildWidget(width: width, preserveFileExtension: true),
+            ),
+          );
+
+          final text = displayedText(tester);
+          expect(text, endsWith('.pdf'), reason: 'width $width: $text');
+          expect(didExceedMaxLines(tester), isFalse, reason: 'width $width: $text');
+        }
+      },
+    );
+
+    testWidgets(
+      'should truncate again when only the system text scale changes',
+      (tester) async {
+        Widget scaled(double scale) => MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          child: buildWidget(width: 150, preserveFileExtension: true),
+        );
+
+        await tester.pumpWidget(scaled(1));
+        await tester.pumpWidget(scaled(1.5));
+
+        expect(didExceedMaxLines(tester), isFalse, reason: displayedText(tester));
+      },
+    );
   });
 }
