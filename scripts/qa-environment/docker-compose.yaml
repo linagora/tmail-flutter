@@ -1,0 +1,29 @@
+# QA stack started by start.sh. The backend configuration is the one of backend-docker/, except
+# the files start.sh generates under .generated/ (JWT keys, jmap.properties with the public URLs,
+# the env.file of the web app).
+services:
+  tmail-backend:
+    image: ${TMAIL_BACKEND_IMAGE:?}
+    volumes:
+      - ./.generated/jwt_publickey:/root/conf/jwt_publickey
+      - ./.generated/jwt_privatekey:/root/conf/jwt_privatekey
+      - ./.generated/jmap.properties:/root/conf/jmap.properties
+      - ../../backend-docker/mailetcontainer.xml:/root/conf/mailetcontainer.xml
+      - ../../backend-docker/imapserver.xml:/root/conf/imapserver.xml
+      - ../../backend-docker/deletedMessageVault.properties:/root/conf/deletedMessageVault.properties
+      - ../../backend-docker/listeners.xml:/root/conf/listeners.xml
+      - ../../backend-docker/linagora-ecosystem.properties:/root/conf/linagora-ecosystem.properties
+      - ../../backend-docker/openpaas.properties:/root/conf/openpaas.properties
+      - ../../provisioning/integration_test/provisioning.sh:/root/conf/integration_test/provisioning.sh
+      - ../../provisioning/integration_test/backup.zip:/root/conf/integration_test/backup.zip
+    ports:
+      - "${QA_JMAP_PORT:?}:80"
+    environment:
+      - DOMAIN=example.com
+
+  web:
+    image: tmail-web-qa
+    volumes:
+      - ./.generated/env.file:/usr/share/nginx/html/assets/env.file:ro
+    ports:
+      - "${QA_WEB_PORT:?}:80"
