@@ -205,11 +205,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
         submenuController: submenuController,
-        onActionSelected: (action) {
-          if (_shouldHandleAction(action.action)) {
-            onThreadDetailActionClick(action.action);
-          }
-        },
+        onActionSelected: (action) => onThreadDetailActionClick(action.action),
       );
 
       mailboxDashBoardController.openPopupMenuActionGroup(
@@ -231,14 +227,6 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       accountId: accountId,
       onLabelActionCallback: (label) => toggleLabelToThread(label, isSelected: true),
     );
-  }
-
-  bool _shouldHandleAction(EmailActionType action) {
-    if (action != EmailActionType.labelAs) {
-      return true;
-    }
-
-    return PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile;
   }
 
   Widget? _getEmailActionSubmenu({

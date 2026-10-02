@@ -593,11 +593,8 @@ class EmailActionReactor with LabelSubMenuMixin {
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
         submenuController: submenuController,
-        onActionSelected: (action) {
-          if (shouldHandleAction(action.action)) {
-            handleEmailAction(presentationEmail, action.action);
-          }
-        },
+        onActionSelected: (action) =>
+            handleEmailAction(presentationEmail, action.action),
       );
 
       openPopupMenu(
