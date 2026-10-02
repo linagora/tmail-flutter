@@ -1,8 +1,10 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/model/hex_color.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
@@ -158,16 +160,44 @@ extension PresentationEmailExtension on PresentationEmail {
   }
 
   List<Label> getLabelList(List<Label> labels) {
-    if (keywords?.isNotEmpty != true || labels.isEmpty) return const [];
+    if (keywords?.isNotEmpty != true) return const [];
 
     final enabledKeywords = keywords!.enabledKeywords;
-
     if (enabledKeywords.isEmpty) return const [];
 
-    return labels
+    // 1) Registered labels: keywords that have a server-side `Label` object
+    //    (Linagora `com:linagora:params:jmap:labels` extension) — carry
+    //    displayName + color set by the user.
+    final registered = labels
         .where((label) =>
             label.keyword != null && enabledKeywords.contains(label.keyword))
         .toList();
+
+    // 2) Orphan / standard JMAP keywords: any keyword set via the RFC 8621
+    //    `Email/set keywords` API by an external tool (mail sentinel,
+    //    filter, IMAP client) that is NOT already a registered Label AND is
+    //    NOT a UI-mapped system keyword (star, seen, draft, junk, etc.).
+    //    Rendered as read-only chips with the default primary color so
+    //    keywords from any standards-compliant JMAP producer become visible.
+    final registeredKeywords = <String>{
+      for (final label in registered)
+        if (label.keyword != null) label.keyword!.value,
+    };
+    final orphanLabels = <Label>[];
+    for (final keyword in enabledKeywords) {
+      if (keyword.isSystemKeyword) continue;
+      if (registeredKeywords.contains(keyword.value)) continue;
+      orphanLabels.add(Label(
+        keyword: keyword,
+        displayName: keyword.value,
+        // Deterministic hash-based color from the tmail palette so each
+        // orphan keyword renders in a distinct, stable color across
+        // sessions and devices without any server-side storage.
+        color: HexColor(keyword.deterministicHexColor),
+      ));
+    }
+
+    return [...registered, ...orphanLabels];
   }
 
   PresentationEmail toggleKeyword(KeyWordIdentifier keyword, bool remove) {
