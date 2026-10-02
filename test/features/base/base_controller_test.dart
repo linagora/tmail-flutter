@@ -6,7 +6,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/widgets.dart' hide State;
+import 'package:flutter/material.dart' hide State;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -31,6 +32,8 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/remote_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
@@ -597,6 +600,29 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(mockBaseController.events, ['removeAllComposerCache', 'logout']);
+    });
+  });
+
+  group('BaseController::showBlockedLinkToast', () {
+    setUp(() => clearInteractions(mockAppToast));
+
+    testWidgets('SHOULD show the link cannot be opened error toast', (tester) async {
+      await tester.pumpWidget(const GetMaterialApp(
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: LocalizationService.supportedLocales,
+        locale: Locale('en'),
+        home: Scaffold(),
+      ));
+      await tester.pump();
+
+      mockBaseController.showBlockedLinkToast();
+
+      verify(mockAppToast.showToastErrorMessage(any, "This link can't be opened")).called(1);
     });
   });
 }
