@@ -1249,6 +1249,18 @@
       "emailAddress": {}
     }
   },
+  "header_email_quoted_date_time": "{date} في {time}",
+  "@header_email_quoted_date_time": {
+    "type": "text",
+    "placeholders_order": [
+      "date",
+      "time"
+    ],
+    "placeholders": {
+      "date": {},
+      "time": {}
+    }
+  },
   "prefix_forward_email": ":Fwd",
   "@prefix_forward_email": {
     "type": "text",

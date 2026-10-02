@@ -28,9 +28,9 @@ extension EmailAddressExtension on EmailAddress {
 
   String asFullStringWithLtGtCharacter() {
     if (displayName.isNotEmpty && emailAddress.isNotEmpty) {
-      return '${displayName.capitalizeFirstEach} <$emailAddress>';
+      return '$displayName <$emailAddress>';
     } else if (displayName.isNotEmpty) {
-      return displayName.capitalizeFirstEach;
+      return displayName;
     } else if (emailAddress.isNotEmpty) {
       return '<$emailAddress>';
     }

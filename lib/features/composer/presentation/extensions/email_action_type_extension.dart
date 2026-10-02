@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -78,7 +79,7 @@ extension EmailActionTypeExtension on EmailActionType {
         final receivedAt = presentationEmail.receivedAt;
         final emailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();
         return appLocalizations.header_email_quoted(
-          receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: languageTag),
+          _formatQuotedDateTime(receivedAt, appLocalizations, languageTag),
           emailAddress
         );
       case EmailActionType.forward:
@@ -101,7 +102,7 @@ extension EmailActionTypeExtension on EmailActionType {
         if (receivedAt != null) {
           headerQuoted = headerQuoted
             .append('${appLocalizations.date}: ')
-            .append(receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: languageTag))
+            .append(_formatQuotedDateTime(receivedAt, appLocalizations, languageTag))
             .addNewLineTag();
         }
         if (fromEmailAddress.isNotEmpty) {
@@ -139,6 +140,18 @@ extension EmailActionTypeExtension on EmailActionType {
       default:
         return null;
     }
+  }
+
+  String _formatQuotedDateTime(
+    UTCDate? dateTime,
+    AppLocalizations appLocalizations,
+    String languageTag,
+  ) {
+    if (dateTime == null) return '';
+    return appLocalizations.header_email_quoted_date_time(
+      dateTime.formatDateToLocal(pattern: 'yMMMd', locale: languageTag),
+      dateTime.formatDateToLocal(pattern: 'jm', locale: languageTag),
+    );
   }
 
   String getIcon(ImagePaths imagePaths) {
