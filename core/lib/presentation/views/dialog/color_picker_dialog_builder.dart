@@ -101,6 +101,7 @@ class ColorPickerDialogBuilder {
                     },
                     copyPasteBehavior: const ColorPickerCopyPasteBehavior(
                       parseShortHexCode: true,
+                      copyFormat: ColorPickerCopyFormat.numHexRRGGBB,
                     ),
                     toolIcons: const ColorPickerActionButtons(
                       dialogActionButtons: true,
