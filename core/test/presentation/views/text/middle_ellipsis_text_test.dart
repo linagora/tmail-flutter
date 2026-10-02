@@ -130,5 +130,20 @@ void main() {
         expect(displayedText(tester), 'q...');
       },
     );
+
+    testWidgets(
+      'should truncate again when only preserveFileExtension changes',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(width: 110));
+        expect(displayedText(tester), 'qa23...pdf');
+
+        await tester.pumpWidget(buildWidget(
+          width: 110,
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'qa2....pdf');
+      },
+    );
   });
 }
