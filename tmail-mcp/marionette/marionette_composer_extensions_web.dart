@@ -1,15 +1,12 @@
 import 'dart:js_interop';
 
 import 'package:marionette_flutter/marionette_flutter.dart';
-import 'package:tmail_ui_user/main/marionette/marionette_composer_schema.dart';
 import 'package:web/web.dart' as web;
 
-/// Summernote's editable area inside the composer's same-origin iframe.
-/// Same target the Patrol web robot uses (`WebComposerRobot.addContent`).
+import 'marionette_composer_schema.dart';
+
 const _editableSelector = 'div.note-editable';
 
-/// Lets agents read and write the web composer body, which lives in an
-/// iframe outside the Flutter widget tree.
 void registerComposerExtensions() {
   registerMarionetteExtension(
     name: setBodyExtensionName,
@@ -51,8 +48,6 @@ web.HTMLElement? _findEditable() {
   return null;
 }
 
-/// Replaces everything but the signature, then fires `input` so Summernote
-/// reports the change back to the composer.
 void _replaceBody(web.HTMLElement editable, String text) {
   final document = editable.ownerDocument!;
   final signature = editable.querySelector('div.tmail-signature');

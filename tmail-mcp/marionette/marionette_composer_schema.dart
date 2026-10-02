@@ -1,7 +1,5 @@
 import 'package:marionette_flutter/marionette_flutter.dart';
 
-/// Shared names and contract of the composer body extensions, so web and
-/// mobile expose identical tools to agents.
 const setBodyExtensionName = 'tmailComposer.setBody';
 const getBodyExtensionName = 'tmailComposer.getBody';
 
@@ -18,7 +16,9 @@ const setBodyInputSchema = ExtensionInputSchema(
 );
 
 MarionetteExtensionResult missingTextParam() =>
-    const MarionetteExtensionResult.invalidParams('Missing required parameter: text');
+    const MarionetteExtensionResult.invalidParams(
+      'Missing required parameter: text',
+    );
 
 MarionetteExtensionResult noComposerOpen() =>
     const MarionetteExtensionResult.invalidParams(

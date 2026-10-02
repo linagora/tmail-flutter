@@ -1486,7 +1486,7 @@ packages:
     source: hosted
     version: "0.1.2"
   marionette_flutter:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: marionette_flutter
       sha256: "9bf6aa531157edeb3d94f7c4972367240a1d704bbe9f4ac558ef1a125c4d1a6d"
@@ -2631,7 +2631,7 @@ packages:
     source: hosted
     version: "1.1.0"
   web:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: web
       sha256: "868d88a33d8a87b18ffc05f9f030ba328ffefba92d6c127917a2ba740f9cfe4a"

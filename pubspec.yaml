@@ -41,10 +41,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # Marionette MCP: lets AI agents drive the running app (debug/profile only)
-  marionette_flutter: 0.6.0
-  web: ^1.1.0
-
   core:
     path: core
 
@@ -311,6 +307,10 @@ dev_dependencies:
   patrol: 4.5.0
 
   patrol_log: 0.8.0
+
+  marionette_flutter: 0.6.0
+
+  web: ^1.1.0
 
   patrol_finders: 3.2.0
 

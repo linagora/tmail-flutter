@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:marionette_flutter/marionette_flutter.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
-import 'package:tmail_ui_user/main/marionette/marionette_composer_schema.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-/// Lets agents read and write the mobile composer body, which lives in an
-/// InAppWebView that Marionette's widget-tree tools cannot reach.
+import 'marionette_composer_schema.dart';
+
 void registerComposerExtensions() {
   registerMarionetteExtension(
     name: setBodyExtensionName,
@@ -34,8 +33,6 @@ void registerComposerExtensions() {
   );
 }
 
-/// The mobile composer registers its controllers without a tag, and only one
-/// composer can be open at a time.
 Future<dynamic> _evaluate(String source) async {
   final editorApi = getBinding<RichTextMobileTabletController>()?.htmlEditorApi;
   if (editorApi == null) return null;
