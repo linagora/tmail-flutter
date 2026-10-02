@@ -308,6 +308,10 @@ dev_dependencies:
 
   patrol_log: 0.8.0
 
+  marionette_flutter: 0.6.0
+
+  web: ^1.1.0
+
   patrol_finders: 3.2.0
 
   plugin_platform_interface: 2.1.8
