@@ -5,6 +5,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:device_info_plus/device_info_plus.dart';
@@ -15,16 +16,17 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
+import 'package:pdfrx/pdfrx.dart' show PdfPasswordException;
 import 'package:tmail_ui_user/features/download/domain/exceptions/download_attachment_exceptions.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/password_aware_pdf_previewer.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/loading_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
-import 'package:twake_previewer_flutter/twake_pdf_previewer/twake_pdf_previewer.dart';
 
 typedef DownloadPDFFileAction = Function(Uint8List bytes, String fileName);
 typedef PrintPDFFileAction = Function(Uint8List bytes, String fileName);
@@ -62,6 +64,8 @@ class _PDFViewerState extends State<PDFViewer> {
   final ValueNotifier<Object?> _pdfViewStateNotifier = ValueNotifier<Object?>(null);
 
   final DeviceInfoPlugin _deviceInfoPlugin = Get.find<DeviceInfoPlugin>();
+
+  int _passwordRequestCount = 0;
 
   @override
   void initState() {
@@ -161,8 +165,9 @@ class _PDFViewerState extends State<PDFViewer> {
               _ => '',
             };
             
-            return TwakePdfPreviewer(
+            return PasswordAwarePdfPreviewer(
               bytes: Uint8List.fromList(bytes ?? []),
+              passwordProvider: _requestPdfPassword,
               previewerOptions: PreviewerOptions(
                 previewerState: previewerState,
                 onError: (error) {
@@ -175,7 +180,9 @@ class _PDFViewerState extends State<PDFViewer> {
                 return ConfirmationDialogBuilder(
                   imagePath: widget.imagePaths,
                   title: appLocalizations.cannotPreviewPdf,
-                  textContent: error.toString(),
+                  textContent: error is PdfPasswordException
+                    ? appLocalizations.pdfPasswordNotProvided
+                    : error.toString(),
                   confirmText: appLocalizations.close,
                   onConfirmButtonAction: popBack,
                 );
@@ -200,6 +207,30 @@ class _PDFViewerState extends State<PDFViewer> {
           },
         );
       }
+    );
+  }
+
+  /// Called by pdfrx after the empty password failed, then again after each
+  /// wrong password. Returning null (dialog cancelled) aborts the opening.
+  Future<String?> _requestPdfPassword() async {
+    if (!mounted) return null;
+
+    final appLocalizations = AppLocalizations.of(context);
+    final isRetry = _passwordRequestCount++ > 0;
+
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => EditTextDialogBuilder(
+        title: appLocalizations.pdfPasswordRequired,
+        value: '',
+        obscureText: true,
+        initialError: isRetry ? appLocalizations.incorrectPdfPassword : null,
+        positiveText: appLocalizations.open,
+        negativeText: appLocalizations.cancel,
+        onPositiveButtonAction: (password) => Navigator.of(dialogContext).pop(password),
+        onNegativeButtonAction: () => Navigator.of(dialogContext).pop(),
+      ),
     );
   }
 
