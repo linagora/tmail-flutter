@@ -54,6 +54,7 @@ void main() {
           final text = displayedText(tester);
           expect(text, contains('...'), reason: 'width $width');
           expect(text, endsWith('.pdf'), reason: 'width $width: $text');
+          expect(didExceedMaxLines(tester), isFalse, reason: 'width $width: $text');
         }
       },
     );
@@ -232,6 +233,49 @@ void main() {
         await tester.pumpWidget(buildWidget(width: 110, keepStartFraction: 1));
 
         expect(displayedText(tester), 'qa23-30...');
+      },
+    );
+
+    testWidgets(
+      'should measure with the ambient style when no style is given',
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp(
+          home: DefaultTextStyle(
+            style: TextStyle(fontSize: 10, letterSpacing: 2),
+            child: Center(
+              child: SizedBox(
+                width: 150,
+                child: MiddleEllipsisText(fileName, preserveFileExtension: true),
+              ),
+            ),
+          ),
+        ));
+
+        expect(displayedText(tester), 'qa23-....pdf');
+        expect(didExceedMaxLines(tester), isFalse);
+      },
+    );
+
+    testWidgets(
+      'should not inherit the ambient letter spacing when the style does not inherit',
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp(
+          home: DefaultTextStyle(
+            style: TextStyle(fontSize: 10, letterSpacing: 2),
+            child: Center(
+              child: SizedBox(
+                width: 150,
+                child: MiddleEllipsisText(
+                  fileName,
+                  style: TextStyle(inherit: false, fontSize: 10),
+                ),
+              ),
+            ),
+          ),
+        ));
+
+        expect(displayedText(tester), 'qa23-3...es.pdf');
+        expect(didExceedMaxLines(tester), isFalse);
       },
     );
   });
