@@ -10,6 +10,7 @@ void main() {
   Widget buildWidget({
     required double width,
     String text = fileName,
+    double keepStartFraction = 0.5,
     bool preserveFileExtension = false,
   }) => MaterialApp(
     home: Scaffold(
@@ -19,6 +20,7 @@ void main() {
           child: MiddleEllipsisText(
             text,
             style: textStyle,
+            keepStartFraction: keepStartFraction,
             preserveFileExtension: preserveFileExtension,
           ),
         ),
@@ -143,6 +145,93 @@ void main() {
         ));
 
         expect(displayedText(tester), 'qa2....pdf');
+      },
+    );
+
+    testWidgets(
+      'should display full text when it fits and preserveFileExtension is true',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(
+          width: 500,
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), fileName);
+      },
+    );
+
+    testWidgets(
+      'should not keep the extension when there is no room for it',
+      (tester) async {
+        // Room for 3 kept characters, the extension needs 4
+        await tester.pumpWidget(buildWidget(
+          width: 70,
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'qa...f');
+      },
+    );
+
+    testWidgets(
+      'should not reserve end characters when the name has no extension',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(
+          width: 110,
+          text: 'qa23-301pages',
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'qa23...ges');
+      },
+    );
+
+    testWidgets(
+      'should not treat a leading dot as a file extension',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(
+          width: 110,
+          text: '.qa23-301pages',
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), '.qa2...ges');
+      },
+    );
+
+    testWidgets(
+      'should only reserve the last extension when the name has several dots',
+      (tester) async {
+        // 9 kept characters: the default split already keeps `.gz` at the end
+        await tester.pumpWidget(buildWidget(
+          width: 130,
+          text: 'qa23-301pages.tar.gz',
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'qa23-...r.gz');
+      },
+    );
+
+    testWidgets(
+      'should keep the extension when keepStartFraction keeps everything at the start',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(
+          width: 110,
+          keepStartFraction: 1,
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'qa2....pdf');
+      },
+    );
+
+    testWidgets(
+      'should not keep the extension when keepStartFraction keeps everything at the start and preserveFileExtension is false',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(width: 110, keepStartFraction: 1));
+
+        expect(displayedText(tester), 'qa23-30...');
       },
     );
   });
