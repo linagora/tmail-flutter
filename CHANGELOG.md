@@ -1,3 +1,30 @@
+## [0.39.0] - 2026-10-02
+### Added
+- Support iOS app builds on Xcode 27.0 and macOS Golden Gate 27.0
+- #4843 Handle EmailSubmission/set invalidRecipients in composer
+- #4672 Hide calendar button when ecosystem URL template is unset
+
+### Fixed
+- #4859 Validate iframe message shape in HTML viewer before handling
+- Support domainPart in URL templates
+- Gate premium CTA on being inside Cozy
+- Strip bidi and control characters from attachment names
+- Escape notification text; private lock-screen visibility
+- Never send credentials with WebFinger discovery requests
+- Escape header fields in EML preview; remove unused PDF viewer
+- Try DNS-over-HTTPS before system DNS for JMAP discovery
+- Return to app base, not host root, after logout
+- Drop redirect_uri handling from the logout callback
+- Pin pica/dotlottie at build time and serve CanvasKit locally
+
+### Changed
+- #4861 Localize file size formatter tests with Intl.defaultLocale
+- #4815 Test switched identity and signature survive web reload
+- #4837 Drop no-op selection-list reorder, add category order test
+- Translate vi, ru, fr, mn
+- Bump tmail-backend docker image to 1.0.21.1
+- Run every test in CI without registration
+
 ## [0.38.0] - 2026-09-23
 ### Fixed
 - #4802 Update Twake Calendar footer separator
