@@ -1,10 +1,12 @@
 
+import 'package:collection/collection.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/extensions/label_extension.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -100,6 +102,14 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   Id? get labelId =>
       isLabelMailbox ? (this as PresentationLabelMailbox).label.id : null;
+
+  /// Whether this is a label mailbox whose label is no longer in [labels],
+  /// e.g. after the label was deleted.
+  bool isLabelMailboxRemovedFrom(List<Label> labels) {
+    final currentLabelId = labelId;
+    return currentLabelId != null &&
+        labels.none((label) => label.id == currentLabelId);
+  }
 
   MailboxId? get browserRouteMailboxId => isLabelMailbox ? null : mailboxId;
 

@@ -66,14 +66,16 @@ extension HandleLabelWebsocketExtension on LabelController {
 
     setCurrentLabelState(result.newState);
 
+    // Apply on a copy and emit once: a listener must never see an updated
+    // label missing from the list
+    final updatedLabels = List.of(labels);
     LabelUtils.applyLabelChanges(
-      currentLabels: labels,
+      currentLabels: updatedLabels,
       created: result.createdLabels,
       updated: result.updatedLabels,
       destroyedIds: result.destroyedLabelIds,
     );
 
-    labels.sortByAlphabetically();
-    labels.refresh();
+    labels.value = updatedLabels..sortByAlphabetically();
   }
 }
