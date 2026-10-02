@@ -571,7 +571,10 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       widget.onBlockedLinkAction?.call(requestUri);
       return;
     }
-    if (!await launcher.canLaunchUrl(requestUri)) return;
+    if (!await launcher.canLaunchUrl(requestUri)) {
+      widget.onBlockedLinkAction?.call(requestUri);
+      return;
+    }
 
     await launcher.launchUrl(
       requestUri,

@@ -49,6 +49,8 @@
 			<string>mailto</string>
 			<string>sms</string>
 			<string>tel</string>
+			<string>webcal</string>
+			<string>geo</string>
 			<string>linshare.mobile</string>
 			<string>twake.chat</string>
 		</array>
