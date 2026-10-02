@@ -1086,10 +1086,13 @@ class AppLocalizations {
   }
 
   String toast_message_delete_multiple_email_permanently_success(int count) {
-    return Intl.message(
-        '$count messages have been deleted forever',
-        name: 'toast_message_delete_multiple_email_permanently_success',
-        args: [count]);
+    return Intl.plural(
+      count,
+      one: '1 message has been deleted forever',
+      other: '$count messages have been deleted forever',
+      name: 'toast_message_delete_multiple_email_permanently_success',
+      args: [count],
+    );
   }
 
   String get toast_message_delete_a_email_permanently_success {
