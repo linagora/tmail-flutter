@@ -95,6 +95,39 @@ class AILabelCategorizationPreferenceOption extends ServerPreferenceOption {
       current.copyWith(aiLabelCategorizationEnabled: enabled);
 }
 
+class AIRAGPreferenceOption extends ServerPreferenceOption {
+  AIRAGPreferenceOption(super.updateServerSettingInteractor);
+
+  @override
+  String get id => 'ai-rag';
+
+  @override
+  String title(AppLocalizations l) => l.rag;
+
+  @override
+  String explanation(AppLocalizations l) => l.ragSettingExplanation;
+
+  @override
+  String toggleDescription(AppLocalizations l) => l.ragToggleDescription;
+
+  @override
+  bool isEnabled(PreferencesContext context) =>
+      context.serverOptions?.isAIRagEnabled ?? false;
+
+  @override
+  bool isAvailable(PreferencesContext context) =>
+      context.serverOptions != null &&
+      context.isAICapabilitySupported &&
+      context.serverOptions?.aiRagEnabled != null;
+
+  @override
+  TMailServerSettingOptions applyTo(
+    TMailServerSettingOptions current, {
+    required bool enabled,
+  }) =>
+      current.copyWith(aiRagEnabled: enabled);
+}
+
 // --- Local-backed options ---
 
 class ThreadPreferenceOption extends LocalPreferenceOption {

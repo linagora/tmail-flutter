@@ -43,11 +43,15 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'ai.label-categorization.enabled')
   final bool? aiLabelCategorizationEnabled;
 
+  @JsonKey(name: 'ai.rag.enabled')
+  final bool? aiRagEnabled;
+
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
     this.aiLabelCategorizationEnabled,
+    this.aiRagEnabled,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -60,12 +64,14 @@ class TMailServerSettingOptions with EquatableMixin {
     bool? displaySenderPriority,
     String? language,
     bool? aiLabelCategorizationEnabled,
+    bool? aiRagEnabled,
   }) {
     return TMailServerSettingOptions(
       alwaysReadReceipts: alwaysReadReceipts ?? this.alwaysReadReceipts,
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
       aiLabelCategorizationEnabled: aiLabelCategorizationEnabled ?? this.aiLabelCategorizationEnabled,
+      aiRagEnabled: aiRagEnabled ?? this.aiRagEnabled,
     );
   }
 
@@ -75,5 +81,6 @@ class TMailServerSettingOptions with EquatableMixin {
     displaySenderPriority,
     language,
     aiLabelCategorizationEnabled,
+    aiRagEnabled,
   ];
 }

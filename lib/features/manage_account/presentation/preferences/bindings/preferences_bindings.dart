@@ -35,6 +35,7 @@ class PreferencesBindings extends Bindings {
         SpamReportPreferenceOption(updateLocal),
         AIScribePreferenceOption(updateLocal),
         AILabelCategorizationPreferenceOption(updateServer),
+        AIRAGPreferenceOption(updateServer),
         LabelPreferenceOption(updateLocal),
         DriveAttachmentPreferenceOption(updateLocal),
       ]);
