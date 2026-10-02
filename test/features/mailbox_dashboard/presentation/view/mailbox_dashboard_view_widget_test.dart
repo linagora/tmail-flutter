@@ -476,6 +476,8 @@ void main() {
       Get.put<AppGridDashboardController>(appGridDashboardController);
       Get.put<SpamReportController>(spamReportController);
       Get.put<LabelController>(labelController);
+      // MailboxController listens to the label list once it is ready
+      when(labelController.labels).thenReturn(RxList());
       Get.put<NetworkConnectionController>(networkConnectionController);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
