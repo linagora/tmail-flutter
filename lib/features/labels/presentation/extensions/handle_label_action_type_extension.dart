@@ -71,9 +71,11 @@ extension HandleLabelActionTypeExtension on LabelController {
   }
 
   void syncListLabels(Label newLabel) {
-    labels.removeWhere((label) => label.id == newLabel.id);
-    labels.add(newLabel);
-    labels.sortByAlphabetically();
+    // Emit once: a listener must never see the list without the edited label
+    labels.value = [
+      ...labels.where((label) => label.id != newLabel.id),
+      newLabel,
+    ]..sortByAlphabetically();
   }
 
   Future<void> _openDeleteLabelModal({
