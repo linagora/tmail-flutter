@@ -215,9 +215,13 @@ Widget buildApp(Widget label, {required double width, WrapWidget? wrap}) {
 String displayedText(WidgetTester tester) =>
     tester.widget<Text>(find.byType(Text)).data!;
 
-bool didExceedMaxLines(WidgetTester tester) => tester
-    .renderObject<RenderParagraph>(find.byType(RichText))
-    .didExceedMaxLines;
+/// The text neither wraps past one line nor paints wider than its box.
+bool fitsOnOneLine(WidgetTester tester) {
+  final paragraph =
+      tester.renderObject<RenderParagraph>(find.byType(RichText));
+  return !paragraph.didExceedMaxLines &&
+      paragraph.getMaxIntrinsicWidth(double.infinity) <= paragraph.size.width;
+}
 
 Future<void> verifyDisplayedText(
   WidgetTester tester,
@@ -227,7 +231,7 @@ Future<void> verifyDisplayedText(
   await tester.pumpWidget(app);
 
   expect(displayedText(tester), expected);
-  expect(didExceedMaxLines(tester), isFalse);
+  expect(fitsOnOneLine(tester), isTrue);
 }
 
 Future<void> verifyExtensionFitsAcrossWidths(
@@ -243,7 +247,7 @@ Future<void> verifyExtensionFitsAcrossWidths(
     final text = displayedText(tester);
     expect(text, contains('...'), reason: 'width $width');
     expect(text, endsWith('.pdf'), reason: 'width $width: $text');
-    expect(didExceedMaxLines(tester), isFalse, reason: 'width $width: $text');
+    expect(fitsOnOneLine(tester), isTrue, reason: 'width $width: $text');
   }
 }
 
@@ -278,7 +282,7 @@ Future<void> verifyTruncatesAgainOnTextScaleChange(WidgetTester tester) async {
   await tester.pumpWidget(scaled(1));
   await tester.pumpWidget(scaled(1.5));
 
-  expect(didExceedMaxLines(tester), isFalse, reason: displayedText(tester));
+  expect(fitsOnOneLine(tester), isTrue, reason: displayedText(tester));
 }
 
 Future<void> verifyTruncatesAgainOnPreserveFileExtensionChange(
