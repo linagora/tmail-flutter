@@ -32,7 +32,8 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
 
   @override
   Widget build(BuildContext context) {
-    final style = widget.style ?? DefaultTextStyle.of(context).style;
+    // Measure with the style [Text] renders: the ambient style merged with ours
+    final style = DefaultTextStyle.of(context).style.merge(widget.style);
     final styleKey = _styleKey(style);
     final textDir = Directionality.of(context);
 
