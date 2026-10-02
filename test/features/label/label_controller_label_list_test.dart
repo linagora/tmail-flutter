@@ -13,6 +13,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/label_changes_result.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_label_changes_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -95,6 +97,23 @@ void main() {
         ],
       ),
     );
+
+    test('should keep the last labels when fetching labels fails', () {
+      harness.controller.handleFailureViewState(
+        GetAllLabelFailure(Exception()),
+      );
+
+      expect(harness.controller.labels, [home, work]);
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+    });
+
+    test('should clear the labels when reading the label setting fails', () {
+      harness.controller.handleFailureViewState(
+        GetLabelSettingStateFailure(Exception()),
+      );
+
+      expect(harness.controller.labels, isEmpty);
+    });
   });
 }
 
