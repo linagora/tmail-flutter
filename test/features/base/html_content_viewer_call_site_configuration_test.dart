@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_body_content_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/html_attachment_previewer.dart';
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_dialog_view.dart';
@@ -73,6 +75,13 @@ void main() {
     testWidgets(
       'forwards the blocked-link callback',
       verifyEventBodyBlockedLinkCallback,
+    );
+  });
+
+  group('CalendarEventDetailWidget', () {
+    testWidgets(
+      'forwards the blocked-link callback to the event description',
+      verifyCalendarEventDetailBlockedLinkCallback,
     );
   });
 }
@@ -266,6 +275,24 @@ Future<void> verifyEventBodyBlockedLinkCallback(WidgetTester tester) async {
     tester,
     EventBodyContentWidget(
       content: '<p>Invitation</p>',
+      onBlockedLinkAction: (_) => blocked++,
+    ),
+  );
+
+  viewer.onBlockedLinkAction!(Uri.parse('zoommtg://x'));
+  expect(blocked, 1);
+}
+
+Future<void> verifyCalendarEventDetailBlockedLinkCallback(
+  WidgetTester tester,
+) async {
+  var blocked = 0;
+
+  final viewer = await pumpAndFindViewer(
+    tester,
+    CalendarEventDetailWidget(
+      calendarEvent: CalendarEvent(description: 'Join the call'),
+      emailContent: '',
       onBlockedLinkAction: (_) => blocked++,
     ),
   );
