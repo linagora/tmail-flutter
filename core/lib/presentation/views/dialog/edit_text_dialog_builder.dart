@@ -146,6 +146,7 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                           color: AppColor.colorErrorState,
                         ),
                         errorText: _error,
+                        errorMaxLines: 3,
                       ),
                     ),
                   ),
@@ -211,9 +212,12 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
   }
 
   void _onPositiveAction() {
-    if (_error?.isNotEmpty != true) {
-      widget.onPositiveButtonAction(_textController.text);
+    final error = widget.onInputErrorChanged?.call(_textController.text);
+    if (error?.isNotEmpty == true) {
+      setState(() => _error = error);
+      return;
     }
+    widget.onPositiveButtonAction(_textController.text);
   }
 
   void _onNegativeAction() {

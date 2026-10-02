@@ -3166,6 +3166,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "folderNameContainsForbiddenCharacters": "Le nom du dossier ne peut ni commencer par \"#\" ni contenir \".\", \"%\", \"*\" ou de retours à la ligne",
+  "@folderNameContainsForbiddenCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "newSubfolder": "Nouveau sous-dossier",
   "@newSubfolder": {
     "type": "text",

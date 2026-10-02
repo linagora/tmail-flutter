@@ -19,7 +19,7 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       }
       return AppLocalizations.of(context).this_folder_name_is_already_taken;
     } else if (exception is SpecialCharacterException) {
-      return AppLocalizations.of(context).folderNameCannotContainSpecialCharacters;
+      return AppLocalizations.of(context).folderNameContainsForbiddenCharacters;
     } else if (exception is NameWithSpaceOnlyException) {
       return AppLocalizations.of(context).thisFieldCannotContainOnlySpaces;
     } else {

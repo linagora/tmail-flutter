@@ -1029,6 +1029,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "folderNameContainsForbiddenCharacters": "Ordnername darf nicht mit \"#\" beginnen und weder \".\", \"%\", \"*\" noch Zeilenumbrüche enthalten",
+  "@folderNameContainsForbiddenCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "hintInputCreateNewFolder": "Name des Ordners eingeben",
   "@hintInputCreateNewFolder": {
     "type": "text",
