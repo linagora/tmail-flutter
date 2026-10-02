@@ -1195,7 +1195,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "Select the identity or email address you want to use to send an emails",
+  "identitiesSettingExplanation": "Select the identity or email address you want to use to send emails",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],

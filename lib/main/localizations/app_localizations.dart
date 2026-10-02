@@ -1278,7 +1278,7 @@ class AppLocalizations {
 
   String get identitiesSettingExplanation {
     return Intl.message(
-      'Select the identity or email address you want to use to send an emails',
+      'Select the identity or email address you want to use to send emails',
       name: 'identitiesSettingExplanation');
   }
 
