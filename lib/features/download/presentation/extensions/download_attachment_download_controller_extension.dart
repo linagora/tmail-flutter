@@ -117,7 +117,7 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
     final cancelToken = CancelToken();
 
     showDownloadingFileDialog(
-      attachmentName: attachment.name ?? '',
+      attachmentName: attachment.generateFileName(),
       cancelToken: cancelToken,
     );
 

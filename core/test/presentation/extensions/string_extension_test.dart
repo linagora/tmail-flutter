@@ -92,4 +92,58 @@ void main() {
       expect('archive.tar.gz'.fileExtension, equals('gz'));
     });
   });
+
+  group("sanitizedBidiForDisplay", () {
+    test("removes a right-to-left override so the extension can't be visually reordered", () {
+      const name = 'invoice\u202Efdp.exe';
+      expect(name.sanitizedBidiForDisplay, equals('invoicefdp.exe'));
+    });
+
+    test("keeps normal punctuation in the file name", () {
+      const name = 'invoice (final) v2.pdf';
+      expect(name.sanitizedBidiForDisplay, equals(name));
+    });
+
+    String codePoint(int value) =>
+        'U+${value.toRadixString(16).toUpperCase().padLeft(4, '0')}';
+
+    for (final value in [
+      0x0000, 0x001F, 0x007F, 0x0085, 0x009F, 0x061C, 0x200E,
+      0x200F, 0x2028, 0x2029, 0x202A, 0x202E, 0x2066, 0x2069,
+    ]) {
+      test("strips ${codePoint(value)}", () {
+        final char = String.fromCharCode(value);
+        expect('a${char}b'.sanitizedBidiForDisplay, equals('ab'));
+      });
+    }
+
+    for (final value in [
+      0x0020, 0x007E, 0x00A0, 0x061B, 0x061D, 0x200C, 0x200D,
+      0x2010, 0x2027, 0x202F, 0x2065, 0x206A,
+    ]) {
+      test("keeps ${codePoint(value)}", () {
+        final name = 'a${String.fromCharCode(value)}b';
+        expect(name.sanitizedBidiForDisplay, equals(name));
+      });
+    }
+
+    for (final name in [
+      '',
+      'tài liệu.pdf',
+      'تقرير.pdf',
+      'דוח.pdf',
+      String.fromCharCodes([0x1F468, 0x200D, 0x1F469, 0x200D, 0x1F467]),
+    ]) {
+      test("keeps ${name.runes} unchanged", () {
+        expect(name.sanitizedBidiForDisplay, equals(name));
+      });
+    }
+
+    test("strips several characters in different positions", () {
+      final name = String.fromCharCodes(
+        [0x202E, ...'inv'.codeUnits, 0x0007, ...'oice'.codeUnits, 0x2028, ...'.pdf'.codeUnits, 0x2066],
+      );
+      expect(name.sanitizedBidiForDisplay, equals('invoice.pdf'));
+    });
+  });
 }

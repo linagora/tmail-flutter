@@ -2,6 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:flutter/material.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_item_composer_widget_style.dart';
@@ -64,7 +65,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                   const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
                   Flexible(
                       child: MiddleEllipsisText(
-                        fileName,
+                        fileName.sanitizedBidiForDisplay,
                         style: AttachmentItemComposerWidgetStyle.labelTextStyle,
                       )
                   ),

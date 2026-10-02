@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/http/converter/id_nullable_converter.dart';
@@ -81,7 +82,9 @@ class Attachment with EquatableMixin {
                 : blobId!.value)
             : _defaultName);
 
-    final sanitized = rawName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_').trim();
+    final sanitized = rawName.sanitizedBidiForDisplay
+        .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+        .trim();
     // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
     return sanitized.contains(RegExp(r'[^_\s]')) ? sanitized : _defaultName;
   }
