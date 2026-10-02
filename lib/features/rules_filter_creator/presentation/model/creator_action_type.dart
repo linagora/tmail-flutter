@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
-import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum CreatorActionType {
@@ -16,12 +15,12 @@ enum CreatorActionType {
     }
   }
 
-  String getActionName(BuildContext context) {
+  String getActionName(AppLocalizations appLocalizations) {
     switch(this) {
       case CreatorActionType.create:
-        return AppLocalizations.of(context).create;
+        return appLocalizations.createRule;
       case CreatorActionType.edit:
-        return AppLocalizations.of(context).save;
+        return appLocalizations.save;
     }
   }
 }

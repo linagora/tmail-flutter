@@ -419,18 +419,22 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             ),
           ),
         ),
-        RuleFilterListActionWidget(
-          positiveLabel: appLocalizations.createRule,
-          negativeLabel: appLocalizations.cancel,
-          padding: EdgeInsets.symmetric(
-            vertical: 25,
-            horizontal: isMobile ? 16 : 32,
+        Obx(
+          () => RuleFilterListActionWidget(
+            positiveLabel: controller.actionType.value.getActionName(
+              appLocalizations,
+            ),
+            negativeLabel: appLocalizations.cancel,
+            padding: EdgeInsets.symmetric(
+              vertical: 25,
+              horizontal: isMobile ? 16 : 32,
+            ),
+            onPositiveAction: () {
+              FocusScope.of(context).unfocus();
+              controller.createNewRuleFilter(context);
+            },
+            onNegativeAction: () => controller.closeView(context),
           ),
-          onPositiveAction: () {
-            FocusScope.of(context).unfocus();
-            controller.createNewRuleFilter(context);
-          },
-          onNegativeAction: () => controller.closeView(context),
         ),
       ],
     );
