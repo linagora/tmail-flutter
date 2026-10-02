@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -76,6 +77,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
@@ -1110,6 +1112,88 @@ void main() {
       const folderName = 'folder';
 
       expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+    });
+  });
+
+  group('selected label removed from the label list:', () {
+    final work = Label(id: Id('work'), displayName: 'Work');
+    final home = Label(id: Id('home'), displayName: 'Home');
+    final workMailbox = PresentationLabelMailbox.initial(work);
+    final inbox = PresentationMailbox(
+      testMailboxId,
+      role: PresentationMailbox.roleInbox,
+    );
+    late RxList<Label> labels;
+
+    setUp(() {
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(true));
+      // The list MailboxController listens to once it is ready
+      labels = RxList([home, work]);
+      when(labelController.labels).thenReturn(labels);
+
+      // Get.put would keep a dashboard left registered by an earlier test,
+      // and MailboxController would then read that one
+      Get.replace(mailboxDashboardController);
+      mailboxDashboardController.onReady();
+      mailboxController = MailboxController(
+        createNewMailboxInteractor,
+        deleteMultipleMailboxInteractor,
+        renameMailboxInteractor,
+        moveMailboxInteractor,
+        subscribeMailboxInteractor,
+        subscribeMultipleMailboxInteractor,
+        subaddressingInteractor,
+        createDefaultMailboxInteractor,
+        moveFolderContentInteractor,
+        treeBuilder,
+        verifyNameInteractor,
+        getAllMailboxInteractor,
+        refreshAllMailboxInteractor);
+      // onInit registers the label list listener under test
+      mailboxController
+        ..onInit()
+        ..onReady();
+      mailboxController.defaultMailboxTree.value = MailboxTree(
+        MailboxNode(
+          MailboxNode.rootItem(),
+          childrenItems: [MailboxNode(inbox)],
+        ),
+      );
+    });
+
+    test('should select the Inbox when the selected label is removed', () {
+      mailboxDashboardController.selectedMailbox.value = workMailbox;
+
+      labels.value = [home];
+
+      expect(mailboxDashboardController.selectedMailbox.value, inbox);
+    });
+
+    test('should keep the selected label when it is still in the list', () {
+      mailboxDashboardController.selectedMailbox.value = workMailbox;
+
+      labels.value = [home, Label(id: Id('work'), displayName: 'Job')];
+
+      expect(mailboxDashboardController.selectedMailbox.value, workMailbox);
+    });
+
+    test('should keep the selected label when another label is removed', () {
+      mailboxDashboardController.selectedMailbox.value = workMailbox;
+
+      labels.value = [work];
+
+      expect(mailboxDashboardController.selectedMailbox.value, workMailbox);
+    });
+
+    test('should keep a folder selected when all labels are removed', () {
+      final folder = PresentationMailbox(MailboxId(Id('folder')));
+      mailboxDashboardController.selectedMailbox.value = folder;
+
+      labels.value = [];
+
+      expect(mailboxDashboardController.selectedMailbox.value, folder);
     });
   });
 
