@@ -96,5 +96,44 @@ void main() {
       expect(printUtils.senderName, senderName);
       expect(printUtils.listAttachment!.single.name, attachmentName);
     });
+
+    test('SHOULD strip bidi overrides from the attachment name', () async {
+      const subject = 'Q&A <b>today</b>';
+      const senderName = 'Bob <Admin> & Co';
+      const attachmentName = 'invoice\u202Efdp.exe';
+      final printUtils = _CapturingPrintUtils();
+      final dataSource = PrintFileDataSourceImpl(
+        printUtils,
+        ImagePaths(),
+        _FakeFileUtils(),
+        _FakeHtmlAnalyzer(),
+        _FakeExceptionThrower(),
+      );
+
+      await dataSource.printEmail(EmailPrint(
+        appName: 'Twake Mail',
+        userName: 'alice@example.com',
+        emailContent: '',
+        fromPrefix: 'From',
+        toPrefix: 'To',
+        ccPrefix: 'Cc',
+        bccPrefix: 'Bcc',
+        replyToPrefix: 'Reply to',
+        titleAttachment: 'attachment',
+        receiveTime: 'today',
+        subject: subject,
+        sender: EmailAddress(senderName, 'bob@example.com'),
+        attachments: [
+          Attachment(
+            blobId: Id('blobId'),
+            name: attachmentName,
+            size: UnsignedInt(1024),
+            type: MediaType.parse('application/pdf'),
+          ),
+        ],
+      ));
+
+      expect(printUtils.listAttachment!.single.name, 'invoicefdp.exe');
+    });
   });
 }

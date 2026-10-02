@@ -44,7 +44,7 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
           const SizedBox(width: FeedbackDraggableAttachmentItemWidgetStyle.space),
           Flexible(
             child: MiddleEllipsisText(
-              attachment.name ?? '',
+              attachment.generateFileName(),
               style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
             ),
           )

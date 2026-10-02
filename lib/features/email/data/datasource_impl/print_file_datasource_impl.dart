@@ -1,4 +1,5 @@
 import 'package:core/data/model/print_attachment.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
@@ -41,7 +42,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
           final iconBase64Data = await _fileUtils.convertImageAssetToBase64(attachment.getIcon(_imagePaths));
           final printAttachment = PrintAttachment(
             iconBase64Data: iconBase64Data,
-            name: attachment.name ?? '',
+            name: (attachment.name ?? '').sanitizedBidiForDisplay,
             size: filesize(attachment.size?.value)
           );
           listPrintAttachment.add(printAttachment);

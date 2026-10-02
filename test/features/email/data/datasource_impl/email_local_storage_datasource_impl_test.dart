@@ -72,5 +72,40 @@ void main() {
       expect(document.querySelector('.sender')!.text.trim(), '$senderName <bob@example.com>');
       expect(document.querySelector('.file-name')!.text, attachmentName);
     });
+
+    test('SHOULD strip bidi overrides from the attachment name', () async {
+      const subject = 'Q&A <b>today</b>';
+      const senderName = 'Bob <Admin> & Co';
+      const attachmentName = 'invoice\u202Efdp.exe';
+      final appLocalizations = AppLocalizations();
+      final dataSource = EmailLocalStorageDataSourceImpl(
+        _FakeLocalStorageManager(),
+        PreviewEmlFileUtils(),
+        _FakeExceptionThrower(),
+      );
+
+      final html = await dataSource.generateEntireMessageAsDocument(ViewEntireMessageRequest(
+        ownEmailAddress: 'alice@example.com',
+        presentationEmail: PresentationEmail(
+          id: EmailId(Id('emailId')),
+          subject: subject,
+          from: {EmailAddress(senderName, 'bob@example.com')},
+        ),
+        attachments: [
+          Attachment(
+            blobId: Id('blobId'),
+            name: attachmentName,
+            size: UnsignedInt(1024),
+            type: MediaType.parse('application/pdf'),
+          ),
+        ],
+        emailContent: '<p>Body</p>',
+        locale: const Locale('en'),
+        appLocalizations: appLocalizations,
+      ));
+
+      final document = parse(html);
+      expect(document.querySelector('.file-name')!.text, 'invoicefdp.exe');
+    });
   });
 }

@@ -65,6 +65,26 @@ void main() {
     });
 
     group('generateFileName:', () {
+      String join(List<Object> parts) => parts
+          .map((part) => part is int ? String.fromCharCode(part) : part as String)
+          .join();
+
+      for (final (parts, expected) in <(List<Object>, String)>[
+        (['invoice', 0x202E, 'fdp.exe'], 'invoicefdp.exe'),
+        (['rep', 0x2066, 'ort', 0x200F, 0x0007, '.pdf'], 'report.pdf'),
+        (['a', 0x0085, 'b', 0x2028, 'c.pdf'], 'abc.pdf'),
+        ([0x202E, 'a?b.exe'], 'a_b.exe'),
+        ([0x202E, 0x0007, 0x2066], 'unknown-attachment'),
+      ]) {
+        final name = join(parts);
+
+        test('should sanitize ${name.runes} to $expected', () {
+          final attachment = Attachment(blobId: Id('some-blob-id'), name: name);
+
+          expect(attachment.generateFileName(), expected);
+        });
+      }
+
       test(
         'should return name when name is not empty',
       () {

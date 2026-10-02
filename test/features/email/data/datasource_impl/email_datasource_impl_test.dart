@@ -82,5 +82,41 @@ void main() {
       expect(document.querySelector('.sender')!.text.trim(), '$senderName <bob@example.com>');
       expect(document.querySelector('.file-name')!.text, attachmentName);
     });
+
+    test('SHOULD strip bidi overrides from the attachment name', () async {
+      const subject = 'Q&A <b>today</b>';
+      const senderName = 'Bob <Admin> & Co';
+      const attachmentName = 'invoice\u202Efdp.exe';
+      final appLocalizations = AppLocalizations();
+      final dataSource = EmailDataSourceImpl(_FakeEmailAPI(), _FakeExceptionThrower());
+
+      final html = await dataSource.generatePreviewEmailEMLContent(PreviewEmailEMLRequest(
+        accountId: AccountFixtures.aliceAccountId,
+        session: SessionFixtures.aliceSession,
+        ownEmailAddress: 'alice@example.com',
+        blobId: Id('emlBlobId'),
+        email: Email(
+          id: EmailId(Id('emailId')),
+          subject: subject,
+          from: {EmailAddress(senderName, 'bob@example.com')},
+          attachments: {
+            EmailBodyPart(
+              partId: PartId('2'),
+              blobId: Id('blobId'),
+              name: attachmentName,
+              size: UnsignedInt(1024),
+              type: MediaType.parse('application/pdf'),
+              disposition: 'attachment',
+            ),
+          },
+        ),
+        locale: const Locale('en'),
+        appLocalizations: appLocalizations,
+        baseDownloadUrl: 'https://jmap.example.com/download/{accountId}/{blobId}/?type={type}&name={name}',
+      ));
+
+      final document = parse(html);
+      expect(document.querySelector('.file-name')!.text, 'invoicefdp.exe');
+    });
   });
 }
