@@ -9,6 +9,7 @@ void main() {
 
   Widget buildWidget({
     required double width,
+    String text = fileName,
     bool preserveFileExtension = false,
   }) => MaterialApp(
     home: Scaffold(
@@ -16,7 +17,7 @@ void main() {
         child: SizedBox(
           width: width,
           child: MiddleEllipsisText(
-            fileName,
+            text,
             style: textStyle,
             preserveFileExtension: preserveFileExtension,
           ),
@@ -113,6 +114,20 @@ void main() {
         await tester.pumpWidget(scaled(1.5));
 
         expect(didExceedMaxLines(tester), isFalse, reason: displayedText(tester));
+      },
+    );
+
+    testWidgets(
+      'should not treat a trailing dot as a file extension',
+      (tester) async {
+        // Room for 1 kept character: it goes to the start, not to the dot
+        await tester.pumpWidget(buildWidget(
+          width: 45,
+          text: 'qa23-301pages.',
+          preserveFileExtension: true,
+        ));
+
+        expect(displayedText(tester), 'q...');
       },
     );
   });
