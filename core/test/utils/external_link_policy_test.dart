@@ -31,4 +31,32 @@ void main() {
       });
     }
   });
+
+  group('ExternalLinkPolicy.canKeepInContent', () {
+    for (final href in const [
+      'https://a.b',
+      'tel:+33123456789',
+      'geo:1,2',
+      'webcal://x/f.ics',
+      'sms:+33123456789',
+      '#top',
+      '/relative',
+    ]) {
+      test('SHOULD keep $href', () {
+        expect(ExternalLinkPolicy.canKeepInContent(href), isTrue);
+      });
+    }
+
+    for (final href in const [
+      'twakemail.mobile://openApp',
+      'intent://scan/#Intent;scheme=zxing;end',
+      'file:///etc/hosts',
+      '//evil.example',
+      'http://[::1',
+    ]) {
+      test('SHOULD drop $href', () {
+        expect(ExternalLinkPolicy.canKeepInContent(href), isFalse);
+      });
+    }
+  });
 }

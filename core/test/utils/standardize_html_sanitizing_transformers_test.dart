@@ -538,5 +538,32 @@ void main() {
         },
       );
     });
+
+    group('link schemes follow ExternalLinkPolicy', () {
+      for (final href in const [
+        'tel:+33123456789',
+        'sms:+33123456789',
+        'webcal://x/f.ics',
+        'geo:1,2',
+        'https://a.b',
+        'mailto:a@b.c',
+      ]) {
+        test('SHOULD keep href $href', () {
+          expect(sanitize('<a href="$href">l</a>'), contains('href="$href"'));
+        });
+      }
+
+      for (final href in const [
+        'twakemail.mobile://openApp',
+        'intent://scan/#Intent;scheme=zxing;end',
+        'javascript:alert(1)',
+      ]) {
+        test('SHOULD drop href $href', () {
+          final out = sanitize('<a href="$href">l</a>');
+          expect(out, isNot(contains('href')));
+          expect(out, contains('l'));
+        });
+      }
+    });
   });
 }
