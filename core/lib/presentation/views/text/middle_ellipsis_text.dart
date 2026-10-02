@@ -29,6 +29,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
   double? _cachedWidth;
   String? _cachedResult;
   bool? _cachedPreserveFileExtension;
+  TextScaler? _cachedTextScaler;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
     final style = DefaultTextStyle.of(context).style.merge(widget.style);
     final styleKey = _styleKey(style);
     final textDir = Directionality.of(context);
+    final textScaler = MediaQuery.textScalerOf(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -45,6 +47,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         if (_cachedText == widget.text &&
             _cachedStyleKey == styleKey &&
             _cachedPreserveFileExtension == widget.preserveFileExtension &&
+            _cachedTextScaler == textScaler &&
             _cachedWidth == maxWidth) {
           return Text(
             _cachedResult!,
@@ -59,6 +62,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
           maxWidth,
           style,
           textDir: textDir,
+          textScaler: textScaler,
           keepStartFraction: widget.keepStartFraction,
           minEndLength: widget.preserveFileExtension
               ? _fileExtensionLength(widget.text)
@@ -71,6 +75,7 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         _cachedWidth = maxWidth;
         _cachedResult = truncated;
         _cachedPreserveFileExtension = widget.preserveFileExtension;
+        _cachedTextScaler = textScaler;
 
         return Text(
           truncated,
@@ -87,11 +92,13 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
     double maxWidth,
     TextStyle style, {
     required TextDirection textDir,
+    required TextScaler textScaler,
     double keepStartFraction = 0.5,
     int minEndLength = 0,
   }) {
     final painter = TextPainter(
       textDirection: textDir,
+      textScaler: textScaler,
       maxLines: 1,
     );
 
