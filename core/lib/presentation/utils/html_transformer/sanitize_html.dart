@@ -1,3 +1,4 @@
+import 'package:core/utils/external_link_policy.dart';
 import 'package:sanitize_html/sanitize_html.dart';
 
 class SanitizeHtml {
@@ -8,6 +9,7 @@ class SanitizeHtml {
   }) {
     final outputHtml = sanitizeHtml(
       inputHtml,
+      allowLinkHref: ExternalLinkPolicy.canKeepInContent,
       allowAttributes: allowAttributes,
       allowTags: allowTags,
     );
