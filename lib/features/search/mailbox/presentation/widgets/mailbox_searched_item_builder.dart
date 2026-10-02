@@ -53,7 +53,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   @override
   Widget build(BuildContext context) {
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && !widget.presentationMailbox.isTeamMailboxRoot) {
       return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
         onAcceptWithDetails: (emails) {
@@ -186,7 +186,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   void _onTapMailboxAction() {
-    if (widget.presentationMailbox.allowedToDisplay) {
+    if (widget.presentationMailbox.allowedToDisplay &&
+        !widget.presentationMailbox.isTeamMailboxRoot) {
       widget.onClickOpenMailboxAction?.call(widget.presentationMailbox);
     }
   }
