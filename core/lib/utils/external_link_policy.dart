@@ -7,6 +7,7 @@
 class ExternalLinkPolicy {
   const ExternalLinkPolicy._();
 
+  // A scheme added here must also be declared in AndroidManifest <queries> and iOS LSApplicationQueriesSchemes.
   static const Set<String> _allowedSchemes = {'http', 'https', 'tel', 'mailto', 'sms', 'webcal', 'geo'};
 
   static bool canLaunchFromContent(Uri uri) =>

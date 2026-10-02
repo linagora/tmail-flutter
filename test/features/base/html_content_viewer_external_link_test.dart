@@ -31,6 +31,7 @@ void main() {
   const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
   late List<String> launchedUrls;
   late List<Uri> blockedUris;
+  late bool canLaunch;
   late _CapturingInAppWebViewPlatform webViewPlatform;
 
   setUp(() {
@@ -38,12 +39,14 @@ void main() {
     InAppWebViewPlatform.instance = webViewPlatform;
     launchedUrls = [];
     blockedUris = [];
+    canLaunch = true;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(urlLauncherChannel, (call) async {
       if (call.method == 'launch' || call.method == 'launchUrl') {
         final arguments = call.arguments as Map<dynamic, dynamic>;
         launchedUrls.add(arguments['url'] as String);
       }
+      if (call.method == 'canLaunch') return canLaunch;
       return true;
     });
   });
@@ -101,6 +104,17 @@ void main() {
         expect(policy, NavigationActionPolicy.CANCEL);
         expect(launchedUrls, ['https://example.com/page']);
         expect(blockedUris, isEmpty);
+      });
+
+      testWidgets('SHOULD report an allowed link no app can open', (tester) async {
+        const url = 'webcal://example.com/calendar.ics';
+        canLaunch = false;
+
+        final policy = await clickLink(tester, buildViewer(), url);
+
+        expect(policy, NavigationActionPolicy.CANCEL);
+        expect(launchedUrls, isEmpty);
+        expect(blockedUris, [Uri.parse(url)]);
       });
     });
   });
