@@ -1868,6 +1868,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailureWithInvalidRecipients": "Échec de l'envoi de votre message, car ces destinataires sont invalides : {invalidRecipients}",
+  "@sendMessageFailureWithInvalidRecipients": {
+    "type": "text",
+    "placeholders_order": [
+      "invalidRecipients"
+    ],
+    "placeholders": {
+      "invalidRecipients": {}
+    }
+  },
   "actionTitleRulesFilter": "Effectuer l'action suivante :",
   "@actionTitleRulesFilter": {
     "type": "text",
@@ -4884,6 +4894,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Vous n'êtes pas invité a cette événement. Veuillez contacter l'organisateur de celui-ci.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeInYourCalendar": "Voir dans votre Agenda",
+  "@seeInYourCalendar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

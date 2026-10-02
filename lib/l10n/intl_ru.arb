@@ -2632,6 +2632,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailureWithInvalidRecipients": "Не удалось отправить сообщение, так как следующие получатели недействительны: {invalidRecipients}",
+  "@sendMessageFailureWithInvalidRecipients": {
+    "type": "text",
+    "placeholders_order": [
+      "invalidRecipients"
+    ],
+    "placeholders": {
+      "invalidRecipients": {}
+    }
+  },
   "languageArabic": "Арабский",
   "@languageArabic": {
     "type": "text",
@@ -4884,6 +4894,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Вы не приглашены на это мероприятие. Пожалуйста, свяжитесь с организатором.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeInYourCalendar": "Посмотреть в вашем Календаре",
+  "@seeInYourCalendar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

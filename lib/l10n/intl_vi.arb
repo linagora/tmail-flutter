@@ -2590,6 +2590,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailureWithInvalidRecipients": "Không thể gửi thư của bạn vì những người nhận sau không hợp lệ: {invalidRecipients}",
+  "@sendMessageFailureWithInvalidRecipients": {
+    "type": "text",
+    "placeholders_order": [
+      "invalidRecipients"
+    ],
+    "placeholders": {
+      "invalidRecipients": {}
+    }
+  },
   "saveEmailAsDraftFailure": "Không thể lưu tin nhắn của bạn vào mục nháp.",
   "@saveEmailAsDraftFailure": {
     "type": "text",
@@ -4872,6 +4882,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Bạn không được mời vào sự kiện này. Hãy liên hệ người tổ chức.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeInYourCalendar": "Xem trong Lịch của bạn",
+  "@seeInYourCalendar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

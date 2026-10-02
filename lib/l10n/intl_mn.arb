@@ -2645,6 +2645,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailureWithInvalidRecipients": "Дараах хүлээн авагчид буруу тул таны зурвасыг илгээж чадсангүй: {invalidRecipients}",
+  "@sendMessageFailureWithInvalidRecipients": {
+    "type": "text",
+    "placeholders_order": [
+      "invalidRecipients"
+    ],
+    "placeholders": {
+      "invalidRecipients": {}
+    }
+  },
   "saveEmailAsDraftFailure": "Таны мессежийг ноорог болгон хадгалж чадсангүй.",
   "@saveEmailAsDraftFailure": {
     "type": "text",
@@ -4671,6 +4681,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Та энэ арга хэмжээнд урьгдаагүй байна. Зохион байгуулагчтай холбогдоно уу.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeInYourCalendar": "Календарьдаа харах",
+  "@seeInYourCalendar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
