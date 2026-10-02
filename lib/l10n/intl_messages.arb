@@ -1064,7 +1064,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_delete_multiple_email_permanently_success": "{count} Messages has been deleted forever",
+  "toast_message_delete_multiple_email_permanently_success": "{count} messages have been deleted forever",
   "@toast_message_delete_multiple_email_permanently_success": {
     "type": "text",
     "placeholders_order": [
@@ -1116,7 +1116,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_empty_trash_folder_success": "All messages has been deleted forever",
+  "toast_message_empty_trash_folder_success": "All messages have been deleted forever",
   "@toast_message_empty_trash_folder_success": {
     "type": "text",
     "placeholders_order": [],
