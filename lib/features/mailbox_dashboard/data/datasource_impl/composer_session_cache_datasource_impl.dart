@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -46,15 +47,32 @@ class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
     UserName userName,
     ComposerCache composerCache,
   ) {
-    return Future.sync(() {
-      final composerCacheKey = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value,
-        composerCache.composerId,
-      ).toString();
-      html.window.sessionStorage[composerCacheKey] = jsonEncode(composerCache.toJson());
-    }).catchError(_exceptionThrower.throwException);
+    return Future.sync(() => _saveComposerCacheSync(
+      accountId,
+      userName,
+      composerCache,
+    )).catchError(_exceptionThrower.throwException);
+  }
+
+  void saveComposerCacheSync(
+    Session session,
+    AccountId accountId,
+    ComposerCache composerCache,
+  ) => _saveComposerCacheSync(accountId, session.username, composerCache);
+
+  void _saveComposerCacheSync(
+    AccountId accountId,
+    UserName userName,
+    ComposerCache composerCache,
+  ) {
+    final composerCacheKey = _buildComposerKey(
+      accountId,
+      userName,
+      composerCache.composerId,
+    );
+    // Encode first so a serialization error cannot replace the old snapshot.
+    final json = jsonEncode(composerCache.toJson());
+    html.window.sessionStorage[composerCacheKey] = json;
   }
 
   @override
@@ -84,7 +102,7 @@ class ComposerSessionCacheDatasourceImpl extends ComposerCacheDatasource {
   String _buildComposerKey(
     AccountId accountId,
     UserName userName,
-    String composerId,
+    String? composerId,
   ) {
     return TupleKey(
       EmailActionType.reopenComposerBrowser.name,

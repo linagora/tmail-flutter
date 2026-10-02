@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 
 import 'composer_manager_test.mocks.dart';
 
@@ -63,6 +64,25 @@ void main() {
 
   tearDown(() {
     Get.reset();
+  });
+
+  testWidgets('restoring an already open composer does not duplicate its queue entry', (tester) async {
+    composerManager.addListComposer([
+      ComposerArguments(composerId: '1'),
+    ]);
+
+    expect(composerManager.composerIdsQueue.toList(), ['1', '2', '3']);
+    expect(composerManager.getComposerIndex('1'), 0);
+  });
+
+  testWidgets('removeAllComposers disposes every open composer', (tester) async {
+    composerManager.removeAllComposers();
+
+    expect(composerManager.composers, isEmpty);
+    expect(composerManager.composerIdsQueue, isEmpty);
+    expect(Get.isRegistered<ComposerController>(tag: '1'), isFalse);
+    expect(Get.isRegistered<ComposerController>(tag: '2'), isFalse);
+    expect(Get.isRegistered<ComposerController>(tag: '3'), isFalse);
   });
 
   // Only test for desktop with minWidth = 1200
