@@ -1,6 +1,7 @@
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const fileName = 'qa23-301pages.pdf';
@@ -9,7 +10,8 @@ const textStyle = TextStyle(fontSize: 10);
 void main() {
   group('MiddleEllipsisText', () {
     group('truncation', registerTruncationTests);
-    group('file extension', registerFileExtensionTests);
+    group('file extension reservation', registerFileExtensionReservationTests);
+    group('file extension detection', registerFileExtensionDetectionTests);
     group('measurement', registerMeasurementTests);
     group('cache', registerCacheTests);
   });
@@ -51,7 +53,7 @@ void registerTruncationTests() {
   );
 }
 
-void registerFileExtensionTests() {
+void registerFileExtensionReservationTests() {
   testWidgets(
     'should keep the full file extension when preserveFileExtension is true',
     (tester) => verifyExtensionFitsAcrossWidths(tester, from: 80, to: 170),
@@ -65,6 +67,24 @@ void registerFileExtensionTests() {
       'qa...f',
     ),
   );
+  testWidgets(
+    'should keep the extension when it is narrower than a shorter candidate without it',
+    verifyNarrowExtensionIsNotSkipped,
+  );
+  testWidgets(
+    'should keep the extension when keepStartFraction keeps everything at the start',
+    (tester) => verifyDisplayedText(
+      tester,
+      buildApp(
+        fileLabel(keepStartFraction: 1, preserveFileExtension: true),
+        width: 110,
+      ),
+      'qa2....pdf',
+    ),
+  );
+}
+
+void registerFileExtensionDetectionTests() {
   testWidgets(
     'should not reserve end characters when the name has no extension',
     (tester) => verifyDisplayedText(
@@ -109,17 +129,6 @@ void registerFileExtensionTests() {
         width: 130,
       ),
       'qa23-...r.gz',
-    ),
-  );
-  testWidgets(
-    'should keep the extension when keepStartFraction keeps everything at the start',
-    (tester) => verifyDisplayedText(
-      tester,
-      buildApp(
-        fileLabel(keepStartFraction: 1, preserveFileExtension: true),
-        width: 110,
-      ),
-      'qa2....pdf',
     ),
   );
 }
@@ -284,5 +293,33 @@ Future<void> verifyTruncatesAgainOnPreserveFileExtensionChange(
     tester,
     buildApp(fileLabel(preserveFileExtension: true), width: 110),
     'qa2....pdf',
+  );
+}
+
+/// With a proportional font, `....ii` (extension kept) is narrower than
+/// `W...i` (a shorter candidate), so the extension must still be found.
+Future<void> verifyNarrowExtensionIsNotSkipped(WidgetTester tester) async {
+  await (FontLoader('Proportional')..addFont(rootBundle.load(
+    'packages/linagora_design_flutter/assets/fonts/TwakeInter-Regular.ttf',
+  ))).load();
+  const style = TextStyle(fontFamily: 'Proportional', fontSize: 20, letterSpacing: 0);
+  final painter = TextPainter(
+    text: const TextSpan(text: '....ii', style: style),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  final width = painter.width + 1;
+  painter.dispose();
+
+  await verifyDisplayedText(
+    tester,
+    buildApp(
+      const MiddleEllipsisText(
+        'WWWWWW.ii',
+        style: style,
+        preserveFileExtension: true,
+      ),
+      width: width,
+    ),
+    '....ii',
   );
 }

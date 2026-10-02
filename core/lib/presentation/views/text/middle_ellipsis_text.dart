@@ -115,41 +115,46 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
 
     if (maxWidth <= ellipsisWidth) return ellipsis;
 
-    // Binary search for best prefix+suffix length
-    int lo = 0, hi = text.length;
-    String best = ellipsis;
-
     final f = keepStartFraction.clamp(0.0, 1.0);
 
-    double measure(String t) {
-      painter.text = TextSpan(text: t, style: style);
-      painter.layout(maxWidth: double.infinity);
-      return painter.width;
-    }
-
-    while (lo <= hi) {
-      final k = (lo + hi) ~/ 2;
+    String candidateOf(int k) {
       int leftLen = (k * f).round().clamp(0, text.length);
       int rightLen = (k - leftLen).clamp(0, text.length - leftLen);
       if (rightLen < minEndLength && k >= minEndLength) {
         rightLen = minEndLength;
         leftLen = k - rightLen;
       }
-
-      final candidate = text.substring(0, leftLen) +
+      return text.substring(0, leftLen) +
           ellipsis +
           text.substring(text.length - rightLen);
-      final width = measure(candidate);
-
-      if (width <= maxWidth) {
-        best = candidate;
-        lo = k + 1;
-      } else {
-        hi = k - 1;
-      }
     }
 
-    return best;
+    // Binary search for the longest fitting candidate with k in [lo, hi]
+    String? longestFitting(int lo, int hi) {
+      String? best;
+      while (lo <= hi) {
+        final k = (lo + hi) ~/ 2;
+        final candidate = candidateOf(k);
+        painter.text = TextSpan(text: candidate, style: style);
+        painter.layout(maxWidth: double.infinity);
+        if (painter.width <= maxWidth) {
+          best = candidate;
+          lo = k + 1;
+        } else {
+          hi = k - 1;
+        }
+      }
+      return best;
+    }
+
+    // Width only grows with k on each side of minEndLength: reserving the
+    // extension swaps start characters for end ones, so `....ii` can fit where
+    // `W...i` does not. Search the extension-keeping range on its own first.
+    if (minEndLength > 0) {
+      final withExtension = longestFitting(minEndLength, text.length);
+      if (withExtension != null) return withExtension;
+    }
+    return longestFitting(0, text.length) ?? ellipsis;
   }
 
   /// Length of the extension including the dot, or 0 when there is none.
