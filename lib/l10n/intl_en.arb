@@ -2951,7 +2951,7 @@
       "maxSize": {}
     }
   },
-  "messageEventActionBannerOrganizerInvited": " has invited you in to a meeting",
+  "messageEventActionBannerOrganizerInvited": " has invited you to a meeting",
   "@messageEventActionBannerOrganizerInvited": {
     "type": "text",
     "placeholders_order": [],
@@ -3011,7 +3011,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "invitationMessageCalendarInformation": " has invited you in to a meeting:",
+  "invitationMessageCalendarInformation": " has invited you to a meeting:",
   "@invitationMessageCalendarInformation": {
     "type": "text",
     "placeholders_order": [],

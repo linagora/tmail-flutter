@@ -3173,7 +3173,7 @@ class AppLocalizations {
 
   String get messageEventActionBannerOrganizerInvited {
     return Intl.message(
-      ' has invited you in to a meeting',
+      ' has invited you to a meeting',
       name: 'messageEventActionBannerOrganizerInvited');
   }
 
@@ -3233,7 +3233,7 @@ class AppLocalizations {
 
   String get invitationMessageCalendarInformation {
     return Intl.message(
-      ' has invited you in to a meeting:',
+      ' has invited you to a meeting:',
       name: 'invitationMessageCalendarInformation');
   }
 
