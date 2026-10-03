@@ -3585,11 +3585,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Apakah Anda yakin ingin berhenti menerima pesan serupa dari",
+  "unsubscribeMailDialogMessage": "Apakah Anda yakin ingin berhenti menerima pesan serupa dari {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Berhenti berlangganan dari milis ini",
   "@unsubscribedFromThisMailingList": {

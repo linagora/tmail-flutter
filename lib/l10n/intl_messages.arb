@@ -3626,11 +3626,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Are you sure you'd like to stop receiving similar messages from",
+  "unsubscribeMailDialogMessage": "Are you sure you'd like to stop receiving similar messages from {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Unsubscribed from this mailing list",
   "@unsubscribedFromThisMailingList": {

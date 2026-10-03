@@ -3745,11 +3745,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Та үүнтэй төстэй мессеж хүлээн авахаа зогсоохдоо итгэлтэй байна уу?",
+  "unsubscribeMailDialogMessage": "Та {senderName}-с ирэх үүнтэй төстэй мессеж хүлээн авахаа зогсоохдоо итгэлтэй байна уу?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Жагсаалтаас бүртгэл цуцлагдлаа",
   "@unsubscribedFromThisMailingList": {

@@ -2631,11 +2631,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Sind Sie sicher, dass Sie keine ähnlichen Nachrichten mehr erhalten möchten von",
+  "unsubscribeMailDialogMessage": "Sind Sie sicher, dass Sie keine ähnlichen Nachrichten mehr von {senderName} erhalten möchten?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Von dieser Mailingliste abgemeldet",
   "@unsubscribedFromThisMailingList": {

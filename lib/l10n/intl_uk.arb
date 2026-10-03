@@ -3589,11 +3589,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Ви впевнені, що хочете більше не отримувати подібні повідомлення від",
+  "unsubscribeMailDialogMessage": "Ви впевнені, що хочете більше не отримувати подібні повідомлення від {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Відписався від цього списку розсилки",
   "@unsubscribedFromThisMailingList": {

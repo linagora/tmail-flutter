@@ -3726,11 +3726,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Вы уверены, что больше не хотите получать схожие письма от",
+  "unsubscribeMailDialogMessage": "Вы уверены, что больше не хотите получать схожие письма от {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribeMail": "Отписаться от почты",
   "@unsubscribeMail": {
