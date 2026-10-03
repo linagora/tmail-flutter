@@ -137,5 +137,15 @@ void main() {
 
       expect(listIdentities, [firstIdentity, ...sameOrderIdentities]);
     });
+
+    test('should put null sortOrder after the maximal sortOrder', () {
+      final nullOrderIdentity = Identity(email: 'null@example.com');
+      final maxOrderIdentity = Identity(email: 'max@example.com', sortOrder: UnsignedInt(2147483647));
+      final listIdentities = [nullOrderIdentity, maxOrderIdentity];
+
+      identityUtils.sortListIdentities(listIdentities);
+
+      expect(listIdentities, [maxOrderIdentity, nullOrderIdentity]);
+    });
   });
 }
