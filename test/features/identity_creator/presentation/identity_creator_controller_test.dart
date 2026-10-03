@@ -545,6 +545,82 @@ void main() {
       );
     });
 
+    test(
+      'should pre-select the owner email address '
+      'when creating a new identity and the owner address is not the first one',
+    () async {
+      // arrange
+      identityCreatorController.listEmailAddressDefault.clear();
+      identityCreatorController.listEmailAddressOfReplyTo.clear();
+      identityCreatorController.emailOfIdentity.value = null;
+
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
+
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+        [
+          Identity(id: IdentityId(Id('alias')), email: 'alias@example.com'),
+          Identity(id: IdentityId(Id('owner')), email: ownEmailAddress),
+        ],
+        null,
+      ))));
+
+      // act
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      // assert
+      expect(
+        identityCreatorController.emailOfIdentity.value?.email,
+        equals(ownEmailAddress),
+      );
+    });
+
+    test(
+      'should pre-select the first email address '
+      'when creating a new identity and the owner address is empty',
+    () async {
+      // arrange
+      identityCreatorController.listEmailAddressDefault.clear();
+      identityCreatorController.listEmailAddressOfReplyTo.clear();
+      identityCreatorController.emailOfIdentity.value = null;
+
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        '',
+      );
+
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+        [
+          Identity(id: IdentityId(Id('alias')), email: 'alias@example.com'),
+          Identity(id: IdentityId(Id('other')), email: 'other@example.com'),
+        ],
+        null,
+      ))));
+
+      // act
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      // assert
+      expect(
+        identityCreatorController.emailOfIdentity.value?.email,
+        equals('alias@example.com'),
+      );
+    });
+
     testWidgets(
       'should show cannotSelectThisImage toast '
       'when pickImage() gets a file whose size is unavailable',
