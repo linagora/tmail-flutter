@@ -125,5 +125,17 @@ void main() {
       identityUtils.sortListIdentities(listIdentities1);
       expect(listIdentities1, [null, null, null, null, null, null, null].map((e) => Identity()).toList());
     });
+
+    test('should keep the original order of identities having the same sortOrder', () {
+      final sameOrderIdentities = ['bob@example.com', 'bob-guests@example.com', 'alice@example.com']
+        .map((email) => Identity(email: email, sortOrder: UnsignedInt(100)))
+        .toList();
+      final firstIdentity = Identity(email: 'first@example.com', sortOrder: UnsignedInt(1));
+      final listIdentities = [...sameOrderIdentities, firstIdentity];
+
+      identityUtils.sortListIdentities(listIdentities);
+
+      expect(listIdentities, [firstIdentity, ...sameOrderIdentities]);
+    });
   });
 }
