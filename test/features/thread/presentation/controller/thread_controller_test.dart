@@ -114,6 +114,22 @@ class _ConfigurableSearchEmailLayoutOwnerRegistry
   bool tryPrepareForSearchHandoff() => canPrepare;
 }
 
+class _ThreadControllerWithCollapseThreads extends ThreadController {
+  _ThreadControllerWithCollapseThreads(
+    super.getEmailsInMailboxInteractor,
+    super.refreshChangesEmailsInMailboxInteractor,
+    super.loadMoreEmailsInMailboxInteractor,
+    super.getEmailByIdInteractor,
+    super.cleanAndGetEmailsInMailboxInteractor, {
+    required this.collapseThreads,
+  });
+
+  final bool collapseThreads;
+
+  @override
+  bool get shouldCollapseThreads => collapseThreads;
+}
+
 class _MockQuickSearchEmailInteractor extends Mock
     implements QuickSearchEmailInteractor {}
 
@@ -1161,30 +1177,29 @@ void main() {
         ),
       );
 
-      late ThreadController collapseController;
+      ThreadController? collapseController;
 
-      setUp(() {
-        collapseController = ThreadController(
+      ThreadController createController({required bool collapseThreads}) {
+        return collapseController = _ThreadControllerWithCollapseThreads(
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
           mockLoadMoreEmailsInMailboxInteractor,
           mockGetEmailByIdInteractor,
           mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: collapseThreads,
         );
-      });
+      }
 
       tearDown(() {
         PlatformInfo.isTestingForWeb = false;
-        collapseController.onClose();
+        collapseController?.onClose();
+        collapseController = null;
       });
 
-      testWidgets(
-        'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
-        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
-        'WHEN getAllEmail stream completes '
-        'THEN auto-load-more IS triggered to fill the viewport '
-        'AND canLoadMore reflects the subsequent load-more server response',
-      (tester) async {
+      Future<void> completeGetAllEmailWithPartialPageInShortViewport(
+        WidgetTester tester,
+        ThreadController controller,
+      ) async {
         PlatformInfo.isTestingForWeb = false;
 
         final partialEmails = makeEmails(15); // fewer than maxCountEmails = 20
@@ -1215,28 +1230,51 @@ void main() {
         await tester.pumpWidget(MaterialApp(
           home: SizedBox(
             height: 600,
-            child: ListView(controller: collapseController.listEmailController),
+            child: ListView(controller: controller.listEmailController),
           ),
         ));
 
-        expect(
-          collapseController.listEmailController.position.maxScrollExtent,
-          0.0,
-        );
+        expect(controller.listEmailController.position.maxScrollExtent, 0.0);
 
-        collapseController.viewState.value = Right(
+        controller.viewState.value = Right(
           GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
         );
 
-        collapseController.onDone();
+        controller.onDone();
         await tester.pumpAndSettle();
+      }
+
+      testWidgets(
+        'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN getAllEmail stream completes '
+        'THEN auto-load-more IS triggered to fill the viewport '
+        'AND canLoadMore reflects the subsequent load-more server response',
+      (tester) async {
+        final controller = createController(collapseThreads: true);
+
+        await completeGetAllEmailWithPartialPageInShortViewport(tester, controller);
 
         // Load-more interactor MUST be called to attempt filling the viewport.
         verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
 
         // After the empty load-more response (serverEmailCount = 0 < maxCountEmails),
         // canLoadMore is set to false by _loadMoreEmailsSuccess.
-        expect(collapseController.canLoadMore, isFalse);
+        expect(controller.canLoadMore, isFalse);
+      });
+
+      testWidgets(
+        'GIVEN collapseThreads is disabled and getAllEmail returns a partial page '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN getAllEmail stream completes '
+        'THEN auto-load-more SHOULD NOT be triggered — the mailbox is exhausted',
+      (tester) async {
+        final controller = createController(collapseThreads: false);
+
+        await completeGetAllEmailWithPartialPageInShortViewport(tester, controller);
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        expect(controller.canLoadMore, isFalse);
       });
 
       test(
