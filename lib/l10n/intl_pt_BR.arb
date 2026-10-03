@@ -3444,7 +3444,7 @@
   "enterYourPasswordToSignIn": "Digite sua senha para entrar",
   "unsubscribe": "Cancelar inscrição",
   "unsubscribeMail": "Cancelar inscrição do e-mail",
-  "unsubscribeMailDialogMessage": "Tem certeza de que deseja parar de receber mensagens semelhantes de",
+  "unsubscribeMailDialogMessage": "Tem certeza de que deseja parar de receber mensagens semelhantes de {senderName}?",
   "unsubscribedFromThisMailingList": "Você cancelou a inscrição nesta lista de e-mails",
   "mailUnsubscribedMessage": "Você cancelou a inscrição de {senderName}",
   "cannotCompressInlineImage": "Não é possível compactar a imagem",

@@ -3750,11 +3750,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Confirmez-vous ne plus vouloir recevoir de message similaire en provenance de",
+  "unsubscribeMailDialogMessage": "Confirmez-vous ne plus vouloir recevoir de message similaire en provenance de {senderName} ?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Désabonnement de cette liste de diffusion réussi",
   "@unsubscribedFromThisMailingList": {

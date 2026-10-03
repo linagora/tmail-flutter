@@ -3847,11 +3847,15 @@
       "nameMailbox": {}
     }
   },
-  "unsubscribeMailDialogMessage": "是否确定要停止接收类似邮件从",
+  "unsubscribeMailDialogMessage": "是否确定要停止接收来自 {senderName} 的类似邮件？",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "downloadMessageAsEML": "以 EML 形式下载邮件",
   "@downloadMessageAsEML": {
