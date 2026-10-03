@@ -2631,7 +2631,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Sind Sie sicher, dass Sie keine ähnlichen Nachrichten mehr erhalten möchten von {senderName}?",
+  "unsubscribeMailDialogMessage": "Sind Sie sicher, dass Sie keine ähnlichen Nachrichten mehr von {senderName} erhalten möchten?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
     "placeholders_order": [
