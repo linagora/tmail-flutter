@@ -3,8 +3,6 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 
 class IdentityUtils {
-  static const int _defaultSortOrder = 2147483647; // 2^31 - 1
-
   List<Identity>? getSmallestOrderedIdentity(List<Identity>? identities) {
     if (identities == null || identities.isEmpty) {
       return identities;
@@ -43,5 +41,5 @@ class IdentityUtils {
   }
 
   num _sortOrderOf(Identity identity) =>
-    identity.sortOrder?.value ?? _defaultSortOrder;
+    identity.sortOrder?.value ?? double.infinity;
 }
