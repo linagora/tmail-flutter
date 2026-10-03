@@ -3682,11 +3682,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Bạn có chắc chắn muốn ngừng nhận các tin nhắn tương tự từ",
+  "unsubscribeMailDialogMessage": "Bạn có chắc chắn muốn ngừng nhận các tin nhắn tương tự từ {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Đã hủy đăng ký khỏi danh sách gửi thư này",
   "@unsubscribedFromThisMailingList": {

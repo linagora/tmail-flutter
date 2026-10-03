@@ -1509,11 +1509,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "An bhfuil tú cinnte gur mhaith leat stop a chur le teachtaireachtaí den chineál céanna a fháil ó",
+  "unsubscribeMailDialogMessage": "An bhfuil tú cinnte gur mhaith leat stop a chur le teachtaireachtaí den chineál céanna a fháil ó {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "Díliostáilte ón liosta seoltaí seo",
   "@unsubscribedFromThisMailingList": {

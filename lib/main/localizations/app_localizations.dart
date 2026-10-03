@@ -3768,10 +3768,11 @@ class AppLocalizations {
     );
   }
 
-  String get unsubscribeMailDialogMessage {
+  String unsubscribeMailDialogMessage(String senderName) {
     return Intl.message(
-      'Are you sure you\'d like to stop receiving similar messages from',
+      'Are you sure you\'d like to stop receiving similar messages from $senderName?',
       name: 'unsubscribeMailDialogMessage',
+      args: [senderName],
     );
   }
 

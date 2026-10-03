@@ -2694,8 +2694,12 @@
   "unsubscribeMailDialogMessage": "",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "message_delete_all_email_in_trash_button": "",
   "@message_delete_all_email_in_trash_button": {

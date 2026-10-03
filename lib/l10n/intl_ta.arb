@@ -2293,11 +2293,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "இதேபோன்ற செய்திகளைப் பெறுவதை நிறுத்த விரும்புகிறீர்களா என்பது உறுதி",
+  "unsubscribeMailDialogMessage": "இதேபோன்ற செய்திகளைப் பெறுவதை நிறுத்த விரும்புகிறீர்களா என்பது உறுதி {senderName}?",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   },
   "unsubscribedFromThisMailingList": "இந்த அஞ்சல் பட்டியலிலிருந்து குழுவிலகப்பட்டது",
   "@unsubscribedFromThisMailingList": {
