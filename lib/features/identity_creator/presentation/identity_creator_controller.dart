@@ -423,7 +423,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       emailOfIdentity.value = listEmailAddressDefault
         .firstWhereOrNull((emailAddress) => emailAddress.email ==  identity!.email);
     } else {
-      emailOfIdentity.value = listEmailAddressDefault.firstOrNull;
+      final ownEmailAddress = arguments?.ownerEmailAddress;
+      emailOfIdentity.value = listEmailAddressDefault
+          .firstWhereOrNull((emailAddress) => emailAddress.email == ownEmailAddress)
+        ?? listEmailAddressDefault.firstOrNull;
     }
   }
 
