@@ -5976,4 +5976,11 @@ class AppLocalizations {
       name: 'clearTrashSubfoldersFailed',
     );
   }
+
+  String get deepLinkCannotBeOpened {
+    return Intl.message(
+      'This sign-in link isn\'t from Twake. Please sign in from the app.',
+      name: 'deepLinkCannotBeOpened',
+    );
+  }
 }

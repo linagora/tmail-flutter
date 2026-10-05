@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-09-22T16:24:18.179437",
+  "@@last_modified": "2026-10-01T11:49:34.038239",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5634,6 +5634,12 @@
   },
   "clearTrashSubfoldersFailed": "Failed to delete subfolders in Trash",
   "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deepLinkCannotBeOpened": "This sign-in link isn't from Twake. Please sign in from the app.",
+  "@deepLinkCannotBeOpened": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
