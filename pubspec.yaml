@@ -86,7 +86,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: feature/file-picker-13-migration
+      ref: reapply/file-picker-13-migration
 
   jmap_dart_client:
 
