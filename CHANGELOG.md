@@ -1,3 +1,7 @@
+## [0.37.3] - 2026-10-05
+### Fixed
+- unload be deprecated in Chrome -> losing composer when refresh
+
 ## [0.37.2] - 2026-09-15
 ### Added
 - Allow workplace to refresh jmap token
