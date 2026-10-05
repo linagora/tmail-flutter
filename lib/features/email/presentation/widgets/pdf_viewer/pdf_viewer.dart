@@ -18,9 +18,9 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/download/domain/exceptions/download_attachment_exceptions.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_link_tap_handler.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/loading_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
@@ -30,7 +30,6 @@ import 'package:twake_previewer_flutter/twake_pdf_previewer/twake_pdf_previewer.
 
 typedef DownloadPDFFileAction = Function(Uint8List bytes, String fileName);
 typedef PrintPDFFileAction = Function(Uint8List bytes, String fileName);
-typedef OpenMailtoLinkAction = void Function(Uri uri);
 
 class PDFViewer extends StatefulWidget {
   final Attachment attachment;
@@ -211,12 +210,15 @@ class _PDFViewerState extends State<PDFViewer> {
 
   void _onLinkTap(Uri uri) {
     final mailtoAction = widget.mailtoAction;
-    if (uri.scheme == RouteUtils.mailtoPrefix && mailtoAction != null) {
-      _closeView();
-      mailtoAction(uri);
-      return;
-    }
-    AppUtils.launchLink(uri.toString());
+    PdfLinkTapHandler(
+      launchLinkAction: AppUtils.launchLink,
+      mailtoAction: mailtoAction == null
+        ? null
+        : (mailtoUri) {
+            _closeView();
+            mailtoAction(mailtoUri);
+          },
+    ).handle(uri);
   }
 
   void _closeView() {
