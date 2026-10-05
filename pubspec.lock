@@ -2084,7 +2084,7 @@ packages:
     description:
       path: sanitize_html
       ref: "fix/nested-css-allowlist"
-      resolved-ref: "248d2d67dbbaf80bc5f5357c25f8712aa429c405"
+      resolved-ref: "93eb50e3dc5dcab9610292ee983ba63f54f8c3ec"
       url: "https://github.com/tddang-linagora/dart-neats.git"
     source: git
     version: "3.0.3"
