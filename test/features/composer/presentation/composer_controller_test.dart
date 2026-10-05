@@ -2839,6 +2839,58 @@ void main() {
           createEmailRequest: anyNamed('createEmailRequest'),
         ));
       });
+
+      Future<void> expectGuardDialogShownAgainAfterDismiss(
+        WidgetTester tester,
+        BuildContext context,
+        String message,
+      ) async {
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(AppLocalizations.of(context).got_it));
+        await tester.pumpAndSettle();
+        expect(find.text(message), findsNothing);
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(find.text(message), findsOneWidget);
+      }
+
+      testWidgets(
+        'Should show the content loading dialog again\n'
+        'When send is clicked again after dismissing the content loading dialog',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        await expectGuardDialogShownAgainAfterDismiss(
+          tester,
+          context,
+          AppLocalizations.of(context).messageDialogSendEmailContentLoading,
+        );
+      });
+
+      testWidgets(
+        'Should show the content load failed dialog again\n'
+        'When send is clicked again after dismissing the content load failed dialog',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        await expectGuardDialogShownAgainAfterDismiss(
+          tester,
+          context,
+          AppLocalizations.of(context).messageDialogSendEmailContentLoadFailed,
+        );
+      });
     });
   });
 }
