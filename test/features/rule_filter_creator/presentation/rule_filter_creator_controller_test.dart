@@ -194,6 +194,7 @@ void main() {
 
       final widget = WidgetFixtures.makeTestableWidget(child: RuleFilterCreatorView());
       await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
 
       rulesFilterCreatorController.arguments = RulesFilterCreatorArguments(
         accountId,
@@ -233,15 +234,10 @@ void main() {
 
       expect(find.byType(RuleFilterActionWidget), findsNWidgets(1));
       expect(find.text('Mark as spam'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Create Rule'), findsNothing);
 
-      rulesFilterCreatorController.dispatchState(Right(UIClosedState()));
-      rulesFilterCreatorController.listEmailRuleFilterActionSelected.clear();
-      rulesFilterCreatorController.allMailboxes.clear();
-      rulesFilterCreatorController.personalMailboxTree.value = MailboxTree(MailboxNode.root());
-      rulesFilterCreatorController.defaultMailboxTree.value = MailboxTree(MailboxNode.root());
-      rulesFilterCreatorController.teamMailboxesTree.value = MailboxTree(MailboxNode.root());
-      debugDefaultTargetPlatformOverride = null;
-      tester.view.reset();
+      _resetCreatorView(tester);
     });
 
     testWidgets(
@@ -273,6 +269,7 @@ void main() {
 
       final widget = WidgetFixtures.makeTestableWidget(child: RuleFilterCreatorView());
       await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
 
       rulesFilterCreatorController.arguments = RulesFilterCreatorArguments(
         accountId,
@@ -314,15 +311,78 @@ void main() {
       expect(find.text('Move message'), findsOneWidget);
       expect(find.text('MailboxA'), findsOneWidget);
       expect(find.text('Mark as spam'), findsNothing);
+      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Create Rule'), findsNothing);
 
-      rulesFilterCreatorController.dispatchState(Right(UIClosedState()));
-      rulesFilterCreatorController.listEmailRuleFilterActionSelected.clear();
-      rulesFilterCreatorController.allMailboxes.clear();
-      rulesFilterCreatorController.personalMailboxTree.value = MailboxTree(MailboxNode.root());
-      rulesFilterCreatorController.defaultMailboxTree.value = MailboxTree(MailboxNode.root());
-      rulesFilterCreatorController.teamMailboxesTree.value = MailboxTree(MailboxNode.root());
-      debugDefaultTargetPlatformOverride = null;
-      tester.view.reset();
+      _resetCreatorView(tester);
     });
+
+    testWidgets(
+      'The submit button SHOULD be labelled `Create Rule`\n'
+      'WHEN creating a filter rule',
+      (tester) => _expectCreateRuleLabelInCreateMode(
+        tester,
+        RulesFilterCreatorArguments(accountId, session),
+      ),
+    );
   });
+}
+
+Future<void> _expectCreateRuleLabelInCreateMode(
+  WidgetTester tester,
+  RulesFilterCreatorArguments arguments,
+) async {
+  debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+  final dpi = tester.view.devicePixelRatio;
+  tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
+
+  final controller = Get.find<RulesFilterCreatorController>();
+
+  await tester.pumpWidget(
+    WidgetFixtures.makeTestableWidget(child: RuleFilterCreatorView()),
+  );
+
+  controller.arguments = arguments;
+
+  when(Get.find<GetAllMailboxInteractor>().execute(
+    arguments.session,
+    arguments.accountId,
+  )).thenAnswer((_) {
+    return Stream.fromIterable([
+      Right(GetAllMailboxLoading()),
+      Right(GetAllMailboxSuccess(
+        mailboxList: [],
+        currentMailboxState: null)),
+    ]);
+  });
+
+  when(Get.find<TreeBuilder>().generateMailboxTreeInUI(
+    allMailboxes: [],
+    currentCollection: MailboxCollection.empty(),
+  )).thenAnswer((_) async => MailboxCollection.empty());
+
+  controller.onReady();
+
+  await tester.pumpAndSettle();
+
+  expect(controller.actionType.value, CreatorActionType.create);
+  expect(find.text('Create Rule'), findsOneWidget);
+  expect(find.text('Save'), findsNothing);
+
+  _resetCreatorView(tester);
+}
+
+void _resetCreatorView(WidgetTester tester) {
+  final controller = Get.find<RulesFilterCreatorController>();
+  controller.dispatchState(Right(UIClosedState()));
+  controller.listEmailRuleFilterActionSelected.clear();
+  controller.listRuleCondition.clear();
+  controller.listRuleConditionValueArguments.clear();
+  controller.allMailboxes = [];
+  controller.personalMailboxTree.value = MailboxTree(MailboxNode.root());
+  controller.defaultMailboxTree.value = MailboxTree(MailboxNode.root());
+  controller.teamMailboxesTree.value = MailboxTree(MailboxNode.root());
+  controller.actionType.value = CreatorActionType.create;
+  debugDefaultTargetPlatformOverride = null;
+  tester.view.reset();
 }
