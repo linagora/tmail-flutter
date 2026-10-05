@@ -2083,9 +2083,9 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: support_mail
-      resolved-ref: ec9342b30a1d611d76a0c5e9bf57b27a918db6d8
-      url: "https://github.com/linagora/dart-neats.git"
+      ref: "fix/nested-css-allowlist"
+      resolved-ref: "248d2d67dbbaf80bc5f5357c25f8712aa429c405"
+      url: "https://github.com/tddang-linagora/dart-neats.git"
     source: git
     version: "3.0.3"
   sentry:
