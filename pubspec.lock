@@ -2083,9 +2083,9 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: "775b28e752fb377bba6eeb152f1d6cedd8d8fe6a"
+      ref: "fix/allow-tel-links-webp-images"
       resolved-ref: "775b28e752fb377bba6eeb152f1d6cedd8d8fe6a"
-      url: "https://github.com/linagora/dart-neats.git"
+      url: "https://github.com/tddang-linagora/dart-neats.git"
     source: git
     version: "3.0.2"
   sentry:
