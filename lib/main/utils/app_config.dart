@@ -79,4 +79,10 @@ class AppConfig {
 
   static bool get isForceEmailQueryEnabled =>
       dotenv.get('FORCE_EMAIL_QUERY', fallback: 'false') == 'true';
+
+  /// Hosts an openApp deep link may point the app to.
+  static List<String> get deepLinkAllowedHosts => [
+    Uri.parse(saasRegistrationUrl).host,
+    Uri.parse(saasJmapServerUrl).host,
+  ];
 }
