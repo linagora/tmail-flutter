@@ -22,4 +22,8 @@ extension XFileExtension on XFile {
     }
     return FilePathInfo(fileName: name, fileSize: fileSize, filePath: path, type: mimeType, isInline: isInline);
   }
+
+  /// A dropped folder arrives as a 0-byte entry with no type, and cannot be read.
+  Future<bool> isDroppedFolder() async =>
+      (mimeType ?? '').isEmpty && await length() == 0;
 }

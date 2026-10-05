@@ -84,4 +84,21 @@ void main() {
       expect(fileInfo.isInline, isTrue);
     });
   });
+
+  group('XFileExtension::isDroppedFolder', () {
+    test('is true for a 0-byte entry with no type', () async {
+      final empty = await writeFile('docs', '');
+
+      expect(await XFile(empty.path, mimeType: '').isDroppedFolder(), isTrue);
+      expect(await XFile(empty.path).isDroppedFolder(), isTrue);
+    });
+
+    test('is false for a typed or non-empty entry', () async {
+      final empty = await writeFile('a.txt', '');
+      final filled = await writeFile('b', 'abc');
+
+      expect(await XFile(empty.path, mimeType: 'text/plain').isDroppedFolder(), isFalse);
+      expect(await XFile(filled.path, mimeType: '').isDroppedFolder(), isFalse);
+    });
+  });
 }
