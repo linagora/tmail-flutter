@@ -34,8 +34,8 @@ dependencies:
   # https://github.com/google/dart-neats/pull/259
   sanitize_html:
     git:
-      url: https://github.com/tddang-linagora/dart-neats.git
-      ref: fix/nested-css-allowlist
+      url: https://github.com/linagora/dart-neats.git
+      ref: support_mail
       path: sanitize_html
 
   linagora_design_flutter:
