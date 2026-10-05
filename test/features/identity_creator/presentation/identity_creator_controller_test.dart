@@ -17,6 +17,7 @@ import 'package:flutter/material.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -33,6 +34,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
@@ -809,6 +811,43 @@ void main() {
     });
 
     test(
+      'should set the sanitized stored signature '
+      'in the web editor',
+    () async {
+      PlatformInfo.isTestingForWeb = true;
+      final webEditorController = _RecordingHtmlEditorController();
+      identityCreatorController.richTextWebController =
+          _FakeRichTextWebController(webEditorController);
+      addTearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        identityCreatorController.richTextWebController = null;
+      });
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+        identity: Identity(
+          id: IdentityId(Id('identity-1')),
+          name: 'Test Identity',
+          email: ownEmailAddress,
+          htmlSignature: Signature('<p>Sig</p><img src="https://x/a.png" onerror="alert(1)">'),
+          mayDelete: true,
+        ),
+        actionType: IdentityActionType.edit,
+      );
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => const Stream.empty());
+
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      expect(webEditorController.text, '<p>Sig</p><img src="https://x/a.png">');
+    });
+
+    test(
       'should sanitize the signature '
       'before saving it',
     () async {
@@ -843,4 +882,20 @@ void main() {
       expect(saved, isNot(contains('onerror')));
     });
   });
+}
+
+class _RecordingHtmlEditorController extends Fake implements HtmlEditorController {
+  String? text;
+
+  @override
+  void setText(String text) => this.text = text;
+}
+
+class _FakeRichTextWebController extends RichTextWebController {
+  _FakeRichTextWebController(this._editorController);
+
+  final HtmlEditorController _editorController;
+
+  @override
+  HtmlEditorController get editorController => _editorController;
 }
