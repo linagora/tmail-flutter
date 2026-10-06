@@ -82,6 +82,46 @@ void main() {
       expect(options.extra['k'], equals('v'));
     });
 
+    test('forwards the send progress, cancel token and timeout', () async {
+      void onSendProgress(int sent, int total) {}
+      final ProgressCallback progress = onSendProgress;
+      final cancelToken = CancelToken();
+      const timeout = Duration(minutes: 5);
+
+      await executor.send(
+        context: bearer('tok'),
+        route: const WorkplaceRequestRoute(method: 'PUT', pathSegments: ['files']),
+        transfer: WorkplaceRequestTransfer(
+          onSendProgress: progress,
+          cancelToken: cancelToken,
+          timeout: timeout,
+        ),
+      );
+
+      final options = adapter.captured!;
+      expect(options.onSendProgress, same(progress));
+      expect(options.cancelToken, same(cancelToken));
+      expect(options.sendTimeout, equals(timeout));
+      expect(options.receiveTimeout, equals(timeout));
+    });
+
+    test('keeps the WorkplaceDio timeouts when the transfer sets none', () async {
+      const defaultTimeout = Duration(seconds: 10);
+      WorkplaceDio.setInstance(
+        Dio(BaseOptions(sendTimeout: defaultTimeout, receiveTimeout: defaultTimeout))
+          ..httpClientAdapter = adapter,
+      );
+
+      await executor.send(
+        context: bearer('tok'),
+        route: const WorkplaceRequestRoute(method: 'GET', pathSegments: ['apps']),
+      );
+
+      final options = adapter.captured!;
+      expect(options.sendTimeout, equals(defaultTimeout));
+      expect(options.receiveTimeout, equals(defaultTimeout));
+    });
+
     test('throws StateError on a blank token without sending', () async {
       await expectLater(
         executor.send(
