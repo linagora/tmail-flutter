@@ -5,58 +5,42 @@ import '../../../tmail-mcp/marionette/composer/composer_body_driver.dart';
 import '../../../tmail-mcp/marionette/marionette_composer_extensions.dart';
 
 void main() {
-  group('handleSetBody', () {
-    test(
-      'returns invalid params and skips the driver when text is missing',
-      () async {
-        final driver = _FakeDriver(const ComposerNotFound());
-
-        final result = await handleSetBody(driver, {});
-
-        expect(
-          result,
-          isA<MarionetteExtensionInvalidParams>().having(
-            (r) => r.detail,
-            'detail',
-            'Missing required parameter: text',
-          ),
-        );
-        expect(driver.setBodyCalls, isEmpty);
-      },
-    );
-
-    test('returns invalid params when no composer is open', () async {
+  test(
+    'setBody returns invalid params and skips the driver when text is missing',
+    () async {
       final driver = _FakeDriver(const ComposerNotFound());
 
-      final result = await handleSetBody(driver, {'text': 'Hello'});
+      final result = await handleSetBody(driver, {});
+
+      expect(result, _isInvalidParams('Missing required parameter: text'));
+      expect(driver.setBodyCalls, isEmpty);
+    },
+  );
+
+  const unavailableComposers = {
+    'no composer is open': (ComposerNotFound(), 'No composer editor found'),
+    'several composers are open': (
+      MultipleComposersFound(),
+      'More than one composer is open',
+    ),
+  };
+
+  for (final MapEntry(key: situation, value: (driverResult, detail))
+      in unavailableComposers.entries) {
+    test('setBody and getBody return invalid params when $situation', () async {
+      final driver = _FakeDriver(driverResult);
 
       expect(
-        result,
-        isA<MarionetteExtensionInvalidParams>().having(
-          (r) => r.detail,
-          'detail',
-          contains('No composer editor found'),
-        ),
+        await handleSetBody(driver, {'text': 'Hello'}),
+        _isInvalidParams(contains(detail)),
       );
+      expect(await handleGetBody(driver), _isInvalidParams(contains(detail)));
     });
+  }
 
-    test('returns invalid params when several composers are open', () async {
-      final result = await handleSetBody(
-        _FakeDriver(const MultipleComposersFound()),
-        {'text': 'Hello'},
-      );
-
-      expect(
-        result,
-        isA<MarionetteExtensionInvalidParams>().having(
-          (r) => r.detail,
-          'detail',
-          contains('More than one composer is open'),
-        ),
-      );
-    });
-
-    test('passes the exact text to the driver and returns the body', () async {
+  test(
+    'setBody passes the exact text to the driver and returns the body',
+    () async {
       final driver = _FakeDriver(
         const ComposerBodyFound({'body': 'Hi\n\nBye'}),
       );
@@ -64,58 +48,30 @@ void main() {
       final result = await handleSetBody(driver, {'text': 'Hi\n\nBye'});
 
       expect(driver.setBodyCalls, ['Hi\n\nBye']);
-      expect(
-        result,
-        isA<MarionetteExtensionSuccess>().having((r) => r.data, 'data', {
-          'body': 'Hi\n\nBye',
-        }),
-      );
-    });
-  });
+      expect(result, _isSuccess({'body': 'Hi\n\nBye'}));
+    },
+  );
 
-  group('handleGetBody', () {
-    test('returns invalid params when no composer is open', () async {
-      final result = await handleGetBody(_FakeDriver(const ComposerNotFound()));
+  test('getBody returns the text and html of the body', () async {
+    const body = {'text': 'Hello', 'html': '<div>Hello</div>'};
 
-      expect(
-        result,
-        isA<MarionetteExtensionInvalidParams>().having(
-          (r) => r.detail,
-          'detail',
-          contains('No composer editor found'),
-        ),
-      );
-    });
+    final result = await handleGetBody(
+      _FakeDriver(const ComposerBodyFound(body)),
+    );
 
-    test('returns invalid params when several composers are open', () async {
-      final result = await handleGetBody(
-        _FakeDriver(const MultipleComposersFound()),
-      );
-
-      expect(
-        result,
-        isA<MarionetteExtensionInvalidParams>().having(
-          (r) => r.detail,
-          'detail',
-          contains('More than one composer is open'),
-        ),
-      );
-    });
-
-    test('returns the text and html of the body', () async {
-      const body = {'text': 'Hello', 'html': '<div>Hello</div>'};
-
-      final result = await handleGetBody(
-        _FakeDriver(const ComposerBodyFound(body)),
-      );
-
-      expect(
-        result,
-        isA<MarionetteExtensionSuccess>().having((r) => r.data, 'data', body),
-      );
-    });
+    expect(result, _isSuccess(body));
   });
 }
+
+Matcher _isInvalidParams(Object detail) =>
+    isA<MarionetteExtensionInvalidParams>().having(
+      (r) => r.detail,
+      'detail',
+      detail,
+    );
+
+Matcher _isSuccess(Map<String, dynamic> data) =>
+    isA<MarionetteExtensionSuccess>().having((r) => r.data, 'data', data);
 
 class _FakeDriver implements ComposerBodyDriver {
   _FakeDriver(this._result);
