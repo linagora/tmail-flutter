@@ -116,6 +116,7 @@ app.*.symbols
 
 #generated file
 *.g.dart
+!test/fixtures/html_emails/html_email_corpus.g.dart
 messages_all.dart
 messages_en.dart
 messages_fr.dart
