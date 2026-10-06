@@ -4365,6 +4365,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "linkCannotBeOpened": "Энэ холбоосыг нээх боломжгүй",
+  "@linkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "downloadAttachmentInEMLPreviewWarningMessage": "Хавсралтыг татаж байна. Нэг дор зөвхөн нэг файл татаж болно.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
@@ -5407,6 +5413,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorReporting": "Алдааны тайлан",
+  "@errorReporting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingSettingExplanation": "Дэмжлэгийн баг таны тааралдсан асуудлыг оношлох боломжтой болохын тулд гэмтэл болон алдааны тайлан илгээнэ үү. Таны имэйл, тэдгээрийн агуулга болон хүлээн авагчид хэзээ ч орохгүй.",
+  "@errorReportingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingToggleDescription": "Алдааны тайлан илгээх",
+  "@errorReportingToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveAttachmentAddedSuccessfully": "Драйваас файлуудыг хавсаргалаа.",
   "@driveAttachmentAddedSuccessfully": {
     "type": "text",
@@ -5693,6 +5717,12 @@
   },
   "clearTrashSubfoldersFailed": "Хогийн савны дэд хавтасыг устгахад алдаа гарлаа",
   "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deepLinkCannotBeOpened": "Энэ нэвтрэх холбоос Twake-ээс ирээгүй байна. Аппаас нэвтэрнэ үү.",
+  "@deepLinkCannotBeOpened": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

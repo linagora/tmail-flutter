@@ -4446,6 +4446,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "linkCannotBeOpened": "Ce lien ne peut pas être ouvert",
+  "@linkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "copySubaddress": "Copier la sous-adresse",
   "@copySubaddress": {
     "type": "text",
@@ -5960,6 +5966,24 @@
   },
   "driveAttachmentToggleDescription": "Activer le bouton de pièce jointe Drive",
   "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReporting": "Rapport d'erreurs",
+  "@errorReporting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingSettingExplanation": "Envoyez des rapports de plantage et d'erreur afin que l'équipe d'assistance puisse diagnostiquer les problèmes que vous rencontrez. Vos e-mails, leur contenu et leurs destinataires ne sont jamais inclus.",
+  "@errorReportingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingToggleDescription": "Envoyer les rapports d'erreurs",
+  "@errorReportingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

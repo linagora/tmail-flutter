@@ -4526,6 +4526,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "linkCannotBeOpened": "Không thể mở liên kết này",
+  "@linkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "unexpectedError": "Lỗi không xác định: {errorMessage}",
   "@unexpectedError": {
     "type": "text",
@@ -5966,6 +5972,24 @@
   },
   "driveAttachmentToggleDescription": "Bật nút đính kèm Drive",
   "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReporting": "Báo cáo lỗi",
+  "@errorReporting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingSettingExplanation": "Gửi báo cáo sự cố và lỗi để đội ngũ hỗ trợ có thể chẩn đoán các vấn đề bạn gặp phải. Email, nội dung và người nhận của chúng không bao giờ được đưa vào.",
+  "@errorReportingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingToggleDescription": "Gửi báo cáo lỗi",
+  "@errorReportingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

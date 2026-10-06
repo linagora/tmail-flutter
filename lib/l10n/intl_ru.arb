@@ -4376,6 +4376,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "linkCannotBeOpened": "Эту ссылку невозможно открыть",
+  "@linkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "downloadAttachmentHasBeenCancelled": "Загрузка вложения отменена",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
@@ -5978,6 +5984,24 @@
   },
   "driveAttachmentToggleDescription": "Включить кнопку вложения Drive",
   "@driveAttachmentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReporting": "Отправка отчетов об ошибках",
+  "@errorReporting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingSettingExplanation": "Отправляйте отчеты о сбоях и ошибках, чтобы служба поддержки могла диагностировать возникающие у вас проблемы. Ваши письма, их содержимое и получатели никогда не включаются.",
+  "@errorReportingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorReportingToggleDescription": "Отправлять отчеты об ошибках",
+  "@errorReportingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
