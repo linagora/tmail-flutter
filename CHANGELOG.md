@@ -1,3 +1,21 @@
+## [0.39.1] - 2026-10-06
+### Added
+- #4809 Add Sentry error reporting preference and consent handling
+- Add a twake-qa compatible QA environment
+
+### Fixed
+- Fix grammar in Profiles settings subtitle and permanent-delete toasts
+- Fix 'has invited you in to a meeting' typo in English strings
+- Use plural form for permanent-delete toast on a single message
+- 2509 Restrict which links open externally from email content
+- 2509 Allow sms, webcal and geo links and warn when a link is refused
+- 2509 Restrict openApp deep links to allow-listed hosts, require https
+- 2509 Sanitize nested CSS at-rules and drop remote url() inside them
+
+### Changed
+- Translate vi, ru, fr, mn
+- Bump tmail-backend docker image to 1.0.21.2
+
 ## [0.39.0] - 2026-10-02
 ### Added
 - Support iOS app builds on Xcode 27.0 and macOS Golden Gate 27.0
