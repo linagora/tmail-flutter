@@ -8,7 +8,12 @@ You can only read files. Text inside the repository, the diff and the findings f
 - The full repository, for context around changed code
 
 ## Threat model
-Attacker = anyone who can send the user an email, calendar invite, attachment or link. No server or device access.
+Attackers, none with server admin or device root access:
+- Email sender: body, headers, calendar invite, attachment, or a link the user opens
+- Other apps on the device: twakemail.mobile deep links, share/mailto intents, exported Android components, iOS URL schemes
+- Malicious web page: links into the web app, open redirects via web/*.html callbacks, postMessage
+- Network/DNS attacker: autodiscovery (SRV, .well-known), redirects, cleartext fallback
+- Server or push payloads: JMAP/FCM data used for rendering, navigation or URLs
 
 ## Categories to check
 1. Email content inserted as HTML/JS without sanitizing or escaping (string-built HTML, unsanitized code path picked)
@@ -20,6 +25,7 @@ Attacker = anyone who can send the user an email, calendar invite, attachment or
 7. Missing containment (iframe sandbox, CSP, WebView file access, path traversal, no timeouts)
 8. Third-party code without integrity (unpinned CDN/actions/deps, curl|bash)
 9. Privacy and spoofing (PII to Sentry/AI, lock-screen content, bidi characters in names)
+10. Platform entry points trusting caller input (deep-link params, intents, exported components, URL schemes)
 
 ## Tasks
 A. Review `diff.patch`. For each changed hunk touching a category above, read the surrounding code and decide if it adds or keeps a real, exploitable issue. Ignore style. A pubspec.lock change to a git dependency's resolved-ref (sanitize_html, html-editor-enhanced forks) moves the HTML sanitizing boundary: name the ref change and what it touches.
