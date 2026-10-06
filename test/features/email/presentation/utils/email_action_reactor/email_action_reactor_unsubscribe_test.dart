@@ -112,12 +112,12 @@ void main() {
     );
 
     testWidgets(
-      'should keep the space before the question mark in French',
+      'should put a narrow no-break space before the question mark in French',
       (tester) => _expectDialogMessage(
         tester,
         const Locale('fr', 'FR'),
         'Confirmez-vous ne plus vouloir recevoir de message similaire '
-        'en provenance de Emma ?',
+        'en provenance de Emma\u202F?',
       ),
     );
 
