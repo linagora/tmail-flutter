@@ -376,7 +376,8 @@ jobs:
           git diff --stat "$base..HEAD" > .security-review/diffstat.txt
           git diff -U5 "$base..HEAD" -- . \
             ':(glob,exclude)**/*.g.dart' ':(glob,exclude)**/*.mocks.dart' \
-            ':(glob,exclude)**/*.arb' ':(glob,exclude)**/*.lock' \
+            ':(glob,exclude)**/*.arb' ':(glob,exclude)**/package-lock.json' \
+            ':(glob,exclude)**/Podfile.lock' \
             > .security-review/diff.patch
 
       - if: steps.cfg.outputs.enabled == 'true'
