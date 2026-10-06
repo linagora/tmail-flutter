@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:universal_html/html.dart';
 
@@ -15,6 +16,9 @@ class HtmlIframeWidget extends StatelessWidget {
   final void Function(IFrameElement iframe)? onIframeCreated;
   final String? width, height, src, srcdoc;
   final double? borderRadius;
+
+  @visibleForTesting
+  static const String? sandboxAttribute = null;
 
   @override
   Widget build(BuildContext context) {
