@@ -159,20 +159,20 @@ void main() {
     return url;
   }
 
-  /// Waits until the server saw the upload with [id] cut off mid-body.
-  Future<void> expectUploadAborted(String id) async {
+  /// Waits until the server reports the upload with [id] in [expected].
+  Future<void> expectUploadState(String id, String expected) async {
     final stateDio = Dio();
     String? state;
-    for (var attempt = 0; attempt < 30; attempt++) {
+    for (var attempt = 0; attempt < 50; attempt++) {
       final response = await stateDio.get<String>(
         '$serverUrl/upload-state',
         queryParameters: {'id': id},
       );
       state = response.data;
-      if (state == 'aborted') return;
+      if (state == expected) return;
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
-    fail('Upload $id was not aborted on the wire, last state: $state');
+    fail('Upload $id never reached "$expected" on the wire, last state: $state');
   }
 
   Options blobUploadOptions(String blobUrl, {Map<String, dynamic>? headers}) =>
@@ -408,10 +408,11 @@ void main() {
         options: blobUploadOptions(createBlobUrl(64 * oneMegabyte)),
         cancelToken: cancelToken,
       );
-      Timer(const Duration(milliseconds: 300), cancelToken.cancel);
+      await expectUploadState('cancel-token', 'reading');
+      cancelToken.cancel();
 
       await expectLater(upload, throwsA(_dioError(DioExceptionType.cancel)));
-      await expectUploadAborted('cancel-token');
+      await expectUploadState('cancel-token', 'aborted');
     });
 
     test('Given a CancelToken cancelled before the blob resolves, '
@@ -439,12 +440,12 @@ void main() {
           queryParameters: {'id': 'force-close'},
           options: blobUploadOptions(createBlobUrl(64 * oneMegabyte)),
         );
-        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await expectUploadState('force-close', 'reading');
 
         dio.httpClientAdapter.close(force: true);
 
         await expectLater(upload, throwsA(_dioError(DioExceptionType.cancel)));
-        await expectUploadAborted('force-close');
+        await expectUploadState('force-close', 'aborted');
         expect(inner.closedWithForce, isTrue);
       },
     );

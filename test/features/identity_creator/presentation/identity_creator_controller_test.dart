@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -8,7 +9,9 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -568,6 +571,54 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(mockAppToast.showToastErrorMessage(any, any)).called(1);
+    });
+
+    testWidgets(
+      'should show canNotUploadFileToSignature toast '
+      'when a non-image file is dropped on the signature',
+    (tester) async {
+      String? message;
+      when(mockAppToast.showToastErrorMessage(any, any)).thenAnswer(
+        (invocation) => message = invocation.positionalArguments[1] as String,
+      );
+      final dropDir = io.Directory.systemTemp.createTempSync('identity-drop');
+      addTearDown(() => dropDir.deleteSync(recursive: true));
+      final note = io.File('${dropDir.path}/note.txt')..writeAsStringSync('hello drop');
+
+      await tester.runAsync(() async {
+        late BuildContext capturedContext;
+        await tester.pumpWidget(GetMaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: LocalizationService.supportedLocales,
+          home: Scaffold(body: Builder(builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          })),
+        ));
+        await tester.pump();
+
+        identityCreatorController.onLocalFileDropZoneListener(
+          context: capturedContext,
+          details: DropDoneDetails(
+            files: [XFile(note.path, mimeType: 'text/plain')],
+            localPosition: Offset.zero,
+            globalPosition: Offset.zero,
+          ),
+          maxWidth: 600,
+        );
+
+        for (var i = 0; i < 100 && message == null; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await tester.pump();
+        }
+      });
+
+      expect(message, 'Can not upload this file to signature');
     });
   });
 }

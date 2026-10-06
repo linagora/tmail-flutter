@@ -1,10 +1,11 @@
 import 'dart:async' as async;
 import 'package:async/async.dart';
-import 'package:core/data/constants/constant.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/x_file_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin DragDropFileMixin {
@@ -20,33 +21,33 @@ mixin DragDropFileMixin {
     );
   }
 
-  async.Future<List<FileInfo>> onDragDone({
+  async.Future<({List<FileInfo> files, int folderCount})> onDragDone({
     required BuildContext context,
     required DropDoneDetails details
   }) async {
-    final bytesList = await showFutureLoadingDialogFullScreen(
+    final files = await _withoutFolders(details.files);
+    final folderCount = details.files.length - files.length;
+    if (files.isEmpty || !context.mounted) return (files: <FileInfo>[], folderCount: folderCount);
+
+    final result = await showFutureLoadingDialogFullScreen(
       context: context,
       future: () => async.Future.wait(
-        details.files.map(
-          (xFile) => xFile.readAsBytes(),
-        ),
+        files.map((xFile) => xFile.toFileInfo()),
       ),
     );
 
-    if (bytesList.error != null) return [];
+    if (result.error != null) return (files: <FileInfo>[], folderCount: folderCount);
 
-    final listFileInfo = <FileInfo>[];
-    for (var i = 0; i < bytesList.result!.length; i++) {
-      listFileInfo.add(
-        FileBytesInfo(
-          bytes: bytesList.result![i],
-          fileName: details.files[i].name,
-          type: details.files[i].mimeType,
-          fileSize: bytesList.result![i].length,
-          isInline: details.files[i].mimeType?.startsWith(Constant.imageType) == true
-        ),
-      );
-    }
-    return listFileInfo;
+    return (files: result.result ?? <FileInfo>[], folderCount: folderCount);
+  }
+
+  async.Future<List<XFile>> _withoutFolders(List<XFile> files) async {
+    final isFolder = await async.Future.wait(
+      files.map((xFile) => xFile.isDroppedFolder()),
+    );
+    return [
+      for (var i = 0; i < files.length; i++)
+        if (!isFolder[i]) files[i],
+    ];
   }
 }
