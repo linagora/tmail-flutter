@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -8,6 +10,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart';
@@ -331,6 +334,52 @@ Future<void> _verifyOverQuotaPremiumAction(
         ? null
         : Uri.parse(testCase.paywallTemplate!),
   );
+}
+
+/// Readable, so it is not a folder, but its size lookup fails.
+class _SizeFailingXFile extends XFile {
+  _SizeFailingXFile(super.path);
+
+  @override
+  Future<int> length() => Future.error(const FileSystemException('size lookup failed'));
+}
+
+/// Drops [files] on the composer and returns the error toast it shows,
+/// closing the loading dialog when the drop fails inside it.
+Future<String?> _dropAndCaptureErrorToast(
+  WidgetTester tester,
+  ComposerController controller,
+  MockAppToast appToast,
+  List<XFile> files,
+) async {
+  String? message;
+  when(appToast.showToastErrorMessage(any, any)).thenAnswer(
+    (invocation) => message = invocation.positionalArguments[1] as String,
+  );
+
+  await tester.runAsync(() async {
+    late BuildContext context;
+    await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+      child: Builder(builder: (ctx) {
+        context = ctx;
+        return const SizedBox.shrink();
+      }),
+    ));
+    await tester.pump();
+
+    controller.onLocalFileDropZoneListener(
+      context: context,
+      details: DropDoneDetails(files: files, localPosition: Offset.zero, globalPosition: Offset.zero),
+      maxWidth: 600,
+    );
+
+    for (var i = 0; i < 100 && message == null; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      await tester.pump();
+      if (find.text('Close').evaluate().isNotEmpty) await tester.tap(find.text('Close'));
+    }
+  });
+  return message;
 }
 
 @GenerateNiceMocks([
@@ -2027,6 +2076,44 @@ void main() {
 
           // Let the asynchronous drop processing (loading dialog/toast) settle.
           await tester.pump(const Duration(seconds: 1));
+        });
+      });
+
+      group('error toast:', () {
+        late Directory dropDir;
+
+        setUp(() => dropDir = Directory.systemTemp.createTempSync('composer-drop'));
+        tearDown(() => dropDir.deleteSync(recursive: true));
+
+        Directory folder(String name) => Directory('${dropDir.path}/$name')..createSync();
+
+        testWidgets('Should name the folder When only one folder is dropped', (tester) async {
+          final message = await _dropAndCaptureErrorToast(
+            tester, composerController!, mockAppToast, [XFile(folder('docs').path)]);
+
+          expect(message, 'Cannot upload this folder as attachment');
+        });
+
+        testWidgets('Should name the folders When only folders are dropped', (tester) async {
+          final message = await _dropAndCaptureErrorToast(
+            tester, composerController!, mockAppToast, [XFile(folder('docs').path), XFile(folder('photos').path)]);
+
+          expect(message, 'Cannot upload these folders as attachments');
+        });
+
+        testWidgets('Should show the file toast When nothing is dropped', (tester) async {
+          final message = await _dropAndCaptureErrorToast(tester, composerController!, mockAppToast, []);
+
+          expect(message, 'Can not upload this file as attachments');
+        });
+
+        testWidgets('Should show the file toast When a folder is dropped with a file that cannot be read', (tester) async {
+          final note = File('${dropDir.path}/note.txt')..writeAsStringSync('hello drop');
+
+          final message = await _dropAndCaptureErrorToast(
+            tester, composerController!, mockAppToast, [XFile(folder('docs').path), _SizeFailingXFile(note.path)]);
+
+          expect(message, 'Can not upload this file as attachments');
         });
       });
     });
