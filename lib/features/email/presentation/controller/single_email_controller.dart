@@ -496,9 +496,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (session != null && accountId != null) {
       try {
         final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-        TransformConfiguration transformConfiguration = PlatformInfo.isWeb
-          ? TransformConfiguration.forPreviewEmailOnWeb()
-          : TransformConfiguration.forPreviewEmail();
+        TransformConfiguration transformConfiguration =
+          TransformConfiguration.forPreviewEmailOnPlatform();
 
         consumeState(_getEmailContentInteractor.execute(
           session!,
@@ -518,9 +517,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                 accountId!,
                 emailId,
                 session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-                PlatformInfo.isWeb
-                  ? TransformConfiguration.forPreviewEmailOnWeb()
-                  : TransformConfiguration.forPreviewEmail(),
+                TransformConfiguration.forPreviewEmailOnPlatform(),
               ),
         ))));
       }

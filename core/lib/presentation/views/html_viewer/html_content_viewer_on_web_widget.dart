@@ -13,6 +13,7 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
@@ -102,6 +103,13 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
         ? scrollHeightWithBuffer >= minHeight
         : scrollHeightWithBuffer > minHeight;
   }
+
+  @visibleForTesting
+  static bool isMessageForView({
+    required Object? messageViewId,
+    required String createdViewId,
+  }) =>
+      messageViewId == createdViewId;
 }
 
 class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
@@ -146,7 +154,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       final data = json.decode(event.data);
 
       final viewId = data['view'];
-      if (viewId != _createdViewId) return;
+      if (!HtmlContentViewerOnWeb.isMessageForView(
+        messageViewId: viewId,
+        createdViewId: _createdViewId,
+      )) {
+        return;
+      }
 
       final type = data['type'];
       if (_isScrollingIsAvailable && _isScrollChangedEventTriggered(type)) {
