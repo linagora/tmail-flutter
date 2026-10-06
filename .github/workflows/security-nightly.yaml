@@ -1,0 +1,438 @@
+name: Security nightly
+
+on:
+  schedule:
+    - cron: "0 19 * * *" # 02:00 Asia/Ho_Chi_Minh
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/security-nightly.yaml"
+      - ".github/security/**"
+
+permissions: {}
+
+concurrency:
+  group: security-nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    # same-repo PRs only: fork PRs get no secrets and no security-events write
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+      base: ${{ steps.check.outputs.base }}
+      mark: ${{ steps.check.outputs.mark }}
+    steps:
+      - name: Decide whether to scan
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          HEAD_SHA: ${{ github.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # PR run = pre-merge verification of this workflow: always scan, never mark master as scanned
+          if [[ "$EVENT" == "pull_request" ]]; then
+            { echo "run=true"; echo "base=$PR_BASE_SHA"; echo "mark=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # schedule + workflow_dispatch: master only, deduped on master HEAD
+          if [[ "$REF" != "refs/heads/master" ]]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipped: manual runs are limited to master (got $REF)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          last=$(gh api "repos/$REPO/actions/artifacts?name=security-scanned&per_page=1" \
+            --jq '[.artifacts[] | select(.expired | not)][0].workflow_run.head_sha // ""')
+          { echo "base=$last"; echo "mark=true"; } >> "$GITHUB_OUTPUT"
+          if [[ "$last" == "$HEAD_SHA" ]]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipped: master HEAD $HEAD_SHA already scanned." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  gitleaks:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    outputs:
+      found: ${{ steps.scan.outputs.found }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks
+        working-directory: ${{ runner.temp }}
+        run: |
+          url=https://github.com/gitleaks/gitleaks/releases/download/v8.30.1
+          curl -sSfLO "$url/gitleaks_8.30.1_linux_x64.tar.gz"
+          curl -sSfLO "$url/gitleaks_8.30.1_checksums.txt"
+          grep " gitleaks_8.30.1_linux_x64.tar.gz$" gitleaks_8.30.1_checksums.txt | sha256sum -c -
+          tar -xzf gitleaks_8.30.1_linux_x64.tar.gz gitleaks
+
+      - name: Scan new commits
+        id: scan
+        env:
+          BASE: ${{ needs.gate.outputs.base }}
+        run: |
+          range="HEAD"
+          if [[ -n "$BASE" ]] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            range="$BASE..HEAD"
+          fi
+          set +e
+          "$RUNNER_TEMP/gitleaks" git --log-opts="$range" --redact --exit-code 2 \
+            --report-format sarif --report-path "$RUNNER_TEMP/gitleaks.sarif" .
+          code=$?
+          set -e
+          [[ $code -eq 0 || $code -eq 2 ]] || exit $code
+          echo "found=$([[ $code -eq 2 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/gitleaks.sarif
+          category: gitleaks
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-gitleaks
+          path: ${{ runner.temp }}/gitleaks.sarif
+          retention-days: 30
+
+  trivy:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    outputs:
+      found: ${{ steps.scan.outcome == 'failure' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Scan dependencies and Dockerfile
+        id: scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,misconfig
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          limit-severities-for-sarif: true
+          format: sarif
+          output: ${{ runner.temp }}/trivy.sarif
+          exit-code: "1"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/trivy.sarif
+          category: trivy
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-trivy
+          path: ${{ runner.temp }}/trivy.sarif
+          retention-days: 30
+
+  osv:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install osv-scanner
+        working-directory: ${{ runner.temp }}
+        run: |
+          url=https://github.com/google/osv-scanner/releases/download/v2.6.0
+          curl -sSfLO "$url/osv-scanner_linux_amd64"
+          curl -sSfLO "$url/osv-scanner_SHA256SUMS"
+          grep " osv-scanner_linux_amd64$" osv-scanner_SHA256SUMS | sha256sum -c -
+          mv osv-scanner_linux_amd64 osv-scanner && chmod +x osv-scanner
+
+      - name: Scan lockfiles
+        run: |
+          set +e
+          "$RUNNER_TEMP/osv-scanner" scan source -r --format sarif --output "$RUNNER_TEMP/osv.sarif" .
+          code=$?
+          set -e
+          # 0 = clean, 1 = vulns found (advisory); anything else = scanner error
+          [[ $code -eq 0 || $code -eq 1 ]] || exit $code
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/osv.sarif
+          category: osv-scanner
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-osv
+          path: ${{ runner.temp }}/osv.sarif
+          retention-days: 30
+
+  semgrep:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Scan with semgrep
+        run: |
+          pip install --quiet semgrep==1.179.0
+          semgrep scan --metrics=off \
+            --config p/default --config p/secrets --config p/javascript \
+            --config p/dockerfile --config p/github-actions \
+            --sarif --output "$RUNNER_TEMP/semgrep.sarif" .
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/semgrep.sarif
+          category: semgrep
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-semgrep
+          path: ${{ runner.temp }}/semgrep.sarif
+          retention-days: 30
+
+  mobsfscan:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Scan Android and iOS sources
+        run: |
+          pip install --quiet mobsfscan==1.0.1
+          # non-zero exit means findings; a missing SARIF file means the scanner broke
+          mobsfscan --sarif -o "$RUNNER_TEMP/mobsfscan.sarif" android ios || true
+          test -s "$RUNNER_TEMP/mobsfscan.sarif"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/mobsfscan.sarif
+          category: mobsfscan
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-mobsfscan
+          path: ${{ runner.temp }}/mobsfscan.sarif
+          retention-days: 30
+
+  zizmor:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Audit GitHub workflows
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+
+  scorecard:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: ${{ runner.temp }}/scorecard.sarif
+          results_format: sarif
+          publish_results: false
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/scorecard.sarif
+          category: scorecard
+
+  llm-review:
+    needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan]
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+      LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+      LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+    steps:
+      - name: Check LLM config
+        id: cfg
+        run: |
+          if [[ -z "$LLM_API_KEY" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "LLM review skipped: SECURITY_LLM_* not configured." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: sarif-*
+          path: .security-review/sarif
+          merge-multiple: true
+
+      - name: Prepare review input
+        if: steps.cfg.outputs.enabled == 'true'
+        env:
+          BASE: ${{ needs.gate.outputs.base }}
+        run: |
+          base="$BASE"
+          if [[ -z "$base" ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base=$(git rev-list -n1 --before="24 hours ago" HEAD)
+          fi
+          [[ -n "$base" ]] || base=$(git rev-parse HEAD~1)
+          mkdir -p .security-review
+          git log --no-merges --format='%h %an %s' "$base..HEAD" > .security-review/commits.txt
+          git diff --stat "$base..HEAD" > .security-review/diffstat.txt
+          git diff -U5 "$base..HEAD" -- . \
+            ':(glob,exclude)**/*.g.dart' ':(glob,exclude)**/*.mocks.dart' \
+            ':(glob,exclude)**/*.arb' ':(glob,exclude)**/*.lock' \
+            > .security-review/diff.patch
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Run opencode security review
+        if: steps.cfg.outputs.enabled == 'true'
+        continue-on-error: true
+        run: |
+          npm install --global --silent opencode-ai@1.18.34
+          export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
+          jq -n --arg model "$LLM_MODEL" '{
+            "$schema": "https://opencode.ai/config.json",
+            autoupdate: false,
+            share: "disabled",
+            provider: { "security-llm": {
+              npm: "@ai-sdk/openai-compatible",
+              name: "Security LLM",
+              options: { baseURL: "{env:LLM_BASE_URL}", apiKey: "{env:LLM_API_KEY}" },
+              models: { ($model): { name: $model } }
+            } },
+            model: ("security-llm/" + $model),
+            permission: { edit: "deny", bash: "deny", webfetch: "deny" }
+          }' > "$OPENCODE_CONFIG"
+          timeout 40m opencode run "$(cat .github/security/llm-review-prompt.md)" \
+            2> "$RUNNER_TEMP/opencode.log" | tee .security-review/llm-report.md
+          cat .security-review/llm-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - if: always() && steps.cfg.outputs.enabled == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: llm-review
+          path: |
+            .security-review/llm-report.md
+            .security-review/commits.txt
+            ${{ runner.temp }}/opencode.log
+          retention-days: 30
+
+  report:
+    needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan, zizmor, scorecard, llm-review]
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Write summary
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          {
+            echo "## Security nightly — \`${GITHUB_SHA::9}\`"
+            echo "| Job | Result |"
+            echo "|---|---|"
+            jq -r 'to_entries[] | select(.key != "gate") | "| \(.key) | \(.value.result) |"' <<< "$RESULTS"
+            echo
+            echo "Findings: Security tab → Code scanning (filter by tool)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write scan marker
+        id: marker
+        if: >-
+          needs.gate.outputs.mark == 'true' &&
+          needs.gitleaks.result == 'success' && needs.trivy.result == 'success' &&
+          needs.osv.result == 'success' && needs.semgrep.result == 'success' &&
+          needs.mobsfscan.result == 'success' && needs.zizmor.result == 'success'
+        run: echo "$GITHUB_SHA" > scanned-sha.txt
+
+      - if: steps.marker.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-scanned
+          path: scanned-sha.txt
+          retention-days: 30
+
+      - name: Fail on new secrets or high/critical vulnerabilities
+        if: needs.gitleaks.outputs.found == 'true' || needs.trivy.outputs.found == 'true'
+        env:
+          GITLEAKS_FOUND: ${{ needs.gitleaks.outputs.found }}
+          TRIVY_FOUND: ${{ needs.trivy.outputs.found }}
+        run: |
+          echo "::error::gitleaks found=$GITLEAKS_FOUND, trivy found=$TRIVY_FOUND. See Security tab."
+          exit 1
