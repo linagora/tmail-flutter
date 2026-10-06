@@ -50,8 +50,9 @@ jobs:
             echo "Skipped: manual runs are limited to master (got $REF)." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          last=$(gh api "repos/$REPO/actions/artifacts?name=security-scanned&per_page=1" \
-            --jq '[.artifacts[] | select(.expired | not)][0].workflow_run.head_sha // ""')
+          # markers from fork or branch runs are untrusted: master runs of this repo only
+          last=$(gh api "repos/$REPO/actions/artifacts?name=security-scanned&per_page=100" \
+            --jq '[.artifacts[] | select((.expired | not) and .workflow_run.head_branch == "master" and .workflow_run.head_repository_id == .workflow_run.repository_id)][0].workflow_run.head_sha // ""')
           { echo "base=$last"; echo "mark=true"; } >> "$GITHUB_OUTPUT"
           if [[ "$last" == "$HEAD_SHA" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
@@ -456,7 +457,8 @@ jobs:
           needs.gate.outputs.mark == 'true' &&
           needs.gitleaks.result == 'success' && needs.trivy.result == 'success' &&
           needs.osv.result == 'success' && needs.semgrep.result == 'success' &&
-          needs.mobsfscan.result == 'success' && needs.zizmor.result == 'success'
+          needs.mobsfscan.result == 'success' && needs.zizmor.result == 'success' &&
+          needs.gitleaks.outputs.found == 'false' && needs.trivy.outputs.found == 'false'
         run: echo "$GITHUB_SHA" > scanned-sha.txt
 
       - if: steps.marker.outcome == 'success'
