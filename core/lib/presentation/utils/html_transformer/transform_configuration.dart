@@ -23,6 +23,8 @@ import 'package:core/presentation/utils/html_transformer/text/standardize_html_s
 import 'package:core/utils/platform_info.dart';
 
 /// Contains the configuration for all transformations.
+///
+/// New factory → add a row in the TransformConfiguration contract test.
 class TransformConfiguration {
 
   /// The list of DOM transformers being used
@@ -136,6 +138,18 @@ class TransformConfiguration {
       TransformConfiguration.fromDomTransformers([
         const NormalizeLineHeightInStyleTransformer(),
       ]);
+
+  factory TransformConfiguration.forPreviewEmailOnPlatform() => PlatformInfo.isWeb
+      ? TransformConfiguration.forPreviewEmailOnWeb()
+      : TransformConfiguration.forPreviewEmail();
+
+  factory TransformConfiguration.forAttachmentPreview() =>
+      TransformConfiguration.create(
+        customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
+        customTextTransformers: const [
+          StandardizeHtmlSanitizingTransformers(),
+        ],
+      );
 
   factory TransformConfiguration.forCalendarEvent() => TransformConfiguration.create(
     customTextTransformers: const [
