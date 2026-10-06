@@ -174,4 +174,36 @@ abstract final class HtmlEmailCorpus {
       '<p>日本語: メールクライアント</p>'
       '<p>中文: 电子邮件客户端</p>'
       '<p>한국어: 이메일 클라이언트</p>';
+
+  static const String htmlNestedQuotesThreeLevels =
+      '<blockquote><p>outer</p>'
+      '<blockquote><p>middle</p>'
+      '<blockquote><p>inner</p></blockquote>'
+      '</blockquote></blockquote>';
+
+  static const String htmlOutlookMso =
+      '<div class="WordSection1">'
+      '<p class="MsoNormal" style="mso-line-height-rule:exactly">'
+      '<span style="font-family:Calibri">Hello from Outlook</span></p>'
+      '</div>';
+
+  static const String htmlNewsletterNestedTables =
+      '<table><tr><td>'
+      '<table><tr>'
+      '<td>Col A</td>'
+      '<td><img src="https://example.com/banner.png" alt="banner"></td>'
+      '</tr></table>'
+      '</td></tr></table>';
+
+  static const String htmlCidImage =
+      '<p>Inline <img src="cid:img-1" alt="photo"></p>';
+
+  static const String htmlSignatureAndDriveCard =
+      '<div class="tmail-signature">Kind regards</div>'
+      '<a class="tmail-file-link-card" href="https://drive.example.com/file" '
+      'contenteditable="false">file.pdf</a>';
+
+  static const String htmlWidePre =
+      '<pre>https://example.com/very/long/path/that/should/not/overflow/'
+      'abcdefghijklmnopqrstuvwxyz0123456789</pre>';
 }
