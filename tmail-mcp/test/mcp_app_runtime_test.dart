@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../tmail-mcp/runtime/mcp_app_binding.dart';
-import '../../tmail-mcp/runtime/mcp_app_runtime.dart';
+import '../runtime/mcp_app_binding.dart';
+import '../runtime/mcp_app_runtime.dart';
 
 void main() {
   test('skips disabled bindings', () {

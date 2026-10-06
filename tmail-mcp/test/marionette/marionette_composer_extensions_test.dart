@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
-import '../../../tmail-mcp/marionette/composer/composer_body_driver.dart';
-import '../../../tmail-mcp/marionette/marionette_composer_extensions.dart';
+import '../../marionette/composer/composer_body_driver.dart';
+import '../../marionette/marionette_composer_extensions.dart';
 
 void main() {
   test(

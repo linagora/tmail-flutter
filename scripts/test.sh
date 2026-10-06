@@ -32,9 +32,16 @@ if [[ -n "$unsupported" ]]; then
         "$MODULES" "$unsupported" >&2
 fi
 
+# The root package also owns the dev-only MCP host tests, kept next to their code.
+vm_targets=()
+if [[ "$MODULES" == "default" && -d tmail-mcp/test ]]; then
+    vm_targets=(test tmail-mcp/test)
+fi
+
 vm_status=0
 printf 'Running VM tests for %s\n' "$MODULES"
-(cd "$package_dir" && flutter test "--file-reporter=json:$REPORT") || vm_status=$?
+(cd "$package_dir" && flutter test "--file-reporter=json:$REPORT" ${vm_targets[@]+"${vm_targets[@]}"}) \
+    || vm_status=$?
 
 chrome_tests=()
 while IFS= read -r test_file; do

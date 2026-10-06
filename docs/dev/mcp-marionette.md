@@ -9,6 +9,7 @@ Owners:
 - MCP entrypoint: `tmail-mcp/main.dart`
 - Binding host: `tmail-mcp/runtime/`
 - Marionette adapter: `tmail-mcp/marionette/`
+- Tests: `tmail-mcp/test/` (run with `fvm flutter test tmail-mcp/test`; CI runs them with the root package)
 - Official package docs: [marionette_flutter](https://pub.dev/packages/marionette_flutter) / [getting started](https://github.com/leancodepl/marionette_mcp/blob/main/docs/getting-started.md)
 
 ## Setup
