@@ -35,6 +35,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -2117,13 +2118,20 @@ void main() {
         });
 
         testWidgets('Should name the folder When a folder is dropped with a readable file', (tester) async {
-          composerController!.attachmentUploadValidationService = MockAttachmentUploadValidationService();
+          final validationService = MockAttachmentUploadValidationService();
+          composerController!.attachmentUploadValidationService = validationService;
           final note = File('${dropDir.path}/note.txt')..writeAsStringSync('hello drop');
 
           final message = await _dropAndCaptureErrorToast(
             tester, composerController!, mockAppToast, [XFile(folder('docs').path), XFile(note.path)]);
 
           expect(message, 'Cannot upload this folder as attachment');
+          final files = verify(validationService.validateFiles(
+            context: anyNamed('context'),
+            files: captureAnyNamed('files'),
+            onAllowed: anyNamed('onAllowed'),
+          )).captured.single as List<FileInfo>;
+          expect(files.map((file) => file.fileName), ['note.txt']);
         });
       });
     });
