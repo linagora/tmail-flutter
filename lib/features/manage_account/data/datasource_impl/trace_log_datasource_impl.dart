@@ -26,34 +26,38 @@ class TraceLogDataSourceImpl extends TraceLogDataSource {
 
   @override
   Future<String> exportTraceLog() {
-    return Future.sync(() async {
-      if (PlatformInfo.isAndroid) {
-        final permissionGranted = await _validateStoragePermissionOnAndroid();
-        if (permissionGranted) {
-          final traceLog = await _logTracking.getTraceLog();
-          return await _logTracking.exportTraceLog(traceLog);
-        } else {
-          throw const NotGrantedPermissionStorageException();
-        }
-      } else {
-        final traceLog = await _logTracking.getTraceLog();
-        final savePath = await _logTracking.exportTraceLog(traceLog);
-        final result = await Share.shareXFiles([XFile(savePath)]);
-        if (result.status == ShareResultStatus.success) {
-          return savePath;
-        }
-        throw UserCancelShareFileException();
-      }
+    return Future.sync(() {
+      return PlatformInfo.isAndroid
+          ? _exportTraceLogOnAndroid()
+          : _exportAndShareTraceLog();
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  Future<String> _exportTraceLogOnAndroid() async {
+    final permissionGranted = await _validateStoragePermissionOnAndroid();
+    if (!permissionGranted) {
+      throw const NotGrantedPermissionStorageException();
+    }
+    final traceLog = await _logTracking.getTraceLog();
+    return _logTracking.exportTraceLog(traceLog);
+  }
+
+  Future<String> _exportAndShareTraceLog() async {
+    final traceLog = await _logTracking.getTraceLog();
+    final savePath = await _logTracking.exportTraceLog(traceLog);
+    final result = await SharePlus.instance.share(
+      ShareParams(files: [XFile(savePath)]),
+    );
+    if (result.status != ShareResultStatus.success) {
+      throw UserCancelShareFileException();
+    }
+    return savePath;
   }
 
   Future<bool> _validateStoragePermissionOnAndroid() async {
     final needRequestPermission = await _deviceManager.isNeedRequestStoragePermissionOnAndroid();
-    if (needRequestPermission) {
-      final isGranted = await _permissionService.isGranted(Permission.storage);
-      return isGranted;
-    } else {
-      return true;
-    }
+    return needRequestPermission
+        ? _permissionService.isGranted(Permission.storage)
+        : true;
   }
 }
