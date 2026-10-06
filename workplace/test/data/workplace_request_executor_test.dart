@@ -69,6 +69,18 @@ void main() {
       );
     });
 
+    test('skips the empty segment of a trailing-slash platform URL', () async {
+      await executor.send(
+        context: WorkplaceRequestContext(
+          platformUrl: Uri.parse('https://platform.example.com/base/'),
+          accessMode: const BearerTokenAccessMode('tok'),
+        ),
+        route: const WorkplaceRequestRoute(method: 'GET', pathSegments: ['apps']),
+      );
+
+      expect(adapter.captured!.uri.path, equals('/base/apps'));
+    });
+
     test('sends the bearer token with the body headers and extra', () async {
       await executor.send(
         context: bearer('tok'),
