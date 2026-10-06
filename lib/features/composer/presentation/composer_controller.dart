@@ -2277,8 +2277,8 @@ class ComposerController extends BaseController
     if (!context.mounted) return;
 
     final listFileInfo = droppedFiles.files;
+    final folderCount = droppedFiles.folderCount;
     if (listFileInfo.isEmpty) {
-      final folderCount = droppedFiles.folderCount;
       final onlyFolders = folderCount > 0 && folderCount == details.files.length;
       appToast.showToastErrorMessage(
         context,
@@ -2287,6 +2287,12 @@ class ComposerController extends BaseController
           : AppLocalizations.of(context).can_not_upload_this_file_as_attachments
       );
       return;
+    }
+
+    if (folderCount > 0) {
+      appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).cannotUploadFoldersAsAttachments(folderCount));
     }
 
     await attachmentUploadValidationService.validateFiles(

@@ -2115,6 +2115,16 @@ void main() {
 
           expect(message, 'Can not upload this file as attachments');
         });
+
+        testWidgets('Should name the folder When a folder is dropped with a readable file', (tester) async {
+          composerController!.attachmentUploadValidationService = MockAttachmentUploadValidationService();
+          final note = File('${dropDir.path}/note.txt')..writeAsStringSync('hello drop');
+
+          final message = await _dropAndCaptureErrorToast(
+            tester, composerController!, mockAppToast, [XFile(folder('docs').path), XFile(note.path)]);
+
+          expect(message, 'Cannot upload this folder as attachment');
+        });
       });
     });
   });
