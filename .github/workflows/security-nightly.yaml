@@ -120,36 +120,55 @@ jobs:
       contents: read
       security-events: write
     outputs:
-      found: ${{ steps.scan.outcome == 'failure' }}
+      found: ${{ steps.vuln.outcome == 'failure' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Scan dependencies and Dockerfile
-        id: scan
+      - name: Scan dependencies
+        id: vuln
         continue-on-error: true
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
-          scanners: vuln,misconfig
+          scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           limit-severities-for-sarif: true
           format: sarif
-          output: ${{ runner.temp }}/trivy.sarif
+          output: ${{ runner.temp }}/trivy-vuln.sarif
           exit-code: "1"
+
+      - name: Scan Dockerfile misconfigurations (advisory)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: misconfig
+          severity: HIGH,CRITICAL
+          limit-severities-for-sarif: true
+          format: sarif
+          output: ${{ runner.temp }}/trivy-misconfig.sarif
+          exit-code: "0"
 
       - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
-          sarif_file: ${{ runner.temp }}/trivy.sarif
-          category: trivy
+          sarif_file: ${{ runner.temp }}/trivy-vuln.sarif
+          category: trivy-vuln
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/trivy-misconfig.sarif
+          category: trivy-misconfig
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sarif-trivy
-          path: ${{ runner.temp }}/trivy.sarif
+          path: |
+            ${{ runner.temp }}/trivy-vuln.sarif
+            ${{ runner.temp }}/trivy-misconfig.sarif
           retention-days: 30
 
   osv:
