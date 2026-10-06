@@ -40,6 +40,7 @@ extension HandleInsertLinkComposerExtension on ComposerController {
         hintText: appLocalizations.text,
         hintUrl: appLocalizations.typeOrPasteLink,
         applyButtonLabel: appLocalizations.apply,
+        rejectedUrlErrorText: appLocalizations.linkTypeNotAllowed,
         hintTextStyle: ThemeUtils.textStyleBodyBody3(
           color: AppColor.steelGray400,
         ),

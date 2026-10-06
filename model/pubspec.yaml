@@ -23,7 +23,7 @@ resolution: workspace
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.9.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -50,7 +50,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  mime: 1.0.4
+  mime: 2.0.0
 
   collection: 1.19.1
 

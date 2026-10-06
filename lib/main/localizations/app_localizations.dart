@@ -6048,4 +6048,11 @@ class AppLocalizations {
       name: 'deepLinkCannotBeOpened',
     );
   }
+
+  String get linkTypeNotAllowed {
+    return Intl.message(
+      'This type of link is not allowed!',
+      name: 'linkTypeNotAllowed',
+    );
+  }
 }

@@ -6,3 +6,12 @@ class PickFileCanceledException extends AppBaseException {
   @override
   String get exceptionName => 'PickFileCanceledException';
 }
+
+/// The picker couldn't report a size, sync or async. Surfaced instead of
+/// guessing 0, which would let an oversized file skip the size-limit check.
+class FileSizeUnavailableException extends AppBaseException {
+  const FileSizeUnavailableException([super.message]);
+
+  @override
+  String get exceptionName => 'FileSizeUnavailableException';
+}

@@ -5707,5 +5707,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "linkTypeNotAllowed": "This type of link is not allowed!",
+  "@linkTypeNotAllowed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
