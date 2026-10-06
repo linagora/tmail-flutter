@@ -309,13 +309,13 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: read
-    env:
-      LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
-      LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
-      LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
     steps:
       - name: Check LLM config
         id: cfg
+        env:
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
         run: |
           if [[ -z "$LLM_API_KEY" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
@@ -360,11 +360,18 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install opencode
+        if: steps.cfg.outputs.enabled == 'true'
+        run: npm ci --silent --prefix .github/security/opencode
+
       - name: Run opencode security review
         if: steps.cfg.outputs.enabled == 'true'
         continue-on-error: true
+        env:
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
         run: |
-          npm install --global --silent opencode-ai@1.18.34
           export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
           jq -n --arg model "$LLM_MODEL" '{
             "$schema": "https://opencode.ai/config.json",
@@ -379,7 +386,7 @@ jobs:
             model: ("security-llm/" + $model),
             permission: { edit: "deny", bash: "deny", webfetch: "deny" }
           }' > "$OPENCODE_CONFIG"
-          timeout 40m opencode run "$(cat .github/security/llm-review-prompt.md)" \
+          timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .github/security/llm-review-prompt.md)" \
             2> "$RUNNER_TEMP/opencode.log" | tee .security-review/llm-report.md
           cat .security-review/llm-report.md >> "$GITHUB_STEP_SUMMARY"
 
