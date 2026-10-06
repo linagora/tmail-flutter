@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-09-08T15:41:58.711795",
+  "@@last_modified": "2026-10-06T11:29:46.825039",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5618,6 +5618,12 @@
   },
   "clearTrashSubfoldersFailed": "Failed to delete subfolders in Trash",
   "@clearTrashSubfoldersFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkTypeNotAllowed": "This type of link is not allowed!",
+  "@linkTypeNotAllowed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

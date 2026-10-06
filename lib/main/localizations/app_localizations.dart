@@ -5958,4 +5958,11 @@ class AppLocalizations {
       name: 'clearTrashSubfoldersFailed',
     );
   }
+
+  String get linkTypeNotAllowed {
+    return Intl.message(
+      'This type of link is not allowed!',
+      name: 'linkTypeNotAllowed',
+    );
+  }
 }
