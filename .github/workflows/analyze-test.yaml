@@ -26,6 +26,8 @@ env:
     ./test/features/upload/data/network/blob_upload_adapter_web_test.dart
     ./test/features/upload/domain/usecases/web_pick_options_web_test.dart
     ./test/features/upload/domain/extensions/dropped_file_open_read_web_test.dart
+    ./test/features/upload/domain/extensions/dropped_file_lazy_read_web_test.dart
+    ./test/features/upload/domain/extensions/dropped_file_flat_memory_web_test.dart
 
 jobs:
   analyze-test:
