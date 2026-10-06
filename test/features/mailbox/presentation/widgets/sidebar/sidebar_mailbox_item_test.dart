@@ -60,6 +60,7 @@ void main() {
     _testMapsExpandToggleToMailboxAction();
     _testOpensPersonalMailboxOnTap();
     _testTogglesTeamMailboxRootOnTap();
+    _testIgnoresTapOnTeamMailboxRootWithoutChildren();
     _testUsesReleaseDropTargetForDesktopWeb();
     _testKeepsTeamMailboxRootOutOfDropTargets();
     _testOpensSharedTopLevelFolderOnTap();
@@ -367,6 +368,35 @@ void _testTogglesTeamMailboxRootOnTap() {
 
     expect(openedMailbox, isNull);
     expect(expandedMailbox, same(mailboxNode));
+  });
+}
+
+void _testIgnoresTapOnTeamMailboxRootWithoutChildren() {
+  testWidgets('neither opens nor toggles a team mailbox root without children',
+      (tester) async {
+    MailboxNode? openedMailbox;
+    MailboxNode? expandedMailbox;
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(
+          id: 'team-root',
+          namespace: _teamMailboxNamespace,
+        ),
+        imagePaths: _imagePaths,
+        isWebDesktop: false,
+        onOpenMailboxFolderClick: (mailboxNode) => openedMailbox = mailboxNode,
+        onExpandFolderActionClick: (mailboxNode) =>
+            expandedMailbox = mailboxNode,
+      ),
+    );
+
+    await tester.tap(find.byType(LinagoraSidebarItem));
+    await tester.pump();
+
+    expect(openedMailbox, isNull);
+    expect(expandedMailbox, isNull);
   });
 }
 
