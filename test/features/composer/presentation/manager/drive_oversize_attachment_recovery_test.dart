@@ -212,15 +212,18 @@ void main() {
       setup.container.dispose();
     });
 
-    testWidgets('inline-only files returns false', (tester) async {
-      final setup = await _setUpRecovery(tester);
+    testWidgets('inline-only files are uploaded like any other file', (tester) async {
+      final link = Uri.parse('https://drive.example.com/public?sharecode=x');
+      final setup = await _setUpRecovery(tester, outcomesByFileName: {'shot.png': link});
 
       final result = await setup.recovery.recover(
         _failure,
         _makeRequest([_makeFile('shot.png', isInline: true)]),
       );
+      expect(result, isTrue);
+      await tester.pumpAndSettle();
 
-      expect(result, isFalse);
+      expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       setup.container.dispose();
     });
 
