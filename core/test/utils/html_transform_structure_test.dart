@@ -3,18 +3,23 @@ import 'dart:convert';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart' show parse;
 
 import '../../../test/fixtures/html_email_corpus.dart';
+import 'html_pipeline_registry.dart';
 import 'html_transform_text_html_test.mocks.dart';
-import 'transform_configuration_contract_test.dart';
 
 void main() {
   late HtmlTransform htmlTransform;
 
   setUp(() {
     htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
+  });
+
+  tearDown(() {
+    PlatformInfo.isTestingForWeb = false;
   });
 
   Future<String> transform(
@@ -79,39 +84,21 @@ void main() {
   });
 
   group('HtmlTransform XSS — raw-input configs', () {
-    final rawConfigs = <String, TransformConfiguration>{
-      'forPreviewEmail': TransformConfiguration.forPreviewEmail(),
-      'forPreviewEmailOnWeb': TransformConfiguration.forPreviewEmailOnWeb(),
-      'forDraftsEmail': TransformConfiguration.forDraftsEmail(),
-      'forEditDraftsEmail': TransformConfiguration.forEditDraftsEmail(),
-      'forRestoreEmail': TransformConfiguration.forRestoreEmail(),
-      'forCalendarEvent': TransformConfiguration.forCalendarEvent(),
-      'forAttachmentPreview': TransformConfiguration.forAttachmentPreview(),
-      'standardConfiguration': TransformConfiguration.standardConfiguration,
-    };
+    for (final row in htmlPipelineRegistry()) {
+      if (row.trust != HtmlPipelineTrust.raw &&
+          !(row.trust == HtmlPipelineTrust.user &&
+              row.wiring == HtmlPipelineWiring.sanitizes)) {
+        continue;
+      }
 
-    for (final entry in rawConfigs.entries) {
-      test('${entry.key} strips script, onerror, javascript href', () async {
-        final out = await transform(HtmlEmailCorpus.htmlXssRich, entry.value);
+      test('${row.name} strips script, onerror, javascript href', () async {
+        final out = await transform(HtmlEmailCorpus.htmlXssRich, row.build());
         expect(out, isNot(contains('<script')));
         expect(out, isNot(contains('javascript:')));
         expect(hasEventHandler(out), isFalse);
         expect(out, contains('Valid content'));
       });
     }
-
-    test(
-      'forReplyForwardEmptyEmail strips XSS from raw server HTML',
-      () async {
-        final out = await transform(
-          HtmlEmailCorpus.htmlXssRich,
-          TransformConfiguration.forReplyForwardEmptyEmail(),
-        );
-        expect(out, isNot(contains('<script')));
-        expect(hasEventHandler(out), isFalse);
-      },
-      skip: emptyReplySanitizerSkip,
-    );
   });
 
   group('HtmlTransform snapshots — canonical fixtures', () {
@@ -152,6 +139,17 @@ void main() {
       );
       expect(out, contains('contenteditable="false"'));
       expect(out, contains('tmail-file-link-card'));
+    });
+
+    test('empty-reply sanitizer keeps signature class for SignatureTransformer', () async {
+      const html = '<div class="tmail-signature">Best regards</div>'
+          '<p>Quoted body</p>';
+      final out = await transform(
+        html,
+        TransformConfiguration.forReplyForwardEmptyEmail(),
+      );
+      expect(out, contains('tmail-signature-blocked'));
+      expect(out, contains('Best regards'));
     });
   });
 }
