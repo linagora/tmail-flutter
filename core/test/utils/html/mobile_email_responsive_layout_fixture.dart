@@ -23,12 +23,14 @@ class EmailFixture {
   /// `enableQuoteToggle` is on, along with the stylesheet and script driving
   /// it, so the collapsed state matches what the app ships.
   final bool quoteToggle;
+  final bool includeMobileScript;
 
   const EmailFixture(
     this.html, {
     this.direction,
     this.viewportWidth = defaultViewportWidth,
     this.quoteToggle = false,
+    this.includeMobileScript = true,
   });
 
   String get _content => quoteToggle ? HtmlUtils.addQuoteToggle(html) : html;
@@ -37,10 +39,12 @@ class EmailFixture {
 
   String get _javaScripts =>
       (quoteToggle ? HtmlUtils.quoteToggleScript : '') +
-      MobileEmailResponsiveLayoutScript.generate(
-        contentSizeChangedEventJSChannelName:
-            contentSizeChangedEventJSChannelName,
-      );
+      (includeMobileScript
+          ? MobileEmailResponsiveLayoutScript.generate(
+              contentSizeChangedEventJSChannelName:
+                  contentSizeChangedEventJSChannelName,
+            )
+          : '');
 
   String buildDocument() => HtmlUtils.generateHtmlDocument(
         content: _content,
@@ -113,6 +117,13 @@ class EmailViewport {
 
   web.Element element(String selector) =>
       _frame.contentDocument!.querySelector(selector)!;
+
+  List<web.Element> get images {
+    final nodes = _frame.contentDocument!.querySelectorAll('img');
+    return [
+      for (var i = 0; i < nodes.length; i++) nodes.item(i)! as web.Element,
+    ];
+  }
 
   bool get overflowsHorizontally =>
       _content.scrollWidth > _content.clientWidth + 1;

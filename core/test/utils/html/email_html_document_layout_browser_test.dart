@@ -1,56 +1,88 @@
 @TestOn('chrome')
 
+import 'dart:convert';
+
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../fixtures/html_emails/html_email_corpus.g.dart';
+import '../html_transform_text_html_test.mocks.dart';
 import 'mobile_email_responsive_layout_fixture.dart';
 
 void main() {
-  group('Email HTML document layout', () {
-    test('nested quote toggle hides then reveals inner quotes', () async {
-      const fixture = EmailFixture(
-        '<blockquote id="outer"><p>outer</p>'
-        '<blockquote id="middle"><p>middle</p>'
-        '<blockquote id="inner"><p>inner</p></blockquote>'
-        '</blockquote></blockquote>',
-        quoteToggle: true,
+  late HtmlTransform htmlTransform;
+
+  setUp(() {
+    htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
+  });
+
+  Future<String> transform(
+    String html,
+    TransformConfiguration configuration,
+  ) =>
+      htmlTransform.transformToHtml(
+        htmlContent: html,
+        transformConfiguration: configuration,
       );
 
-      await withEmail(fixture, (viewport) async {
-        expect(viewport.isQuoteVisible, isFalse);
-        await viewport.expandQuote();
-        expect(viewport.isQuoteVisible, isTrue);
-        expect(viewport.element('#inner').textContent, contains('inner'));
-      });
-    });
-
-    test('wide pre does not overflow a 360px viewport', () async {
-      const fixture = EmailFixture(
-        '<pre id="wide">https://example.com/very/long/path/that/should/not/'
-        'overflow/abcdefghijklmnopqrstuvwxyz0123456789</pre>',
-      );
-
-      await withEmail(fixture, (viewport) async {
-        expect(viewport.overflowsHorizontally, isFalse);
-        final pre = viewport.element('#wide');
-        expect(pre.scrollWidth <= pre.clientWidth + 1, isTrue);
-      });
-    });
-
-    test('simple table stays within 360px', () async {
-      const fixture = EmailFixture(
-        '<table style="width:100%"><tr>'
-        '<td id="cell">https://example.com/a-reasonably-long-cell-value</td>'
-        '</tr></table>',
-      );
-
-      await withEmail(fixture, (viewport) async {
-        expect(viewport.overflowsHorizontally, isFalse);
-        expect(
-          viewport.element('#cell').scrollWidth <=
-              viewport.element('#cell').clientWidth + 1,
-          isTrue,
+  group('corpus layout through HtmlTransform', () {
+    for (final fixture in htmlEmailCorpus) {
+      test('${fixture.category}/${fixture.name} web 1280', () async {
+        final transformed = await transform(
+          fixture.html,
+          TransformConfiguration.forPreviewEmailOnWeb(),
+        );
+        final hasQuote = transformed.contains('<blockquote');
+        await withEmail(
+          EmailFixture(
+            transformed,
+            viewportWidth: 1280,
+            quoteToggle: fixture.expectQuote || hasQuote,
+            includeMobileScript: false,
+          ),
+          (viewport) async {
+            expect(viewport.overflowsHorizontally, isFalse);
+            if (!fixture.allowEmptyBody) {
+              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
+            }
+            if (fixture.expectQuote || hasQuote) {
+              expect(viewport.element('.quote-toggle-button'), isNotNull);
+              expect(viewport.isQuoteVisible, isFalse);
+              await viewport.expandQuote();
+              expect(viewport.isQuoteVisible, isTrue);
+            }
+          },
         );
       });
-    });
+
+      test('${fixture.category}/${fixture.name} mobile 360', () async {
+        final transformed = await transform(
+          fixture.html,
+          TransformConfiguration.forPreviewEmail(),
+        );
+        final hasQuote = transformed.contains('<blockquote');
+        await withEmail(
+          EmailFixture(
+            transformed,
+            viewportWidth: 360,
+            quoteToggle: fixture.expectQuote || hasQuote,
+            includeMobileScript: true,
+          ),
+          (viewport) async {
+            expect(viewport.overflowsHorizontally, isFalse);
+            if (!fixture.allowEmptyBody) {
+              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
+            }
+            for (final img in viewport.images) {
+              expect(
+                img.getBoundingClientRect().width <= viewport.contentWidth + 1,
+                isTrue,
+              );
+            }
+          },
+        );
+      });
+    }
   });
 }
