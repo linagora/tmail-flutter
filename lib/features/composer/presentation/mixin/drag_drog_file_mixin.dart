@@ -21,12 +21,13 @@ mixin DragDropFileMixin {
     );
   }
 
-  async.Future<List<FileInfo>> onDragDone({
+  async.Future<({List<FileInfo> files, int folderCount})> onDragDone({
     required BuildContext context,
     required DropDoneDetails details
   }) async {
     final files = await _withoutFolders(details.files);
-    if (files.isEmpty || !context.mounted) return [];
+    final folderCount = details.files.length - files.length;
+    if (files.isEmpty || !context.mounted) return (files: <FileInfo>[], folderCount: folderCount);
 
     final result = await showFutureLoadingDialogFullScreen(
       context: context,
@@ -35,9 +36,9 @@ mixin DragDropFileMixin {
       ),
     );
 
-    if (result.error != null) return [];
+    if (result.error != null) return (files: <FileInfo>[], folderCount: folderCount);
 
-    return result.result ?? [];
+    return (files: result.result ?? <FileInfo>[], folderCount: folderCount);
   }
 
   async.Future<List<XFile>> _withoutFolders(List<XFile> files) async {

@@ -2272,14 +2272,19 @@ class ComposerController extends BaseController
 
     _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
 
-    final listFileInfo = await onDragDone(context: context, details: details);
+    final droppedFiles = await onDragDone(context: context, details: details);
 
     if (!context.mounted) return;
 
+    final listFileInfo = droppedFiles.files;
     if (listFileInfo.isEmpty) {
+      final folderCount = droppedFiles.folderCount;
+      final onlyFolders = folderCount > 0 && folderCount == details.files.length;
       appToast.showToastErrorMessage(
         context,
-        AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+        onlyFolders
+          ? AppLocalizations.of(context).cannotUploadFoldersAsAttachments(folderCount)
+          : AppLocalizations.of(context).can_not_upload_this_file_as_attachments
       );
       return;
     }
