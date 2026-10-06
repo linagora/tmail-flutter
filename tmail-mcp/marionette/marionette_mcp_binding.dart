@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import '../runtime/mcp_app_binding.dart';
+import 'composer/composer_body_driver_factory.dart';
 import 'marionette_composer_extensions.dart';
 
 class MarionetteMcpBinding extends McpAppBinding {
@@ -35,7 +36,7 @@ class MarionetteMcpBinding extends McpAppBinding {
       MarionetteConfiguration(
         isInteractiveWidget: (type) =>
             type == TMailButtonWidget || type == TMailContainerWidget,
-        extractText: _extractTMailText,
+        extractText: extractTMailText,
         logCollector: logCollector,
       ),
     );
@@ -47,10 +48,11 @@ class MarionetteMcpBinding extends McpAppBinding {
 
   @override
   void registerExtensions() {
-    registerComposerExtensions();
+    registerComposerExtensions(createComposerBodyDriver());
   }
 
-  static String? _extractTMailText(Element element) {
+  @visibleForTesting
+  static String? extractTMailText(Element element) {
     final widget = element.widget;
     if (widget is TMailButtonWidget) {
       if (widget.text.isNotEmpty) return widget.text;

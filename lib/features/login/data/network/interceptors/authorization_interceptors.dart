@@ -78,11 +78,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
+    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: EXPIRED_TIME = ${newToken?.expiredTime}');
   }
 
   void _updateNewToken(TokenOIDC newToken) {
-    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
+    log('AuthorizationInterceptors::_updateNewToken: EXPIRED_TIME = ${newToken.expiredTime}');
     _token = newToken;
   }
 

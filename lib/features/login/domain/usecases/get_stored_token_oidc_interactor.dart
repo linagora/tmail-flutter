@@ -34,7 +34,7 @@ class GetStoredTokenOidcInteractor {
       final baseUrl = futureValue[0] as Uri;
       final tokenOidc = futureValue[1] as TokenOIDC;
       final oidcConfiguration = futureValue[2] as OIDCConfiguration;
-      log('GetStoredTokenOidcInteractor::execute(): $tokenOidc');
+      log('GetStoredTokenOidcInteractor::execute(): tokenIdHash: ${tokenOidc.tokenIdHash} | EXPIRED_TIME = ${tokenOidc.expiredTime}');
       log('GetStoredTokenOidcInteractor::execute(): oidcConfiguration: $oidcConfiguration');
 
       if (_isCredentialValid(baseUrl)) {

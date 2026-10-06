@@ -199,6 +199,7 @@ It does **not** replace Patrol (CI truth) or `agent-browser` (SSO, file picker, 
 - Iframe / WebView / OS dialogs are still blind without an extension (file picker, native share, SSO browser).
 - Gestures are best-effort. Overlays and custom hit targets can miss.
 - `setBody` then Send too fast can save or send the old body.
+- On web, `setBody` / `getBody` refuse to act while more than one composer is open (even minimized). Close the others first.
 - Not a CI replacement. Flaky agent runs do not replace Patrol.
 - Login, SSO, and real sends still need a human and an allowlisted recipient.
 - One `WidgetsBinding` per process. The MCP entrypoint boots Marionette before Sentry. Do not init it from `flutter test` or Patrol.

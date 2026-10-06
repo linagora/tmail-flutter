@@ -13,8 +13,8 @@ class GetAuthenticationInfoInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(GetAuthenticationInfoLoading());
-      final result = await _oidcRepository.getAuthenticationInfo();
-      log('GetAuthenticationInfoInteractor::execute(): result: $result');
+      await _oidcRepository.getAuthenticationInfo();
+      log('GetAuthenticationInfoInteractor::execute(): authentication info found');
       yield Right<Failure, Success>(GetAuthenticationInfoSuccess());
     } catch (e) {
       log('GetAuthenticationInfoInteractor::execute(): ERROR: $e');

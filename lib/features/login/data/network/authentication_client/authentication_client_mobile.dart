@@ -40,7 +40,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     final authorizationTokenResponse = await _appAuth.authorizeAndExchangeCode(
       authorizationTokenRequest,
     );
-    log('$runtimeType::getTokenOIDC(): token: ${authorizationTokenResponse.accessToken}');
+    log('$runtimeType::getTokenOIDC(): token received');
     final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
     if (tokenOIDC.isTokenValid()) {
       return tokenOIDC;
@@ -82,7 +82,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
         scopes,
       );
       final tokenResponse = await _appAuth.token(tokenRequest);
-      log('$runtimeType::refreshingTokensOIDC():Token: ${tokenResponse.accessToken}');
+      log('$runtimeType::refreshingTokensOIDC(): token refreshed');
       final tokenOIDC = tokenResponse.toTokenOIDC(currentToken: currentToken);
       if (tokenOIDC.isTokenValid()) {
         return tokenOIDC;

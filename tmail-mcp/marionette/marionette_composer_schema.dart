@@ -24,3 +24,8 @@ MarionetteExtensionResult noComposerOpen() =>
     const MarionetteExtensionResult.invalidParams(
       'No composer editor found. Open the composer first.',
     );
+
+MarionetteExtensionResult multipleComposersOpen() =>
+    const MarionetteExtensionResult.invalidParams(
+      'More than one composer is open. Close the others first.',
+    );

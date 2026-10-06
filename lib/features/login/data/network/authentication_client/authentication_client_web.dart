@@ -47,7 +47,7 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
       // silenced exception instead of dereferencing null and flashing an error.
       throw AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException();
     }
-    log('$runtimeType::getTokenOIDC():Token: ${authorizationTokenResponse.accessToken}');
+    log('$runtimeType::getTokenOIDC(): token received');
     final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
     if (tokenOIDC.isTokenValid()) {
       return tokenOIDC;

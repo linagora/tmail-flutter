@@ -417,7 +417,7 @@ class LoginController extends ReloadableController {
 
   void handleLoginPressed(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-    log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
+    log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | hasPassword: ${_password != null}');
     if (_currentBaseUrl == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
     } else if (_username == null) {
