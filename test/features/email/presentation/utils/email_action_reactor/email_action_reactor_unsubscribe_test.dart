@@ -95,8 +95,8 @@ Future<void> _expectDialogMessage(
 
 void main() {
   setUp(() {
-    Get.put(ResponsiveUtils());
-    Get.put(ImagePaths());
+    Get.put(ResponsiveUtils(), permanent: true);
+    Get.put(ImagePaths(), permanent: true);
   });
 
   tearDown(Get.reset);
