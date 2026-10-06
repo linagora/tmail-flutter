@@ -110,7 +110,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
         intentFlags: ephemeralIntentFlags,
       ),
     );
-    log('$runtimeType::signInTwakeWorkplace():Uri = $uri');
+    log('$runtimeType::signInTwakeWorkplace(): callback received');
     return TokenOIDC.fromUri(uri);
   }
 
@@ -123,7 +123,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
         intentFlags: ephemeralIntentFlags,
       ),
     );
-    log('$runtimeType::signUpTwakeWorkplace():Uri = $uri');
+    log('$runtimeType::signUpTwakeWorkplace(): callback received');
     return TokenOIDC.fromUri(uri);
   }
 }

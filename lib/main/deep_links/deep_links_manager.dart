@@ -18,7 +18,7 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
 
   Future<DeepLinkData?> getDeepLinkData() async {
     final uriLink = await AppLinks().getInitialLink();
-    log('DeepLinksManager::getDeepLinkData:uriLink = $uriLink');
+    log('DeepLinksManager::getDeepLinkData: received link');
     if (uriLink == null) return null;
 
     final deepLinkData = parseDeepLink(uriLink.toString());
@@ -32,7 +32,7 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
 
   void _handleUriLinkStream(Uri uri) {
     final deepLinkData = parseDeepLink(uri.toString());
-    log('DeepLinksManager::_handleUriLinkStream:DeepLinkData = $deepLinkData');
+    log('DeepLinksManager::_handleUriLinkStream: action = ${deepLinkData?.actionType}');
     setPendingDeepLinkData(deepLinkData);
   }
 
@@ -53,7 +53,7 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
     try {
       final decodedUrl = Uri.decodeFull(url);
       final uri = Uri.parse(decodedUrl);
-      log('DeepLinksManager::parseDeepLink:uri = $uri');
+      log('DeepLinksManager::parseDeepLink: host = ${uri.host}');
       final action = uri.host;
 
       if (action == DeepLinkActionType.openApp.name.toLowerCase()) {
