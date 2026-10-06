@@ -332,6 +332,34 @@ jobs:
     permissions:
       contents: read
       security-events: read
+    strategy:
+      fail-fast: false
+      # repo variable SECURITY_LLM_MAX_PARALLEL=1 runs the areas one by one
+      max-parallel: ${{ fromJSON(vars.SECURITY_LLM_MAX_PARALLEL || '8') }}
+      matrix:
+        include:
+          - area: changes
+          - area: html-xss
+            focus: Email/HTML rendering, sanitizer setup, composer, reply/forward quoting, print
+            paths: core/lib/utils/html core/lib/presentation/utils/html_transformer lib/features/email lib/features/email_previewer lib/features/composer lib/features/thread_detail
+          - area: navigation
+            focus: Link opening, deep links, mailto, routing, notification taps
+            paths: lib/main/deep_links lib/main/routes lib/features/mailto lib/features/push_notification core/lib/utils/external_link_policy.dart core/lib/utils/web_uri_parser.dart core/lib/utils/web_link_generator.dart
+          - area: storage
+            focus: Local storage, cache encryption, offline data, downloads, logout wipe
+            paths: lib/features/caching lib/features/offline_mode lib/features/sending_queue lib/features/cleanup lib/features/download lib/features/upload
+          - area: auth
+            focus: Login, OIDC, autodiscovery, token handling, logout
+            paths: lib/features/login lib/features/starting_page lib/features/home lib/main/bindings
+          - area: platform
+            focus: Android/iOS config, exported components, URL schemes, entitlements, native code, FCM
+            paths: android ios fcm
+          - area: web-shell
+            focus: Web shell pages, OIDC callbacks, service worker, CSP, nginx serving
+            paths: web Dockerfile server
+          - area: deps
+            focus: Dependencies and supply chain, git-pinned forks, CI workflows, patches
+            paths: pubspec.yaml pubspec.lock .github/workflows patchs
     steps:
       - name: Check LLM config
         id: cfg
@@ -365,13 +393,29 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           REF: ${{ github.ref }}
+          AREA: ${{ matrix.area }}
+          FOCUS: ${{ matrix.focus }}
+          AREA_PATHS: ${{ matrix.paths }}
         run: |
+          mkdir -p .security-review
+          prompt=.security-review/prompt.md
+          cp .github/security/llm-review-prompt.md "$prompt"
+          if [[ "$AREA" != "changes" ]]; then
+            read -ra paths <<< "$AREA_PATHS"
+            {
+              echo
+              cat .github/security/llm-task-area.md
+              printf '\nArea: %s\nFocus: %s\nPaths:\n' "$AREA" "$FOCUS"
+              printf -- '- %s\n' "${paths[@]}"
+            } >> "$prompt"
+            exit 0
+          fi
+          { echo; cat .github/security/llm-task-changes.md; } >> "$prompt"
           base="$BASE"
           if [[ -z "$base" ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
             base=$(git rev-list -n1 --before="24 hours ago" HEAD)
           fi
           [[ -n "$base" ]] || base=$(git rev-parse HEAD~1)
-          mkdir -p .security-review
           # open code-scanning alerts for this ref, error/warning only
           gh api --paginate "repos/$REPO/code-scanning/alerts?ref=$REF&state=open&per_page=100" \
             --jq '.[] | select(.rule.severity == "error" or .rule.severity == "warning") | {tool: .tool.name, rule: .rule.id, level: .rule.severity, text: .most_recent_instance.message.text, at: "\(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line)"}' \
@@ -418,7 +462,7 @@ jobs:
             permission: { edit: "deny", bash: "deny", webfetch: "deny", external_directory: "deny" }
           }' > "$OPENCODE_CONFIG"
           # report goes to the private issue only: run logs are public
-          timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .github/security/llm-review-prompt.md)" \
+          timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .security-review/prompt.md)" \
             > .security-review/llm-report.md
 
       - name: Post report to private issue
@@ -427,10 +471,12 @@ jobs:
           GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
           GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
           IID: ${{ needs.gitlab-issue.outputs.iid }}
+          AREA: ${{ matrix.area }}
         run: |
           report=.security-review/llm-report.md
           [[ -s "$report" ]] || echo "LLM review produced no output; see the run log." > "$report"
-          bash .github/security/gitlab.sh note "$IID" "$report"
+          { echo "## LLM review: $AREA"; echo; cat "$report"; } > .security-review/note.md
+          bash .github/security/gitlab.sh note "$IID" .security-review/note.md
 
   report:
     needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan, zizmor, scorecard, gitlab-issue, llm-review]
