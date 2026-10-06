@@ -367,6 +367,11 @@ jobs:
           fi
           [[ -n "$base" ]] || base=$(git rev-parse HEAD~1)
           mkdir -p .security-review
+          mkdir -p .security-review/findings
+          for f in .security-review/sarif/*.sarif; do
+            jq '[.runs[] | {tool: .tool.driver.name, results: [.results[]? | select((.level // "warning") != "note") | {rule: .ruleId, level: (.level // "warning"), text: .message.text, at: ((.locations[0].physicalLocation // {}) | "\(.artifactLocation.uri):\(.region.startLine)")}]}]' \
+              "$f" > ".security-review/findings/$(basename "$f" .sarif).json"
+          done
           git log --no-merges --format='%h %an %s' "$base..HEAD" > .security-review/commits.txt
           git diff --stat "$base..HEAD" > .security-review/diffstat.txt
           git diff -U5 "$base..HEAD" -- . \
