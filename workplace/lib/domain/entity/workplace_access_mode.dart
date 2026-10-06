@@ -1,16 +1,16 @@
-/// How a Drive intent request authenticates: same shape for callers,
+/// How a Workplace call authenticates: same shape for callers,
 /// diverse implementation per variant.
-sealed class WorkplaceIntentAccessMode {
-  const WorkplaceIntentAccessMode();
+sealed class WorkplaceAccessMode {
+  const WorkplaceAccessMode();
 }
 
 /// Container app already holds the stack session; no token needed.
-class BridgeAccessMode extends WorkplaceIntentAccessMode {
+final class BridgeAccessMode extends WorkplaceAccessMode {
   const BridgeAccessMode();
 }
 
 /// Direct REST call authenticated with an exchanged Drive access token.
-class BearerTokenAccessMode extends WorkplaceIntentAccessMode {
+final class BearerTokenAccessMode extends WorkplaceAccessMode {
   final String accessToken;
   const BearerTokenAccessMode(this.accessToken);
 }
