@@ -340,6 +340,11 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "LLM review skipped: SECURITY_LLM_* not configured." >> "$GITHUB_STEP_SUMMARY"
           else
+            # the key goes in an Authorization header; refuse cleartext endpoints
+            if [[ "$LLM_BASE_URL" != https://* ]]; then
+              echo "::error::SECURITY_LLM_BASE_URL must use https."
+              exit 1
+            fi
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -396,6 +401,8 @@ jobs:
           LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+          # ignore repo .opencode config/plugins in the key-bearing step
+          OPENCODE_DISABLE_PROJECT_CONFIG: "true"
         run: |
           export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
           jq -n --arg model "$LLM_MODEL" '{
@@ -409,7 +416,7 @@ jobs:
               models: { ($model): { name: $model } }
             } },
             model: ("security-llm/" + $model),
-            permission: { edit: "deny", bash: "deny", webfetch: "deny" }
+            permission: { edit: "deny", bash: "deny", webfetch: "deny", external_directory: "deny" }
           }' > "$OPENCODE_CONFIG"
           timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .github/security/llm-review-prompt.md)" \
             | tee .security-review/llm-report.md
