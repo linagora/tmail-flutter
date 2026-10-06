@@ -11,7 +11,7 @@ import '../model/workplace_intent_response.dart';
 import '../bridge/cozy_bridge.dart';
 import '../workplace_dio.dart';
 import '../../domain/entity/workplace_intent.dart';
-import '../../domain/entity/workplace_intent_access_mode.dart';
+import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
@@ -28,7 +28,7 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   @override
   Future<WorkplaceIntent> createIntent({
     required Uri platformUrl,
-    required WorkplaceIntentAccessMode accessMode,
+    required WorkplaceAccessMode accessMode,
     required WorkplaceIntentConfig config,
   }) async {
     final body = _buildIntentRequest(config);

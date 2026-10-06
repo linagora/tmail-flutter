@@ -14,7 +14,7 @@ import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
-import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
+import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
@@ -183,7 +183,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 
   Future<WorkplaceIntent> _createIntent(
     Uri platformUrl,
-    WorkplaceIntentAccessMode accessMode, {
+    WorkplaceAccessMode accessMode, {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) async {
     WorkplaceIntent? intent;

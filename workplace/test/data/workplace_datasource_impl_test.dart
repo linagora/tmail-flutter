@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
-import 'package:workplace/domain/entity/workplace_intent_access_mode.dart';
+import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
 

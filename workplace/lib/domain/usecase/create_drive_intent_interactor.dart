@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
-import '../entity/workplace_intent_access_mode.dart';
+import '../entity/workplace_access_mode.dart';
 import '../entity/workplace_intent_config.dart';
 import '../repository/workplace_repository.dart';
 import '../state/workplace_intent_state.dart';
@@ -13,7 +13,7 @@ class CreateDriveIntentInteractor {
 
   Stream<Either<Failure, Success>> execute(
     Uri platformUrl,
-    WorkplaceIntentAccessMode accessMode, {
+    WorkplaceAccessMode accessMode, {
     required WorkplaceIntentConfig config,
   }) async* {
     try {
