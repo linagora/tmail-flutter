@@ -86,14 +86,20 @@ void main() {
   });
 
   group('XFileExtension::isDroppedFolder', () {
-    test('is true for a 0-byte entry with no type', () async {
-      final empty = await writeFile('docs', '');
+    test('is true for a directory', () async {
+      final folder = await Directory('${tempDir.path}/docs').create();
 
-      expect(await XFile(empty.path, mimeType: '').isDroppedFolder(), isTrue);
-      expect(await XFile(empty.path).isDroppedFolder(), isTrue);
+      expect(await XFile(folder.path, mimeType: '').isDroppedFolder(), isTrue);
     });
 
-    test('is false for a typed or non-empty entry', () async {
+    test('is false for a 0-byte file with no type', () async {
+      final empty = await writeFile('LICENSE', '');
+
+      expect(await XFile(empty.path, mimeType: '').isDroppedFolder(), isFalse);
+      expect(await XFile(empty.path).isDroppedFolder(), isFalse);
+    });
+
+    test('is false for a typed or non-empty file', () async {
       final empty = await writeFile('a.txt', '');
       final filled = await writeFile('b', 'abc');
 

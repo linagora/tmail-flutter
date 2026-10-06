@@ -21,4 +21,23 @@ void main() {
     expect(await utf8.decodeStream(openRead()), 'hello drop');
     expect(await utf8.decodeStream(openRead()), 'hello drop');
   });
+
+  test('a readable or empty blob is readable', () async {
+    final filled = web.URL.createObjectURL(web.Blob(<JSAny>[Uint8List.fromList(utf8.encode('abc')).toJS].toJS));
+    final empty = web.URL.createObjectURL(web.Blob(<JSAny>[].toJS));
+    addTearDown(() {
+      web.URL.revokeObjectURL(filled);
+      web.URL.revokeObjectURL(empty);
+    });
+
+    expect(await droppedFileIsReadable(XFile(filled, name: 'b')), isTrue);
+    expect(await droppedFileIsReadable(XFile(empty, name: 'LICENSE')), isTrue);
+  });
+
+  test('an unreadable blob url, as a dropped folder gives, is not readable', () async {
+    final url = web.URL.createObjectURL(web.Blob(<JSAny>[].toJS));
+    web.URL.revokeObjectURL(url);
+
+    expect(await droppedFileIsReadable(XFile(url, name: 'docs')), isFalse);
+  });
 }
