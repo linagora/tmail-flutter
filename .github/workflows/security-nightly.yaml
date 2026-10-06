@@ -387,7 +387,7 @@ jobs:
             permission: { edit: "deny", bash: "deny", webfetch: "deny" }
           }' > "$OPENCODE_CONFIG"
           timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .github/security/llm-review-prompt.md)" \
-            2> "$RUNNER_TEMP/opencode.log" | tee .security-review/llm-report.md
+            | tee .security-review/llm-report.md
           cat .security-review/llm-report.md >> "$GITHUB_STEP_SUMMARY"
 
       - if: always() && steps.cfg.outputs.enabled == 'true'
@@ -397,7 +397,6 @@ jobs:
           path: |
             .security-review/llm-report.md
             .security-review/commits.txt
-            ${{ runner.temp }}/opencode.log
           retention-days: 30
 
   report:
