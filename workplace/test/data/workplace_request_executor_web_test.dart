@@ -42,6 +42,26 @@ void main() {
       expect(decoded.containsKey('headers'), isFalse);
     });
 
+    test('encodes reserved characters in query keys and values', () async {
+      JSObject? captured;
+      installCozyBridge((options) {
+        captured = options;
+        return null;
+      });
+
+      await executor.send(
+        context: context,
+        route: const WorkplaceRequestRoute(
+          method: 'GET',
+          pathSegments: ['files'],
+          queryParameters: {'a&b': 'c=d'},
+        ),
+      );
+
+      final decoded = captured!.dartify() as Map;
+      expect(decoded['path'], equals('/files?a%26b=c%3Dd'));
+    });
+
     test('passes body and headers through when present', () async {
       JSObject? captured;
       installCozyBridge((options) {
