@@ -1390,8 +1390,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/petitparser-7-xml-6-upgrade"
-      resolved-ref: "86b40d238681e57d0d49a71ef047d74587a8fc79"
+      ref: master
+      resolved-ref: c6d4474add36a5ba5d7cd6d8f4acdd21cc06cb3a
       url: "https://github.com/linagora/intl_generator.git"
     source: git
     version: "0.4.1"
