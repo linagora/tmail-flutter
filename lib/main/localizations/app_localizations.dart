@@ -414,6 +414,16 @@ class AppLocalizations {
     );
   }
 
+  String cannotUploadFoldersAsAttachments(int count) {
+    return Intl.plural(
+      count,
+      one: 'Cannot upload this folder as attachment',
+      other: 'Cannot upload these folders as attachments',
+      name: 'cannotUploadFoldersAsAttachments',
+      args: [count],
+    );
+  }
+
   String get attachments_uploaded_successfully {
     return Intl.message(
       'Attachments uploaded successfully',

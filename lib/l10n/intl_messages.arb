@@ -414,6 +414,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "cannotUploadFoldersAsAttachments": "{count,plural, =1{Cannot upload this folder as attachment}other{Cannot upload these folders as attachments}}",
+  "@cannotUploadFoldersAsAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Attachments uploaded successfully",
   "@attachments_uploaded_successfully": {
     "type": "text",

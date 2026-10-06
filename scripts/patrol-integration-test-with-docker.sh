@@ -135,6 +135,15 @@ echo "google cli auth"
 gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
 gcloud config set project "$FIREBASE_PROJECT_ID"
 
+# AGP 8.12 puts the APKs under android/app/build, not ../build
+APP_APK=$(find build android/app/build -path '*/apk/debug/app-debug.apk' 2>/dev/null | head -1)
+TEST_APK=$(find build android/app/build -path '*/apk/androidTest/debug/app-debug-androidTest.apk' 2>/dev/null | head -1)
+if [ ! -f "$APP_APK" ] || [ ! -f "$TEST_APK" ]; then
+    echo "ERROR: APKs not found (app: '$APP_APK', test: '$TEST_APK'). APKs present:"
+    find . -name '*.apk' -not -path './.pub-cache/*'
+    exit 1
+fi
+
 echo "start firebase tests"
 FTL_OUTPUT=$(mktemp)
 RESULTS_DIR="jenkins/${BUILD_NUMBER:-local-$(date +%s)}"
@@ -142,8 +151,8 @@ RESULTS_DIR="jenkins/${BUILD_NUMBER:-local-$(date +%s)}"
 set +e
 gcloud firebase test android run \
     --type instrumentation \
-    --app build/app/outputs/apk/debug/app-debug.apk \
-    --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+    --app "$APP_APK" \
+    --test "$TEST_APK" \
     --device model=MediumPhone.arm,version=34 \
     --timeout 60m \
     --use-orchestrator \
