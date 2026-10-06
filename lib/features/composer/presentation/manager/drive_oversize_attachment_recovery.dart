@@ -50,7 +50,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     final platformUrl = container.read(driveAttachmentUriValueProvider).value;
     if (platformUrl == null) return false;
 
-    final files = request.regularFiles;
+    final files = request.files;
     if (files.isEmpty) return false;
 
     final items = files
