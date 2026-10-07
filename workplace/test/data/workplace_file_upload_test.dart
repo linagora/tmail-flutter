@@ -13,6 +13,9 @@ import 'package:workplace/data/model/workplace_request_transfer.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
 
+/// Queue item for a failure that carries no HTTP response.
+const _connectionError = Object();
+
 /// Captures the last request, returns a queued response per call.
 class _QueueAdapter implements HttpClientAdapter {
   final List<dynamic> queue;
@@ -28,6 +31,12 @@ class _QueueAdapter implements HttpClientAdapter {
   ) async {
     capturedOptions.add(options);
     final item = queue[capturedOptions.length - 1];
+    if (identical(item, _connectionError)) {
+      throw DioException.connectionError(
+        requestOptions: options,
+        reason: 'unreachable',
+      );
+    }
     if (item is int) {
       throw DioException(
         requestOptions: options,
@@ -199,6 +208,21 @@ void main() {
       await expectLater(
         datasource.uploadFile(context: context, spec: spec),
         throwsA(isA<DioException>()),
+      );
+      expect(adapter.capturedOptions, hasLength(1));
+    });
+
+    test('rethrows a failure without a response without retrying', () async {
+      final adapter = _QueueAdapter([_connectionError]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.uploadFile(context: context, spec: spec),
+        throwsA(isA<DioException>().having(
+          (exception) => exception.type,
+          'type',
+          DioExceptionType.connectionError,
+        )),
       );
       expect(adapter.capturedOptions, hasLength(1));
     });
