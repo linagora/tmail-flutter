@@ -16,6 +16,14 @@ import 'package:workplace/domain/entity/workplace_upload_source.dart';
 /// Queue item for a failure that carries no HTTP response.
 const _connectionError = Object();
 
+/// Queue item for a response body sent as-is under [contentType].
+class _RawResponse {
+  final String body;
+  final String contentType;
+
+  const _RawResponse(this.body, this.contentType);
+}
+
 /// Captures the last request, returns a queued response per call.
 class _QueueAdapter implements HttpClientAdapter {
   final List<dynamic> queue;
@@ -42,6 +50,15 @@ class _QueueAdapter implements HttpClientAdapter {
         requestOptions: options,
         response: Response(statusCode: item, requestOptions: options),
         type: DioExceptionType.badResponse,
+      );
+    }
+    if (item is _RawResponse) {
+      return ResponseBody.fromString(
+        item.body,
+        200,
+        headers: {
+          Headers.contentTypeHeader: [item.contentType],
+        },
       );
     }
     return ResponseBody.fromString(
@@ -238,6 +255,44 @@ void main() {
       await expectLater(
         datasource.uploadFile(context: context, spec: spec),
         throwsA(isA<StateError>()),
+      );
+    });
+
+    test('returns an empty name when the response carries no attributes', () async {
+      final adapter = _QueueAdapter([
+        {
+          'data': {'id': 'file-1'},
+        },
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final result = await datasource.uploadFile(context: context, spec: spec);
+
+      expect(result.fileId, equals('file-1'));
+      expect(result.name, isEmpty);
+    });
+
+    test('parses a JSON object the stack returns as a plain-text string', () async {
+      final adapter = _QueueAdapter([
+        _RawResponse(jsonEncode(fileResponse), 'text/plain'),
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final result = await datasource.uploadFile(context: context, spec: spec);
+
+      expect(result.fileId, equals('file-1'));
+      expect(result.name, equals('report.pdf'));
+    });
+
+    test('throws FormatException when the response is not a JSON object', () async {
+      final adapter = _QueueAdapter([
+        const _RawResponse('[]', 'application/json'),
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.uploadFile(context: context, spec: spec),
+        throwsA(isA<FormatException>()),
       );
     });
 
