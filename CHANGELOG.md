@@ -1,3 +1,7 @@
+## [0.39.2] - 2026-10-07
+### Added 
+- Log when user toggle Sentry
+
 ## [0.39.1] - 2026-10-06
 ### Added
 - #4809 Add Sentry error reporting preference and consent handling
