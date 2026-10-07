@@ -11,6 +11,7 @@ import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
+import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
 
 /// Queue item for a failure that carries no HTTP response.
 const _connectionError = Object();
@@ -94,6 +95,7 @@ class _QueueAdapter implements HttpClientAdapter {
 /// Records every route it is asked to send and answers with an uploaded file.
 class _RecordingExecutor implements WorkplaceRequestExecutor {
   final List<WorkplaceRequestRoute> routes = [];
+  final List<WorkplaceRequestTransfer> transfers = [];
 
   @override
   Future<dynamic> send({
@@ -103,6 +105,7 @@ class _RecordingExecutor implements WorkplaceRequestExecutor {
     WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
   }) async {
     routes.add(route);
+    transfers.add(transfer);
     return {
       'data': {'id': 'file-1'},
     };
@@ -404,7 +407,7 @@ void main() {
       await datasource.uploadFile(
         context: context,
         spec: spec,
-        transfer: const WorkplaceRequestTransfer(timeout: timeout),
+        transfer: const WorkplaceUploadTransfer(timeout: timeout),
       );
       await datasource.uploadFile(context: context, spec: spec);
 
@@ -423,6 +426,39 @@ void main() {
       final route = executor.routes.single;
       expect(route.method, equals('POST'));
       expect(route.pathSegments, equals(['files', 'io.cozy.apps/mail']));
+    });
+
+    test('maps the domain transfer onto the request transfer', () async {
+      final executor = _RecordingExecutor();
+      final cancel = Completer<void>();
+      void onProgress(int sent, int total) {}
+
+      await WorkplaceDataSourceImpl(executor: executor).uploadFile(
+        context: context,
+        spec: spec,
+        transfer: WorkplaceUploadTransfer(
+          onProgress: onProgress,
+          cancelSignal: cancel.future,
+          timeout: const Duration(minutes: 30),
+        ),
+      );
+      final sent = executor.transfers.single;
+      expect(sent.onSendProgress, same(onProgress));
+      expect(sent.timeout, equals(const Duration(minutes: 30)));
+      expect(sent.cancelToken!.isCancelled, isFalse);
+
+      cancel.complete();
+      await Future<void>.delayed(Duration.zero);
+      expect(sent.cancelToken!.isCancelled, isTrue);
+    });
+
+    test('sends no cancel token without a cancel signal', () async {
+      final executor = _RecordingExecutor();
+
+      await WorkplaceDataSourceImpl(executor: executor)
+          .uploadFile(context: context, spec: spec);
+
+      expect(executor.transfers.single.cancelToken, isNull);
     });
 
     test('WorkplaceFileResponse.fromJson parses a real stack payload', () {
