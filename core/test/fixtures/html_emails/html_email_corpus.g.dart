@@ -11,6 +11,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic empty body",
     allowEmptyBody: true,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "malformed",
@@ -21,6 +24,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic malformed HTML",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "style_in_head",
@@ -31,6 +37,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic style only in head",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "wide_image",
@@ -41,6 +50,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic wide image width attr",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "wide_pre",
@@ -51,6 +63,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic wide pre",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "wide_table",
@@ -61,6 +76,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic wide table",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "cid_image",
@@ -71,6 +89,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic CID image",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "tracking_pixel",
@@ -81,6 +102,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic tracking pixel",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "cerberus_media",
@@ -91,6 +115,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Cerberus @media newsletter",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "mailchimp",
@@ -101,6 +128,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Mailchimp nested tables",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "gitlab",
@@ -111,6 +141,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic GitLab notification",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "google_calendar",
@@ -121,6 +154,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Google Calendar invite",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "jira",
@@ -131,6 +167,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Jira notification",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "gmail_quoted_reply",
@@ -141,6 +180,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Gmail quoted reply",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "long_thread",
@@ -151,6 +193,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic long thread",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "nested_blockquote",
@@ -161,6 +206,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic nested blockquotes",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "rtl_arabic",
@@ -171,6 +219,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic RTL Arabic",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "vietnamese_emoji",
@@ -181,6 +232,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Vietnamese + emoji",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "apple_mail",
@@ -191,6 +245,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Apple Mail",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "gmail_web",
@@ -201,6 +258,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic look-alike of Gmail web compose",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "outlook_desktop",
@@ -211,6 +271,9 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "synthetic Outlook Word/VML markup",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
   HtmlEmailCorpusFixture(
     name: "twake_signature_drive",
@@ -221,5 +284,8 @@ const htmlEmailCorpus = <HtmlEmailCorpusFixture>[
     minPreservation: 0.95,
     source: "Twake Mail signature + Drive card look-alike",
     allowEmptyBody: false,
+    purpose: "",
+    contentType: "text/html",
+    expect: [],
   ),
 ];
