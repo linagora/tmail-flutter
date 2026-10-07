@@ -18,6 +18,9 @@ import 'package:core/presentation/utils/html_transformer/dom/responsive_table_ce
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/utils/platform_info.dart';
@@ -150,6 +153,15 @@ class TransformConfiguration {
           StandardizeHtmlSanitizingTransformers(),
         ],
       );
+
+  /// A `text/plain` body: autolinks and HTML-escapes the text, then keeps only
+  /// safe `<a>` tags, then preserves ASCII tables in a monospace block.
+  factory TransformConfiguration.forPlainTextEmail() =>
+      TransformConfiguration.fromTextTransformers(const [
+        SanitizeAutolinkHtmlTransformers(),
+        SanitizePlainTextHtmlOutputTransformer(),
+        PersistPreformattedTextTransformer(),
+      ]);
 
   factory TransformConfiguration.forCalendarEvent() => TransformConfiguration.create(
     customTextTransformers: const [

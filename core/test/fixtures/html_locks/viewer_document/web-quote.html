@@ -1,0 +1,538 @@
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <style>
+            @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'TwakeInter', sans-serif;
+    }
+  
+        
+            body {
+      font-weight: 400;
+      font-size: 14.0px;
+      font-style: normal;
+    }
+    
+    p {
+      margin: 0px;
+    }
+  
+        
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        .tmail-content {
+          min-height: 150.0px;
+          min-width: 300.0px;
+          overflow: auto;
+          overflow-wrap: break-word;
+          word-break: break-word;
+        }
+                  .tmail-content::-webkit-scrollbar {
+            display: none;
+          }
+          .tmail-content {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+        
+        
+        pre {
+          white-space: pre-wrap;
+        }
+        
+        table {
+          white-space: normal !important;
+        }
+              
+        @media only screen and (max-width: 600px) {
+          table {
+            width: 100% !important;
+          }
+          
+          a:not(.tmail-file-link-card) {
+            width: -webkit-fill-available !important;
+          }
+        }
+        
+        table, td, th {
+          word-break: normal !important;
+        }
+        
+            <style>
+      .quote-toggle-button + blockquote {
+        display: block; /* Default display */
+      }
+      .quote-toggle-button.collapsed + blockquote {
+        display: none;
+      }
+      .quote-toggle-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        gap: 2px;
+        background-color: #d7e2f5;
+        padding: 0;
+        margin: 8px 0;
+        border-radius: 50%;
+        transition: background-color 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE 10+ */
+        user-select: none; /* Standard syntax */
+        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */
+      }
+      .quote-toggle-button:hover {
+        background-color: #cdcdcd !important;
+      }
+      .dot {
+        width: 3.75px;
+        height: 3.75px;
+        background-color: #55687d;
+        border-radius: 50%;
+      }
+    </style>
+      </style>
+      </head>
+      <body  style = "overflow-x: hidden; margin: 0.0;";>
+      <div class="tmail-content"><html><head></head><body><div class="quote-toggle-container"><div>Reply</div><button class="quote-toggle-button collapsed" title="Show trimmed content">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+      </button><blockquote><p>quoted</p><blockquote><p>nested</p></blockquote></blockquote></div></body></html></div>
+      <style>html, body { height: auto !important; }</style>
+            <script type="text/javascript">
+        window.parent.addEventListener('message', handleMessage, false);
+        window.addEventListener('load', handleOnLoad);
+        window.addEventListener('pagehide', (event) => {
+          window.parent.removeEventListener('message', handleMessage, false);
+          window.removeEventListener('load', handleOnLoad);
+                      clearTimeout(_resizeDebounceTimer);
+            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
+          
+        });
+      
+        function handleMessage(e) {
+          if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
+            var data;
+            try {
+              data = JSON.parse(e.data);
+            } catch (error) {
+              return;
+            }
+            if (data
+                && typeof data["view"] === 'string'
+                && data["view"].includes("lockViewId")
+                && typeof data["type"] === 'string') {
+              if (data["type"].includes("getHeight")) {
+                var height = document.body.scrollHeight;
+                window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+              }
+              if (data["type"].includes("getWidth")) {
+                var width = document.body.scrollWidth;
+                window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlWidth", "width": width}), "*");
+              }
+              if (data["type"].includes("execCommand")) {
+                if (data["argument"] === null) {
+                  document.execCommand(data["command"], false);
+                } else {
+                  document.execCommand(data["command"], false, data["argument"]);
+                }
+              }
+            }
+          }
+        }
+
+                  var _lastResizeHeight = 0;
+          var _resizeDebounceTimer;
+          const resizeObserver = new ResizeObserver((entries) => {
+            clearTimeout(_resizeDebounceTimer);
+            _resizeDebounceTimer = setTimeout(function() {
+              var height = document.body.scrollHeight;
+              if (height === _lastResizeHeight) return;
+              _lastResizeHeight = height;
+              window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+            }, 50);
+          });
+        
+        
+                        function handleOnClickEmailLink(e) {
+                   var href = this.href;
+                   window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
+                   e.preventDefault();
+                }
+              
+        
+        
+        
+        
+        
+        function handleOnLoad() {
+          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "message": "iframeHasBeenLoaded"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toIframe: getHeight"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toIframe: getWidth"}), "*");
+          
+          
+          
+                            var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                  for (var i=0; i < emailLinks.length; i++){
+                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
+                  }
+                
+          
+          resizeObserver.observe(document.body);
+        }
+      </script>
+        <script type="text/javascript">
+      document.addEventListener('wheel', function(e) {
+        e.ctrlKey && e.preventDefault();
+      }, {
+        passive: false,
+      });
+      window.addEventListener('keydown', disableZoomControl);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', disableZoomControl);
+      });
+      
+      function disableZoomControl(event) {
+        if (event.metaKey || event.ctrlKey) {
+          switch (event.key) {
+            case '=':
+            case '-':
+              event.preventDefault();
+              break;
+          }
+        }
+      }
+    </script>
+      <script type="text/javascript">
+      const lazyImages = document.querySelectorAll('[lazy]');
+      const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const lazyImage = entry.target;
+            const src = lazyImage.dataset.src;
+            lazyImage.tagName.toLowerCase() === 'img'
+              ? lazyImage.src = src
+              : lazyImage.style.backgroundImage = "url('" + src + "')";
+            lazyImage.removeAttribute('lazy');
+            observer.unobserve(lazyImage);
+          }
+        });
+      });
+      
+      lazyImages.forEach((lazyImage) => {
+        lazyImageObserver.observe(lazyImage);
+      });
+    </script>
+        <script type="text/javascript">
+        const displayWidth = 760.0;
+    
+        const sizeUnits = ['px', 'in', 'cm', 'mm', 'pt', 'pc'];
+    
+        function convertToPx(value, unit) {
+          switch (unit.toLowerCase()) {
+            case 'px': return value;
+            case 'in': return value * 96;
+            case 'cm': return value * 37.8;
+            case 'mm': return value * 3.78;
+            case 'pt': return value * (96 / 72);
+            case 'pc': return value * (96 / 6);
+            default: return value;
+          }
+        }
+    
+        function removeWidthHeightFromStyle(style) {
+          // Remove width and height properties from style string
+          style = style.replace(/width\s*:\s*[\d.]+[a-zA-Z%]+\s*;?/gi, '');
+          style = style.replace(/height\s*:\s*[\d.]+[a-zA-Z%]+\s*;?/gi, '');
+          style = style.trim();
+          if (style.length && !style.endsWith(';')) {
+            style += ';';
+          }
+          return style;
+        }
+    
+        function extractWidthHeightFromStyle(style) {
+          // Extract width and height values with units from style string
+          const result = {};
+          const widthMatch = style.match(/width\s*:\s*([\d.]+)([a-zA-Z%]+)\s*;?/);
+          const heightMatch = style.match(/height\s*:\s*([\d.]+)([a-zA-Z%]+)\s*;?/);
+    
+          if (widthMatch) {
+            const value = parseFloat(widthMatch[1]);
+            const unit = widthMatch[2];
+            if (!isNaN(value) && unit) {
+              result['width'] = { value, unit };
+            }
+          }
+    
+          if (heightMatch) {
+            const value = parseFloat(heightMatch[1]);
+            const unit = heightMatch[2];
+            if (!isNaN(value) && unit) {
+              result['height'] = { value, unit };
+            }
+          }
+    
+          return result;
+        }
+    
+        function normalizeStyleAttribute(attrs) {
+          // Normalize style attribute to ensure proper responsive behavior
+          let style = attrs['style'];
+          
+          if (!style) {
+            attrs['style'] = 'max-width:100%;height:auto;display:inline;';
+            return;
+          }
+    
+          style = style.trim();
+          const dimensions = extractWidthHeightFromStyle(style);
+          const hasWidth = dimensions.hasOwnProperty('width');
+    
+          if (hasWidth) {
+            const widthData = dimensions['width'];
+            const widthPx = convertToPx(widthData.value, widthData.unit);
+    
+            if (displayWidth !== undefined &&
+                widthPx > displayWidth &&
+                sizeUnits.includes(widthData.unit)) {
+              style = removeWidthHeightFromStyle(style).trim();
+            }
+          }
+    
+          // Ensure proper style string formatting
+          if (style.length && !style.endsWith(';')) {
+            style += ';';
+          }
+    
+          // Add responsive defaults if missing
+          if (!style.includes('max-width')) {
+            style += 'max-width:100%;';
+          }
+    
+          if (!style.includes('height')) {
+            style += 'height:auto;';
+          }
+    
+          if (!style.includes('display')) {
+            style += 'display:inline;';
+          }
+    
+          attrs['style'] = style;
+        }
+    
+        function normalizeWidthHeightAttribute(attrs) {
+          // Normalize width/height attributes and remove if necessary
+          const widthStr = attrs['width'];
+          const heightStr = attrs['height'];
+    
+          // Remove attribute if value is null or undefined
+          if (widthStr === null || widthStr === undefined) {
+            delete attrs['width'];
+          } else if (displayWidth !== undefined) {
+            const widthValue = parseFloat(widthStr);
+            if (!isNaN(widthValue)) {
+              if (widthValue > displayWidth) {
+                delete attrs['width'];
+                delete attrs['height'];
+              }
+            }
+          }
+    
+          // Remove height attribute if value is null or undefined
+          if (heightStr === null || heightStr === undefined) {
+            delete attrs['height'];
+          }
+        }
+    
+        function normalizeImageSize(attrs) {
+          // Apply both style and attribute normalization
+          normalizeWidthHeightAttribute(attrs);
+          normalizeStyleAttribute(attrs);
+        }
+    
+        function applyImageNormalization() {
+          // Process all images on the page
+          document.querySelectorAll('img').forEach(img => {
+            const attrs = {
+              style: img.getAttribute('style'),
+              width: img.getAttribute('width'),
+              height: img.getAttribute('height')
+            };
+    
+            normalizeImageSize(attrs);
+    
+            // Handle style attribute
+            if (attrs.style !== null && attrs.style !== undefined) {
+              img.setAttribute('style', attrs.style);
+            } else {
+              img.removeAttribute('style');
+            }
+    
+            // Handle width attribute
+            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {
+              img.setAttribute('width', attrs.width);
+            } else {
+              img.removeAttribute('width');
+            }
+    
+            // Handle height attribute
+            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {
+              img.setAttribute('height', attrs.height);
+            } else {
+              img.removeAttribute('height');
+            }
+          });
+        }
+        
+        function safeApplyImageNormalization() {
+          // Error-safe wrapper for the normalization function
+          try {
+            applyImageNormalization();
+          } catch (e) {
+            console.error('Image normalization failed:', e);
+          }
+        }
+        
+        // Run normalization when page loads
+        window.onload = safeApplyImageNormalization;
+      </script>
+        <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.quote-toggle-button');
+        buttons.forEach(button => {
+          button.onclick = function() {
+            const blockquote = this.nextElementSibling;
+            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {
+              this.classList.toggle('collapsed');
+              if (this.classList.contains('collapsed')) {
+                this.title = 'Show trimmed content';
+              } else {
+                this.title = 'Hide expanded content';
+              }
+            }
+          };
+        });
+      });
+    </script>    <script type="text/javascript">
+      function onWheel(e) { 
+        const deltaY = event.deltaY;
+        window.parent.postMessage(JSON.stringify({
+          "view": "lockViewId",
+          "type": "toDart: onScrollChanged",
+          "deltaY": deltaY
+        }), "*");
+      }
+      
+      window.addEventListener('wheel', onWheel, { passive: true });
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('wheel', onWheel);
+      });
+    </script>
+      <script type="text/javascript">
+      window.addEventListener('keydown', handleIframeKeydown);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', handleIframeKeydown);
+      });
+      
+      function handleIframeKeydown(event) {
+        const payload = {
+          view: 'lockViewId',
+          type: 'toDart: iframeKeydown',
+          key: event.key,
+          code: event.code,
+          shift: event.shiftKey
+        };
+        window.parent.postMessage(JSON.stringify(payload), "*");
+      }
+    </script>
+      <script type="text/javascript">
+      document.addEventListener('click', function (e) {
+        try {
+          const payload = {
+            view: 'lockViewId',
+            type: 'toDart: iframeClick',
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        } catch (_) {}
+      });
+    </script>
+      <script type="text/javascript">
+      document.addEventListener("mouseover", function (e) {
+        const target = e.target;
+        if (target.tagName.toLowerCase() === "a") {
+          const rect = target.getBoundingClientRect();
+          
+          const payload = {
+            view: 'lockViewId',
+            type: 'toDart: iframeLinkHover',
+            url: target.href,
+            rect: {
+              x: rect.x,
+              y: rect.y,
+              width: rect.width,
+              height: rect.height
+            }
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        }
+      });
+    
+      document.addEventListener("mouseout", function (e) {
+        const target = e.target;
+        if (target.tagName.toLowerCase() === "a") {
+          const payload = {
+            view: 'lockViewId',
+            type: 'toDart: iframeLinkOut'
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        }
+      });
+    </script>
+  
+      </body>
+      </html> 
+    

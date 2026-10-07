@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:core/presentation/utils/html_transformer/dom/add_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_negative_margin_float_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
@@ -10,6 +11,10 @@ import 'package:core/utils/platform_info.dart';
 enum HtmlPipelineTrust { raw, sanitized, user }
 
 enum HtmlPipelineWiring { sanitizes, passesThrough, stripsStyles }
+
+/// Which [HtmlTransform] entry point feeds the pipeline: `transformToHtml`
+/// for HTML bodies, `transformToTextPlain` for `text/plain` bodies.
+enum HtmlPipelineInput { html, plainText }
 
 class HtmlPipelineRow {
   const HtmlPipelineRow({
@@ -20,6 +25,7 @@ class HtmlPipelineRow {
     required this.wiring,
     this.setPlatform,
     this.allowsContentEditable = false,
+    this.input = HtmlPipelineInput.html,
   });
 
   final String name;
@@ -29,6 +35,9 @@ class HtmlPipelineRow {
   final HtmlPipelineWiring wiring;
   final void Function()? setPlatform;
   final bool allowsContentEditable;
+  final HtmlPipelineInput input;
+
+  bool get takesHtml => input == HtmlPipelineInput.html;
 
   TransformConfiguration build() {
     setPlatform?.call();
@@ -36,9 +45,18 @@ class HtmlPipelineRow {
   }
 }
 
-bool pipelineHasSanitizer(TransformConfiguration config) => config
-    .textTransformers
-    .any((transformer) => transformer is StandardizeHtmlSanitizingTransformers);
+/// HTML pipelines must run [StandardizeHtmlSanitizingTransformers];
+/// text/plain pipelines sanitize their escaped output with
+/// [SanitizePlainTextHtmlOutputTransformer] instead.
+bool pipelineHasSanitizer(
+  TransformConfiguration config, {
+  HtmlPipelineInput input = HtmlPipelineInput.html,
+}) =>
+    config.textTransformers.any(
+      (transformer) => input == HtmlPipelineInput.html
+          ? transformer is StandardizeHtmlSanitizingTransformers
+          : transformer is SanitizePlainTextHtmlOutputTransformer,
+    );
 
 bool pipelineAllowsContentEditable(TransformConfiguration config) => config
     .textTransformers
@@ -168,6 +186,14 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
         wiring: HtmlPipelineWiring.sanitizes,
       ),
       HtmlPipelineRow(
+        name: 'forPlainTextEmail',
+        factoryName: 'forPlainTextEmail',
+        create: TransformConfiguration.forPlainTextEmail,
+        trust: HtmlPipelineTrust.raw,
+        wiring: HtmlPipelineWiring.sanitizes,
+        input: HtmlPipelineInput.plainText,
+      ),
+      HtmlPipelineRow(
         name: 'standardConfiguration',
         factoryName: 'standardConfiguration',
         create: () => TransformConfiguration.standardConfiguration,
@@ -209,7 +235,7 @@ String htmlPipelineTransformConfigurationSource() {
 Map<String, TransformConfiguration Function()> sanitizingPipelineFactories() {
   final factories = <String, TransformConfiguration Function()>{};
   for (final row in htmlPipelineRegistry()) {
-    if (row.wiring != HtmlPipelineWiring.sanitizes) continue;
+    if (!row.takesHtml || row.wiring != HtmlPipelineWiring.sanitizes) continue;
     factories.putIfAbsent(row.factoryName, () => row.create);
   }
   return factories;
@@ -218,7 +244,9 @@ Map<String, TransformConfiguration Function()> sanitizingPipelineFactories() {
 Map<String, TransformConfiguration Function()> passThroughPipelineFactories() {
   final factories = <String, TransformConfiguration Function()>{};
   for (final row in htmlPipelineRegistry()) {
-    if (row.wiring != HtmlPipelineWiring.passesThrough) continue;
+    if (!row.takesHtml || row.wiring != HtmlPipelineWiring.passesThrough) {
+      continue;
+    }
     factories.putIfAbsent(row.factoryName, () => row.create);
   }
   return factories;

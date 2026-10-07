@@ -33,13 +33,13 @@ void main() {
         switch (row.trust) {
           case HtmlPipelineTrust.raw:
             expect(
-              pipelineHasSanitizer(config),
+              pipelineHasSanitizer(config, input: row.input),
               isTrue,
               reason: '${row.name} receives raw HTML and must sanitize',
             );
           case HtmlPipelineTrust.sanitized:
             expect(
-              pipelineHasSanitizer(config),
+              pipelineHasSanitizer(config, input: row.input),
               isFalse,
               reason:
                   '${row.name} receives already-sanitized EmailLoaded; '
@@ -47,7 +47,7 @@ void main() {
             );
           case HtmlPipelineTrust.user:
             expect(
-              pipelineHasSanitizer(config),
+              pipelineHasSanitizer(config, input: row.input),
               row.wiring == HtmlPipelineWiring.sanitizes,
               reason: '${row.name} user-authored policy is ${row.wiring.name}',
             );
