@@ -8,7 +8,7 @@ import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
-import 'package:workplace/data/model/workplace_request_transfer.dart';
+import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
@@ -48,7 +48,7 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) => throw UnimplementedError();
 
   @override
