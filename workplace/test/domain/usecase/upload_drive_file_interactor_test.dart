@@ -20,14 +20,20 @@ class _StubUploadSource implements WorkplaceUploadSource {
   Map<String, dynamic> get dioExtra => const {};
 }
 
-/// Records the upload and share-link calls; [uploadError] makes the upload fail.
+/// Records the upload and share-link calls; [uploadError] makes the upload
+/// fail, [linkError] makes the share link fail, and [onUploaded] runs once the
+/// upload has succeeded.
 class _RecordingRepository extends Fake implements WorkplaceRepository {
   final Object? uploadError;
+  final Object? linkError;
+  final void Function()? onUploaded;
+  WorkplaceRequestContext? uploadContext;
+  WorkplaceUploadFileSpec? uploadSpec;
   WorkplaceUploadTransfer? uploadTransfer;
   WorkplaceRequestContext? linkContext;
   String? linkFileId;
 
-  _RecordingRepository({this.uploadError});
+  _RecordingRepository({this.uploadError, this.linkError, this.onUploaded});
 
   @override
   Future<DriveUploadedFile> uploadFile({
@@ -35,8 +41,11 @@ class _RecordingRepository extends Fake implements WorkplaceRepository {
     required WorkplaceUploadFileSpec spec,
     WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) async {
+    uploadContext = context;
+    uploadSpec = spec;
     uploadTransfer = transfer;
     if (uploadError != null) throw uploadError!;
+    onUploaded?.call();
     return const DriveUploadedFile(fileId: 'file-1', name: 'report (1).pdf');
   }
 
@@ -47,6 +56,7 @@ class _RecordingRepository extends Fake implements WorkplaceRepository {
   }) async {
     linkContext = context;
     linkFileId = fileId;
+    if (linkError != null) throw linkError!;
     return Uri.parse('https://user-drive.example.com/public?sharecode=abc123');
   }
 }
@@ -110,6 +120,38 @@ void main() {
         UploadDriveFileInteractor(repository).execute(context: context, spec: spec),
         throwsA(isA<StateError>()),
       );
+      expect(repository.linkFileId, isNull);
+    });
+
+    test('uploads with the caller context and spec', () async {
+      final repository = _RecordingRepository();
+
+      await UploadDriveFileInteractor(repository).execute(context: context, spec: spec);
+
+      expect(repository.uploadContext, same(context));
+      expect(repository.uploadSpec, same(spec));
+    });
+
+    test('surfaces the share link failure after a successful upload', () async {
+      final repository = _RecordingRepository(linkError: StateError('link failed'));
+
+      await expectLater(
+        UploadDriveFileInteractor(repository).execute(context: context, spec: spec),
+        throwsA(isA<StateError>()),
+      );
+      expect(repository.uploadSpec, same(spec));
+      expect(repository.linkFileId, equals('file-1'));
+    });
+
+    test('does not mint a link when cancelled after the upload succeeded', () async {
+      final cancel = Completer<void>();
+      final repository = _RecordingRepository(onUploaded: cancel.complete);
+
+      await UploadDriveFileInteractor(repository)
+          .execute(context: context, spec: spec, cancelSignal: cancel.future)
+          .catchError((_) => Uri());
+
+      expect(repository.uploadSpec, same(spec));
       expect(repository.linkFileId, isNull);
     });
   });
