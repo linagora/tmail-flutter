@@ -5,11 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
+import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
 import 'package:workplace/data/model/workplace_file_response.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
-import 'package:workplace/domain/entity/workplace_request_context.dart';
-import 'package:workplace/data/model/workplace_request_transfer.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
 
@@ -72,6 +71,24 @@ class _QueueAdapter implements HttpClientAdapter {
 
   @override
   void close({bool force = false}) {}
+}
+
+/// Records every route it is asked to send and answers with an uploaded file.
+class _RecordingExecutor implements WorkplaceRequestExecutor {
+  final List<WorkplaceRequestRoute> routes = [];
+
+  @override
+  Future<dynamic> send({
+    required WorkplaceRequestContext context,
+    required WorkplaceRequestRoute route,
+    WorkplaceRequestBody body = const WorkplaceRequestBody(),
+    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+  }) async {
+    routes.add(route);
+    return {
+      'data': {'id': 'file-1'},
+    };
+  }
 }
 
 /// Uploads [fileName] against a 409 then a success; returns the retried name.
@@ -331,6 +348,17 @@ void main() {
       expect(adapter.capturedOptions[0].receiveTimeout, equals(timeout));
       expect(adapter.capturedOptions[1].sendTimeout, isNull);
       expect(adapter.capturedOptions[1].receiveTimeout, isNull);
+    });
+
+    test('sends the upload through the executor injected into the datasource', () async {
+      final executor = _RecordingExecutor();
+
+      await WorkplaceDataSourceImpl(executor: executor)
+          .uploadFile(context: context, spec: spec);
+
+      final route = executor.routes.single;
+      expect(route.method, equals('POST'));
+      expect(route.pathSegments, equals(['files', 'io.cozy.apps/mail']));
     });
 
     test('WorkplaceFileResponse.fromJson parses a real stack payload', () {
