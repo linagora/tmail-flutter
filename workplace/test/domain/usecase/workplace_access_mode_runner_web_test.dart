@@ -1,6 +1,7 @@
 @TestOn('chrome')
 library;
 
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
@@ -97,20 +98,40 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   }) => throw UnimplementedError();
 }
 
-// Records each access mode it runs on and answers per mode.
+// Records each access mode it runs on; a bridge call throws when [bridgeFails].
 class _ScriptedAction extends WorkplaceAction<String> {
   @override
   final bool supportsBridge;
   @override
   final bool fallsBackToBearer;
+  final bool bridgeFails;
   final List<WorkplaceAccessMode> calls = [];
 
-  _ScriptedAction({this.supportsBridge = true, this.fallsBackToBearer = false});
+  _ScriptedAction({
+    this.supportsBridge = true,
+    this.fallsBackToBearer = false,
+    this.bridgeFails = false,
+  });
 
   @override
   Future<String> call(WorkplaceAccessMode accessMode) async {
     calls.add(accessMode);
-    return accessMode is BridgeAccessMode ? 'bridge-result' : 'bearer-result';
+    if (accessMode is! BridgeAccessMode) return 'bearer-result';
+    if (bridgeFails) throw StateError('bridge rejected');
+    return 'bridge-result';
+  }
+}
+
+// The token exchange fails with a non-refreshable server error.
+class _FailingExchangeRepository extends Fake implements WorkplaceRepository {
+  @override
+  Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async {
+    final requestOptions = RequestOptions(path: '/auth/token_exchange');
+    throw DioException(
+      requestOptions: requestOptions,
+      response: Response(statusCode: 500, requestOptions: requestOptions),
+      type: DioExceptionType.badResponse,
+    );
   }
 }
 
@@ -176,5 +197,17 @@ void main() {
 
     expect(result, 'bearer-result');
     expect(action.calls, [isA<BridgeAccessMode>(), isA<BearerTokenAccessMode>()]);
+  });
+
+  test('surfaces the bearer error when both the bridge and the bearer fallback fail', () async {
+    installCozyBridge((_) => null);
+    final action = _ScriptedAction(fallsBackToBearer: true, bridgeFails: true);
+
+    await expectLater(
+      _runnerOver(_FailingExchangeRepository())
+          .run(Uri.parse('https://platform.example.com'), action),
+      throwsA(isA<DioException>().having((e) => e.response?.statusCode, 'status', 500)),
+    );
+    expect(action.calls, [isA<BridgeAccessMode>()]);
   });
 }
