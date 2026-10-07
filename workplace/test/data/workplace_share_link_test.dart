@@ -160,6 +160,16 @@ void main() {
       );
     });
 
+    test('throws StateError when the share code is empty', () async {
+      final adapter = _QueueAdapter([permissionResponse('')]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.createShareLink(context: context, fileId: 'file-1'),
+        throwsA(isA<StateError>()),
+      );
+    });
+
     test('builds the flat drive subdomain, nested host', () async {
       final adapter = _QueueAdapter([permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
