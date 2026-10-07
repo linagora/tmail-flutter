@@ -183,6 +183,32 @@ void main() {
       expect(link.host, equals('user-drive.nested.example.com'));
     });
 
+    test('appends -drive to a single-label host', () async {
+      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+      final singleLabelContext = WorkplaceRequestContext(
+        platformUrl: Uri.parse('http://localhost'),
+        accessMode: const BearerTokenAccessMode('test-token'),
+      );
+
+      final link = await datasource.createShareLink(context: singleLabelContext, fileId: 'file-1');
+
+      expect(link.host, equals('localhost-drive'));
+    });
+
+    test('keeps the platform port and drops its path and query', () async {
+      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+      final portContext = WorkplaceRequestContext(
+        platformUrl: Uri.parse('https://user.example.com:8443/base/?lang=en'),
+        accessMode: const BearerTokenAccessMode('test-token'),
+      );
+
+      final link = await datasource.createShareLink(context: portContext, fileId: 'file-1');
+
+      expect(link.toString(), equals('https://user-drive.example.com:8443/public?sharecode=abc123'));
+    });
+
     test('builds the flat drive subdomain, flat host', () async {
       final adapter = _QueueAdapter([permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
