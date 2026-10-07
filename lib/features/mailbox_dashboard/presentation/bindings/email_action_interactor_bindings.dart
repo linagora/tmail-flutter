@@ -12,8 +12,11 @@ class EmailActionInteractorBindings extends Bindings {
 
   @override
   void dependencies() {
-    Get.lazyPut(() => AddALabelToAnEmailInteractor(_emailRepository));
-    Get.lazyPut(() => RemoveALabelFromAnEmailInteractor(_emailRepository));
+    // Created eagerly so they belong to the dashboard route. A lazy instance is
+    // first resolved inside the label dialog on touch layouts, so GetX links it
+    // to that dialog and deletes it when the dialog closes.
+    Get.put(AddALabelToAnEmailInteractor(_emailRepository));
+    Get.put(RemoveALabelFromAnEmailInteractor(_emailRepository));
     Get.lazyPut(() => AddListLabelToListEmailsInteractor(_emailRepository));
   }
 }
