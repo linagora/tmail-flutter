@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:labels/extensions/label_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.dart';
 
 import '../base/core_robot.dart';
 import '../utils/wait_for_condition.dart';
@@ -16,9 +18,10 @@ class EmailAssertionRobot extends CoreRobot
   }
 
   @override
-  Future<void> expectLabelAddedToast(String labelDisplayName) async {
-    final message = AppLocalizations()
-        .addLabelToEmailSuccessfullyMessage(labelDisplayName);
-    await waitForCondition(() => $(message).evaluate().isNotEmpty);
+  Future<void> expectLabelShownOnEmailSubject(String labelDisplayName) async {
+    final labelOnSubject = $(EmailSubjectWidget).$(LabelWidget).which<LabelWidget>(
+      (widget) => widget.label.safeDisplayName == labelDisplayName,
+    );
+    await waitForCondition(() => labelOnSubject.evaluate().isNotEmpty);
   }
 }
