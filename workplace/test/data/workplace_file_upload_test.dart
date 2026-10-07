@@ -23,6 +23,24 @@ class _RawResponse {
   const _RawResponse(this.body, this.contentType);
 }
 
+/// Opens a fresh body per read, like the app's `UploadBody`.
+class _FakeUploadSource implements WorkplaceUploadSource {
+  final Object? Function() _open;
+  int reads = 0;
+
+  @override
+  final Map<String, dynamic> dioExtra;
+
+  _FakeUploadSource({Object? Function()? open, this.dioExtra = const {}})
+      : _open = open ?? (() => 'bytes');
+
+  @override
+  Object? get requestData {
+    reads++;
+    return _open();
+  }
+}
+
 /// Captures the last request, returns a queued response per call.
 class _QueueAdapter implements HttpClientAdapter {
   final List<dynamic> queue;
@@ -110,7 +128,7 @@ Future<String?> _retriedName(
       fileName: fileName,
       mimeType: 'application/octet-stream',
       fileSize: 1,
-      source: const WorkplaceUploadSource(requestData: 'bytes'),
+      source: _FakeUploadSource(),
     ),
   );
   return adapter.capturedOptions[1].uri.queryParameters['Name'];
@@ -123,11 +141,11 @@ void main() {
     platformUrl: Uri.parse('https://platform.example.com'),
     accessMode: const BearerTokenAccessMode('test-token'),
   );
-  const spec = WorkplaceUploadFileSpec(
+  final spec = WorkplaceUploadFileSpec(
     fileName: 'report.pdf',
     mimeType: 'application/pdf',
     fileSize: 1234,
-    source: WorkplaceUploadSource(requestData: 'bytes'),
+    source: _FakeUploadSource(),
   );
 
   final fileResponse = {
@@ -171,8 +189,8 @@ void main() {
         fileName: 'report.pdf',
         mimeType: 'application/pdf',
         fileSize: 1234,
-        source: WorkplaceUploadSource(
-          requestData: Stream<List<int>>.fromIterable([
+        source: _FakeUploadSource(
+          open: () => Stream<List<int>>.fromIterable([
             [1, 2, 3],
           ]),
         ),
@@ -209,14 +227,36 @@ void main() {
       expect(adapter.capturedOptions[1].uri.queryParameters['Name'], equals('report (1).pdf'));
     });
 
+    test('reads a fresh body for the 409 retry', () async {
+      final adapter = _QueueAdapter([409, fileResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+      final source = _FakeUploadSource(
+        open: () => Stream<List<int>>.fromIterable([
+          [1, 2, 3],
+        ]),
+      );
+
+      await datasource.uploadFile(
+        context: context,
+        spec: WorkplaceUploadFileSpec(
+          fileName: 'report.pdf',
+          mimeType: 'application/pdf',
+          fileSize: 3,
+          source: source,
+        ),
+      );
+
+      expect(source.reads, equals(2));
+    });
+
     test('suffixes an extension-less name by appending (1)', () async {
       final adapter = _QueueAdapter([409, fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
-      const noExtSpec = WorkplaceUploadFileSpec(
+      final noExtSpec = WorkplaceUploadFileSpec(
         fileName: 'report',
         mimeType: 'application/pdf',
         fileSize: 1234,
-        source: WorkplaceUploadSource(requestData: 'bytes'),
+        source: _FakeUploadSource(),
       );
 
       await datasource.uploadFile(context: context, spec: noExtSpec);
@@ -316,11 +356,11 @@ void main() {
     test('forwards the source extra verbatim so the web blob adapter sees it', () async {
       final adapter = _QueueAdapter([fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
-      const blobSpec = WorkplaceUploadFileSpec(
+      final blobSpec = WorkplaceUploadFileSpec(
         fileName: 'report.pdf',
         mimeType: 'application/pdf',
         fileSize: 1234,
-        source: WorkplaceUploadSource(requestExtra: {
+        source: _FakeUploadSource(dioExtra: {
           'upload-attachment': {'sourceUrl': 'blob:x'},
         }),
       );
