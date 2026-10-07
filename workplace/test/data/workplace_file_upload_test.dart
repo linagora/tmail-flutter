@@ -121,6 +121,28 @@ void main() {
       expect(result.name, equals('report.pdf'));
     });
 
+    test('sends the spec size as Content-Length for a streamed body Dio cannot size', () async {
+      final adapter = _QueueAdapter([fileResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+      final streamSpec = WorkplaceUploadFileSpec(
+        fileName: 'report.pdf',
+        mimeType: 'application/pdf',
+        fileSize: 1234,
+        source: WorkplaceUploadSource(
+          requestData: Stream<List<int>>.fromIterable([
+            [1, 2, 3],
+          ]),
+        ),
+      );
+
+      await datasource.uploadFile(context: context, spec: streamSpec);
+
+      expect(
+        adapter.capturedOptions.single.headers[Headers.contentLengthHeader],
+        equals('1234'),
+      );
+    });
+
     test('sends force_session_id=true so cozy-stack accepts the bearer-only request', () async {
       final adapter = _QueueAdapter([fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
