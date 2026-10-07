@@ -1,0 +1,13 @@
+text:
+  - StandardizeHtmlSanitizingTransformers(allowAttributes: [contenteditable])
+dom:
+  - RemoveScriptTransformer
+  - BlockQuotedTransformer
+  - BlockCodeTransformer
+  - SanitizeHyperLinkTagInHtmlTransformer
+  - ImageTransformer
+  - AddLazyLoadingForBackgroundImageTransformer
+  - RemoveCollapsedSignatureButtonTransformer
+  - NormalizeLineHeightInStyleTransformer
+  - ResponsiveTableCellTransformer
+  - RemoveNegativeMarginFloatTransformer

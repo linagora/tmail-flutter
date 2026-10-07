@@ -1,0 +1,9 @@
+text:
+  - StandardizeHtmlSanitizingTransformers
+dom:
+  - RemoveScriptTransformer
+  - BlockQuotedTransformer
+  - BlockCodeTransformer
+  - SanitizeHyperLinkTagInHtmlTransformer
+  - ImageTransformer
+  - NormalizeLineHeightInStyleTransformer
