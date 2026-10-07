@@ -11,6 +11,7 @@ import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
@@ -199,7 +200,7 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
 
     final newLabel = await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
-        key: const Key('add_label_to_email_modal'),
+        key: const Key(UiKeys.addLabelToEmailModal),
         labels: labels,
         emailLabels: emailLabels,
         emailIds: [emailId],

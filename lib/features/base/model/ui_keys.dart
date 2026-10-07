@@ -45,4 +45,8 @@ class UiKeys {
   static const String addNewFolderButton = 'add_new_folder_button';
   static const String addNewLabelButton = 'labels_bar_widget_add_new_label_button';
   static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
+
+  // Email detail labels
+  static const String emailDetailedMoreButton = 'email_detailed_more_button';
+  static const String addLabelToEmailModal = 'add_label_to_email_modal';
 }
