@@ -1,0 +1,116 @@
+import 'dart:async';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
+import 'package:workplace/domain/entity/drive_uploaded_file.dart';
+import 'package:workplace/domain/entity/workplace_access_mode.dart';
+import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
+import 'package:workplace/domain/entity/workplace_upload_source.dart';
+import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
+import 'package:workplace/domain/repository/workplace_repository.dart';
+import 'package:workplace/domain/usecase/upload_drive_file_interactor.dart';
+
+class _StubUploadSource implements WorkplaceUploadSource {
+  const _StubUploadSource();
+
+  @override
+  Object? get requestData => 'bytes';
+
+  @override
+  Map<String, dynamic> get dioExtra => const {};
+}
+
+/// Records the upload and share-link calls; [uploadError] makes the upload fail.
+class _RecordingRepository extends Fake implements WorkplaceRepository {
+  final Object? uploadError;
+  WorkplaceUploadTransfer? uploadTransfer;
+  WorkplaceRequestContext? linkContext;
+  String? linkFileId;
+
+  _RecordingRepository({this.uploadError});
+
+  @override
+  Future<DriveUploadedFile> uploadFile({
+    required WorkplaceRequestContext context,
+    required WorkplaceUploadFileSpec spec,
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
+  }) async {
+    uploadTransfer = transfer;
+    if (uploadError != null) throw uploadError!;
+    return const DriveUploadedFile(fileId: 'file-1', name: 'report (1).pdf');
+  }
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) async {
+    linkContext = context;
+    linkFileId = fileId;
+    return Uri.parse('https://user-drive.example.com/public?sharecode=abc123');
+  }
+}
+
+void main() {
+  final context = WorkplaceRequestContext(
+    platformUrl: Uri.parse('https://user.example.com'),
+    accessMode: const BearerTokenAccessMode('test-token'),
+  );
+  const spec = WorkplaceUploadFileSpec(
+    fileName: 'report.pdf',
+    mimeType: 'application/pdf',
+    fileSize: 1234,
+    source: _StubUploadSource(),
+  );
+
+  group('UploadDriveFileInteractor::execute::', () {
+    test('uploads with the long timeout and the cancel signal, then links the uploaded file', () async {
+      final repository = _RecordingRepository();
+      final cancelSignal = Completer<void>().future;
+
+      final link = await UploadDriveFileInteractor(repository).execute(
+        context: context,
+        spec: spec,
+        cancelSignal: cancelSignal,
+      );
+
+      expect(repository.uploadTransfer?.timeout, equals(const Duration(minutes: 30)));
+      expect(repository.uploadTransfer?.cancelSignal, same(cancelSignal));
+      expect(repository.linkContext, same(context));
+      expect(repository.linkFileId, equals('file-1'));
+      expect(link.toString(), equals('https://user-drive.example.com/public?sharecode=abc123'));
+    });
+
+    test('forwards upload progress to onProgress', () async {
+      final repository = _RecordingRepository();
+      final progress = <List<int>>[];
+
+      await UploadDriveFileInteractor(repository).execute(
+        context: context,
+        spec: spec,
+        onProgress: (count, total) => progress.add([count, total]),
+      );
+      repository.uploadTransfer?.onProgress?.call(512, 1234);
+
+      expect(progress, equals([[512, 1234]]));
+    });
+
+    test('sends no progress callback when onProgress is null', () async {
+      final repository = _RecordingRepository();
+
+      await UploadDriveFileInteractor(repository).execute(context: context, spec: spec);
+
+      expect(repository.uploadTransfer?.onProgress, isNull);
+    });
+
+    test('does not mint a link when the upload fails', () async {
+      final repository = _RecordingRepository(uploadError: StateError('upload failed'));
+
+      await expectLater(
+        UploadDriveFileInteractor(repository).execute(context: context, spec: spec),
+        throwsA(isA<StateError>()),
+      );
+      expect(repository.linkFileId, isNull);
+    });
+  });
+}
