@@ -1,3 +1,7 @@
+## [0.39.3] - 2026-10-07
+### Fixed
+- Send the Sentry log when user opts in to error reporting
+
 ## [0.39.2] - 2026-10-07
 ### Added 
 - Log when user toggle Sentry
