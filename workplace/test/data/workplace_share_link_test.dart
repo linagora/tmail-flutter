@@ -5,11 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
+import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
 import 'package:workplace/data/model/workplace_permission_request.dart';
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
-import 'package:workplace/domain/entity/workplace_request_context.dart';
 
 /// Queued responses; an int means "throw that HTTP status".
 class _QueueAdapter implements HttpClientAdapter {
@@ -44,6 +44,30 @@ class _QueueAdapter implements HttpClientAdapter {
 
   @override
   void close({bool force = false}) {}
+}
+
+/// Records the last request it is asked to send and answers with a share code.
+class _RecordingExecutor implements WorkplaceRequestExecutor {
+  WorkplaceRequestRoute? route;
+  WorkplaceRequestBody? body;
+
+  @override
+  Future<dynamic> send({
+    required WorkplaceRequestContext context,
+    required WorkplaceRequestRoute route,
+    WorkplaceRequestBody body = const WorkplaceRequestBody(),
+    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+  }) async {
+    this.route = route;
+    this.body = body;
+    return {
+      'data': {
+        'attributes': {
+          'shortcodes': {'code': 'abc123'},
+        },
+      },
+    };
+  }
 }
 
 void main() {
@@ -102,6 +126,21 @@ void main() {
       expect(link.toString(), equals('https://platform-drive.example.com/public?sharecode=abc123'));
       expect(adapter.capturedOptions.first.uri.queryParameters['codes'], equals('code'));
       expect(adapter.capturedOptions, hasLength(1));
+    });
+
+    test('POSTs a JSON GET rule on the given file id to /permissions', () async {
+      final executor = _RecordingExecutor();
+
+      await WorkplaceDriveDataSourceImpl(executor: executor)
+          .createShareLink(context: context, fileId: 'file-1');
+
+      expect(executor.route?.method, equals('POST'));
+      expect(executor.route?.pathSegments, equals(['permissions']));
+      expect(executor.body?.headers, equals({'Content-Type': 'application/json'}));
+      final rule = (executor.body?.data as Map)['data']['attributes']['permissions']['file'];
+      expect(rule['type'], equals('io.cozy.files'));
+      expect(rule['verbs'], equals(['GET']));
+      expect(rule['values'], equals(['file-1']));
     });
 
     test('throws StateError when the response carries no share code', () async {
