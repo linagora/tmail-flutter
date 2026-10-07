@@ -288,6 +288,23 @@ void main() {
       );
       expect(adapter.capturedOptions, hasLength(1));
     });
+
+    test('surfaces the permissions failure without retrying', () async {
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), 403]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.createShareLink(context: context, fileId: 'file-1'),
+        throwsA(isA<DioException>().having(
+          (exception) => exception.response?.statusCode,
+          'statusCode',
+          403,
+        )),
+      );
+      expect(adapter.capturedOptions, hasLength(2));
+      expect(adapter.capturedOptions.last.method, equals('POST'));
+      expect(adapter.capturedOptions.last.uri.path, endsWith('/permissions'));
+    });
   });
 
   group('WorkplaceRepositoryImpl::createShareLink::', () {
