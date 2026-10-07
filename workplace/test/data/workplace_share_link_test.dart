@@ -4,10 +4,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/data/datasource/workplace_drive_datasource.dart';
+import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
 import 'package:workplace/data/model/workplace_permission_request.dart';
 import 'package:workplace/data/model/workplace_enums.dart';
+import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/data/workplace_dio.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 
@@ -67,6 +70,22 @@ class _RecordingExecutor implements WorkplaceRequestExecutor {
         },
       },
     };
+  }
+}
+
+/// Records the arguments of the last share-link call; other calls are out of scope.
+class _RecordingDataSource extends Fake implements WorkplaceDriveDataSource {
+  WorkplaceRequestContext? context;
+  String? fileId;
+
+  @override
+  Future<Uri> createShareLink({
+    required WorkplaceRequestContext context,
+    required String fileId,
+  }) async {
+    this.context = context;
+    this.fileId = fileId;
+    return Uri.parse('https://user-drive.example.com/public?sharecode=abc123');
   }
 }
 
@@ -221,6 +240,19 @@ void main() {
 
       expect(link.host, equals('user-drive.example.com'));
       expect(link.toString(), equals('https://user-drive.example.com/public?sharecode=abc123'));
+    });
+  });
+
+  group('WorkplaceRepositoryImpl::createShareLink::', () {
+    test('forwards the context and file id to the datasource', () async {
+      final dataSource = _RecordingDataSource();
+
+      final link = await WorkplaceRepositoryImpl(WorkplaceDataSourceImpl(), dataSource)
+          .createShareLink(context: context, fileId: 'file-1');
+
+      expect(dataSource.context, same(context));
+      expect(dataSource.fileId, equals('file-1'));
+      expect(link.queryParameters['sharecode'], equals('abc123'));
     });
   });
 }
