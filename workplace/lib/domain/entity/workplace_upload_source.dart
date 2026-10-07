@@ -1,11 +1,8 @@
-/// A request body plus the extra entries the web blob adapter keys on.
-/// Built by the caller so this package never imports the app's upload layer.
-class WorkplaceUploadSource {
-  final Object? requestData;
-  final Map<String, dynamic> requestExtra;
+/// What an upload sends; the app's `UploadBody` implements it.
+abstract interface class WorkplaceUploadSource {
+  /// Read once per attempt, so a stream body is fresh on every retry.
+  Object? get requestData;
 
-  const WorkplaceUploadSource({
-    this.requestData,
-    this.requestExtra = const {},
-  });
+  /// The `Options.extra` the web blob adapter keys on.
+  Map<String, dynamic> get dioExtra;
 }

@@ -9,6 +9,16 @@ import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
 
+class _StubUploadSource implements WorkplaceUploadSource {
+  const _StubUploadSource();
+
+  @override
+  Object? get requestData => 'bytes';
+
+  @override
+  Map<String, dynamic> get dioExtra => const {};
+}
+
 /// Records the arguments of the last upload; other calls are out of scope.
 class _RecordingDataSource implements WorkplaceDataSource {
   WorkplaceRequestContext? context;
@@ -51,7 +61,7 @@ void main() {
         fileName: 'report.pdf',
         mimeType: 'application/pdf',
         fileSize: 1234,
-        source: WorkplaceUploadSource(requestData: 'bytes'),
+        source: _StubUploadSource(),
       );
       const transfer = WorkplaceRequestTransfer(timeout: Duration(minutes: 30));
 
