@@ -2,6 +2,9 @@ import '../../base/test_base.dart';
 import '../../models/test_tags.dart';
 import '../../scenarios/labels/add_labels_to_email_repeatedly_scenario.dart';
 
+// The regression path is the add-label dialog: mobile, and narrow web layouts
+// (run web with a narrow `--web-viewport`). The default desktop web run goes
+// through the hover submenu instead, so there it is only a smoke test.
 void main() {
   TestBase().runPatrolTest(
     description:
