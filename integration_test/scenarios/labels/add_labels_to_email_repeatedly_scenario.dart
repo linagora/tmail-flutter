@@ -56,6 +56,6 @@ class AddLabelsToEmailRepeatedlyScenario extends BaseTestScenario
     await emailRobot.assertion.expectLabelPickerVisible();
 
     await emailRobot.label.selectLabel(labelDisplayName);
-    await emailRobot.assertion.expectLabelAddedToast(labelDisplayName);
+    await emailRobot.assertion.expectLabelShownOnEmailSubject(labelDisplayName);
   }
 }
