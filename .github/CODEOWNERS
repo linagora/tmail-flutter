@@ -4,3 +4,4 @@ core/lib/presentation/utils/html_transformer/** @hoangdat
 core/lib/utils/html/** @hoangdat
 core/lib/presentation/views/html_viewer/** @hoangdat
 core/test/fixtures/html_emails/** @hoangdat
+core/test/fixtures/html_locks/** @hoangdat

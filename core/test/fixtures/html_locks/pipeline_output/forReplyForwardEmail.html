@@ -1,0 +1,29 @@
+<html><head>
+<style>.x{color:red;position:fixed} @media (max-width:600px){.col{display:block}}</style>
+<meta http-equiv="refresh" content="0">
+</head><body>
+<script>alert(1)</script>
+<p class="x" onclick="alert(1)" style="color:blue;line-height:0px">styled</p>
+<div style="float:left;margin-left:-40px">negative margin float</div>
+<a href="javascript:alert(1)">js link</a>
+<a href="https://example.com/a?b=1">https link</a>
+<a href="mailto:someone@example.com">mail link</a>
+<p>bare url https://example.org/path here</p>
+<img src="cid:img-1" alt="cid image">
+<img src="https://example.com/i.png" style="max-width:600px" alt="remote image">
+<img src="https://example.com/lazy.png" loading="lazy" alt="already lazy">
+<div style="background-image:url('https://example.com/bg.png')">background</div>
+<blockquote><p>quoted</p><blockquote><p>nested quote</p></blockquote></blockquote>
+<pre><code>code()</code></pre>
+<table><tbody><tr><td style="width:300px">cell https://example.com/very/long/path</td></tr></tbody></table>
+<div class="tmail-signature-blocked" style="display: block;">
+  
+  <div class="tmail-signature-content">Regards</div>
+</div>
+<a class="tmail-file-link-card" href="https://drive.example.com/f" contenteditable="false">file.pdf</a>
+<div contenteditable="true">editable region</div>
+<iframe src="https://evil.example"></iframe>
+<form action="https://evil.example"><input name="p"></form>
+<svg onload="alert(1)"><rect width="1" height="1"></rect></svg>
+
+</body></html>

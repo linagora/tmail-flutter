@@ -12,3 +12,5 @@
 - [ ] Regenerated `core/test/fixtures/html_emails/html_email_corpus.g.dart`
       (`cd core && fvm dart run tool/generate_html_email_corpus.dart`)
 - [ ] Chrome layout + preservation tests run
+- [ ] Transformer/sanitizer change: lock diff under `core/test/fixtures/html_locks/` reviewed
+      (`cd core && UPDATE_HTML_LOCKS=true fvm flutter test test/utils/html_locks`)

@@ -1,0 +1,7 @@
+text:
+dom:
+  - RemoveLazyLoadingForBackgroundImageTransformer
+  - RemoveLazyLoadingImageTransformer
+  - RemoveCollapsedSignatureButtonTransformer
+  - RemoveStyleTagOutsideTransformer
+  - RemoveMaxWidthInImageStyleTransformer
