@@ -127,15 +127,17 @@ void main() {
     });
 
     test('should keep the original order of identities having the same sortOrder', () {
-      final sameOrderIdentities = ['bob@example.com', 'bob-guests@example.com', 'alice@example.com']
-        .map((email) => Identity(email: email, sortOrder: UnsignedInt(100)))
-        .toList();
-      final firstIdentity = Identity(email: 'first@example.com', sortOrder: UnsignedInt(1));
-      final listIdentities = [...sameOrderIdentities, firstIdentity];
+      expectSameSortOrderKeepsOriginalOrder(
+        identityUtils,
+        ['bob@example.com', 'bob-guests@example.com', 'alice@example.com'],
+      );
+    });
 
-      identityUtils.sortListIdentities(listIdentities);
-
-      expect(listIdentities, [firstIdentity, ...sameOrderIdentities]);
+    test('should keep the original order of identities having the same sortOrder in a list longer than 32', () {
+      expectSameSortOrderKeepsOriginalOrder(
+        identityUtils,
+        List.generate(40, (index) => 'user$index@example.com'),
+      );
     });
 
     test('should put null sortOrder after the maximal sortOrder', () {
@@ -148,4 +150,19 @@ void main() {
       expect(listIdentities, [maxOrderIdentity, nullOrderIdentity]);
     });
   });
+}
+
+void expectSameSortOrderKeepsOriginalOrder(
+  IdentityUtils identityUtils,
+  List<String> sameOrderEmails,
+) {
+  final sameOrderIdentities = sameOrderEmails
+    .map((email) => Identity(email: email, sortOrder: UnsignedInt(100)))
+    .toList();
+  final firstIdentity = Identity(email: 'first@example.com', sortOrder: UnsignedInt(1));
+  final listIdentities = [...sameOrderIdentities, firstIdentity];
+
+  identityUtils.sortListIdentities(listIdentities);
+
+  expect(listIdentities, [firstIdentity, ...sameOrderIdentities]);
 }
