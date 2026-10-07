@@ -1,3 +1,6 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
@@ -8,6 +11,7 @@ import 'package:workplace/domain/entity/workplace_request_context.dart';
 import 'package:workplace/data/model/workplace_request_transfer.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
+import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
 import 'package:workplace/domain/usecase/workplace_action.dart';
@@ -52,6 +56,16 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
     required WorkplaceRequestContext context,
     required String fileId,
   }) => throw UnimplementedError();
+}
+
+// Ends after the loading state without ever yielding a token.
+class _TokenlessExchangeInteractor extends ExchangeDriveTokenInteractor {
+  _TokenlessExchangeInteractor() : super(_FakeWorkplaceRepository([]));
+
+  @override
+  Stream<Either<Failure, Success>> execute(Uri platformUrl, String oidcIdToken) async* {
+    yield Right(ExchangingWorkplaceToken());
+  }
 }
 
 class _RecordingAction extends WorkplaceAction<String> {
@@ -126,6 +140,23 @@ void main() {
           (e) => e.message, 'message', contains('OIDC token'),
         )),
       );
+    });
+
+    test('throws StateError without calling the action when the exchange yields no token', () async {
+      final runner = WorkplaceAccessModeRunner(
+        exchangeTokenInteractor: _TokenlessExchangeInteractor(),
+        oidcTokenGetter: () => 'oidc-token',
+        oidcRefreshTrigger: () async => null,
+      );
+      final action = bearerEchoAction();
+
+      await expectLater(
+        runner.run(platformUrl, action),
+        throwsA(isA<StateError>().having(
+          (e) => e.message, 'message', contains('exchange failed'),
+        )),
+      );
+      expect(action.calls, isEmpty);
     });
 
     test('resolves BearerTokenAccessMode and calls the action when exchange succeeds', () async {
