@@ -45,6 +45,22 @@ const _probe = '''
 </body></html>
 ''';
 
+/// The `text/plain` counterpart of [_probe]: injected markup, bare and
+/// unsafe URLs, a PHP namespace (sanitizer false-positive trap) and an ASCII
+/// table that must stay preformatted.
+const _plainTextProbe = r'''
+Hello <b>bold</b> <script>alert(1)</script> & "quotes"
+<a href="javascript:alert(1)">js link</a>
+Visit https://example.com/a?b=1&c=2 or www.example.org or mail someone@example.com
+javascript:alert(1) ftp://example.com/f
+Namespace \Sabre\DAV\Server stays.
++------+-------+
+| Name | Value |
++------+-------+
+| a    | 1     |
++------+-------+
+''';
+
 void main() {
   late HtmlTransform htmlTransform;
 
@@ -60,10 +76,15 @@ void main() {
 
   for (final row in rows) {
     test('${row.name} output for the probe is locked', () async {
-      final output = await htmlTransform.transformToHtml(
-        htmlContent: _probe,
-        transformConfiguration: row.build(),
-      );
+      final output = row.takesHtml
+          ? await htmlTransform.transformToHtml(
+              htmlContent: _probe,
+              transformConfiguration: row.build(),
+            )
+          : htmlTransform.transformToTextPlain(
+              content: _plainTextProbe,
+              transformConfiguration: row.build(),
+            );
       expectMatchesHtmlLock('pipeline_output/${row.name}.html', output);
     });
   }

@@ -46,7 +46,9 @@ void main() {
     );
   });
 
-  for (final row in htmlPipelineRegistry()) {
+  // A text/plain pipeline escapes the probe instead of parsing it; its
+  // sanitizing is covered by html_transform_text_plain_test.dart.
+  for (final row in htmlPipelineRegistry().where((row) => row.takesHtml)) {
     test('${row.name} ${row.wiring.name}', () async {
       final html = await htmlTransform.transformToHtml(
         htmlContent: probe,

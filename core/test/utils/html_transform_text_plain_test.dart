@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
-import 'package:core/presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_plain_text_html_output_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,13 +19,9 @@ void main() {
   group('HtmlTransform.transformToTextPlain', () {
     late HtmlTransform htmlTransform;
 
-    // Mirror the configuration hard-coded in HtmlAnalyzer.transformEmailContent
-    // for EmailContentType.textPlain.
-    final textPlainConfig = TransformConfiguration.fromTextTransformers([
-      const SanitizeAutolinkHtmlTransformers(),
-      const SanitizePlainTextHtmlOutputTransformer(),
-      const PersistPreformattedTextTransformer(),
-    ]);
+    // The configuration HtmlAnalyzer.transformEmailContent uses for
+    // EmailContentType.textPlain.
+    final textPlainConfig = TransformConfiguration.forPlainTextEmail();
 
     setUp(() {
       htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
