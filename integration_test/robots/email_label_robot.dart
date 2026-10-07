@@ -13,8 +13,12 @@ class EmailLabelRobot extends CoreRobot implements AbstractEmailLabelRobot {
 
   @override
   Future<void> openLabelPicker() async {
-    await $(const ValueKey(UiKeys.emailDetailedMoreButton)).tap();
+    await tapMoreButton();
     await $(labelAsActionKey).tap();
+  }
+
+  Future<void> tapMoreButton() async {
+    await $(const ValueKey(UiKeys.emailDetailedMoreButton)).tap();
   }
 
   @override
