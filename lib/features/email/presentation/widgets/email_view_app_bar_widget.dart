@@ -9,6 +9,7 @@ import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
@@ -221,7 +222,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     AppLocalizations applocalizations,
     bool isScreenWithShortestSide,
   ) => TMailButtonWidget.fromIcon(
-    key: const Key('email_detailed_more_button'),
+    key: const Key(UiKeys.emailDetailedMoreButton),
     icon: _imagePaths.icMoreVertical,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
