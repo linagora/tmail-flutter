@@ -18,6 +18,8 @@ abstract class AbstractSearchRobot
 
   Future<void> openSearch();
   Future<void> searchByLabel(String labelName);
+  Future<void> openAdvancedSearchFolderPicker();
+  Future<void> expectAdvancedSearchFolder(String folderName);
   Future<void> expectEmailWithSubjectVisible(String subject);
   Future<void> expectEmptyResults();
 }
