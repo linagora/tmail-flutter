@@ -7,6 +7,7 @@ import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
 import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/usecase/upload_drive_file_interactor.dart';
 
@@ -22,18 +23,19 @@ class _StubUploadSource implements WorkplaceUploadSource {
 
 /// Records the upload and share-link calls; [uploadError] makes the upload
 /// fail, [linkError] makes the share link fail, and [onUploaded] runs once the
-/// upload has succeeded.
+/// upload has succeeded, [onLinkRequested] runs once the link is requested.
 class _RecordingRepository extends Fake implements WorkplaceRepository {
   final Object? uploadError;
   final Object? linkError;
   final void Function()? onUploaded;
+  final void Function()? onLinkRequested;
   WorkplaceRequestContext? uploadContext;
   WorkplaceUploadFileSpec? uploadSpec;
   WorkplaceUploadTransfer? uploadTransfer;
   WorkplaceRequestContext? linkContext;
   String? linkFileId;
 
-  _RecordingRepository({this.uploadError, this.linkError, this.onUploaded});
+  _RecordingRepository({this.uploadError, this.linkError, this.onUploaded, this.onLinkRequested});
 
   @override
   Future<DriveUploadedFile> uploadFile({
@@ -46,6 +48,7 @@ class _RecordingRepository extends Fake implements WorkplaceRepository {
     uploadTransfer = transfer;
     if (uploadError != null) throw uploadError!;
     onUploaded?.call();
+    await Future<void>.delayed(Duration.zero);
     return const DriveUploadedFile(fileId: 'file-1', name: 'report (1).pdf');
   }
 
@@ -56,6 +59,8 @@ class _RecordingRepository extends Fake implements WorkplaceRepository {
   }) async {
     linkContext = context;
     linkFileId = fileId;
+    onLinkRequested?.call();
+    await Future<void>.delayed(Duration.zero);
     if (linkError != null) throw linkError!;
     return Uri.parse('https://user-drive.example.com/public?sharecode=abc123');
   }
@@ -72,6 +77,14 @@ void main() {
     fileSize: 1234,
     source: _StubUploadSource(),
   );
+
+  Future<void> expectCancelled(_RecordingRepository repository, Future<void> cancelSignal) {
+    return expectLater(
+      UploadDriveFileInteractor(repository)
+          .execute(context: context, spec: spec, cancelSignal: cancelSignal),
+      throwsA(isA<WorkplaceUploadCancelledException>()),
+    );
+  }
 
   group('UploadDriveFileInteractor::execute::', () {
     test('uploads with the long timeout and the cancel signal, then links the uploaded file', () async {
@@ -152,6 +165,23 @@ void main() {
           .catchError((_) => Uri());
 
       expect(repository.uploadSpec, same(spec));
+      expect(repository.linkFileId, isNull);
+    });
+
+    test('drops the link when cancelled while it is minted', () async {
+      final cancel = Completer<void>();
+      final repository = _RecordingRepository(onLinkRequested: cancel.complete);
+
+      await expectCancelled(repository, cancel.future);
+
+      expect(repository.linkFileId, equals('file-1'));
+    });
+
+    test('treats a failed cancel signal as a cancel', () async {
+      final repository = _RecordingRepository();
+
+      await expectCancelled(repository, Future<void>.error(StateError('signal failed')));
+
       expect(repository.linkFileId, isNull);
     });
   });

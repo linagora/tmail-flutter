@@ -17,6 +17,9 @@ class DriveIntentTimeoutException implements Exception {}
 
 class WorkplaceNoIntentClientException implements Exception {}
 
+/// The caller cancelled the Drive upload; no share link is returned.
+class WorkplaceUploadCancelledException implements Exception {}
+
 class DriveDownloadNullAttachmentException implements Exception {}
 
 class DriveDownloadInsecureLinkException implements Exception {}
