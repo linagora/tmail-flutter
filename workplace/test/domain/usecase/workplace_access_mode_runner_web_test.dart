@@ -101,9 +101,11 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
 class _ScriptedAction extends WorkplaceAction<String> {
   @override
   final bool supportsBridge;
+  @override
+  final bool fallsBackToBearer;
   final List<WorkplaceAccessMode> calls = [];
 
-  _ScriptedAction({required this.supportsBridge});
+  _ScriptedAction({this.supportsBridge = true, this.fallsBackToBearer = false});
 
   @override
   Future<String> call(WorkplaceAccessMode accessMode) async {
@@ -131,6 +133,19 @@ void main() {
     expect(result, 'bearer-result');
     expect(action.calls, [isA<BearerTokenAccessMode>()]);
   });
+
+  for (final fallsBackToBearer in [false, true]) {
+    test('returns the bridge result without an exchange (fallsBackToBearer: $fallsBackToBearer)', () async {
+      installCozyBridge((_) => null);
+      final action = _ScriptedAction(fallsBackToBearer: fallsBackToBearer);
+
+      final result = await _runnerOver(_UnreachableRepository())
+          .run(Uri.parse('https://platform.example.com'), action);
+
+      expect(result, 'bridge-result');
+      expect(action.calls, [isA<BridgeAccessMode>()]);
+    });
+  }
 
   test('bridge supported + available + fetchJson throws propagates the error, exchange never called', () async {
     installCozyBridge((_) => throw StateError('bridge rejected'));
