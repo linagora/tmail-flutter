@@ -2,38 +2,16 @@ import 'package:dio/dio.dart';
 
 import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_request_context.dart';
-import '../../domain/entity/workplace_request_transfer.dart';
 import '../bridge/cozy_bridge.dart';
+import '../model/workplace_request_body.dart';
+import '../model/workplace_request_route.dart';
+import '../model/workplace_request_transfer.dart';
 import '../workplace_dio.dart';
 
 export '../../domain/entity/workplace_request_context.dart';
-export '../../domain/entity/workplace_request_transfer.dart';
-
-/// What a Workplace request targets on the stack.
-class WorkplaceRequestRoute {
-  final String method;
-  final List<String> pathSegments;
-  final Map<String, String> queryParameters;
-
-  const WorkplaceRequestRoute({
-    required this.method,
-    required this.pathSegments,
-    this.queryParameters = const {},
-  });
-}
-
-/// What a Workplace request carries.
-class WorkplaceRequestBody {
-  final Object? data;
-  final Map<String, String> headers;
-  final Map<String, dynamic> extra;
-
-  const WorkplaceRequestBody({
-    this.data,
-    this.headers = const {},
-    this.extra = const {},
-  });
-}
+export '../model/workplace_request_body.dart';
+export '../model/workplace_request_route.dart';
+export '../model/workplace_request_transfer.dart';
 
 /// Sends one cozy-stack request over whichever access mode was resolved.
 class WorkplaceRequestExecutor {
