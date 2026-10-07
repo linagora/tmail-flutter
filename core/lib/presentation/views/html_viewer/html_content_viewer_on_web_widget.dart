@@ -5,11 +5,10 @@ import 'dart:math' as math;
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_viewer_document_builder.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/html/html_interaction.dart';
-import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -127,10 +126,14 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   late double minHeight;
   late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
   bool _iframeLoaded = false;
-  static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
-  static const String onClickHyperLinkName = 'onClickHyperLink';
-  static const String onScrollChangedEvent = 'onScrollChanged';
-  static const String onScrollEndEvent = 'onScrollEnd';
+  static const String iframeOnLoadMessage =
+      HtmlViewerDocumentBuilder.iframeOnLoadMessage;
+  static const String onClickHyperLinkName =
+      HtmlViewerDocumentBuilder.onClickHyperLinkName;
+  static const String onScrollChangedEvent =
+      HtmlViewerDocumentBuilder.onScrollChangedEvent;
+  static const String onScrollEndEvent =
+      HtmlViewerDocumentBuilder.onScrollEndEvent;
 
   IframeTooltipOverlay? _tooltipOverlay;
 
@@ -420,163 +423,31 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
 
 
 
-  String _generateHtmlDocument(String content) {
-    final webViewActionScripts = '''
-      <script type="text/javascript">
-        window.parent.addEventListener('message', handleMessage, false);
-        window.addEventListener('load', handleOnLoad);
-        window.addEventListener('pagehide', (event) => {
-          window.parent.removeEventListener('message', handleMessage, false);
-          window.removeEventListener('load', handleOnLoad);
-          ${!widget.autoAdjustHeight ? '''
-            clearTimeout(_resizeDebounceTimer);
-            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
-          ''' : ''}
-        });
-      
-        function handleMessage(e) {
-          if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
-            var data;
-            try {
-              data = JSON.parse(e.data);
-            } catch (error) {
-              return;
-            }
-            if (data
-                && typeof data["view"] === 'string'
-                && data["view"].includes("$_createdViewId")
-                && typeof data["type"] === 'string') {
-              if (data["type"].includes("getHeight")) {
-                var height = document.body.scrollHeight;
-                window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
-              }
-              if (data["type"].includes("getWidth")) {
-                var width = document.body.scrollWidth;
-                window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlWidth", "width": width}), "*");
-              }
-              if (data["type"].includes("execCommand")) {
-                if (data["argument"] === null) {
-                  document.execCommand(data["command"], false);
-                } else {
-                  document.execCommand(data["command"], false, data["argument"]);
-                }
-              }
-            }
-          }
-        }
-
-        ${!widget.autoAdjustHeight ? '''
-          var _lastResizeHeight = 0;
-          var _resizeDebounceTimer;
-          const resizeObserver = new ResizeObserver((entries) => {
-            clearTimeout(_resizeDebounceTimer);
-            _resizeDebounceTimer = setTimeout(function() {
-              var height = document.body.scrollHeight;
-              if (height === _lastResizeHeight) return;
-              _lastResizeHeight = height;
-              window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
-            }, 50);
-          });
-        ''' : ''}
-        
-        ${widget.mailtoDelegate != null
-            ? '''
-                function handleOnClickEmailLink(e) {
-                   var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
-                   e.preventDefault();
-                }
-              '''
-            : ''}
-        
-        
-        
-        ${widget.onClickHyperLinkAction != null
-            ? '''
-                function onClickHyperLink(e) {
-                   var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
-                   e.preventDefault();
-                }
-              '''
-            : ''}
-        
-        function handleOnLoad() {
-          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "message": "$iframeOnLoadMessage"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getHeight"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getWidth"}), "*");
-          
-          ${widget.onClickHyperLinkAction != null
-              ? '''
-                  var hyperLinks = document.querySelectorAll('a');
-                  for (var i=0; i < hyperLinks.length; i++){
-                      hyperLinks[i].addEventListener('click', onClickHyperLink);
-                  }
-                '''
-              : ''}
-          
-          ${widget.mailtoDelegate != null
-              ? '''
-                  var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
-                  for (var i=0; i < emailLinks.length; i++){
-                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
-                  }
-                '''
-              : ''}
-          
-          ${!widget.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
-        }
-      </script>
-    ''';
-
-    final processedContent = widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(content)
-        : content;
-
-    final combinedCss = [
-      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
-      if (widget.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
-    ].join();
-
-    final combinedScripts = [
-      webViewActionScripts,
-      HtmlInteraction.scriptsDisableZoom,
-      HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
-      HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
-      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
-      if (widget.scrollController != null)
-        PlatformInfo.isWebTouchDevice
-            ? HtmlInteraction.scriptsTouchEventListener(
-                viewId: _createdViewId,
-                onScrollChangedEvent: onScrollChangedEvent,
-                onScrollEndEvent: onScrollEndEvent,
-              )
-            : HtmlInteraction.scriptsWheelEventListener(
-                viewId: _createdViewId,
-                onScrollChangedEvent: onScrollChangedEvent,
-              ),
-      if (widget.onIFrameKeyboardShortcutAction != null)
-        HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
-      if (widget.useLinkTooltipOverlay)
-        HtmlInteraction.scriptsHandleIframeClickListener(_createdViewId),
-      if (PlatformInfo.isWebDesktop)
-        HtmlInteraction.scriptsHandleIframeLinkHoverListener(_createdViewId),
-    ].join();
-
-    final htmlTemplate = HtmlUtils.generateHtmlDocument(
-      content: processedContent,
-      minHeight: minHeight,
-      minWidth: widget.htmlContentMinWidth,
-      styleCSS: combinedCss,
-      javaScripts: combinedScripts,
-      direction: widget.direction,
-      contentPadding: widget.contentPadding,
-      useDefaultFontStyle: widget.useDefaultFontStyle,
-      fontSize: widget.fontSize,
-    );
-
-    return htmlTemplate;
-  }
+  String _generateHtmlDocument(String content) =>
+      HtmlViewerDocumentBuilder.buildWebDocument(
+        HtmlWebViewerDocumentInput(
+          content: content,
+          viewId: _createdViewId,
+          widthContent: widget.widthContent,
+          minHeight: minHeight,
+          minWidth: widget.htmlContentMinWidth,
+          direction: widget.direction,
+          contentPadding: widget.contentPadding,
+          useDefaultFontStyle: widget.useDefaultFontStyle,
+          fontSize: widget.fontSize,
+          enableQuoteToggle: widget.enableQuoteToggle,
+          disableScrolling: widget.disableScrolling,
+          autoAdjustHeight: widget.autoAdjustHeight,
+          hasMailtoDelegate: widget.mailtoDelegate != null,
+          hasHyperLinkAction: widget.onClickHyperLinkAction != null,
+          hasScrollController: widget.scrollController != null,
+          hasKeyboardShortcutAction:
+              widget.onIFrameKeyboardShortcutAction != null,
+          useLinkTooltipOverlay: widget.useLinkTooltipOverlay,
+          isWebTouchDevice: PlatformInfo.isWebTouchDevice,
+          isWebDesktop: PlatformInfo.isWebDesktop,
+        ),
+      );
 
   void _setUpWeb() {
     _createdViewId = HtmlUtils.getRandString(10);

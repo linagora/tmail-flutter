@@ -84,7 +84,7 @@ void main() {
   });
 
   group('HtmlTransform XSS — raw-input configs', () {
-    for (final row in htmlPipelineRegistry()) {
+    for (final row in htmlPipelineRegistry().where((row) => row.takesHtml)) {
       if (row.trust != HtmlPipelineTrust.raw &&
           !(row.trust == HtmlPipelineTrust.user &&
               row.wiring == HtmlPipelineWiring.sanitizes)) {

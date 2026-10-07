@@ -1,0 +1,122 @@
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <style>
+            @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'TwakeInter';
+      src: url("assets/packages/linagora_design_flutter/assets/fonts/TwakeInter-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'TwakeInter', sans-serif;
+    }
+  
+        
+            body {
+      font-weight: 400;
+      font-size: 16.0px;
+      font-style: normal;
+    }
+    
+    p {
+      margin: 0px;
+    }
+  
+        
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        .tmail-content {
+          min-height: 0.0px;
+          min-width: 0.0px;
+          overflow: auto;
+          overflow-wrap: break-word;
+          word-break: break-word;
+        }
+                  .tmail-content::-webkit-scrollbar {
+            display: none;
+          }
+          .tmail-content {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+        
+        
+        pre {
+          white-space: pre-wrap;
+        }
+        
+        table {
+          white-space: normal !important;
+        }
+              
+        @media only screen and (max-width: 600px) {
+          table {
+            width: 100% !important;
+          }
+          
+          a:not(.tmail-file-link-card) {
+            width: -webkit-fill-available !important;
+          }
+        }
+        
+        table, td, th {
+          word-break: normal !important;
+        }
+        
+        
+      </style>
+      </head>
+      <body  style = "overflow-x: hidden; ";>
+      <div class="tmail-content"><p>Hello <b>world</b></p></div>
+      <style>html, body { height: auto !important; }</style>
+          <script type="text/javascript">
+      const lazyImages = document.querySelectorAll('[lazy]');
+      const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const lazyImage = entry.target;
+            const src = lazyImage.dataset.src;
+            lazyImage.tagName.toLowerCase() === 'img'
+              ? lazyImage.src = src
+              : lazyImage.style.backgroundImage = "url('" + src + "')";
+            lazyImage.removeAttribute('lazy');
+            observer.unobserve(lazyImage);
+          }
+        });
+      });
+      
+      lazyImages.forEach((lazyImage) => {
+        lazyImageObserver.observe(lazyImage);
+      });
+    </script>
+  
+      </body>
+      </html> 
+    
