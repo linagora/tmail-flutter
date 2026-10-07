@@ -452,6 +452,21 @@ void main() {
       expect(sent.cancelToken!.isCancelled, isTrue);
     });
 
+    test('cancels the request when the cancel signal fails', () async {
+      final executor = _RecordingExecutor();
+      final cancel = Completer<void>();
+
+      await WorkplaceDriveDataSourceImpl(executor: executor).uploadFile(
+        context: context,
+        spec: spec,
+        transfer: WorkplaceUploadTransfer(cancelSignal: cancel.future),
+      );
+      cancel.completeError(StateError('signal failed'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(executor.transfers.single.cancelToken!.isCancelled, isTrue);
+    });
+
     test('sends no cancel token without a cancel signal', () async {
       final executor = _RecordingExecutor();
 
