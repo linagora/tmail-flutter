@@ -16,6 +16,7 @@ import '../../domain/entity/workplace_intent.dart';
 import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
 import '../../domain/entity/workplace_upload_file_spec.dart';
+import '../../domain/entity/workplace_upload_transfer.dart';
 
 class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   WorkplaceDataSourceImpl({WorkplaceRequestExecutor? executor})
@@ -122,6 +123,6 @@ class WorkplaceDataSourceImpl implements WorkplaceDataSource {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) => _driveFiles.uploadFile(context: context, spec: spec, transfer: transfer);
 }

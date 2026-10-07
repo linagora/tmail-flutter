@@ -2,7 +2,7 @@ import '../entity/workplace_intent.dart';
 import '../entity/workplace_access_mode.dart';
 import '../entity/workplace_intent_config.dart';
 import '../entity/workplace_request_context.dart';
-import '../../data/model/workplace_request_transfer.dart';
+import '../entity/workplace_upload_transfer.dart';
 import '../entity/workplace_upload_file_spec.dart';
 import '../entity/drive_uploaded_file.dart';
 
@@ -17,6 +17,6 @@ abstract class WorkplaceRepository {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer,
+    WorkplaceUploadTransfer transfer,
   });
 }

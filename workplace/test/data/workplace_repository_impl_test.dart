@@ -8,6 +8,7 @@ import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
+import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
 
 class _StubUploadSource implements WorkplaceUploadSource {
   const _StubUploadSource();
@@ -23,13 +24,13 @@ class _StubUploadSource implements WorkplaceUploadSource {
 class _RecordingDataSource implements WorkplaceDataSource {
   WorkplaceRequestContext? context;
   WorkplaceUploadFileSpec? spec;
-  WorkplaceRequestTransfer? transfer;
+  WorkplaceUploadTransfer? transfer;
 
   @override
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) async {
     this.context = context;
     this.spec = spec;
@@ -63,7 +64,7 @@ void main() {
         fileSize: 1234,
         source: _StubUploadSource(),
       );
-      const transfer = WorkplaceRequestTransfer(timeout: Duration(minutes: 30));
+      const transfer = WorkplaceUploadTransfer(timeout: Duration(minutes: 30));
 
       final result = await WorkplaceRepositoryImpl(dataSource).uploadFile(
         context: context,
