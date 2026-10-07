@@ -1,0 +1,5 @@
+# Test tags. CI runs `display` in the html-display job and `mutation` in
+# html-display-mutation; scripts/test.sh excludes both from the core job.
+tags:
+  display:
+  mutation:
