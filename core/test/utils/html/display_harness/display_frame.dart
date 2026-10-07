@@ -167,6 +167,20 @@ class DisplayFrame {
     ];
   }
 
+  /// Elements whose own content (text that cannot wrap, a `pre` line) runs
+  /// past their box while their `overflow-x` is `visible`: the box fits, the
+  /// text sticks out.
+  List<DisplayOverflow> contentOverflows({double tolerance = 1}) => [
+        for (final element in [content, ...queryAll('.tmail-content *')])
+          if (element.scrollWidth > element.clientWidth + tolerance &&
+              element.clientWidth > 0 &&
+              computedStyle(element).overflowX == 'visible')
+            DisplayOverflow(
+              cssPath(element),
+              (element.scrollWidth - element.clientWidth).toDouble(),
+            ),
+      ];
+
   bool get scrollsHorizontally => content.scrollWidth > content.clientWidth + 1;
 
   List<DisplayImage> get images => [

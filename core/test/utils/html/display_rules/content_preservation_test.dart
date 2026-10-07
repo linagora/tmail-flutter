@@ -4,11 +4,13 @@ import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../fixtures/html_emails/html_email_corpus.g.dart';
-import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
-import '../html_transform_text_html_test.mocks.dart';
-import 'html_content_preservation.dart';
+import '../../../fixtures/html_emails/html_email_corpus.g.dart';
+import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
+import '../../html_transform_text_html_test.mocks.dart';
+import 'content_preservation.dart';
 
+/// G-preserve: the display pipelines keep the body words and the links of
+/// every fixture (measured on the transform output).
 void main() {
   late HtmlTransform htmlTransform;
 
@@ -24,13 +26,29 @@ void main() {
 
   group('content preservation', () {
     for (final fixture in htmlEmailCorpus) {
-      for (final entry in displayPipelines.entries) {
+      final pipelines = fixture.isPlainText
+          ? {'forPlainTextEmail': TransformConfiguration.forPlainTextEmail}
+          : displayPipelines;
+      for (final entry in pipelines.entries) {
         test('${fixture.category}/${fixture.name} through ${entry.key}', () async {
-          final out = await htmlTransform.transformToHtml(
-            htmlContent: fixture.html,
-            transformConfiguration: entry.value(),
-          );
+          final out = fixture.isPlainText
+              ? htmlTransform.transformToTextPlain(
+                  content: fixture.html,
+                  transformConfiguration: entry.value(),
+                )
+              : await htmlTransform.transformToHtml(
+                  htmlContent: fixture.html,
+                  transformConfiguration: entry.value(),
+                );
           if (fixture.allowEmptyBody) return;
+          if (fixture.isPlainText) {
+            // Autolinking adds links, so only the words are compared.
+            expect(
+              plainTextWordPreservation(fixture.html, out),
+              greaterThanOrEqualTo(fixture.minPreservation),
+            );
+            return;
+          }
           expect(
             bodyWordPreservation(fixture.html, out),
             greaterThanOrEqualTo(fixture.minPreservation),
@@ -39,6 +57,16 @@ void main() {
         });
       }
     }
+  });
+
+  test('plain-text words survive escaping and autolinking', () async {
+    const source = 'Hi <b>there</b> & see https://example.com/a now';
+    final out = htmlTransform.transformToTextPlain(
+      content: source,
+      transformConfiguration: TransformConfiguration.forPlainTextEmail(),
+    );
+    expect(plainTextWordPreservation(source, out), 1);
+    expect(plainTextWordPreservation(source, 'Hi now'), lessThan(0.95));
   });
 
   test('dropping visible table-cell text fails preservation', () {
