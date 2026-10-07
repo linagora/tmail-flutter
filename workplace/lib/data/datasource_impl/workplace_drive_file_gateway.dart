@@ -6,6 +6,7 @@ import '../model/workplace_file_response.dart';
 import 'workplace_request_executor.dart';
 import '../../domain/entity/drive_uploaded_file.dart';
 import '../../domain/entity/workplace_upload_file_spec.dart';
+import '../../domain/entity/workplace_upload_transfer.dart';
 
 /// Writes a file to the Mail magic folder.
 /// Split out of `WorkplaceDataSourceImpl` to keep that file under 200 lines.
@@ -26,11 +27,12 @@ class WorkplaceDriveFileGateway {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) async {
+    final requestTransfer = _toRequestTransfer(transfer);
     for (var attempt = 0;; attempt++) {
       try {
-        return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, transfer);
+        return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, requestTransfer);
       } on DioException catch (exception) {
         // The stack already holds a file by that name; retry with the next suffix.
         final isLast = attempt + 1 >= _maxNameAttempts;
@@ -64,6 +66,18 @@ class WorkplaceDriveFileGateway {
       transfer: transfer,
     );
     return _parseUploadedFile(data);
+  }
+
+  static WorkplaceRequestTransfer _toRequestTransfer(WorkplaceUploadTransfer transfer) {
+    final signal = transfer.cancelSignal;
+    final cancelToken = signal == null ? null : CancelToken();
+    // A failed signal cancels too; neither path leaves an unhandled error.
+    signal?.then((_) => cancelToken!.cancel(), onError: (_) => cancelToken!.cancel());
+    return WorkplaceRequestTransfer(
+      onSendProgress: transfer.onProgress,
+      cancelToken: cancelToken,
+      timeout: transfer.timeout,
+    );
   }
 
   /// Attempt 0 keeps the name; then `report.pdf` → `report (n).pdf`, extension-less gets it appended.
