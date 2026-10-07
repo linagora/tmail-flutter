@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/tag_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
@@ -11,9 +12,22 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import 'abstract/abstract_email_assertion_robot.dart';
+import 'abstract/abstract_email_label_robot.dart';
+import 'email_assertion_robot.dart';
+import 'email_label_robot.dart';
 
 class EmailRobot extends CoreRobot {
-  EmailRobot(super.$);
+  final AbstractEmailAssertionRobot assertion;
+  final AbstractEmailLabelRobot label;
+
+  EmailRobot(
+    PatrolIntegrationTester $, {
+    AbstractEmailAssertionRobot? assertionRobot,
+    AbstractEmailLabelRobot? labelRobot,
+  })  : assertion = assertionRobot ?? EmailAssertionRobot($),
+        label = labelRobot ?? EmailLabelRobot($),
+        super($);
 
   Future<void> onTapForwardEmail() async {
     await $(#forward_email_button).tap();

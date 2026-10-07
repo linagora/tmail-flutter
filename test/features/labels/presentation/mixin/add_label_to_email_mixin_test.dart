@@ -18,6 +18,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
@@ -176,7 +177,7 @@ void main() {
       onCreateANewLabelAction: () {},
     );
     await tester.pumpAndSettle();
-    final modal = find.byKey(const Key('add_label_to_email_modal'));
+    final modal = find.byKey(const Key(UiKeys.addLabelToEmailModal));
     expect(modal, findsOneWidget);
     final modalRoute = WeakReference(ModalRoute.of(tester.element(modal))!);
 
