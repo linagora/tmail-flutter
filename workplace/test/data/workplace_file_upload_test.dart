@@ -48,6 +48,31 @@ class _QueueAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
+/// Uploads [fileName] against a 409 then a success; returns the retried name.
+Future<String?> _retriedName(
+  WorkplaceDataSourceImpl datasource,
+  WorkplaceRequestContext context,
+  String fileName,
+) async {
+  final adapter = _QueueAdapter([
+    409,
+    {
+      'data': {'id': 'file-1'},
+    },
+  ]);
+  WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+  await datasource.uploadFile(
+    context: context,
+    spec: WorkplaceUploadFileSpec(
+      fileName: fileName,
+      mimeType: 'application/octet-stream',
+      fileSize: 1,
+      source: const WorkplaceUploadSource(requestData: 'bytes'),
+    ),
+  );
+  return adapter.capturedOptions[1].uri.queryParameters['Name'];
+}
+
 void main() {
   late WorkplaceDataSourceImpl datasource;
   late Dio originalDio;
@@ -132,6 +157,17 @@ void main() {
       await datasource.uploadFile(context: context, spec: noExtSpec);
 
       expect(adapter.capturedOptions[1].uri.queryParameters['Name'], equals('report (1)'));
+    });
+
+    test('suffixes a dot-leading name like an extension-less one', () async {
+      expect(await _retriedName(datasource, context, '.env'), equals('.env (1)'));
+    });
+
+    test('suffixes a multi-dot name before its last extension only', () async {
+      expect(
+        await _retriedName(datasource, context, 'archive.tar.gz'),
+        equals('archive.tar (1).gz'),
+      );
     });
 
     test('rethrows a non-409 failure without retrying', () async {
