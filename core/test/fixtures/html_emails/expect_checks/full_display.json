@@ -1,0 +1,5 @@
+{
+  "source": "synthetic fullDisplay positive case",
+  "purpose": "short email with one image: every rule holds and every box renders",
+  "expect": ["fullDisplay"]
+}

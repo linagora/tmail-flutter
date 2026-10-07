@@ -126,6 +126,10 @@ class DisplayFrame {
 
   web.Window get _window => _frame.contentWindow!;
 
+  /// Top of the iframe in the test page's viewport, to place an element of
+  /// the email relative to the top-level fold (what lazy observers watch).
+  double get topInWindow => _frame.getBoundingClientRect().top.toDouble();
+
   web.Document get document => _frame.contentDocument!;
 
   web.Element get content =>
@@ -224,6 +228,43 @@ class DisplayFrame {
   Future<void> toggleQuote() async {
     (query('.quote-toggle-button')! as web.HTMLElement).click();
     await _settleAndGrow().timeout(settleTimeout);
+  }
+
+  /// Scrolls [element] into view the way the app's scrolling viewer does:
+  /// the frame shrinks to the visible part of the test page (which itself
+  /// cannot scroll), the email scrolls inside it, then the frame grows back.
+  /// Lazy observers watch the top-level viewport, so this is what loads a
+  /// lazy element. Waits up to [maxFrames] frames for it to load.
+  Future<void> scrollIntoView(web.Element element, {int maxFrames = 60}) async {
+    final visible = (web.window.innerHeight - topInWindow).clamp(100, double.infinity);
+    _frame.height = '${visible.floor()}';
+    await _nextFrame();
+    element.scrollIntoView();
+    for (var i = 0; i < maxFrames && element.hasAttribute('lazy'); i++) {
+      await _nextFrame();
+    }
+    _window.scrollTo(0.toJS, 0);
+    await _settleAndGrow().timeout(settleTimeout);
+  }
+
+  /// The inline value of [property] the sender wrote on [element] (the
+  /// `data-sender-style` snapshot taken before the viewer scripts ran).
+  String senderInlineValue(web.Element element, String property) {
+    final probe = web.document.createElement('div') as web.HTMLElement
+      ..setAttribute('style', element.getAttribute('data-sender-style') ?? '');
+    return probe.style.getPropertyValue(property);
+  }
+
+  /// Whether a viewer script changed the inline [property] of [element].
+  bool changedByScript(web.Element element, String property) =>
+      (element as web.HTMLElement).style.getPropertyValue(property) !=
+      senderInlineValue(element, property);
+
+  /// Whether a viewer script rewrote [element]'s inline style at all.
+  bool styleChangedByScript(web.Element element) {
+    final sender = element.getAttribute('data-sender-style');
+    final now = element.getAttribute('style');
+    return sender == null ? (now ?? '').isNotEmpty : sender != now;
   }
 
   String get visibleText => (content as web.HTMLElement).innerText;

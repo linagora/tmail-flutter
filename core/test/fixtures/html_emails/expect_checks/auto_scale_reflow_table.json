@@ -1,0 +1,5 @@
+{
+  "source": "synthetic autoScale reflow-path case",
+  "purpose": "900px wrapper around a 900px fixed table (24px padding, 18px text): at a pane <= 480 the script reflows the table, shrinks text (floor 12px) and caps padding at 12px. A bare table would already fit through the 600px media query (the sanitizer drops td width attributes)",
+  "expect": ["autoScale"]
+}

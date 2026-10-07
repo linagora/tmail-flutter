@@ -30,7 +30,8 @@ from html.parser import HTMLParser
 
 FIXTURE_HOST = 'https://fixture.invalid'
 DEFAULT_IMAGE_SIZE = (600, 300)
-EXPECT_VALUES = ('fullDisplay', 'lazyImages', 'autoScale', 'noScale', 'quoteToggle')
+EXPECT_VALUES = ('fullDisplay', 'lazyImages', 'autoScale', 'noScale', 'quoteToggle',
+                 'noQuoteToggle')
 SIZE_SOURCES = ('cid', 'data', 'attr', 'css', 'container', 'default')
 
 # Absolute (http/https/ftp) or protocol-relative URL.

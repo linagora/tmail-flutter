@@ -21,12 +21,14 @@ final _attribute = RegExp(r'''(\s)([^\s=/>]+)(\s*=\s*)("[^"]*"|'[^']*')''');
 final _cssUrl = RegExp(r'''url\(\s*(['"]?)([^'")]+)\1\s*\)''', caseSensitive: false);
 final _cssImport = RegExp(r'''@import\s+(['"])([^'"]+)\1''', caseSensitive: false);
 
+/// A W x H SVG as a data URI. `'` is percent-encoded too, so the URI also
+/// survives inside `url('…')` (the lazy-background script writes that).
 String offlineSvgDataUri(int width, int height) =>
     'data:image/svg+xml,${Uri.encodeComponent(
       "<svg xmlns='http://www.w3.org/2000/svg' width='$width' height='$height' "
       "viewBox='0 0 $width $height'><rect width='100%' height='100%' "
       "fill='#c8c8c8'/></svg>",
-    )}';
+    ).replaceAll("'", '%27')}';
 
 bool _isRemote(String url) =>
     !url.trimLeft().toLowerCase().startsWith('data:') && _remote.hasMatch(url);

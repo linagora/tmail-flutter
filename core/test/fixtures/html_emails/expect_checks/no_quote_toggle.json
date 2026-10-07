@@ -1,0 +1,5 @@
+{
+  "source": "synthetic noQuoteToggle positive case",
+  "purpose": "blockquote nested three div levels deep: out of the toggle reach",
+  "expect": ["noQuoteToggle"]
+}
