@@ -71,13 +71,18 @@ class TreeViewChild {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        GestureDetector(
-          child: parent,
-          onTap: () {
-            if (onTap != null) {
-              onTap!();
-            }
-          },
+        // Its own semantics node keeps the parent from being reparented when
+        // the children appear; the web engine asserts on that reparenting.
+        Semantics(
+          container: true,
+          child: GestureDetector(
+            child: parent,
+            onTap: () {
+              if (onTap != null) {
+                onTap!();
+              }
+            },
+          ),
         ),
         AnimatedContainer(
           duration: const Duration(milliseconds: 400),
