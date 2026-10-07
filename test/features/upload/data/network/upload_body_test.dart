@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_body.dart';
@@ -46,6 +48,25 @@ void main() {
       await blobBody().open(0, 2).drain<void>();
 
       expect(opens, [(0, 2)]);
+    });
+  });
+
+  group('StreamUploadBody', () {
+    const sourceBytes = <int>[1, 2, 3];
+
+    UploadBody bytesBody() => UploadBody.of(FileBytesInfo(
+      bytes: Uint8List.fromList(sourceBytes),
+      fileName: 'a.pdf',
+    ));
+
+    test('opens a fresh stream on each requestData read so a retry resends the whole file', () async {
+      final body = bytesBody();
+
+      final first = await (body.requestData as Stream<List<int>>).toList();
+      final second = await (body.requestData as Stream<List<int>>).toList();
+
+      expect(first, [sourceBytes]);
+      expect(second, [sourceBytes]);
     });
   });
 }
