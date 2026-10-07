@@ -20,17 +20,22 @@ class WorkplaceDriveFileGateway {
     throw FormatException('Expected JSON object or string, got: ${data.runtimeType}');
   }
 
+  /// Name-taken attempts before the 409 surfaces; each one re-sends the body.
+  static const _maxNameAttempts = 10;
+
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
     WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
   }) async {
-    try {
-      return await _uploadOnce(context, spec.fileName, spec, transfer);
-    } on DioException catch (exception) {
-      // The stack already holds a file by that name; one retry with a suffix.
-      if (exception.response?.statusCode != 409) rethrow;
-      return _uploadOnce(context, _suffixedName(spec.fileName), spec, transfer);
+    for (var attempt = 0;; attempt++) {
+      try {
+        return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, transfer);
+      } on DioException catch (exception) {
+        // The stack already holds a file by that name; retry with the next suffix.
+        final isLast = attempt + 1 >= _maxNameAttempts;
+        if (exception.response?.statusCode != 409 || isLast) rethrow;
+      }
     }
   }
 
@@ -61,11 +66,12 @@ class WorkplaceDriveFileGateway {
     return _parseUploadedFile(data);
   }
 
-  /// `report.pdf` → `report (1).pdf`; an extension-less name gets the suffix appended.
-  static String _suffixedName(String fileName) {
+  /// Attempt 0 keeps the name; then `report.pdf` → `report (n).pdf`, extension-less gets it appended.
+  static String _nameFor(String fileName, int attempt) {
+    if (attempt == 0) return fileName;
     final dot = fileName.lastIndexOf('.');
-    if (dot <= 0) return '$fileName (1)';
-    return '${fileName.substring(0, dot)} (1)${fileName.substring(dot)}';
+    if (dot <= 0) return '$fileName ($attempt)';
+    return '${fileName.substring(0, dot)} ($attempt)${fileName.substring(dot)}';
   }
 
   DriveUploadedFile _parseUploadedFile(dynamic data) {

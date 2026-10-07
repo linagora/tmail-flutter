@@ -216,7 +216,7 @@ void main() {
       );
     });
 
-    test('retries once with a suffixed name on a 409 name conflict', () async {
+    test('retries with a suffixed name on a 409 name conflict', () async {
       final adapter = _QueueAdapter([409, fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
@@ -225,6 +225,30 @@ void main() {
       expect(adapter.capturedOptions, hasLength(2));
       expect(adapter.capturedOptions[0].uri.queryParameters['Name'], equals('report.pdf'));
       expect(adapter.capturedOptions[1].uri.queryParameters['Name'], equals('report (1).pdf'));
+    });
+
+    test('keeps incrementing the suffix while the name is taken', () async {
+      final adapter = _QueueAdapter([409, 409, fileResponse]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await datasource.uploadFile(context: context, spec: spec);
+
+      expect(
+        adapter.capturedOptions.map((o) => o.uri.queryParameters['Name']),
+        ['report.pdf', 'report (1).pdf', 'report (2).pdf'],
+      );
+    });
+
+    test('rethrows the 409 once every name attempt is taken', () async {
+      final adapter = _QueueAdapter(List.filled(10, 409));
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.uploadFile(context: context, spec: spec),
+        throwsA(isA<DioException>()),
+      );
+      expect(adapter.capturedOptions, hasLength(10));
+      expect(adapter.capturedOptions.last.uri.queryParameters['Name'], equals('report (9).pdf'));
     });
 
     test('reads a fresh body for the 409 retry', () async {
