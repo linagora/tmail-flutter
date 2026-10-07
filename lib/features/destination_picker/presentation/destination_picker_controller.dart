@@ -261,16 +261,29 @@ class DestinationPickerController extends BaseMailboxController {
 
   void searchMailbox(BuildContext context, String value) {
     searchQuery.value = SearchQuery(value);
-    final searchableMailboxList =
-        mailboxAction.value?.canPickTeamMailboxes() == true
-            ? allMailboxes
-            : allMailboxes.listPersonalMailboxes;
-
-    final mailboxListWithDisplayName = searchableMailboxList
+    final mailboxListWithDisplayName = searchableMailboxes
       .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))
       .toList();
 
     _searchMailboxAction(mailboxListWithDisplayName, searchQuery.value);
+  }
+
+  List<PresentationMailbox> get searchableMailboxes {
+    final mailboxes = mailboxAction.value?.canPickTeamMailboxes() == true
+        ? allMailboxes
+        : allMailboxes.listPersonalMailboxes;
+    return mailboxes.where(_canPickMailbox).toList();
+  }
+
+  bool _canPickMailbox(PresentationMailbox mailbox) =>
+      mailboxAction.value?.canPickMailbox(mailbox) ?? true;
+
+  /// Expands [mailboxNode] instead of picking it when the current action
+  /// can't pick it. Returns whether the node was toggled.
+  bool toggleUnpickableMailboxNode(MailboxNode mailboxNode) {
+    if (_canPickMailbox(mailboxNode.item)) return false;
+    toggleMailboxFolder(mailboxNode);
+    return true;
   }
 
   void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {

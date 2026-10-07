@@ -466,6 +466,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   void _pickMailboxNode(BuildContext context, MailboxNode mailboxNode) {
+    if (controller.toggleUnpickableMailboxNode(mailboxNode)) return;
     _handleOpenMailboxNodeClick(mailboxNode);
     controller.dispatchSelectMailboxDestination(context);
   }
