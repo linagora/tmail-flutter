@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
+import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
 import 'package:workplace/data/model/workplace_file_response.dart';
 import 'package:workplace/data/workplace_dio.dart';
@@ -114,7 +114,7 @@ class _RecordingExecutor implements WorkplaceRequestExecutor {
 
 /// Uploads [fileName] against a 409 then a success; returns the retried name.
 Future<String?> _retriedName(
-  WorkplaceDataSourceImpl datasource,
+  WorkplaceDriveDataSourceImpl datasource,
   WorkplaceRequestContext context,
   String fileName,
 ) async {
@@ -138,7 +138,7 @@ Future<String?> _retriedName(
 }
 
 void main() {
-  late WorkplaceDataSourceImpl datasource;
+  late WorkplaceDriveDataSourceImpl datasource;
   late Dio originalDio;
   final context = WorkplaceRequestContext(
     platformUrl: Uri.parse('https://platform.example.com'),
@@ -159,13 +159,13 @@ void main() {
   };
 
   setUp(() {
-    datasource = WorkplaceDataSourceImpl();
+    datasource = WorkplaceDriveDataSourceImpl();
     originalDio = WorkplaceDio.instance;
   });
 
   tearDown(() => WorkplaceDio.setInstance(originalDio));
 
-  group('WorkplaceDataSourceImpl::uploadFile::', () {
+  group('WorkplaceDriveDataSourceImpl::uploadFile::', () {
     test('sends Type/Name query params, the magic-folder dir-id in the path, and the mimeType/size headers', () async {
       final adapter = _QueueAdapter([fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
@@ -417,10 +417,10 @@ void main() {
       expect(adapter.capturedOptions[1].receiveTimeout, isNull);
     });
 
-    test('sends the upload through the executor injected into the datasource', () async {
+    test('sends the upload through the injected executor', () async {
       final executor = _RecordingExecutor();
 
-      await WorkplaceDataSourceImpl(executor: executor)
+      await WorkplaceDriveDataSourceImpl(executor: executor)
           .uploadFile(context: context, spec: spec);
 
       final route = executor.routes.single;
@@ -433,7 +433,7 @@ void main() {
       final cancel = Completer<void>();
       void onProgress(int sent, int total) {}
 
-      await WorkplaceDataSourceImpl(executor: executor).uploadFile(
+      await WorkplaceDriveDataSourceImpl(executor: executor).uploadFile(
         context: context,
         spec: spec,
         transfer: WorkplaceUploadTransfer(
@@ -455,7 +455,7 @@ void main() {
     test('sends no cancel token without a cancel signal', () async {
       final executor = _RecordingExecutor();
 
-      await WorkplaceDataSourceImpl(executor: executor)
+      await WorkplaceDriveDataSourceImpl(executor: executor)
           .uploadFile(context: context, spec: spec);
 
       expect(executor.transfers.single.cancelToken, isNull);

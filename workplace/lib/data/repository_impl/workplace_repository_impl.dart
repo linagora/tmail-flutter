@@ -1,4 +1,5 @@
 import '../datasource/workplace_datasource.dart';
+import '../datasource/workplace_drive_datasource.dart';
 import '../../domain/entity/workplace_intent.dart';
 import '../../domain/entity/workplace_access_mode.dart';
 import '../../domain/entity/workplace_intent_config.dart';
@@ -10,8 +11,9 @@ import '../../domain/repository/workplace_repository.dart';
 
 class WorkplaceRepositoryImpl implements WorkplaceRepository {
   final WorkplaceDataSource _dataSource;
+  final WorkplaceDriveDataSource _driveDataSource;
 
-  WorkplaceRepositoryImpl(this._dataSource);
+  WorkplaceRepositoryImpl(this._dataSource, this._driveDataSource);
 
   @override
   Future<WorkplaceIntent> createIntent({
@@ -33,5 +35,5 @@ class WorkplaceRepositoryImpl implements WorkplaceRepository {
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
     WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
-  }) => _dataSource.uploadFile(context: context, spec: spec, transfer: transfer);
+  }) => _driveDataSource.uploadFile(context: context, spec: spec, transfer: transfer);
 }

@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../model/workplace_enums.dart';
 import '../model/workplace_file_response.dart';
+import '../datasource/workplace_drive_datasource.dart';
 import 'workplace_request_executor.dart';
 import '../../domain/entity/drive_uploaded_file.dart';
 import '../../domain/entity/workplace_upload_file_spec.dart';
 import '../../domain/entity/workplace_upload_transfer.dart';
 
 /// Writes a file to the Mail magic folder.
-/// Split out of `WorkplaceDataSourceImpl` to keep that file under 200 lines.
-class WorkplaceDriveFileGateway {
-  const WorkplaceDriveFileGateway(this._executor);
+class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
+  WorkplaceDriveDataSourceImpl({WorkplaceRequestExecutor? executor})
+      : _executor = executor ?? const WorkplaceRequestExecutor();
 
   final WorkplaceRequestExecutor _executor;
 
@@ -24,6 +25,7 @@ class WorkplaceDriveFileGateway {
   /// Name-taken attempts before the 409 surfaces; each one re-sends the body.
   static const _maxNameAttempts = 10;
 
+  @override
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
