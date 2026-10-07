@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -97,6 +98,18 @@ class PreferencesController extends BaseController {
     if (success is GetServerSettingSuccess) {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is UpdateServerSettingSuccess) {
+      final previousConsent = settingOption.value?.sentryUserOptIn;
+      final nextConsent = success.settingOption.sentryUserOptIn;
+      if (previousConsent != nextConsent) {
+        logError(
+          'User toggled Sentry reporting',
+          extras: {
+            'enabled': nextConsent,
+            'previousConsent': previousConsent,
+            'nextConsent': nextConsent,
+          },
+        );
+      }
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is GetLocalSettingsSuccess) {
       _localSettingLoaderStatus = LoaderStatus.completed;
