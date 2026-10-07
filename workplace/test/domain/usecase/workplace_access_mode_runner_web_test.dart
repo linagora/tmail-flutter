@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
-import 'package:workplace/data/model/workplace_request_transfer.dart';
+import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
@@ -34,7 +34,7 @@ class _UnreachableRepository implements WorkplaceRepository {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) => throw UnimplementedError();
 
   @override
@@ -88,7 +88,7 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
-    WorkplaceRequestTransfer transfer = const WorkplaceRequestTransfer(),
+    WorkplaceUploadTransfer transfer = const WorkplaceUploadTransfer(),
   }) => throw UnimplementedError();
 
   @override
