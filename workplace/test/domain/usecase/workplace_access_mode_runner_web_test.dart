@@ -97,8 +97,40 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   }) => throw UnimplementedError();
 }
 
+// Records each access mode it runs on and answers per mode.
+class _ScriptedAction extends WorkplaceAction<String> {
+  @override
+  final bool supportsBridge;
+  final List<WorkplaceAccessMode> calls = [];
+
+  _ScriptedAction({required this.supportsBridge});
+
+  @override
+  Future<String> call(WorkplaceAccessMode accessMode) async {
+    calls.add(accessMode);
+    return accessMode is BridgeAccessMode ? 'bridge-result' : 'bearer-result';
+  }
+}
+
+WorkplaceAccessModeRunner _runnerOver(WorkplaceRepository repository) => WorkplaceAccessModeRunner(
+      exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
+      oidcTokenGetter: () => 'oidc-token',
+      oidcRefreshTrigger: () async => null,
+    );
+
 void main() {
   tearDown(removeCozyBridge);
+
+  test('supportsBridge: false skips an available bridge and runs over bearer token', () async {
+    installCozyBridge((_) => null);
+    final action = _ScriptedAction(supportsBridge: false);
+
+    final result = await _runnerOver(_FakeWorkplaceRepository())
+        .run(Uri.parse('https://platform.example.com'), action);
+
+    expect(result, 'bearer-result');
+    expect(action.calls, [isA<BearerTokenAccessMode>()]);
+  });
 
   test('bridge supported + available + fetchJson throws propagates the error, exchange never called', () async {
     installCozyBridge((_) => throw StateError('bridge rejected'));
