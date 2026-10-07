@@ -54,7 +54,7 @@ class WorkplaceDriveFileGateway {
       body: WorkplaceRequestBody(
         data: spec.source.requestData,
         headers: {'Content-Type': spec.mimeType, 'Content-Length': '${spec.fileSize}'},
-        extra: spec.source.requestExtra,
+        extra: spec.source.dioExtra,
       ),
       transfer: transfer,
     );

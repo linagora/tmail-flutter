@@ -1,18 +1,21 @@
 import 'package:model/upload/file_info.dart';
+import 'package:workplace/domain/entity/workplace_upload_source.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 
 /// How a picked file's bytes reach a request — one shape per [FileInfo] subtype.
-sealed class UploadBody {
+sealed class UploadBody implements WorkplaceUploadSource {
   const UploadBody();
 
   /// Body for `dio.post(data:)`; null when the adapter sends the source itself.
+  @override
   Object? get requestData;
 
   /// Extra entries the web blob adapter and the 401 replay key on.
   Map<String, dynamic> get requestExtra;
 
   /// The `Options.extra` shape the blob adapter and the 401 replay key on.
+  @override
   Map<String, dynamic> get dioExtra =>
       <String, dynamic>{UploadRequestExtra.uploadAttachmentKey: requestExtra};
 
