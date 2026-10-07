@@ -1,0 +1,58 @@
+on:
+  pull_request:
+    paths-ignore:
+      - "docs"
+      - "Jenkinsfile"
+      - "**/*.md"
+
+name: HTML email display
+
+env:
+  FLUTTER_VERSION: 3.38.9
+
+jobs:
+  # Chrome suite tagged `display`: every HTML email fixture rendered through
+  # the production transform and viewer document, at every email pane width.
+  # scripts/test.sh excludes this tag from the core job.
+  html-display:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: "deps-${{ hashFiles('pubspec.lock') }}"
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Display tests
+        working-directory: core
+        # Same discovery as scripts/test.sh (every @TestOn('chrome') file),
+        # filtered to the `display` tag that test.sh excludes. A whole-folder
+        # Chrome run would also compile VM-only tests, which web cannot load.
+        run: |
+          files=()
+          while IFS= read -r file; do files+=("$file"); done \
+            < <(grep -rlE "^@TestOn\(['\"]chrome['\"]\)$" --include='*_test.dart' test | sort)
+          flutter test --platform chrome -t display \
+            --file-reporter=json:../test-report-html-display.json "${files[@]}"
+
+      - name: Upload test report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-html-display
+          path: test-report-html-display.json
