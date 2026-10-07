@@ -564,5 +564,86 @@ void main() {
         equals('alias@example.com'),
       );
     });
+
+    test(
+      'should pre-select the owner email address '
+      'when creating a new identity and the owner address is not in the identities list',
+    () async {
+      // arrange
+      identityCreatorController.listEmailAddressDefault.clear();
+      identityCreatorController.listEmailAddressOfReplyTo.clear();
+      identityCreatorController.emailOfIdentity.value = null;
+
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
+
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+        [
+          Identity(id: IdentityId(Id('alias')), email: 'alias@example.com'),
+          Identity(id: IdentityId(Id('other')), email: 'other@example.com'),
+        ],
+        null,
+      ))));
+
+      // act
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      // assert
+      expect(
+        identityCreatorController.emailOfIdentity.value?.email,
+        equals(ownEmailAddress),
+      );
+    });
+
+    test(
+      'should keep the identity email address '
+      'when editing an identity whose address is not the owner one',
+    () async {
+      // arrange
+      const aliasEmail = 'alias@example.com';
+      final aliasIdentityId = IdentityId(Id('alias'));
+
+      identityCreatorController.listEmailAddressDefault.clear();
+      identityCreatorController.listEmailAddressOfReplyTo.clear();
+      identityCreatorController.emailOfIdentity.value = null;
+
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+        identity: Identity(id: aliasIdentityId, email: aliasEmail),
+        actionType: IdentityActionType.edit,
+      );
+
+      when(mockGetAllIdentitiesInteractor.execute(
+        any,
+        any,
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+        [
+          Identity(id: IdentityId(Id('owner')), email: ownEmailAddress),
+          Identity(id: aliasIdentityId, email: aliasEmail),
+        ],
+        null,
+      ))));
+
+      // act
+      identityCreatorController.onReady();
+      await pumpEventQueue();
+
+      // assert
+      expect(
+        identityCreatorController.emailOfIdentity.value?.email,
+        equals(aliasEmail),
+      );
+    });
   });
 }
