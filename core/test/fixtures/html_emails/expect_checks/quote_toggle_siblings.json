@@ -1,0 +1,6 @@
+{
+  "source": "synthetic quoteToggle case with two top-level quotes",
+  "purpose": "the toggle goes before the LAST top-level blockquote",
+  "expectQuote": true,
+  "expect": ["quoteToggle"]
+}

@@ -6,6 +6,7 @@ enum HtmlEmailExpect {
   autoScale,
   noScale,
   quoteToggle,
+  noQuoteToggle,
 }
 
 class HtmlEmailCorpusFixture {

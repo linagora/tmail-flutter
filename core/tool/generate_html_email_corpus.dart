@@ -129,6 +129,9 @@ class _Sidecar {
     if (unknown.isNotEmpty) {
       throw FormatException('$path: unknown expect $unknown');
     }
+    if (read<bool>('expectQuote', false) && expect.contains('noQuoteToggle')) {
+      throw FormatException('$path: expectQuote contradicts noQuoteToggle');
+    }
     final contentType = read<String>('contentType', 'text/html');
     if (!_contentTypes.contains(contentType)) {
       throw FormatException('$path: unknown contentType "$contentType"');

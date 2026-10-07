@@ -1,0 +1,5 @@
+{
+  "source": "synthetic noScale positive case",
+  "purpose": "plain email that fits: left exactly as written",
+  "expect": ["noScale"]
+}

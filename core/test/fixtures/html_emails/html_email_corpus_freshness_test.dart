@@ -73,6 +73,11 @@ void main() {
       expect(() => buildHtmlEmailCorpusDart(dir), throwsFormatException);
     });
 
+    test('rejects expectQuote together with noQuoteToggle', () {
+      writeFixture('both', '<p>x</p>', '{"expectQuote": true, "expect": ["noQuoteToggle"]}');
+      expect(() => buildHtmlEmailCorpusDart(dir), throwsFormatException);
+    });
+
     test('rejects an unknown contentType', () {
       writeFixture('odd', '<p>x</p>', '{"contentType": "text/markdown"}');
       expect(() => buildHtmlEmailCorpusDart(dir), throwsFormatException);

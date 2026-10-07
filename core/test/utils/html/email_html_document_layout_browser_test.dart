@@ -4,6 +4,7 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import 'display_harness/display_case.dart';
 
 /// Every corpus fixture through the production pipeline on every viewer and
@@ -22,9 +23,13 @@ void main() {
             reason: displayCase.failure('keeps text', '.tmail-content'),
           );
         }
+        // A blockquote deeper than two div levels gets no toggle (D3); the
+        // noQuoteToggle checker covers that case.
+        final quoteReachable = !displayCase.fixture.expect
+            .contains(HtmlEmailExpect.noQuoteToggle);
         if (displayCase.viewer.hasQuoteToggle &&
             (displayCase.fixture.expectQuote ||
-                render.transformedHtml.contains('<blockquote'))) {
+                (quoteReachable && render.transformedHtml.contains('<blockquote')))) {
           expect(frame.hasQuoteToggle, isTrue,
               reason: displayCase.failure('quote toggle', '.quote-toggle-button', 'missing'));
           expect(frame.isQuoteExpanded, isFalse,

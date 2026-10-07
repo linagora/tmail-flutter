@@ -65,7 +65,7 @@ What it does:
 ```
 
 `expect` values: `fullDisplay`, `lazyImages`, `autoScale`, `noScale`,
-`quoteToggle` (the `HtmlEmailExpect` enum; the generator rejects any other value).
+`quoteToggle`, `noQuoteToggle` (the `HtmlEmailExpect` enum; the generator rejects any other value).
 Older fields still work: `expectQuote`, `rtl`, `allowEmptyBody`.
 
 ## Regenerate and test

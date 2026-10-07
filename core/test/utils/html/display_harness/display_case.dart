@@ -53,6 +53,27 @@ class _OfflineDioClient extends Fake implements DioClient {}
 
 final _htmlTransform = HtmlTransform(_OfflineDioClient(), const HtmlEscape());
 
+/// Copies every element's inline `style` to `data-sender-style` at
+/// `DOMContentLoaded`, before the viewer scripts run on `load`, so checkers
+/// can tell what a script changed from what the sender wrote. Test-only: it
+/// adds an attribute and changes nothing the viewers read.
+const _senderStyleSnapshotScript = '''
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[style]').forEach(function(element) {
+      element.setAttribute('data-sender-style', element.getAttribute('style'));
+    });
+  });
+</script>
+''';
+
+String _withSenderStyleSnapshot(String document) {
+  final head = document.indexOf('<head>');
+  if (head < 0) return '$_senderStyleSnapshotScript$document';
+  final at = head + '<head>'.length;
+  return document.substring(0, at) + _senderStyleSnapshotScript + document.substring(at);
+}
+
 /// Runs the production pipeline for [displayCase]: the viewer's transform
 /// configuration (or `forPlainTextEmail` for `text/plain`), the offline image
 /// swap, the viewer's document builder, then an iframe at the pane width.
@@ -73,7 +94,7 @@ Future<DisplayRender> renderDisplayCase(DisplayCase displayCase) async {
     direction: displayCase.direction,
   );
   final frame = await DisplayFrame.render(
-    document,
+    _withSenderStyleSnapshot(document),
     displayCase.width,
     label: displayCase.label,
   );
