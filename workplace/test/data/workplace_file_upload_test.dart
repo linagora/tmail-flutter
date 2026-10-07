@@ -12,9 +12,15 @@ import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_source.dart';
 import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 
 /// Queue item for a failure that carries no HTTP response.
 const _connectionError = Object();
+
+/// Queue item for a request the caller cancelled.
+class _Cancelled {
+  const _Cancelled();
+}
 
 /// Queue item for a response body sent as-is under [contentType].
 class _RawResponse {
@@ -62,6 +68,9 @@ class _QueueAdapter implements HttpClientAdapter {
         requestOptions: options,
         reason: 'unreachable',
       );
+    }
+    if (item is _Cancelled) {
+      throw DioException(requestOptions: options, type: DioExceptionType.cancel);
     }
     if (item is int) {
       throw DioException(
@@ -324,6 +333,17 @@ void main() {
           'type',
           DioExceptionType.connectionError,
         )),
+      );
+      expect(adapter.capturedOptions, hasLength(1));
+    });
+
+    test('throws WorkplaceUploadCancelledException on a cancel without retrying', () async {
+      final adapter = _QueueAdapter([const _Cancelled()]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.uploadFile(context: context, spec: spec),
+        throwsA(isA<WorkplaceUploadCancelledException>()),
       );
       expect(adapter.capturedOptions, hasLength(1));
     });

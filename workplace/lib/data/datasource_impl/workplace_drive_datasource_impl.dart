@@ -10,6 +10,7 @@ import 'workplace_request_executor.dart';
 import '../../domain/entity/drive_uploaded_file.dart';
 import '../../domain/entity/workplace_upload_file_spec.dart';
 import '../../domain/entity/workplace_upload_transfer.dart';
+import '../../domain/exceptions/workplace_exceptions.dart';
 
 /// Writes a file to the Mail magic folder and mints its public share link.
 class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
@@ -38,6 +39,7 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
       try {
         return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, requestTransfer);
       } on DioException catch (exception) {
+        if (exception.type == DioExceptionType.cancel) throw WorkplaceUploadCancelledException();
         // The stack already holds a file by that name; retry with the next suffix.
         final isLast = attempt + 1 >= _maxNameAttempts;
         if (exception.response?.statusCode != 409 || isLast) rethrow;
