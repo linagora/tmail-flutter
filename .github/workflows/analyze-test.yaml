@@ -24,7 +24,7 @@ jobs:
         id: modules
         run: |
           modules=$(git ls-files 'test/*_test.dart' '*/test/*_test.dart' \
-            | awk -F/ '$1 == "test" { print "default"; next } { print $1 }' \
+            | awk -F/ '$1 == "test" || $1 == "tmail-mcp" { print "default"; next } { print $1 }' \
             | sort -u | jq -R . | jq -sc .)
           if [[ "$modules" == "[]" ]]; then
             echo "ERROR: no test found" >&2

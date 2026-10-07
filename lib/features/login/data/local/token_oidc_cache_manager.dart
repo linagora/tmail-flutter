@@ -16,7 +16,7 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
     log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
     try {
       final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
-      log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
+      log('TokenOidcCacheManager::getTokenOidc(): tokenCache found: ${tokenCache != null}');
       if (tokenCache == null) {
         throw NotFoundStoredTokenException();
       }
