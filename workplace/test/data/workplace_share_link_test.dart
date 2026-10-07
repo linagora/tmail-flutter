@@ -106,6 +106,14 @@ void main() {
         },
       };
 
+  Map<String, dynamic> capabilitiesResponse({required bool flat}) => {
+        'data': {
+          'type': 'io.cozy.settings',
+          'id': 'io.cozy.settings.capabilities',
+          'attributes': {'flat_subdomains': flat},
+        },
+      };
+
   setUp(() {
     datasource = WorkplaceDriveDataSourceImpl();
     originalDio = WorkplaceDio.instance;
@@ -137,14 +145,16 @@ void main() {
     });
 
     test('reads the code from shortcodes.code and builds <driveApp>/public?sharecode=', () async {
-      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       final link = await datasource.createShareLink(context: context, fileId: 'file-1');
 
       expect(link.toString(), equals('https://platform-drive.example.com/public?sharecode=abc123'));
-      expect(adapter.capturedOptions.first.uri.queryParameters['codes'], equals('code'));
-      expect(adapter.capturedOptions, hasLength(1));
+      expect(adapter.capturedOptions.first.method, equals('GET'));
+      expect(adapter.capturedOptions.first.uri.path, endsWith('/settings/capabilities'));
+      expect(adapter.capturedOptions.last.uri.queryParameters['codes'], equals('code'));
+      expect(adapter.capturedOptions, hasLength(2));
     });
 
     test('POSTs a JSON GET rule on the given file id to /permissions', () async {
@@ -164,6 +174,7 @@ void main() {
 
     test('throws StateError when the response carries no share code', () async {
       final adapter = _QueueAdapter([
+        capabilitiesResponse(flat: true),
         {
           'data': {
             'id': 'perm-1',
@@ -180,7 +191,7 @@ void main() {
     });
 
     test('throws StateError when the share code is empty', () async {
-      final adapter = _QueueAdapter([permissionResponse('')]);
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       await expectLater(
@@ -189,8 +200,8 @@ void main() {
       );
     });
 
-    test('builds the flat drive subdomain, nested host', () async {
-      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+    test('builds the flat drive subdomain for a multi-label host', () async {
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
       final nestedContext = WorkplaceRequestContext(
         platformUrl: Uri.parse('https://user.nested.example.com'),
@@ -203,7 +214,7 @@ void main() {
     });
 
     test('appends -drive to a single-label host', () async {
-      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
       final singleLabelContext = WorkplaceRequestContext(
         platformUrl: Uri.parse('http://localhost'),
@@ -216,7 +227,7 @@ void main() {
     });
 
     test('keeps the platform port and drops its path and query', () async {
-      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
       final portContext = WorkplaceRequestContext(
         platformUrl: Uri.parse('https://user.example.com:8443/base/?lang=en'),
@@ -229,7 +240,7 @@ void main() {
     });
 
     test('builds the flat drive subdomain, flat host', () async {
-      final adapter = _QueueAdapter([permissionResponse('abc123')]);
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: true), permissionResponse('abc123')]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
       final flatContext = WorkplaceRequestContext(
         platformUrl: Uri.parse('https://user.example.com'),
@@ -240,6 +251,42 @@ void main() {
 
       expect(link.host, equals('user-drive.example.com'));
       expect(link.toString(), equals('https://user-drive.example.com/public?sharecode=abc123'));
+    });
+
+    test('builds the nested drive subdomain when the stack is not flat', () async {
+      final adapter = _QueueAdapter([capabilitiesResponse(flat: false), permissionResponse('abc123')]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+      final nestedContext = WorkplaceRequestContext(
+        platformUrl: Uri.parse('https://user.example.com:8443/base/?lang=en'),
+        accessMode: const BearerTokenAccessMode('test-token'),
+      );
+
+      final link = await datasource.createShareLink(context: nestedContext, fileId: 'file-1');
+
+      expect(link.toString(), equals('https://drive.user.example.com:8443/public?sharecode=abc123'));
+    });
+
+    test('treats a missing flat_subdomains flag as nested', () async {
+      final adapter = _QueueAdapter([
+        {'data': {'attributes': <String, dynamic>{}}},
+        permissionResponse('abc123'),
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final link = await datasource.createShareLink(context: context, fileId: 'file-1');
+
+      expect(link.host, equals('drive.platform.example.com'));
+    });
+
+    test('mints no link when the capabilities request fails', () async {
+      final adapter = _QueueAdapter([500]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.createShareLink(context: context, fileId: 'file-1'),
+        throwsA(isA<DioException>()),
+      );
+      expect(adapter.capturedOptions, hasLength(1));
     });
   });
 

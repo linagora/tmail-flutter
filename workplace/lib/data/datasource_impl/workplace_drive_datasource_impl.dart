@@ -106,6 +106,7 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
     required WorkplaceRequestContext context,
     required String fileId,
   }) async {
+    final flatSubdomains = await _hasFlatSubdomains(context);
     final data = await _executor.send(
       context: context,
       route: const WorkplaceRequestRoute(
@@ -119,10 +120,21 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
       ),
     );
     final shareCode = _parseShareCode(data);
-    return _driveAppUrl(context.platformUrl).replace(
+    return _driveAppUrl(context.platformUrl, flatSubdomains: flatSubdomains).replace(
       path: '/public',
       queryParameters: {'sharecode': shareCode},
     );
+  }
+
+  /// Needs no permission; an absent flag means nested, the cozy-stack default.
+  Future<bool> _hasFlatSubdomains(WorkplaceRequestContext context) async {
+    final data = await _executor.send(
+      context: context,
+      route: const WorkplaceRequestRoute(method: 'GET', pathSegments: ['settings', 'capabilities']),
+    );
+    final payload = _asJsonMap(data)['data'];
+    final attributes = payload is Map ? payload['attributes'] : null;
+    return attributes is Map && attributes['flat_subdomains'] == true;
   }
 
   Map<String, dynamic> _buildPermissionRequest(String fileId) => WorkplacePermissionRequest(
@@ -149,11 +161,13 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
     return code;
   }
 
-  /// Drive lives on the flat app subdomain: `user.example.com` → `user-drive.example.com`.
-  static Uri _driveAppUrl(Uri platformUrl) {
+  /// Flat: `user.example.com` → `user-drive.example.com`; nested: → `drive.user.example.com`.
+  static Uri _driveAppUrl(Uri platformUrl, {required bool flatSubdomains}) {
     final host = platformUrl.host;
     final dot = host.indexOf('.');
-    final flat = dot <= 0 ? '$host-drive' : '${host.substring(0, dot)}-drive${host.substring(dot)}';
-    return platformUrl.replace(host: flat, path: '', query: '');
+    final driveHost = !flatSubdomains
+        ? 'drive.$host'
+        : dot <= 0 ? '$host-drive' : '${host.substring(0, dot)}-drive${host.substring(dot)}';
+    return platformUrl.replace(host: driveHost, path: '', query: '');
   }
 }
