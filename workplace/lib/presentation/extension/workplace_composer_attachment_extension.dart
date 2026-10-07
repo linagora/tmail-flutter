@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/bridge/cozy_bridge.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
+import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
@@ -46,8 +47,10 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final num? Function(String? composerId) remainingAttachmentCapacityBytesGetter;
   final OnDrivePickStateChanged? onPickState;
 
-  late final _dataSource = WorkplaceDataSourceImpl();
-  late final _repository = WorkplaceRepositoryImpl(_dataSource);
+  late final _repository = WorkplaceRepositoryImpl(
+    WorkplaceDataSourceImpl(),
+    WorkplaceDriveDataSourceImpl(),
+  );
   late final _createIntentInteractor = CreateDriveIntentInteractor(_repository);
   late final _exchangeTokenInteractor = ExchangeDriveTokenInteractor(
     _repository,
