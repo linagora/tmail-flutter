@@ -128,13 +128,26 @@ Future<DisplayRender> renderDisplayCase(
   return DisplayRender(displayCase, transformed, document, frame);
 }
 
-/// Every fixture of [corpus] on every viewer and width.
+/// `--dart-define=DISPLAY_VIEWER=native|web|ios` limits a run to one viewer,
+/// so CI can split the display suite into parallel jobs. Empty: all viewers.
+const _viewerFilter = String.fromEnvironment('DISPLAY_VIEWER');
+
+/// Every fixture of [corpus] on every viewer (of [viewers] that the
+/// `DISPLAY_VIEWER` define keeps) and width.
 Iterable<DisplayCase> displayCases({
   List<HtmlEmailCorpusFixture> corpus = htmlEmailCorpus,
   Iterable<DisplayViewer> viewers = DisplayViewer.values,
 }) sync* {
+  final selected = [
+    for (final viewer in viewers)
+      if (_viewerFilter.isEmpty || viewer.label == _viewerFilter) viewer,
+  ];
+  if (_viewerFilter.isNotEmpty &&
+      !DisplayViewer.values.any((viewer) => viewer.label == _viewerFilter)) {
+    throw ArgumentError.value(_viewerFilter, 'DISPLAY_VIEWER', 'unknown viewer');
+  }
   for (final fixture in corpus) {
-    for (final viewer in viewers) {
+    for (final viewer in selected) {
       for (final width in viewer.widths) {
         yield DisplayCase(fixture, viewer, width);
       }

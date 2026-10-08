@@ -53,7 +53,7 @@ void main() {
             bodyWordPreservation(fixture.html, out),
             greaterThanOrEqualTo(fixture.minPreservation),
           );
-          expect(bodyLinkCount(out), bodyLinkCount(fixture.html));
+          expect(bodyLinkCount(out), bodyKeptLinkCount(fixture.html));
         });
       }
     }

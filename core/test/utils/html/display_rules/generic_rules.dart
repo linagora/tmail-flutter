@@ -89,6 +89,10 @@ List<Violation> overflowRule(DisplayRender render) {
 List<Violation> imageFitRule(DisplayRender render) {
   final frame = render.frame;
   final declared = _declaredImageRatios(render.transformedHtml);
+  final guessedSizes = [
+    for (final image in html_parser.parse(render.transformedHtml).querySelectorAll('img'))
+      (image.attributes['src'] ?? '').contains('fixture.invalid/est/'),
+  ];
   final images = frame.images;
   final violations = <Violation>[];
   for (var i = 0; i < images.length; i++) {
@@ -105,10 +109,15 @@ List<Violation> imageFitRule(DisplayRender render) {
     final natural = image.naturalHeight == 0
         ? null
         : image.naturalWidth / image.naturalHeight;
-    final intended = [
-      if (i < declared.length && declared[i] != null) declared[i]!,
-      if (natural != null) natural,
-    ];
+    // A guessed placeholder size (`fixture.invalid/est/`) says nothing about
+    // the real image's shape, so only the pane width is checked for it.
+    final guessed = i < guessedSizes.length && guessedSizes[i];
+    final intended = guessed
+        ? const <double>[]
+        : [
+            if (i < declared.length && declared[i] != null) declared[i]!,
+            if (natural != null) natural,
+          ];
     if (intended.isNotEmpty &&
         intended.every((ratio) => (rendered / ratio - 1).abs() > 0.02)) {
       violations.add(Violation(
