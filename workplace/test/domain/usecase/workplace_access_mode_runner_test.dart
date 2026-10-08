@@ -14,7 +14,7 @@ import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
-import 'package:workplace/domain/usecase/workplace_action.dart';
+import 'package:workplace/domain/usecase/workplace_call.dart';
 
 // Queued items in order: a String succeeds, anything else is thrown.
 class _FakeWorkplaceRepository implements WorkplaceRepository {
@@ -68,12 +68,12 @@ class _TokenlessExchangeInteractor extends ExchangeDriveTokenInteractor {
   }
 }
 
-class _RecordingAction extends WorkplaceAction<String> {
+class _RecordingCall extends WorkplaceCall<String> {
   final bool _supportsBridge;
   final Future<String> Function(WorkplaceAccessMode accessMode) _onCall;
   final List<WorkplaceAccessMode> calls = [];
 
-  _RecordingAction({
+  _RecordingCall({
     bool supportsBridge = true,
     required Future<String> Function(WorkplaceAccessMode accessMode) onCall,
   })  : _supportsBridge = supportsBridge,
@@ -109,7 +109,7 @@ void main() {
         oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       );
 
-  _RecordingAction bearerEchoAction({bool supportsBridge = true}) => _RecordingAction(
+  _RecordingCall bearerEchoCall({bool supportsBridge = true}) => _RecordingCall(
         supportsBridge: supportsBridge,
         onCall: (mode) async => (mode as BearerTokenAccessMode).accessToken,
       );
@@ -135,7 +135,7 @@ void main() {
       );
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         throwsA(isA<StateError>().having(
           (e) => e.message, 'message', contains('OIDC token'),
         )),
@@ -148,7 +148,7 @@ void main() {
         oidcTokenGetter: () => 'oidc-token',
         oidcRefreshTrigger: () async => null,
       );
-      final action = bearerEchoAction();
+      final action = bearerEchoCall();
 
       await expectLater(
         runner.run(platformUrl, action),
@@ -163,7 +163,7 @@ void main() {
       final repository = _FakeWorkplaceRepository(['drive-token']);
       final runner = makeRunner(repository: repository);
 
-      final result = await runner.run(platformUrl, bearerEchoAction());
+      final result = await runner.run(platformUrl, bearerEchoCall());
 
       expect(result, equals('drive-token'));
     });
@@ -174,7 +174,7 @@ void main() {
         final refresh = countingTrigger('refreshed-oidc-token');
         final runner = makeRunner(repository: repository, oidcRefreshTrigger: refresh.trigger);
 
-        final result = await runner.run(platformUrl, bearerEchoAction());
+        final result = await runner.run(platformUrl, bearerEchoCall());
 
         expect(refresh.callCount(), equals(1));
         expect(result, equals('drive-token'));
@@ -188,7 +188,7 @@ void main() {
       final runner = makeRunner(repository: repository, oidcRefreshTrigger: refresh.trigger);
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         throwsA(isA<DioException>()),
       );
       expect(refresh.callCount(), equals(1));
@@ -204,7 +204,7 @@ void main() {
       );
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         throwsA(isA<DioException>()),
       );
       expect(refresh.callCount(), equals(1));
@@ -220,7 +220,7 @@ void main() {
       );
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         throwsA(same(rejection)),
       );
       expect(repository.exchangeCallCount, equals(1));
@@ -255,9 +255,9 @@ void main() {
         oidcRefreshTrigger: refresh,
       );
 
-      final resultA = await runner.run(platformUrl, bearerEchoAction());
+      final resultA = await runner.run(platformUrl, bearerEchoCall());
       isStale = true; // B started before A's refresh landed.
-      final resultB = await runner.run(platformUrl, bearerEchoAction());
+      final resultB = await runner.run(platformUrl, bearerEchoCall());
 
       expect(refreshCount, equals(1));
       expect(resultA, equals('drive-token'));
@@ -276,7 +276,7 @@ void main() {
       final runner = makeRunner(repository: repository, oidcRefreshTrigger: refresh.trigger);
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         throwsA(isA<DioException>()),
       );
       // A network error is not a stale token; refreshing would be pointless.
@@ -289,7 +289,7 @@ void main() {
       final runner = makeRunner(repository: repository, oidcRefreshTrigger: () async => null);
 
       await expectLater(
-        runner.run(platformUrl, bearerEchoAction()),
+        runner.run(platformUrl, bearerEchoCall()),
         // Not a StateError from a null access token: the 401 is the real cause.
         throwsA(isA<DioException>().having(
           (e) => e.response?.statusCode, 'statusCode', 401,
@@ -301,7 +301,7 @@ void main() {
     test('supportsBridge == false never invokes the bridge and runs the exchange once', () async {
       final repository = _FakeWorkplaceRepository(['drive-token']);
       final runner = makeRunner(repository: repository);
-      final action = bearerEchoAction(supportsBridge: false);
+      final action = bearerEchoCall(supportsBridge: false);
 
       final result = await runner.run(platformUrl, action);
 

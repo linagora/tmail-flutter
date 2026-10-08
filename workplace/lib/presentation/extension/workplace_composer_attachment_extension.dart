@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
-import 'package:workplace/data/model/workplace_enums.dart' hide WorkplaceAction;
+import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
@@ -21,7 +21,7 @@ import 'package:workplace/presentation/model/drive_picker_session.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
-import 'package:workplace/domain/usecase/workplace_action.dart';
+import 'package:workplace/domain/usecase/workplace_call.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
@@ -174,7 +174,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
 }
 
 /// cozy-stack `POST /intents` is served by the bridge.
-class _CreateIntentAction extends WorkplaceAction<WorkplaceIntent> {
+class _CreateIntentAction extends WorkplaceCall<WorkplaceIntent> {
   final Future<WorkplaceIntent> Function(WorkplaceAccessMode accessMode) _createIntent;
 
   const _CreateIntentAction(this._createIntent);

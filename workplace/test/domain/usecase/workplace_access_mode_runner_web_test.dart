@@ -11,7 +11,7 @@ import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
-import 'package:workplace/domain/usecase/workplace_action.dart';
+import 'package:workplace/domain/usecase/workplace_call.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 
@@ -44,8 +44,8 @@ class _UnreachableRepository implements WorkplaceRepository {
   }) => throw UnimplementedError();
 }
 
-class _BridgeOnlyAction extends WorkplaceAction<String> {
-  const _BridgeOnlyAction();
+class _BridgeOnlyCall extends WorkplaceCall<String> {
+  const _BridgeOnlyCall();
 
   @override
   bool get supportsBridge => true;
@@ -55,7 +55,7 @@ class _BridgeOnlyAction extends WorkplaceAction<String> {
 }
 
 // Succeeds only over bearer token; a bridge attempt always throws first.
-class _FallsBackToBearerAction extends WorkplaceAction<String> {
+class _FallsBackToBearerCall extends WorkplaceCall<String> {
   final List<WorkplaceAccessMode> calls = [];
 
   @override
@@ -99,7 +99,7 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
 }
 
 // Records each access mode it runs on; a bridge call throws when [bridgeFails].
-class _ScriptedAction extends WorkplaceAction<String> {
+class _ScriptedCall extends WorkplaceCall<String> {
   @override
   final bool supportsBridge;
   @override
@@ -107,7 +107,7 @@ class _ScriptedAction extends WorkplaceAction<String> {
   final bool bridgeFails;
   final List<WorkplaceAccessMode> calls = [];
 
-  _ScriptedAction({
+  _ScriptedCall({
     this.supportsBridge = true,
     this.fallsBackToBearer = false,
     this.bridgeFails = false,
@@ -146,7 +146,7 @@ void main() {
 
   test('supportsBridge: false skips an available bridge and runs over bearer token', () async {
     installCozyBridge((_) => null);
-    final action = _ScriptedAction(supportsBridge: false);
+    final action = _ScriptedCall(supportsBridge: false);
 
     final result = await _runnerOver(_FakeWorkplaceRepository())
         .run(Uri.parse('https://platform.example.com'), action);
@@ -158,7 +158,7 @@ void main() {
   for (final fallsBackToBearer in [false, true]) {
     test('returns the bridge result without an exchange (fallsBackToBearer: $fallsBackToBearer)', () async {
       installCozyBridge((_) => null);
-      final action = _ScriptedAction(fallsBackToBearer: fallsBackToBearer);
+      final action = _ScriptedCall(fallsBackToBearer: fallsBackToBearer);
 
       final result = await _runnerOver(_UnreachableRepository())
           .run(Uri.parse('https://platform.example.com'), action);
@@ -178,7 +178,7 @@ void main() {
     );
 
     await expectLater(
-      runner.run(Uri.parse('https://platform.example.com'), const _BridgeOnlyAction()),
+      runner.run(Uri.parse('https://platform.example.com'), const _BridgeOnlyCall()),
       throwsA(isA<StateError>().having((e) => e.message, 'message', 'bridge rejected')),
     );
   });
@@ -191,7 +191,7 @@ void main() {
       oidcTokenGetter: () => 'oidc-token',
       oidcRefreshTrigger: () async => null,
     );
-    final action = _FallsBackToBearerAction();
+    final action = _FallsBackToBearerCall();
 
     final result = await runner.run(Uri.parse('https://platform.example.com'), action);
 
@@ -201,7 +201,7 @@ void main() {
 
   test('surfaces the bearer error when both the bridge and the bearer fallback fail', () async {
     installCozyBridge((_) => null);
-    final action = _ScriptedAction(fallsBackToBearer: true, bridgeFails: true);
+    final action = _ScriptedCall(fallsBackToBearer: true, bridgeFails: true);
 
     await expectLater(
       _runnerOver(_FailingExchangeRepository())
