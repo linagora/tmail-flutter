@@ -5,10 +5,14 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import 'abstract_composer_editor_keyboard_robot.dart';
 import 'abstract_composer_reload_robot.dart';
 
 abstract class AbstractComposerRobot {
   AbstractComposerReloadRobot? get reload;
+
+  /// Web only: real key presses in the Summernote editor.
+  AbstractComposerEditorKeyboardRobot? get editorKeyboard;
 
   Future<void> expectComposerViewVisible();
   Future<void> grantContactPermission();

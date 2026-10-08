@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../mocks/fake_file_picker.dart';
+import '../abstract/abstract_composer_editor_keyboard_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
 import '../composer_robot.dart';
@@ -20,7 +21,14 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerReloadRobot? reload;
 
-  MobileComposerRobot(PatrolIntegrationTester $, {this.reload}) : super($);
+  @override
+  final AbstractComposerEditorKeyboardRobot? editorKeyboard;
+
+  MobileComposerRobot(
+    PatrolIntegrationTester $, {
+    this.reload,
+    this.editorKeyboard,
+  }) : super($);
 
   @override
   Future<void> expectComposerViewVisible() async {

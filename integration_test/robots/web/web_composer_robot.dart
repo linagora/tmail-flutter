@@ -9,13 +9,19 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_edi
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../mobile/mobile_composer_robot.dart';
+import 'web_composer_controller_finder.dart';
+import 'web_composer_editor_keyboard_robot.dart';
 import 'web_composer_reload_robot.dart';
 
 /// Web-specific composer robot. Overrides [addContent] because InAppWebView
 /// is unavailable on web — content is injected via Patrol's web automator.
 class WebComposerRobot extends MobileComposerRobot {
   WebComposerRobot(PatrolIntegrationTester $)
-      : super($, reload: WebComposerReloadRobot($));
+      : super(
+          $,
+          reload: WebComposerReloadRobot($),
+          editorKeyboard: WebComposerEditorKeyboardRobot($),
+        );
 
   @override
   Future<void> expectComposerViewVisible() async {
@@ -46,13 +52,8 @@ class WebComposerRobot extends MobileComposerRobot {
   /// composerId tag, so [Get.find] without a tag fails. Reading it from the
   /// widget's [controller] getter is the only reliable approach.
   @override
-  ComposerController? findComposerController() {
-    final widgets = $.tester
-        .widgetList<ComposerView>(find.byType(ComposerView))
-        .toList();
-    if (widgets.isEmpty) return null;
-    return widgets.first.controller;
-  }
+  ComposerController? findComposerController() =>
+      findWebComposerController($);
 
   @override
   Future<void> tapSaveAsTemplateButton() async {
