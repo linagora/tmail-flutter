@@ -3,6 +3,7 @@ library;
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/domain/entity/bridge_policy.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
@@ -48,7 +49,7 @@ class _BridgeOnlyCall extends WorkplaceCall<String> {
   const _BridgeOnlyCall();
 
   @override
-  bool get supportsBridge => true;
+  BridgePolicy get bridgePolicy => BridgePolicy.noBearerReplay;
 
   @override
   Future<String> call(WorkplaceAccessMode accessMode) => throw StateError('bridge rejected');
@@ -59,10 +60,7 @@ class _FallsBackToBearerCall extends WorkplaceCall<String> {
   final List<WorkplaceAccessMode> calls = [];
 
   @override
-  bool get supportsBridge => true;
-
-  @override
-  bool get fallsBackToBearer => true;
+  BridgePolicy get bridgePolicy => BridgePolicy.bearerReplay;
 
   @override
   Future<String> call(WorkplaceAccessMode accessMode) {
@@ -101,15 +99,12 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
 // Records each access mode it runs on; a bridge call throws when [bridgeFails].
 class _ScriptedCall extends WorkplaceCall<String> {
   @override
-  final bool supportsBridge;
-  @override
-  final bool fallsBackToBearer;
+  final BridgePolicy bridgePolicy;
   final bool bridgeFails;
   final List<WorkplaceAccessMode> calls = [];
 
   _ScriptedCall({
-    this.supportsBridge = true,
-    this.fallsBackToBearer = false,
+    this.bridgePolicy = BridgePolicy.noBearerReplay,
     this.bridgeFails = false,
   });
 
@@ -144,9 +139,9 @@ WorkplaceAccessModeRunner _runnerOver(WorkplaceRepository repository) => Workpla
 void main() {
   tearDown(removeCozyBridge);
 
-  test('supportsBridge: false skips an available bridge and runs over bearer token', () async {
+  test('BridgePolicy.never skips an available bridge and runs over bearer token', () async {
     installCozyBridge((_) => null);
-    final action = _ScriptedCall(supportsBridge: false);
+    final action = _ScriptedCall(bridgePolicy: BridgePolicy.never);
 
     final result = await _runnerOver(_FakeWorkplaceRepository())
         .run(Uri.parse('https://platform.example.com'), action);
@@ -155,10 +150,10 @@ void main() {
     expect(action.calls, [isA<BearerTokenAccessMode>()]);
   });
 
-  for (final fallsBackToBearer in [false, true]) {
-    test('returns the bridge result without an exchange (fallsBackToBearer: $fallsBackToBearer)', () async {
+  for (final policy in [BridgePolicy.noBearerReplay, BridgePolicy.bearerReplay]) {
+    test('returns the bridge result without an exchange (bridgePolicy: $policy)', () async {
       installCozyBridge((_) => null);
-      final action = _ScriptedCall(fallsBackToBearer: fallsBackToBearer);
+      final action = _ScriptedCall(bridgePolicy: policy);
 
       final result = await _runnerOver(_UnreachableRepository())
           .run(Uri.parse('https://platform.example.com'), action);
@@ -183,7 +178,7 @@ void main() {
     );
   });
 
-  test('fallsBackToBearer: true retries over bearer token when the bridge call throws', () async {
+  test('BridgePolicy.bearerReplay retries over bearer token when the bridge call throws', () async {
     installCozyBridge((_) => throw StateError('bridge rejected'));
     final repository = _FakeWorkplaceRepository();
     final runner = WorkplaceAccessModeRunner(
@@ -201,7 +196,7 @@ void main() {
 
   test('surfaces the bearer error when both the bridge and the bearer fallback fail', () async {
     installCozyBridge((_) => null);
-    final action = _ScriptedCall(fallsBackToBearer: true, bridgeFails: true);
+    final action = _ScriptedCall(bridgePolicy: BridgePolicy.bearerReplay, bridgeFails: true);
 
     await expectLater(
       _runnerOver(_FailingExchangeRepository())

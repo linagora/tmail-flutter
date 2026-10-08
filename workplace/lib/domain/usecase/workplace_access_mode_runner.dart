@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
+import '../entity/bridge_policy.dart';
 import '../entity/workplace_access_mode.dart';
 import '../exceptions/workplace_exceptions.dart';
 import '../state/workplace_intent_state.dart';
@@ -30,8 +31,10 @@ class WorkplaceAccessModeRunner {
 
   Future<T> run<T>(Uri platformUrl, WorkplaceCall<T> workplaceCall) async {
     if (_canUseBridge(workplaceCall)) {
-      // No bearer retry for non-idempotent actions — the bridge may have already dispatched.
-      if (!workplaceCall.fallsBackToBearer) return workplaceCall(const BridgeAccessMode());
+      // No bearer replay unless opted in — the bridge may have already dispatched.
+      if (workplaceCall.bridgePolicy != BridgePolicy.bearerReplay) {
+        return workplaceCall(const BridgeAccessMode());
+      }
       try {
         return await workplaceCall(const BridgeAccessMode());
       } catch (error) {
@@ -49,7 +52,8 @@ class WorkplaceAccessModeRunner {
   }
 
   bool _canUseBridge(WorkplaceCall<Object?> workplaceCall) =>
-      workplaceCall.supportsBridge && CozyBridge.isSupported && CozyBridge.isAvailable;
+      workplaceCall.bridgePolicy != BridgePolicy.never &&
+          CozyBridge.isSupported && CozyBridge.isAvailable;
 
   Future<String?> _exchangeAccessToken(
     Uri platformUrl,
