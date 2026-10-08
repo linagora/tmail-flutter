@@ -17,11 +17,11 @@ import 'package:workplace/presentation/model/drive_picker_session.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_call.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
-import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
+import 'package:workplace/data/transport/workplace_access_mode_runner.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
-export 'package:workplace/domain/usecase/workplace_access_mode_runner.dart'
+export 'package:workplace/data/transport/workplace_access_mode_runner.dart'
     show OidcRefreshTrigger;
 
 typedef OnDrivePickStateChanged =

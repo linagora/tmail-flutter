@@ -14,7 +14,7 @@ import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
-import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
+import 'package:workplace/data/transport/workplace_access_mode_runner.dart';
 import 'package:workplace/domain/usecase/workplace_call.dart';
 
 // Queued items in order: a String succeeds, anything else is thrown.

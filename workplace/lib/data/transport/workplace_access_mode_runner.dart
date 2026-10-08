@@ -3,13 +3,13 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
-import '../entity/bridge_policy.dart';
-import '../entity/workplace_access_mode.dart';
-import '../exceptions/workplace_exceptions.dart';
-import '../state/workplace_intent_state.dart';
-import 'exchange_drive_token_interactor.dart';
-import 'workplace_call.dart';
-import '../../data/bridge/cozy_bridge.dart';
+import '../../domain/entity/bridge_policy.dart';
+import '../../domain/entity/workplace_access_mode.dart';
+import '../../domain/exceptions/workplace_exceptions.dart';
+import '../../domain/state/workplace_intent_state.dart';
+import '../../domain/usecase/exchange_drive_token_interactor.dart';
+import '../../domain/usecase/workplace_call.dart';
+import '../bridge/cozy_bridge.dart';
 
 /// Triggers the host app's OIDC refresh; returns the refreshed id token.
 typedef OidcRefreshTrigger = Future<String?> Function();
