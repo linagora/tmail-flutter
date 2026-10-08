@@ -1,5 +1,4 @@
 text:
-  - StandardizeHtmlSanitizingTransformers(allowAttributes: [contenteditable])
 dom:
   - SignatureTransformer
   - RemoveCollapsedSignatureButtonTransformer

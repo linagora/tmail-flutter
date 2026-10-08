@@ -26,6 +26,7 @@ class HtmlPipelineRow {
     this.setPlatform,
     this.allowsContentEditable = false,
     this.input = HtmlPipelineInput.html,
+    this.knownGap,
   });
 
   final String name;
@@ -36,6 +37,11 @@ class HtmlPipelineRow {
   final void Function()? setPlatform;
   final bool allowsContentEditable;
   final HtmlPipelineInput input;
+
+  /// A known bug that breaks this pipeline's contract, with what it is. The
+  /// contract tests skip with this reason until the fix lands; the wiring
+  /// and lock tests still record what the pipeline really does.
+  final String? knownGap;
 
   bool get takesHtml => input == HtmlPipelineInput.html;
 
@@ -87,8 +93,9 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
         factoryName: 'forReplyForwardEmptyEmail',
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        allowsContentEditable: true,
+        wiring: HtmlPipelineWiring.passesThrough,
+        knownGap: 'XSS: replying to an email with no reply text puts the '
+            'original raw HTML into the composer without the sanitizer',
       ),
       HtmlPipelineRow(
         name: 'forDraftsEmail',

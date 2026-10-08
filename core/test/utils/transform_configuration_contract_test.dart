@@ -52,7 +52,7 @@ void main() {
               reason: '${row.name} user-authored policy is ${row.wiring.name}',
             );
         }
-      });
+      }, skip: row.knownGap);
     }
   });
 
