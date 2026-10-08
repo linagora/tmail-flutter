@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_limits.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_size_snapshot.dart';
+import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_dialog_view.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/drive_oversize_transfer_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/providers/drive_oversize_transfer_notifier.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -358,6 +359,25 @@ void main() {
       setup.container.dispose();
     });
 
+    testWidgets('a takeover shows the in-flight dialog until the batch settles', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'a.zip': Uri.parse('https://drive.example.com/public?sharecode=x')},
+      );
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+
+      expect(find.byType(DriveOversizeUploadDialogView), findsOneWidget);
+      hold.complete();
+      await tester.pumpAndSettle();
+      expect(find.byType(DriveOversizeUploadDialogView), findsNothing);
+      setup.container.dispose();
+    });
+
     testWidgets('a running upload marks its row uploading and forwards its progress', (tester) async {
       Get.put<MailboxDashBoardController>(_FakeDashboardController());
       final setup = await _setUpRecovery(tester);
@@ -540,6 +560,10 @@ void main() {
 
       expect(lastStatuses(), {'a.zip': DriveOversizeTransferStatus.linked});
       expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
+      expect(
+        logHandler.errorRecords.map((record) => record.rawMessage),
+        ['DriveOversizeAttachmentRecovery::_insertLinks: editor refused'],
+      );
       setup.container.dispose();
     });
 
@@ -579,6 +603,10 @@ void main() {
         'a.zip': DriveOversizeTransferStatus.failed,
         'b.zip': DriveOversizeTransferStatus.failed,
       });
+      expect(
+        logHandler.errorRecords.map((record) => record.rawMessage),
+        ['DriveOversizeAttachmentRecovery::_runUploads: Bad state: OIDC token is unavailable'],
+      );
       expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       setup.container.dispose();
