@@ -165,6 +165,25 @@ void main() {
       expect(waiting.cancelToken.isCancelled, isTrue);
     });
 
+    test('a late progress tick, mark or failure leaves a settled row unchanged', () {
+      final notifier = container.read(driveOversizeTransferProvider.notifier);
+      notifier.start([makeItem('a'), makeItem('b'), makeItem('c')]);
+      notifier.cancel(const UploadTaskId('a'));
+      notifier.markLinked(const UploadTaskId('b'));
+      notifier.markFailed(const UploadTaskId('c'));
+      final before = container.read(driveOversizeTransferProvider);
+
+      for (final id in ['a', 'b', 'c']) {
+        notifier.reportProgress(UploadTaskId(id), 50, 100);
+        notifier.markUploading(UploadTaskId(id));
+        notifier.markLinked(UploadTaskId(id));
+        notifier.markFailed(UploadTaskId(id));
+      }
+
+      expect(container.read(driveOversizeTransferProvider), equals(before));
+      expect(notifier.allSettled, isTrue);
+    });
+
     test('allSettled is false on an empty list', () {
       final notifier = container.read(driveOversizeTransferProvider.notifier);
       expect(notifier.allSettled, isFalse);

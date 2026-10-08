@@ -67,8 +67,11 @@ class DriveOversizeTransfer extends _$DriveOversizeTransfer {
   ) {
     final index = state.indexWhere((item) => item.taskId == taskId);
     if (index < 0) return;
-    final next = transform(state[index]);
-    if (identical(next, state[index])) return;
+    final current = state[index];
+    // A late progress/mark callback must not revive a cancelled, failed or linked row.
+    if (current.status.settled) return;
+    final next = transform(current);
+    if (identical(next, current)) return;
     state = [...state]..[index] = next;
   }
 }
