@@ -103,11 +103,13 @@ void main() {
     required _FakeWorkplaceRepository repository,
     String? Function()? oidcTokenGetter,
     OidcRefreshTrigger? oidcRefreshTrigger,
+    bool Function()? isBridgeAvailable,
   }) =>
       WorkplaceAccessModeRunner(
         exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
         oidcTokenGetter: oidcTokenGetter ?? () => 'oidc-token',
         oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
+        isBridgeAvailable: isBridgeAvailable ?? () => false,
       );
 
   _RecordingCall bearerEchoCall({
@@ -115,6 +117,15 @@ void main() {
   }) => _RecordingCall(
         bridgePolicy: bridgePolicy,
         onCall: (mode) async => (mode as BearerTokenAccessMode).accessToken,
+      );
+
+  _RecordingCall scriptedCall(BridgePolicy policy, {bool bridgeFails = false}) => _RecordingCall(
+        bridgePolicy: policy,
+        onCall: (mode) async {
+          if (mode is! BridgeAccessMode) return 'bearer-result';
+          if (bridgeFails) throw StateError('bridge rejected');
+          return 'bridge-result';
+        },
       );
 
   ({OidcRefreshTrigger trigger, int Function() callCount}) countingTrigger(
@@ -150,6 +161,7 @@ void main() {
         exchangeTokenInteractor: _TokenlessExchangeInteractor(),
         oidcTokenGetter: () => 'oidc-token',
         oidcRefreshTrigger: () async => null,
+        isBridgeAvailable: () => false,
       );
       final action = bearerEchoCall();
 
@@ -311,6 +323,73 @@ void main() {
       expect(result, equals('drive-token'));
       expect(repository.exchangeCallCount, equals(1));
       expect(action.calls.single, isA<BearerTokenAccessMode>());
+    });
+  });
+
+  group('WorkplaceAccessModeRunner::run::bridge::', () {
+    test('BridgePolicy.never skips an available bridge and runs over bearer token', () async {
+      final runner = makeRunner(
+        repository: _FakeWorkplaceRepository(['drive-token']),
+        isBridgeAvailable: () => true,
+      );
+      final call = scriptedCall(BridgePolicy.never);
+
+      final result = await runner.run(platformUrl, call);
+
+      expect(result, equals('bearer-result'));
+      expect(call.calls, [isA<BearerTokenAccessMode>()]);
+    });
+
+    for (final policy in [BridgePolicy.noBearerReplay, BridgePolicy.bearerReplay]) {
+      test('returns the bridge result without an exchange (bridgePolicy: $policy)', () async {
+        final repository = _FakeWorkplaceRepository([]);
+        final runner = makeRunner(repository: repository, isBridgeAvailable: () => true);
+        final call = scriptedCall(policy);
+
+        final result = await runner.run(platformUrl, call);
+
+        expect(result, equals('bridge-result'));
+        expect(call.calls, [isA<BridgeAccessMode>()]);
+        expect(repository.exchangeCallCount, equals(0));
+      });
+    }
+
+    test('noBearerReplay propagates a bridge failure and never exchanges', () async {
+      final repository = _FakeWorkplaceRepository([]);
+      final runner = makeRunner(repository: repository, isBridgeAvailable: () => true);
+
+      await expectLater(
+        runner.run(platformUrl, scriptedCall(BridgePolicy.noBearerReplay, bridgeFails: true)),
+        throwsA(isA<StateError>().having((e) => e.message, 'message', 'bridge rejected')),
+      );
+      expect(repository.exchangeCallCount, equals(0));
+    });
+
+    test('bearerReplay retries over bearer token when the bridge call throws', () async {
+      final runner = makeRunner(
+        repository: _FakeWorkplaceRepository(['drive-token']),
+        isBridgeAvailable: () => true,
+      );
+      final call = scriptedCall(BridgePolicy.bearerReplay, bridgeFails: true);
+
+      final result = await runner.run(platformUrl, call);
+
+      expect(result, equals('bearer-result'));
+      expect(call.calls, [isA<BridgeAccessMode>(), isA<BearerTokenAccessMode>()]);
+    });
+
+    test('bearerReplay surfaces the bearer error when the exchange also fails', () async {
+      final runner = makeRunner(
+        repository: _FakeWorkplaceRepository([statusError(500)]),
+        isBridgeAvailable: () => true,
+      );
+      final call = scriptedCall(BridgePolicy.bearerReplay, bridgeFails: true);
+
+      await expectLater(
+        runner.run(platformUrl, call),
+        throwsA(isA<DioException>().having((e) => e.response?.statusCode, 'status', 500)),
+      );
+      expect(call.calls, [isA<BridgeAccessMode>()]);
     });
   });
 }
