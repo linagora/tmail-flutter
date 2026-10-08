@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workplace/domain/entity/bridge_policy.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
@@ -69,18 +70,18 @@ class _TokenlessExchangeInteractor extends ExchangeDriveTokenInteractor {
 }
 
 class _RecordingCall extends WorkplaceCall<String> {
-  final bool _supportsBridge;
+  final BridgePolicy _bridgePolicy;
   final Future<String> Function(WorkplaceAccessMode accessMode) _onCall;
   final List<WorkplaceAccessMode> calls = [];
 
   _RecordingCall({
-    bool supportsBridge = true,
+    BridgePolicy bridgePolicy = BridgePolicy.noBearerReplay,
     required Future<String> Function(WorkplaceAccessMode accessMode) onCall,
-  })  : _supportsBridge = supportsBridge,
+  })  : _bridgePolicy = bridgePolicy,
         _onCall = onCall;
 
   @override
-  bool get supportsBridge => _supportsBridge;
+  BridgePolicy get bridgePolicy => _bridgePolicy;
 
   @override
   Future<String> call(WorkplaceAccessMode accessMode) {
@@ -109,8 +110,10 @@ void main() {
         oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       );
 
-  _RecordingCall bearerEchoCall({bool supportsBridge = true}) => _RecordingCall(
-        supportsBridge: supportsBridge,
+  _RecordingCall bearerEchoCall({
+    BridgePolicy bridgePolicy = BridgePolicy.noBearerReplay,
+  }) => _RecordingCall(
+        bridgePolicy: bridgePolicy,
         onCall: (mode) async => (mode as BearerTokenAccessMode).accessToken,
       );
 
@@ -298,10 +301,10 @@ void main() {
       expect(repository.exchangeCallCount, equals(1));
     });
 
-    test('supportsBridge == false never invokes the bridge and runs the exchange once', () async {
+    test('BridgePolicy.never never invokes the bridge and runs the exchange once', () async {
       final repository = _FakeWorkplaceRepository(['drive-token']);
       final runner = makeRunner(repository: repository);
-      final action = bearerEchoCall(supportsBridge: false);
+      final action = bearerEchoCall(bridgePolicy: BridgePolicy.never);
 
       final result = await runner.run(platformUrl, action);
 
