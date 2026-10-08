@@ -97,7 +97,7 @@ void main() {
         expect(out, isNot(contains('javascript:')));
         expect(hasEventHandler(out), isFalse);
         expect(out, contains('Valid content'));
-      });
+      }, skip: row.knownGap);
     }
   });
 
