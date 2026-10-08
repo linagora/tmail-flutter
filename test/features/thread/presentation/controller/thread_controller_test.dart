@@ -1179,6 +1179,8 @@ void main() {
 
       ThreadController? collapseController;
 
+      setUp(() => clearInteractions(mockLoadMoreEmailsInMailboxInteractor));
+
       ThreadController createController({required bool collapseThreads}) {
         return collapseController = _ThreadControllerWithCollapseThreads(
           mockGetEmailsInMailboxInteractor,
@@ -1196,13 +1198,14 @@ void main() {
         collapseController = null;
       });
 
-      Future<void> completeGetAllEmailWithPartialPageInShortViewport(
+      Future<void> completeGetAllEmailInShortViewport(
         WidgetTester tester,
-        ThreadController controller,
-      ) async {
+        ThreadController controller, {
+        required int emailCount,
+      }) async {
         PlatformInfo.isTestingForWeb = false;
 
-        final partialEmails = makeEmails(15); // fewer than maxCountEmails = 20
+        final emails = makeEmails(emailCount);
 
         when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
         when(mockMailboxDashBoardController.sessionCurrent)
@@ -1213,7 +1216,7 @@ void main() {
             .thenReturn(Rxn(PresentationMailbox(mailboxId)));
         when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
         when(mockMailboxDashBoardController.emailsInCurrentMailbox)
-            .thenReturn(RxList(partialEmails));
+            .thenReturn(RxList(emails));
         when(mockMailboxDashBoardController.filterMessageOption)
             .thenReturn(Rx(FilterMessageOption.all));
         when(mockMailboxDashBoardController.searchController)
@@ -1237,7 +1240,7 @@ void main() {
         expect(controller.listEmailController.position.maxScrollExtent, 0.0);
 
         controller.viewState.value = Right(
-          GetAllEmailSuccess(emailList: partialEmails, currentMailboxId: mailboxId),
+          GetAllEmailSuccess(emailList: emails, currentMailboxId: mailboxId),
         );
 
         controller.onDone();
@@ -1253,7 +1256,11 @@ void main() {
       (tester) async {
         final controller = createController(collapseThreads: true);
 
-        await completeGetAllEmailWithPartialPageInShortViewport(tester, controller);
+        await completeGetAllEmailInShortViewport(
+          tester,
+          controller,
+          emailCount: 15, // fewer than maxCountEmails = 20
+        );
 
         // Load-more interactor MUST be called to attempt filling the viewport.
         verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
@@ -1271,7 +1278,47 @@ void main() {
       (tester) async {
         final controller = createController(collapseThreads: false);
 
-        await completeGetAllEmailWithPartialPageInShortViewport(tester, controller);
+        await completeGetAllEmailInShortViewport(
+          tester,
+          controller,
+          emailCount: 15, // fewer than maxCountEmails = 20
+        );
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        expect(controller.canLoadMore, isFalse);
+      });
+
+      testWidgets(
+        'GIVEN collapseThreads is disabled and getAllEmail returns a full page '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN getAllEmail stream completes '
+        'THEN auto-load-more IS triggered once — more emails may remain',
+      (tester) async {
+        final controller = createController(collapseThreads: false);
+
+        await completeGetAllEmailInShortViewport(
+          tester,
+          controller,
+          emailCount: ThreadConstants.maxCountEmails,
+        );
+
+        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+        expect(controller.canLoadMore, isFalse);
+      });
+
+      testWidgets(
+        'GIVEN collapseThreads returns an empty page '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN getAllEmail stream completes '
+        'THEN auto-load-more SHOULD NOT be triggered — the mailbox is empty',
+      (tester) async {
+        final controller = createController(collapseThreads: true);
+
+        await completeGetAllEmailInShortViewport(
+          tester,
+          controller,
+          emailCount: 0,
+        );
 
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
         expect(controller.canLoadMore, isFalse);
