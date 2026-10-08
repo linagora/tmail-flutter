@@ -79,12 +79,16 @@ String _withSenderStyleSnapshot(String document) {
 class DisplayMutation {
   const DisplayMutation({
     this.transformConfiguration,
+    this.plainTextTransformConfiguration,
     this.document,
     this.quoteToggle = true,
   });
 
   /// Replaces the viewer's HTML transform configuration.
   final TransformConfiguration Function(DisplayViewer viewer)? transformConfiguration;
+
+  /// Replaces [TransformConfiguration.forPlainTextEmail] for `text/plain`.
+  final TransformConfiguration Function()? plainTextTransformConfiguration;
 
   /// Rewrites the built viewer document (strip a script or a CSS rule).
   final String Function(String document)? document;
@@ -105,7 +109,8 @@ Future<DisplayRender> renderDisplayCase(
   final transformed = fixture.isPlainText
       ? _htmlTransform.transformToTextPlain(
           content: fixture.html,
-          transformConfiguration: TransformConfiguration.forPlainTextEmail(),
+          transformConfiguration: mutation?.plainTextTransformConfiguration?.call() ??
+              TransformConfiguration.forPlainTextEmail(),
         )
       : await _htmlTransform.transformToHtml(
           htmlContent: fixture.html,

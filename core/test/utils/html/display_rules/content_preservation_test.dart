@@ -47,6 +47,8 @@ void main() {
               plainTextWordPreservation(fixture.html, out),
               greaterThanOrEqualTo(fixture.minPreservation),
             );
+            expect(webLinkCount(out), plainTextUrlCount(fixture.html),
+                reason: 'every web address in the text is a link');
             return;
           }
           expect(

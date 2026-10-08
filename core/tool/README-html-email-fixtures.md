@@ -114,8 +114,63 @@ the email documents the bug; its fix PR turns it green). Viewer/width:
 | Image never shown (0×0): sender lazy-loading with only `data-src` | 28; also 13, 36 at some widths | n, w |
 | Body taller than the native viewer cap (`ConstantsUI.htmlContentMaxHeight`) | 20 | n744, w760 |
 | Plain-text ASCII table in a `white-space: pre` block overflows | 35 | i, w |
+| Word cut mid-letters in a table cell: `ResponsiveTableCellTransformer` adds `overflow-wrap: anywhere`, so a column shrinks below its longest word (7 on native: the responsive script sets `word-break`) | 11, 17, 29, 31, 36, 39; 7 | n, w, i |
 
 Synthetic fixtures with recorded findings: `layout_stress/wide_image`,
 `layout_stress/wide_table`, `newsletter_builders/mailchimp`,
 `expect_checks/auto_scale_*`, `expect_checks/quote_toggle_wide` (iOS and web
-do not fit fixed-width content).
+do not fit fixed-width content); `layout_stress/word_and_prose_columns` (word
+cut even at 1000px, see above); `edge/plain_text_table` (an ASCII table next
+to prose is not detected, `StringConvert.isTextTable` needs every line to be
+table art, so it renders in a proportional font and its columns misalign).
+
+## Coverage: what the rules prove
+
+Each display mechanism of the received-mail viewers is either proven by a
+mutation (`mutation_proof_browser_test.dart` breaks it in the test and a rule
+must turn a fixture red) or listed with the reason it has no proof.
+Re-check this table when a transformer, the viewer CSS or a viewer script is
+added.
+
+| Mechanism | Proof (rule → first red fixture) |
+|---|---|
+| `BlockQuotedTransformer` | G-overflow → `real/eml_12` |
+| `BlockCodeTransformer` + `pre { white-space: pre-wrap }` (each alone is masked by the other) | G-overflow → `layout_stress/wide_pre` |
+| `ImageTransformer`, `AddLazyLoadingForBackgroundImageTransformer`, lazy background script | lazyImages → `expect_checks/lazy_images` |
+| `NormalizeLineHeightInStyleTransformer` | G-line-height → `real/eml_27` |
+| `ResponsiveTableCellTransformer` | G-overflow → `layout_stress/long_url_cell`, `real/eml_10` |
+| `RemoveNegativeMarginFloatTransformer` | G-overflow → `real/eml_39` |
+| Sanitizer losing content | G-preserve → `expect_checks/auto_scale_reflow_table` |
+| Plain text: `SanitizeAutolinkHtmlTransformers` | G-preserve (links) → `edge/plain_text_table` |
+| Plain text: `PersistPreformattedTextTransformer` | G-ascii-table → `edge/plain_text_markdown_table` |
+| CSS: `.tmail-content` wrapping, `table { white-space }`, `@media` table width and link fill, `box-sizing`, default body font | G-overflow → `real/eml_20`, `eml_31`, `wide_table`, `eml_12`, `eml_38`, `eml_43` |
+| Normalize image script | G-image-fit → `layout_stress/wide_image` |
+| Mobile responsive script, reflow font floor | autoScale → `expect_checks/auto_scale_reflow_table` |
+| Quote toggle (markup, script, collapsed style) | quoteToggle → `expect_checks/quote_toggle` |
+
+No proof, verified:
+
+- `RemoveScriptTransformer`: the sanitizer already drops `<script>`, `on*`
+  handlers and `javascript:` links (checked with the transformer removed).
+  `SanitizeHyperLinkTagInHtmlTransformer` and
+  `SanitizePlainTextHtmlOutputTransformer` are link/security behaviour with no
+  layout effect. All three have unit tests and HTML locks.
+- `RemoveCollapsedSignatureButtonTransformer`: no visible effect. The composer
+  flattens the signature before sending
+  (`HtmlAnalyzer.removeCollapsedExpandedSignatureEffect`), and the sanitizer
+  drops the editor's button markup.
+- `table, td, th { word-break: normal }`: no effect, because the cell
+  transformer's `overflow-wrap: anywhere` wins. Removing it changes nothing
+  (see the word-cut finding).
+- `body { overflow-x: hidden }` only clips what G-overflow already reports.
+  `p { margin: 0 }`, the code-block colours and the font family are cosmetic;
+  the HTML locks pin them.
+
+Not covered by this harness (needs widget or device tests):
+
+- Flutter side: height reporting (web `htmlHeight` messages, Android
+  content-size script, `html, body { height: auto }`), scroll / wheel / touch
+  listeners, link click / hover / tooltip, keyboard shortcuts, zoom lock.
+- Engines and fonts: every run uses Chrome, not WKWebView or Android WebView,
+  with CI fonts.
+- Other pipelines (reply / forward, drafts, print, signatures, calendar).

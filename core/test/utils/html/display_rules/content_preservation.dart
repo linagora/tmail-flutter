@@ -23,6 +23,14 @@ double plainTextWordPreservation(String source, String transformed) {
   return sourceWords.where(outputWords.contains).length / sourceWords.length;
 }
 
+/// Web addresses (`http://`, `https://`, `www.`) written in a `text/plain` body:
+/// the autolinker must make each one a link.
+int plainTextUrlCount(String source) => RegExp(r'(?:https?://|\bwww\.)\S', caseSensitive: false).allMatches(source).length;
+
+/// Links of the rendered [html] that open a web address.
+int webLinkCount(String html) =>
+    parse(html).body?.querySelectorAll('a[href^="http"]').length ?? 0;
+
 int bodyLinkCount(String html) =>
     parse(html).body?.querySelectorAll('a[href]').length ?? 0;
 
