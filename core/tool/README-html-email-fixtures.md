@@ -98,7 +98,7 @@ python3 -m unittest discover -s tool -p 'test_*.py'
 
 ## Pending display bugs (the only list)
 
-Every display bug found by these tests, in one place. Fixtures that show a
+Every bug found by these tests, in one place (display bugs, plus one security bug found by the pipeline tests). Fixtures that show a
 bug are committed red on purpose (decision: the email documents the bug; its
 fix PR turns it green). Fixtures: `eml_N` = `real/eml_N`, others are paths
 under `core/test/fixtures/html_emails/`. Viewers: `n` native, `w` web,
@@ -120,6 +120,7 @@ under `core/test/fixtures/html_emails/`. Viewers: `n` native, `w` web,
 | 12 | Word cut mid-letters in a table cell: `ResponsiveTableCellTransformer` adds `overflow-wrap: anywhere`, so a column shrinks below its longest word, even at 1000px. It also makes `table, td, th { word-break: normal }` dead CSS. eml_7 on native: the responsive script sets `word-break`. A fix must keep long URLs from overflowing (`layout_stress/long_url_cell`). | eml_11, 17, 29, 31, 36, 39, 7; `layout_stress/word_and_prose_columns` | n, w, i | deferred (Dat, 2026-10-08) |
 | 13 | The sanitizer drops `td` attributes (`width`, `colspan`, `rowspan`, `valign`, `nowrap`; locked in `sanitizer_policy/attributes.txt`): column layout and spans come from inline CSS only | none yet | all | open |
 | 14 | `ImageTransformer` and `AddLazyLoadingForBackgroundImageTransformer` match case-sensitively: `HTTPS://` images get no `loading="lazy"`, `BACKGROUND-IMAGE:url(…)` stays eager | none yet | all | open |
+| 15 | Security, not display: XSS. When the composer opens a reply/forward whose original content is not loaded yet, it fetches it through `forReplyForwardEmptyEmail`, which has no sanitizer, so the original raw HTML (`<script>`, `on*` handlers, `javascript:` links) reaches the composer. Its contract tests skip with this reason (`knownGap` in `test/utils/html_pipeline_registry.dart`) | XSS probe in `test/utils/html_transform_structure_test.dart` | composer | deferred (Dat, 2026-10-08) |
 
 ## Coverage: what the rules prove
 
