@@ -19,13 +19,17 @@ void main() {
     });
 
     group('Should launch the link', () {
-      final webLinks = {
+      final launchableLinks = {
         'http://example.com/page': 'http://example.com/page',
         'https://example.com/page?q=1#top': 'https://example.com/page?q=1#top',
         'HTTPS://Example.com/page': 'https://example.com/page',
+        'tel:+15550100': 'tel:+15550100',
+        'sms:+15550100': 'sms:+15550100',
+        'webcal://example.com/calendar.ics': 'webcal://example.com/calendar.ics',
+        'geo:48.8566,2.3522': 'geo:48.8566,2.3522',
       };
 
-      webLinks.forEach((link, expectedLaunchedLink) {
+      launchableLinks.forEach((link, expectedLaunchedLink) {
         test('When the link is "$link"', () {
           buildHandler().handle(Uri.parse(link));
 
