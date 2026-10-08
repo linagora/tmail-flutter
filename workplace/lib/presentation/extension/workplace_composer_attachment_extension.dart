@@ -9,6 +9,7 @@ import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.d
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
+import 'package:workplace/domain/entity/bridge_policy.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
@@ -180,10 +181,7 @@ class _CreateIntentAction extends WorkplaceCall<WorkplaceIntent> {
   const _CreateIntentAction(this._createIntent);
 
   @override
-  bool get supportsBridge => true;
-
-  @override
-  bool get fallsBackToBearer => true;
+  BridgePolicy get bridgePolicy => BridgePolicy.bearerReplay;
 
   @override
   Future<WorkplaceIntent> call(WorkplaceAccessMode accessMode) => _createIntent(accessMode);
