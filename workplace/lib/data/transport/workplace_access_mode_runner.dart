@@ -15,7 +15,7 @@ import '../bridge/cozy_bridge.dart';
 typedef OidcRefreshTrigger = Future<String?> Function();
 
 /// Runs one Workplace call over bridge or bearer token, resolved once so
-/// every request the call sends shares it and costs at most one exchange.
+/// every request the call sends shares it: one exchange, plus one retry after an OIDC refresh.
 class WorkplaceAccessModeRunner {
   WorkplaceAccessModeRunner({
     required ExchangeDriveTokenInteractor exchangeTokenInteractor,

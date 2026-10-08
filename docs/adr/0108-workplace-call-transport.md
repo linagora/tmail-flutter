@@ -31,7 +31,8 @@ Accepted
   dispatched the request before it failed, so the runner does not replay it.
 - `bearerReplay` is only for a call whose re-send is harmless, such as `POST /intents`;
   an upload never uses it.
-- Every request the action sends rides that one mode, so an action costs at most one exchange.
+- Every request the call sends rides that one mode, so a call costs one exchange, plus one
+  retry after an OIDC refresh.
 - The bridge exists on web only, so every action on mobile resolves to the bearer token.
 - A request executor sends whatever the caller describes.
 - The Drive token is exchanged per action, kept in memory, never persisted or refreshed.
