@@ -1,3 +1,4 @@
+import 'package:core/utils/external_link_policy.dart';
 import 'package:html/parser.dart' show parse;
 
 double bodyWordPreservation(String source, String transformed) {
@@ -22,8 +23,27 @@ double plainTextWordPreservation(String source, String transformed) {
   return sourceWords.where(outputWords.contains).length / sourceWords.length;
 }
 
+/// Web addresses (`http://`, `https://`, `www.`) written in a `text/plain` body:
+/// the autolinker must make each one a link.
+int plainTextUrlCount(String source) => RegExp(r'(?:https?://|\bwww\.)\S', caseSensitive: false).allMatches(source).length;
+
+/// Links of the rendered [html] that open a web address.
+int webLinkCount(String html) =>
+    parse(html).body?.querySelectorAll('a[href^="http"]').length ?? 0;
+
 int bodyLinkCount(String html) =>
     parse(html).body?.querySelectorAll('a[href]').length ?? 0;
+
+/// Links of [html] the sanitizer is meant to keep: it drops a link whose
+/// scheme `ExternalLinkPolicy` refuses (custom app schemes, `javascript:`...),
+/// so those are not "lost" content.
+int bodyKeptLinkCount(String html) =>
+    parse(html)
+        .body
+        ?.querySelectorAll('a[href]')
+        .where((link) => ExternalLinkPolicy.canKeepInContent(link.attributes['href']!))
+        .length ??
+    0;
 
 List<String> _bodyWords(String html) {
   final document = parse(html);

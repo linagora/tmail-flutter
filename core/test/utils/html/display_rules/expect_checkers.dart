@@ -88,15 +88,25 @@ Future<List<Violation>> lazyImagesChecker(DisplayRender render) async {
   }
 
   final frame = render.frame;
+  // Laziness first, on the email as shown: a visible background below the
+  // fold must still be unloaded (one inside a collapsed quote is hidden, so
+  // it cannot have loaded).
   final viewportBottom = web.window.innerHeight;
+  for (final element in frame.queryAll('.tmail-content [data-src]')) {
+    if (element.getClientRects().length == 0) continue;
+    final belowFold = frame.topInWindow + element.getBoundingClientRect().top > viewportBottom;
+    final style = (element as web.HTMLElement).style;
+    if (belowFold && (!element.hasAttribute('lazy') || style.backgroundImage.isNotEmpty)) {
+      violations.add(Violation('lazyImages', frame.cssPath(element),
+          'loaded before it was scrolled into view'));
+    }
+  }
+  // Then every background, quoted ones included, loads once scrolled to.
+  if (frame.hasQuoteToggle && !frame.isQuoteExpanded) await frame.toggleQuote();
   for (final element in frame.queryAll('.tmail-content [data-src]')) {
     final path = frame.cssPath(element);
     final dataSrc = element.getAttribute('data-src')!;
     final style = (element as web.HTMLElement).style;
-    final belowFold = frame.topInWindow + element.getBoundingClientRect().top > viewportBottom;
-    if (belowFold && (!element.hasAttribute('lazy') || style.backgroundImage.isNotEmpty)) {
-      violations.add(Violation('lazyImages', path, 'loaded before it was scrolled into view'));
-    }
     await frame.scrollIntoView(element);
     if (element.hasAttribute('lazy') || !style.backgroundImage.contains(dataSrc)) {
       violations.add(Violation('lazyImages', path,
@@ -119,8 +129,8 @@ AutoScalePath autoScalePathOf(DisplayFrame frame) {
   return AutoScalePath.none;
 }
 
-/// autoScale (E6, E7, E9): the too-wide email is reflowed or zoomed and no
-/// longer overflows. Every element the script zoomed has `zoom` < 1 (no font
+/// autoScale (E6, E7, E9): wherever the email is too wide for the pane it is
+/// reflowed or zoomed and no longer overflows. Every element the script zoomed has `zoom` < 1 (no font
 /// floor on that path). At a pane ≤ 480, text whose size the script changed
 /// stays ≥ 12px and cell padding it changed stays ≤ 12px. "Changed" is
 /// against the sender's own inline style, so a sender `!important` is not
@@ -131,7 +141,9 @@ Future<List<Violation>> autoScaleChecker(DisplayRender render) async {
     for (final violation in overflowRule(render))
       Violation('autoScale', violation.path, 'still overflows ${violation.detail}'),
   ];
-  if (autoScalePathOf(frame) == AutoScalePath.none) {
+  // At a width where the email already fits there is nothing to scale; an
+  // email that still overflows without any reflow or zoom is reported.
+  if (violations.isNotEmpty && autoScalePathOf(frame) == AutoScalePath.none) {
     violations.add(const Violation('autoScale', '.tmail-content', 'neither reflowed nor zoomed'));
   }
   for (final element in frame.queryAll('.tmail-content .tmail-responsive-scale')) {

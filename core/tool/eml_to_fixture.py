@@ -20,13 +20,18 @@ import binascii
 import email
 import email.policy
 import email.utils
+import hashlib
 import html as html_lib
 import json
 import os
+import random
 import re
 import struct
 import sys
+import unicodedata
 from html.parser import HTMLParser
+
+import fixture_words
 
 FIXTURE_HOST = 'https://fixture.invalid'
 DEFAULT_IMAGE_SIZE = (600, 300)
@@ -35,8 +40,10 @@ EXPECT_VALUES = ('fullDisplay', 'lazyImages', 'autoScale', 'noScale', 'quoteTogg
 SIZE_SOURCES = ('cid', 'data', 'attr', 'css', 'container', 'default')
 
 # Absolute (http/https/ftp) or protocol-relative URL.
+# Parentheses only in balanced pairs, so `url(https://…)` in CSS ends at its `)`.
 _URL_RE = re.compile(
-    r'''(?i)(?:\b(?:https?|ftp):|(?<![\w:/]))//[a-z0-9\[][^\s"'<>\\]*''')
+    r'''(?i)(?:\b(?:https?|ftp):|(?<![\w:/]))//[a-z0-9\[]'''
+    r'''(?:[^\s"'<>()\\]|\([^\s"'<>()\\]*\))*''')
 _EMAIL_RE = re.compile(r'(?i)\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b')
 _PX_RE = re.compile(r'^\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*(?:!important)?\s*$', re.I)
 _HOST_RE = re.compile(r'(?i)\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b')
@@ -51,8 +58,26 @@ _PLACEHOLDER_HOST_RE = re.compile(r'(?i)^(?:[a-z]+:)?//(?:fixture|link\d+)\.inva
 URL_ATTRIBUTES = {'href', 'src', 'background', 'action', 'poster', 'srcset',
                   'data-src', 'longdesc', 'cite'}
 # Attributes whose value is human text, so names and domains are replaced.
-TEXT_ATTRIBUTES = {'alt', 'title', 'value', 'content', 'aria-label',
+TEXT_ATTRIBUTES = {'alt', 'title', 'value', 'content', 'aria-label', 'aria-description',
+                   'aria-roledescription', 'aria-valuetext', 'aria-placeholder',
                    'placeholder', 'label', 'summary'}
+# Words of CSS itself (properties, values, generic fonts): never renamed.
+CSS_VOCABULARY = set('''
+adjust align all apple arial auto background baseline before after black block
+bold border bottom box break button calibri cambria cell center child class
+clear collapse color content courier cursor data decoration detectors device
+display ease family first fixed flex float font format georgia grid hidden
+height helvetica hide hover image important inherit initial inline inner
+italic justify last left line link list lowercase margin mask max media middle
+min mono monospace none normal nowrap only opacity outer outline outlook
+overflow padding pointer position radius relative repeat right roboto sans
+scale screen segoe serif shadow size small solid space spacing style table
+tahoma text times title transform transition trebuchet underline uppercase
+verdana vertical visible visited webkit weight white width word wrap
+cover contain ellipsis dashed dotted double linear exactly gradient radial
+rgba transparent clip fill stretch
+'''.split())
+
 # Header name words too generic to treat as private.
 NAME_STOPWORDS = {'team', 'support', 'info', 'noreply', 'no-reply', 'the', 'and',
                   'news', 'newsletter', 'service', 'mail', 'admin', 'contact',
@@ -118,13 +143,158 @@ def _style_px(style, prop):
     return _px(match.group(1)) if match else None
 
 
+# ------------------------------------------------------------- scrambler
+
+_LOWER = 'abcdefghijklmnopqrstuvwxyz'
+_UPPER = _LOWER.upper()
+_DIGITS = '0123456789'
+# Kept as is inside text: placeholders written by the anonymizer and HTML
+# entities.
+_PROTECTED_RE = re.compile(
+    # A URL scheme stays, so text URLs remain URLs (autolinking depends on
+    # it); entities stay; placeholders stay (text attributes may hold one).
+    r'(?i)(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*'
+    r'|[a-z0-9._%+-]+@example\.invalid'
+    r'|\b(?:https?|ftp)://|\bmailto:|\bwww\.'
+    r'|&(?:#\d+|#x[0-9a-f]+|[a-z][a-z0-9]*);')
+
+
+# A run of letters (any script, with their combining marks), digits excluded.
+_WORD_RE = re.compile(r'(?:[^\W\d_][\u0300-\u036f]*)+')
+
+
+# Advance widths (1/1000 em, Arial/Helvetica) to pick replacement words that
+# render about as wide as the original, so text-sized boxes keep their size.
+_GLYPH_WIDTHS = dict(zip(
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    [556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556,
+     556, 333, 500, 278, 556, 500, 722, 500, 500, 500,
+     667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667,
+     778, 722, 667, 611, 722, 667, 944, 667, 667, 611]))
+
+
+def _text_width(word):
+    return sum(_GLYPH_WIDTHS.get(ch, 556)
+               for ch in unicodedata.normalize('NFD', word)
+               if unicodedata.category(ch) != 'Mn')
+
+
+def _script_of(ch):
+    return unicodedata.name(ch, '').split(' ')[0]
+
+
+class TextScrambler:
+    """Replaces the words of human text with real but unrelated words of the
+    same length and case pattern (English for unaccented Latin words,
+    Vietnamese syllables for accented ones), so the fixture stays readable
+    while the overall content means nothing. Other scripts (Arabic, CJK...)
+    get random letters of the same script; digits get random digits.
+    Punctuation, spaces, emoji, placeholders and entities are kept, so word
+    lengths, line breaks and layout survive. Seeded, so deterministic."""
+
+    def __init__(self, seed):
+        self.rng = random.Random(seed)
+        self.count = 0
+
+    def _char(self, ch):
+        if ch.isascii():
+            if ch in _LOWER:
+                return self.rng.choice(_LOWER)
+            if ch in _UPPER:
+                return self.rng.choice(_UPPER)
+            if ch in _DIGITS:
+                return self.rng.choice(_DIGITS)
+            return ch
+        category = unicodedata.category(ch)
+        if category == 'Nd':
+            return chr(ord(ch) - unicodedata.digit(ch) + self.rng.randrange(10))
+        if not category.startswith('L'):
+            return ch
+        decomposed = unicodedata.normalize('NFD', ch)
+        base, marks = decomposed[0], decomposed[1:]
+        if base in _LOWER or base in _UPPER:
+            letters = list(_LOWER if base in _LOWER else _UPPER)
+            self.rng.shuffle(letters)
+            for letter in letters:
+                # Only letters that compose with these accents into one
+                # character, so the text keeps its length.
+                composed = unicodedata.normalize('NFC', letter + marks)
+                if len(composed) == 1:
+                    return composed
+            return ch
+        script = _script_of(ch)
+        for _ in range(40):
+            candidate = chr(max(0x80, ord(ch) + self.rng.randint(-48, 48)))
+            if (unicodedata.category(candidate) == category
+                    and _script_of(candidate) == script):
+                return candidate
+        return ch
+
+    def _pick(self, groups, length, source=None):
+        """A word of exactly [length] from [groups] that renders about as wide
+        as [source] (random among those within 3%, else the closest), or two
+        words glued together."""
+        if length in groups:
+            if source is None:
+                return self.rng.choice(groups[length])
+            target = _text_width(source)
+            close = [word for word in groups[length]
+                     if abs(_text_width(word) - target) <= 0.03 * target]
+            if close:
+                return self.rng.choice(close)
+            return min(groups[length], key=lambda word: abs(_text_width(word) - target))
+        for first in sorted(groups, reverse=True):
+            if length - first in groups:
+                return self.rng.choice(groups[first]) + self.rng.choice(groups[length - first])
+        return None
+
+    @staticmethod
+    def _same_case(word, source):
+        if source.isupper() and len(source) > 1:
+            return word.upper()
+        if source[0].isupper():
+            return word[0].upper() + word[1:]
+        return word.lower()
+
+    def _word(self, word):
+        # Lengths are what is shown: decomposed accents count with their letter.
+        word = unicodedata.normalize('NFC', word)
+        if all(ch in _LOWER or ch in _UPPER for ch in word):
+            groups = fixture_words.ENGLISH_BY_LENGTH
+        elif all(_script_of(ch) == 'LATIN' for ch in word):
+            groups = fixture_words.VIETNAMESE_BY_LENGTH
+        else:
+            return ''.join(self._char(ch) for ch in word)
+        replacement = self._pick(groups, len(word), word.lower())
+        if replacement is None:
+            return ''.join(self._char(ch) for ch in word)
+        return self._same_case(replacement, word)
+
+    def _plain(self, text):
+        scrambled = _WORD_RE.sub(lambda m: self._word(m.group(0)), text)
+        scrambled = ''.join(self._char(ch) if ch.isdigit() else ch for ch in scrambled)
+        self.count += sum(1 for a, b in zip(text, scrambled) if a != b)
+        return scrambled
+
+    def text(self, text):
+        out = []
+        position = 0
+        for match in _PROTECTED_RE.finditer(text):
+            out.append(self._plain(text[position:match.start()]))
+            out.append(match.group(0))
+            position = match.end()
+        out.append(self._plain(text[position:]))
+        return ''.join(out)
+
+
 # ------------------------------------------------------------ anonymizer
 
 class Anonymizer:
     """Replaces URLs, addresses, names and sender domains with stable,
     same-length placeholders (layout-neutral where possible)."""
 
-    def __init__(self, names, domains):
+    def __init__(self, names, domains, scrambler=None):
+        self.scrambler = scrambler
         words = set()
         for name in names:
             for word in re.split(r'[\s,"]+', name):
@@ -191,8 +361,16 @@ class Anonymizer:
             return 'tel:' + _pad('+1555', len(stripped) - 4, '0')
         if _URL_RE.match(stripped):
             return _URL_RE.sub(lambda m: self.fake_url(m.group(0)), stripped)
-        if re.match(r'(?i)^[a-z][a-z0-9+.-]*:', stripped):
-            return value  # other schemes (sms:, webcal:...) carry no host here
+        scheme = re.match(r'(?i)^([a-z][a-z0-9+.-]*):', stripped)
+        if scheme:
+            # sms:, geo:, webcal:, app schemes...: the value can hold a phone
+            # number, coordinates or a meeting ID, so only the scheme stays.
+            self.counts['urls'] += 1
+            rest = stripped[scheme.end():]
+            if rest.startswith('//'):
+                return scheme.group(0) + _pad('//link%d.invalid/' % len(self.urls), len(rest))
+            filler = '0' if re.fullmatch(r'[+\d\s().-]+', rest) else 'x'
+            return scheme.group(0) + filler * len(rest)
         return self.fake_relative(stripped)
 
     def srcset_value(self, value):
@@ -201,14 +379,65 @@ class Anonymizer:
             for item in value.split(',') if item.strip())
 
     # -- text
-    def text(self, text):
-        """URLs, addresses and identities in free text (body, comments, CSS)."""
+    def long_numbers(self, text):
+        """Tracking IDs: every run of 6+ digits becomes zeros (same length)."""
+        return re.sub(r'\d{6,}', lambda m: '0' * len(m.group(0)), text)
+
+    def _css_words(self):
+        words = set()
+        for source in list(self.names) + list(self.words):
+            words.update(w.lower() for w in re.findall(r'[A-Za-z]{4,}', source))
+        for domain in self.domains:
+            words.update(label.lower() for label in domain.split('.')[:-1] if len(label) >= 4)
+        return sorted(w for w in words if w not in CSS_VOCABULARY and w not in NAME_STOPWORDS)
+
+    def css_identities(self, text):
+        """Sender names and domain words inside CSS identifiers (font
+        families, class and id names, selectors), replaced consistently with
+        same-length letters so every selector still matches its elements. CSS
+        vocabulary is never touched."""
+        if not hasattr(self, '_css_map'):
+            self._css_map = {}
+            for index, word in enumerate(self._css_words()):
+                code = ''
+                n = index
+                while True:
+                    code += 'qzxjvkw'[n % 7]
+                    n //= 7
+                    if n == 0:
+                        break
+                self._css_map[word] = (code + 'q' * len(word))[:len(word)]
+        for word, fake in self._css_map.items():
+            def same_case(match, fake=fake):
+                found = match.group(0)
+                if _is_css_value_token(match):
+                    return found
+                if found.isupper():
+                    return fake.upper()
+                if found[0].isupper():
+                    return fake[0].upper() + fake[1:]
+                return fake
+            text, n = re.subn(r'(?i)(?<![A-Za-z])' + re.escape(word) + r'(?![A-Za-z])', same_case, text)
+            self.counts['domains'] += n
+        return text
+
+    def numbers(self, text):
+        """Long digit runs and phone numbers, zeroed (digits only, so the
+        length and separators stay)."""
+        text = _PHONE_RE.sub(lambda m: re.sub(r'\d', '0', m.group(0)), text)
+        return self.long_numbers(text)
+
+    def urls_and_addresses(self, text):
+        """URLs (CSS `url()` included) and addresses; safe for CSS and script."""
         text = _URL_RE.sub(lambda m: self.fake_url(m.group(0)), text)
         text = re.sub(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''',
                       lambda m: 'url(%s%s%s)' % (m.group(1), self.url_value(m.group(2)), m.group(1)),
                       text)
-        text = _EMAIL_RE.sub(lambda m: self.fake_email(m.group(0)), text)
-        return self.identities(text)
+        return _EMAIL_RE.sub(lambda m: self.fake_email(m.group(0)), text)
+
+    def text(self, text):
+        """URLs, addresses and identities in free text."""
+        return self.identities(self.urls_and_addresses(text))
 
     def identities(self, text):
         separator = r'(?:\s|&nbsp;|&#160;|&#xa0;)+'
@@ -226,6 +455,27 @@ class Anonymizer:
             text, n = re.subn(r'(?i)(?<![\w.-])' + re.escape(domain) + r'(?![\w-])', fake, text)
             self.counts['domains'] += n
         return text
+
+
+def _is_css_value_token(match):
+    """True when a name word is really part of a hex colour (`#cafe00`) or
+    of a CSS function name (`linear-gradient(`), which must stay as is."""
+    text, start, end = match.string, match.start(), match.end()
+    head = start
+    while head > 0 and text[head - 1] in '0123456789abcdefABCDEF':
+        head -= 1
+    tail = end
+    while tail < len(text) and text[tail] in '0123456789abcdefABCDEF':
+        tail += 1
+    if head > 0 and text[head - 1] == '#' and re.fullmatch(r'[0-9a-fA-F]+', text[head:tail]) \
+            and tail - head in (3, 4, 6, 8):
+        rest = re.match(r'[^{;}]*([{;}]|$)', text[tail:])
+        if rest.group(1) != '{':  # a selector `#cafe {` is an id, not a colour
+            return True
+    tail = end
+    while tail < len(text) and (text[tail].isalnum() or text[tail] in '-_'):
+        tail += 1
+    return text[tail:tail + 1] == '('
 
 
 # ------------------------------------------------------ start-tag rewrite
@@ -300,22 +550,42 @@ class _TagRewriter(HTMLParser):
             self.containers.append((tag, width))
         raw = self.get_starttag_text()
         image = self._image_placeholder(attr_map) if tag == 'img' else None
+        meta_name = (attr_map.get('name') or attr_map.get('property') or '').lower()
+        # A <meta content> drives rendering (viewport, charset, format
+        # detection...), so it is kept; only human text metadata is replaced.
+        meta_is_text = meta_name in ('author', 'description', 'keywords') or \
+            meta_name.startswith(('og:', 'twitter:'))
 
         def rewrite(name, value):
+            if name.startswith('xmlns') or name == 'itemtype':
+                return value  # public namespace / schema URIs, not private
+            if tag == 'meta' and name == 'content' and not meta_is_text:
+                return self.anonymizer.numbers(self.anonymizer.urls_and_addresses(value))
             if image and name in ('src', 'srcset'):
                 return image
             if name == 'srcset':
                 return self.anonymizer.srcset_value(value)
-            if name in URL_ATTRIBUTES:
+            if name in URL_ATTRIBUTES or name.endswith(('url', 'href', 'src')):
                 return self.anonymizer.url_value(value)
+            if name in ('class', 'id'):
+                return self.anonymizer.css_identities(value)
+            if name.endswith('-id'):
+                # Asset / tracking identifiers: masked whole (UUIDs included).
+                return re.sub(r'[A-Za-z]', 'x', re.sub(r'\d', '0', value))
+            if name.startswith('data-'):
+                # Tracking IDs, phones and sender names in widget data.
+                value = self.anonymizer.identities(self.anonymizer.numbers(value))
             value = _EMAIL_RE.sub(lambda m: self.anonymizer.fake_email(m.group(0)),
                                   _URL_RE.sub(lambda m: self.anonymizer.fake_url(m.group(0)), value))
             if name == 'style':
+                value = self.anonymizer.css_identities(value)
                 value = re.sub(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''',
                                lambda m: 'url(%s%s%s)' % (m.group(1), self.anonymizer.url_value(m.group(2)), m.group(1)),
                                value)
             if name in TEXT_ATTRIBUTES:
                 value = self.anonymizer.identities(value)
+                if self.anonymizer.scrambler:
+                    value = self.anonymizer.scrambler.text(value)
             return value
 
         replacement = rewrite_attributes(raw, rewrite)
@@ -353,7 +623,8 @@ class _TagRewriter(HTMLParser):
     def _image_placeholder(self, attrs):
         source, (width, height) = self._measure(attrs.get('src') or '', attrs)
         self.size_counts[source] += 1
-        kind = 'cid' if source == 'cid' else 'img'
+        # `est`: a pure guess (no size anywhere), so its ratio is unknown.
+        kind = {'cid': 'cid', 'default': 'est'}.get(source, 'img')
         return '%s/%s/%dx%d' % (FIXTURE_HOST, kind, width, height)
 
 
@@ -364,12 +635,46 @@ def rewrite_html(html, cid_sizes, anonymizer):
     out = html
     for start, end, replacement in sorted(parser.edits, reverse=True):
         out = out[:start] + replacement + out[end:]
-    # Free text, comments and <style> CSS; start tags were rewritten above.
-    parts = re.split(r'(?s)(<!--.*?-->|<[^>]*>)', out)
+    # Start tags were rewritten above. Visible text (and the text inside
+    # comments: MSO conditionals carry markup) is replaced word by word, which
+    # keeps every word length, so names, addresses and URLs in it need no
+    # placeholders. <style>/<script> content keeps its CSS; only URLs and
+    # addresses in it are replaced. Without a scrambler, text gets
+    # placeholders instead.
+    # Tags are matched quote-aware: a `>` inside an attribute value does not
+    # end the tag.
+    parts = re.split(r'''(?s)(<!--.*?-->|<(?:[^>"']|"[^"]*"|'[^']*')*>)''', out)
+    scrambler = anonymizer.scrambler
+    raw_element = None
     for index, part in enumerate(parts):
-        if part.startswith('<!--') or not part.startswith('<'):
-            parts[index] = anonymizer.text(part)
+        lower = part.lower()
+        if raw_element is not None and not lower.startswith('</' + raw_element):
+            # CSS or script, comments inside it included: only URLs and
+            # addresses change, never names (they would hit CSS identifiers).
+            parts[index] = anonymizer.css_identities(anonymizer.urls_and_addresses(part))
+        elif part.startswith('<!--'):
+            # MSO conditionals carry markup (VML href/src): URLs first.
+            part = anonymizer.css_identities(anonymizer.urls_and_addresses(part))
+            parts[index] = ''.join(
+                chunk if chunk.lower().startswith('<style') else
+                _COMMENT_TEXT_RE.sub(lambda m: m.group(1) or scrambler.text(m.group(2)), chunk)
+                if scrambler else anonymizer.identities(chunk)
+                for chunk in re.split(r'(?is)(<style\b.*?</style\s*>)', part))
+        elif not part.startswith('<'):
+            parts[index] = scrambler.text(part) if scrambler else anonymizer.text(part)
+        else:
+            opening = re.match(r'<(style|script)\b', lower)
+            if opening:
+                raw_element = opening.group(1)
+            elif raw_element and lower.startswith('</' + raw_element):
+                raw_element = None
     return ''.join(parts), parser.size_counts
+
+
+# Inside a comment: markup, `[if …]`/`[endif]` and the comment delimiters
+# are kept (group 1); the text between them is scrambled (group 2).
+_COMMENT_TEXT_RE = re.compile(
+    r'''(?s)(<!--|-->|<(?:[^>"']|"[^"]*"|'[^']*')*>|\[(?:if|endif)[^\]]*\])|([^<\[-]+|[<\[-])''')
 
 
 # ------------------------------------------------------------ identities
@@ -415,6 +720,33 @@ def suspicious_leftovers(text):
     }
 
 
+LEFTOVER_KINDS = ('hosts', 'emails', 'longDigits', 'phones')
+
+_PLACEHOLDER_RE = re.compile(
+    r'(?i)(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*'
+    r'|\b(?:d\d+x*|example|link\d+|fixture)\.invalid\b|\brel\d+/x*|tel:\+15550*')
+_ASSET_SUFFIX_RE = re.compile(r'(?i)\.(?:css|js|png|jpe?g|gif|svg|webp|ico|html?|php|aspx?)$')
+
+
+def markup_leftovers(html):
+    """Possible private data in what the scrambler does not touch: attribute
+    values and `<style>` CSS (hosts, addresses, long numbers, phones)."""
+    chunks = re.findall(r'(?is)<style\b.*?</style>', html)
+    for tag in re.findall(r'''(?s)<[a-zA-Z](?:[^>"']|"[^"]*"|'[^']*')*>''', html):
+        chunks.extend(match.group(1).strip('"\'') for match in
+                      re.finditer(r'''=\s*("[^"]*"|'[^']*'|[^\s"'=<>`]+)''', tag))
+    markup = _PLACEHOLDER_RE.sub(' ', html_lib.unescape(' '.join(chunks)))
+    hosts = set(re.findall(r'(?i)//([a-z0-9-]+(?:\.[a-z0-9-]+)+)', markup))
+    hosts |= {host for host in _HOST_RE.findall(markup) if not _ASSET_SUFFIX_RE.search(host)}
+    return {
+        'hosts': sorted(hosts),
+        'emails': sorted(e for e in set(_EMAIL_RE.findall(markup))
+                         if not e.lower().endswith('@example.invalid')),
+        'longDigits': sorted(d for d in set(_LONG_DIGITS_RE.findall(markup)) if d.strip('0')),
+        'phones': sorted(p for p in set(_PHONE_RE.findall(markup)) if re.sub(r'\D|0', '', p)),
+    }
+
+
 # ------------------------------------------------------------- converter
 
 def _cid_sizes(message):
@@ -440,17 +772,23 @@ def convert(eml_bytes):
 
     names, domains = header_identities(message)
     body_names, body_domains = body_identities(body)
-    anonymizer = Anonymizer(names | body_names, domains | body_domains)
+    # Seeded from the decoded body: stable even when the MIME framing differs.
+    scrambler = TextScrambler(hashlib.sha256(body.encode('utf-8')).hexdigest())
+    anonymizer = Anonymizer(names | body_names, domains | body_domains, scrambler)
 
     size_counts = {key: 0 for key in SIZE_SOURCES}
     if content_type == 'text/html':
         body, size_counts = rewrite_html(body, _cid_sizes(message), anonymizer)
     else:
-        body = anonymizer.text(body)
+        body = scrambler.text(body)
 
     report = dict(anonymizer.counts)
+    report['scrambledChars'] = scrambler.count
     report['images'] = size_counts
-    report['leftovers'] = suspicious_leftovers(body)
+    # The text is scrambled, so private data can only be left in what is
+    # not: attribute values and CSS.
+    report['leftovers'] = (markup_leftovers(body) if content_type == 'text/html'
+                           else {key: [] for key in LEFTOVER_KINDS})
     return body, {'contentType': content_type, 'imageSizes': size_counts}, report
 
 
@@ -469,8 +807,8 @@ def _repo_root(start):
 
 def _print_report(report, show_samples):
     print('privacy report')
-    for key in ('urls', 'mailto', 'tel', 'addresses', 'names', 'domains'):
-        print('  rewritten %-9s %d' % (key, report[key]))
+    for key in ('urls', 'mailto', 'tel', 'addresses', 'names', 'domains', 'scrambledChars'):
+        print('  rewritten %-14s %d' % (key, report[key]))
     print('  image sizes        ' + ', '.join(
         '%s=%d' % (k, report['images'][k]) for k in SIZE_SOURCES))
     leftovers = report['leftovers']

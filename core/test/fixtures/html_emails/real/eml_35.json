@@ -1,0 +1,17 @@
+{
+  "contentType": "text/plain",
+  "expect": [
+    "fullDisplay"
+  ],
+  "imageSizes": {
+    "attr": 0,
+    "cid": 0,
+    "container": 0,
+    "css": 0,
+    "data": 0,
+    "default": 0
+  },
+  "minPreservation": 0.95,
+  "purpose": "real email #35 (fullDisplay), text scrambled",
+  "source": "eml #35, anonymized"
+}
