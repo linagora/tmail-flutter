@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_oidc_token.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
 import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
@@ -24,18 +23,9 @@ DriveOversizeUploader driveOversizeUploader(Ref ref) {
   return (
     runner: WorkplaceAccessModeRunner(
       exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
-      oidcTokenGetter: () =>
-          getBinding<AuthorizationInterceptors>()?.currentOidcIdToken,
-      oidcRefreshTrigger: _refreshWorkplaceOidcToken,
+      oidcTokenGetter: currentWorkplaceOidcToken,
+      oidcRefreshTrigger: refreshWorkplaceOidcToken,
     ),
     interactor: UploadDriveFileInteractor(repository),
   );
-}
-
-/// Same body as `_refreshWorkplaceOidcToken` in the extension registry provider.
-Future<String?> _refreshWorkplaceOidcToken() async {
-  final interceptor = getBinding<AuthorizationInterceptors>();
-  if (interceptor == null) return null;
-  final newToken = await interceptor.requestTokenRefresh();
-  return newToken.tokenId.uuid;
 }
