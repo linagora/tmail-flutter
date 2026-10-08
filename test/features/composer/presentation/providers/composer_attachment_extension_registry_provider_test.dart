@@ -75,6 +75,20 @@ void main() {
     Get.reset();
   });
 
+  group('oidcTokenGetter::', () {
+    test('returns the current OIDC id token of the interceptor', () {
+      when(interceptor.currentOidcIdToken).thenReturn('id-token-1');
+
+      expect(readExtension().oidcTokenGetter(), equals('id-token-1'));
+    });
+
+    test('returns null when no interceptor is registered', () {
+      Get.delete<AuthorizationInterceptors>();
+
+      expect(readExtension().oidcTokenGetter(), isNull);
+    });
+  });
+
   group('oidcRefreshTrigger::', () {
     test('returns the refreshed id token on success', () async {
       when(interceptor.requestTokenRefresh()).thenAnswer(
