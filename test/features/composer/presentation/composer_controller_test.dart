@@ -1313,6 +1313,53 @@ void main() {
       });
     });
 
+    group('insertHtmlIntoEditor on mobile:', () {
+      const cardHtml = '<div class="file-card">a.zip</div>';
+
+      // The rich text mock is shared by the whole file: start and end each test clean.
+      setUp(() => reset(mockRichTextMobileTabletController));
+      tearDown(() => reset(mockRichTextMobileTabletController));
+
+      test(
+        'Should return false and insert nothing\n'
+        'When no mobile editor is attached',
+      () async {
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(null);
+
+        final inserted = await composerController?.insertHtmlIntoEditor(cardHtml);
+
+        expect(inserted, isFalse);
+        verifyNever(mockRichTextMobileTabletController.restoreMobileEditorFocus());
+      });
+
+      testWidgets(
+        'Should restore the editor focus, insert the html once and return true\n'
+        'When a mobile editor is attached',
+      (tester) async {
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        final calls = <String>[];
+        when(mockRichTextMobileTabletController.restoreMobileEditorFocus())
+            .thenAnswer((_) async => calls.add('restoreFocus'));
+        when(mockHtmlEditorApi.insertHtml(any))
+            .thenAnswer((invocation) async => calls.add('insertHtml:${invocation.positionalArguments.single}'));
+
+        bool? inserted;
+        composerController!.insertHtmlIntoEditor(cardHtml).then((value) => inserted = value);
+        // The insert completes at the end of a frame scheduled after the mocks resolve.
+        for (var frame = 0; frame < 5 && inserted == null; frame++) {
+          await tester.pump();
+        }
+
+        expect(inserted, isTrue);
+        expect(calls, ['restoreFocus', 'insertHtml:$cardHtml']);
+      });
+    });
+
     group('markCleanClose - platform guard:', () {
       test(
           'Should set isCleanClose flag in the notifier\n'
