@@ -1,9 +1,11 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dio/dio.dart';
+import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -12,6 +14,7 @@ import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_dialog_view.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/drive_oversize_transfer_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/providers/drive_oversize_transfer_notifier.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../../fixtures/widget_fixtures.dart';
 import 'drive_oversize_upload_dialog_view_test.mocks.dart';
@@ -182,6 +185,79 @@ void main() {
       await pumpDialog(tester, items: [makeItem('a')], isWebLayout: false);
       final row = tester.widget<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow));
       expect(row.layout, LinagoraFileTransferLayout.compact);
+    });
+
+    AppLocalizations localizationsOf(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(DriveOversizeUploadDialogView)));
+
+    String statusLabelOf(WidgetTester tester) =>
+        tester.widget<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow)).statusLabel;
+
+    final statusLabelCases = <({
+      DriveOversizeTransferStatus status,
+      String Function(AppLocalizations appLocalizations) expectedLabel,
+    })>[
+      (status: DriveOversizeTransferStatus.waiting, expectedLabel: (_) => filesize(1000, 0)),
+      (status: DriveOversizeTransferStatus.uploading, expectedLabel: (_) => filesize(1000, 0)),
+      (status: DriveOversizeTransferStatus.linked, expectedLabel: (l10n) => l10n.driveUploadRowDone),
+      (status: DriveOversizeTransferStatus.failed, expectedLabel: (l10n) => l10n.driveUploadRowFailed),
+      (status: DriveOversizeTransferStatus.cancelled, expectedLabel: (l10n) => l10n.driveUploadRowCancelled),
+    ];
+    for (final labelCase in statusLabelCases) {
+      testWidgets('a row in ${labelCase.status.name} shows its status label', (tester) async {
+        await pumpDialog(tester, items: [makeItem('a', status: labelCase.status)]);
+
+        final expectedLabel = labelCase.expectedLabel(localizationsOf(tester));
+        expect(statusLabelOf(tester), equals(expectedLabel));
+        expect(find.text(expectedLabel), findsOneWidget);
+      });
+    }
+
+    testWidgets('the description names the per-email size limit', (tester) async {
+      when(dashboard.maxSizeAttachmentsPerEmail).thenReturn(UnsignedInt(26214400));
+      await pumpDialog(tester, items: [makeItem('a')]);
+
+      final appLocalizations = localizationsOf(tester);
+      final expectedDescription =
+          '${appLocalizations.driveOversizeDialogMessage(filesize(26214400, 0))}'
+          '${appLocalizations.driveOversizeDialogMessageEmphasis}.';
+      expect(find.text(expectedDescription, findRichText: true), findsOneWidget);
+    });
+
+    for (final status in [DriveOversizeTransferStatus.failed, DriveOversizeTransferStatus.cancelled]) {
+      testWidgets('a row in ${status.name} with no bytes freezes an empty determinate bar', (tester) async {
+        await pumpDialog(tester, items: [makeItem('a', status: status)]);
+
+        expect(await barValue(tester), equals(0.0));
+      });
+    }
+
+    testWidgets('tapping the Cancel button cancels every running row and leaves a linked row', (tester) async {
+      await pumpDialog(tester, items: [
+        makeItem('a', status: DriveOversizeTransferStatus.linked),
+        makeItem('b', status: DriveOversizeTransferStatus.uploading),
+        makeItem('c'),
+      ]);
+
+      await tester.tap(find.byKey(LinagoraFileTransferDialog.cancelAllButtonKey));
+      await tester.pump();
+
+      final statuses = container.read(driveOversizeTransferProvider).map((row) => row.status);
+      expect(statuses, equals([
+        DriveOversizeTransferStatus.linked,
+        DriveOversizeTransferStatus.cancelled,
+        DriveOversizeTransferStatus.cancelled,
+      ]));
+    });
+
+    testWidgets('clearing the rows while the dialog is mounted removes every row', (tester) async {
+      await pumpDialog(tester, items: [makeItem('a'), makeItem('b')]);
+
+      container.read(driveOversizeTransferProvider.notifier).clear();
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(LinagoraFileTransferRow), findsNothing);
     });
   });
 }
