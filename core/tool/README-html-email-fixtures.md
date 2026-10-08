@@ -96,33 +96,30 @@ fvm flutter test test/fixtures/html_emails
 python3 -m unittest discover -s tool -p 'test_*.py'
 ```
 
-## Pending display bugs (real emails, red on purpose)
+## Pending display bugs (the only list)
 
-Real fixtures are committed even when they break a display rule (decision:
-the email documents the bug; its fix PR turns it green). Viewer/width:
-`n` native, `w` web, `i` iOS previewer. Status 2026-10-08.
+Every display bug found by these tests, in one place. Fixtures that show a
+bug are committed red on purpose (decision: the email documents the bug; its
+fix PR turns it green). Fixtures: `eml_N` = `real/eml_N`, others are paths
+under `core/test/fixtures/html_emails/`. Viewers: `n` native, `w` web,
+`i` iOS previewer, with pane widths. Status as of 2026-10-08.
 
-| Finding | Fixtures (`real/eml_*`) | Where |
-|---|---|---|
-| Native responsive script leaves the email overflowing | 1, 8 (296), 12, 20 | n296–n744 |
-| iOS previewer has no image normalize / responsive script: wide content overflows | 1, 2, 6, 7, 8, 9, 11, 12, 13, 16, 19, 20, 23, 29, 31, 32, 34, 35, 36, 38, 39, 40, 43 | i296–i390 |
-| Web does not fit wide content (no responsive script; the 600px media query only resizes tables) | 1, 2, 6, 8, 12, 20, 29, 34, 35, 36, 38, 40, 43 | w524–w1000 |
-| Image wider than the pane | 16, 23, 40 (iOS); 2, 34, 40 (web 760) | i296–i390, w760 |
-| Image squashed: fixed `height` + `max-width:100%` from the normalize script (width shrinks, height stays) | 6, 13, 15, 31, 36 (w524) | n, w (15 also i) |
-| Quoted text below 13px at ≤ 480px: the rule sets 13px on the `blockquote` only, inner inline sizes win | 6, 12, 43 | n296–n390 |
-| Expanded quote overflows the pane (20: about 30 nested `blockquote` levels) | 12 (296–390), 20 | n296–n744 |
-| Image never shown (0×0): sender lazy-loading with only `data-src` | 28; also 13, 36 at some widths | n, w |
-| Body taller than the native viewer cap (`ConstantsUI.htmlContentMaxHeight`) | 20 | n744, w760 |
-| Plain-text ASCII table in a `white-space: pre` block overflows | 35 | i, w |
-| Word cut mid-letters in a table cell: `ResponsiveTableCellTransformer` adds `overflow-wrap: anywhere`, so a column shrinks below its longest word (7 on native: the responsive script sets `word-break`) | 11, 17, 29, 31, 36, 39; 7 | n, w, i |
-
-Synthetic fixtures with recorded findings: `layout_stress/wide_image`,
-`layout_stress/wide_table`, `newsletter_builders/mailchimp`,
-`expect_checks/auto_scale_*`, `expect_checks/quote_toggle_wide` (iOS and web
-do not fit fixed-width content); `layout_stress/word_and_prose_columns` (word
-cut even at 1000px, see above); `edge/plain_text_table` (an ASCII table next
-to prose is not detected, `StringConvert.isTextTable` needs every line to be
-table art, so it renders in a proportional font and its columns misalign).
+| # | Bug | Fixtures | Where | Status |
+|---|---|---|---|---|
+| 1 | Native responsive script leaves the email overflowing | eml_1, eml_8 (296), eml_12, eml_20 | n296–n744 | open |
+| 2 | iOS previewer has no image normalize / responsive script: wide content overflows | eml_1, 2, 6, 7, 8, 9, 11, 12, 13, 16, 19, 20, 23, 29, 31, 32, 34, 35, 36, 38, 39, 40, 43; `layout_stress/wide_image`, `newsletter_builders/mailchimp`, `expect_checks/auto_scale_*`, `expect_checks/quote_toggle_wide` | i296–i390 | open |
+| 3 | Web does not fit wide content: no responsive script, the 600px media query only resizes tables (wide tables above 600px, fixed-width wrapper `div` at any width) | eml_1, 2, 6, 8, 12, 20, 29, 34, 35, 36, 38, 40, 43; `layout_stress/wide_table`, `expect_checks/auto_scale_*`, `expect_checks/quote_toggle_wide` | w524–w1000 | open |
+| 4 | Image wider than the pane | eml_16, 23, 40 (iOS); eml_2, 34, 40 (web 760) | i296–i390, w760 | open |
+| 5 | Image squashed: the normalize script sets `max-width:100%` but keeps a fixed `height` (also for `em`/`rem`/`%` sizes) | eml_6, 13, 15, 31, 36 | n, w524 (eml_15 also i) | open |
+| 6 | Quoted text below 13px at ≤ 480px: the rule sets 13px on the `blockquote` only, inner inline sizes win | eml_6, 12, 43 | n296–n390 | open |
+| 7 | Expanded quote overflows the pane (eml_20: 31 nested `blockquote` levels) | eml_12 (296–390), eml_20 | n296–n744 | open |
+| 8 | Image never shown (0×0): sender lazy-loading with only `data-src` | eml_28; also eml_13, 36 at some widths | n, w | open |
+| 9 | Body taller than the native viewer cap (`ConstantsUI.htmlContentMaxHeight`) | eml_20 | n744, w760 | open |
+| 10 | Plain-text ASCII table in a `white-space: pre` block overflows | eml_35 | i, w | open |
+| 11 | Plain-text ASCII table next to prose is not detected (`StringConvert.isTextTable` needs every line to be table art): proportional font, columns misalign | `edge/plain_text_table` | n, w, i | open |
+| 12 | Word cut mid-letters in a table cell: `ResponsiveTableCellTransformer` adds `overflow-wrap: anywhere`, so a column shrinks below its longest word, even at 1000px. It also makes `table, td, th { word-break: normal }` dead CSS. eml_7 on native: the responsive script sets `word-break`. A fix must keep long URLs from overflowing (`layout_stress/long_url_cell`). | eml_11, 17, 29, 31, 36, 39, 7; `layout_stress/word_and_prose_columns` | n, w, i | deferred (Dat, 2026-10-08) |
+| 13 | The sanitizer drops `td` attributes (`width`, `colspan`, `rowspan`, `valign`, `nowrap`; locked in `sanitizer_policy/attributes.txt`): column layout and spans come from inline CSS only | none yet | all | open |
+| 14 | `ImageTransformer` and `AddLazyLoadingForBackgroundImageTransformer` match case-sensitively: `HTTPS://` images get no `loading="lazy"`, `BACKGROUND-IMAGE:url(…)` stays eager | none yet | all | open |
 
 ## Coverage: what the rules prove
 
@@ -161,7 +158,7 @@ No proof, verified:
   drops the editor's button markup.
 - `table, td, th { word-break: normal }`: no effect, because the cell
   transformer's `overflow-wrap: anywhere` wins. Removing it changes nothing
-  (see the word-cut finding).
+  (bug 12).
 - `body { overflow-x: hidden }` only clips what G-overflow already reports.
   `p { margin: 0 }`, the code-block colours and the font family are cosmetic;
   the HTML locks pin them.
