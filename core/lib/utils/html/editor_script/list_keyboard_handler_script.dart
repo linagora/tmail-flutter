@@ -53,6 +53,13 @@ abstract final class ListKeyboardHandlerSource {
           return listItem;
         }
 
+        // Summernote `indent` wraps an item with no previous sibling in an
+        // empty parent item, so each Tab would add a stray bullet.
+        function canNestListItem(item) {
+          const previous = item.previousElementSibling;
+          return !!previous && previous.tagName === 'LI';
+        }
+
         function isNestedListItem(item) {
           const list = item.parentElement;
           let ancestor = list ? list.parentElement : null;
@@ -116,7 +123,12 @@ abstract final class ListKeyboardHandlerSource {
                 || event.metaKey) return;
 
             if (event.key === 'Tab') {
-              if (!findCaretListItem()) return;
+              const item = findCaretListItem();
+              if (!item) return;
+              if (!event.shiftKey && !canNestListItem(item)) {
+                event.preventDefault();
+                return;
+              }
               runListCommand(event, event.shiftKey ? 'outdent' : 'indent');
               return;
             }
