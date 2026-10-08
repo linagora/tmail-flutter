@@ -7,14 +7,14 @@ import '../entity/workplace_access_mode.dart';
 import '../exceptions/workplace_exceptions.dart';
 import '../state/workplace_intent_state.dart';
 import 'exchange_drive_token_interactor.dart';
-import 'workplace_action.dart';
+import 'workplace_call.dart';
 import '../../data/bridge/cozy_bridge.dart';
 
 /// Triggers the host app's OIDC refresh; returns the refreshed id token.
 typedef OidcRefreshTrigger = Future<String?> Function();
 
-/// Runs one Workplace action over bridge or bearer token, resolved once so
-/// every request the action sends shares it and costs at most one exchange.
+/// Runs one Workplace call over bridge or bearer token, resolved once so
+/// every request the call sends shares it and costs at most one exchange.
 class WorkplaceAccessModeRunner {
   WorkplaceAccessModeRunner({
     required ExchangeDriveTokenInteractor exchangeTokenInteractor,
@@ -28,12 +28,12 @@ class WorkplaceAccessModeRunner {
   final String? Function() _oidcTokenGetter;
   final OidcRefreshTrigger _oidcRefreshTrigger;
 
-  Future<T> run<T>(Uri platformUrl, WorkplaceAction<T> action) async {
-    if (_canUseBridge(action)) {
+  Future<T> run<T>(Uri platformUrl, WorkplaceCall<T> workplaceCall) async {
+    if (_canUseBridge(workplaceCall)) {
       // No bearer retry for non-idempotent actions — the bridge may have already dispatched.
-      if (!action.fallsBackToBearer) return action(const BridgeAccessMode());
+      if (!workplaceCall.fallsBackToBearer) return workplaceCall(const BridgeAccessMode());
       try {
-        return await action(const BridgeAccessMode());
+        return await workplaceCall(const BridgeAccessMode());
       } catch (error) {
         logWarning(
           'WorkplaceAccessModeRunner::run: bridge failed, falling back to bearer token: $error',
@@ -45,11 +45,11 @@ class WorkplaceAccessModeRunner {
     if (oidcToken == null) throw StateError('OIDC token is unavailable');
     final accessToken = await _exchangeAccessToken(platformUrl, oidcToken);
     if (accessToken == null) throw StateError('Drive access token exchange failed');
-    return action(BearerTokenAccessMode(accessToken));
+    return workplaceCall(BearerTokenAccessMode(accessToken));
   }
 
-  bool _canUseBridge(WorkplaceAction<Object?> action) =>
-      action.supportsBridge && CozyBridge.isSupported && CozyBridge.isAvailable;
+  bool _canUseBridge(WorkplaceCall<Object?> workplaceCall) =>
+      workplaceCall.supportsBridge && CozyBridge.isSupported && CozyBridge.isAvailable;
 
   Future<String?> _exchangeAccessToken(
     Uri platformUrl,
