@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/failure.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:workplace/data/datasource_impl/workplace_datasource_impl.dart';
@@ -9,20 +8,16 @@ import 'package:workplace/data/datasource_impl/workplace_drive_datasource_impl.d
 import 'package:workplace/data/model/workplace_enums.dart';
 import 'package:workplace/data/model/workplace_intent_request.dart';
 import 'package:workplace/data/repository_impl/workplace_repository_impl.dart';
-import 'package:workplace/domain/entity/bridge_policy.dart';
 import 'package:workplace/domain/entity/workplace_action_config.dart';
 import 'package:workplace/domain/entity/workplace_intent.dart';
-import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_theme.dart';
-import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
-import 'package:workplace/domain/state/workplace_intent_state.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 import 'package:workplace/presentation/model/drive_picker_session.dart';
+import 'package:workplace/domain/usecase/create_drive_intent_call.dart';
 import 'package:workplace/domain/usecase/create_drive_intent_interactor.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/workplace_access_mode_runner.dart';
-import 'package:workplace/domain/usecase/workplace_call.dart';
 import 'package:workplace/presentation/widget/drive_attachment_context_menu_tile.dart';
 import 'package:workplace/presentation/widget/drive_attachment_picker_button.dart';
 
@@ -72,25 +67,15 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
     required WorkplaceFilePickerConfigRequest filePickerConfig,
   }) => _accessModeRunner.run(
         platformUrl,
-        _CreateIntentAction(
-          (accessMode) => _createIntent(
-            platformUrl,
-            accessMode,
-            filePickerConfig: filePickerConfig,
-          ),
+        CreateDriveIntentCall(
+          _createIntentInteractor,
+          platformUrl,
+          _toIntentConfig(filePickerConfig),
         ),
       );
 
-  Future<WorkplaceIntent> _createIntent(
-    Uri platformUrl,
-    WorkplaceAccessMode accessMode, {
-    required WorkplaceFilePickerConfigRequest filePickerConfig,
-  }) async {
-    WorkplaceIntent? intent;
-    await for (final either in _createIntentInteractor.execute(
-      platformUrl,
-      accessMode,
-      config: WorkplaceIntentConfig(
+  WorkplaceIntentConfig _toIntentConfig(WorkplaceFilePickerConfigRequest filePickerConfig) =>
+      WorkplaceIntentConfig(
         addAsLink: WorkplaceActionConfig(label: filePickerConfig.sharingLink.label),
         addAsAttachment: filePickerConfig.downloadLink == null
             ? null
@@ -103,20 +88,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           WorkplaceThemeType.light => WorkplaceTheme.light,
           WorkplaceThemeType.dark => WorkplaceTheme.dark,
         },
-      ),
-    )) {
-      either.fold(
-        (failure) {
-          // reported by DriveIntentMessageHandlerMixin._failWith, the single funnel.
-          throw failure is FeatureFailure ? failure.exception : WorkplaceCreateIntentException();
-        },
-        (success) {
-          if (success is CreateWorkplaceIntentSuccess) intent = success.intent;
-        },
       );
-    }
-    return intent!;
-  }
 
   @override
   Widget buildToolbarButton(
@@ -172,17 +144,4 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
           filePickerConfig: filePickerConfig,
         ),
       );
-}
-
-/// cozy-stack `POST /intents` is served by the bridge.
-class _CreateIntentAction extends WorkplaceCall<WorkplaceIntent> {
-  final Future<WorkplaceIntent> Function(WorkplaceAccessMode accessMode) _createIntent;
-
-  const _CreateIntentAction(this._createIntent);
-
-  @override
-  BridgePolicy get bridgePolicy => BridgePolicy.bearerReplay;
-
-  @override
-  Future<WorkplaceIntent> call(WorkplaceAccessMode accessMode) => _createIntent(accessMode);
 }
