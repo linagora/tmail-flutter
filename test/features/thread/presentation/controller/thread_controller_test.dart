@@ -1347,6 +1347,209 @@ void main() {
       });
     });
 
+    group('collapseThreads on email-change refresh test:', () {
+      final inboxMailbox = PresentationMailbox(MailboxId(Id('inbox')));
+      final favoriteFolder = PresentationMailbox.favoriteFolder;
+
+      List<PresentationEmail> makeEmails(int count, MailboxId mailboxId) =>
+          List.generate(
+            count,
+            (i) => PresentationEmail(
+              id: EmailId(Id('rc$i')),
+              mailboxIds: {mailboxId: true},
+            ),
+          );
+
+      void stubDashboardForEmailStateChange(
+        PresentationMailbox mailbox,
+        List<PresentationEmail> emails,
+        Rxn<EmailUIAction> emailAction,
+      ) {
+        when(mockMailboxDashBoardController.sessionCurrent)
+            .thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId)
+            .thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.currentEmailState)
+            .thenReturn(jmap.State('old-state'));
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(mailbox));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(emailAction);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.viewState)
+            .thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.filterMessageOption)
+            .thenReturn(Rx(FilterMessageOption.all));
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.trashSpamMailboxIds).thenReturn(null);
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList(emails));
+        when(mockMailboxDashBoardController.isEmailListDisplayed).thenReturn(false);
+        when(mockMailboxDashBoardController.isSelectionEnabled()).thenReturn(false);
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+        when(mockSearchController.searchQuery).thenReturn(SearchQuery(''));
+      }
+
+      void stubInteractorsForEmailStateChange(
+        List<PresentationEmail> emails,
+        MailboxId mailboxId,
+      ) {
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => Stream.value(
+              Right(RefreshChangesAllEmailSuccess(emailList: const [])),
+            ));
+        when(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => Stream.value(
+              Right(GetAllEmailSuccess(emailList: emails, currentMailboxId: mailboxId)),
+            ));
+        when(mockLoadMoreEmailsInMailboxInteractor.execute(any)).thenAnswer(
+          (_) => Stream.value(Right(LoadMoreEmailsSuccess([], serverEmailCount: 0))),
+        );
+      }
+
+      void verifyVirtualFolderQuery({required bool collapseThreads}) {
+        verify(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: false,
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: collapseThreads,
+        )).called(1);
+      }
+
+      Future<ThreadController> refreshAfterEmailStateChange(
+        WidgetTester tester, {
+        required bool collapseThreads,
+        required PresentationMailbox mailbox,
+      }) async {
+        PlatformInfo.isTestingForWeb = false;
+        clearInteractions(mockRefreshChangesEmailsInMailboxInteractor);
+        clearInteractions(mockGetEmailsInMailboxInteractor);
+        clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
+
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: collapseThreads,
+        );
+        addTearDown(() {
+          controller.onClose();
+          PlatformInfo.isTestingForWeb = false;
+        });
+
+        // Short viewport (maxScrollExtent = 0) so auto-load-more is allowed.
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(
+            height: 600,
+            child: ListView(controller: controller.listEmailController),
+          ),
+        ));
+
+        final emails = makeEmails(3, mailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(mailbox, emails, emailAction);
+        stubInteractorsForEmailStateChange(emails, mailbox.id);
+
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(
+          newState: jmap.State('new-state'),
+        );
+        await tester.pumpAndSettle();
+        return controller;
+      }
+
+      for (final collapseThreads in [true, false]) {
+        testWidgets(
+          'GIVEN collapseThreads is $collapseThreads and a regular mailbox is open '
+          'WHEN the email state changes '
+          'THEN the refresh query SHOULD use collapseThreads = $collapseThreads',
+        (tester) async {
+          await refreshAfterEmailStateChange(
+            tester,
+            collapseThreads: collapseThreads,
+            mailbox: inboxMailbox,
+          );
+
+          verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: collapseThreads,
+          )).called(1);
+        });
+      }
+
+      testWidgets(
+        'GIVEN collapseThreads is enabled and a virtual folder returns a partial page '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN the email state changes '
+        'THEN the folder query SHOULD use collapseThreads = true '
+        'AND auto-load-more IS triggered once',
+      (tester) async {
+        await refreshAfterEmailStateChange(
+          tester,
+          collapseThreads: true,
+          mailbox: favoriteFolder,
+        );
+
+        verifyVirtualFolderQuery(collapseThreads: true);
+        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+      });
+
+      testWidgets(
+        'GIVEN collapseThreads is disabled and a virtual folder returns a partial page '
+        'AND the list content does not fill the viewport (maxScrollExtent = 0) '
+        'WHEN the email state changes '
+        'THEN the folder query SHOULD use collapseThreads = false '
+        'AND auto-load-more SHOULD NOT be triggered — the folder is exhausted',
+      (tester) async {
+        final controller = await refreshAfterEmailStateChange(
+          tester,
+          collapseThreads: false,
+          mailbox: favoriteFolder,
+        );
+
+        verifyVirtualFolderQuery(collapseThreads: false);
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        expect(controller.canLoadMore, isFalse);
+      });
+    });
+
     group('SearchLayoutCoordinator test:', () {
       final searchEmails = List.generate(
         30,
