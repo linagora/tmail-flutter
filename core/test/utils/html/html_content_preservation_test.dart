@@ -36,9 +36,22 @@ void main() {
             greaterThanOrEqualTo(fixture.minPreservation),
           );
           expect(bodyLinkCount(out), bodyLinkCount(fixture.html));
+          expect(bodyLinkDestinations(out), bodyLinkDestinations(fixture.html));
         });
       }
     }
+  });
+
+  test('dropping repeated paragraphs fails preservation', () {
+    final source = List.filled(5, '<p>hello world</p>').join('\n');
+    expect(bodyWordPreservation(source, '<p>hello world</p>'), closeTo(0.2, 1e-9));
+  });
+
+  test('a rewritten link destination is caught', () {
+    expect(
+      bodyLinkDestinations('<a href="https://a.example/x">x</a>'),
+      isNot(bodyLinkDestinations('<a href="https://b.example/x">x</a>')),
+    );
   });
 
   test('dropping visible table-cell text fails preservation', () {
