@@ -1,0 +1,6 @@
+{
+  "source": "synthetic quoteToggle case with wide quoted content",
+  "purpose": "expanding a quote with a 900px block reflows it; at a pane <= 480 the quote text is >= 13px",
+  "expectQuote": true,
+  "expect": ["quoteToggle"]
+}

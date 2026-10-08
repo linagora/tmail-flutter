@@ -1,0 +1,4 @@
+{
+  "source": "synthetic long unbreakable URL in a table cell",
+  "purpose": "a cell with a long URL must shrink (overflow-wrap: anywhere from ResponsiveTableCellTransformer) instead of widening the table"
+}

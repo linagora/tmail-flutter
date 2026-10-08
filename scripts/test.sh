@@ -6,14 +6,20 @@
 # @TestOn('chrome'). Any other platform metadata (another selector, @OnPlatform, a per-test
 # testOn/onPlatform, an import prefix) fails the run, so a test is never skipped in silence.
 # Every phase runs even if an earlier one failed; the script fails at the end.
+#
+# Tests tagged `display` (HTML email display rules) and `mutation` (proof that those rules
+# can fail) are excluded here: they run in the html-display workflow.
 
 set -euo pipefail
 
 : "${MODULES:?MODULES must be set to default or a package folder}"
 
-PLATFORM_METADATA='TestOn|testOn|OnPlatform|onPlatform'
+# Whole names only, so an identifier such as forPreviewEmailOnPlatform is not metadata.
+PLATFORM_METADATA='(^|[^[:alnum:]_])(TestOn|testOn|OnPlatform|onPlatform)([^[:alnum:]_]|$)'
 SUPPORTED_TEST_ON="@TestOn\(['\"](vm|chrome)['\"]\)$"
 CHROME_TEST_ON="^@TestOn\(['\"]chrome['\"]\)$"
+
+EXCLUDED_TAGS='display,mutation'
 
 package_dir=$([[ "$MODULES" == "default" ]] && echo . || echo "$MODULES")
 # Write the machine-readable reports straight to files instead of redirecting stdout:
@@ -40,7 +46,8 @@ fi
 
 vm_status=0
 printf 'Running VM tests for %s\n' "$MODULES"
-(cd "$package_dir" && flutter test "--file-reporter=json:$REPORT" ${vm_targets[@]+"${vm_targets[@]}"}) \
+(cd "$package_dir" && flutter test --exclude-tags "$EXCLUDED_TAGS" "--file-reporter=json:$REPORT" \
+    ${vm_targets[@]+"${vm_targets[@]}"}) \
     || vm_status=$?
 
 chrome_tests=()
@@ -51,7 +58,8 @@ done < <(cd "$package_dir" && grep -rlE "$CHROME_TEST_ON" --include='*_test.dart
 chrome_status=0
 if (( ${#chrome_tests[@]} > 0 )); then
     printf 'Running %d Chrome test file(s) for %s\n' "${#chrome_tests[@]}" "$MODULES"
-    (cd "$package_dir" && flutter test --platform chrome "--file-reporter=json:$CHROME_REPORT" "${chrome_tests[@]}") \
+    (cd "$package_dir" && flutter test --platform chrome --exclude-tags "$EXCLUDED_TAGS" \
+        "--file-reporter=json:$CHROME_REPORT" "${chrome_tests[@]}") \
         || chrome_status=$?
 fi
 

@@ -2,6 +2,7 @@ on:
   workflow_run:
     workflows:
       - "Analyze and test"
+      - "HTML email display"
     types:
       - completed
 

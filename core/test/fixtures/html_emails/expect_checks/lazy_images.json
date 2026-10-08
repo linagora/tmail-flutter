@@ -1,0 +1,5 @@
+{
+  "source": "synthetic lazyImages positive case",
+  "purpose": "remote image and a background below the fold: both lazy, the background restored when scrolled to",
+  "expect": ["lazyImages"]
+}

@@ -1,0 +1,5 @@
+{
+  "source": "synthetic autoScale positive case",
+  "purpose": "900px fixed-width wrapper (the 600px media query only resizes tables): the native responsive script must reflow or zoom it",
+  "expect": ["autoScale"]
+}

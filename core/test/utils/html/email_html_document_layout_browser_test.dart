@@ -1,88 +1,53 @@
 @TestOn('chrome')
+@Tags(['display'])
+library;
 
-import 'dart:convert';
-
-import 'package:core/presentation/utils/html_transformer/html_transform.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../fixtures/html_emails/html_email_corpus.g.dart';
-import '../html_transform_text_html_test.mocks.dart';
-import 'mobile_email_responsive_layout_fixture.dart';
+import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
+import 'display_harness/display_case.dart';
 
+/// Every corpus fixture through the production pipeline on every viewer and
+/// email pane width: it renders offline, keeps its text, and a trimmed quote
+/// starts collapsed and expands on tap. The native viewer (responsive script)
+/// must not overflow; per-viewer layout rules live in the display rule suites.
 void main() {
-  late HtmlTransform htmlTransform;
-
-  setUp(() {
-    htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
-  });
-
-  Future<String> transform(
-    String html,
-    TransformConfiguration configuration,
-  ) =>
-      htmlTransform.transformToHtml(
-        htmlContent: html,
-        transformConfiguration: configuration,
-      );
-
-  group('corpus layout through HtmlTransform', () {
-    for (final fixture in htmlEmailCorpus) {
-      test('${fixture.category}/${fixture.name} web 1280', () async {
-        final transformed = await transform(
-          fixture.html,
-          TransformConfiguration.forPreviewEmailOnWeb(),
-        );
-        final hasQuote = transformed.contains('<blockquote');
-        await withEmail(
-          EmailFixture(
-            transformed,
-            viewportWidth: 1280,
-            quoteToggle: fixture.expectQuote || hasQuote,
-            includeMobileScript: false,
-          ),
-          (viewport) async {
-            expect(viewport.overflowsHorizontally, isFalse);
-            if (!fixture.allowEmptyBody) {
-              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
-            }
-            if (fixture.expectQuote || hasQuote) {
-              expect(viewport.element('.quote-toggle-button'), isNotNull);
-              expect(viewport.isQuoteVisible, isFalse);
-              await viewport.expandQuote();
-              expect(viewport.isQuoteVisible, isTrue);
-            }
-          },
-        );
+  for (final displayCase in displayCases()) {
+    test(displayCase.label, () async {
+      await withDisplayCase(displayCase, (render) async {
+        final frame = render.frame;
+        if (!displayCase.fixture.allowEmptyBody) {
+          expect(
+            frame.content.textContent?.trim(),
+            isNotEmpty,
+            reason: displayCase.failure('keeps text', '.tmail-content'),
+          );
+        }
+        // A blockquote deeper than two div levels gets no toggle (D3); the
+        // noQuoteToggle checker covers that case.
+        final quoteReachable = !displayCase.fixture.expect
+            .contains(HtmlEmailExpect.noQuoteToggle);
+        if (displayCase.viewer.hasQuoteToggle &&
+            (displayCase.fixture.expectQuote ||
+                (quoteReachable && render.transformedHtml.contains('<blockquote')))) {
+          expect(frame.hasQuoteToggle, isTrue,
+              reason: displayCase.failure('quote toggle', '.quote-toggle-button', 'missing'));
+          expect(frame.isQuoteExpanded, isFalse,
+              reason: displayCase.failure('quote toggle', 'blockquote', 'not collapsed'));
+          await frame.toggleQuote();
+          expect(frame.isQuoteExpanded, isTrue,
+              reason: displayCase.failure('quote toggle', 'blockquote', 'does not expand'));
+        }
+        if (displayCase.viewer == DisplayViewer.native) {
+          final overflows = frame.overflows();
+          expect(overflows, isEmpty,
+              reason: displayCase.failure(
+                'no horizontal overflow',
+                overflows.isEmpty ? '' : overflows.first.path,
+                overflows.map((o) => '+${o.pixels.toStringAsFixed(1)}px').join(', '),
+              ));
+        }
       });
-
-      test('${fixture.category}/${fixture.name} mobile 360', () async {
-        final transformed = await transform(
-          fixture.html,
-          TransformConfiguration.forPreviewEmail(),
-        );
-        final hasQuote = transformed.contains('<blockquote');
-        await withEmail(
-          EmailFixture(
-            transformed,
-            viewportWidth: 360,
-            quoteToggle: fixture.expectQuote || hasQuote,
-            includeMobileScript: true,
-          ),
-          (viewport) async {
-            expect(viewport.overflowsHorizontally, isFalse);
-            if (!fixture.allowEmptyBody) {
-              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
-            }
-            for (final img in viewport.images) {
-              expect(
-                img.getBoundingClientRect().width <= viewport.contentWidth + 1,
-                isTrue,
-              );
-            }
-          },
-        );
-      });
-    }
-  });
+    });
+  }
 }
