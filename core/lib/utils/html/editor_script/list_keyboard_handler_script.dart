@@ -73,7 +73,7 @@ abstract final class ListKeyboardHandlerSource {
         function isEmptyListItem(item) {
           if (item.querySelector('li, ul, ol')) return false;
           const text = typeof item.textContent === 'string'
-            ? item.textContent.replace(/[\s​‌‍⁠﻿]/g, '')
+            ? item.textContent.replace(/[\s\u200B\u200C\u200D\u2060\uFEFF]/g, '')
             : '';
           if (text !== '') return false;
           return !item.querySelector(
