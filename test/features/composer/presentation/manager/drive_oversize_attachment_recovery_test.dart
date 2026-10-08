@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dio/dio.dart' hide Response;
 import 'package:dio/dio.dart' as dio show Response;
 import 'package:flutter/material.dart';
@@ -14,12 +16,16 @@ import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_limits.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_request.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_size_snapshot.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/drive_oversize_transfer_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/providers/drive_oversize_transfer_notifier.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_oversize_uploader_provider.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
+import '../../../../fixtures/capturing_log_handler.dart';
 import '../../../../fixtures/widget_fixtures.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
@@ -33,6 +39,7 @@ import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/upload_drive_file_interactor.dart';
 import 'package:workplace/data/transport/workplace_access_mode_runner.dart';
+import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 final _platformUrl = Uri.parse('https://platform.example.com');
 const _failure = MaxEmailAttachmentSizeExceeded(1000);
@@ -59,11 +66,26 @@ class _FakeDashboardController extends Fake implements MailboxDashBoardControlle
   UnsignedInt? get maxSizeAttachmentsPerEmail => null;
 }
 
+/// Records the message of every failure toast the recovery shows.
+class _FakeToastManager extends Fake implements ToastManager {
+  final failureMessages = <String?>[];
+
+  @override
+  void showMessageFailure(FeatureFailure failure) =>
+      failureMessages.add((failure as DrivePickFailure).message);
+}
+
+/// The last statuses the dialog showed before the batch was cleared.
+Map<String, DriveOversizeTransferStatus> Function() _recordLastStatuses(ProviderContainer container) {
+  var last = <String, DriveOversizeTransferStatus>{};
+  container.listen<List<DriveOversizeTransferState>>(driveOversizeTransferProvider, (_, rows) {
+    if (rows.isNotEmpty) last = {for (final row in rows) row.fileName: row.status};
+  });
+  return () => last;
+}
+
 class _FakeWorkplaceRepository implements WorkplaceRepository {
   final Map<String, dynamic> outcomesByFileName;
-  /// When true every uploadFile call throws, simulating a runner-level
-  /// failure that never reaches a per-file try/catch.
-  final bool failEveryUpload;
 
   /// Every spec seen by [uploadFile], so a test can assert what reaches the wire.
   final capturedSpecs = <WorkplaceUploadFileSpec>[];
@@ -74,10 +96,23 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   /// While set, an upload stays in flight until it completes.
   Completer<void>? holdUpload;
 
-  _FakeWorkplaceRepository(this.outcomesByFileName, {this.failEveryUpload = false});
+  /// While set, the token exchange stays in flight until it completes.
+  Completer<void>? holdExchange;
+
+  /// While set, minting the share link stays in flight until it completes.
+  Completer<void>? holdShareLink;
+
+  /// When true the token exchange fails with a non-retryable server error.
+  bool failExchange = false;
+
+  _FakeWorkplaceRepository(this.outcomesByFileName);
 
   @override
-  Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async => 'drive-token';
+  Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async {
+    await holdExchange?.future;
+    if (failExchange) throw _httpError(500);
+    return 'drive-token';
+  }
 
   @override
   Future<WorkplaceIntent> createIntent({
@@ -95,7 +130,6 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
     capturedSpecs.add(spec);
     capturedTransfers.add(transfer);
     await holdUpload?.future;
-    if (failEveryUpload) throw StateError('runner-level failure');
     return _uploadOutcome(spec);
   }
 
@@ -118,6 +152,7 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
     required WorkplaceRequestContext context,
     required String fileId,
   }) async {
+    await holdShareLink?.future;
     final outcome = outcomesByFileName[fileId.replaceFirst('file-', '')];
     if (outcome is Uri) return outcome;
     throw _httpError(403);
@@ -154,6 +189,8 @@ typedef _Setup = ({
   DriveOversizeAttachmentRecovery recovery,
   ProviderContainer container,
   _FakeWorkplaceRepository repository,
+  _FakeToastManager toast,
+  AppLocalizations appLocalizations,
 });
 
 /// [platformUri] defaults to a non-null platform URL; pass `null` explicitly
@@ -162,11 +199,13 @@ Future<_Setup> _setUpRecovery(
   WidgetTester tester, {
   bool driveAvailable = true,
   Map<String, dynamic> outcomesByFileName = const {},
-  bool failEveryUpload = false,
+  String? oidcToken = 'oidc-token',
   Future<bool> Function(String html)? insertHtml,
 }) async {
   late BuildContext capturedContext;
-  final repository = _FakeWorkplaceRepository(outcomesByFileName, failEveryUpload: failEveryUpload);
+  final repository = _FakeWorkplaceRepository(outcomesByFileName);
+  final toast = _FakeToastManager();
+  Get.put<ToastManager>(toast);
   final container = ProviderContainer(overrides: [
     driveAttachmentUriValueProvider.overrideWithValue(
       ValueNotifier<Uri?>(driveAvailable ? _platformUrl : null),
@@ -174,7 +213,7 @@ Future<_Setup> _setUpRecovery(
     driveOversizeUploaderProvider.overrideWithValue((
       runner: WorkplaceAccessModeRunner(
         exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
-        oidcTokenGetter: () => 'oidc-token',
+        oidcTokenGetter: () => oidcToken,
         oidcRefreshTrigger: () async => null,
       ),
       interactor: UploadDriveFileInteractor(repository),
@@ -195,12 +234,24 @@ Future<_Setup> _setUpRecovery(
     ),
     container: container,
     repository: repository,
+    toast: toast,
+    appLocalizations: AppLocalizations.of(capturedContext),
   );
 }
 
 void main() {
-  setUp(() => Get.testMode = true);
-  tearDown(() => Get.reset());
+  late CapturingLogHandler logHandler;
+
+  setUp(() {
+    Get.testMode = true;
+    logHandler = CapturingLogHandler();
+    AppLoggerRegistry.instance.registerHandler(logHandler);
+  });
+
+  tearDown(() {
+    Get.reset();
+    AppLoggerRegistry.instance.resetForTesting();
+  });
 
   group('DriveOversizeAttachmentRecovery::recover::', () {
     testWidgets('null Drive uri returns false, no dialog', (tester) async {
@@ -210,12 +261,35 @@ void main() {
 
       expect(result, isFalse);
       expect(Get.isDialogOpen, isNot(true));
+      expect(setup.repository.capturedSpecs, isEmpty);
+      setup.container.dispose();
+    });
+
+    testWidgets('a request without files returns false and starts no batch', (tester) async {
+      final setup = await _setUpRecovery(tester);
+      final lastStatuses = _recordLastStatuses(setup.container);
+
+      final result = await setup.recovery.recover(_failure, _makeRequest(const []));
+      await tester.pumpAndSettle();
+
+      expect(result, isFalse);
+      expect(Get.isDialogOpen, isNot(true));
+      expect(lastStatuses(), isEmpty);
+      expect(setup.repository.capturedSpecs, isEmpty);
       setup.container.dispose();
     });
 
     testWidgets('inline-only files are uploaded like any other file', (tester) async {
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
-      final setup = await _setUpRecovery(tester, outcomesByFileName: {'shot.png': link});
+      final inserted = <String>[];
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'shot.png': link},
+        insertHtml: (html) async {
+          inserted.add(html);
+          return true;
+        },
+      );
 
       final result = await setup.recovery.recover(
         _failure,
@@ -224,13 +298,25 @@ void main() {
       expect(result, isTrue);
       await tester.pumpAndSettle();
 
+      expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['shot.png']);
+      expect(inserted, hasLength(1));
+      expect(inserted.single, contains('sharecode=x'));
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       setup.container.dispose();
     });
 
-    testWidgets('success links every file and settles the batch', (tester) async {
+    testWidgets('success links every file, inserts its card and shows no toast', (tester) async {
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
-      final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link});
+      final inserted = <String>[];
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'a.zip': link},
+        insertHtml: (html) async {
+          inserted.add(html);
+          return true;
+        },
+      );
+      final lastStatuses = _recordLastStatuses(setup.container);
 
       final result = await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
       expect(result, isTrue);
@@ -238,16 +324,23 @@ void main() {
       // The transfer is unawaited; pump the event loop until it settles.
       await tester.pumpAndSettle();
 
+      expect(lastStatuses(), {'a.zip': DriveOversizeTransferStatus.linked});
+      expect(inserted, hasLength(1));
+      expect(inserted.single, contains('sharecode=x'));
+      expect(inserted.single, contains('a.zip'));
+      expect(setup.toast.failureMessages, isEmpty);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      expect(Get.isDialogOpen, isNot(true));
       setup.container.dispose();
     });
 
-    testWidgets('one file throws: that row fails, the other still links', (tester) async {
+    testWidgets('one file throws: that row fails, the other still links, one failure toast', (tester) async {
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
       final setup = await _setUpRecovery(tester, outcomesByFileName: {
         'ok.zip': link,
         'bad.zip': 'not-a-uri',
       });
+      final lastStatuses = _recordLastStatuses(setup.container);
 
       final result = await setup.recovery.recover(
         _failure,
@@ -256,7 +349,57 @@ void main() {
       expect(result, isTrue);
       await tester.pumpAndSettle();
 
+      expect(lastStatuses(), {
+        'ok.zip': DriveOversizeTransferStatus.linked,
+        'bad.zip': DriveOversizeTransferStatus.failed,
+      });
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      setup.container.dispose();
+    });
+
+    testWidgets('a running upload marks its row uploading and forwards its progress', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(tester);
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+      expect(setup.container.read(driveOversizeTransferProvider).single.status,
+          DriveOversizeTransferStatus.uploading);
+
+      setup.repository.capturedTransfers.single.onProgress!(40, 100);
+
+      final row = setup.container.read(driveOversizeTransferProvider).single;
+      expect(row.sentBytes, 40);
+      expect(row.status, DriveOversizeTransferStatus.uploading);
+      hold.complete();
+      await tester.pumpAndSettle();
+      setup.container.dispose();
+    });
+
+    testWidgets('a row cancelled before its turn is never uploaded', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final link = Uri.parse('https://drive.example.com/public?sharecode=x');
+      final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link, 'b.zip': link});
+      final lastStatuses = _recordLastStatuses(setup.container);
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip'), _makeFile('b.zip')]));
+      await tester.pump();
+      final notifier = setup.container.read(driveOversizeTransferProvider.notifier);
+      notifier.cancel(setup.container.read(driveOversizeTransferProvider)[1].taskId);
+      hold.complete();
+      await tester.pumpAndSettle();
+
+      expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['a.zip']);
+      expect(lastStatuses(), {
+        'a.zip': DriveOversizeTransferStatus.linked,
+        'b.zip': DriveOversizeTransferStatus.cancelled,
+      });
+      expect(setup.toast.failureMessages, isEmpty);
       setup.container.dispose();
     });
 
@@ -285,13 +428,54 @@ void main() {
     });
 
     testWidgets('a cancelled row stays cancelled, not failed', (tester) async {
-      final setup = await _setUpRecovery(tester, outcomesByFileName: {'c.zip': _Failure.cancelled});
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final inserted = <String>[];
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'c.zip': _Failure.cancelled},
+        insertHtml: (html) async {
+          inserted.add(html);
+          return true;
+        },
+      );
+      final lastStatuses = _recordLastStatuses(setup.container);
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
 
       final result = await setup.recovery.recover(_failure, _makeRequest([_makeFile('c.zip')]));
       expect(result, isTrue);
+      await tester.pump();
+      // The user cancels; the transport then reports the cancel.
+      setup.container.read(driveOversizeTransferProvider.notifier).cancel(
+          setup.container.read(driveOversizeTransferProvider).single.taskId);
+      hold.complete();
       await tester.pumpAndSettle();
 
+      expect(lastStatuses(), {'c.zip': DriveOversizeTransferStatus.cancelled});
+      expect(inserted, isEmpty);
+      expect(setup.toast.failureMessages, isEmpty);
+      // A cancel is the user's own doing, not an error to report.
+      expect(logHandler.errorRecords, isEmpty);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      setup.container.dispose();
+    });
+
+    testWidgets('a cancel while the share link is minted keeps the row cancelled when the link call then fails', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(tester, outcomesByFileName: {'c.zip': _Failure.shareLinkForbidden});
+      final lastStatuses = _recordLastStatuses(setup.container);
+      final hold = Completer<void>();
+      setup.repository.holdShareLink = hold;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('c.zip')]));
+      await tester.pump();
+      setup.container.read(driveOversizeTransferProvider.notifier).cancel(
+          setup.container.read(driveOversizeTransferProvider).single.taskId);
+      hold.complete();
+      await tester.pumpAndSettle();
+
+      expect(lastStatuses(), {'c.zip': DriveOversizeTransferStatus.cancelled});
+      expect(setup.toast.failureMessages, isEmpty);
       setup.container.dispose();
     });
 
@@ -339,6 +523,23 @@ void main() {
 
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       expect(Get.isDialogOpen, isNot(true));
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
+      setup.container.dispose();
+    });
+
+    testWidgets('an editor that refuses the links shows one failure toast', (tester) async {
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'a.zip': Uri.parse('https://drive.example.com/public?sharecode=x')},
+        insertHtml: (_) async => false,
+      );
+      final lastStatuses = _recordLastStatuses(setup.container);
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pumpAndSettle();
+
+      expect(lastStatuses(), {'a.zip': DriveOversizeTransferStatus.linked});
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       setup.container.dispose();
     });
 
@@ -362,13 +563,47 @@ void main() {
     });
 
     testWidgets('a runner-level failure fails every unsettled row', (tester) async {
-      final setup = await _setUpRecovery(tester, failEveryUpload: true);
+      // No OIDC token: the runner throws before any per-file try/catch.
+      final setup = await _setUpRecovery(tester, oidcToken: null);
+      final lastStatuses = _recordLastStatuses(setup.container);
 
-      final result = await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      final result = await setup.recovery.recover(
+        _failure,
+        _makeRequest([_makeFile('a.zip'), _makeFile('b.zip')]),
+      );
       expect(result, isTrue);
       await tester.pumpAndSettle();
 
+      expect(setup.repository.capturedSpecs, isEmpty);
+      expect(lastStatuses(), {
+        'a.zip': DriveOversizeTransferStatus.failed,
+        'b.zip': DriveOversizeTransferStatus.failed,
+      });
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      setup.container.dispose();
+    });
+
+    testWidgets('a runner-level failure keeps a row the user already cancelled', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(tester);
+      final lastStatuses = _recordLastStatuses(setup.container);
+      final hold = Completer<void>();
+      setup.repository
+        ..holdExchange = hold
+        ..failExchange = true;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip'), _makeFile('b.zip')]));
+      await tester.pump();
+      setup.container.read(driveOversizeTransferProvider.notifier).cancel(
+          setup.container.read(driveOversizeTransferProvider).first.taskId);
+      hold.complete();
+      await tester.pumpAndSettle();
+
+      expect(lastStatuses(), {
+        'a.zip': DriveOversizeTransferStatus.cancelled,
+        'b.zip': DriveOversizeTransferStatus.failed,
+      });
       setup.container.dispose();
     });
   });
