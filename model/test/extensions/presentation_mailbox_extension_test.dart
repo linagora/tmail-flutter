@@ -165,4 +165,47 @@ void main() {
       expect(first.isValidRuleActionTarget(mapOf([first, second])), isTrue);
     });
   });
+
+  group('PresentationMailboxExtension - isTeamMailboxRoot', () {
+    PresentationMailbox createMailbox({
+      String? namespace,
+      String? parentIdVal,
+    }) {
+      return PresentationMailbox(
+        MailboxId(Id('mailbox')),
+        namespace: namespace != null ? Namespace(namespace) : null,
+        parentId: parentIdVal != null ? MailboxId(Id(parentIdVal)) : null,
+      );
+    }
+
+    test('Should be true for a top-level mailbox in a TeamMailbox namespace', () {
+      final mailbox = createMailbox(namespace: 'TeamMailbox[team@example.com]');
+
+      expect(mailbox.isTeamMailboxRoot, isTrue);
+    });
+
+    test('Should be false for a child folder of a team mailbox', () {
+      final mailbox = createMailbox(
+        namespace: 'TeamMailbox[team@example.com]',
+        parentIdVal: 'team-root',
+      );
+
+      expect(mailbox.isTeamMailboxRoot, isFalse);
+    });
+
+    test('Should be false for a top-level folder shared through ACL', () {
+      final mailbox = createMailbox(namespace: 'Delegated[bob@example.com]');
+
+      expect(mailbox.isTeamMailboxes, isTrue);
+      expect(mailbox.isTeamMailboxRoot, isFalse);
+    });
+
+    test('Should be false for a personal mailbox', () {
+      expect(createMailbox(namespace: 'Personal').isTeamMailboxRoot, isFalse);
+    });
+
+    test('Should be false for a mailbox without namespace', () {
+      expect(createMailbox().isTeamMailboxRoot, isFalse);
+    });
+  });
 }
