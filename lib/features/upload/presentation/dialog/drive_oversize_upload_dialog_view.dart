@@ -48,6 +48,7 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
       ),
       cancelLabel: appLocalizations.cancel,
       onClose: notifier.cancelAll,
+      closeTooltip: appLocalizations.cancel,
       onCancelAll: notifier.cancelAll,
       showCancelAll: anyRunning,
     );
@@ -92,10 +93,12 @@ class _DriveOversizeUploadRowSlot extends ConsumerWidget {
     // The list only empties on clear(), as the dialog closes.
     if (item == null) return const SizedBox.shrink();
     final notifier = ref.read(driveOversizeTransferProvider.notifier);
+    final appLocalizations = AppLocalizations.of(context);
     return LinagoraFileTransferRow(
       layout: layout,
       fileName: item.fileName,
-      statusLabel: _statusLabel(item, AppLocalizations.of(context)),
+      statusLabel: _statusLabel(item, appLocalizations),
+      cancelTooltip: appLocalizations.cancel,
       progress: _progress(item),
       // A settled row has nothing left to cancel.
       onCancel: item.status.settled ? null : () => notifier.cancel(item.taskId),

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_dialog_view.dart';
 
 /// Web gets the centred `Dialog`, mobile the bottom sheet, matching the two
@@ -34,6 +35,9 @@ class DriveOversizeUploadDialogPresenter {
           layout: isWebLayout
               ? LinagoraFileTransferLayout.wide
               : LinagoraFileTransferLayout.compact,
+          semanticLabel: Get.context == null
+              ? null
+              : AppLocalizations.of(Get.context!).attachingFileTitle,
           child: body,
         ),
       ),
