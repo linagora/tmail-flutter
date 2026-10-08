@@ -3,9 +3,9 @@ import 'package:core/utils/app_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
-import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
+import 'package:tmail_ui_user/main/providers/workplace/workplace_oidc_token.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/presentation/extension/workplace_composer_attachment_extension.dart';
@@ -20,8 +20,8 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
     WorkplaceComposerAttachmentExtension(
       workplaceUri: uriNotifier,
       uploadFromUrlSupported: _isUploadFromUrlSupported,
-      oidcTokenGetter: () => getBinding<AuthorizationInterceptors>()?.currentOidcIdToken,
-      oidcRefreshTrigger: _refreshWorkplaceOidcToken,
+      oidcTokenGetter: currentWorkplaceOidcToken,
+      oidcRefreshTrigger: refreshWorkplaceOidcToken,
       maxAttachmentSizeBytesGetter: () =>
           getBinding<MailboxDashBoardController>()?.maxSizeAttachmentsPerEmail?.value,
       // Read at picker-open time from the composer that owns the picker.
@@ -44,16 +44,6 @@ bool _isUploadFromUrlSupported() {
         jmapUrl: jmapUrl,
       ) ??
       false;
-}
-
-/// Triggers the main app's OIDC refresh for Workplace's own (unwired) Dio.
-/// The interceptor owns the outcome, logging included; a dead session surfaces
-/// as RefreshTokenFailedException and is routed by [_onDrivePickState].
-Future<String?> _refreshWorkplaceOidcToken() async {
-  final interceptor = getBinding<AuthorizationInterceptors>();
-  if (interceptor == null) return null;
-  final newToken = await interceptor.requestTokenRefresh();
-  return newToken.tokenId.uuid;
 }
 
 Future<void> _onDrivePickState(String? composerId, DrivePickState state) async {
