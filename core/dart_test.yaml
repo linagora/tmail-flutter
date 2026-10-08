@@ -3,3 +3,6 @@
 tags:
   display:
   mutation:
+    # Mutation proofs are slow and only matter when display rules or fixtures
+    # change: run locally while authoring, and on CI only for HTML paths.
+    skip: "local only: fvm flutter test --platform chrome -t mutation --run-skipped"

@@ -56,3 +56,73 @@ jobs:
         with:
           name: test-reports-html-display
           path: test-report-html-display.json
+
+  # Which HTML display paths a PR touches (decision D10): the mutation proofs
+  # only run when display code, rules, harness or fixtures change.
+  html-paths:
+    runs-on: ubuntu-latest
+    outputs:
+      html: ${{ steps.filter.outputs.html }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Filter HTML display paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            html:
+              - "core/lib/presentation/utils/html_transformer/**"
+              - "core/lib/utils/html/**"
+              - "core/lib/presentation/views/html_viewer/**"
+              - "core/test/fixtures/html_emails/**"
+              - "core/test/utils/html/display_rules/**"
+              - "core/test/utils/html/display_harness/**"
+              - "core/tool/generate_html_email_corpus.dart"
+              - "core/dart_test.yaml"
+
+  # Proof that each display rule still bites: every test breaks one
+  # mechanism in the test and expects a new violation. Tagged `mutation`,
+  # skipped by default (core/dart_test.yaml), so it needs --run-skipped.
+  html-display-mutation:
+    needs: html-paths
+    if: ${{ needs.html-paths.outputs.html == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: "deps-${{ hashFiles('pubspec.lock') }}"
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Mutation proofs
+        working-directory: core
+        run: |
+          files=()
+          while IFS= read -r file; do files+=("$file"); done \
+            < <(grep -rlE "^@TestOn\(['\"]chrome['\"]\)$" --include='*_test.dart' test | sort)
+          flutter test --platform chrome -t mutation --run-skipped \
+            --file-reporter=json:../test-report-html-display-mutation.json "${files[@]}"
+
+      - name: Upload test report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-html-display-mutation
+          path: test-report-html-display-mutation.json

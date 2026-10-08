@@ -55,12 +55,18 @@ enum DisplayViewer {
       };
 
   /// The exact document the viewer loads for [content] at pane [width].
-  String buildDocument(String content, int width, {TextDirection? direction}) =>
+  /// [quoteToggle] is only turned off by mutation tests.
+  String buildDocument(
+    String content,
+    int width, {
+    TextDirection? direction,
+    bool quoteToggle = true,
+  }) =>
       switch (this) {
         DisplayViewer.native => HtmlViewerDocumentBuilder.buildNativeDocument(
             configuration: _nativeEmailConfiguration(
               content,
-              (width: appWidth(width), mobile: isMobileDevice(width)),
+              (width: appWidth(width), mobile: isMobileDevice(width), quoteToggle: quoteToggle),
               direction,
             ),
             platform: HtmlContentViewerPlatform.mobile,
@@ -69,7 +75,7 @@ enum DisplayViewer {
         DisplayViewer.web => HtmlViewerDocumentBuilder.buildWebDocument(
             _webEmailInput(
               content,
-              (width: appWidth(width), mobile: isMobileDevice(width)),
+              (width: appWidth(width), mobile: isMobileDevice(width), quoteToggle: quoteToggle),
               direction,
             ),
           ),
@@ -80,7 +86,7 @@ enum DisplayViewer {
       };
 }
 
-typedef _AppViewport = ({int width, bool mobile});
+typedef _AppViewport = ({int width, bool mobile, bool quoteToggle});
 
 /// Mirrors the native `HtmlContentViewer` options of the Email View.
 HtmlContentViewerConfiguration _nativeEmailConfiguration(
@@ -102,7 +108,7 @@ HtmlContentViewerConfiguration _nativeEmailConfiguration(
       ),
       behavior: HtmlContentViewerBehavior(features: {
         HtmlContentViewerFeature.keepAlive,
-        HtmlContentViewerFeature.quoteToggle,
+        if (viewport.quoteToggle) HtmlContentViewerFeature.quoteToggle,
         HtmlContentViewerFeature.mobileResponsiveLayout,
       }),
     );
@@ -125,7 +131,7 @@ HtmlWebViewerDocumentInput _webEmailInput(
     contentPadding: 0,
     useDefaultFontStyle: true,
     fontSize: isDesktop ? 14 : 16,
-    enableQuoteToggle: true,
+    enableQuoteToggle: viewport.quoteToggle,
     hasMailtoDelegate: true,
     hasScrollController: true,
     hasKeyboardShortcutAction: true,

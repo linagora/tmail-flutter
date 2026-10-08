@@ -74,10 +74,33 @@ String _withSenderStyleSnapshot(String document) {
   return document.substring(0, at) + _senderStyleSnapshotScript + document.substring(at);
 }
 
+/// A deliberate break of one display mechanism, applied in the test only
+/// (production code is never edited), to prove a rule notices it.
+class DisplayMutation {
+  const DisplayMutation({
+    this.transformConfiguration,
+    this.document,
+    this.quoteToggle = true,
+  });
+
+  /// Replaces the viewer's HTML transform configuration.
+  final TransformConfiguration Function(DisplayViewer viewer)? transformConfiguration;
+
+  /// Rewrites the built viewer document (strip a script or a CSS rule).
+  final String Function(String document)? document;
+
+  /// Builds the viewer document without the quote toggle.
+  final bool quoteToggle;
+}
+
 /// Runs the production pipeline for [displayCase]: the viewer's transform
 /// configuration (or `forPlainTextEmail` for `text/plain`), the offline image
 /// swap, the viewer's document builder, then an iframe at the pane width.
-Future<DisplayRender> renderDisplayCase(DisplayCase displayCase) async {
+/// A [mutation] (mutation tests only) breaks one step on purpose.
+Future<DisplayRender> renderDisplayCase(
+  DisplayCase displayCase, {
+  DisplayMutation? mutation,
+}) async {
   final fixture = displayCase.fixture;
   final transformed = fixture.isPlainText
       ? _htmlTransform.transformToTextPlain(
@@ -86,13 +109,17 @@ Future<DisplayRender> renderDisplayCase(DisplayCase displayCase) async {
         )
       : await _htmlTransform.transformToHtml(
           htmlContent: fixture.html,
-          transformConfiguration: displayCase.viewer.transformConfiguration(),
+          transformConfiguration:
+              mutation?.transformConfiguration?.call(displayCase.viewer) ??
+                  displayCase.viewer.transformConfiguration(),
         );
-  final document = displayCase.viewer.buildDocument(
+  final built = displayCase.viewer.buildDocument(
     swapImagesForOffline(transformed),
     displayCase.width,
     direction: displayCase.direction,
+    quoteToggle: mutation?.quoteToggle ?? true,
   );
+  final document = mutation?.document?.call(built) ?? built;
   final frame = await DisplayFrame.render(
     _withSenderStyleSnapshot(document),
     displayCase.width,
