@@ -92,6 +92,29 @@ void main() {
       expect(row.sentBytes, equals(1000));
     });
 
+    test('markUploading moves a waiting row to uploading without bytes', () {
+      final notifier = container.read(driveOversizeTransferProvider.notifier);
+      notifier.start([makeItem('a', fileSize: 1000)]);
+
+      notifier.markUploading(const UploadTaskId('a'));
+
+      final row = container.read(driveOversizeTransferProvider).single;
+      expect(row.status, equals(DriveOversizeTransferStatus.uploading));
+      expect(row.sentBytes, equals(0));
+    });
+
+    test('markFailed sets failed and keeps the bytes already sent', () {
+      final notifier = container.read(driveOversizeTransferProvider.notifier);
+      notifier.start([makeItem('a', fileSize: 1000)]);
+      notifier.reportProgress(const UploadTaskId('a'), 400, 1000);
+
+      notifier.markFailed(const UploadTaskId('a'));
+
+      final row = container.read(driveOversizeTransferProvider).single;
+      expect(row.status, equals(DriveOversizeTransferStatus.failed));
+      expect(row.sentBytes, equals(400));
+    });
+
     final cancelCases = <({
       String description,
       bool markLinkedFirst,
