@@ -21,13 +21,18 @@ class WorkplaceAccessModeRunner {
     required ExchangeDriveTokenInteractor exchangeTokenInteractor,
     required String? Function() oidcTokenGetter,
     required OidcRefreshTrigger oidcRefreshTrigger,
+    bool Function()? isBridgeAvailable,
   })  : _exchangeTokenInteractor = exchangeTokenInteractor,
         _oidcTokenGetter = oidcTokenGetter,
-        _oidcRefreshTrigger = oidcRefreshTrigger;
+        _oidcRefreshTrigger = oidcRefreshTrigger,
+        _isBridgeAvailable = isBridgeAvailable ?? _cozyBridgeAvailable;
 
   final ExchangeDriveTokenInteractor _exchangeTokenInteractor;
   final String? Function() _oidcTokenGetter;
   final OidcRefreshTrigger _oidcRefreshTrigger;
+  final bool Function() _isBridgeAvailable;
+
+  static bool _cozyBridgeAvailable() => CozyBridge.isSupported && CozyBridge.isAvailable;
 
   Future<T> run<T>(Uri platformUrl, WorkplaceCall<T> workplaceCall) async {
     if (_canUseBridge(workplaceCall)) {
@@ -52,8 +57,7 @@ class WorkplaceAccessModeRunner {
   }
 
   bool _canUseBridge(WorkplaceCall<Object?> workplaceCall) =>
-      workplaceCall.bridgePolicy != BridgePolicy.never &&
-          CozyBridge.isSupported && CozyBridge.isAvailable;
+      workplaceCall.bridgePolicy != BridgePolicy.never && _isBridgeAvailable();
 
   Future<String?> _exchangeAccessToken(
     Uri platformUrl,
