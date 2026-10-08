@@ -27,8 +27,8 @@ Directory corePackageRoot() {
 Directory htmlEmailCorpusDirectory() =>
     Directory('${corePackageRoot().path}/test/fixtures/html_emails');
 
-String buildHtmlEmailCorpusDart() {
-  final emailsDir = htmlEmailCorpusDirectory();
+String buildHtmlEmailCorpusDart([Directory? directory]) {
+  final emailsDir = directory ?? htmlEmailCorpusDirectory();
   if (!emailsDir.existsSync()) {
     throw StateError('Missing ${emailsDir.path}');
   }
@@ -55,19 +55,23 @@ String buildHtmlEmailCorpusDart() {
   for (final fixture in fixtures) {
     buffer
       ..writeln('  HtmlEmailCorpusFixture(')
-      ..writeln('    name: ${jsonEncode(fixture.name)},')
-      ..writeln('    category: ${jsonEncode(fixture.category)},')
-      ..writeln('    html: ${jsonEncode(fixture.html)},')
+      ..writeln('    name: ${_dartString(fixture.name)},')
+      ..writeln('    category: ${_dartString(fixture.category)},')
+      ..writeln('    html: ${_dartString(fixture.html)},')
       ..writeln('    expectQuote: ${fixture.expectQuote},')
       ..writeln('    rtl: ${fixture.rtl},')
       ..writeln('    minPreservation: ${fixture.minPreservation},')
-      ..writeln('    source: ${jsonEncode(fixture.source)},')
+      ..writeln('    source: ${_dartString(fixture.source)},')
       ..writeln('    allowEmptyBody: ${fixture.allowEmptyBody},')
       ..writeln('  ),');
   }
   buffer.writeln('];');
   return buffer.toString();
 }
+
+/// A Dart string literal: JSON escaping plus `$`, which Dart would read as
+/// interpolation (emails contain prices like `$19.99`).
+String _dartString(String value) => jsonEncode(value).replaceAll(r'$', r'\$');
 
 class _Parsed {
   _Parsed({
