@@ -28,6 +28,7 @@ import 'package:workplace/domain/entity/workplace_intent_config.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/entity/workplace_upload_transfer.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/repository/workplace_repository.dart';
 import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
 import 'package:workplace/domain/usecase/upload_drive_file_interactor.dart';
@@ -102,7 +103,7 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   Future<DriveUploadedFile> _uploadOutcome(WorkplaceUploadFileSpec spec) async {
     switch (outcomesByFileName[spec.fileName]) {
       case _Failure.cancelled:
-        throw DioException(requestOptions: RequestOptions(path: ''), type: DioExceptionType.cancel);
+        throw WorkplaceUploadCancelledException();
       case _Failure.uploadConflict:
         throw _httpError(409);
       case 'not-a-uri':

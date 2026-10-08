@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
+import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/usecase/drive_oversize_upload_call.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
@@ -178,11 +179,9 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
       );
       linked.add((name: file.fileName, link: link));
       notifier.markLinked(item.taskId);
-    } on DioException catch (exception) {
+    } on WorkplaceUploadCancelledException {
       // A cancel is the user's own doing — the row already says so.
-      if (exception.type == DioExceptionType.cancel) return;
-      logError('DriveOversizeAttachmentRecovery::_uploadOne: $exception');
-      notifier.markFailed(item.taskId);
+      return;
     } catch (e) {
       logError('DriveOversizeAttachmentRecovery::_uploadOne: $e');
       notifier.markFailed(item.taskId);
