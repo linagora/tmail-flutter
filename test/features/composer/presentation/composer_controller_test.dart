@@ -1360,6 +1360,45 @@ void main() {
       });
     });
 
+    group('insertHtmlIntoEditor on web:', () {
+      const cardHtml = '<div class="file-card">a.zip</div>';
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        // The web editor mock is shared by the whole file: start each test clean.
+        reset(mockRichTextWebController.editorController);
+      });
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'Should return false\n'
+        'When no web editor is attached',
+      () async {
+        composerController?.richTextWebController = null;
+
+        final inserted = await composerController?.insertHtmlIntoEditor(cardHtml);
+
+        expect(inserted, isFalse);
+      });
+
+      testWidgets(
+        'Should insert the html once and return true\n'
+        'When a web editor is attached',
+      (tester) async {
+        composerController?.richTextWebController = mockRichTextWebController;
+
+        bool? inserted;
+        composerController!.insertHtmlIntoEditor(cardHtml).then((value) => inserted = value);
+        // The insert completes at the end of the next frame.
+        for (var frame = 0; frame < 5 && inserted == null; frame++) {
+          await tester.pump();
+        }
+
+        expect(inserted, isTrue);
+        verify(mockRichTextWebController.editorController.insertHtml(cardHtml)).called(1);
+      });
+    });
+
     group('markCleanClose - platform guard:', () {
       test(
           'Should set isCleanClose flag in the notifier\n'
