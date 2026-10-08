@@ -94,8 +94,8 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.passesThrough,
-        knownGap: 'XSS: replying to an email with no reply text puts the '
-            'original raw HTML into the composer without the sanitizer',
+        knownGap: 'XSS: reply/forward whose original content is not loaded '
+            'yet fetches it through this pipeline, which has no sanitizer',
       ),
       HtmlPipelineRow(
         name: 'forDraftsEmail',
