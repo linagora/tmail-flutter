@@ -1,3 +1,7 @@
+## [0.39.4] - 2026-10-08
+### Fixed
+- Mobile can select another label in email view
+
 ## [0.39.3] - 2026-10-07
 ### Fixed
 - Send the Sentry log when user opts in to error reporting
