@@ -157,7 +157,7 @@ Future<List<Violation>> _preservation(DisplayRender render) async {
   return [
     if (kept < fixture.minPreservation)
       Violation('G-preserve', '.tmail-content', '${(kept * 100).toStringAsFixed(1)}% of the words kept'),
-    if (bodyLinkCount(render.transformedHtml) != bodyLinkCount(fixture.html))
+    if (bodyLinkCount(render.transformedHtml) != bodyKeptLinkCount(fixture.html))
       const Violation('G-preserve', 'a[href]', 'link count changed'),
   ];
 }
@@ -170,6 +170,15 @@ final _mutations = <_Mutation>[
     ),
     check: _overflow,
     cases: () => _casesWhere((f) => _has(f, 'td'), viewers: [DisplayViewer.web, DisplayViewer.ios]),
+  ),
+  _Mutation(
+    name: 'remove ResponsiveTableCellTransformer (real emails only)',
+    mutation: DisplayMutation(
+      transformConfiguration: (viewer) => _without(viewer, [ResponsiveTableCellTransformer]),
+    ),
+    check: _overflow,
+    cases: () => _casesWhere((f) => f.category == 'real' && _has(f, 'td'),
+        viewers: [DisplayViewer.web, DisplayViewer.ios, DisplayViewer.native]),
   ),
   _Mutation(
     name: 'remove the @media (max-width: 600px) table { width: 100% } rule',

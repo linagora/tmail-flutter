@@ -1,0 +1,18 @@
+{
+  "contentType": "text/html",
+  "expect": [
+    "fullDisplay",
+    "lazyImages"
+  ],
+  "imageSizes": {
+    "attr": 1,
+    "cid": 0,
+    "container": 0,
+    "css": 0,
+    "data": 0,
+    "default": 0
+  },
+  "minPreservation": 0.95,
+  "purpose": "real email #22 (fullDisplay, lazyImages), text scrambled",
+  "source": "eml #22, anonymized"
+}
