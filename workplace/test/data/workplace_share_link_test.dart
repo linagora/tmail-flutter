@@ -302,6 +302,18 @@ void main() {
       expect(link.host, equals('drive.platform.example.com'));
     });
 
+    test('treats a capabilities response whose data is not an object as nested', () async {
+      final adapter = _QueueAdapter([
+        {'data': <dynamic>[]},
+        permissionResponse('abc123'),
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final link = await datasource.createShareLink(context: context, fileId: 'file-1');
+
+      expect(link.host, equals('drive.platform.example.com'));
+    });
+
     test('mints no link when the capabilities request fails', () async {
       final adapter = _QueueAdapter([500]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
