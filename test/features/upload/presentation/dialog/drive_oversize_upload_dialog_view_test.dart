@@ -1,20 +1,17 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_dialog_view.dart';
-import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_row.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/drive_oversize_transfer_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/providers/drive_oversize_transfer_notifier.dart';
-import 'package:tmail_ui_user/features/upload/presentation/styles/drive_oversize_upload_dialog_style.dart';
 
 import '../../../../fixtures/widget_fixtures.dart';
 import 'drive_oversize_upload_dialog_view_test.mocks.dart';
@@ -59,6 +56,14 @@ void main() {
     await tester.pump();
   }
 
+  // Determinate bars animate to their value; an indeterminate one never settles.
+  Future<double?> barValue(WidgetTester tester) async {
+    await tester.pump(const Duration(milliseconds: 400));
+    return tester
+        .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator).first)
+        .value;
+  }
+
   setUp(() {
     Get.testMode = true;
     dashboard = MockMailboxDashBoardController();
@@ -77,35 +82,33 @@ void main() {
   group('DriveOversizeUploadDialogView::', () {
     testWidgets('1 item renders 1 row', (tester) async {
       await pumpDialog(tester, items: [makeItem('a')]);
-      expect(find.byType(DriveOversizeUploadRow), findsOneWidget);
+      expect(find.byType(LinagoraFileTransferRow), findsOneWidget);
     });
 
     testWidgets('3 items render 3 rows in one ListView', (tester) async {
       await pumpDialog(tester, items: [makeItem('a'), makeItem('b'), makeItem('c')]);
-      expect(find.byType(DriveOversizeUploadRow), findsNWidgets(3));
+      expect(find.byType(LinagoraFileTransferRow), findsNWidgets(3));
       expect(find.byType(ListView), findsOneWidget);
     });
 
     testWidgets('a row with no bytes renders LinearProgressIndicator', (tester) async {
       await pumpDialog(tester, items: [makeItem('a', status: DriveOversizeTransferStatus.uploading)]);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
-      expect(find.byType(LinearPercentIndicator), findsNothing);
+      expect(await barValue(tester), isNull);
     });
 
-    testWidgets('a row with bytes renders LinearPercentIndicator at the right percent', (tester) async {
+    testWidgets('a row with bytes renders a determinate bar at the right percent', (tester) async {
       await pumpDialog(tester, items: [
         makeItem('a', sentBytes: 400, status: DriveOversizeTransferStatus.uploading),
       ]);
-      final indicator = tester.widget<LinearPercentIndicator>(find.byType(LinearPercentIndicator));
-      expect(indicator.percent, closeTo(0.4, 0.001));
+      expect(await barValue(tester), closeTo(0.4, 0.001));
     });
 
     testWidgets('a linked row renders the bar at 1.0', (tester) async {
       await pumpDialog(tester, items: [
         makeItem('a', sentBytes: 1000, status: DriveOversizeTransferStatus.linked),
       ]);
-      final indicator = tester.widget<LinearPercentIndicator>(find.byType(LinearPercentIndicator));
-      expect(indicator.percent, equals(1.0));
+      expect(await barValue(tester), equals(1.0));
     });
 
     testWidgets('a progress tick updates that row\'s bar', (tester) async {
@@ -118,20 +121,16 @@ void main() {
         .reportProgress(const UploadTaskId('a'), 700, 1000);
       await tester.pump();
 
-      final indicator = tester.widget<LinearPercentIndicator>(find.byType(LinearPercentIndicator));
-      expect(indicator.percent, closeTo(0.7, 0.001));
+      expect(await barValue(tester), closeTo(0.7, 0.001));
     });
 
     testWidgets('a settled row renders no close icon button', (tester) async {
       await pumpDialog(tester, items: [makeItem('a', status: DriveOversizeTransferStatus.linked)]);
-      final row = tester.widget<DriveOversizeUploadRow>(find.byType(DriveOversizeUploadRow));
-      expect(row.item.status.settled, isTrue);
+      expect(find.byKey(LinagoraFileTransferRow.cancelButtonKey), findsNothing);
     });
 
-    // Cancel is the only TMailButtonWidget built with visible text (the row
-    // and header close buttons use fromIcon, whose text defaults to '').
     Finder cancelButtonIgnorePointer() => find.ancestor(
-          of: find.byWidgetPredicate((widget) => widget is TMailButtonWidget && widget.text.isNotEmpty),
+          of: find.byKey(LinagoraFileTransferDialog.cancelAllButtonKey),
           matching: find.byType(IgnorePointer),
         ).first;
 
@@ -151,8 +150,8 @@ void main() {
       await pumpDialog(tester, items: [makeItem('a'), makeItem('b')]);
 
       final rowCloseButton = find.descendant(
-        of: find.byType(DriveOversizeUploadRow).first,
-        matching: find.byType(TMailButtonWidget),
+        of: find.byType(LinagoraFileTransferRow).first,
+        matching: find.byKey(LinagoraFileTransferRow.cancelButtonKey),
       );
       await tester.tap(rowCloseButton);
       await tester.pump();
@@ -165,9 +164,7 @@ void main() {
     testWidgets('tapping the header close cancels every row', (tester) async {
       await pumpDialog(tester, items: [makeItem('a'), makeItem('b')]);
 
-      final headerClose = find.byWidgetPredicate((widget) =>
-          widget is TMailButtonWidget &&
-          widget.iconSize == DriveOversizeUploadDialogStyle.headerCloseIconSize);
+      final headerClose = find.byKey(LinagoraFileTransferDialog.closeButtonKey);
       await tester.tap(headerClose);
       await tester.pump();
 
@@ -177,14 +174,14 @@ void main() {
 
     testWidgets('isWebLayout true puts the bar inside the row', (tester) async {
       await pumpDialog(tester, items: [makeItem('a')], isWebLayout: true);
-      final row = tester.widget<DriveOversizeUploadRow>(find.byType(DriveOversizeUploadRow));
-      expect(row.isWebLayout, isTrue);
+      final row = tester.widget<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow));
+      expect(row.layout, LinagoraFileTransferLayout.wide);
     });
 
     testWidgets('isWebLayout false puts the bar on its own line', (tester) async {
       await pumpDialog(tester, items: [makeItem('a')], isWebLayout: false);
-      final row = tester.widget<DriveOversizeUploadRow>(find.byType(DriveOversizeUploadRow));
-      expect(row.isWebLayout, isFalse);
+      final row = tester.widget<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow));
+      expect(row.layout, LinagoraFileTransferLayout.compact);
     });
   });
 }
