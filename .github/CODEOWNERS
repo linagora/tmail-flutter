@@ -5,3 +5,6 @@ core/lib/utils/html/** @hoangdat
 core/lib/presentation/views/html_viewer/** @hoangdat
 core/test/fixtures/html_emails/** @hoangdat
 core/test/fixtures/html_locks/** @hoangdat
+core/tool/generate_html_email_corpus.dart @hoangdat
+core/test/utils/html/** @hoangdat
+core/test/utils/html_locks/** @hoangdat
