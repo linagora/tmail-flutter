@@ -79,6 +79,26 @@ void main() {
     expect(_commands(), ['outdent']);
   });
 
+  test('Tab on the first item of a list keeps focus without nesting it', () {
+    final item = _byId(editable, 'first');
+    _placeCaret(item);
+
+    final defaultPrevented = _dispatchKey(item, 'Tab');
+
+    expect(defaultPrevented, isTrue);
+    expect(_commands(), isEmpty);
+  });
+
+  test('Shift+Tab on the first item of a list outdents it', () {
+    final item = _byId(editable, 'first');
+    _placeCaret(item);
+
+    final defaultPrevented = _dispatchKey(item, 'Tab', shiftKey: true);
+
+    expect(defaultPrevented, isTrue);
+    expect(_commands(), ['outdent']);
+  });
+
   test('Tab outside a list keeps the browser behaviour', () {
     final paragraph = _byId(editable, 'paragraph');
     _placeCaret(paragraph);
