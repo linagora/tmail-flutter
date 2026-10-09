@@ -228,6 +228,19 @@ void main() {
       expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
     });
 
+    test('should never produce a style end tag from the newline closing the @scope block', () {
+      final output = CssScopeUtils.scope('.a {} </style', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    test('should escape a style end tag without changing what the CSS reads', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "</style>" } </style} .b {}', root),
+        scoped(r'.a { content: "<\/style>" } <\/style  .b {}'),
+      );
+    });
+
     // `body` weighs (0,0,1) while `:scope` weighs (0,1,0): the rewrite must not
     // let a mail rule beat a rule it used to lose to, or content gets hidden.
     test('should rewrite body without raising its specificity', () {

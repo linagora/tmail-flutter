@@ -12,10 +12,14 @@
 /// `html` and `body` type selectors would match nothing: they are rewritten
 /// to `:scope`, and `html body` to a single `:scope`.
 ///
+/// `<style>` text is serialized raw, so the output never contains `</style`.
+///
 /// Browsers without `@scope` support drop the whole block, so the untrusted
 /// CSS is ignored rather than leaked.
 class CssScopeUtils {
   const CssScopeUtils._();
+
+  static final RegExp _styleEndTagStart = RegExp('</(?=style)', caseSensitive: false);
 
   /// Returns [css] wrapped into `@scope ([scopeRootSelector]) { ... }`, or an
   /// empty string when [css] cannot be tokenized unambiguously.
@@ -34,7 +38,9 @@ class CssScopeUtils {
     if (confinedCss == null) {
       return '';
     }
-    return '@scope ($scopeRootSelector) {\n$confinedCss\n}';
+    // `\/` reads as `/` in strings, urls and identifiers, and starts no
+    // comment, so escaping it changes no block boundary.
+    return '@scope ($scopeRootSelector) {\n$confinedCss\n}'.replaceAll(_styleEndTagStart, r'<\/');
   }
 }
 
