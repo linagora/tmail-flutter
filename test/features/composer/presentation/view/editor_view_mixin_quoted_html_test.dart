@@ -12,41 +12,54 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 class _QuoteHarness with EditorViewMixin {}
 
-void main() {
-  Future<AppLocalizations> pumpLocalizations(WidgetTester tester) async {
-    late AppLocalizations localizations;
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
-        supportedLocales: LocalizationService.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: Builder(
-          builder: (context) {
-            localizations = AppLocalizations.of(context);
-            return const SizedBox();
-          },
-        ),
+Future<AppLocalizations> _pumpLocalizations(WidgetTester tester) async {
+  late AppLocalizations localizations;
+  await tester.pumpWidget(
+    MaterialApp(
+      locale: const Locale('en'),
+      supportedLocales: LocalizationService.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: Builder(
+        builder: (context) {
+          localizations = AppLocalizations.of(context);
+          return const SizedBox();
+        },
       ),
-    );
-    await tester.pumpAndSettle();
-    return localizations;
-  }
+    ),
+  );
+  await tester.pumpAndSettle();
+  return localizations;
+}
 
+/// The reply/forward quote the composer inserts for [email].
+Future<String> _quote(
+  WidgetTester tester, {
+  required String content,
+  required EmailActionType type,
+  required PresentationEmail email,
+}) async =>
+    _QuoteHarness().getEmailContentQuotedAsHtml(
+      locale: const Locale('en'),
+      appLocalizations: await _pumpLocalizations(tester),
+      emailContent: content,
+      emailActionType: type,
+      presentationEmail: email,
+    );
+
+void main() {
   testWidgets('quote wrap adds cite, blockquote and editor start tags', (
     tester,
   ) async {
-    final localizations = await pumpLocalizations(tester);
-    final html = _QuoteHarness().getEmailContentQuotedAsHtml(
-      locale: const Locale('en'),
-      appLocalizations: localizations,
-      emailContent: '<p>Previous</p>',
-      emailActionType: EmailActionType.reply,
-      presentationEmail: PresentationEmail(
+    final html = await _quote(
+      tester,
+      content: '<p>Previous</p>',
+      type: EmailActionType.reply,
+      email: PresentationEmail(
         from: {EmailAddress('Alice', 'alice@example.com')},
       ),
     );
@@ -58,13 +71,11 @@ void main() {
   });
 
   testWidgets('quote wrap escapes HTML in the from name', (tester) async {
-    final localizations = await pumpLocalizations(tester);
-    final html = _QuoteHarness().getEmailContentQuotedAsHtml(
-      locale: const Locale('en'),
-      appLocalizations: localizations,
-      emailContent: '<p>Body</p>',
-      emailActionType: EmailActionType.reply,
-      presentationEmail: PresentationEmail(
+    final html = await _quote(
+      tester,
+      content: '<p>Body</p>',
+      type: EmailActionType.reply,
+      email: PresentationEmail(
         from: {EmailAddress('Alice <img src=x onerror=alert(1)>', 'alice@example.com')},
       ),
     );
@@ -74,13 +85,11 @@ void main() {
   });
 
   testWidgets('forward wrap escapes HTML in the subject', (tester) async {
-    final localizations = await pumpLocalizations(tester);
-    final html = _QuoteHarness().getEmailContentQuotedAsHtml(
-      locale: const Locale('en'),
-      appLocalizations: localizations,
-      emailContent: '<p>Body</p>',
-      emailActionType: EmailActionType.forward,
-      presentationEmail: PresentationEmail(
+    final html = await _quote(
+      tester,
+      content: '<p>Body</p>',
+      type: EmailActionType.forward,
+      email: PresentationEmail(
         subject: '<script>alert(1)</script>',
         from: {EmailAddress('Alice', 'alice@example.com')},
       ),
