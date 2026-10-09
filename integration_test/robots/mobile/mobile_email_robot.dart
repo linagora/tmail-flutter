@@ -1,12 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
+import '../abstract/abstract_email_pdf_preview_robot.dart';
 import '../abstract/abstract_email_robot.dart';
+import '../email_pdf_preview_robot.dart';
 import '../email_robot.dart';
 import '../../utils/test_timeouts.dart';
 
 class MobileEmailRobot extends EmailRobot implements AbstractEmailRobot {
-  MobileEmailRobot(super.$);
+  MobileEmailRobot(super.$, {AbstractEmailPdfPreviewRobot? pdfPreview})
+      : pdfPreview = pdfPreview ?? EmailPdfPreviewRobot($);
+
+  @override
+  final AbstractEmailPdfPreviewRobot pdfPreview;
 
   @override
   Future<void> expectDownloadSaveDialogVisible() async {
