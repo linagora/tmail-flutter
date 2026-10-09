@@ -67,9 +67,11 @@ class PreviewEmlFileUtils {
             </div>
           </div>
       
-          <!-- Email Body -->
-          <div class="$emailBodyClassName">
-            <p>$emailContent</p>
+          <!-- Email Body: a stacking context the email styles cannot reach, below the header -->
+          <div class="email-body-layer">
+            <div class="$emailBodyClassName">
+              <p>$emailContent</p>
+            </div>
           </div>
       
           ${listAttachment?.isNotEmpty == true ? _createAttachmentsElement(listAttachment: listAttachment ?? [], titleAttachment: titleAttachment) : ''}

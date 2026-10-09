@@ -150,6 +150,14 @@ class HtmlTemplate {
         display: flex;
         align-items: flex-start;
         gap: 10px;
+        position: relative;
+        z-index: 1;
+        background: #fff;
+      }
+
+      .email-body-layer {
+        position: relative;
+        z-index: 0;
       }
       
       .circle {
