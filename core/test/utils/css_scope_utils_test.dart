@@ -229,8 +229,23 @@ void main() {
       );
     });
 
+    // `@scope` does not confine `@page` either: margin boxes would print mail
+    // text around the app-generated header on every page.
+    test('should drop page rules wherever they are and however they are spelled', () {
+      expect(
+        CssScopeUtils.scope(
+          '@page { @top-left { content: "From: x" } } @media print { @PAGE :first { margin: 0 } } .a { page: x }',
+          root,
+        ),
+        scoped(
+          '@dropped-page { @top-left { content: "From: x" } } @media print { @dropped-page :first { margin: 0 } } .a { page: x }',
+        ),
+      );
+    });
+
     test('should keep other at-rules', () {
-      const css = '@font-feature-values App { @styleset { a: 1 } } @keyframes font-face {} @import url(x);';
+      const css = '@font-feature-values App { @styleset { a: 1 } } @keyframes font-face {} @import url(x); '
+          '@font-faces {} @pages {} @-webkit-page {}';
 
       expect(CssScopeUtils.scope(css, root), scoped(css));
     });

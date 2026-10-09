@@ -13,9 +13,10 @@
 /// to `:is(:where(:scope), body)`, and `html body` to a single one, which
 /// matches the scope root with the weight of the original selector.
 ///
-/// `@font-face` is not confined by `@scope`: a mail could redefine the app
-/// font and redraw the app-generated header, so its at-keyword is renamed to
-/// one browsers ignore, dropping the rule and its block.
+/// `@font-face` and `@page` are not confined by `@scope`: a mail could
+/// redefine the app font and redraw the app-generated header, or print text
+/// in every page margin, so their at-keyword is renamed to one browsers
+/// ignore, dropping the rule and its block.
 ///
 /// `<style>` text is serialized raw, so the output never contains `</style`.
 ///
@@ -222,8 +223,7 @@ class _CssBlockConfiner {
   static const int _maxHexDigits = 6;
   static const int _replacementCharacter = 0xFFFD;
   static const String _scopeRootPrefix = ':is(:where(:scope), ';
-  static const String _fontFace = 'font-face';
-  static const String _droppedFontFace = '@dropped-font-face';
+  static const Set<String> _globalAtRules = {'font-face', 'page'};
   static const Set<String> _rootTypeSelectors = {'html', 'body'};
   static const Set<String> _groupingAtRules = {
     'media', 'supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style',
@@ -267,8 +267,8 @@ class _CssBlockConfiner {
     return output.toString();
   }
 
-  String _replacementOf(_Identifier rewrite) => rewrite.name == _fontFace
-      ? _droppedFontFace
+  String _replacementOf(_Identifier rewrite) => _globalAtRules.contains(rewrite.name)
+      ? '@dropped-${rewrite.name}'
       : '$_scopeRootPrefix${String.fromCharCodes(_codeUnits, rewrite.start, rewrite.end)})';
 
   /// Consumes the next token, returns false when it is ambiguous.
@@ -333,7 +333,7 @@ class _CssBlockConfiner {
     } else if (_groupingAtRules.contains(name)) {
       _rules.onToken(_TokenKind.groupingAtKeyword);
     } else {
-      if (name == _fontFace) {
+      if (_globalAtRules.contains(name)) {
         _rewrites.add((start: start, end: _index, name: name));
       }
       _rules.onToken(_TokenKind.atKeyword);
