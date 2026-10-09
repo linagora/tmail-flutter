@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,6 +90,24 @@ void main() {
       );
       semantics.dispose();
     });
+
+    for (final layoutCase in [
+      (isWeb: true, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: false, layout: LinagoraFileTransferLayout.compact),
+    ]) {
+      testWidgets('show uses the ${layoutCase.layout.name} layout when isWeb is ${layoutCase.isWeb}', (tester) async {
+        PlatformInfo.isTestingForWeb = layoutCase.isWeb;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        await _pumpHost(tester, container);
+
+        await _showDialog(tester, container);
+
+        final surface = tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface));
+        final view = tester.widget<DriveOversizeUploadDialogView>(_dialogView);
+        expect(surface.layout, equals(layoutCase.layout));
+        expect(view.isWebLayout, equals(layoutCase.isWeb));
+      });
+    }
 
     testWidgets('a tap on the barrier does not close the dialog', (tester) async {
       await _pumpHost(tester, container);
