@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/css_scope_utils.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 class PreviewEmlFileUtils {
+  static const String emailBodyClassName = 'email-body';
   static const HtmlEscape _textEscape = HtmlEscape();
   static const HtmlEscape _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
 
@@ -65,9 +67,11 @@ class PreviewEmlFileUtils {
             </div>
           </div>
       
-          <!-- Email Body -->
-          <div class="email-body">
-            <p>$emailContent</p>
+          <!-- Email Body: a stacking context the email styles cannot reach, below the header -->
+          <div class="email-body-layer">
+            <div class="$emailBodyClassName">
+              <p>$emailContent</p>
+            </div>
           </div>
       
           ${listAttachment?.isNotEmpty == true ? _createAttachmentsElement(listAttachment: listAttachment ?? [], titleAttachment: titleAttachment) : ''}
@@ -189,11 +193,20 @@ class PreviewEmlFileUtils {
     document.head?.append(styleElement);
 
     if (emailElement != null) {
+      _confineEmailStylesToEmailBody(emailElement);
       document.body?.append(emailElement);
     }
 
     final htmlDocument = document.outerHtml;
 
     return htmlDocument;
+  }
+
+  /// The email styles share the document with the app-generated header
+  /// (subject, sender, recipients, date): scope them so they cannot restyle it.
+  void _confineEmailStylesToEmailBody(Element emailElement) {
+    for (final styleElement in emailElement.querySelectorAll('style')) {
+      styleElement.text = CssScopeUtils.scope(styleElement.text, '.$emailBodyClassName');
+    }
   }
 }

@@ -1,0 +1,340 @@
+import 'package:core/utils/html/css_scope_utils.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  const root = '.email-body';
+
+  String scoped(String body) => '@scope ($root) {\n$body\n}';
+
+  String scopeRoot(String selector) => ':is(:where(:scope), $selector)';
+
+  group('CssScopeUtils.scope', () {
+    test('should wrap well formed CSS into an @scope block', () {
+      const css = '* { font-family: "Comic Sans MS" !important } '
+          '@media (max-width: 600px) { .a { color: red } }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should neutralize a stray closing brace escaping the @scope block', () {
+      expect(
+        CssScopeUtils.scope('.a { color: red } } .sender-email { display: none }', root),
+        scoped('.a { color: red }   .sender-email { display: none }'),
+      );
+    });
+
+    test('should neutralize leading stray closing braces', () {
+      expect(
+        CssScopeUtils.scope('}}} * { color: red }', root),
+        scoped('    * { color: red }'),
+      );
+    });
+
+    test('should keep closing braces swallowed by a parenthesis block', () {
+      const css = '.a { color: foo(}) }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should ignore braces inside comments and strings', () {
+      const css = '/* } */ .a::before { content: "}" } .b::after { content: \'\\\'}\' }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should end an unterminated string at the next newline', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "{\n} } .b { color: red }', root),
+        scoped('.a { content: "{\n}   .b { color: red }'),
+      );
+    });
+
+    test('should end an unterminated string at a lone carriage return or form feed', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "{\r} } .b { content: "{\f} } .c {}', root),
+        scoped('.a { content: "{\n}   .b { content: "{\n}   .c {}'),
+      );
+    });
+
+    test('should honor escaped newlines inside strings', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "\\\r\n{" } } .b {}', root),
+        scoped('.a { content: "\\\n{" }   .b {}'),
+      );
+    });
+
+    test('should keep a string open across the newline swallowed by a hex escape', () {
+      expect(
+        CssScopeUtils.scope('"\\a\n(}\n} .b {}', root),
+        scoped('"\\a\n(}\n  .b {}'),
+      );
+    });
+
+    test('should not treat an escaped brace as a block delimiter', () {
+      expect(
+        CssScopeUtils.scope('.a\\{ { color: red } \\} } .b {}', root),
+        scoped('.a\\{ { color: red } \\}   .b {}'),
+      );
+    });
+
+    test('should skip braces inside an unquoted url token', () {
+      expect(
+        CssScopeUtils.scope('.a { background: url(x{) } } .b {}', root),
+        scoped('.a { background: url(x{) }   .b {}'),
+      );
+    });
+
+    test('should not end an unquoted url token at an escaped parenthesis', () {
+      const css = r'.a { b: url(x\) } ) } .c {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should recognize url tokens spelled with escapes', () {
+      expect(
+        CssScopeUtils.scope('.a { background: u\\72 l(x{) } } .b {}', root),
+        scoped('.a { background: u\\72 l(x{) }   .b {}'),
+      );
+      expect(
+        CssScopeUtils.scope('.a { background: \\75rl(x{) } } .b {}', root),
+        scoped('.a { background: \\75rl(x{) }   .b {}'),
+      );
+    });
+
+    test('should read <!-- as one token so a following url( is a url token', () {
+      expect(
+        CssScopeUtils.scope('<!--url(x{) } .b {}', root),
+        scoped('<!--url(x{)   .b {}'),
+      );
+      expect(
+        CssScopeUtils.scope(r'<!--\75rl(x{) } .b {}', root),
+        scoped(r'<!--\75rl(x{)   .b {}'),
+      );
+    });
+
+    test('should treat quoted url as a function', () {
+      const css = '.a { background: url( "x{" ) } .b {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+      expect(
+        CssScopeUtils.scope('.a { b: url( "x)" ) } } .c {}', root),
+        scoped('.a { b: url( "x)" ) }   .c {}'),
+      );
+    });
+
+    test('should not treat a dimension unit named url as a url token', () {
+      expect(
+        CssScopeUtils.scope('.a { width: 10url(x{) } }) } } .b {}', root),
+        scoped('.a { width: 10url(x{) } }) }   .b {}'),
+      );
+    });
+
+    test('should end a number before a full stop not followed by a digit', () {
+      expect(
+        CssScopeUtils.scope('.a { b: 1.url( ( ) } } .c {}', root),
+        scoped('.a { b: 1.url( ( ) }   .c {}'),
+      );
+    });
+
+    test('should treat a hyphen-prefixed url( as a function, not a url token', () {
+      const css = '.a { b: -url( ( ) } } .c {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should read signed, decimal, exponent and percentage numbers as one token', () {
+      const css = '.a { b: +.5e-3url( ( ) } } .c { d: 50% -1E+2px }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should not treat a hash or an at-keyword named url as a url token', () {
+      const css = '.a { b: #url(x{) } } .c { d: @url(x{) } }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should not treat braces in an unterminated comment as delimiters', () {
+      const css = '.a { color: red } /* }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should accept unicode ranges', () {
+      const css = '.a { unicode-range: U+0025-00FF, u+4?? }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    // Both browsers read the seventh `?` as a delimiter, then a url token.
+    test('should end a unicode range after six code points', () {
+      expect(
+        CssScopeUtils.scope('.a { b: u+???????url(x{) } } .c {}', root),
+        scoped('.a { b: u+???????url(x{) }   .c {}'),
+      );
+    });
+
+    test('should reject unicode ranges tokenized differently across browsers', () {
+      expect(CssScopeUtils.scope('.a { b: u+aurl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope(r'.a { b: u+1\75rl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope('.a { b: u+au+burl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope('.a { b: u+aURL(x{) } } .c {}', root), isEmpty);
+    });
+
+    test('should rewrite html and body type selectors to the scope root', () {
+      expect(
+        CssScopeUtils.scope('body { background: blue } html, BODY {} body .a, body > .b {}', root),
+        scoped('${scopeRoot('body')} { background: blue } ${scopeRoot('html')}, ${scopeRoot('BODY')} {} '
+            '${scopeRoot('body')} .a, ${scopeRoot('body')} > .b {}'),
+      );
+    });
+
+    test('should rewrite html followed by body to a single scope root', () {
+      expect(
+        CssScopeUtils.scope('html body .a, html > body .b, html .c {}', root),
+        scoped('${scopeRoot('html body')} .a, ${scopeRoot('html > body')} .b, ${scopeRoot('html')} .c {}'),
+      );
+    });
+
+    test('should not join html and body separated by a non-whitespace control character', () {
+      expect(
+        CssScopeUtils.scope('html\u000Bbody {}', root),
+        scoped('${scopeRoot('html')}\u000B${scopeRoot('body')} {}'),
+      );
+    });
+
+    test('should rewrite html and body inside grouping at-rules and pseudo-classes', () {
+      expect(
+        CssScopeUtils.scope('@media screen { body .a {} } :not(body) {} b\\6f dy {}', root),
+        scoped('@media screen { ${scopeRoot('body')} .a {} } :not(${scopeRoot('body')}) {} ${scopeRoot('b\\6f dy')} {}'),
+      );
+    });
+
+    test('should rewrite html and body inside every grouping at-rule', () {
+      for (final atRule in ['supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style']) {
+        expect(
+          CssScopeUtils.scope('@$atRule x { body {} }', root),
+          scoped('@$atRule x { ${scopeRoot('body')} {} }'),
+          reason: atRule,
+        );
+      }
+    });
+
+    test('should not rewrite body when it is not a type selector', () {
+      const css = '.body, #body, a:body, [data-x=body], ns|body, body|a, body() {} '
+          '.a { font-family: body } @font-face { font-family: body } @scope (body) {} '
+          '@counter-style body {} .a { .b body {} } .a { @media x { body {} } }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css.replaceFirst('@font-face', '@dropped-font-face')));
+    });
+
+    test('should restart selector detection after a statement at-rule', () {
+      expect(
+        CssScopeUtils.scope('@charset "utf-8"; body {}', root),
+        scoped('@charset "utf-8"; ${scopeRoot('body')} {}'),
+      );
+    });
+
+    // `@scope` does not confine `@font-face`: a mail font named like the app
+    // font would redraw the app-generated header.
+    test('should drop font faces wherever they are and however they are spelled', () {
+      expect(
+        CssScopeUtils.scope(
+          "@font-face { font-family: App } @media print { @FONT-FACE { src: url(x) } } "
+              r"@font-f\61 ce {} .a { font-family: App } .b { content: '@font-face' }",
+          root,
+        ),
+        scoped(
+          "@dropped-font-face { font-family: App } @media print { @dropped-font-face { src: url(x) } } "
+              "@dropped-font-face {} .a { font-family: App } .b { content: '@font-face' }",
+        ),
+      );
+    });
+
+    // `@scope` does not confine `@page` either: margin boxes would print mail
+    // text around the app-generated header on every page.
+    test('should drop page rules wherever they are and however they are spelled', () {
+      expect(
+        CssScopeUtils.scope(
+          '@page { @top-left { content: "From: x" } } @media print { @PAGE :first { margin: 0 } } .a { page: x }',
+          root,
+        ),
+        scoped(
+          '@dropped-page { @top-left { content: "From: x" } } @media print { @dropped-page :first { margin: 0 } } .a { page: x }',
+        ),
+      );
+    });
+
+    test('should keep other at-rules', () {
+      const css = '@font-feature-values App { @styleset { a: 1 } } @keyframes font-face {} @import url(x); '
+          '@font-faces {} @pages {} @-webkit-page {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    test('should replace NULL characters', () {
+      expect(
+        CssScopeUtils.scope('.a\u0000 {}', root),
+        scoped('.a� {}'),
+      );
+    });
+
+    test('should read escapes of NULL, surrogates and out-of-range code points without failing', () {
+      const css = r'.a\0 {} .b\D800 {} .c\110000 {} .d {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+
+    // `<style>` text is serialized raw, so a `}` turned into whitespace can
+    // complete `</style` into an end tag and let the rest parse as HTML.
+    test('should never produce a style end tag from a neutralized brace', () {
+      final output = CssScopeUtils.scope('</style}><img src=x onerror=alert(1)>', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    test('should never produce a style end tag whatever the letter case', () {
+      final output = CssScopeUtils.scope('</STYLE} ><img src=x>', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    test('should never produce a style end tag from the newline closing the @scope block', () {
+      final output = CssScopeUtils.scope('.a {} </style', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    test('should escape a style end tag without changing what the CSS reads', () {
+      expect(
+        CssScopeUtils.scope('.a { content: "</style>" } </style} .b {}', root),
+        scoped(r'.a { content: "<\/style>" } <\/style  .b {}'),
+      );
+    });
+
+    // `body` weighs (0,0,1), `:scope` (0,1,0) and `:where(:scope)` nothing:
+    // the rewrite must keep the original weight, or a mail rule starts to win
+    // or lose against another one and content gets hidden or shown.
+    test('should rewrite body without changing its specificity', () {
+      expect(
+        CssScopeUtils.scope('.show .promo { display: block } body .promo { display: none } .a { color: blue }', root),
+        scoped('.show .promo { display: block } ${scopeRoot('body')} .promo { display: none } .a { color: blue }'),
+      );
+    });
+
+    test('should rewrite html followed by body without changing its specificity', () {
+      expect(
+        CssScopeUtils.scope('html > body .a {}', root),
+        scoped('${scopeRoot('html > body')} .a {}'),
+      );
+    });
+
+    // `u+div` is a `<div>` right after a `<u>`: dropping the whole stylesheet
+    // for it also drops rules that hide content, such as preheaders.
+    test('should keep the stylesheet when u+element is an adjacent sibling selector', () {
+      const css = 'u+div { color: red } .hidden-preheader { display: none }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
+  });
+}

@@ -151,6 +151,19 @@ class HtmlTemplate {
         align-items: flex-start;
         gap: 10px;
       }
+
+      .email-subject,
+      .email-header,
+      .attachments {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+      }
+
+      .email-body-layer {
+        position: relative;
+        z-index: 0;
+      }
       
       .circle {
         width: 40px;
