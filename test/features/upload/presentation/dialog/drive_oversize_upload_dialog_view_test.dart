@@ -213,6 +213,33 @@ void main() {
       });
     }
 
+    testWidgets('cancelling one of two running rows updates only that row to cancelled', (tester) async {
+      await pumpDialog(tester, items: [
+        makeItem('a', status: DriveOversizeTransferStatus.uploading),
+        makeItem('b', status: DriveOversizeTransferStatus.uploading),
+      ]);
+
+      container.read(driveOversizeTransferProvider.notifier).cancel(const UploadTaskId('a'));
+      await tester.pump();
+
+      final rows = tester
+          .widgetList<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow))
+          .toList();
+      expect(
+        rows.map((row) => row.statusLabel),
+        equals([localizationsOf(tester).driveUploadRowCancelled, filesize(1000, 0)]),
+      );
+      expect(rows.map((row) => row.onCancel != null), equals([false, true]));
+    });
+
+    testWidgets('a linked row of unknown size renders the bar at 1.0', (tester) async {
+      await pumpDialog(tester, items: [
+        makeItem('a', fileSize: 0, status: DriveOversizeTransferStatus.linked),
+      ]);
+
+      expect(await barValue(tester), equals(1.0));
+    });
+
     testWidgets('the description names the per-email size limit', (tester) async {
       when(dashboard.maxSizeAttachmentsPerEmail).thenReturn(UnsignedInt(26214400));
       await pumpDialog(tester, items: [makeItem('a')]);
