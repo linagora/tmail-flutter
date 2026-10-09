@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
@@ -32,51 +33,31 @@ void main() {
     return document;
   }
 
-  group('BlockQuotedTransformer', () {
-    const transformer = BlockQuotedTransformer();
-
-    test('injects quote border styles', () async {
-      final document = await run(
+  Future<Document> processWith(DomTransformer transformer, String html) => run(
         (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<blockquote><p>quoted</p></blockquote>',
+        html,
       );
-      expect(
-        document.querySelector('blockquote')!.attributes['style'],
-        contains('border-left: 2px solid #eee'),
-      );
-    });
 
-    test('no-op without blockquote', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>plain</p>',
-      );
-      expect(document.querySelector('p')!.text, 'plain');
-      expect(document.querySelector('blockquote'), isNull);
-    });
-  });
+  String? styleOf(Document document, String selector) =>
+      document.querySelector(selector)?.attributes['style'];
 
-  group('BlockCodeTransformer', () {
-    const transformer = BlockCodeTransformer();
+  group('style-injecting transformers', () {
+    for (final (transformer, html, selector, style) in <(DomTransformer, String, String, String)>[
+      (const BlockQuotedTransformer(), '<blockquote><p>quoted</p></blockquote>', 'blockquote',
+          'border-left: 2px solid #eee'),
+      (const BlockCodeTransformer(), '<pre>code</pre>', 'pre', 'overflow: auto'),
+    ]) {
+      test('${transformer.runtimeType} styles $selector', () async {
+        expect(styleOf(await processWith(transformer, html), selector), contains(style));
+      });
 
-    test('styles pre blocks', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<pre>code</pre>',
-      );
-      expect(
-        document.querySelector('pre')!.attributes['style'],
-        contains('overflow: auto'),
-      );
-    });
-
-    test('no-op without pre', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>code</p>',
-      );
-      expect(document.querySelector('p')!.attributes.containsKey('style'), isFalse);
-    });
+      test('${transformer.runtimeType} leaves HTML without $selector untouched', () async {
+        final document = await processWith(transformer, '<p>plain</p>');
+        expect(document.querySelector('p')!.text, 'plain');
+        expect(document.querySelector(selector), isNull);
+        expect(styleOf(document, 'p'), isNull);
+      });
+    }
   });
 
   group('SignatureTransformer', () {
