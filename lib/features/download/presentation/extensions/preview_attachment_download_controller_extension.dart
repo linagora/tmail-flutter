@@ -2,8 +2,6 @@ import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/utils/app_logger.dart';
@@ -354,12 +352,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
         attachment,
         DownloadTaskId(blobId.value),
         downloadUrl,
-        TransformConfiguration.create(
-          customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
-          customTextTransformers: [
-            const StandardizeHtmlSanitizingTransformers()
-          ],
-        ),
+        TransformConfiguration.forAttachmentPreview(),
         sourceView: sourceView,
       ),
     );

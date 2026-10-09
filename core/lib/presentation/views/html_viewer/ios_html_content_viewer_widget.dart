@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_viewer_document_builder.dart';
 import 'package:core/utils/external_link_policy.dart';
-import 'package:core/utils/html/html_interaction.dart';
-import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -52,12 +51,10 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
   }
 
   Future<void> _onWebViewCreated(InAppWebViewController controller) async {
-    await controller.loadData(data: HtmlUtils.generateHtmlDocument(
+    await controller.loadData(data: HtmlViewerDocumentBuilder.buildIosDocument(
       content: widget.contentHtml,
       direction: widget.direction,
-      javaScripts: HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       useDefaultFontStyle: widget.useDefaultFontStyle,
-      fontSize: 16,
     ));
   }
 

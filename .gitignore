@@ -118,6 +118,7 @@ app.*.symbols
 
 #generated file
 *.g.dart
+!core/test/fixtures/html_emails/html_email_corpus.g.dart
 messages_*.dart
 *.mocks.dart
 test_bundle.dart

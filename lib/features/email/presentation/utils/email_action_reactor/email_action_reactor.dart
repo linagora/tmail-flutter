@@ -814,6 +814,8 @@ class EmailActionReactor with LabelSubMenuMixin {
     }
   }
 
+  /// Print callers must pass a non-null [emailLoaded] so this fallback is
+  /// unused. Do not revive it with a non-sanitizing [transformConfiguration].
   Future<EmailLoaded?> _getEmailLoaded(
     Session? session,
     AccountId? accountId,

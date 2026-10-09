@@ -1,0 +1,6 @@
+text:
+dom:
+  - SignatureTransformer
+  - RemoveCollapsedSignatureButtonTransformer
+  - NormalizeLineHeightInStyleTransformer
+  - ImageTransformer

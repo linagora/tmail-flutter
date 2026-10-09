@@ -1,0 +1,10 @@
+# HTML transform, viewer, and display corpus.
+# Request review when these change; display bug fixes must add a fixture.
+core/lib/presentation/utils/html_transformer/** @hoangdat
+core/lib/utils/html/** @hoangdat
+core/lib/presentation/views/html_viewer/** @hoangdat
+core/test/fixtures/html_emails/** @hoangdat
+core/test/fixtures/html_locks/** @hoangdat
+core/tool/generate_html_email_corpus.dart @hoangdat
+core/test/utils/html/** @hoangdat
+core/test/utils/html_locks/** @hoangdat
