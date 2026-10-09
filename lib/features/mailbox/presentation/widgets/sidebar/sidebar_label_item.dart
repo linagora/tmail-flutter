@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/labels/label_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -73,6 +74,7 @@ class SidebarLabelItem extends StatelessWidget {
         LinagoraSidebarItemActionEntry(
           id: _SidebarLabelActionId.more,
           child: LinagoraSidebarMenuAction(
+            key: const ValueKey(UiKeys.labelMoreActionButton),
             semanticLabel: AppLocalizations.of(context).more,
             onPressed: (details) => onOpenContextMenu?.call(
               label,
