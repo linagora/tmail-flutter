@@ -10,7 +10,8 @@
 ///
 /// Inside `@scope` a selector only matches elements under the scope root, so
 /// `html` and `body` type selectors would match nothing: they are rewritten
-/// to `:scope`, and `html body` to a single `:scope`.
+/// to `:is(:where(:scope), body)`, and `html body` to a single one, which
+/// matches the scope root with the weight of the original selector.
 ///
 /// `<style>` text is serialized raw, so the output never contains `</style`.
 ///
@@ -174,7 +175,7 @@ enum _TokenKind { insignificant, atKeyword, groupingAtKeyword, openBrace, closeB
 
 enum _Prelude { none, selector, atRule, groupingAtRule }
 
-/// Tells a selector, where `html` and `body` must become `:scope`, from
+/// Tells a selector, where `html` and `body` are rewritten, from
 /// declarations and at-rule preludes.
 class _RuleContext {
   /// One entry per open `{`: whether the block holds rules or declarations.
@@ -216,7 +217,7 @@ class _RuleContext {
 class _CssBlockConfiner {
   static const int _maxHexDigits = 6;
   static const int _replacementCharacter = 0xFFFD;
-  static const String _scopeSelector = ':scope';
+  static const String _scopeRootPrefix = ':is(:where(:scope), ';
   static const Set<String> _rootTypeSelectors = {'html', 'body'};
   static const Set<String> _groupingAtRules = {
     'media', 'supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style',
@@ -253,7 +254,9 @@ class _CssBlockConfiner {
     for (final rewrite in _scopeRewrites) {
       output
         ..write(String.fromCharCodes(_codeUnits, position, rewrite.start))
-        ..write(_scopeSelector);
+        ..write(_scopeRootPrefix)
+        ..write(String.fromCharCodes(_codeUnits, rewrite.start, rewrite.end))
+        ..write(')');
       position = rewrite.end;
     }
     output.write(String.fromCharCodes(_codeUnits, position));
@@ -276,8 +279,8 @@ class _CssBlockConfiner {
     } else if (lookahead.startsNumber) {
       _rules.onToken(_TokenKind.other);
       _skipNumeric();
-    } else if (lookahead.startsUnicodeRange) {
-      return _skipUnicodeRange();
+    } else if (lookahead.startsUnicodeRange && _isAmbiguousUnicodeRange()) {
+      return false;
     } else if (lookahead.startsIdentifier) {
       _rules.onToken(_TokenKind.other);
       _skipIdentLike();
@@ -403,18 +406,27 @@ class _CssBlockConfiner {
   }
 
   /// Some browsers (Chromium) tokenize `U+...` as a unicode-range token,
-  /// others (Firefox) as an identifier followed by other tokens. Both agree
-  /// on where it ends unless a name code point immediately follows, in which
-  /// case the CSS is rejected as ambiguous.
-  bool _skipUnicodeRange() {
+  /// others (Firefox) as the identifier `U` followed by other tokens, as read
+  /// here. They only disagree on blocks when the range runs into a url token
+  /// (`u+a` then `url(`), or into another range that may, so only that is
+  /// rejected: `u+div` stays a selector.
+  bool _isAmbiguousUnicodeRange() {
+    final start = _index;
     _index += 2;
     _skipUnicodeRangeStart();
     if (_current == _CodeUnit.hyphen && _lookahead.second.isHexDigit) {
       _index++;
       _skipHexDigits();
     }
-    return !_current.isName && _current != _CodeUnit.backslash;
+    final ambiguous = _lookahead.startsUnicodeRange || _startsUrlToken();
+    _index = start;
+    return ambiguous;
   }
+
+  bool _startsUrlToken() =>
+      _lookahead.startsIdentifier
+          && _consumeName().toLowerCase() == 'url'
+          && _current == _CodeUnit.openParenthesis;
 
   void _skipUnicodeRangeStart() {
     int length = _skipHexDigits();

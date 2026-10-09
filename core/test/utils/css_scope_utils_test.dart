@@ -6,6 +6,8 @@ void main() {
 
   String scoped(String body) => '@scope ($root) {\n$body\n}';
 
+  String scopeRoot(String selector) => ':is(:where(:scope), $selector)';
+
   group('CssScopeUtils.scope', () {
     test('should wrap well formed CSS into an @scope block', () {
       const css = '* { font-family: "Comic Sans MS" !important } '
@@ -162,33 +164,37 @@ void main() {
 
     test('should reject unicode ranges tokenized differently across browsers', () {
       expect(CssScopeUtils.scope('.a { b: u+aurl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope(r'.a { b: u+1\75rl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope('.a { b: u+au+burl(x{) } } .c {}', root), isEmpty);
+      expect(CssScopeUtils.scope('.a { b: u+aURL(x{) } } .c {}', root), isEmpty);
     });
 
-    test('should rewrite html and body type selectors to :scope', () {
+    test('should rewrite html and body type selectors to the scope root', () {
       expect(
         CssScopeUtils.scope('body { background: blue } html, BODY {} body .a, body > .b {}', root),
-        scoped(':scope { background: blue } :scope, :scope {} :scope .a, :scope > .b {}'),
+        scoped('${scopeRoot('body')} { background: blue } ${scopeRoot('html')}, ${scopeRoot('BODY')} {} '
+            '${scopeRoot('body')} .a, ${scopeRoot('body')} > .b {}'),
       );
     });
 
-    test('should rewrite html followed by body to a single :scope', () {
+    test('should rewrite html followed by body to a single scope root', () {
       expect(
         CssScopeUtils.scope('html body .a, html > body .b, html .c {}', root),
-        scoped(':scope .a, :scope .b, :scope .c {}'),
+        scoped('${scopeRoot('html body')} .a, ${scopeRoot('html > body')} .b, ${scopeRoot('html')} .c {}'),
       );
     });
 
     test('should not join html and body separated by a non-whitespace control character', () {
       expect(
         CssScopeUtils.scope('html\u000Bbody {}', root),
-        scoped(':scope\u000B:scope {}'),
+        scoped('${scopeRoot('html')}\u000B${scopeRoot('body')} {}'),
       );
     });
 
     test('should rewrite html and body inside grouping at-rules and pseudo-classes', () {
       expect(
         CssScopeUtils.scope('@media screen { body .a {} } :not(body) {} b\\6f dy {}', root),
-        scoped('@media screen { :scope .a {} } :not(:scope) {} :scope {}'),
+        scoped('@media screen { ${scopeRoot('body')} .a {} } :not(${scopeRoot('body')}) {} ${scopeRoot('b\\6f dy')} {}'),
       );
     });
 
@@ -203,7 +209,7 @@ void main() {
     test('should restart selector detection after a statement at-rule', () {
       expect(
         CssScopeUtils.scope('@charset "utf-8"; body {}', root),
-        scoped('@charset "utf-8"; :scope {}'),
+        scoped('@charset "utf-8"; ${scopeRoot('body')} {}'),
       );
     });
 
@@ -241,19 +247,20 @@ void main() {
       );
     });
 
-    // `body` weighs (0,0,1) while `:scope` weighs (0,1,0): the rewrite must not
-    // let a mail rule beat a rule it used to lose to, or content gets hidden.
-    test('should rewrite body without raising its specificity', () {
+    // `body` weighs (0,0,1), `:scope` (0,1,0) and `:where(:scope)` nothing:
+    // the rewrite must keep the original weight, or a mail rule starts to win
+    // or lose against another one and content gets hidden or shown.
+    test('should rewrite body without changing its specificity', () {
       expect(
-        CssScopeUtils.scope('.show .promo { display: block } body .promo { display: none }', root),
-        scoped('.show .promo { display: block } :where(:scope) .promo { display: none }'),
+        CssScopeUtils.scope('.show .promo { display: block } body .promo { display: none } .a { color: blue }', root),
+        scoped('.show .promo { display: block } ${scopeRoot('body')} .promo { display: none } .a { color: blue }'),
       );
     });
 
-    test('should rewrite html followed by body without raising its specificity', () {
+    test('should rewrite html followed by body without changing its specificity', () {
       expect(
         CssScopeUtils.scope('html > body .a {}', root),
-        scoped(':where(:scope) .a {}'),
+        scoped('${scopeRoot('html > body')} .a {}'),
       );
     });
 
