@@ -31,14 +31,53 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   }
 
   void _sanitizeUrlResource(Element element) {
-    final url = element.attributes['href'] ?? '';
+    final rawUrl = element.attributes['href'] ?? '';
+    final url = _withDefaultScheme(rawUrl);
 
-    final urlSanitized = _sanitizeUrl.process(url);
-    if (urlSanitized.isEmpty) {
+    if (_isRelativeUrl(url)) {
+      // Relative links cannot be resolved against a trusted base (the email
+      // <base> is stripped), so make them inert rather than guessing a host.
+      element.attributes.remove('href');
       return;
     }
 
-    element.attributes['href'] = urlSanitized;
+    final urlSanitized = _sanitizeUrl.process(url);
+    final hasAddedScheme = url != rawUrl;
+    if (hasAddedScheme && (urlSanitized.isEmpty || _tryDecode(url) == null)) {
+      // Fail closed: the raw value is still relative, so the browser would
+      // resolve it (e.g. `//www.bank.com@evil.com` lands on evil.com).
+      // SanitizeUrl returns its input when decoding fails, so that is a
+      // rejection too.
+      element.attributes.remove('href');
+    } else if (urlSanitized.isNotEmpty) {
+      element.attributes['href'] = urlSanitized;
+    }
+  }
+
+  /// Only scheme-less hrefs that unambiguously name a host get `https`.
+  /// A "looks like a domain" check would turn `setup.zip` into a real host.
+  String _withDefaultScheme(String url) {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.startsWith('//')) return 'https:$trimmedUrl';
+    if (trimmedUrl.toLowerCase().startsWith('www.')) return 'https://$trimmedUrl';
+    return url;
+  }
+
+  bool _isRelativeUrl(String url) {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.isEmpty || trimmedUrl.startsWith('#')) {
+      return false;
+    }
+    final uri = Uri.tryParse(_tryDecode(trimmedUrl) ?? trimmedUrl);
+    return uri == null || !uri.hasScheme;
+  }
+
+  String? _tryDecode(String url) {
+    try {
+      return Uri.decodeFull(url);
+    } catch (_) {
+      return null;
+    }
   }
 
   void _addBlankForTargetProperty(Element element) {

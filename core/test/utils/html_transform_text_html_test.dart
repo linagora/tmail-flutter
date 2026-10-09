@@ -400,6 +400,85 @@ void main() {
         ));
       });
 
+      test('SHOULD drop relative href instead of rewriting it to a bogus host WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<base href="https://example.com/"><a href="page.html">rel-link</a>'
+            '<a href="./dir/page.html">dot-link</a>'
+            '<a href="/root.html">root-link</a>'
+            '<a href="setup.zip">zip-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">rel-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">dot-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">root-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">zip-link</a>'),
+          isNot(contains('https://page.html')),
+        ));
+      });
+
+      test('SHOULD keep fragment, mailto and absolute hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="#section">anchor</a>'
+            '<a href="mailto:support@example.com">mail</a>'
+            '<a href="https://example.com/page.html">abs</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('href="#section"'),
+          contains('href="mailto:support@example.com"'),
+          contains('href="https://example.com/page.html"'),
+        ));
+      });
+
+      test('SHOULD add https to www. and protocol-relative hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="www.linagora.com">www-link</a>'
+            '<a href="WWW.linagora.com/a?b=1">upper-www-link</a>'
+            '<a href="//cdn.example.com/x">proto-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a href="https://www.linagora.com" target="_blank" rel="noreferrer">www-link</a>'),
+          contains('<a href="https://WWW.linagora.com/a?b=1" target="_blank" rel="noreferrer">upper-www-link</a>'),
+          contains('<a href="https://cdn.example.com/x" target="_blank" rel="noreferrer">proto-link</a>'),
+        ));
+      });
+
+      test('SHOULD drop www. and protocol-relative hrefs that SanitizeUrl rejects WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="//www.bank.com@evil.com/">userinfo-link</a>'
+            '<a href="///evil.com">triple-slash-link</a>'
+            '<a href="www.bank.com@evil.com">www-userinfo-link</a>'
+            '<a href="/\\evil.com">backslash-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">userinfo-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">triple-slash-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">www-userinfo-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">backslash-link</a>'),
+        ));
+      });
+
+      test('SHOULD drop badly percent-encoded www. and protocol-relative hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="//www.bank.com@evil.com/%ZZ">userinfo-bad-escape-link</a>'
+            '<a href="www.bank.com@evil.com/%ZZ">www-userinfo-bad-escape-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">userinfo-bad-escape-link</a>'),
+          contains('<a target="_blank" rel="noreferrer">www-userinfo-bad-escape-link</a>'),
+        ));
+      });
+
+      test('SHOULD keep whitespace-padded absolute href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href=" https://example.com/page.html ">padded</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, contains('<a href=" https://example.com/page.html " target="_blank" rel="noreferrer">padded</a>'));
+      });
+
+      test('SHOULD drop unparsable and badly percent-encoded href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="http://[::1">unparsable</a>'
+            '<a href="%E0%A4%A">bad-escape</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">unparsable</a>'),
+          contains('<a target="_blank" rel="noreferrer">bad-escape</a>'),
+        ));
+      });
+
       test('SHOULD add overflow-wrap: anywhere to td and th when only ResponsiveTableCellTransformer is used', () async {
         final out = await transformWith(
           HtmlEmailCorpus.htmlTableSimple,
