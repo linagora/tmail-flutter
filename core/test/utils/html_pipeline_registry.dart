@@ -19,7 +19,7 @@ enum HtmlPipelineInput { html, plainText }
 class HtmlPipelineRow {
   const HtmlPipelineRow({
     required this.name,
-    required this.factoryName,
+    String? factoryName,
     required this.create,
     required this.trust,
     required this.wiring,
@@ -27,7 +27,7 @@ class HtmlPipelineRow {
     this.allowsContentEditable = false,
     this.input = HtmlPipelineInput.html,
     this.knownGap,
-  });
+  }) : factoryName = factoryName ?? name;
 
   final String name;
   final String factoryName;
@@ -81,16 +81,21 @@ bool pipelineHasDisplayOnly(TransformConfiguration config) =>
     );
 
 List<HtmlPipelineRow> htmlPipelineRegistry() => [
+      ..._composerPipelines(),
+      ..._readingPipelines(),
+      ..._otherPipelines(),
+    ];
+
+/// Pipelines that feed the composer: replies, drafts and signatures.
+List<HtmlPipelineRow> _composerPipelines() => [
       HtmlPipelineRow(
         name: 'forReplyForwardEmail',
-        factoryName: 'forReplyForwardEmail',
         create: TransformConfiguration.forReplyForwardEmail,
         trust: HtmlPipelineTrust.sanitized,
         wiring: HtmlPipelineWiring.passesThrough,
       ),
       HtmlPipelineRow(
         name: 'forReplyForwardEmptyEmail',
-        factoryName: 'forReplyForwardEmptyEmail',
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.passesThrough,
@@ -99,7 +104,6 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
       ),
       HtmlPipelineRow(
         name: 'forDraftsEmail',
-        factoryName: 'forDraftsEmail',
         create: TransformConfiguration.forDraftsEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
@@ -123,8 +127,23 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
         allowsContentEditable: true,
       ),
       HtmlPipelineRow(
+        name: 'forSignatureIdentity',
+        create: TransformConfiguration.forSignatureIdentity,
+        trust: HtmlPipelineTrust.user,
+        wiring: HtmlPipelineWiring.sanitizes,
+      ),
+      HtmlPipelineRow(
+        name: 'forComposerSignature',
+        create: TransformConfiguration.forComposerSignature,
+        trust: HtmlPipelineTrust.user,
+        wiring: HtmlPipelineWiring.passesThrough,
+      ),
+    ];
+
+/// Pipelines that show a received email or attachment.
+List<HtmlPipelineRow> _readingPipelines() => [
+      HtmlPipelineRow(
         name: 'forPreviewEmailOnWeb',
-        factoryName: 'forPreviewEmailOnWeb',
         create: TransformConfiguration.forPreviewEmailOnWeb,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
@@ -132,7 +151,6 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
       ),
       HtmlPipelineRow(
         name: 'forPreviewEmail',
-        factoryName: 'forPreviewEmail',
         create: TransformConfiguration.forPreviewEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
@@ -157,44 +175,7 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
         allowsContentEditable: true,
       ),
       HtmlPipelineRow(
-        name: 'forRestoreEmail',
-        factoryName: 'forRestoreEmail',
-        create: TransformConfiguration.forRestoreEmail,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        allowsContentEditable: true,
-      ),
-      HtmlPipelineRow(
-        name: 'forPrintEmail',
-        factoryName: 'forPrintEmail',
-        create: TransformConfiguration.forPrintEmail,
-        trust: HtmlPipelineTrust.sanitized,
-        wiring: HtmlPipelineWiring.stripsStyles,
-      ),
-      HtmlPipelineRow(
-        name: 'forSignatureIdentity',
-        factoryName: 'forSignatureIdentity',
-        create: TransformConfiguration.forSignatureIdentity,
-        trust: HtmlPipelineTrust.user,
-        wiring: HtmlPipelineWiring.sanitizes,
-      ),
-      HtmlPipelineRow(
-        name: 'forComposerSignature',
-        factoryName: 'forComposerSignature',
-        create: TransformConfiguration.forComposerSignature,
-        trust: HtmlPipelineTrust.user,
-        wiring: HtmlPipelineWiring.passesThrough,
-      ),
-      HtmlPipelineRow(
-        name: 'forCalendarEvent',
-        factoryName: 'forCalendarEvent',
-        create: TransformConfiguration.forCalendarEvent,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-      ),
-      HtmlPipelineRow(
         name: 'forPlainTextEmail',
-        factoryName: 'forPlainTextEmail',
         create: TransformConfiguration.forPlainTextEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
@@ -202,15 +183,36 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
       ),
       HtmlPipelineRow(
         name: 'standardConfiguration',
-        factoryName: 'standardConfiguration',
         create: () => TransformConfiguration.standardConfiguration,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
       ),
       HtmlPipelineRow(
         name: 'forAttachmentPreview',
-        factoryName: 'forAttachmentPreview',
         create: TransformConfiguration.forAttachmentPreview,
+        trust: HtmlPipelineTrust.raw,
+        wiring: HtmlPipelineWiring.sanitizes,
+      ),
+    ];
+
+/// Restore, print and calendar pipelines.
+List<HtmlPipelineRow> _otherPipelines() => [
+      HtmlPipelineRow(
+        name: 'forRestoreEmail',
+        create: TransformConfiguration.forRestoreEmail,
+        trust: HtmlPipelineTrust.raw,
+        wiring: HtmlPipelineWiring.sanitizes,
+        allowsContentEditable: true,
+      ),
+      HtmlPipelineRow(
+        name: 'forPrintEmail',
+        create: TransformConfiguration.forPrintEmail,
+        trust: HtmlPipelineTrust.sanitized,
+        wiring: HtmlPipelineWiring.stripsStyles,
+      ),
+      HtmlPipelineRow(
+        name: 'forCalendarEvent',
+        create: TransformConfiguration.forCalendarEvent,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
       ),
@@ -239,22 +241,11 @@ String htmlPipelineTransformConfigurationSource() {
   throw StateError('Missing transform_configuration.dart from $cwd');
 }
 
-Map<String, TransformConfiguration Function()> sanitizingPipelineFactories() {
-  final factories = <String, TransformConfiguration Function()>{};
-  for (final row in htmlPipelineRegistry()) {
-    if (!row.takesHtml || row.wiring != HtmlPipelineWiring.sanitizes) continue;
-    factories.putIfAbsent(row.factoryName, () => row.create);
-  }
-  return factories;
-}
-
-Map<String, TransformConfiguration Function()> passThroughPipelineFactories() {
-  final factories = <String, TransformConfiguration Function()>{};
-  for (final row in htmlPipelineRegistry()) {
-    if (!row.takesHtml || row.wiring != HtmlPipelineWiring.passesThrough) {
-      continue;
-    }
-    factories.putIfAbsent(row.factoryName, () => row.create);
-  }
-  return factories;
-}
+/// The HTML pipelines whose observed [wiring] matches, one per factory.
+Map<String, TransformConfiguration Function()> pipelineFactoriesWired(
+  HtmlPipelineWiring wiring,
+) =>
+    {
+      for (final row in htmlPipelineRegistry().reversed)
+        if (row.takesHtml && row.wiring == wiring) row.factoryName: row.create,
+    };

@@ -18,8 +18,8 @@ void main() {
     htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
   });
 
-  final sanitizingPipelines = sanitizingPipelineFactories();
-  final passThroughPipelines = passThroughPipelineFactories();
+  final sanitizingPipelines = pipelineFactoriesWired(HtmlPipelineWiring.sanitizes);
+  final passThroughPipelines = pipelineFactoriesWired(HtmlPipelineWiring.passesThrough);
   final allPipelines = {...sanitizingPipelines, ...passThroughPipelines};
 
   const savedPipelines = [
