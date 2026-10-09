@@ -116,6 +116,10 @@ void main() {
       const css = '.a { background: url( "x{" ) } .b {}';
 
       expect(CssScopeUtils.scope(css, root), scoped(css));
+      expect(
+        CssScopeUtils.scope('.a { b: url( "x)" ) } } .c {}', root),
+        scoped('.a { b: url( "x)" ) }   .c {}'),
+      );
     });
 
     test('should not treat a dimension unit named url as a url token', () {
@@ -162,6 +166,14 @@ void main() {
       expect(CssScopeUtils.scope(css, root), scoped(css));
     });
 
+    // Both browsers read the seventh `?` as a delimiter, then a url token.
+    test('should end a unicode range after six code points', () {
+      expect(
+        CssScopeUtils.scope('.a { b: u+???????url(x{) } } .c {}', root),
+        scoped('.a { b: u+???????url(x{) }   .c {}'),
+      );
+    });
+
     test('should reject unicode ranges tokenized differently across browsers', () {
       expect(CssScopeUtils.scope('.a { b: u+aurl(x{) } } .c {}', root), isEmpty);
       expect(CssScopeUtils.scope(r'.a { b: u+1\75rl(x{) } } .c {}', root), isEmpty);
@@ -198,10 +210,20 @@ void main() {
       );
     });
 
+    test('should rewrite html and body inside every grouping at-rule', () {
+      for (final atRule in ['supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style']) {
+        expect(
+          CssScopeUtils.scope('@$atRule x { body {} }', root),
+          scoped('@$atRule x { ${scopeRoot('body')} {} }'),
+          reason: atRule,
+        );
+      }
+    });
+
     test('should not rewrite body when it is not a type selector', () {
       const css = '.body, #body, a:body, [data-x=body], ns|body, body|a, body() {} '
           '.a { font-family: body } @font-face { font-family: body } @scope (body) {} '
-          '@counter-style body {} .a { .b body {} }';
+          '@counter-style body {} .a { .b body {} } .a { @media x { body {} } }';
 
       expect(CssScopeUtils.scope(css, root), scoped(css.replaceFirst('@font-face', '@dropped-font-face')));
     });
@@ -255,6 +277,12 @@ void main() {
         CssScopeUtils.scope('.a\u0000 {}', root),
         scoped('.a� {}'),
       );
+    });
+
+    test('should read escapes of NULL, surrogates and out-of-range code points without failing', () {
+      const css = r'.a\0 {} .b\D800 {} .c\110000 {} .d {}';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
     });
 
     // `<style>` text is serialized raw, so a `}` turned into whitespace can
