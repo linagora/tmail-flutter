@@ -13,8 +13,8 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/download/presentation/extensions/preview_attachment_download_controller_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/password_aware_pdf_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
-import 'package:twake_previewer_flutter/twake_pdf_previewer/twake_pdf_previewer.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
@@ -74,7 +74,7 @@ void main() {
 
       final mailtoUri = Uri.parse('mailto:bob@example.com');
       tester
-          .widget<TwakePdfPreviewer>(find.byType(TwakePdfPreviewer))
+          .widget<PasswordAwarePdfPreviewer>(find.byType(PasswordAwarePdfPreviewer))
           .onLinkTap!(mailtoUri);
       await tester.pump(const Duration(seconds: 1));
 
