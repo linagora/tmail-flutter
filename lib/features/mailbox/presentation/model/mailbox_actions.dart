@@ -1,6 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum MailboxActions {
@@ -197,4 +199,20 @@ extension MailboxActionsExtension on MailboxActions {
         return false;
     }
   }
+
+  bool canPickTeamMailboxes() {
+    switch(this) {
+      case MailboxActions.moveEmail:
+      case MailboxActions.moveFolderContent:
+      case MailboxActions.select:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /// A team mailbox root only holds folders: searching in it finds nothing,
+  /// so it can't be picked as a search scope.
+  bool canPickMailbox(PresentationMailbox mailbox) =>
+      this != MailboxActions.select || !mailbox.isTeamMailboxRoot;
 }

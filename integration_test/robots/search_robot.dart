@@ -340,4 +340,14 @@ class SearchRobot extends CoreRobot implements AbstractSearchRobot {
   Future<void> searchByLabel(String labelName) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> openAdvancedSearchFolderPicker() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> expectAdvancedSearchFolder(String folderName) {
+    throw UnimplementedError();
+  }
 }
