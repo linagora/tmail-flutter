@@ -145,5 +145,25 @@ void main() {
 
       expect(document.head!.querySelector('style')!.text, isNot(contains('@scope')));
     });
+
+    test('should not let a style end tag forged inside the email styles inject HTML', () {
+      final document = parse(generate(
+        emailContent: '<style></style}><img src=x onerror="alert(1)"></style><div>Hi</div>',
+      ));
+
+      expect(document.querySelectorAll('img[onerror]'), isEmpty);
+    });
+
+    // A mail can still pull its own body up with a negative margin and paint
+    // a fake sender over the header; the header must stack above it.
+    test('should stack the header above the email body', () {
+      final document = parse(generate(emailContent: '<div>Hi</div>'));
+      final appCss = document.head!.querySelector('style')!.text;
+      final headerRule = RegExp(r'\.email-header\s*\{([^}]*)\}').firstMatch(appCss)!.group(1)!;
+
+      expect(headerRule, contains('position: relative'));
+      expect(headerRule, contains('z-index'));
+      expect(headerRule, contains('background'));
+    });
   });
 }

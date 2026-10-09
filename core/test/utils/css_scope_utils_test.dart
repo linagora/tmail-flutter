@@ -213,5 +213,43 @@ void main() {
         scoped('.a� {}'),
       );
     });
+
+    // `<style>` text is serialized raw, so a `}` turned into whitespace can
+    // complete `</style` into an end tag and let the rest parse as HTML.
+    test('should never produce a style end tag from a neutralized brace', () {
+      final output = CssScopeUtils.scope('</style}><img src=x onerror=alert(1)>', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    test('should never produce a style end tag whatever the letter case', () {
+      final output = CssScopeUtils.scope('</STYLE} ><img src=x>', root);
+
+      expect(output, isNot(matches(RegExp(r'</style[\s/>]', caseSensitive: false))));
+    });
+
+    // `body` weighs (0,0,1) while `:scope` weighs (0,1,0): the rewrite must not
+    // let a mail rule beat a rule it used to lose to, or content gets hidden.
+    test('should rewrite body without raising its specificity', () {
+      expect(
+        CssScopeUtils.scope('.show .promo { display: block } body .promo { display: none }', root),
+        scoped('.show .promo { display: block } :where(:scope) .promo { display: none }'),
+      );
+    });
+
+    test('should rewrite html followed by body without raising its specificity', () {
+      expect(
+        CssScopeUtils.scope('html > body .a {}', root),
+        scoped(':where(:scope) .a {}'),
+      );
+    });
+
+    // `u+div` is a `<div>` right after a `<u>`: dropping the whole stylesheet
+    // for it also drops rules that hide content, such as preheaders.
+    test('should keep the stylesheet when u+element is an adjacent sibling selector', () {
+      const css = 'u+div { color: red } .hidden-preheader { display: none }';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
+    });
   });
 }
