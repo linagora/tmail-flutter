@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -23,6 +24,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -88,16 +90,24 @@ import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_serve
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/drive_oversize_transfer_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:tmail_ui_user/features/upload/presentation/providers/drive_oversize_transfer_notifier.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_attachment_uri_value_notifier_provider.dart';
+import 'package:tmail_ui_user/main/providers/workplace/drive_oversize_uploader_provider.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workplace/data/transport/workplace_access_mode_runner.dart';
 import 'package:workplace/domain/entity/drive_document.dart';
+import 'package:workplace/domain/repository/workplace_repository.dart';
+import 'package:workplace/domain/usecase/exchange_drive_token_interactor.dart';
+import 'package:workplace/domain/usecase/upload_drive_file_interactor.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
@@ -381,6 +391,39 @@ Future<String?> _dropAndCaptureErrorToast(
     }
   });
   return message;
+}
+
+/// Never reached: the runner below fails before any Workplace request.
+class _UnusedWorkplaceRepository extends Fake implements WorkplaceRepository {}
+
+/// Drive enabled, with a runner that has no OIDC token: the recovery takes
+/// over, then fails its batch before sending anything.
+ProviderContainer _buildDriveRecoveryContainer() {
+  final repository = _UnusedWorkplaceRepository();
+  return ProviderContainer(overrides: [
+    driveAttachmentUriValueProvider.overrideWithValue(
+      ValueNotifier<Uri?>(Uri.parse('https://platform.example.com')),
+    ),
+    driveOversizeUploaderProvider.overrideWithValue((
+      runner: WorkplaceAccessModeRunner(
+        exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
+        oidcTokenGetter: () => null,
+        oidcRefreshTrigger: () async => null,
+      ),
+      interactor: UploadDriveFileInteractor(repository),
+    )),
+  ]);
+}
+
+/// The file names of every Drive batch the recovery starts in [container].
+List<List<String>> _recordStartedDriveBatches(ProviderContainer container) {
+  final batches = <List<String>>[];
+  container.listen<List<DriveOversizeTransferState>>(driveOversizeTransferProvider, (previous, rows) {
+    if ((previous?.isEmpty ?? true) && rows.isNotEmpty) {
+      batches.add(rows.map((row) => row.fileName).toList());
+    }
+  });
+  return batches;
 }
 
 @GenerateNiceMocks([
@@ -1310,6 +1353,128 @@ void main() {
           rawSignature,
           allowCollapsed: false,
         )).called(1);
+      });
+    });
+
+    group('insertHtmlIntoEditor on mobile:', () {
+      const cardHtml = '<div class="file-card">a.zip</div>';
+
+      // The rich text mock is shared by the whole file: start and end each test clean.
+      setUp(() => reset(mockRichTextMobileTabletController));
+      tearDown(() => reset(mockRichTextMobileTabletController));
+
+      test(
+        'Should return false and insert nothing\n'
+        'When no mobile editor is attached',
+      () async {
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(null);
+
+        final inserted = await composerController?.insertHtmlIntoEditor(cardHtml);
+
+        expect(inserted, isFalse);
+        verifyNever(mockRichTextMobileTabletController.restoreMobileEditorFocus());
+      });
+
+      testWidgets(
+        'Should restore the editor focus, insert the html once and return true\n'
+        'When a mobile editor is attached',
+      (tester) async {
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+        final calls = <String>[];
+        when(mockRichTextMobileTabletController.restoreMobileEditorFocus())
+            .thenAnswer((_) async => calls.add('restoreFocus'));
+        when(mockHtmlEditorApi.insertHtml(any))
+            .thenAnswer((invocation) async => calls.add('insertHtml:${invocation.positionalArguments.single}'));
+
+        bool? inserted;
+        composerController!.insertHtmlIntoEditor(cardHtml).then((value) => inserted = value);
+        // The insert completes at the end of a frame scheduled after the mocks resolve.
+        for (var frame = 0; frame < 5 && inserted == null; frame++) {
+          await tester.pump();
+        }
+
+        expect(inserted, isTrue);
+        expect(calls, ['restoreFocus', 'insertHtml:$cardHtml']);
+      });
+    });
+
+    group('insertHtmlIntoEditor on web:', () {
+      const cardHtml = '<div class="file-card">a.zip</div>';
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        // The web editor mock is shared by the whole file: start each test clean.
+        reset(mockRichTextWebController.editorController);
+      });
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'Should return false\n'
+        'When no web editor is attached',
+      () async {
+        composerController?.richTextWebController = null;
+
+        final inserted = await composerController?.insertHtmlIntoEditor(cardHtml);
+
+        expect(inserted, isFalse);
+      });
+
+      testWidgets(
+        'Should insert the html once and return true\n'
+        'When a web editor is attached',
+      (tester) async {
+        composerController?.richTextWebController = mockRichTextWebController;
+
+        bool? inserted;
+        composerController!.insertHtmlIntoEditor(cardHtml).then((value) => inserted = value);
+        // The insert completes at the end of the next frame.
+        for (var frame = 0; frame < 5 && inserted == null; frame++) {
+          await tester.pump();
+        }
+
+        expect(inserted, isTrue);
+        verify(mockRichTextWebController.editorController.insertHtml(cardHtml)).called(1);
+      });
+    });
+
+    group('oversize files and the Drive recovery:', () {
+      testWidgets(
+        'Should hand the files to the Drive recovery and not upload them\n'
+        'When they exceed the server limit and Drive is enabled',
+      (tester) async {
+        when(mockMailboxDashBoardController.maxSizeAttachmentsPerEmail)
+            .thenReturn(UnsignedInt(100));
+        // The dashboard mock is shared by the whole file: drop the limit after the test.
+        addTearDown(() => when(mockMailboxDashBoardController.maxSizeAttachmentsPerEmail)
+            .thenReturn(null));
+        final container = _buildDriveRecoveryContainer();
+        addTearDown(container.dispose);
+        final startedBatches = _recordStartedDriveBatches(container);
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+          providerContainer: container,
+          child: const SizedBox.shrink(),
+        ));
+        // Lets the localizations load: the recovery's dialog reads them.
+        await tester.pumpAndSettle();
+        final context = tester.element(find.byType(SizedBox));
+        var allowed = false;
+
+        unawaited(composerController!.attachmentUploadValidationService.validateFiles(
+          context: context,
+          files: [
+            FileBytesInfo(fileName: 'big.zip', fileSize: 200, bytes: Uint8List(200)),
+          ],
+          onAllowed: () => allowed = true,
+        ));
+        await tester.pumpAndSettle();
+
+        expect(startedBatches, [['big.zip']]);
+        expect(allowed, isFalse);
       });
     });
 
