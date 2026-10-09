@@ -37,7 +37,7 @@ import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'label_controller_label_list_test.mocks.dart';
 
-/// TF-4898: MailboxController leaves a label mailbox as soon as the label list
+/// MailboxController leaves a label mailbox as soon as the label list
 /// no longer holds its label, so every emitted list must be a final one.
 @GenerateNiceMocks([
   MockSpec<CachingManager>(),
