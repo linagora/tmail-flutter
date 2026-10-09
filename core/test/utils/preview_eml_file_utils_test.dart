@@ -165,5 +165,17 @@ void main() {
       expect(headerRule, contains('z-index'));
       expect(headerRule, contains('background'));
     });
+
+    // Email styles can restyle the email body itself (`body` becomes the scope
+    // root), but not its layer: whatever z-index they set stays below the header.
+    test('should keep the email body inside a stacking layer below the header', () {
+      final document = parse(generate(emailContent: '<div>Hi</div>'));
+      final appCss = document.head!.querySelector('style')!.text;
+      final layerRule = RegExp(r'\.email-body-layer\s*\{([^}]*)\}').firstMatch(appCss)!.group(1)!;
+
+      expect(document.querySelector('.email-body')!.parent!.classes, contains('email-body-layer'));
+      expect(layerRule, contains('position: relative'));
+      expect(layerRule, contains('z-index: 0'));
+    });
   });
 }
