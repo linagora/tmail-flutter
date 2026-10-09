@@ -1,0 +1,554 @@
+name: Security nightly
+
+on:
+  schedule:
+    - cron: "0 19 * * *" # 02:00 Asia/Ho_Chi_Minh
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/security-nightly.yaml"
+      - ".github/security/**"
+
+permissions: {}
+
+concurrency:
+  group: security-nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    # same-repo PRs only: fork PRs get no secrets and no security-events write
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+      base: ${{ steps.check.outputs.base }}
+      mark: ${{ steps.check.outputs.mark }}
+    steps:
+      - name: Decide whether to scan
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          HEAD_SHA: ${{ github.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # PR run = pre-merge verification of this workflow: always scan, never mark master as scanned
+          if [[ "$EVENT" == "pull_request" ]]; then
+            { echo "run=true"; echo "base=$PR_BASE_SHA"; echo "mark=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # schedule + workflow_dispatch: master only, deduped on master HEAD
+          if [[ "$REF" != "refs/heads/master" ]]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipped: manual runs are limited to master (got $REF)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # markers from fork or branch runs are untrusted: master runs of this repo only
+          last=$(gh api "repos/$REPO/actions/artifacts?name=security-scanned&per_page=100" \
+            --jq '[.artifacts[] | select((.expired | not) and .workflow_run.head_branch == "master" and .workflow_run.head_repository_id == .workflow_run.repository_id)][0].workflow_run.head_sha // ""')
+          { echo "base=$last"; echo "mark=true"; } >> "$GITHUB_OUTPUT"
+          if [[ "$last" == "$HEAD_SHA" ]]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipped: master HEAD $HEAD_SHA already scanned." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  gitleaks:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    outputs:
+      found: ${{ steps.scan.outputs.found }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks
+        working-directory: ${{ runner.temp }}
+        run: |
+          url=https://github.com/gitleaks/gitleaks/releases/download/v8.30.1
+          curl -sSfLO "$url/gitleaks_8.30.1_linux_x64.tar.gz"
+          curl -sSfLO "$url/gitleaks_8.30.1_checksums.txt"
+          grep " gitleaks_8.30.1_linux_x64.tar.gz$" gitleaks_8.30.1_checksums.txt | sha256sum -c -
+          tar -xzf gitleaks_8.30.1_linux_x64.tar.gz gitleaks
+
+      - name: Scan new commits
+        id: scan
+        env:
+          BASE: ${{ needs.gate.outputs.base }}
+        run: |
+          range="HEAD"
+          if [[ -n "$BASE" ]] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            range="$BASE..HEAD"
+          fi
+          set +e
+          "$RUNNER_TEMP/gitleaks" git --log-opts="$range" --redact --exit-code 2 \
+            --report-format sarif --report-path "$RUNNER_TEMP/gitleaks.sarif" .
+          code=$?
+          set -e
+          [[ $code -eq 0 || $code -eq 2 ]] || exit $code
+          echo "found=$([[ $code -eq 2 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/gitleaks.sarif
+          category: gitleaks
+
+  trivy:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    outputs:
+      found: ${{ steps.vuln.outcome == 'failure' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Scan dependencies
+        id: vuln
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          limit-severities-for-sarif: true
+          format: sarif
+          output: ${{ runner.temp }}/trivy-vuln.sarif
+          exit-code: "1"
+
+      - name: Scan Dockerfile misconfigurations (advisory)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: misconfig
+          severity: HIGH,CRITICAL
+          limit-severities-for-sarif: true
+          format: sarif
+          output: ${{ runner.temp }}/trivy-misconfig.sarif
+          exit-code: "0"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/trivy-vuln.sarif
+          category: trivy-vuln
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/trivy-misconfig.sarif
+          category: trivy-misconfig
+
+  osv:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install osv-scanner
+        working-directory: ${{ runner.temp }}
+        run: |
+          url=https://github.com/google/osv-scanner/releases/download/v2.6.0
+          curl -sSfLO "$url/osv-scanner_linux_amd64"
+          curl -sSfLO "$url/osv-scanner_SHA256SUMS"
+          grep " osv-scanner_linux_amd64$" osv-scanner_SHA256SUMS | sha256sum -c -
+          mv osv-scanner_linux_amd64 osv-scanner && chmod +x osv-scanner
+
+      - name: Scan lockfiles
+        run: |
+          set +e
+          "$RUNNER_TEMP/osv-scanner" scan source -r --format sarif --output "$RUNNER_TEMP/osv.sarif" .
+          code=$?
+          set -e
+          # 0 = clean, 1 = vulns found (advisory); anything else = scanner error
+          [[ $code -eq 0 || $code -eq 1 ]] || exit $code
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/osv.sarif
+          category: osv-scanner
+
+  semgrep:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Scan with semgrep
+        run: |
+          pip install --quiet semgrep==1.179.0
+          semgrep scan --metrics=off \
+            --config p/default --config p/secrets --config p/javascript \
+            --config p/dockerfile --config p/github-actions \
+            --sarif --output "$RUNNER_TEMP/semgrep.sarif" .
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/semgrep.sarif
+          category: semgrep
+
+  mobsfscan:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Scan Android and iOS sources
+        run: |
+          pip install --quiet mobsfscan==1.0.1
+          # non-zero exit means findings; a missing SARIF file means the scanner broke
+          mobsfscan --sarif -o "$RUNNER_TEMP/mobsfscan.sarif" android ios || true
+          test -s "$RUNNER_TEMP/mobsfscan.sarif"
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: ${{ runner.temp }}/mobsfscan.sarif
+          category: mobsfscan
+
+  zizmor:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Audit GitHub workflows
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+
+  scorecard:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: scorecard.sarif
+          results_format: sarif
+          publish_results: false
+
+      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: scorecard.sarif
+          category: scorecard
+
+  gitlab-issue:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      iid: ${{ steps.open.outputs.iid }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/security
+
+      - name: Open private report issue
+        id: open
+        env:
+          GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
+          GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
+          BASE: ${{ needs.gate.outputs.base }}
+          EVENT: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [[ -z "$GITLAB_TOKEN" || -z "$GITLAB_PROJECT" ]]; then
+            echo "Private report skipped: SECURITY_GITLAB_TOKEN / SECURITY_GITLAB_PROJECT not configured." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          title="Security nightly ${GITHUB_SHA::9} $(date -u +%F)"
+          [[ "$EVENT" != "pull_request" ]] || title="[PR #$PR_NUMBER] $title"
+          printf 'Run: %s\n\nRange: %s..%s\n' "$RUN_URL" "${BASE:-full}" "$GITHUB_SHA" > "$RUNNER_TEMP/issue.md"
+          echo "iid=$(bash .github/security/gitlab.sh issue "$title" "$RUNNER_TEMP/issue.md")" >> "$GITHUB_OUTPUT"
+
+  llm-review:
+    needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan, gitlab-issue]
+    # no private sink, no LLM run: the report is never published publicly
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' && needs.gitlab-issue.outputs.iid != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: read
+    strategy:
+      fail-fast: false
+      # repo variable SECURITY_LLM_MAX_PARALLEL=1 runs the areas one by one
+      max-parallel: ${{ fromJSON(vars.SECURITY_LLM_MAX_PARALLEL || '8') }}
+      matrix:
+        include:
+          - area: changes
+          - area: html-xss
+            focus: Email/HTML rendering, sanitizer setup, composer, reply/forward quoting, print
+            paths: core/lib/utils/html core/lib/presentation/utils/html_transformer lib/features/email lib/features/email_previewer lib/features/composer lib/features/thread_detail
+          - area: navigation
+            focus: Link opening, deep links, mailto, routing, notification taps
+            paths: lib/main/deep_links lib/main/routes lib/features/mailto lib/features/push_notification core/lib/utils/external_link_policy.dart core/lib/utils/web_uri_parser.dart core/lib/utils/web_link_generator.dart
+          - area: storage
+            focus: Local storage, cache encryption, offline data, downloads, logout wipe
+            paths: lib/features/caching lib/features/offline_mode lib/features/sending_queue lib/features/cleanup lib/features/download lib/features/upload
+          - area: auth
+            focus: Login, OIDC, autodiscovery, token handling, logout
+            paths: lib/features/login lib/features/starting_page lib/features/home lib/main/bindings
+          - area: platform
+            focus: Android/iOS config, exported components, URL schemes, entitlements, native code, FCM
+            paths: android ios fcm
+          - area: web-shell
+            focus: Web shell pages, OIDC callbacks, service worker, CSP, nginx serving
+            paths: web Dockerfile server
+          - area: deps
+            focus: Dependencies and supply chain, git-pinned forks, CI workflows, patches
+            paths: pubspec.yaml pubspec.lock .github/workflows patchs
+    steps:
+      - name: Check LLM config
+        id: cfg
+        env:
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+        run: |
+          if [[ -z "$LLM_API_KEY" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "LLM review skipped: SECURITY_LLM_* not configured." >> "$GITHUB_STEP_SUMMARY"
+          else
+            # the key goes in an Authorization header; refuse cleartext endpoints
+            if [[ "$LLM_BASE_URL" != https://* ]]; then
+              echo "::error::SECURITY_LLM_BASE_URL must use https."
+              exit 1
+            fi
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare review input
+        if: steps.cfg.outputs.enabled == 'true'
+        env:
+          BASE: ${{ needs.gate.outputs.base }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref }}
+          AREA: ${{ matrix.area }}
+          FOCUS: ${{ matrix.focus }}
+          AREA_PATHS: ${{ matrix.paths }}
+        run: |
+          mkdir -p .security-review
+          prompt=.security-review/prompt.md
+          cp .github/security/llm-review-prompt.md "$prompt"
+          if [[ "$AREA" != "changes" ]]; then
+            read -ra paths <<< "$AREA_PATHS"
+            {
+              echo
+              cat .github/security/llm-task-area.md
+              printf '\nArea: %s\nFocus: %s\nPaths:\n' "$AREA" "$FOCUS"
+              printf -- '- %s\n' "${paths[@]}"
+            } >> "$prompt"
+            exit 0
+          fi
+          { echo; cat .github/security/llm-task-changes.md; } >> "$prompt"
+          base="$BASE"
+          if [[ -z "$base" ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base=$(git rev-list -n1 --before="24 hours ago" HEAD)
+          fi
+          [[ -n "$base" ]] || base=$(git rev-parse HEAD~1)
+          # open code-scanning alerts for this ref, error/warning only
+          gh api --paginate "repos/$REPO/code-scanning/alerts?ref=$REF&state=open&per_page=100" \
+            --jq '.[] | select(.rule.severity == "error" or .rule.severity == "warning") | {tool: .tool.name, rule: .rule.id, level: .rule.severity, text: .most_recent_instance.message.text, at: "\(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line)"}' \
+            | jq -s . > .security-review/findings.json
+          git log --no-merges --format='%h %an %s' "$base..HEAD" > .security-review/commits.txt
+          git diff --stat "$base..HEAD" > .security-review/diffstat.txt
+          git diff -U5 "$base..HEAD" -- . \
+            ':(glob,exclude)**/*.g.dart' ':(glob,exclude)**/*.mocks.dart' \
+            ':(glob,exclude)**/*.arb' ':(glob,exclude)**/package-lock.json' \
+            ':(glob,exclude)**/Podfile.lock' \
+            > .security-review/diff.patch
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Install opencode
+        if: steps.cfg.outputs.enabled == 'true'
+        run: npm ci --silent --prefix .github/security/opencode
+
+      - name: Run opencode security review
+        if: steps.cfg.outputs.enabled == 'true'
+        continue-on-error: true
+        env:
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+          # ignore repo .opencode config/plugins in the key-bearing step
+          OPENCODE_DISABLE_PROJECT_CONFIG: "true"
+        run: |
+          export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
+          jq -n --arg model "$LLM_MODEL" '{
+            "$schema": "https://opencode.ai/config.json",
+            autoupdate: false,
+            share: "disabled",
+            provider: { "security-llm": {
+              npm: "@ai-sdk/openai-compatible",
+              name: "Security LLM",
+              options: { baseURL: "{env:LLM_BASE_URL}", apiKey: "{env:LLM_API_KEY}" },
+              models: { ($model): { name: $model } }
+            } },
+            model: ("security-llm/" + $model),
+            permission: { edit: "deny", bash: "deny", webfetch: "deny", external_directory: "deny" }
+          }' > "$OPENCODE_CONFIG"
+          # report goes to the private issue only: run logs are public
+          timeout 40m .github/security/opencode/node_modules/.bin/opencode run "$(cat .security-review/prompt.md)" \
+            > .security-review/llm-report.md
+
+      - name: Post report to private issue
+        if: always() && steps.cfg.outputs.enabled == 'true'
+        env:
+          GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
+          GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
+          IID: ${{ needs.gitlab-issue.outputs.iid }}
+          AREA: ${{ matrix.area }}
+        run: |
+          report=.security-review/llm-report.md
+          [[ -s "$report" ]] || echo "LLM review produced no output; see the run log." > "$report"
+          { echo "## LLM review: $AREA"; echo; cat "$report"; } > .security-review/note.md
+          bash .github/security/gitlab.sh note "$IID" .security-review/note.md
+
+  report:
+    needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan, zizmor, scorecard, gitlab-issue, llm-review]
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/security
+
+      - name: Count open alerts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref }}
+        run: |
+          gh api --paginate "repos/$REPO/code-scanning/alerts?ref=$REF&state=open&per_page=100" --jq '.[].tool.name' \
+            | jq -Rrs 'split("\n") | map(select(. != "")) | group_by(.) | .[] | "| \(.[0]) | \(length) |"' \
+            > "$RUNNER_TEMP/counts.md"
+
+      - name: Write summary
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          {
+            echo "## Security nightly — \`${GITHUB_SHA::9}\`"
+            echo "| Job | Result |"
+            echo "|---|---|"
+            jq -r 'to_entries[] | select(.key != "gate") | "| \(.key) | \(.value.result) |"' <<< "$RESULTS"
+            echo
+            echo "| Tool | Open alerts |"
+            echo "|---|---|"
+            cat "$RUNNER_TEMP/counts.md"
+            echo
+            echo "Details: Security tab → Code scanning, and the private report issue."
+          } > "$RUNNER_TEMP/summary.md"
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post counts to private issue
+        if: needs.gitlab-issue.outputs.iid != ''
+        env:
+          GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
+          GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
+          IID: ${{ needs.gitlab-issue.outputs.iid }}
+        run: bash .github/security/gitlab.sh note "$IID" "$RUNNER_TEMP/summary.md"
+
+      - name: Write scan marker
+        id: marker
+        if: >-
+          needs.gate.outputs.mark == 'true' &&
+          needs.gitleaks.result == 'success' && needs.trivy.result == 'success' &&
+          needs.osv.result == 'success' && needs.semgrep.result == 'success' &&
+          needs.mobsfscan.result == 'success' && needs.zizmor.result == 'success' &&
+          needs.gitleaks.outputs.found == 'false' && needs.trivy.outputs.found == 'false'
+        run: echo "$GITHUB_SHA" > scanned-sha.txt
+
+      - if: steps.marker.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-scanned
+          path: scanned-sha.txt
+          retention-days: 30
+
+      - name: Fail on new secrets or high/critical vulnerabilities
+        if: needs.gitleaks.outputs.found == 'true' || needs.trivy.outputs.found == 'true'
+        env:
+          GITLEAKS_FOUND: ${{ needs.gitleaks.outputs.found }}
+          TRIVY_FOUND: ${{ needs.trivy.outputs.found }}
+        run: |
+          echo "::error::gitleaks found=$GITLEAKS_FOUND, trivy found=$TRIVY_FOUND. See Security tab."
+          exit 1
