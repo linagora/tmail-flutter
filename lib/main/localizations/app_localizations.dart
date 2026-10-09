@@ -5672,6 +5672,56 @@ class AppLocalizations {
     );
   }
 
+  String get attachingFileTitle {
+    return Intl.message(
+      'Attaching file',
+      name: 'attachingFileTitle',
+    );
+  }
+
+  String driveOversizeDialogMessage(String maxSize) {
+    return Intl.message(
+        'Your file is larger than $maxSize. It will be uploaded to Twake Drive and attached as ',
+        name: 'driveOversizeDialogMessage',
+        args: [maxSize]
+    );
+  }
+
+  String get driveOversizeDialogMessageEmphasis {
+    return Intl.message(
+      'a link',
+      name: 'driveOversizeDialogMessageEmphasis',
+    );
+  }
+
+  String get driveUploadRowDone {
+    return Intl.message(
+      'Done',
+      name: 'driveUploadRowDone',
+    );
+  }
+
+  String get driveUploadRowFailed {
+    return Intl.message(
+      'Failed',
+      name: 'driveUploadRowFailed',
+    );
+  }
+
+  String get driveUploadRowCancelled {
+    return Intl.message(
+      'Canceled',
+      name: 'driveUploadRowCancelled',
+    );
+  }
+
+  String get driveOversizeUploadFailed {
+    return Intl.message(
+      'Some files could not be uploaded to Drive.',
+      name: 'driveOversizeUploadFailed',
+    );
+  }
+
   String get driveNoValidAttachment {
     return Intl.message(
       'No valid attachment',
