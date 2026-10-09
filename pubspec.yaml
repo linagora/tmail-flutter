@@ -261,11 +261,10 @@ dependencies:
 
   flutter_file_dialog: 3.0.2
 
-  # TODO: switch back to linagora/twake-previewer-flutter main once linagora/twake-previewer-flutter#6 is merged
   twake_previewer_flutter:
     git:
-      url: https://github.com/chibenwa/twake-previewer-flutter.git
-      ref: pdf-clickable-links
+      url: https://github.com/linagora/twake-previewer-flutter.git
+      ref: main
 
   lottie_native: 0.1.2
 
