@@ -67,6 +67,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                       child: MiddleEllipsisText(
                         fileName.sanitizedBidiForDisplay,
                         style: AttachmentItemComposerWidgetStyle.labelTextStyle,
+                        preserveFileExtension: true,
                       )
                   ),
                   const SizedBox(width: AttachmentItemComposerWidgetStyle.space),

@@ -7,11 +7,15 @@ class MiddleEllipsisText extends StatefulWidget {
   /// Ratio of characters to keep at the start (0–1). Default = 0.5
   final double keepStartFraction;
 
+  /// When true, the file extension (e.g. `.pdf`) is always kept visible.
+  final bool preserveFileExtension;
+
   const MiddleEllipsisText(
     this.text, {
     super.key,
     this.style,
     this.keepStartFraction = 0.5,
+    this.preserveFileExtension = false,
   });
 
   @override
@@ -24,12 +28,16 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
   String? _cachedStyleKey;
   double? _cachedWidth;
   String? _cachedResult;
+  bool? _cachedPreserveFileExtension;
+  TextScaler? _cachedTextScaler;
 
   @override
   Widget build(BuildContext context) {
-    final style = widget.style ?? DefaultTextStyle.of(context).style;
+    // Measure with the style [Text] renders: the ambient style merged with ours
+    final style = DefaultTextStyle.of(context).style.merge(widget.style);
     final styleKey = _styleKey(style);
     final textDir = Directionality.of(context);
+    final textScaler = MediaQuery.textScalerOf(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -38,6 +46,8 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         // Use cached result if nothing changed
         if (_cachedText == widget.text &&
             _cachedStyleKey == styleKey &&
+            _cachedPreserveFileExtension == widget.preserveFileExtension &&
+            _cachedTextScaler == textScaler &&
             _cachedWidth == maxWidth) {
           return Text(
             _cachedResult!,
@@ -52,7 +62,11 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
           maxWidth,
           style,
           textDir: textDir,
+          textScaler: textScaler,
           keepStartFraction: widget.keepStartFraction,
+          minEndLength: widget.preserveFileExtension
+              ? _fileExtensionLength(widget.text)
+              : 0,
         );
 
         // Update cache
@@ -60,6 +74,8 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
         _cachedStyleKey = styleKey;
         _cachedWidth = maxWidth;
         _cachedResult = truncated;
+        _cachedPreserveFileExtension = widget.preserveFileExtension;
+        _cachedTextScaler = textScaler;
 
         return Text(
           truncated,
@@ -76,10 +92,13 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
     double maxWidth,
     TextStyle style, {
     required TextDirection textDir,
+    required TextScaler textScaler,
     double keepStartFraction = 0.5,
+    int minEndLength = 0,
   }) {
     final painter = TextPainter(
       textDirection: textDir,
+      textScaler: textScaler,
       maxLines: 1,
     );
 
@@ -96,37 +115,53 @@ class _MiddleEllipsisTextState extends State<MiddleEllipsisText> {
 
     if (maxWidth <= ellipsisWidth) return ellipsis;
 
-    // Binary search for best prefix+suffix length
-    int lo = 0, hi = text.length;
-    String best = ellipsis;
-
     final f = keepStartFraction.clamp(0.0, 1.0);
 
-    double measure(String t) {
-      painter.text = TextSpan(text: t, style: style);
-      painter.layout(maxWidth: double.infinity);
-      return painter.width;
-    }
-
-    while (lo <= hi) {
-      final k = (lo + hi) ~/ 2;
+    String candidateOf(int k) {
       int leftLen = (k * f).round().clamp(0, text.length);
       int rightLen = (k - leftLen).clamp(0, text.length - leftLen);
-
-      final candidate = text.substring(0, leftLen) +
+      if (rightLen < minEndLength && k >= minEndLength) {
+        rightLen = minEndLength;
+        leftLen = k - rightLen;
+      }
+      return text.substring(0, leftLen) +
           ellipsis +
           text.substring(text.length - rightLen);
-      final width = measure(candidate);
-
-      if (width <= maxWidth) {
-        best = candidate;
-        lo = k + 1;
-      } else {
-        hi = k - 1;
-      }
     }
 
-    return best;
+    // Binary search for the longest fitting candidate with k in [lo, hi]
+    String? longestFitting(int lo, int hi) {
+      String? best;
+      while (lo <= hi) {
+        final k = (lo + hi) ~/ 2;
+        final candidate = candidateOf(k);
+        painter.text = TextSpan(text: candidate, style: style);
+        painter.layout(maxWidth: double.infinity);
+        if (painter.width <= maxWidth) {
+          best = candidate;
+          lo = k + 1;
+        } else {
+          hi = k - 1;
+        }
+      }
+      return best;
+    }
+
+    // Width only grows with k on each side of minEndLength: reserving the
+    // extension swaps start characters for end ones, so `....ii` can fit where
+    // `W...i` does not. Search the extension-keeping range on its own first.
+    if (minEndLength > 0) {
+      final withExtension = longestFitting(minEndLength, text.length);
+      if (withExtension != null) return withExtension;
+    }
+    return longestFitting(0, text.length) ?? ellipsis;
+  }
+
+  /// Length of the extension including the dot, or 0 when there is none.
+  int _fileExtensionLength(String text) {
+    final dotIndex = text.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex == text.length - 1) return 0;
+    return text.length - dotIndex;
   }
 
   // Cache key based on style properties
