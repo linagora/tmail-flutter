@@ -98,53 +98,36 @@ const _svgChildren = {
   'foreignobject', 'use', 'image',
 };
 
-_TagProbe _tagProbe(String tag) {
-  const table = '<table><tbody><tr><td>x</td></tr></tbody></table>';
-  switch (tag) {
-    case 'tr':
-    case 'td':
-    case 'tbody':
-      return const _TagProbe(table, 'table')._select(tag);
-    case 'th':
-      return const _TagProbe(
-        '<table><tbody><tr><th>x</th></tr></tbody></table>',
-        'th',
-      );
-    case 'thead':
-    case 'tfoot':
-      return _TagProbe('<table><$tag><tr><td>x</td></tr></$tag></table>', tag);
-    case 'caption':
-      return const _TagProbe('<table><caption>x</caption></table>', 'caption');
-    case 'colgroup':
-    case 'col':
-      return _TagProbe(
-        '<table><colgroup><col></colgroup><tbody><tr><td>x</td></tr></tbody></table>',
-        tag,
-      );
-    case 'li':
-      return const _TagProbe('<ul><li>x</li></ul>', 'li');
-    case 'dt':
-    case 'dd':
-      return _TagProbe('<dl><$tag>x</$tag></dl>', tag);
-    case 'rt':
-    case 'rp':
-      return _TagProbe('<ruby>x<$tag>y</$tag></ruby>', tag);
-    case 'summary':
-      return const _TagProbe('<details><summary>x</summary></details>', 'summary');
-    case 'figcaption':
-      return const _TagProbe('<figure><figcaption>x</figcaption></figure>', 'figcaption');
-    case 'option':
-      return const _TagProbe('<select><option>x</option></select>', 'option');
-  }
-  if (_svgChildren.contains(tag)) {
-    return _TagProbe('<svg><$tag></$tag></svg>', tag);
-  }
-  if (_voidTags.contains(tag)) return _TagProbe('<div><$tag></div>', tag);
-  return _TagProbe('<div><$tag>x</$tag></div>', tag);
-}
+/// Tags the parser only keeps inside a parent (a `td` outside a table is
+/// dropped by the parser, not the sanitizer), wrapped in that parent.
+const _tagsInContext = {
+  'tr': '<table><tbody><tr><td>x</td></tr></tbody></table>',
+  'td': '<table><tbody><tr><td>x</td></tr></tbody></table>',
+  'tbody': '<table><tbody><tr><td>x</td></tr></tbody></table>',
+  'th': '<table><tbody><tr><th>x</th></tr></tbody></table>',
+  'thead': '<table><thead><tr><td>x</td></tr></thead></table>',
+  'tfoot': '<table><tfoot><tr><td>x</td></tr></tfoot></table>',
+  'caption': '<table><caption>x</caption></table>',
+  'colgroup': '<table><colgroup><col></colgroup><tbody><tr><td>x</td></tr></tbody></table>',
+  'col': '<table><colgroup><col></colgroup><tbody><tr><td>x</td></tr></tbody></table>',
+  'li': '<ul><li>x</li></ul>',
+  'dt': '<dl><dt>x</dt></dl>',
+  'dd': '<dl><dd>x</dd></dl>',
+  'rt': '<ruby>x<rt>y</rt></ruby>',
+  'rp': '<ruby>x<rp>y</rp></ruby>',
+  'summary': '<details><summary>x</summary></details>',
+  'figcaption': '<figure><figcaption>x</figcaption></figure>',
+  'option': '<select><option>x</option></select>',
+};
 
-extension on _TagProbe {
-  _TagProbe _select(String selector) => _TagProbe(html, selector);
+_TagProbe _tagProbe(String tag) {
+  final html = _tagsInContext[tag] ??
+      (_svgChildren.contains(tag)
+          ? '<svg><$tag></$tag></svg>'
+          : _voidTags.contains(tag)
+              ? '<div><$tag></div>'
+              : '<div><$tag>x</$tag></div>');
+  return _TagProbe(html, tag);
 }
 
 const _tagCandidates = [
