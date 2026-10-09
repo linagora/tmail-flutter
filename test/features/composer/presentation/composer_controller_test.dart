@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
@@ -45,6 +46,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/composer_repos
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart' show UpdateTemplateEmailSuccess;
@@ -2865,6 +2867,267 @@ void main() {
           // Let the asynchronous drop processing (loading dialog/toast) settle.
           await tester.pump(const Duration(seconds: 1));
         });
+      });
+    });
+
+    group('isEmailBodyNotReady test:', () {
+      final contentLoaded = Right<Failure, Success>(
+        GetEmailContentSuccess(htmlEmailContent: 'content'),
+      );
+
+      test(
+        'Should return true\n'
+        'When email content is still loading',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return true\n'
+        'When editor is not loaded on mobile',
+      () {
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return false\n'
+        'When content is loaded and editor is loaded',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content loading failed and editor is loaded',
+      () {
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+
+      test(
+        'Should return true\n'
+        'When editor is not loaded on web and composer content is visible',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.screenDisplayMode.value = ScreenDisplayMode.normal;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isTrue);
+      });
+
+      test(
+        'Should return false\n'
+        'When editor is not loaded on web and composer is minimized',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.isEmailBodyLoaded = false;
+        composerController?.screenDisplayMode.value = ScreenDisplayMode.minimize;
+        composerController?.emailContentsViewState.value = contentLoaded;
+
+        expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+    });
+
+    group('isEditedEmailContentLoadFailed test:', () {
+      const editingActionTypes = [
+        EmailActionType.editDraft,
+        EmailActionType.editAsNewEmail,
+        EmailActionType.reopenComposerBrowser,
+        EmailActionType.restoreComposerFromPersistentCache,
+      ];
+
+      for (final actionType in editingActionTypes) {
+        test(
+          'Should return true\n'
+          'When email content loading failed for $actionType',
+        () {
+          composerController?.currentEmailActionType = actionType;
+          composerController?.emailContentsViewState.value =
+            Left(GetEmailContentFailure(Exception('failure')));
+
+          expect(composerController?.isEditedEmailContentLoadFailed, isTrue);
+        });
+
+        test(
+          'Should return false\n'
+          'When email content is empty (EmptyEmailContentException) for $actionType',
+        () {
+          composerController?.currentEmailActionType = actionType;
+          composerController?.emailContentsViewState.value =
+            Left(GetEmailContentFailure(EmptyEmailContentException()));
+
+          expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+        });
+      }
+
+      test(
+        'Should return false\n'
+        'When email content loading failed for a non editing action type',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.reply;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content is loaded while editing a draft',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentSuccess(htmlEmailContent: 'content'));
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+      });
+
+      test(
+        'Should return false\n'
+        'When email content is still loading while editing a draft',
+      () {
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        expect(composerController?.isEditedEmailContentLoadFailed, isFalse);
+      });
+    });
+
+    group('handleClickSendButton guards on email body test:', () {
+      Future<BuildContext> pumpContext(WidgetTester tester) async {
+        late BuildContext capturedContext;
+        await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+          child: Builder(builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          }),
+        ));
+        await tester.pump();
+        return capturedContext;
+      }
+
+      void arrangeOtherwiseSendableEmail() {
+        final validationService = MockAttachmentUploadValidationService();
+        when(validationService.isExceededMaxSizeAttachmentsPerEmail()).thenReturn(false);
+        when(mockUploadController.allUploadAttachmentsCompleted).thenReturn(true);
+        composerController!
+          ..attachmentUploadValidationService = validationService
+          ..isEnableEmailSendButton.value = true
+          ..subjectEmail.value = 'subject';
+      }
+
+      testWidgets(
+        'Should show the content loading dialog and not send the email\n'
+        'When send is clicked while email content is still loading',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).messageDialogSendEmailContentLoading),
+          findsOneWidget,
+        );
+        verifyNever(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        ));
+      });
+
+      testWidgets(
+        'Should show the content load failed dialog and not send the email\n'
+        'When send is clicked after draft content failed to load',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).messageDialogSendEmailContentLoadFailed),
+          findsOneWidget,
+        );
+        verifyNever(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        ));
+      });
+
+      Future<void> expectGuardDialogShownAgainAfterDismiss(
+        WidgetTester tester,
+        BuildContext context,
+        String message,
+      ) async {
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(AppLocalizations.of(context).got_it));
+        await tester.pumpAndSettle();
+        expect(find.text(message), findsNothing);
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(find.text(message), findsOneWidget);
+      }
+
+      testWidgets(
+        'Should show the content loading dialog again\n'
+        'When send is clicked again after dismissing the content loading dialog',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+
+        await expectGuardDialogShownAgainAfterDismiss(
+          tester,
+          context,
+          AppLocalizations.of(context).messageDialogSendEmailContentLoading,
+        );
+      });
+
+      testWidgets(
+        'Should show the content load failed dialog again\n'
+        'When send is clicked again after dismissing the content load failed dialog',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.emailContentsViewState.value =
+          Left(GetEmailContentFailure(Exception('failure')));
+
+        await expectGuardDialogShownAgainAfterDismiss(
+          tester,
+          context,
+          AppLocalizations.of(context).messageDialogSendEmailContentLoadFailed,
+        );
       });
     });
   });
