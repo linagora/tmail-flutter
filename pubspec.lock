@@ -2457,9 +2457,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: pdf-clickable-links
-      resolved-ref: f163be32e956317d7f894d1eb3f2603b6fd4198d
-      url: "https://github.com/chibenwa/twake-previewer-flutter.git"
+      ref: main
+      resolved-ref: d0292f1532a66dd0382f29b9114411e26bd65dca
+      url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
     version: "0.1.1"
   typed_data:
