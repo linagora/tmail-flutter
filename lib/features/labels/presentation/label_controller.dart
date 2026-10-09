@@ -256,7 +256,6 @@ class LabelController extends BaseController
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
-      labels.value = [];
       setLabelLoaded();
     } else if (failure is GetLabelSettingStateFailure) {
       _clearLabelData();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:labels/extensions/label_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_mailbox_item.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
@@ -16,11 +18,13 @@ import '../exceptions/mailbox/null_quota_exception.dart';
 import 'abstract/abstract_mailbox_assertion_robot.dart';
 import 'abstract/abstract_mailbox_empty_trash_robot.dart';
 import 'abstract/abstract_mailbox_folder_robot.dart';
+import 'abstract/abstract_mailbox_label_robot.dart';
 import 'abstract/abstract_mailbox_menu_robot.dart';
 import 'abstract/abstract_mailbox_navigation_robot.dart';
 import 'mailbox_assertion_robot.dart';
 import 'mailbox_empty_trash_robot.dart';
 import 'mailbox_folder_robot.dart';
+import 'mailbox_label_robot.dart';
 import 'mailbox_navigation_robot.dart';
 
 class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
@@ -34,14 +38,19 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   final AbstractMailboxEmptyTrashRobot emptyTrash;
 
   @override
+  final AbstractMailboxLabelRobot label;
+
+  @override
   final AbstractMailboxAssertionRobot assertion;
 
   MailboxMenuRobot(
     PatrolIntegrationTester $, {
     AbstractMailboxNavigationRobot? navigationRobot,
+    AbstractMailboxLabelRobot? labelRobot,
   })  : navigation = navigationRobot ?? MailboxNavigationRobot($),
         folder = MailboxFolderRobot($),
         emptyTrash = MailboxEmptyTrashRobot($),
+        label = labelRobot ?? MailboxLabelRobot($),
         assertion = MailboxAssertionRobot($),
         super($);
 
@@ -56,6 +65,11 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   @override
   PatrolFinder mailboxItemByExactName(String name) =>
       $(SidebarMailboxItem).which<SidebarMailboxItem>((w) => w.mailboxNode.item.name?.name.toLowerCase() == name.toLowerCase());
+
+  /// Finds the sidebar label item whose name exactly matches the given value.
+  @override
+  PatrolFinder labelItemByName(String name) =>
+      $(SidebarLabelItem).which<SidebarLabelItem>((w) => w.label.safeDisplayName == name);
 
   @override
   Future<void> openSetting() async {

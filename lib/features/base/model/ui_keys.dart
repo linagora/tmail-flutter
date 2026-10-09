@@ -44,5 +44,6 @@ class UiKeys {
   static const String mailboxSearchButton = 'mailbox_search_button';
   static const String addNewFolderButton = 'add_new_folder_button';
   static const String addNewLabelButton = 'labels_bar_widget_add_new_label_button';
+  static const String labelMoreActionButton = 'label_more_action_button';
   static const String cleanMessageBannerNotVisible = 'clean_message_banner_not_visible';
 }
