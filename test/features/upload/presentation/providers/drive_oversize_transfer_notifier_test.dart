@@ -61,6 +61,17 @@ void main() {
       expect(container.read(driveOversizeTransferProvider).single.sentBytes, equals(410));
     });
 
+    test('reportProgress moves a waiting row to uploading on a zero-byte tick', () {
+      final notifier = container.read(driveOversizeTransferProvider.notifier);
+      notifier.start([makeItem('a', fileSize: 1000)]);
+
+      notifier.reportProgress(const UploadTaskId('a'), 0, 1000);
+
+      final row = container.read(driveOversizeTransferProvider).single;
+      expect(row.status, equals(DriveOversizeTransferStatus.uploading));
+      expect(row.sentBytes, equals(0));
+    });
+
     test('reportProgress applies the first byte so the bar leaves indeterminate', () {
       final notifier = container.read(driveOversizeTransferProvider.notifier);
       notifier.start([makeItem('a', fileSize: 100000)]);
