@@ -150,6 +150,11 @@ class HtmlTemplate {
         display: flex;
         align-items: flex-start;
         gap: 10px;
+      }
+
+      .email-subject,
+      .email-header,
+      .attachments {
         position: relative;
         z-index: 1;
         background: #fff;

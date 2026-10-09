@@ -155,15 +155,23 @@ void main() {
     });
 
     // A mail can still pull its own body up with a negative margin and paint
-    // a fake sender over the header; the header must stack above it.
-    test('should stack the header above the email body', () {
+    // a fake sender, subject or attachment over the app-generated parts; they
+    // must stack above it.
+    test('should stack the subject, header and attachments above the email body', () {
       final document = parse(generate(emailContent: '<div>Hi</div>'));
       final appCss = document.head!.querySelector('style')!.text;
-      final headerRule = RegExp(r'\.email-header\s*\{([^}]*)\}').firstMatch(appCss)!.group(1)!;
 
-      expect(headerRule, contains('position: relative'));
-      expect(headerRule, contains('z-index'));
-      expect(headerRule, contains('background'));
+      for (final selector in ['.email-subject', '.email-header', '.attachments']) {
+        final declarations = RegExp(r'([^{}]+)\{([^}]*)\}')
+            .allMatches(appCss)
+            .where((rule) => rule.group(1)!.split(',').map((part) => part.trim()).contains(selector))
+            .map((rule) => rule.group(2)!)
+            .join();
+
+        expect(declarations, contains('position: relative'), reason: selector);
+        expect(declarations, contains('z-index: 1'), reason: selector);
+        expect(declarations, contains('background'), reason: selector);
+      }
     });
 
     // Email styles can restyle the email body itself (`body` becomes the scope
