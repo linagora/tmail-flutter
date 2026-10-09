@@ -13,6 +13,10 @@
 /// to `:is(:where(:scope), body)`, and `html body` to a single one, which
 /// matches the scope root with the weight of the original selector.
 ///
+/// `@font-face` is not confined by `@scope`: a mail could redefine the app
+/// font and redraw the app-generated header, so its at-keyword is renamed to
+/// one browsers ignore, dropping the rule and its block.
+///
 /// `<style>` text is serialized raw, so the output never contains `</style`.
 ///
 /// Browsers without `@scope` support drop the whole block, so the untrusted
@@ -167,8 +171,8 @@ class _Lookahead {
           && (third.isHexDigit || third == _CodeUnit.questionMark);
 }
 
-/// An identifier token: its span in the stylesheet and its lowercase,
-/// unescaped name.
+/// An identifier or at-keyword token: its span in the stylesheet and its
+/// lowercase, unescaped name.
 typedef _Identifier = ({int start, int end, String name});
 
 enum _TokenKind { insignificant, atKeyword, groupingAtKeyword, openBrace, closeBrace, semicolon, other }
@@ -218,6 +222,8 @@ class _CssBlockConfiner {
   static const int _maxHexDigits = 6;
   static const int _replacementCharacter = 0xFFFD;
   static const String _scopeRootPrefix = ':is(:where(:scope), ';
+  static const String _fontFace = 'font-face';
+  static const String _droppedFontFace = '@dropped-font-face';
   static const Set<String> _rootTypeSelectors = {'html', 'body'};
   static const Set<String> _groupingAtRules = {
     'media', 'supports', 'layer', 'container', 'scope', 'document', '-moz-document', 'starting-style',
@@ -225,7 +231,7 @@ class _CssBlockConfiner {
 
   final List<_CodeUnit> _codeUnits;
   final List<_CodeUnit> _expectedClosings = [];
-  final List<_Identifier> _scopeRewrites = [];
+  final List<_Identifier> _rewrites = [];
   final _RuleContext _rules = _RuleContext();
   int _index = 0;
 
@@ -251,17 +257,19 @@ class _CssBlockConfiner {
   String _render() {
     final output = StringBuffer();
     int position = 0;
-    for (final rewrite in _scopeRewrites) {
+    for (final rewrite in _rewrites) {
       output
         ..write(String.fromCharCodes(_codeUnits, position, rewrite.start))
-        ..write(_scopeRootPrefix)
-        ..write(String.fromCharCodes(_codeUnits, rewrite.start, rewrite.end))
-        ..write(')');
+        ..write(_replacementOf(rewrite));
       position = rewrite.end;
     }
     output.write(String.fromCharCodes(_codeUnits, position));
     return output.toString();
   }
+
+  String _replacementOf(_Identifier rewrite) => rewrite.name == _fontFace
+      ? _droppedFontFace
+      : '$_scopeRootPrefix${String.fromCharCodes(_codeUnits, rewrite.start, rewrite.end)})';
 
   /// Consumes the next token, returns false when it is ambiguous.
   bool _consumeToken() {
@@ -317,6 +325,7 @@ class _CssBlockConfiner {
 
   /// `#name` (hash token) or `@name` (at-keyword token).
   void _skipPrefixedName(_CodeUnit prefix) {
+    final start = _index;
     _index++;
     final name = _consumeName().toLowerCase();
     if (prefix != _CodeUnit.at) {
@@ -324,6 +333,9 @@ class _CssBlockConfiner {
     } else if (_groupingAtRules.contains(name)) {
       _rules.onToken(_TokenKind.groupingAtKeyword);
     } else {
+      if (name == _fontFace) {
+        _rewrites.add((start: start, end: _index, name: name));
+      }
       _rules.onToken(_TokenKind.atKeyword);
     }
   }
@@ -492,21 +504,21 @@ class _CssBlockConfiner {
   /// `html body` and `html > body` name the scope root once.
   void _addScopeRewrite(_Identifier identifier) {
     if (_followsHtmlRewrite(identifier)) {
-      final html = _scopeRewrites.removeLast();
-      _scopeRewrites.add((start: html.start, end: identifier.end, name: identifier.name));
+      final html = _rewrites.removeLast();
+      _rewrites.add((start: html.start, end: identifier.end, name: identifier.name));
       return;
     }
-    _scopeRewrites.add(identifier);
+    _rewrites.add(identifier);
   }
 
   bool _followsHtmlRewrite(_Identifier identifier) {
-    if (identifier.name != 'body' || _scopeRewrites.isEmpty || _scopeRewrites.last.name != 'html') {
+    if (identifier.name != 'body' || _rewrites.isEmpty || _rewrites.last.name != 'html') {
       return false;
     }
     // CSS whitespace only: String.trim() would also drop U+000B and join
     // `html` and `body` into one selector the browser rejects.
     final between = _codeUnits
-        .sublist(_scopeRewrites.last.end, identifier.start)
+        .sublist(_rewrites.last.end, identifier.start)
         .where((codeUnit) => !codeUnit.isWhitespace)
         .toList();
     return between.isEmpty || (between.length == 1 && between.single == _CodeUnit.greaterThan);

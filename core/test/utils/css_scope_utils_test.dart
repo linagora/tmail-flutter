@@ -203,7 +203,7 @@ void main() {
           '.a { font-family: body } @font-face { font-family: body } @scope (body) {} '
           '@counter-style body {} .a { .b body {} }';
 
-      expect(CssScopeUtils.scope(css, root), scoped(css));
+      expect(CssScopeUtils.scope(css, root), scoped(css.replaceFirst('@font-face', '@dropped-font-face')));
     });
 
     test('should restart selector detection after a statement at-rule', () {
@@ -211,6 +211,28 @@ void main() {
         CssScopeUtils.scope('@charset "utf-8"; body {}', root),
         scoped('@charset "utf-8"; ${scopeRoot('body')} {}'),
       );
+    });
+
+    // `@scope` does not confine `@font-face`: a mail font named like the app
+    // font would redraw the app-generated header.
+    test('should drop font faces wherever they are and however they are spelled', () {
+      expect(
+        CssScopeUtils.scope(
+          "@font-face { font-family: App } @media print { @FONT-FACE { src: url(x) } } "
+              r"@font-f\61 ce {} .a { font-family: App } .b { content: '@font-face' }",
+          root,
+        ),
+        scoped(
+          "@dropped-font-face { font-family: App } @media print { @dropped-font-face { src: url(x) } } "
+              "@dropped-font-face {} .a { font-family: App } .b { content: '@font-face' }",
+        ),
+      );
+    });
+
+    test('should keep other at-rules', () {
+      const css = '@font-feature-values App { @styleset { a: 1 } } @keyframes font-face {} @import url(x);';
+
+      expect(CssScopeUtils.scope(css, root), scoped(css));
     });
 
     test('should replace NULL characters', () {
