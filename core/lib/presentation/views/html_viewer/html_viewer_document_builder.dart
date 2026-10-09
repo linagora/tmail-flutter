@@ -139,20 +139,164 @@ class HtmlViewerDocumentBuilder {
 
   /// Document of `HtmlContentViewerOnWeb`, loaded as the iframe `srcdoc`.
   static String buildWebDocument(HtmlWebViewerDocumentInput input) {
+    final processedContent = input.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(input.content)
+        : input.content;
+
+    return HtmlUtils.generateHtmlDocument(
+      content: processedContent,
+      minHeight: input.minHeight,
+      minWidth: input.minWidth,
+      styleCSS: _webStyles(input),
+      javaScripts: _webScripts(input),
+      direction: input.direction,
+      contentPadding: input.contentPadding,
+      useDefaultFontStyle: input.useDefaultFontStyle,
+      fontSize: input.fontSize,
+    );
+  }
+
+  static String _webStyles(HtmlWebViewerDocumentInput input) => [
+        if (input.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
+        if (input.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
+      ].join();
+
+  static String _webScripts(HtmlWebViewerDocumentInput input) => [
+        _webActionScripts(input),
+        HtmlInteraction.scriptsDisableZoom,
+        HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+        HtmlInteraction.generateNormalizeImageScript(input.widthContent),
+        if (input.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+        if (input.hasScrollController) _webScrollScript(input),
+        if (input.hasKeyboardShortcutAction)
+          HtmlInteraction.scriptHandleIframeKeyboardListener(input.viewId),
+        if (input.useLinkTooltipOverlay)
+          HtmlInteraction.scriptsHandleIframeClickListener(input.viewId),
+        if (input.isWebDesktop)
+          HtmlInteraction.scriptsHandleIframeLinkHoverListener(input.viewId),
+      ].join();
+
+  static String _webScrollScript(HtmlWebViewerDocumentInput input) =>
+      input.isWebTouchDevice
+          ? HtmlInteraction.scriptsTouchEventListener(
+              viewId: input.viewId,
+              onScrollChangedEvent: onScrollChangedEvent,
+              onScrollEndEvent: onScrollEndEvent,
+            )
+          : HtmlInteraction.scriptsWheelEventListener(
+              viewId: input.viewId,
+              onScrollChangedEvent: onScrollChangedEvent,
+            );
+
+  /// The iframe side of the postMessage bridge with the web viewer widget.
+  static String _webActionScripts(HtmlWebViewerDocumentInput input) {
     final viewId = input.viewId;
-    final webViewActionScripts = '''
+    return '''
       <script type="text/javascript">
         window.parent.addEventListener('message', handleMessage, false);
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
-          ${!input.autoAdjustHeight ? '''
-            clearTimeout(_resizeDebounceTimer);
-            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
-          ''' : ''}
+          ${_webStopResizeObserver(input)}
         });
       
+${_webHandleMessage(viewId)}
+
+        ${_webResizeObserver(input)}
+        
+        ${_webMailtoHandler(input)}
+        
+        
+        
+        ${_webHyperLinkHandler(input)}
+        
+        function handleOnLoad() {
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getHeight"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getWidth"}), "*");
+          
+          ${_webListenHyperLinks(input)}
+          
+          ${_webListenMailtoLinks(input)}
+          
+          ${!input.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
+        }
+      </script>
+    ''';
+  }
+
+  /// Stops the resize observer when the iframe is hidden.
+  static String _webStopResizeObserver(HtmlWebViewerDocumentInput input) =>
+      !input.autoAdjustHeight ? '''
+            clearTimeout(_resizeDebounceTimer);
+            if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
+          ''' : '';
+
+  /// Reports the content height to Dart when it changes, unless the widget sizes itself.
+  static String _webResizeObserver(HtmlWebViewerDocumentInput input) =>
+      !input.autoAdjustHeight ? '''
+          var _lastResizeHeight = 0;
+          var _resizeDebounceTimer;
+          const resizeObserver = new ResizeObserver((entries) => {
+            clearTimeout(_resizeDebounceTimer);
+            _resizeDebounceTimer = setTimeout(function() {
+              var height = document.body.scrollHeight;
+              if (height === _lastResizeHeight) return;
+              _lastResizeHeight = height;
+              window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: htmlHeight", "height": height}), "*");
+            }, 50);
+          });
+        ''' : '';
+
+  /// Sends `mailto:` clicks to Dart.
+  static String _webMailtoHandler(HtmlWebViewerDocumentInput input) =>
+      input.hasMailtoDelegate
+            ? '''
+                function handleOnClickEmailLink(e) {
+                   var href = this.href;
+                   window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: OpenLink", "url": "" + href}), "*");
+                   e.preventDefault();
+                }
+              '''
+            : '';
+
+  /// Sends link clicks to Dart.
+  static String _webHyperLinkHandler(HtmlWebViewerDocumentInput input) =>
+      input.hasHyperLinkAction
+            ? '''
+                function onClickHyperLink(e) {
+                   var href = this.href;
+                   window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
+                   e.preventDefault();
+                }
+              '''
+            : '';
+
+  /// Attaches the link click handler on load.
+  static String _webListenHyperLinks(HtmlWebViewerDocumentInput input) =>
+      input.hasHyperLinkAction
+              ? '''
+                  var hyperLinks = document.querySelectorAll('a');
+                  for (var i=0; i < hyperLinks.length; i++){
+                      hyperLinks[i].addEventListener('click', onClickHyperLink);
+                  }
+                '''
+              : '';
+
+  /// Attaches the `mailto:` click handler on load.
+  static String _webListenMailtoLinks(HtmlWebViewerDocumentInput input) =>
+      input.hasMailtoDelegate
+              ? '''
+                  var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                  for (var i=0; i < emailLinks.length; i++){
+                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
+                  }
+                '''
+              : '';
+
+  /// Answers the height, width and `execCommand` requests Dart posts to the iframe.
+  static String _webHandleMessage(String viewId) => '''
         function handleMessage(e) {
           if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
             var data;
@@ -182,116 +326,5 @@ class HtmlViewerDocumentBuilder {
               }
             }
           }
-        }
-
-        ${!input.autoAdjustHeight ? '''
-          var _lastResizeHeight = 0;
-          var _resizeDebounceTimer;
-          const resizeObserver = new ResizeObserver((entries) => {
-            clearTimeout(_resizeDebounceTimer);
-            _resizeDebounceTimer = setTimeout(function() {
-              var height = document.body.scrollHeight;
-              if (height === _lastResizeHeight) return;
-              _lastResizeHeight = height;
-              window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": height}), "*");
-            }, 50);
-          });
-        ''' : ''}
-        
-        ${input.hasMailtoDelegate
-            ? '''
-                function handleOnClickEmailLink(e) {
-                   var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
-                   e.preventDefault();
-                }
-              '''
-            : ''}
-        
-        
-        
-        ${input.hasHyperLinkAction
-            ? '''
-                function onClickHyperLink(e) {
-                   var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
-                   e.preventDefault();
-                }
-              '''
-            : ''}
-        
-        function handleOnLoad() {
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getHeight"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getWidth"}), "*");
-          
-          ${input.hasHyperLinkAction
-              ? '''
-                  var hyperLinks = document.querySelectorAll('a');
-                  for (var i=0; i < hyperLinks.length; i++){
-                      hyperLinks[i].addEventListener('click', onClickHyperLink);
-                  }
-                '''
-              : ''}
-          
-          ${input.hasMailtoDelegate
-              ? '''
-                  var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
-                  for (var i=0; i < emailLinks.length; i++){
-                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
-                  }
-                '''
-              : ''}
-          
-          ${!input.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
-        }
-      </script>
-    ''';
-
-    final processedContent = input.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(input.content)
-        : input.content;
-
-    final combinedCss = [
-      if (input.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
-      if (input.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
-    ].join();
-
-    final combinedScripts = [
-      webViewActionScripts,
-      HtmlInteraction.scriptsDisableZoom,
-      HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
-      HtmlInteraction.generateNormalizeImageScript(input.widthContent),
-      if (input.enableQuoteToggle) HtmlUtils.quoteToggleScript,
-      if (input.hasScrollController)
-        input.isWebTouchDevice
-            ? HtmlInteraction.scriptsTouchEventListener(
-                viewId: viewId,
-                onScrollChangedEvent: onScrollChangedEvent,
-                onScrollEndEvent: onScrollEndEvent,
-              )
-            : HtmlInteraction.scriptsWheelEventListener(
-                viewId: viewId,
-                onScrollChangedEvent: onScrollChangedEvent,
-              ),
-      if (input.hasKeyboardShortcutAction)
-        HtmlInteraction.scriptHandleIframeKeyboardListener(viewId),
-      if (input.useLinkTooltipOverlay)
-        HtmlInteraction.scriptsHandleIframeClickListener(viewId),
-      if (input.isWebDesktop)
-        HtmlInteraction.scriptsHandleIframeLinkHoverListener(viewId),
-    ].join();
-
-    return HtmlUtils.generateHtmlDocument(
-      content: processedContent,
-      minHeight: input.minHeight,
-      minWidth: input.minWidth,
-      styleCSS: combinedCss,
-      javaScripts: combinedScripts,
-      direction: input.direction,
-      contentPadding: input.contentPadding,
-      useDefaultFontStyle: input.useDefaultFontStyle,
-      fontSize: input.fontSize,
-    );
-  }
+        }''';
 }
