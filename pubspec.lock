@@ -1481,7 +1481,7 @@ packages:
     description:
       path: "."
       ref: "feature/tf-4827-file-transfer-dialog"
-      resolved-ref: "4e3d3db4885d3a162b49817797e9a29e38a1023a"
+      resolved-ref: d9d2a6e2d26b316f021e7a22ee0d14e14964aa6a
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.3.4"
