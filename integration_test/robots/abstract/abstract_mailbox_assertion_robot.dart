@@ -9,4 +9,6 @@ abstract class AbstractMailboxAssertionRobot {
     String teamMailboxEmail,
     String childName,
   );
+  Future<void> expectMailboxSelected(PatrolFinder mailbox);
+  Future<void> expectLabelSelected(PatrolFinder label);
 }
