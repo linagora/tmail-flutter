@@ -133,10 +133,14 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
             )),
       );
       return null;
-    } catch (error) {
+    } catch (error, stackTrace) {
       // Failed outside a per-file catch (token exchange, bridge): fail only
       // unsettled rows, so an already-linked row keeps its label.
-      logError('DriveOversizeAttachmentRecovery::_runUploads: $error');
+      logError(
+        'DriveOversizeAttachmentRecovery::_runUploads',
+        exception: error,
+        stackTrace: stackTrace,
+      );
       for (final item in container.read(driveOversizeTransferProvider)) {
         if (!item.status.settled) notifier.markFailed(item.taskId);
       }
@@ -189,8 +193,12 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     } on WorkplaceUploadCancelledException {
       // A cancel is the user's own doing — the row already says so.
       return;
-    } catch (e) {
-      logError('DriveOversizeAttachmentRecovery::_uploadOne: $e');
+    } catch (error, stackTrace) {
+      logError(
+        'DriveOversizeAttachmentRecovery::_uploadOne',
+        exception: error,
+        stackTrace: stackTrace,
+      );
       notifier.markFailed(item.taskId);
     }
   }
@@ -211,13 +219,17 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     try {
       final inserted =
           await _insertHtml(FileLinkCardHtmlBuilder.wrapFileCardsHtml(cards));
-      // An editor that refused the HTML would otherwise lose the links silently.
+      // Known outcome the toast reports: a breadcrumb, not an error event.
       if (!inserted) {
-        logError('DriveOversizeAttachmentRecovery::_insertLinks: editor refused');
+        logTrace('DriveOversizeAttachmentRecovery::_insertLinks: editor refused');
       }
       return inserted;
-    } catch (error) {
-      logError('DriveOversizeAttachmentRecovery::_insertLinks: $error');
+    } catch (error, stackTrace) {
+      logError(
+        'DriveOversizeAttachmentRecovery::_insertLinks',
+        exception: error,
+        stackTrace: stackTrace,
+      );
       return false;
     }
   }
