@@ -53,6 +53,8 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
 
     final files = request.files;
     if (files.isEmpty) return false;
+    // One batch at a time: the running batch owns the dialog and its rows.
+    if (container.read(driveOversizeTransferProvider).isNotEmpty) return true;
 
     final items = files
         .map((file) => DriveOversizeTransferState(

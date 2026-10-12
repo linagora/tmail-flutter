@@ -755,5 +755,25 @@ void main() {
       });
       setup.container.dispose();
     });
+
+    testWidgets('a second oversize batch while one runs leaves the running batch alone', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final link = Uri.parse('https://drive.example.com/public?sharecode=x');
+      final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link, 'b.zip': link});
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+
+      final second = await setup.recovery.recover(_failure, _makeRequest([_makeFile('b.zip')]));
+      await tester.pump();
+
+      expect(second, isTrue);
+      expect(setup.container.read(driveOversizeTransferProvider).map((row) => row.fileName), ['a.zip']);
+      expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['a.zip']);
+      hold.complete();
+      await tester.pumpAndSettle();
+      setup.container.dispose();
+    });
   });
 }
