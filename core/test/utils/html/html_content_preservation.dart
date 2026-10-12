@@ -20,18 +20,12 @@ double bodyWordPreservation(String source, String transformed) {
   return kept / sourceWords.length;
 }
 
-int bodyLinkCount(String html) =>
-    parse(html).body?.querySelectorAll('a[href]').length ?? 0;
-
 /// Every link destination in the body, sorted, so a transform that keeps the
 /// number of links but rewrites where they go is caught.
 List<String> bodyLinkDestinations(String html) => [
       for (final link in parse(html).body?.querySelectorAll('a[href]') ?? const [])
         link.attributes['href']!.trim(),
     ]..sort();
-
-int bodyImageCount(String html) =>
-    parse(html).body?.querySelectorAll('img').length ?? 0;
 
 List<String> _bodyWords(String html) {
   final document = parse(html);

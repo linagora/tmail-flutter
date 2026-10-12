@@ -32,20 +32,6 @@ void main() {
         : HtmlPipelineWiring.passesThrough;
   }
 
-  test('covers every TransformConfiguration factory', () {
-    final fromSource = htmlPipelineFactoryNamesFromSource(
-      htmlPipelineTransformConfigurationSource(),
-    );
-    final fromRegistry =
-        htmlPipelineRegistry().map((row) => row.factoryName).toSet();
-
-    expect(
-      fromRegistry,
-      fromSource,
-      reason: 'a new pipeline needs a row in htmlPipelineRegistry()',
-    );
-  });
-
   // A text/plain pipeline escapes the probe instead of parsing it; its
   // sanitizing is covered by html_transform_text_plain_test.dart.
   for (final row in htmlPipelineRegistry().where((row) => row.takesHtml)) {

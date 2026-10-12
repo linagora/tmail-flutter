@@ -51,12 +51,6 @@ void main() {
         expect(styleOf(await processWith(transformer, html), selector), contains(style));
       });
 
-      test('${transformer.runtimeType} leaves HTML without $selector untouched', () async {
-        final document = await processWith(transformer, '<p>plain</p>');
-        expect(document.querySelector('p')!.text, 'plain');
-        expect(document.querySelector(selector), isNull);
-        expect(styleOf(document, 'p'), isNull);
-      });
     }
   });
 
@@ -74,14 +68,6 @@ void main() {
       );
       expect(document.querySelector('.tmail-signature'), isNull);
     });
-
-    test('no-op without signature', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>body</p>',
-      );
-      expect(document.querySelector('.tmail-signature-blocked'), isNull);
-    });
   });
 
   group('HideDraftSignatureTransformer', () {
@@ -97,14 +83,6 @@ void main() {
         contains('display: none'),
       );
     });
-
-    test('no-op without signature', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>body</p>',
-      );
-      expect(document.outerHtml, contains('<p>body</p>'));
-    });
   });
 
   group('RemoveCollapsedSignatureButtonTransformer', () {
@@ -116,14 +94,6 @@ void main() {
         '<div class="tmail-signature-button">...</div><p>keep</p>',
       );
       expect(document.querySelector('.tmail-signature-button'), isNull);
-      expect(document.querySelector('p')!.text, 'keep');
-    });
-
-    test('no-op without buttons', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>keep</p>',
-      );
       expect(document.querySelector('p')!.text, 'keep');
     });
   });
@@ -141,14 +111,6 @@ void main() {
       expect(element.attributes.containsKey('lazy'), isTrue);
       expect(element.attributes['style'], isNot(contains('background-image')));
     });
-
-    test('no-op without background-image', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<div style="color:red;"></div>',
-      );
-      expect(document.querySelector('div')!.attributes.containsKey('lazy'), isFalse);
-    });
   });
 
   group('RemoveLazyLoadingForBackgroundImageTransformer', () {
@@ -164,14 +126,6 @@ void main() {
       expect(element.attributes.containsKey('lazy'), isFalse);
       expect(element.attributes.containsKey('data-src'), isFalse);
     });
-
-    test('no-op without lazy', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<div style="color:red;"></div>',
-      );
-      expect(document.querySelector('div')!.attributes['style'], 'color:red;');
-    });
   });
 
   group('RemoveLazyLoadingImageTransformer', () {
@@ -183,14 +137,6 @@ void main() {
         '<img src="https://example.com/a.png" loading="lazy">',
       );
       expect(document.querySelector('img')!.attributes.containsKey('loading'), isFalse);
-    });
-
-    test('no-op without loading', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<img src="https://example.com/a.png">',
-      );
-      expect(document.querySelector('img')!.attributes['src'], 'https://example.com/a.png');
     });
   });
 
@@ -207,14 +153,6 @@ void main() {
         isNot(contains('max-width:100%')),
       );
     });
-
-    test('no-op without max-width', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<img src="x.png" style="height:auto;">',
-      );
-      expect(document.querySelector('img')!.attributes['style'], 'height:auto;');
-    });
   });
 
   group('RemoveStyleTagOutsideTransformer', () {
@@ -226,14 +164,6 @@ void main() {
         '<style>.x{color:red}</style><p>keep</p>',
       );
       expect(document.querySelector('style'), isNull);
-      expect(document.querySelector('p')!.text, 'keep');
-    });
-
-    test('no-op without style tags', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>keep</p>',
-      );
       expect(document.querySelector('p')!.text, 'keep');
     });
   });
@@ -249,14 +179,6 @@ void main() {
       expect(document.querySelector('script'), isNull);
       expect(document.body!.text, contains('Before'));
     });
-
-    test('no-op without script', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<p>keep</p>',
-      );
-      expect(document.querySelector('p')!.text, 'keep');
-    });
   });
 
   group('ImageTransformer', () {
@@ -268,14 +190,6 @@ void main() {
         '<img src="https://example.com/a.png">',
       );
       expect(document.querySelector('img')!.attributes['loading'], 'lazy');
-    });
-
-    test('no-op when loading is already set', () async {
-      final document = await run(
-        (doc) => transformer.process(document: doc, dioClient: dioClient),
-        '<img src="https://example.com/a.png" loading="eager">',
-      );
-      expect(document.querySelector('img')!.attributes['loading'], 'eager');
     });
 
     test('rewrites cid src to a data URI when the map hits', () async {
@@ -309,5 +223,26 @@ void main() {
       );
       expect(document.querySelector('img')!.attributes['src'], 'cid:missing');
     });
+  });
+
+  group('transformers leave HTML without their target unchanged', () {
+    for (final (transformer, html) in <(DomTransformer, String)>[
+      (const BlockQuotedTransformer(), '<p>plain</p>'),
+      (const BlockCodeTransformer(), '<p>plain</p>'),
+      (const SignatureTransformer(), '<p>body</p>'),
+      (const HideDraftSignatureTransformer(), '<p>body</p>'),
+      (const RemoveCollapsedSignatureButtonTransformer(), '<p>keep</p>'),
+      (const AddLazyLoadingForBackgroundImageTransformer(), '<div style="color:red;"></div>'),
+      (const RemoveLazyLoadingForBackgroundImageTransformer(), '<div style="color:red;"></div>'),
+      (const RemoveLazyLoadingImageTransformer(), '<img src="https://example.com/a.png">'),
+      (const RemoveMaxWidthInImageStyleTransformer(), '<img src="x.png" style="height:auto;">'),
+      (const RemoveStyleTagOutsideTransformer(), '<p>keep</p>'),
+      (const RemoveScriptTransformer(), '<p>keep</p>'),
+      (const ImageTransformer(), '<img src="https://example.com/a.png" loading="eager">'),
+    ]) {
+      test('${transformer.runtimeType} leaves $html unchanged', () async {
+        expect((await processWith(transformer, html)).outerHtml, parse(html).outerHtml);
+      });
+    }
   });
 }

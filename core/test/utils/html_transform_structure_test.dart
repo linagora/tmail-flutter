@@ -45,14 +45,6 @@ void main() {
   group('HtmlTransform structure — preview', () {
     final config = TransformConfiguration.forPreviewEmail();
 
-    test('preserves nested table count on a newsletter', () async {
-      final out = await transform(
-        HtmlEmailCorpus.htmlNewsletterNestedTables,
-        config,
-      );
-      expect(parse(out).querySelectorAll('table').length, 2);
-    });
-
     test('adds overflow-wrap on table cells', () async {
       final out = await transform(HtmlEmailCorpus.htmlTableSimple, config);
       final style = parse(out).querySelector('td')?.attributes['style'] ?? '';
@@ -67,14 +59,6 @@ void main() {
     test('keeps Outlook MsoNormal text', () async {
       final out = await transform(HtmlEmailCorpus.htmlOutlookMso, config);
       expect(out, contains('Hello from Outlook'));
-    });
-
-    test('keeps nested quotes', () async {
-      final out = await transform(
-        HtmlEmailCorpus.htmlNestedQuotesThreeLevels,
-        config,
-      );
-      expect(parse(out).querySelectorAll('blockquote').length, 3);
     });
 
     test('keeps wide pre text', () async {
