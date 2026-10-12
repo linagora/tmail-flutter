@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_oversize_attachment_recovery.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_request_extra.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_failure.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_limits.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_request.dart';
@@ -57,6 +58,14 @@ DioException _httpError(int statusCode) => DioException(
 
 /// The in-flight dialog reads only the attachment size limit from it.
 class _FakeDashboardController extends Fake implements MailboxDashBoardController {
+  final urgentExceptions = <Exception?>[];
+
+  @override
+  bool validateUrgentException(dynamic exception) => exception is RefreshTokenFailedException;
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) => urgentExceptions.add(exception);
+
   @override
   InternalFinalCallback<void> get onStart => InternalFinalCallback<void>(callback: () {});
 
@@ -106,12 +115,16 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
   /// When true the token exchange fails with a non-retryable server error.
   bool failExchange = false;
 
+  /// When true the token exchange fails with a stale-token 401.
+  bool staleExchange = false;
+
   _FakeWorkplaceRepository(this.outcomesByFileName);
 
   @override
   Future<String> exchangeToken(Uri platformUrl, String oidcIdToken) async {
     await holdExchange?.future;
     if (failExchange) throw _httpError(500);
+    if (staleExchange) throw _httpError(401);
     return 'drive-token';
   }
 
@@ -210,6 +223,7 @@ Future<_Setup> _setUpRecovery(
   Map<String, dynamic> outcomesByFileName = const {},
   String? oidcToken = 'oidc-token',
   Future<bool> Function(String html)? insertHtml,
+  Future<String?> Function()? oidcRefreshTrigger,
 }) async {
   late BuildContext capturedContext;
   final repository = _FakeWorkplaceRepository(outcomesByFileName);
@@ -223,7 +237,7 @@ Future<_Setup> _setUpRecovery(
       runner: WorkplaceAccessModeRunner(
         exchangeTokenInteractor: ExchangeDriveTokenInteractor(repository),
         oidcTokenGetter: () => oidcToken,
-        oidcRefreshTrigger: () async => null,
+        oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       ),
       interactor: UploadDriveFileInteractor(repository),
     )),
@@ -753,6 +767,27 @@ void main() {
         'a.zip': DriveOversizeTransferStatus.cancelled,
         'b.zip': DriveOversizeTransferStatus.failed,
       });
+      setup.container.dispose();
+    });
+
+    testWidgets('a dead session during the token exchange goes to the urgent handler, not the toast', (tester) async {
+      final dashboard = _FakeDashboardController();
+      Get.put<MailboxDashBoardController>(dashboard);
+      final setup = await _setUpRecovery(
+        tester,
+        oidcRefreshTrigger: () async => throw RefreshTokenFailedException(),
+      );
+      setup.repository.staleExchange = true;
+      final lastStatuses = _recordLastStatuses(setup.container);
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pumpAndSettle();
+
+      expect(setup.repository.capturedSpecs, isEmpty);
+      expect(lastStatuses(), {'a.zip': DriveOversizeTransferStatus.failed});
+      expect(dashboard.urgentExceptions.single, isA<RefreshTokenFailedException>());
+      expect(setup.toast.failureMessages, isEmpty);
+      expect(Get.isDialogOpen, isNot(true));
       setup.container.dispose();
     });
 
