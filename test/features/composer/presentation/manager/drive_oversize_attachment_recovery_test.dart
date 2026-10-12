@@ -662,6 +662,10 @@ void main() {
           'bad.zip': DriveOversizeTransferStatus.failed,
           'two.zip': DriveOversizeTransferStatus.linked,
         });
+        final error = logHandler.errorRecords.single;
+        expect(error.rawMessage, startsWith('DriveOversizeAttachmentRecovery::_uploadOne'));
+        expect(error.exception, isA<DioException>());
+        expect(error.stackTrace, isNotNull);
         expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
         expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
         expect(Get.isDialogOpen, isNot(true));
@@ -720,6 +724,10 @@ void main() {
 
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       expect(Get.isDialogOpen, isNot(true));
+      final error = logHandler.errorRecords.single;
+      expect(error.rawMessage, startsWith('DriveOversizeAttachmentRecovery::_insertLinks'));
+      expect(error.exception, isA<StateError>());
+      expect(error.stackTrace, isNotNull);
       expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       setup.container.dispose();
     });
