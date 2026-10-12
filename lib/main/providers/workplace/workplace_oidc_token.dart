@@ -6,7 +6,7 @@ String? currentWorkplaceOidcToken() =>
 
 /// Triggers the main app's OIDC refresh for Workplace's own (unwired) Dio.
 /// The interceptor owns the outcome, logging included; a dead session surfaces
-/// as RefreshTokenFailedException and is routed by the registry's pick-state handler.
+/// as RefreshTokenFailedException and is routed to the urgent handler by its callers.
 Future<String?> refreshWorkplaceOidcToken() async {
   final interceptor = getBinding<AuthorizationInterceptors>();
   if (interceptor == null) return null;
