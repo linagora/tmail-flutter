@@ -1,5 +1,10 @@
+import 'package:core/data/constants/constant.dart';
+import 'package:core/presentation/extensions/media_type_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 
 enum DriveOversizeTransferStatus { waiting, uploading, linked, failed, cancelled }
@@ -14,6 +19,7 @@ class DriveOversizeTransferState with EquatableMixin {
   final UploadTaskId taskId;
   final String fileName;
   final int fileSize;
+  final String mimeType;
   final int sentBytes;
   final DriveOversizeTransferStatus status;
 
@@ -25,6 +31,7 @@ class DriveOversizeTransferState with EquatableMixin {
     required this.fileName,
     required this.fileSize,
     required this.cancelToken,
+    this.mimeType = Constant.octetStreamMimeType,
     this.sentBytes = 0,
     this.status = DriveOversizeTransferStatus.waiting,
   });
@@ -35,6 +42,16 @@ class DriveOversizeTransferState with EquatableMixin {
 
   int get percent => (progress * 100).round();
 
+  /// Same file-type icon as the composer attachment chip.
+  String getIcon(ImagePaths imagePaths) {
+    try {
+      return MediaType.parse(mimeType).getIcon(imagePaths, fileName: fileName);
+    } catch (e) {
+      logWarning('DriveOversizeTransferState::getIcon: Exception: $e');
+      return imagePaths.icFileDefault;
+    }
+  }
+
   DriveOversizeTransferState copyWith({
     int? sentBytes,
     DriveOversizeTransferStatus? status,
@@ -42,11 +59,12 @@ class DriveOversizeTransferState with EquatableMixin {
         taskId: taskId,
         fileName: fileName,
         fileSize: fileSize,
+        mimeType: mimeType,
         cancelToken: cancelToken,
         sentBytes: sentBytes ?? this.sentBytes,
         status: status ?? this.status,
       );
 
   @override
-  List<Object?> get props => [taskId, fileName, fileSize, sentBytes, status];
+  List<Object?> get props => [taskId, fileName, fileSize, mimeType, sentBytes, status];
 }

@@ -71,6 +71,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
               taskId: UploadTaskId(const Uuid().v4()),
               fileName: file.fileName,
               fileSize: file.fileSize,
+              mimeType: file.mimeType,
               cancelToken: CancelToken(),
             ))
         .toList();
