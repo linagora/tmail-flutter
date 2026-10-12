@@ -26,6 +26,11 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
       ? LinagoraFileTransferLayout.wide
       : LinagoraFileTransferLayout.compact;
 
+  /// The close asset has no inner padding, so the icon size is the 14px Figma glyph.
+  LinagoraFileTransferStyle get _style =>
+      LinagoraFileTransferStyle.forLayout(_layout)
+          .copyWith(rowCloseIconSize: 14, headerCloseIconSize: 14);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final itemCount = ref.watch(
@@ -38,6 +43,7 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
     // Header ✕ means the same as Cancel: abandon the batch and close.
     return LinagoraFileTransferDialog(
       layout: _layout,
+      style: _style,
       title: appLocalizations.attachingFileTitle,
       description: _buildDescription(appLocalizations),
       itemCount: itemCount,
@@ -45,6 +51,7 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
         index: index,
         imagePaths: imagePaths,
         layout: _layout,
+        style: _style,
       ),
       cancelLabel: appLocalizations.cancel,
       onClose: notifier.cancelAll,
@@ -66,7 +73,7 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
         TextSpan(text: appLocalizations.driveOversizeDialogMessage(maxSize)),
         TextSpan(
           text: appLocalizations.driveOversizeDialogMessageEmphasis,
-          style: LinagoraFileTransferStyle.forLayout(_layout).emphasisTextStyle,
+          style: _style.emphasisTextStyle,
         ),
         const TextSpan(text: '.'),
       ],
@@ -79,11 +86,13 @@ class _DriveOversizeUploadRowSlot extends ConsumerWidget {
   final int index;
   final ImagePaths imagePaths;
   final LinagoraFileTransferLayout layout;
+  final LinagoraFileTransferStyle style;
 
   const _DriveOversizeUploadRowSlot({
     required this.index,
     required this.imagePaths,
     required this.layout,
+    required this.style,
   });
 
   @override
@@ -96,6 +105,7 @@ class _DriveOversizeUploadRowSlot extends ConsumerWidget {
     final appLocalizations = AppLocalizations.of(context);
     return LinagoraFileTransferRow(
       layout: layout,
+      style: style,
       fileName: item.fileName,
       statusLabel: _statusLabel(item, appLocalizations),
       cancelTooltip: appLocalizations.cancel,
