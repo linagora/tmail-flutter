@@ -5805,6 +5805,13 @@ class AppLocalizations {
     );
   }
 
+  String get driveOversizeUploadBusy {
+    return Intl.message(
+      'A Drive upload is already in progress. Try again when it finishes.',
+      name: 'driveOversizeUploadBusy',
+    );
+  }
+
   String get driveNoValidAttachment {
     return Intl.message(
       'No valid attachment',
