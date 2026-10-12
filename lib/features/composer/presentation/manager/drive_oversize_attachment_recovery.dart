@@ -54,8 +54,12 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
 
     final files = request.files;
     if (files.isEmpty) return false;
-    // One batch at a time: the running batch owns the dialog and its rows.
-    if (container.read(driveOversizeTransferProvider).isNotEmpty) return true;
+    // One batch at a time: the batch on screen owns the dialog and its rows.
+    // Rows left by a batch whose dialog was removed give way to the next one.
+    if (container.read(driveOversizeTransferProvider).isNotEmpty &&
+        DriveOversizeUploadDialogPresenter.isShowing) {
+      return true;
+    }
 
     final items = files
         .map((file) => DriveOversizeTransferState(
@@ -66,12 +70,21 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
             ))
         .toList();
 
-    container.read(driveOversizeTransferProvider.notifier).start(items);
-    DriveOversizeUploadDialogPresenter.show(container);
+    final notifier = container.read(driveOversizeTransferProvider.notifier);
+    notifier.start(items);
+    // A dialog removed by anything else leaves Send unblocked, so its batch stops.
+    // After our own close the rows are already cleared, so this is a no-op.
+    var dialogRemoved = false;
+    unawaited(DriveOversizeUploadDialogPresenter.show(container, owner: items).then((_) {
+      dialogRemoved = true;
+      for (final item in items) {
+        notifier.cancel(item.taskId);
+      }
+    }));
 
     // Deliberately not awaited: the contract completes at takeover, not at
     // upload completion, or every validateFiles caller waits for the transfer.
-    unawaited(_transfer(container, platformUrl, files, items));
+    unawaited(_transfer(container, platformUrl, files, items, () => dialogRemoved));
     return true;
   }
 
@@ -80,6 +93,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     Uri platformUrl,
     List<FileInfo> files,
     List<DriveOversizeTransferState> items,
+    bool Function() isDialogRemoved,
   ) async {
     final notifier = container.read(driveOversizeTransferProvider.notifier);
     final linked = <_LinkedFile>[];
@@ -87,28 +101,44 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
         currentContext == null ? null : AppLocalizations.of(currentContext!);
     var hasFailedUpload = false;
     var inserted = true;
+    var removedByOther = false;
     Object? runnerError;
 
     try {
       runnerError = await _runUploads(container, notifier, platformUrl, files, items, linked);
       // Any row still failed once uploads settle (cancelled rows don't count).
-      hasFailedUpload = container
-          .read(driveOversizeTransferProvider)
+      hasFailedUpload = _ownRows(container, items)
           .any((item) => item.status == DriveOversizeTransferStatus.failed);
       // Links go in before any toast: a new platform view can drop a pending web editor insert.
       if (linked.isNotEmpty) {
         inserted = await _insertLinks(linked, appLocalizations);
       }
     } finally {
+      // Read before our own close: the dialog view never pops itself, so a removal
+      // already seen here came from elsewhere and cut the batch short.
+      removedByOther = isDialogRemoved();
       // The dialog closes on every path, so the composer is never left blocked.
-      DriveOversizeUploadDialogPresenter.close();
-      notifier.clear();
+      // A batch that outlived its dialog leaves the next batch's dialog and rows alone.
+      DriveOversizeUploadDialogPresenter.close(items);
+      if (_ownRows(container, items).isNotEmpty) notifier.clear();
     }
 
     if (runnerError != null && _routeUrgentError(runnerError)) return;
-    if (hasFailedUpload || !inserted) {
+    if (hasFailedUpload || !inserted || removedByOther) {
       _showFailureToast(appLocalizations);
     }
+  }
+
+  /// This batch's rows still in the provider; empty once another batch replaced them.
+  List<DriveOversizeTransferState> _ownRows(
+    ProviderContainer container,
+    List<DriveOversizeTransferState> items,
+  ) {
+    final taskIds = items.map((item) => item.taskId).toSet();
+    return container
+        .read(driveOversizeTransferProvider)
+        .where((row) => taskIds.contains(row.taskId))
+        .toList();
   }
 
   Future<Object?> _runUploads(
@@ -141,8 +171,8 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
         exception: error,
         stackTrace: stackTrace,
       );
-      for (final item in container.read(driveOversizeTransferProvider)) {
-        if (!item.status.settled) notifier.markFailed(item.taskId);
+      for (final item in items) {
+        notifier.markFailed(item.taskId);
       }
       return error;
     }

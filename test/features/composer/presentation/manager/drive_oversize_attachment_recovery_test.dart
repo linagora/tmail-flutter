@@ -428,6 +428,8 @@ void main() {
 
       hold.complete();
       await tester.pumpAndSettle();
+      // The user never saw the batch end, so the one failure toast tells them.
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       setup.container.dispose();
     });
 
