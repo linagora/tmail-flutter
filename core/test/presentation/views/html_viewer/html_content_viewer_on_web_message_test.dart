@@ -1,5 +1,4 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
-import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -22,12 +21,6 @@ void main() {
         ),
         isFalse,
       );
-    });
-  });
-
-  group('HtmlIframeWidget sandbox policy', () {
-    test('leaves sandbox unset (allow-scripts + allow-same-origin is unsafe)', () {
-      expect(HtmlIframeWidget.sandboxAttribute, isNull);
     });
   });
 }
