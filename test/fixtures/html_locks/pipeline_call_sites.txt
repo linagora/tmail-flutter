@@ -1,0 +1,17 @@
+lib/features/composer/presentation/composer_controller.dart: forComposerSignature
+lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forEditDraftsEmail
+lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forReplyForwardEmail
+lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forReplyForwardEmptyEmail
+lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forRestoreEmail
+lib/features/download/domain/usecase/get_html_content_from_upload_file_interactor.dart: forAttachmentPreview
+lib/features/download/presentation/extensions/preview_attachment_download_controller_extension.dart: forAttachmentPreview
+lib/features/email/data/datasource_impl/email_datasource_impl.dart: forPreviewEmailOnPlatform
+lib/features/email/data/datasource_impl/print_file_datasource_impl.dart: forPrintEmail
+lib/features/email/data/local/html_analyzer.dart: forPlainTextEmail
+lib/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart: forDraftsEmail
+lib/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart: forPreviewEmail
+lib/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart: forPreviewEmailOnWeb
+lib/features/email/presentation/controller/single_email_controller.dart: forCalendarEvent
+lib/features/email/presentation/controller/single_email_controller.dart: forPreviewEmailOnPlatform
+lib/features/email/presentation/controller/single_email_controller.dart: forPreviewEmailOnPlatform
+lib/features/manage_account/data/datasource_impl/identity_data_source_impl.dart: forSignatureIdentity

@@ -26,9 +26,12 @@ void main() {
         transformConfiguration: configuration,
       );
 
+  // These lay the transformed corpus out in the shared document template
+  // (HtmlUtils.generateHtmlDocument), not in the full web viewer document;
+  // the viewer document itself is locked in viewer_document_lock_test.dart.
   group('corpus layout through HtmlTransform', () {
     for (final fixture in htmlEmailCorpus) {
-      test('${fixture.category}/${fixture.name} web 1280', () async {
+      test('${fixture.category}/${fixture.name} web pipeline output, 1280px, shared template', () async {
         final transformed = await transform(
           fixture.html,
           TransformConfiguration.forPreviewEmailOnWeb(),
@@ -56,7 +59,7 @@ void main() {
         );
       });
 
-      test('${fixture.category}/${fixture.name} mobile 360', () async {
+      test('${fixture.category}/${fixture.name} mobile pipeline output, 360px, mobile script', () async {
         final transformed = await transform(
           fixture.html,
           TransformConfiguration.forPreviewEmail(),

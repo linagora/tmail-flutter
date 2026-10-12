@@ -8,3 +8,5 @@ core/test/fixtures/html_locks/** @hoangdat
 core/tool/generate_html_email_corpus.dart @hoangdat
 core/test/utils/html/** @hoangdat
 core/test/utils/html_locks/** @hoangdat
+test/fixtures/html_locks/** @hoangdat
+test/features/base/html_pipeline_call_sites_lock_test.dart @hoangdat

@@ -130,6 +130,18 @@ void main() {
             disableScrolling: true,
           ),
         ),
+    'web-custom-font-size.html': () =>
+        HtmlViewerDocumentBuilder.buildWebDocument(
+          const HtmlWebViewerDocumentInput(
+            content: plain,
+            viewId: 'lockViewId',
+            widthContent: 760,
+            minHeight: ConstantsUI.htmlContentMinHeight,
+            minWidth: ConstantsUI.htmlContentMinWidth,
+            useDefaultFontStyle: true,
+            fontSize: 17,
+          ),
+        ),
     'web-touch-scroll.html': () => HtmlViewerDocumentBuilder.buildWebDocument(
           const HtmlWebViewerDocumentInput(
             content: plain,

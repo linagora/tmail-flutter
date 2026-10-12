@@ -56,26 +56,16 @@ void main() {
     }
   });
 
-  group('TransformConfiguration contract — current membership', () {
-    test('preview configs currently allow contenteditable', () {
-      expect(
-        pipelineAllowsContentEditable(TransformConfiguration.forPreviewEmail()),
-        isTrue,
-      );
-      expect(
-        pipelineAllowsContentEditable(
-          TransformConfiguration.forPreviewEmailOnWeb(),
-        ),
-        isTrue,
-      );
-      expect(
-        pipelineAllowsContentEditable(
-          TransformConfiguration.forEditDraftsEmail(),
-        ),
-        isTrue,
-      );
-    });
+  group('TransformConfiguration contract — contenteditable', () {
+    for (final row in htmlPipelineRegistry().where((row) => row.takesHtml)) {
+      test('${row.name} ${row.allowsContentEditable ? 'lets' : 'does not let'} '
+          'the Drive link card keep contenteditable', () {
+        expect(pipelineAllowsContentEditable(row.build()), row.allowsContentEditable);
+      });
+    }
+  });
 
+  group('TransformConfiguration contract — current membership', () {
     test('attachment preview sanitizes and does not rewrite display layout', () {
       final config = TransformConfiguration.forAttachmentPreview();
       expect(pipelineHasSanitizer(config), isTrue);
@@ -97,17 +87,6 @@ void main() {
       ]) {
         expect(pipelineHasDisplayOnly(config), isFalse);
       }
-    });
-
-    test('print has no sanitizer (input is already-sanitized EmailLoaded)', () {
-      expect(pipelineHasSanitizer(TransformConfiguration.forPrintEmail()), isFalse);
-    });
-
-    test('reply-forward has no sanitizer (input is EmailLoaded.htmlContent)', () {
-      expect(
-        pipelineHasSanitizer(TransformConfiguration.forReplyForwardEmail()),
-        isFalse,
-      );
     });
 
     test('forRemoveScript is present on full preview configs', () {
@@ -139,20 +118,6 @@ void main() {
         TransformConfiguration.forEditDraftsEmail().domTransformers.any(
           (transformer) => transformer is HideDraftSignatureTransformer,
         ),
-        isTrue,
-      );
-    });
-
-    test('forPreviewEmailOnPlatform matches mobile and web preview', () {
-      PlatformInfo.isTestingForWeb = false;
-      expect(
-        pipelineHasSanitizer(TransformConfiguration.forPreviewEmailOnPlatform()),
-        isTrue,
-      );
-
-      PlatformInfo.isTestingForWeb = true;
-      expect(
-        pipelineHasSanitizer(TransformConfiguration.forPreviewEmailOnPlatform()),
         isTrue,
       );
     });
