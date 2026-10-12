@@ -277,14 +277,14 @@ void main() {
       ]));
     });
 
-    testWidgets('clearing the rows while the dialog is mounted removes every row', (tester) async {
+    testWidgets('clearing the rows while the dialog is mounted keeps the last rows on screen', (tester) async {
       await pumpDialog(tester, items: [makeItem('a'), makeItem('b')]);
 
       container.read(driveOversizeTransferProvider.notifier).clear();
       await tester.pump();
 
       expect(tester.takeException(), isNull);
-      expect(find.byType(LinagoraFileTransferRow), findsNothing);
+      expect(find.byType(LinagoraFileTransferRow), findsNWidgets(2));
     });
   });
 }

@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 /// Binds the oversize transfer state to the design-system file transfer
 /// dialog. The surface itself is the presenter's job.
-class DriveOversizeUploadDialogView extends ConsumerWidget {
+class DriveOversizeUploadDialogView extends ConsumerStatefulWidget {
   final ImagePaths imagePaths;
   final bool isWebLayout;
 
@@ -22,7 +22,17 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
     required this.isWebLayout,
   });
 
-  LinagoraFileTransferLayout get _layout => isWebLayout
+  @override
+  ConsumerState<DriveOversizeUploadDialogView> createState() =>
+      _DriveOversizeUploadDialogViewState();
+}
+
+class _DriveOversizeUploadDialogViewState
+    extends ConsumerState<DriveOversizeUploadDialogView> {
+  /// Rows held on screen after clear(), while the closing dialog animates out.
+  List<DriveOversizeTransferState> _closingRows = const [];
+
+  LinagoraFileTransferLayout get _layout => widget.isWebLayout
       ? LinagoraFileTransferLayout.wide
       : LinagoraFileTransferLayout.compact;
 
@@ -32,9 +42,18 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
           .copyWith(rowCloseIconSize: 14, headerCloseIconSize: 14);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final itemCount = ref.watch(
+  Widget build(BuildContext context) {
+    ref.listen<List<DriveOversizeTransferState>>(driveOversizeTransferProvider,
+        (previous, next) {
+      if (next.isEmpty && previous != null && previous.isNotEmpty) {
+        setState(() => _closingRows = previous);
+      } else if (next.isNotEmpty && _closingRows.isNotEmpty) {
+        setState(() => _closingRows = const []);
+      }
+    });
+    final liveCount = ref.watch(
       driveOversizeTransferProvider.select((items) => items.length));
+    final itemCount = liveCount == 0 ? _closingRows.length : liveCount;
     final anyRunning = ref.watch(driveOversizeTransferProvider.select(
       (items) => items.any((item) => !item.status.settled)));
     final notifier = ref.read(driveOversizeTransferProvider.notifier);
@@ -49,9 +68,10 @@ class DriveOversizeUploadDialogView extends ConsumerWidget {
       itemCount: itemCount,
       itemBuilder: (_, index) => _DriveOversizeUploadRowSlot(
         index: index,
-        imagePaths: imagePaths,
+        imagePaths: widget.imagePaths,
         layout: _layout,
         style: _style,
+        fallback: index < _closingRows.length ? _closingRows[index] : null,
       ),
       cancelLabel: appLocalizations.cancel,
       onClose: notifier.cancelAll,
@@ -87,19 +107,21 @@ class _DriveOversizeUploadRowSlot extends ConsumerWidget {
   final ImagePaths imagePaths;
   final LinagoraFileTransferLayout layout;
   final LinagoraFileTransferStyle style;
+  final DriveOversizeTransferState? fallback;
 
   const _DriveOversizeUploadRowSlot({
     required this.index,
     required this.imagePaths,
     required this.layout,
     required this.style,
+    required this.fallback,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final item = ref.watch(driveOversizeTransferProvider.select(
-      (items) => index < items.length ? items[index] : null));
-    // The list only empties on clear(), as the dialog closes.
+      (items) => index < items.length ? items[index] : null)) ?? fallback;
+    // Empty after clear(); the closing dialog shows the last rows.
     if (item == null) return const SizedBox.shrink();
     final notifier = ref.read(driveOversizeTransferProvider.notifier);
     final appLocalizations = AppLocalizations.of(context);
