@@ -46,6 +46,8 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     AttachmentUploadFailure failure,
     AttachmentUploadRequest request,
   ) async {
+    // Drive only fixes size; any other failure keeps the gate's own feedback.
+    if (failure is! MaxEmailAttachmentSizeExceeded) return false;
     final container = ProviderScope.containerOf(_context, listen: false);
     // Null means fqdn, ecosystem flag or user preference says no Drive: decline,
     // and the gate shows today's size dialog.
