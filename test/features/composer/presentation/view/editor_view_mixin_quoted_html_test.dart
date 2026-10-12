@@ -100,34 +100,39 @@ void main() {
     expect(html, contains('&lt;script&gt;'));
   });
 
-  testWidgets('forward wrap shows every address field as text, never as markup', (tester) async {
-    const injected = '<img src=x onerror=alert(1)>';
-    final localizations = await _pumpLocalizations(tester);
-    final html = _QuoteHarness().getEmailContentQuotedAsHtml(
-      locale: const Locale('en'),
-      appLocalizations: localizations,
-      emailContent: '<p>Body</p>',
-      emailActionType: EmailActionType.forward,
-      presentationEmail: PresentationEmail(
-        from: {EmailAddress('From $injected', 'from@example.com')},
-        to: {EmailAddress('To $injected', 'to@example.com')},
-        cc: {EmailAddress('Cc $injected', 'cc@example.com')},
-        bcc: {EmailAddress('Bcc $injected', 'bcc@example.com')},
-        replyTo: {EmailAddress('ReplyTo $injected', 'reply@example.com')},
-      ),
-    );
+  testWidgets(
+    'forward wrap shows every address field as text, never as markup',
+    _expectForwardAddressFieldsAsText,
+  );
+}
 
-    final document = parse(html);
-    final text = document.body!.text;
-    expect(document.querySelectorAll('img'), isEmpty);
-    for (final (prefix, name) in [
-      (localizations.from_email_address_prefix, 'From $injected'),
-      (localizations.to_email_address_prefix, 'To $injected'),
-      (localizations.cc_email_address_prefix, 'Cc $injected'),
-      (localizations.bcc_email_address_prefix, 'Bcc $injected'),
-      (localizations.reply_to_email_address_prefix, 'ReplyTo $injected'),
-    ]) {
-      expect(text, contains('$prefix: $name'));
-    }
-  });
+Future<void> _expectForwardAddressFieldsAsText(WidgetTester tester) async {
+  const injected = '<img src=x onerror=alert(1)>';
+  final localizations = await _pumpLocalizations(tester);
+  final html = _QuoteHarness().getEmailContentQuotedAsHtml(
+    locale: const Locale('en'),
+    appLocalizations: localizations,
+    emailContent: '<p>Body</p>',
+    emailActionType: EmailActionType.forward,
+    presentationEmail: PresentationEmail(
+      from: {EmailAddress('From $injected', 'from@example.com')},
+      to: {EmailAddress('To $injected', 'to@example.com')},
+      cc: {EmailAddress('Cc $injected', 'cc@example.com')},
+      bcc: {EmailAddress('Bcc $injected', 'bcc@example.com')},
+      replyTo: {EmailAddress('ReplyTo $injected', 'reply@example.com')},
+    ),
+  );
+
+  final document = parse(html);
+  final text = document.body!.text;
+  expect(document.querySelectorAll('img'), isEmpty);
+  for (final (prefix, name) in [
+    (localizations.from_email_address_prefix, 'From $injected'),
+    (localizations.to_email_address_prefix, 'To $injected'),
+    (localizations.cc_email_address_prefix, 'Cc $injected'),
+    (localizations.bcc_email_address_prefix, 'Bcc $injected'),
+    (localizations.reply_to_email_address_prefix, 'ReplyTo $injected'),
+  ]) {
+    expect(text, contains('$prefix: $name'));
+  }
 }
