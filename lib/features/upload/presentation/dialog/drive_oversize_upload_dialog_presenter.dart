@@ -35,21 +35,27 @@ class DriveOversizeUploadDialogPresenter {
       ),
     );
 
+    final surface = LinagoraFileTransferSurface(
+      layout: isWebLayout
+          ? LinagoraFileTransferLayout.wide
+          : LinagoraFileTransferLayout.compact,
+      semanticLabel: Get.context == null
+          ? null
+          : AppLocalizations.of(Get.context!).attachingFileTitle,
+      child: body,
+    );
+
     return Get.dialog<void>(
       PopScope(
         canPop: false,
-        child: LinagoraFileTransferSurface(
-          layout: isWebLayout
-              ? LinagoraFileTransferLayout.wide
-              : LinagoraFileTransferLayout.compact,
-          semanticLabel: Get.context == null
-              ? null
-              : AppLocalizations.of(Get.context!).attachingFileTitle,
-          child: body,
-        ),
+        // The sheet pads its own bottom/sides so its background reaches the screen edge.
+        child: isWebLayout
+            ? surface
+            : SafeArea(bottom: false, left: false, right: false, child: surface),
       ),
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      useSafeArea: isWebLayout,
     ).whenComplete(() {
       if (identical(_owner, owner)) _owner = null;
     });

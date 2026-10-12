@@ -110,6 +110,23 @@ void main() {
       });
     }
 
+    testWidgets('the compact sheet background reaches the bottom edge while its content clears the inset', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+
+      await _showDialog(tester, container);
+
+      final screenHeight = tester.view.physicalSize.height;
+      final background = find.descendant(
+        of: find.byType(LinagoraFileTransferSurface),
+        matching: find.byType(DecoratedBox),
+      ).first;
+      expect(tester.getBottomLeft(background).dy, equals(screenHeight));
+      expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
+    });
+
     testWidgets('a tap on the barrier does not close the dialog', (tester) async {
       await _pumpHost(tester, container);
       await _showDialog(tester, container);
