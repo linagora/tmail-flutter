@@ -500,7 +500,7 @@ void main() {
     });
 
     for (final failure in [_Failure.uploadConflict, _Failure.shareLinkForbidden]) {
-      testWidgets('${failure.name} on one file: the others still reach the editor', (tester) async {
+      testWidgets('${failure.name} on one file: that row fails, the others still reach the editor, one failure toast', (tester) async {
         final inserted = <String>[];
         final setup = await _setUpRecovery(
           tester,
@@ -514,6 +514,7 @@ void main() {
             return true;
           },
         );
+        final lastStatuses = _recordLastStatuses(setup.container);
 
         await setup.recovery.recover(
           _failure,
@@ -525,11 +526,56 @@ void main() {
         expect(inserted.single, contains('sharecode=one'));
         expect(inserted.single, contains('sharecode=two'));
         expect(inserted.single, isNot(contains('bad.zip')));
+        expect(lastStatuses(), {
+          'one.zip': DriveOversizeTransferStatus.linked,
+          'bad.zip': DriveOversizeTransferStatus.failed,
+          'two.zip': DriveOversizeTransferStatus.linked,
+        });
+        expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
         expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
         expect(Get.isDialogOpen, isNot(true));
         setup.container.dispose();
       });
     }
+
+    testWidgets('a file with no readable source fails only its own row', (tester) async {
+      final inserted = <String>[];
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {
+          'one.zip': Uri.parse('https://drive.example.com/public?sharecode=one'),
+          'two.zip': Uri.parse('https://drive.example.com/public?sharecode=two'),
+        },
+        insertHtml: (html) async {
+          inserted.add(html);
+          return true;
+        },
+      );
+      final lastStatuses = _recordLastStatuses(setup.container);
+
+      await setup.recovery.recover(
+        _failure,
+        _makeRequest([
+          _makeFile('one.zip'),
+          const FilePlaceholderInfo(fileName: 'empty.zip', fileSize: 100),
+          _makeFile('two.zip'),
+        ]),
+      );
+      await tester.pumpAndSettle();
+
+      // The body is built before any request, so the empty file never reaches Drive.
+      expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['one.zip', 'two.zip']);
+      expect(lastStatuses(), {
+        'one.zip': DriveOversizeTransferStatus.linked,
+        'empty.zip': DriveOversizeTransferStatus.failed,
+        'two.zip': DriveOversizeTransferStatus.linked,
+      });
+      expect(inserted.single, contains('sharecode=one'));
+      expect(inserted.single, contains('sharecode=two'));
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
+      expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      setup.container.dispose();
+    });
 
     testWidgets('an editor that throws still closes the dialog and clears the batch', (tester) async {
       final setup = await _setUpRecovery(
