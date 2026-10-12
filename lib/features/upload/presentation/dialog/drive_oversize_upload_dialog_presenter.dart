@@ -14,9 +14,16 @@ import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize
 class DriveOversizeUploadDialogPresenter {
   const DriveOversizeUploadDialogPresenter._();
 
-  /// Opens the batch dialog. Modal, opaque barrier, no dismiss — this is what
+  static Object? _owner;
+
+  /// True while a batch's dialog is on screen.
+  static bool get isShowing => _owner != null;
+
+  /// Opens the batch dialog for [owner]. Modal, opaque barrier, no dismiss — this is what
   /// blocks every user input for the Drive path. Chips are untouched.
-  static void show(ProviderContainer container) {
+  /// Completes when the route is removed, by [close] or by anything else.
+  static Future<void> show(ProviderContainer container, {required Object owner}) {
+    _owner = owner;
     final isWebLayout = PlatformInfo.isWeb;
     final body = PointerInterceptor(
       child: UncontrolledProviderScope(
@@ -28,7 +35,7 @@ class DriveOversizeUploadDialogPresenter {
       ),
     );
 
-    Get.dialog(
+    return Get.dialog<void>(
       PopScope(
         canPop: false,
         child: LinagoraFileTransferSurface(
@@ -43,11 +50,15 @@ class DriveOversizeUploadDialogPresenter {
       ),
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-    );
+    ).whenComplete(() {
+      if (identical(_owner, owner)) _owner = null;
+    });
   }
 
-  /// Safe to call when nothing is open — `Get.isDialogOpen` guards a double pop.
-  static void close() {
+  /// Pops only [owner]'s dialog, so a batch that outlived its dialog never closes the next one.
+  static void close(Object owner) {
+    if (!identical(_owner, owner)) return;
+    _owner = null;
     if (Get.isDialogOpen == true) Get.back();
   }
 }
