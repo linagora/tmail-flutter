@@ -28,6 +28,7 @@ Future<void> _settleRoute(WidgetTester tester) async {
   await tester.pump();
 }
 
+final _batch = Object();
 final _dialogView = find.byType(DriveOversizeUploadDialogView);
 
 Future<void> _pumpHost(WidgetTester tester, ProviderContainer container) async {
@@ -41,7 +42,7 @@ Future<void> _pumpHost(WidgetTester tester, ProviderContainer container) async {
 }
 
 Future<void> _showDialog(WidgetTester tester, ProviderContainer container) async {
-  DriveOversizeUploadDialogPresenter.show(container);
+  DriveOversizeUploadDialogPresenter.show(container, owner: _batch);
   await _settleRoute(tester);
 }
 
@@ -133,10 +134,20 @@ void main() {
       await _pumpHost(tester, container);
       await _showDialog(tester, container);
 
-      DriveOversizeUploadDialogPresenter.close();
+      DriveOversizeUploadDialogPresenter.close(_batch);
       await _settleRoute(tester);
 
       expect(_dialogView, findsNothing);
+    });
+
+    testWidgets('close for another batch leaves the open dialog in place', (tester) async {
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+
+      DriveOversizeUploadDialogPresenter.close(Object());
+      await _settleRoute(tester);
+
+      expect(_dialogView, findsOneWidget);
     });
 
     testWidgets('close with no dialog open leaves the current page in place', (tester) async {
@@ -144,7 +155,7 @@ void main() {
       Get.to(() => const Scaffold(body: Text('second page')));
       await _settleRoute(tester);
 
-      DriveOversizeUploadDialogPresenter.close();
+      DriveOversizeUploadDialogPresenter.close(_batch);
       await _settleRoute(tester);
 
       expect(find.text('second page'), findsOneWidget);
