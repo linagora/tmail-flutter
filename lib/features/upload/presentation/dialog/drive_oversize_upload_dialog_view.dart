@@ -134,7 +134,7 @@ class _DriveOversizeUploadRowSlot extends ConsumerWidget {
       progress: _progress(item),
       // A settled row has nothing left to cancel.
       onCancel: item.status.settled ? null : () => notifier.cancel(item.taskId),
-      leading: SvgPicture.asset(imagePaths.icFileDefault, width: 20, height: 20),
+      leading: SvgPicture.asset(item.getIcon(imagePaths), width: 20, height: 20),
     );
   }
 
