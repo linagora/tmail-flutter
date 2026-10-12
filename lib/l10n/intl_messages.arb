@@ -5388,6 +5388,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "driveOversizeUploadBusy": "A Drive upload is already in progress. Try again when it finishes.",
+  "@driveOversizeUploadBusy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveNoValidAttachment": "No valid attachment",
   "@driveNoValidAttachment": {
     "type": "text",
