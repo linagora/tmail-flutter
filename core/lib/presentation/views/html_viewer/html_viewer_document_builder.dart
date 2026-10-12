@@ -205,20 +205,20 @@ ${_webHandleMessage(viewId)}
 
         ${_webResizeObserver(input)}
         
-        ${_webMailtoHandler(input)}
+        ${_webLinkClickHandler(input, _WebLinkScript.mailto)}
         
         
         
-        ${_webHyperLinkHandler(input)}
+        ${_webLinkClickHandler(input, _WebLinkScript.hyperLink)}
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getHeight"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getWidth"}), "*");
           
-          ${_webListenHyperLinks(input)}
+          ${_webListenLinks(input, _WebLinkScript.hyperLink)}
           
-          ${_webListenMailtoLinks(input)}
+          ${_webListenLinks(input, _WebLinkScript.mailto)}
           
           ${!input.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
         }
@@ -249,48 +249,32 @@ ${_webHandleMessage(viewId)}
           });
         ''' : '';
 
-  /// Sends `mailto:` clicks to Dart.
-  static String _webMailtoHandler(HtmlWebViewerDocumentInput input) =>
-      input.hasMailtoDelegate
+  /// Defines the click handler of [link], which sends the clicked URL to Dart,
+  /// when the viewer was given the matching callback.
+  static String _webLinkClickHandler(
+    HtmlWebViewerDocumentInput input,
+    _WebLinkScript link,
+  ) =>
+      link.isEnabled(input)
             ? '''
-                function handleOnClickEmailLink(e) {
+                function ${link.handler}(e) {
                    var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: OpenLink", "url": "" + href}), "*");
+                   window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: ${link.dartType}", "url": "" + href}), "*");
                    e.preventDefault();
                 }
               '''
             : '';
 
-  /// Sends link clicks to Dart.
-  static String _webHyperLinkHandler(HtmlWebViewerDocumentInput input) =>
-      input.hasHyperLinkAction
-            ? '''
-                function onClickHyperLink(e) {
-                   var href = this.href;
-                   window.parent.postMessage(JSON.stringify({"view": "${input.viewId}", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
-                   e.preventDefault();
-                }
-              '''
-            : '';
-
-  /// Attaches the link click handler on load.
-  static String _webListenHyperLinks(HtmlWebViewerDocumentInput input) =>
-      input.hasHyperLinkAction
+  /// Attaches the click handler of [link] on load, when it is defined.
+  static String _webListenLinks(
+    HtmlWebViewerDocumentInput input,
+    _WebLinkScript link,
+  ) =>
+      link.isEnabled(input)
               ? '''
-                  var hyperLinks = document.querySelectorAll('a');
-                  for (var i=0; i < hyperLinks.length; i++){
-                      hyperLinks[i].addEventListener('click', onClickHyperLink);
-                  }
-                '''
-              : '';
-
-  /// Attaches the `mailto:` click handler on load.
-  static String _webListenMailtoLinks(HtmlWebViewerDocumentInput input) =>
-      input.hasMailtoDelegate
-              ? '''
-                  var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
-                  for (var i=0; i < emailLinks.length; i++){
-                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
+                  var ${link.variable} = document.querySelectorAll('${link.selector}');
+                  for (var i=0; i < ${link.variable}.length; i++){
+                      ${link.variable}[i].addEventListener('click', ${link.handler});
                   }
                 '''
               : '';
@@ -327,4 +311,37 @@ ${_webHandleMessage(viewId)}
             }
           }
         }''';
+}
+
+/// The two kinds of link clicks the web viewer forwards to Dart.
+enum _WebLinkScript {
+  mailto(
+    handler: 'handleOnClickEmailLink',
+    dartType: 'OpenLink',
+    variable: 'emailLinks',
+    selector: 'a[href^="mailto:"]',
+  ),
+  hyperLink(
+    handler: HtmlViewerDocumentBuilder.onClickHyperLinkName,
+    dartType: HtmlViewerDocumentBuilder.onClickHyperLinkName,
+    variable: 'hyperLinks',
+    selector: 'a',
+  );
+
+  const _WebLinkScript({
+    required this.handler,
+    required this.dartType,
+    required this.variable,
+    required this.selector,
+  });
+
+  final String handler;
+  final String dartType;
+  final String variable;
+  final String selector;
+
+  bool isEnabled(HtmlWebViewerDocumentInput input) => switch (this) {
+        _WebLinkScript.mailto => input.hasMailtoDelegate,
+        _WebLinkScript.hyperLink => input.hasHyperLinkAction,
+      };
 }
