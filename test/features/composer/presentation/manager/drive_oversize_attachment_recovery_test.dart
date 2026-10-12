@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
+import 'package:core/utils/logging/log_level.dart';
 import 'package:dio/dio.dart' hide Response;
 import 'package:dio/dio.dart' as dio show Response;
 import 'package:flutter/material.dart';
@@ -695,9 +696,10 @@ void main() {
 
       expect(lastStatuses(), {'a.zip': DriveOversizeTransferStatus.linked});
       expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
+      expect(logHandler.errorRecords, isEmpty);
       expect(
-        logHandler.errorRecords.map((record) => record.rawMessage),
-        ['DriveOversizeAttachmentRecovery::_insertLinks: editor refused'],
+        logHandler.records.where((record) => record.level == Level.trace).map((record) => record.rawMessage),
+        contains('DriveOversizeAttachmentRecovery::_insertLinks: editor refused'),
       );
       setup.container.dispose();
     });
@@ -738,10 +740,10 @@ void main() {
         'a.zip': DriveOversizeTransferStatus.failed,
         'b.zip': DriveOversizeTransferStatus.failed,
       });
-      expect(
-        logHandler.errorRecords.map((record) => record.rawMessage),
-        ['DriveOversizeAttachmentRecovery::_runUploads: Bad state: OIDC token is unavailable'],
-      );
+      final error = logHandler.errorRecords.single;
+      expect(error.rawMessage, startsWith('DriveOversizeAttachmentRecovery::_runUploads'));
+      expect(error.exception, isA<StateError>());
+      expect(error.stackTrace, isNotNull);
       expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadFailed]);
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
       setup.container.dispose();
