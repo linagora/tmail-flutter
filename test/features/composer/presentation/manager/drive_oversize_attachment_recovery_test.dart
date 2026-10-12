@@ -470,6 +470,45 @@ void main() {
       setup.container.dispose();
     });
 
+    testWidgets('a batch that outlived its dialog and then fails leaves the next batch rows unfailed', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'b.zip': Uri.parse('https://drive.example.com/public?sharecode=x')},
+      );
+      final holdFirst = Completer<void>();
+      final holdSecond = Completer<void>();
+      addTearDown(() {
+        if (!holdFirst.isCompleted) holdFirst.complete();
+        if (!holdSecond.isCompleted) holdSecond.complete();
+      });
+
+      setup.repository.holdExchange = holdFirst;
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+      Get.back();
+      await _settleDialogRoute(tester);
+
+      setup.repository.holdExchange = holdSecond;
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('b.zip')]));
+      await tester.pump();
+
+      // The first batch's token exchange fails while the second batch is still waiting on its own.
+      setup.repository.failExchange = true;
+      holdFirst.complete();
+      await _settleDialogRoute(tester);
+
+      final row = setup.container.read(driveOversizeTransferProvider).single;
+      expect(row.fileName, 'b.zip');
+      expect(row.status, DriveOversizeTransferStatus.waiting);
+      expect(find.byType(DriveOversizeUploadDialogView), findsOneWidget);
+
+      setup.repository.failExchange = false;
+      holdSecond.complete();
+      await tester.pumpAndSettle();
+      setup.container.dispose();
+    });
+
     testWidgets('a running upload marks its row uploading and forwards its progress', (tester) async {
       Get.put<MailboxDashBoardController>(_FakeDashboardController());
       final setup = await _setUpRecovery(tester);
