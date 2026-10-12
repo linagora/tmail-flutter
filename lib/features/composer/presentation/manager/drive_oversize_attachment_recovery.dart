@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:dio/dio.dart';
@@ -61,9 +62,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     if (container.read(driveOversizeTransferProvider).isNotEmpty &&
         DriveOversizeUploadDialogPresenter.isShowing) {
       // Taken over so the size dialog stays shut; the toast says why the file was dropped.
-      final context = currentContext;
-      _showFailureToast(
-          context == null ? null : AppLocalizations.of(context).driveOversizeUploadBusy);
+      _showBusyToast();
       return true;
     }
 
@@ -284,6 +283,16 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     if (currentContext == null || message == null) return;
     getBinding<ToastManager>()?.showMessageFailure(
       DrivePickFailure(Exception(), message: message),
+    );
+  }
+
+  void _showBusyToast() {
+    final context = currentContext;
+    final overlayContext = currentOverlayContext;
+    if (context == null || overlayContext == null) return;
+    getBinding<AppToast>()?.showToastWarningMessage(
+      overlayContext,
+      AppLocalizations.of(context).driveOversizeUploadBusy,
     );
   }
 }
