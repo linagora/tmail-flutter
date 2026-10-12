@@ -186,6 +186,14 @@ AttachmentUploadRequest _makeRequest(List<FileInfo> files) => AttachmentUploadRe
       files: files,
     );
 
+/// The indeterminate bar animates forever, so pumpAndSettle can't be used while
+/// a dialog is up: a frame to start the route transition, one past its end, one to finalize.
+Future<void> _settleDialogRoute(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+  await tester.pump();
+}
+
 typedef _Setup = ({
   DriveOversizeAttachmentRecovery recovery,
   ProviderContainer container,
@@ -375,6 +383,73 @@ void main() {
       hold.complete();
       await tester.pumpAndSettle();
       expect(find.byType(DriveOversizeUploadDialogView), findsNothing);
+      setup.container.dispose();
+    });
+
+    testWidgets('a dialog removed mid-batch cancels the batch it was showing', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'a.zip': Uri.parse('https://drive.example.com/public?sharecode=x')},
+      );
+      final hold = Completer<void>();
+      addTearDown(() => hold.isCompleted ? null : hold.complete());
+      setup.repository.holdUpload = hold;
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+      expect(find.byType(DriveOversizeUploadDialogView), findsOneWidget);
+
+      // Something other than the batch removes the dialog route: a logout
+      // navigation or a stray pop. PopScope does not stop a programmatic pop.
+      Get.back();
+      await _settleDialogRoute(tester);
+      expect(find.byType(DriveOversizeUploadDialogView), findsNothing);
+
+      // With no dialog, nothing blocks Send, so the batch must not keep running unseen.
+      final row = setup.container.read(driveOversizeTransferProvider).single;
+      expect(row.status, DriveOversizeTransferStatus.cancelled);
+      expect(row.cancelToken.isCancelled, isTrue);
+
+      hold.complete();
+      await tester.pumpAndSettle();
+      setup.container.dispose();
+    });
+
+    testWidgets('a batch that outlived its dialog leaves the next batch dialog and rows alone', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final link = Uri.parse('https://drive.example.com/public?sharecode=x');
+      final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link, 'b.zip': link});
+      final holdFirst = Completer<void>();
+      final holdSecond = Completer<void>();
+      addTearDown(() {
+        if (!holdFirst.isCompleted) holdFirst.complete();
+        if (!holdSecond.isCompleted) holdSecond.complete();
+      });
+
+      setup.repository.holdUpload = holdFirst;
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pump();
+      Get.back();
+      await _settleDialogRoute(tester);
+
+      setup.repository.holdUpload = holdSecond;
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('b.zip')]));
+      await tester.pump();
+      expect(find.byType(DriveOversizeUploadDialogView), findsOneWidget);
+
+      // The first batch ends while the second is still uploading.
+      holdFirst.complete();
+      await _settleDialogRoute(tester);
+
+      expect(find.byType(DriveOversizeUploadDialogView), findsOneWidget);
+      expect(
+        setup.container.read(driveOversizeTransferProvider).map((row) => row.fileName),
+        ['b.zip'],
+      );
+
+      holdSecond.complete();
+      await tester.pumpAndSettle();
       setup.container.dispose();
     });
 
