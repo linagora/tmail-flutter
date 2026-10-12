@@ -251,16 +251,14 @@ void main() {
       );
     });
 
-    test('rethrows the 409 once every name attempt is taken', () async {
-      final adapter = _QueueAdapter(List.filled(10, 409));
+    test('keeps retrying past ten taken names until one is free', () async {
+      final adapter = _QueueAdapter([...List.filled(12, 409), fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
-      await expectLater(
-        datasource.uploadFile(context: context, spec: spec),
-        throwsA(isA<DioException>()),
-      );
-      expect(adapter.capturedOptions, hasLength(10));
-      expect(adapter.capturedOptions.last.uri.queryParameters['Name'], equals('report (9).pdf'));
+      await datasource.uploadFile(context: context, spec: spec);
+
+      expect(adapter.capturedOptions, hasLength(13));
+      expect(adapter.capturedOptions.last.uri.queryParameters['Name'], equals('report (12).pdf'));
     });
 
     test('reads a fresh body for the 409 retry', () async {

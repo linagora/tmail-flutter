@@ -25,9 +25,6 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
     throw FormatException('Expected JSON object or string, got: ${data.runtimeType}');
   }
 
-  /// Name-taken attempts before the 409 surfaces; each one re-sends the body.
-  static const _maxNameAttempts = 10;
-
   @override
   Future<DriveUploadedFile> uploadFile({
     required WorkplaceRequestContext context,
@@ -40,9 +37,8 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
         return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, requestTransfer);
       } on DioException catch (exception) {
         if (exception.type == DioExceptionType.cancel) throw WorkplaceUploadCancelledException();
-        // The stack already holds a file by that name; retry with the next suffix.
-        final isLast = attempt + 1 >= _maxNameAttempts;
-        if (exception.response?.statusCode != 409 || isLast) rethrow;
+        // The stack already holds a file by that name; retry with the next suffix until one is free.
+        if (exception.response?.statusCode != 409) rethrow;
       }
     }
   }
