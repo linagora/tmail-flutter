@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/data/network/upload_body.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/validator/attachment_upload_failure.dart';
@@ -86,9 +87,10 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
         currentContext == null ? null : AppLocalizations.of(currentContext!);
     var hasFailedUpload = false;
     var inserted = true;
+    Object? runnerError;
 
     try {
-      await _runUploads(container, notifier, platformUrl, files, items, linked);
+      runnerError = await _runUploads(container, notifier, platformUrl, files, items, linked);
       // Any row still failed once uploads settle (cancelled rows don't count).
       hasFailedUpload = container
           .read(driveOversizeTransferProvider)
@@ -103,12 +105,13 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
       notifier.clear();
     }
 
+    if (runnerError != null && _routeUrgentError(runnerError)) return;
     if (hasFailedUpload || !inserted) {
       _showFailureToast(appLocalizations);
     }
   }
 
-  Future<void> _runUploads(
+  Future<Object?> _runUploads(
     ProviderContainer container,
     DriveOversizeTransfer notifier,
     Uri platformUrl,
@@ -129,6 +132,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
               linked: linked,
             )),
       );
+      return null;
     } catch (error) {
       // Failed outside a per-file catch (token exchange, bridge): fail only
       // unsettled rows, so an already-linked row keeps its label.
@@ -136,6 +140,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
       for (final item in container.read(driveOversizeTransferProvider)) {
         if (!item.status.settled) notifier.markFailed(item.taskId);
       }
+      return error;
     }
   }
 
@@ -215,6 +220,16 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
       logError('DriveOversizeAttachmentRecovery::_insertLinks: $error');
       return false;
     }
+  }
+
+  /// A dead session takes BaseController's path (logout, reconnect), as the Drive picker does.
+  bool _routeUrgentError(Object error) {
+    final dashboard = getBinding<MailboxDashBoardController>();
+    if (dashboard == null || error is! Exception || !dashboard.validateUrgentException(error)) {
+      return false;
+    }
+    dashboard.handleUrgentException(failure: DrivePickFailure(error), exception: error);
+    return true;
   }
 
   void _showFailureToast(AppLocalizations? appLocalizations) {
