@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:universal_html/html.dart';
 
@@ -17,15 +16,13 @@ class HtmlIframeWidget extends StatelessWidget {
   final String? width, height, src, srcdoc;
   final double? borderRadius;
 
-  @visibleForTesting
-  static const String? sandboxAttribute = null;
-
   @override
   Widget build(BuildContext context) {
     return HtmlElementView.fromTagName(
       key: key,
       tagName: 'iframe',
       onElementCreated: (element) {
+        // No sandbox: the viewer needs allow-scripts + allow-same-origin, which together void it.
         final iframe = element as IFrameElement;
         onIframeCreated?.call(iframe);
         iframe
