@@ -795,7 +795,7 @@ void main() {
       setup.container.dispose();
     });
 
-    testWidgets('a second oversize batch while one runs leaves the running batch alone', (tester) async {
+    testWidgets('a second oversize batch while one runs is denied with a busy toast and leaves the running batch alone', (tester) async {
       Get.put<MailboxDashBoardController>(_FakeDashboardController());
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
       final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link, 'b.zip': link});
@@ -808,10 +808,12 @@ void main() {
       await tester.pump();
 
       expect(second, isTrue);
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadBusy]);
       expect(setup.container.read(driveOversizeTransferProvider).map((row) => row.fileName), ['a.zip']);
       expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['a.zip']);
       hold.complete();
       await tester.pumpAndSettle();
+      expect(setup.toast.failureMessages, [setup.appLocalizations.driveOversizeUploadBusy]);
       setup.container.dispose();
     });
   });

@@ -60,6 +60,10 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     // Rows left by a batch whose dialog was removed give way to the next one.
     if (container.read(driveOversizeTransferProvider).isNotEmpty &&
         DriveOversizeUploadDialogPresenter.isShowing) {
+      // Taken over so the size dialog stays shut; the toast says why the file was dropped.
+      final context = currentContext;
+      _showFailureToast(
+          context == null ? null : AppLocalizations.of(context).driveOversizeUploadBusy);
       return true;
     }
 
@@ -127,7 +131,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
 
     if (runnerError != null && _routeUrgentError(runnerError)) return;
     if (hasFailedUpload || !inserted || removedByOther) {
-      _showFailureToast(appLocalizations);
+      _showFailureToast(appLocalizations?.driveOversizeUploadFailed);
     }
   }
 
@@ -276,14 +280,10 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     return true;
   }
 
-  void _showFailureToast(AppLocalizations? appLocalizations) {
-    final context = currentContext;
-    if (context == null || appLocalizations == null) return;
+  void _showFailureToast(String? message) {
+    if (currentContext == null || message == null) return;
     getBinding<ToastManager>()?.showMessageFailure(
-      DrivePickFailure(
-        Exception(),
-        message: appLocalizations.driveOversizeUploadFailed,
-      ),
+      DrivePickFailure(Exception(), message: message),
     );
   }
 }
