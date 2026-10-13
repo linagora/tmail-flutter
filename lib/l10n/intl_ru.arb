@@ -338,6 +338,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "cannotUploadFoldersAsAttachments": "{count,plural, =1{Невозможно загрузить эту папку как вложение}other{Невозможно загрузить эти папки как вложения}}",
+  "@cannotUploadFoldersAsAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Вложения успешно загружены",
   "@attachments_uploaded_successfully": {
     "type": "text",
@@ -6040,6 +6050,58 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attachingFileTitle": "Прикрепление файла",
+  "@attachingFileTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeDialogMessage": "Ваш файл больше {maxSize}. Он будет загружен в Twake Drive и прикреплён в виде ",
+  "@driveOversizeDialogMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "driveOversizeDialogMessageEmphasis": "ссылки",
+  "@driveOversizeDialogMessageEmphasis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowDone": "Готово",
+  "@driveUploadRowDone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowFailed": "Ошибка",
+  "@driveUploadRowFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowCancelled": "Отменено",
+  "@driveUploadRowCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadFailed": "Не удалось загрузить некоторые файлы в Drive.",
+  "@driveOversizeUploadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadBusy": "Загрузка в Drive уже выполняется. Повторите попытку после её завершения.",
+  "@driveOversizeUploadBusy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveNoValidAttachment": "Нет допустимых вложений",
   "@driveNoValidAttachment": {
     "type": "text",
@@ -6066,6 +6128,30 @@
   },
   "deepLinkCannotBeOpened": "Эта ссылка для входа не от Twake. Пожалуйста, войдите через приложение.",
   "@deepLinkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordRequired": "PDF защищён паролем",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Неверный пароль, попробуйте ещё раз",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "Этот PDF защищён паролем. Вы по-прежнему можете его скачать.",
+  "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkTypeNotAllowed": "Этот тип ссылки не разрешён!",
+  "@linkTypeNotAllowed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

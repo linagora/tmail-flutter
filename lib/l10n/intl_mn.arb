@@ -399,6 +399,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "cannotUploadFoldersAsAttachments": "{count,plural, =1{Энэ фолдерыг хавсралт болгон байршуулах боломжгүй}other{Эдгээр фолдеруудыг хавсралт болгон байршуулах боломжгүй}}",
+  "@cannotUploadFoldersAsAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Хавсралтуудыг амжилттай байршууллаа",
   "@attachments_uploaded_successfully": {
     "type": "text",
@@ -637,6 +647,12 @@
   },
   "folderNameCannotContainSpecialCharacters": "Хавтасны нэр тусгай тэмдэгт агуулж болохгүй",
   "@folderNameCannotContainSpecialCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderNameContainsForbiddenCharacters": "Фолдерын нэр \"#\"-ээр эхэлж, \".\", \"%\", \"*\" эсвэл мөр таслагч агуулж болохгүй",
+  "@folderNameContainsForbiddenCharacters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -5743,6 +5759,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "pdfPasswordRequired": "Нууц үгээр хамгаалагдсан PDF",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Нууц үг буруу байна, дахин оролдоно уу",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "Энэ PDF нууц үгээр хамгаалагдсан. Та үүнийг татаж авах боломжтой.",
+  "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkTypeNotAllowed": "Энэ төрлийн холбоосыг зөвшөөрөхгүй!",
+  "@linkTypeNotAllowed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "ssoRedirectFailedMessage": "Нэг удаагийн нэвтрэлтийн (SSO) чиглүүлэлтийг гүйцээж чадсангүй. Дахин оролдоно уу.",
   "@ssoRedirectFailedMessage": {
     "type": "text",
@@ -5763,6 +5803,58 @@
   },
   "driveAttachmentTransferFailed": "Драйваас файл хавсаргахад алдаа гарлаа.",
   "@driveAttachmentTransferFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachingFileTitle": "Файл хавсаргаж байна",
+  "@attachingFileTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeDialogMessage": "Таны файл {maxSize}-аас том байна. Файлыг Twake Drive-д байршуулж, дараах хэлбэрээр хавсаргана: ",
+  "@driveOversizeDialogMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "driveOversizeDialogMessageEmphasis": "холбоос",
+  "@driveOversizeDialogMessageEmphasis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowDone": "Дууссан",
+  "@driveUploadRowDone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowFailed": "Амжилтгүй",
+  "@driveUploadRowFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowCancelled": "Цуцлагдсан",
+  "@driveUploadRowCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadFailed": "Зарим файлыг Drive-д байршуулж чадсангүй.",
+  "@driveOversizeUploadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadBusy": "Drive руу байршуулалт аль хэдийн явагдаж байна. Дууссаны дараа дахин оролдоно уу.",
+  "@driveOversizeUploadBusy": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

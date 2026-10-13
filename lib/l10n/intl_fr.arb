@@ -338,6 +338,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "cannotUploadFoldersAsAttachments": "{count,plural, =1{Impossible de téléverser ce dossier en pièce jointe}other{Impossible de téléverser ces dossiers en pièces jointes}}",
+  "@cannotUploadFoldersAsAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Pièces jointes téléversées avec succès",
   "@attachments_uploaded_successfully": {
     "type": "text",
@@ -6022,6 +6032,58 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attachingFileTitle": "Ajout du fichier en pièce jointe",
+  "@attachingFileTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeDialogMessage": "Votre fichier dépasse {maxSize}. Il sera téléversé dans Twake Drive et joint sous forme de ",
+  "@driveOversizeDialogMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "driveOversizeDialogMessageEmphasis": "lien",
+  "@driveOversizeDialogMessageEmphasis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowDone": "Terminé",
+  "@driveUploadRowDone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowFailed": "Échec",
+  "@driveUploadRowFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowCancelled": "Annulé",
+  "@driveUploadRowCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadFailed": "Certains fichiers n'ont pas pu être téléversés dans Drive.",
+  "@driveOversizeUploadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadBusy": "Un téléversement Drive est déjà en cours. Réessayez une fois terminé.",
+  "@driveOversizeUploadBusy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveNoValidAttachment": "Aucune pièce jointe valide",
   "@driveNoValidAttachment": {
     "type": "text",
@@ -6066,6 +6128,12 @@
   },
   "pdfPasswordNotProvided": "Ce PDF est protégé par mot de passe. Vous pouvez toujours le télécharger.",
   "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkTypeNotAllowed": "Ce type de lien n'est pas autorisé !",
+  "@linkTypeNotAllowed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

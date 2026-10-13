@@ -338,6 +338,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "cannotUploadFoldersAsAttachments": "{count,plural, =1{Không thể tải thư mục này lên làm tệp đính kèm}other{Không thể tải các thư mục này lên làm tệp đính kèm}}",
+  "@cannotUploadFoldersAsAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Tệp đính kèm đã được tải lên thành công",
   "@attachments_uploaded_successfully": {
     "type": "text",
@@ -6028,6 +6038,58 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attachingFileTitle": "Đang đính kèm tệp",
+  "@attachingFileTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeDialogMessage": "Tệp của bạn lớn hơn {maxSize}. Tệp sẽ được tải lên Twake Drive và đính kèm dưới dạng ",
+  "@driveOversizeDialogMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "driveOversizeDialogMessageEmphasis": "liên kết",
+  "@driveOversizeDialogMessageEmphasis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowDone": "Xong",
+  "@driveUploadRowDone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowFailed": "Thất bại",
+  "@driveUploadRowFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveUploadRowCancelled": "Đã hủy",
+  "@driveUploadRowCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadFailed": "Không thể tải một số tệp lên Drive.",
+  "@driveOversizeUploadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "driveOversizeUploadBusy": "Một lượt tải lên Drive đang diễn ra. Hãy thử lại khi hoàn tất.",
+  "@driveOversizeUploadBusy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "driveNoValidAttachment": "Không có tệp đính kèm hợp lệ",
   "@driveNoValidAttachment": {
     "type": "text",
@@ -6054,6 +6116,30 @@
   },
   "deepLinkCannotBeOpened": "Liên kết đăng nhập này không phải từ Twake. Vui lòng đăng nhập từ ứng dụng.",
   "@deepLinkCannotBeOpened": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordRequired": "PDF được bảo vệ bằng mật khẩu",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Mật khẩu không đúng, vui lòng thử lại",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "PDF này được bảo vệ bằng mật khẩu. Bạn vẫn có thể tải xuống.",
+  "@pdfPasswordNotProvided": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "linkTypeNotAllowed": "Loại liên kết này không được phép!",
+  "@linkTypeNotAllowed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
