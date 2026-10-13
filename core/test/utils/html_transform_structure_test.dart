@@ -150,7 +150,7 @@ void main() {
       expect(out, contains('tmail-file-link-card'));
     });
 
-    test('empty-reply sanitizer keeps signature class for SignatureTransformer', () async {
+    test('empty-reply pipeline blocks the quoted signature', () async {
       const html = '<div class="tmail-signature">Best regards</div>'
           '<p>Quoted body</p>';
       final out = await transform(
