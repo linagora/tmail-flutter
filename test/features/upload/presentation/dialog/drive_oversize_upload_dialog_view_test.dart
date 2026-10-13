@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -185,6 +186,16 @@ void main() {
       await pumpDialog(tester, items: [makeItem('a')], isWebLayout: false);
       final row = tester.widget<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow));
       expect(row.layout, LinagoraFileTransferLayout.compact);
+    });
+
+    testWidgets('each row leads with the icon of its file type', (tester) async {
+      await pumpDialog(tester, items: [makeItem('a'), makeItem('b')]);
+
+      final imagePaths = ImagePaths();
+      final leadingAssets = tester
+          .widgetList<LinagoraFileTransferRow>(find.byType(LinagoraFileTransferRow))
+          .map((row) => ((row.leading as SvgPicture).bytesLoader as SvgAssetLoader).assetName);
+      expect(leadingAssets, [imagePaths.icFileText, imagePaths.icFileText]);
     });
 
     AppLocalizations localizationsOf(WidgetTester tester) =>

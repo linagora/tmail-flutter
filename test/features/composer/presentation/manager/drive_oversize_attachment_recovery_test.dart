@@ -543,6 +543,28 @@ void main() {
       setup.container.dispose();
     });
 
+    testWidgets('each row keeps its file mime type once its upload starts', (tester) async {
+      Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final setup = await _setUpRecovery(tester);
+      final hold = Completer<void>();
+      setup.repository.holdUpload = hold;
+      final files = [_makeFile('a.zip'), _makeFile('notes.txt')];
+
+      await setup.recovery.recover(_failure, _makeRequest(files));
+      await tester.pump();
+
+      final rows = setup.container.read(driveOversizeTransferProvider);
+      expect(rows.map((row) => row.status), [
+        DriveOversizeTransferStatus.uploading,
+        DriveOversizeTransferStatus.waiting,
+      ]);
+      expect(rows.map((row) => row.mimeType), ['application/zip', 'text/plain']);
+      expect(rows.map((row) => row.mimeType), files.map((file) => file.mimeType));
+      hold.complete();
+      await tester.pumpAndSettle();
+      setup.container.dispose();
+    });
+
     testWidgets('a row cancelled before its turn is never uploaded', (tester) async {
       Get.put<MailboxDashBoardController>(_FakeDashboardController());
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
