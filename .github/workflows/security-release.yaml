@@ -269,7 +269,7 @@ jobs:
 
       - name: Scan with semgrep
         run: |
-          pip install --quiet semgrep==1.179.0
+          pip install --quiet --require-hashes -r .github/security/requirements-semgrep.txt
           semgrep scan --metrics=off \
             --config p/default --config p/secrets --config p/javascript \
             --config p/dockerfile --config p/github-actions \
@@ -300,7 +300,7 @@ jobs:
 
       - name: Scan Android and iOS sources
         run: |
-          pip install --quiet mobsfscan==1.0.1
+          pip install --quiet --require-hashes -r .github/security/requirements-mobsfscan.txt
           # non-zero exit means findings; a missing SARIF file means the scanner broke
           mobsfscan --sarif -o "$RUNNER_TEMP/mobsfscan.sarif" android ios || true
           test -s "$RUNNER_TEMP/mobsfscan.sarif"
