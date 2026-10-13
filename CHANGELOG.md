@@ -1,3 +1,26 @@
+## [0.40.0] - 2026-10-13
+### Added
+- #4827 Upload oversize attachments to Drive and attach them as a link
+- #4877 Prompt for a password when previewing an encrypted PDF
+- #4897 Open mailto links from the PDF viewer in the composer
+- #4871 Hide Outbox, Drafts and Templates from rule move targets
+
+### Fixed
+- #4862 No draft-save prompt when closing an unmodified composer
+- #4864 Localize the reply quote header date and time
+- #4867 Reject "." in folder names with a clear message
+- #4873 Scope email CSS in the EML preview to the email body
+- #4878 Keep the full file extension in middle-ellipsis attachment chips
+- #4883 Show the color picker value as #RRGGBB
+- #4886 Rule edit button reads "Save"; fix French rule update toast
+- #4888 Localize team mailbox system folder names
+- #4889 Neutralize the team mailbox root folder
+- #4894 Open the label picker on "Label as" click in the reading pane
+
+### Changed
+- Translate vi, ru, fr, mn
+- Place sender name naturally in the unsubscribe dialog translations
+
 ## [0.39.4] - 2026-10-08
 ### Fixed
 - Mobile can select another label in email view
