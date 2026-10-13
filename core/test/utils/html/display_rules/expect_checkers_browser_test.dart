@@ -2,6 +2,7 @@
 @Tags(['display'])
 library;
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fixtures/html_emails/html_email_corpus.g.dart';
@@ -61,6 +62,81 @@ void main() {
         final lazy = render.frame.queryAll('.tmail-content [lazy]');
         expect(lazy, isNotEmpty);
       });
+    });
+  });
+
+  group('checkers catch what they exist for', () {
+    Future<List<String>> check(
+      ExpectChecker checker,
+      String html, {
+      DisplayMutation? mutation,
+    }) async {
+      final render = await renderDisplayCase(
+        DisplayCase(
+          HtmlEmailCorpusFixture(name: 'probe', category: 'checkers', html: html),
+          DisplayViewer.native,
+          390,
+        ),
+        mutation: mutation,
+      );
+      try {
+        return [for (final v in await checker(render)) '${v.rule} ${v.path} ${v.detail}'];
+      } finally {
+        render.dispose();
+      }
+    }
+
+    DisplayMutation onLoad(String script) => DisplayMutation(
+          document: (document) => document.replaceFirst(
+            '</body>',
+            "<script>window.addEventListener('load', function() {"
+                "var p = document.querySelector('.tmail-content p'); $script });</script></body>",
+          ),
+        );
+
+    test('noScale accepts an email that fits untouched', () async {
+      expect(await check(noScaleChecker, '<p>fits</p>'), isEmpty);
+    });
+
+    test('noScale catches an inline style a viewer script rewrote', () async {
+      expect(
+        await check(noScaleChecker, '<p>fits</p>', mutation: onLoad("p.style.fontSize = '9px';")),
+        ['noScale .tmail-content > p changed: style="font-size: 9px;"'],
+      );
+    });
+
+    test('noScale catches a zoom applied by a stylesheet', () async {
+      expect(
+        await check(
+          noScaleChecker,
+          '<p>fits</p>',
+          mutation: DisplayMutation(
+            document: (document) => document.replaceFirst(
+              '</head>',
+              '<style>.tmail-content p { zoom: 0.5; }</style></head>',
+            ),
+          ),
+        ),
+        ['noScale .tmail-content > p changed: style="null"'],
+      );
+    });
+
+    test('noQuoteToggle catches a toggle added to a reachable quote', () async {
+      final violations = await check(noQuoteToggleChecker, '<blockquote><p>q</p></blockquote>');
+      expect(violations, ['noQuoteToggle .tmail-content > div > button toggle added']);
+    });
+
+    test('noQuoteToggle catches a fixture without a blockquote', () async {
+      expect(await check(noQuoteToggleChecker, '<p>x</p>'), [
+        'noQuoteToggle .tmail-content fixture has no blockquote',
+      ]);
+    });
+
+    test('fullDisplay catches a body taller than the viewer cap', () async {
+      final cap = ConstantsUI.htmlContentMaxHeight.toInt();
+      expect(await check(fullDisplayChecker, '<div style="height:${cap}px">tall</div>'), [
+        'fullDisplay .tmail-content body height ${cap}px',
+      ]);
     });
   });
 
