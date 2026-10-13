@@ -1,0 +1,19 @@
+{
+  "contentType": "text/html",
+  "expect": [
+    "fullDisplay",
+    "autoScale",
+    "quoteToggle"
+  ],
+  "imageSizes": {
+    "attr": 2,
+    "cid": 0,
+    "container": 1,
+    "css": 0,
+    "data": 0,
+    "default": 0
+  },
+  "minPreservation": 0.95,
+  "purpose": "real email #29 (fullDisplay, autoScale, quoteToggle), text scrambled",
+  "source": "eml #29, anonymized"
+}

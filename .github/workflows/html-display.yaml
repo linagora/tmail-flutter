@@ -14,9 +14,15 @@ jobs:
   # Chrome suite tagged `display`: every HTML email fixture rendered through
   # the production transform and viewer document, at every email pane width.
   # scripts/test.sh excludes this tag from the core job.
+  # Split by viewer (DISPLAY_VIEWER) so each job stays within its budget;
+  # all pane widths are kept.
   html-display:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        viewer: [native, web, ios]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -48,14 +54,15 @@ jobs:
           while IFS= read -r file; do files+=("$file"); done \
             < <(grep -rlE "^@TestOn\(['\"]chrome['\"]\)$" --include='*_test.dart' test | sort)
           flutter test --platform chrome -t display \
-            --file-reporter=json:../test-report-html-display.json "${files[@]}"
+            --dart-define=DISPLAY_VIEWER=${{ matrix.viewer }} \
+            --file-reporter=json:../test-report-html-display-${{ matrix.viewer }}.json "${files[@]}"
 
       - name: Upload test report
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports-html-display
-          path: test-report-html-display.json
+          name: test-reports-html-display-${{ matrix.viewer }}
+          path: test-report-html-display-${{ matrix.viewer }}.json
 
   # Which HTML display paths a PR touches (decision D10): the mutation proofs
   # only run when display code, rules, harness or fixtures change.

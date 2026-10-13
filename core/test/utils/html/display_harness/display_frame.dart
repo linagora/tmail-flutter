@@ -73,6 +73,7 @@ class DisplayFrame {
     try {
       await () async {
         await loaded.future;
+        display._loadLazyImages();
         await display._settleAndGrow();
       }()
           .timeout(settleTimeout);
@@ -87,6 +88,17 @@ class DisplayFrame {
       rethrow;
     }
     return display;
+  }
+
+  /// `loading="lazy"` images (added by `ImageTransformer`) only load inside
+  /// the top-level window, which the frame outgrows, so settling would wait
+  /// on them forever. The app loads them as the user scrolls; the harness
+  /// loads them all now. `lazyImages` checks the attribute on the transform
+  /// output, not here.
+  void _loadLazyImages() {
+    for (final image in queryAll('img[loading="lazy"]')) {
+      image.setAttribute('loading', 'eager');
+    }
   }
 
   Future<void> _settleAndGrow() async {

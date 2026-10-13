@@ -7,6 +7,12 @@ import 'dart:convert';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/remove_negative_margin_float_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -153,14 +159,41 @@ Future<List<Violation>> _overflow(DisplayRender render) async => overflowRule(re
 Future<List<Violation>> _preservation(DisplayRender render) async {
   final fixture = render.displayCase.fixture;
   if (fixture.allowEmptyBody) return const [];
+  if (fixture.isPlainText) {
+    return [
+      if (webLinkCount(render.transformedHtml) != plainTextUrlCount(fixture.html))
+        const Violation('G-preserve', 'a[href]', 'a web address is not a link'),
+    ];
+  }
   final kept = bodyWordPreservation(fixture.html, render.transformedHtml);
   return [
     if (kept < fixture.minPreservation)
       Violation('G-preserve', '.tmail-content', '${(kept * 100).toStringAsFixed(1)}% of the words kept'),
-    if (bodyLinkCount(render.transformedHtml) != bodyLinkCount(fixture.html))
+    if (bodyLinkCount(render.transformedHtml) != bodyKeptLinkCount(fixture.html))
       const Violation('G-preserve', 'a[href]', 'link count changed'),
   ];
 }
+
+/// [rule] on the email as shown and, if a quote hides part of it, expanded.
+Future<List<Violation>> _expanded(DisplayRender render, DisplayRule rule) async {
+  final violations = [...rule(render)];
+  if (render.frame.hasQuoteToggle && !render.frame.isQuoteExpanded) {
+    await render.frame.toggleQuote();
+    violations.addAll(rule(render));
+  }
+  return violations;
+}
+
+String _cssOnce(String document, String rule, String what) =>
+    _replaceOnce(document, RegExp(rule), '', what);
+
+TransformConfiguration _plainWithout(List<Type> removed) => TransformConfiguration.fromTextTransformers([
+      for (final transformer in TransformConfiguration.forPlainTextEmail().textTransformers)
+        if (!removed.contains(transformer.runtimeType)) transformer,
+    ]);
+
+bool _matches(HtmlEmailCorpusFixture fixture, String pattern) =>
+    RegExp(pattern, caseSensitive: false).hasMatch(fixture.html);
 
 final _mutations = <_Mutation>[
   _Mutation(
@@ -170,6 +203,15 @@ final _mutations = <_Mutation>[
     ),
     check: _overflow,
     cases: () => _casesWhere((f) => _has(f, 'td'), viewers: [DisplayViewer.web, DisplayViewer.ios]),
+  ),
+  _Mutation(
+    name: 'remove ResponsiveTableCellTransformer (real emails only)',
+    mutation: DisplayMutation(
+      transformConfiguration: (viewer) => _without(viewer, [ResponsiveTableCellTransformer]),
+    ),
+    check: _overflow,
+    cases: () => _casesWhere((f) => f.category == 'real' && _has(f, 'td'),
+        viewers: [DisplayViewer.web, DisplayViewer.ios, DisplayViewer.native]),
   ),
   _Mutation(
     name: 'remove the @media (max-width: 600px) table { width: 100% } rule',
@@ -249,5 +291,85 @@ final _mutations = <_Mutation>[
     check: _preservation,
     cases: () => _casesWhere((f) => _has(f, 'table'), viewers: [DisplayViewer.native],
         width: (w) => w == 390),
+  ),
+
+  for (final (name, types, pattern, rule) in <(String, List<Type>, String, DisplayRule)>[
+    ('remove BlockQuotedTransformer', [BlockQuotedTransformer], '<blockquote', overflowRule),
+    ('remove RemoveNegativeMarginFloatTransformer', [RemoveNegativeMarginFloatTransformer],
+        r'float\s*:', overflowRule),
+    ('remove NormalizeLineHeightInStyleTransformer', [NormalizeLineHeightInStyleTransformer],
+        'line-height', lineHeightRule),
+  ])
+    _Mutation(
+      name: name,
+      mutation: DisplayMutation(transformConfiguration: (viewer) => _without(viewer, types)),
+      check: (render) async => _expanded(render, rule),
+      cases: () => _casesWhere((f) => !f.isPlainText && _matches(f, pattern), viewers: DisplayViewer.values),
+    ),
+  _Mutation(
+    name: 'remove BlockCodeTransformer and the pre { white-space: pre-wrap } rule',
+    mutation: DisplayMutation(
+      transformConfiguration: (viewer) => _without(viewer, [BlockCodeTransformer]),
+      document: (document) => _cssOnce(document, r'pre\s*\{\s*white-space:\s*pre-wrap;\s*\}', 'pre rule'),
+    ),
+    check: _overflow,
+    cases: () => _casesWhere((f) => _has(f, 'pre'), viewers: DisplayViewer.values),
+  ),
+  for (final (name, css, pattern, rule) in <(String, String, String, DisplayRule)>[
+    ('remove .tmail-content overflow-wrap / word-break',
+        r'overflow-wrap:\s*break-word;\s*word-break:\s*break-word;', r'[^<\s]{40,}', overflowRule),
+    ('remove table { white-space: normal }',
+        r'table\s*\{\s*white-space:\s*normal\s*!important;\s*\}', 'nowrap', overflowRule),
+    ('remove the @media link fill-available rule',
+        r'a:not\(\.tmail-file-link-card\)\s*\{\s*width:\s*-webkit-fill-available\s*!important;\s*\}',
+        '<a ', overflowRule),
+    ('remove box-sizing: border-box',
+        r'\*,\s*\*::before,\s*\*::after\s*\{\s*box-sizing:\s*border-box;\s*\}', 'padding', overflowRule),
+    ('remove the default body font style',
+        r'body\s*\{\s*font-weight:\s*400;\s*font-size:\s*[\d.]+px;\s*font-style:\s*normal;\s*\}', '.',
+        overflowRule),
+  ])
+    _Mutation(
+      name: name,
+      mutation: DisplayMutation(document: (document) => _cssOnce(document, css, name)),
+      check: (render) async => _expanded(render, rule),
+      cases: () => _casesWhere((f) => !f.isPlainText && _matches(f, pattern), viewers: DisplayViewer.values),
+    ),
+  _Mutation(
+    name: 'plain text: remove PersistPreformattedTextTransformer',
+    mutation: DisplayMutation(
+      plainTextTransformConfiguration: () => _plainWithout([PersistPreformattedTextTransformer]),
+    ),
+    check: (render) async => asciiTableRule(render),
+    cases: () => _casesWhere((f) => f.isPlainText, viewers: DisplayViewer.values),
+  ),
+  _Mutation(
+    name: 'plain text: remove SanitizeAutolinkHtmlTransformers',
+    mutation: DisplayMutation(
+      plainTextTransformConfiguration: () => _plainWithout([SanitizeAutolinkHtmlTransformers]),
+    ),
+    check: _preservation,
+    cases: () => _casesWhere((f) => f.isPlainText, viewers: [DisplayViewer.native]),
+  ),
+  _Mutation(
+    name: 'remove the lazy background-image script',
+    mutation: DisplayMutation(
+      document: (document) => _removeScript(document, "querySelectorAll('[lazy]')"),
+    ),
+    check: lazyImagesChecker,
+    cases: () => _casesWhere((f) => _expects(f, HtmlEmailExpect.lazyImages), viewers: DisplayViewer.values),
+  ),
+  _Mutation(
+    name: 'remove the collapsed-quote style',
+    mutation: DisplayMutation(
+      document: (document) => _cssOnce(
+        document,
+        r'\.quote-toggle-button\.collapsed \+ blockquote \{\s*display: none;\s*\}',
+        'collapsed quote style',
+      ),
+    ),
+    check: quoteToggleChecker,
+    cases: () => _casesWhere((f) => _expects(f, HtmlEmailExpect.quoteToggle),
+        viewers: [DisplayViewer.native, DisplayViewer.web]),
   ),
 ];

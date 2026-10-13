@@ -1,8 +1,8 @@
 /// Turns image URLs into inline SVGs of a known size so a fixture renders
 /// with no network access.
 ///
-/// `https://fixture.invalid/{img|cid}/<W>x<H>` (written by
-/// `tool/eml_to_fixture.py`) becomes a W x H SVG. Any other remote URL in a
+/// `https://fixture.invalid/{img|cid|est}/<W>x<H>` (written by
+/// `tool/eml_to_fixture.py`; `est` = a guessed size) becomes a W x H SVG. Any other remote URL in a
 /// resource attribute ([_resourceAttributes], `data-src` included because
 /// `AddLazyLoadingForBackgroundImageTransformer` moves backgrounds there), in
 /// a `style` attribute or in a `<style>` block becomes the converter's
@@ -13,7 +13,7 @@ library;
 
 const defaultOfflineImageSize = (width: 600, height: 300);
 
-final _placeholder = RegExp(r'https://fixture\.invalid/(?:img|cid)/(\d+)x(\d+)');
+final _placeholder = RegExp(r'https://fixture\.invalid/(?:img|cid|est)/(\d+)x(\d+)');
 final _remote = RegExp(r'''(?:https?:)?//[^\s"'<>)]+''', caseSensitive: false);
 // A tag, with `>` allowed inside quoted attribute values.
 final _tag = RegExp(r'''<(?:[^>"']|"[^"]*"|'[^']*')*>''');
