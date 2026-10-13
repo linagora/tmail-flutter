@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/utils/logging/log_level.dart';
 import 'package:dio/dio.dart' hide Response;
@@ -84,6 +85,18 @@ class _FakeToastManager extends Fake implements ToastManager {
   @override
   void showMessageFailure(FeatureFailure failure) =>
       failureMessages.add((failure as DrivePickFailure).message);
+}
+
+/// Records the message of every warning toast the recovery shows.
+/// Any other toast kind throws, so a toast of the wrong kind fails the test.
+class _FakeAppToast extends Fake implements AppToast {
+  final warningMessages = <String>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName != #showToastWarningMessage) return super.noSuchMethod(invocation);
+    warningMessages.add(invocation.positionalArguments[1] as String);
+  }
 }
 
 /// The last statuses the dialog showed before the batch was cleared.
@@ -842,8 +855,10 @@ void main() {
       setup.container.dispose();
     });
 
-    testWidgets('a second oversize batch while one runs leaves the running batch alone', (tester) async {
+    testWidgets('a second oversize batch while one runs is denied with a busy warning toast and leaves the running batch alone', (tester) async {
       Get.put<MailboxDashBoardController>(_FakeDashboardController());
+      final appToast = _FakeAppToast();
+      Get.put<AppToast>(appToast);
       final link = Uri.parse('https://drive.example.com/public?sharecode=x');
       final setup = await _setUpRecovery(tester, outcomesByFileName: {'a.zip': link, 'b.zip': link});
       final hold = Completer<void>();
@@ -855,10 +870,13 @@ void main() {
       await tester.pump();
 
       expect(second, isTrue);
+      expect(appToast.warningMessages, [setup.appLocalizations.driveOversizeUploadBusy]);
       expect(setup.container.read(driveOversizeTransferProvider).map((row) => row.fileName), ['a.zip']);
       expect(setup.repository.capturedSpecs.map((spec) => spec.fileName), ['a.zip']);
       hold.complete();
       await tester.pumpAndSettle();
+      expect(appToast.warningMessages, [setup.appLocalizations.driveOversizeUploadBusy]);
+      expect(setup.toast.failureMessages, isEmpty);
       setup.container.dispose();
     });
   });
