@@ -72,7 +72,7 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
       ),
       transfer: transfer,
     );
-    return _parseUploadedFile(data);
+    return _parseUploadedFile(data, sentName: name);
   }
 
   static WorkplaceRequestTransfer _toRequestTransfer(WorkplaceUploadTransfer transfer) {
@@ -99,13 +99,18 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
   static String _uniqueNameFor(String fileName) =>
       _nameFor(fileName, DateTime.now().millisecondsSinceEpoch);
 
-  DriveUploadedFile _parseUploadedFile(dynamic data) {
+  /// Drive may omit the name; the one sent is what it stored then.
+  DriveUploadedFile _parseUploadedFile(dynamic data, {required String sentName}) {
     final parsed = WorkplaceFileResponse.fromJson(_asJsonMap(data));
     final doc = parsed.data;
     if (doc.id.isEmpty) {
       throw StateError('Upload response contains no file id');
     }
-    return DriveUploadedFile(fileId: doc.id, name: doc.attributes?.name ?? '');
+    final storedName = doc.attributes?.name;
+    return DriveUploadedFile(
+      fileId: doc.id,
+      name: storedName == null || storedName.isEmpty ? sentName : storedName,
+    );
   }
 
   @override

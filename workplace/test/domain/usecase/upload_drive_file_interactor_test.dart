@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workplace/data/datasource_impl/workplace_request_executor.dart';
+import 'package:workplace/domain/entity/drive_shared_file.dart';
 import 'package:workplace/domain/entity/drive_uploaded_file.dart';
 import 'package:workplace/domain/entity/workplace_access_mode.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
@@ -91,7 +92,7 @@ void main() {
       final repository = _RecordingRepository();
       final cancelSignal = Completer<void>().future;
 
-      final link = await UploadDriveFileInteractor(repository).execute(
+      final shared = await UploadDriveFileInteractor(repository).execute(
         context: context,
         spec: spec,
         cancelSignal: cancelSignal,
@@ -101,7 +102,8 @@ void main() {
       expect(repository.uploadTransfer?.cancelSignal, same(cancelSignal));
       expect(repository.linkContext, same(context));
       expect(repository.linkFileId, equals('file-1'));
-      expect(link.toString(), equals('https://user-drive.example.com/public?sharecode=abc123'));
+      expect(shared.link.toString(), equals('https://user-drive.example.com/public?sharecode=abc123'));
+      expect(shared.name, equals('report (1).pdf'));
     });
 
     test('forwards upload progress to onProgress', () async {
@@ -162,7 +164,7 @@ void main() {
 
       await UploadDriveFileInteractor(repository)
           .execute(context: context, spec: spec, cancelSignal: cancel.future)
-          .catchError((_) => Uri());
+          .catchError((_) => DriveSharedFile(name: '', link: Uri()));
 
       expect(repository.uploadSpec, same(spec));
       expect(repository.linkFileId, isNull);
