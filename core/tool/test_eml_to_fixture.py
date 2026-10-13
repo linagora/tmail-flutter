@@ -35,7 +35,20 @@ def _png(width, height):
             + struct.pack('>I', zlib.crc32(chunk)))
 
 
-HTML = '''<html><head><style>.Hero{color:red}</style></head><body>
+def _gif(width, height):
+    return b'GIF89a' + struct.pack('<HH', width, height) + b'\x00\x00\x00'
+
+
+def _jpeg(width, height):
+    """SOI, APP0 and a DHT segment (whose 0xC4 marker is not a frame
+    header), then the SOF0 frame header with the size."""
+    app0 = b'\xff\xe0' + struct.pack('>H', 16) + b'JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00'
+    dht = b'\xff\xc4' + struct.pack('>H', 3) + b'\x00'
+    sof0 = b'\xff\xc0' + struct.pack('>HBHHB', 11, 8, height, width, 1) + b'\x01\x11\x00'
+    return b'\xff\xd8' + app0 + dht + sof0 + b'\xff\xd9'
+
+
+HTML ='''<html><head><style>.Hero{color:red}</style></head><body>
 <p class="Hero">Hi, Alice Martin wrote from acme-corp.com</p>
 <img src="cid:logo@acme" alt="logo">
 <table width="640"><tr><td width="320"><img src="https://cdn.acme-corp.com/banner.png?u=8812345678"></td></tr></table>
@@ -185,11 +198,40 @@ class RegressionTest(unittest.TestCase):
         self.assertIn('<p class="Hero" id="Hero-top" style="font-family:Hero">', body)
         self.assertNotIn('>Hero<', body)
 
+    def test_entity_encoded_address_and_phone_in_text_are_reported(self):
+        body, _, report = _convert_html(
+            '<p>Write to sales&#64;shop.example or call +33 1 23 45 67 89</p>')
+        self.assertIn('sales&#64;shop.example', body)
+        self.assertEqual(report['leftovers']['emails'], ['sales@shop.example'])
+        self.assertEqual(report['leftovers']['phones'], ['+33 1 23 45 67 89'])
+
     def test_data_uri_image_is_measured_and_replaced(self):
         uri = 'data:image/png;base64,' + base64.b64encode(_png(64, 32)).decode()
         body, fields, _ = _convert_html('<img src="%s">' % uri)
         self.assertIn('src="https://fixture.invalid/img/64x32"', body)
         self.assertEqual(fields['imageSizes']['data'], 1)
+
+
+class ImageSizeTest(unittest.TestCase):
+
+    def test_reads_png_gif_and_jpeg_sizes(self):
+        self.assertEqual(converter.image_size_from_bytes(_png(120, 40)), (120, 40))
+        self.assertEqual(converter.image_size_from_bytes(_gif(320, 50)), (320, 50))
+        self.assertEqual(converter.image_size_from_bytes(_jpeg(640, 480)), (640, 480))
+
+    def test_unknown_or_truncated_bytes_have_no_size(self):
+        self.assertIsNone(converter.image_size_from_bytes(b'BM' + b'\x00' * 40))
+        self.assertIsNone(converter.image_size_from_bytes(_png(120, 40)[:20]))
+        self.assertIsNone(converter.image_size_from_bytes(b'\xff\xd8' + b'\x00' * 40))
+
+    def test_cid_jpeg_gets_exact_size(self):
+        message = EmailMessage()
+        message['From'] = 'Alice Martin <alice.martin@acme-corp.com>'
+        message.set_content('<img src="cid:hero@acme">', subtype='html')
+        message.add_related(_jpeg(640, 480), 'image', 'jpeg', cid='<hero@acme>')
+        body, fields, _ = converter.convert(message.as_bytes())
+        self.assertIn('src="https://fixture.invalid/cid/640x480"', body)
+        self.assertEqual(fields['imageSizes']['cid'], 1)
 
 
 class CliTest(unittest.TestCase):
