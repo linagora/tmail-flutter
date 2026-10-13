@@ -5,11 +5,37 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 
-import '../../../test/fixtures/html_email_corpus.dart';
+import '../fixtures/html_emails/html_email_corpus.g.dart';
+import '../fixtures/html_emails/html_email_corpus_fixture.dart';
+import 'html/html_content_preservation.dart';
 import 'html_pipeline_registry.dart';
 import 'html_transform_text_html_test.mocks.dart';
+
+/// Small inputs that probe one transformer each; real-email shapes come from
+/// the shared corpus in `test/fixtures/html_emails`.
+const _simpleTable = '<table>'
+    '<tr><th>Name</th><th>Email</th></tr>'
+    '<tr><td>Alice</td><td>alice@example.com</td></tr>'
+    '</table>';
+
+const _xss = '<div>'
+    '<script>document.cookie="stolen";</script>'
+    '<img src=x onerror="alert(1)">'
+    '<svg><script>alert(\'svg\')</script></svg>'
+    '<a href="javascript:void(0)" onclick="alert(1)">Click</a>'
+    '<p onmouseover="alert(1)">Hover</p>'
+    '<p>Valid content after XSS.</p>'
+    '</div>';
+
+const _signature = '<div class="tmail-signature">Kind regards</div>';
+
+/// The corpus email at `test/fixtures/html_emails/<category>/<name>.html`.
+String _corpus(String category, String name) => htmlEmailCorpus
+    .singleWhere((HtmlEmailCorpusFixture f) => f.category == category && f.name == name)
+    .html;
 
 void main() {
   late HtmlTransform htmlTransform;
@@ -46,24 +72,24 @@ void main() {
     final config = TransformConfiguration.forPreviewEmail();
 
     test('adds overflow-wrap on table cells', () async {
-      final out = await transform(HtmlEmailCorpus.htmlTableSimple, config);
+      final out = await transform(_simpleTable, config);
       final style = parse(out).querySelector('td')?.attributes['style'] ?? '';
       expect(style, contains('overflow-wrap'));
     });
 
     test('keeps RTL text', () async {
-      final out = await transform(HtmlEmailCorpus.htmlRtlArabic, config);
-      expect(out, contains('مرحبا'));
+      final source = _corpus('scripts_languages', 'rtl_arabic');
+      expect(bodyWordPreservation(source, await transform(source, config)), 1);
     });
 
     test('keeps Outlook MsoNormal text', () async {
-      final out = await transform(HtmlEmailCorpus.htmlOutlookMso, config);
-      expect(out, contains('Hello from Outlook'));
+      final source = _corpus('sending_clients', 'outlook_desktop');
+      expect(bodyWordPreservation(source, await transform(source, config)), 1);
     });
 
     test('keeps wide pre text', () async {
-      final out = await transform(HtmlEmailCorpus.htmlWidePre, config);
-      expect(out, contains('abcdefghijklmnopqrstuvwxyz0123456789'));
+      final source = _corpus('layout_stress', 'wide_pre');
+      expect(bodyWordPreservation(source, await transform(source, config)), 1);
     });
   });
 
@@ -76,7 +102,7 @@ void main() {
       }
 
       test('${row.name} strips script, onerror, javascript href', () async {
-        final out = await transform(HtmlEmailCorpus.htmlXssRich, row.build());
+        final out = await transform(_xss, row.build());
         expect(out, isNot(contains('<script')));
         expect(out, isNot(contains('javascript:')));
         expect(hasEventHandler(out), isFalse);
@@ -87,23 +113,22 @@ void main() {
 
   group('HtmlTransform snapshots — canonical fixtures', () {
     test('newsletter keeps tables and https image', () async {
-      final out = await transform(
-        HtmlEmailCorpus.htmlNewsletterNestedTables,
+      final source = parse(_corpus('newsletter_builders', 'mailchimp'));
+      final out = parse(await transform(
+        source.outerHtml,
         TransformConfiguration.forPreviewEmail(),
-      );
-      final document = parse(out);
-      expect(document.querySelectorAll('table'), hasLength(2));
-      expect(
-        document.querySelector('img')?.attributes['src'],
-        'https://example.com/banner.png',
-      );
+      ));
+      List<String?> httpsImages(Document document) => [
+            for (final img in document.querySelectorAll('img'))
+              if (img.attributes['src']?.startsWith('https://') == true) img.attributes['src'],
+          ];
+      expect(out.querySelectorAll('table'), hasLength(source.querySelectorAll('table').length));
+      expect(httpsImages(out), allOf(isNotEmpty, httpsImages(source)));
     });
 
     test('nested quotes stay nested after preview', () async {
-      final out = await transform(
-        HtmlEmailCorpus.htmlNestedQuotesThreeLevels,
-        TransformConfiguration.forPreviewEmail(),
-      );
+      final source = _corpus('quoting_threads', 'nested_blockquote');
+      final out = await transform(source, TransformConfiguration.forPreviewEmail());
       expect(parse(out).querySelectorAll('blockquote'), hasLength(3));
     });
 
@@ -116,7 +141,7 @@ void main() {
           iconZoneHtml: '',
         ),
       );
-      final html = '${HtmlEmailCorpus.htmlSignatureAndDriveCard}$card';
+      final html = '$_signature$card';
       final out = await transform(
         html,
         TransformConfiguration.forEditDraftsEmail(),

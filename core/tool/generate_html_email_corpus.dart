@@ -95,6 +95,10 @@ class _Parsed {
   final bool allowEmptyBody;
 }
 
+/// The keys a fixture sidecar may set; any other key is a typo that would
+/// silently leave the fixture on its defaults.
+const _sidecarKeys = {'expectQuote', 'rtl', 'minPreservation', 'source', 'allowEmptyBody'};
+
 _Parsed _parse(File htmlFile, String rootPrefix) {
   final relative = htmlFile.path.substring(rootPrefix.length);
   final parts = relative.split('/');
@@ -109,6 +113,10 @@ _Parsed _parse(File htmlFile, String rootPrefix) {
   var allowEmptyBody = false;
   if (sidecar.existsSync()) {
     final json = jsonDecode(sidecar.readAsStringSync()) as Map<String, dynamic>;
+    final unknown = json.keys.toSet().difference(_sidecarKeys);
+    if (unknown.isNotEmpty) {
+      throw FormatException('${sidecar.path}: unknown keys $unknown');
+    }
     expectQuote = json['expectQuote'] == true;
     rtl = json['rtl'] == true;
     minPreservation = (json['minPreservation'] as num?)?.toDouble() ?? 0.95;
