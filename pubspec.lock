@@ -1301,8 +1301,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "reapply/file-picker-13-migration"
-      resolved-ref: ae15b057e5d877c0c8884864634489178052d1ea
+      ref: main
+      resolved-ref: c8df616d006c2e2673ead506bc3795cf36c5ca03
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.3.7"
