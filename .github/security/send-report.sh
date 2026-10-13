@@ -15,9 +15,10 @@ args=()
 for r in "${rcpts[@]}"; do args+=(--mail-rcpt "$r"); done
 mail=$(mktemp)
 trap 'rm -f "$mail"' EXIT
+to=$(printf '%s,' "${rcpts[@]}"); to=${to%,}
 {
   printf 'From: %s\r\nTo: %s\r\nSubject: %s\r\nDate: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n' \
-    "$MAIL_FROM" "$(IFS=,; echo "${rcpts[*]}")" "$MAIL_SUBJECT" "$(date -R)"
+    "$MAIL_FROM" "$to" "$MAIL_SUBJECT" "$(date -R)"
   # base64: no bare LF, no over-long lines
   base64 < "$body" | sed 's/$/\r/'
 } > "$mail"
