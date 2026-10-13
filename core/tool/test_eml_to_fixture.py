@@ -209,6 +209,17 @@ class RegressionTest(unittest.TestCase):
         self.assertNotIn('415 555', body)
         self.assertNotIn('Bob Smith', body)
 
+    def test_text_attributes_and_text_metas_are_scrambled(self):
+        body, _, _ = _convert_html(
+            '<meta name="description" content="Riverside Lambert">'
+            '<meta property="og:title" content="Riverside Lambert">'
+            '<meta name="twitter:title" content="Riverside Lambert">'
+            '<img src="cid:x" alt="Quarterly Lambert" title="Riverside Lambert"><p>x</p>')
+        for secret in ('Riverside', 'Lambert', 'Quarterly'):
+            self.assertNotIn(secret, body, secret)
+        self.assertEqual(len(re.findall(r'content="[A-Z][a-z]{8} [A-Z][a-z]{6}"', body)), 3)
+        self.assertRegex(body, r'alt="[A-Z][a-z]{8} [A-Z][a-z]{6}" title="[A-Z][a-z]{8} [A-Z][a-z]{6}"')
+
     def test_leftovers_scan_unquoted_values_and_gt_in_quotes(self):
         _, _, report = _convert_html('<div title="a>b" lang=crm.acme-shop.shop>x</div>')
         self.assertIn('crm.acme-shop.shop', report['leftovers']['hosts'])
