@@ -142,7 +142,6 @@ jobs:
     permissions:
       contents: read
       actions: read
-      security-events: write
     uses: ./.github/workflows/security-release.yaml
     secrets:
       SECURITY_GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}

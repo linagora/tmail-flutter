@@ -1,7 +1,7 @@
 ## Inputs
 - `.security-review/commits.txt` — commits since the last scan
 - `.security-review/diffstat.txt`, `.security-review/diff.patch` — the change set (generated code, translations, package-lock.json and Podfile.lock excluded)
-- `.security-review/findings.json` — open scanner alerts, error/warning only (gitleaks, trivy, osv, semgrep, mobsfscan)
+- `.security-review/findings.json` — scanner findings, error/warning only (gitleaks, trivy, osv, semgrep, mobsfscan)
 - The full repository, for context around changed code
 
 ## Tasks

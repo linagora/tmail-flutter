@@ -17,7 +17,7 @@ Run the same LLM security review as the CI release scan, with your own agent.
 ## Commands
 - `bash scripts/security-review.sh list` — print the areas
 - `bash scripts/security-review.sh changes` — review changes since the previous release tag
-- `bash scripts/security-review.sh --scan changes` — run scanners first, triage their alerts
+- `bash scripts/security-review.sh --scan changes` — run scanners first, triage their findings
 - `bash scripts/security-review.sh --base v0.20.0 all` — every area, custom range
 - `bash scripts/security-review.sh html-xss` — one full-area audit
 

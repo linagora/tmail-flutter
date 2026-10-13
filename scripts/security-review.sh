@@ -43,12 +43,8 @@ run_scanners() {
     --config p/dockerfile --config p/github-actions --sarif --output "$dir/semgrep.sarif" .
   run_tool mobsfscan --sarif -o "$dir/mobsfscan.sarif" android ios
   local files=("$dir"/*.sarif)
-  if [[ ! -e "${files[0]}" ]]; then echo '[]' > "$dir/findings.json"; return; fi
-  jq -s '[.[].runs[] | .tool.driver.name as $t | .results[]?
-    | select((.level // "warning") | IN("error", "warning"))
-    | {tool: $t, rule: .ruleId, level: (.level // "warning"), text: .message.text,
-       at: "\(.locations[0].physicalLocation.artifactLocation.uri // "?"):\(.locations[0].physicalLocation.region.startLine // 0)"}]' \
-    "${files[@]}" > "$dir/findings.json"
+  [[ -e "${files[0]}" ]] || files=()
+  bash "$sec/sarif-digest.sh" ${files[@]+"${files[@]}"} > "$dir/findings.json"
   echo "scanner findings: $(jq length "$dir/findings.json") (SARIF in $dir)"
 }
 

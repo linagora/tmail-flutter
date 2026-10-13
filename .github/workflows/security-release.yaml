@@ -120,9 +120,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
     outputs:
       found: ${{ steps.scan.outputs.found }}
+      count: ${{ steps.pack.outputs.count }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -156,21 +156,27 @@ jobs:
           [[ $code -eq 0 || $code -eq 2 ]] || exit $code
           echo "found=$([[ $code -eq 2 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh gitleaks "$RUNNER_TEMP/gitleaks.sarif"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/gitleaks.sarif
-          category: gitleaks
+          name: findings-gitleaks
+          path: ${{ runner.temp }}/findings-gitleaks.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   trivy:
     needs: gate
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
     outputs:
       found: ${{ steps.vuln.outcome == 'failure' }}
+      count: ${{ steps.pack.outputs.count }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -204,26 +210,26 @@ jobs:
           output: ${{ runner.temp }}/trivy-misconfig.sarif
           exit-code: "0"
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
-        with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/trivy-vuln.sarif
-          category: trivy-vuln
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh trivy "$RUNNER_TEMP/trivy-vuln.sarif" "$RUNNER_TEMP/trivy-misconfig.sarif"
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/trivy-misconfig.sarif
-          category: trivy-misconfig
+          name: findings-trivy
+          path: ${{ runner.temp }}/findings-trivy.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   osv:
     needs: gate
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+    outputs:
+      count: ${{ steps.pack.outputs.count }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -248,19 +254,26 @@ jobs:
           # 0 = clean, 1 = vulns found (advisory); anything else = scanner error
           [[ $code -eq 0 || $code -eq 1 ]] || exit $code
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh osv "$RUNNER_TEMP/osv.sarif"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/osv.sarif
-          category: osv-scanner
+          name: findings-osv
+          path: ${{ runner.temp }}/findings-osv.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   semgrep:
     needs: gate
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+    outputs:
+      count: ${{ steps.pack.outputs.count }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -279,19 +292,26 @@ jobs:
             --config p/dockerfile --config p/github-actions \
             --sarif --output "$RUNNER_TEMP/semgrep.sarif" .
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh semgrep "$RUNNER_TEMP/semgrep.sarif"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/semgrep.sarif
-          category: semgrep
+          name: findings-semgrep
+          path: ${{ runner.temp }}/findings-semgrep.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   mobsfscan:
     needs: gate
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+    outputs:
+      count: ${{ steps.pack.outputs.count }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -309,36 +329,66 @@ jobs:
           mobsfscan --sarif -o "$RUNNER_TEMP/mobsfscan.sarif" android ios || true
           test -s "$RUNNER_TEMP/mobsfscan.sarif"
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh mobsfscan "$RUNNER_TEMP/mobsfscan.sarif"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          ref: ${{ needs.gate.outputs.ref }}
-          sha: ${{ needs.gate.outputs.sha }}
-          sarif_file: ${{ runner.temp }}/mobsfscan.sarif
-          category: mobsfscan
+          name: findings-mobsfscan
+          path: ${{ runner.temp }}/findings-mobsfscan.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   zizmor:
     needs: gate
     runs-on: ubuntu-latest
+    outputs:
+      count: ${{ steps.pack.outputs.count }}
     permissions:
       contents: read
       actions: read
-      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.gate.outputs.sha }}
           persist-credentials: false
 
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
       - name: Audit GitHub workflows
-        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pip install --quiet --require-hashes -r .github/security/requirements-zizmor.txt
+          # sarif output exits 0 with findings, so non-zero means zizmor itself failed
+          zizmor --format sarif . > "$RUNNER_TEMP/zizmor.sarif"
+
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh zizmor "$RUNNER_TEMP/zizmor.sarif"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: findings-zizmor
+          path: ${{ runner.temp }}/findings-zizmor.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   scorecard:
     needs: gate
     runs-on: ubuntu-latest
+    outputs:
+      count: ${{ steps.pack.outputs.count }}
     permissions:
       contents: read
       actions: read
-      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -351,10 +401,18 @@ jobs:
           results_format: sarif
           publish_results: false
 
-      - uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+      - name: Package findings
+        id: pack
+        env:
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+        run: bash .github/security/pack-findings.sh scorecard scorecard.sarif
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          sarif_file: scorecard.sarif
-          category: scorecard
+          name: findings-scorecard
+          path: ${{ runner.temp }}/findings-scorecard.enc
+          retention-days: 1
+          if-no-files-found: ignore # REPORT_KEY unset
 
   llm-review:
     needs: [gate, gitleaks, trivy, osv, semgrep, mobsfscan]
@@ -364,7 +422,6 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: read
-      security-events: read
     strategy:
       fail-fast: false
       # repo variable SECURITY_LLM_MAX_PARALLEL=1 runs the areas one by one
@@ -398,22 +455,30 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Download scanner findings
+        if: steps.cfg.outputs.enabled == 'true' && matrix.area == 'changes'
+        continue-on-error: true # a failed scanner uploads nothing
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: findings-*
+          path: ${{ runner.temp }}/findings
+          merge-multiple: true
+
       - name: Prepare review input
         if: steps.cfg.outputs.enabled == 'true'
         env:
           BASE: ${{ needs.gate.outputs.base }}
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          REF: ${{ needs.gate.outputs.ref }}
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
           AREA: ${{ matrix.area }}
         run: |
+          set -o pipefail
           findings=""
           if [[ "$AREA" == "changes" ]]; then
-            # open code-scanning alerts for this ref, error/warning only
-            # no analysis for the ref yet answers 404: review without findings
-            { gh api --paginate "repos/$REPO/code-scanning/alerts?ref=$REF&state=open&per_page=100" \
-              --jq '.[] | select(.rule.severity == "error" or .rule.severity == "warning") | {tool: .tool.name, rule: .rule.id, level: .rule.severity, text: .most_recent_instance.message.text, at: "\(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line)"}' || true; } \
-              | jq -s . > "$RUNNER_TEMP/findings.json"
+            # only the scanners llm-review needs: zizmor and scorecard may still be running
+            for t in gitleaks trivy osv semgrep mobsfscan; do
+              f="$RUNNER_TEMP/findings/findings-$t.enc"
+              [[ ! -f "$f" ]] || openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$f"
+            done | jq -s 'add // []' > "$RUNNER_TEMP/findings.json"
             findings="$RUNNER_TEMP/findings.json"
           fi
           BASE="$BASE" FINDINGS="$findings" bash .github/security/prepare-review.sh "$AREA"
@@ -483,23 +548,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.gate.outputs.sha }}
           persist-credentials: false
           sparse-checkout: .github/security
-
-      - name: Count open alerts
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          REF: ${{ needs.gate.outputs.ref }}
-        run: |
-          { gh api --paginate "repos/$REPO/code-scanning/alerts?ref=$REF&state=open&per_page=100" --jq '.[].tool.name' || true; } \
-            | jq -Rrs 'split("\n") | map(select(. != "")) | group_by(.) | .[] | "| \(.[0]) | \(length) |"' \
-            > "$RUNNER_TEMP/counts.md"
 
       - name: Write summary
         env:
@@ -509,15 +563,11 @@ jobs:
         run: |
           {
             echo "## Security scan — ${TAG:-PR} \`${SHA::9}\`"
-            echo "| Job | Result |"
-            echo "|---|---|"
-            jq -r 'to_entries[] | select(.key != "gate") | "| \(.key) | \(.value.result) |"' <<< "$RESULTS"
+            echo "| Job | Result | Findings |"
+            echo "|---|---|---|"
+            jq -r 'to_entries[] | select(.key != "gate") | "| \(.key) | \(.value.result) | \(.value.outputs.count | select(. != "") // "-") |"' <<< "$RESULTS"
             echo
-            echo "| Tool | Open alerts |"
-            echo "|---|---|"
-            cat "$RUNNER_TEMP/counts.md"
-            echo
-            echo "Details: Security tab → Code scanning, and the emailed report."
+            echo "Details: the emailed report."
           } > "$RUNNER_TEMP/summary.md"
           cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
 
@@ -528,6 +578,15 @@ jobs:
         with:
           pattern: llm-report-*
           path: ${{ runner.temp }}/llm
+          merge-multiple: true
+
+      - name: Download scanner findings
+        if: needs.gate.outputs.report == 'true'
+        continue-on-error: true # none exist when a scanner failed early
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: findings-*
+          path: ${{ runner.temp }}/findings
           merge-multiple: true
 
       - name: Email report to GitLab owners/maintainers
@@ -547,11 +606,18 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -o pipefail
           body="$RUNNER_TEMP/report.md"
           shopt -s nullglob
           {
             printf 'Run: %s\nRange: %s..%s\n\n' "$RUN_URL" "${BASE:-full}" "$SHA"
             cat "$RUNNER_TEMP/summary.md"
+            for f in "$RUNNER_TEMP"/findings/*.enc; do
+              echo; echo "## Findings: $(basename "$f" .enc | sed 's/^findings-//')"
+              openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$f" \
+                | jq -r '.[:100][] | "- [\(.level)] \(.rule) \(.at): \(.text | split("\n")[0] | .[0:200])"' \
+                || echo "(could not decrypt $(basename "$f"))"
+            done
             compgen -G "$RUNNER_TEMP/llm/*.enc" > /dev/null || printf '\n(no LLM area reports were produced; see the run log)\n'
             for f in "$RUNNER_TEMP"/llm/*.enc; do
               echo
@@ -569,5 +635,5 @@ jobs:
           GITLEAKS_FOUND: ${{ needs.gitleaks.outputs.found }}
           TRIVY_FOUND: ${{ needs.trivy.outputs.found }}
         run: |
-          echo "::error::gitleaks found=$GITLEAKS_FOUND, trivy found=$TRIVY_FOUND. See Security tab."
+          echo "::error::gitleaks found=$GITLEAKS_FOUND, trivy found=$TRIVY_FOUND. See the emailed report."
           exit 1
