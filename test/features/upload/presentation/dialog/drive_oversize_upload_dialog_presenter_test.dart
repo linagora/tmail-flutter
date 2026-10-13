@@ -127,6 +127,25 @@ void main() {
       expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
     });
 
+    testWidgets('the compact sheet background reaches the side edges while its content clears the side insets', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(844, 390);
+      tester.view.padding = const FakeViewPadding(left: 47, right: 47, bottom: 21);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+
+      await _showDialog(tester, container);
+
+      final background = find.descendant(
+        of: find.byType(LinagoraFileTransferSurface),
+        matching: find.byType(DecoratedBox),
+      ).first;
+      expect(tester.getTopLeft(background).dx, equals(0));
+      expect(tester.getTopRight(background).dx, equals(844));
+      expect(tester.getTopLeft(_dialogView).dx, greaterThanOrEqualTo(47));
+      expect(tester.getTopRight(_dialogView).dx, lessThanOrEqualTo(844 - 47));
+    });
+
     testWidgets('a tap on the barrier does not close the dialog', (tester) async {
       await _pumpHost(tester, container);
       await _showDialog(tester, container);
