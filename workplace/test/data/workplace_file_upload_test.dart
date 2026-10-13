@@ -375,7 +375,7 @@ void main() {
       );
     });
 
-    test('returns an empty name when the response carries no attributes', () async {
+    test('falls back to the sent name when the response carries no attributes', () async {
       final adapter = _QueueAdapter([
         {
           'data': {'id': 'file-1'},
@@ -386,7 +386,21 @@ void main() {
       final result = await datasource.uploadFile(context: context, spec: spec);
 
       expect(result.fileId, equals('file-1'));
-      expect(result.name, isEmpty);
+      expect(result.name, equals('report.pdf'));
+    });
+
+    test('falls back to the suffixed name it sent when a retried response has no name', () async {
+      final adapter = _QueueAdapter([
+        409,
+        {
+          'data': {'id': 'file-1'},
+        },
+      ]);
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      final result = await datasource.uploadFile(context: context, spec: spec);
+
+      expect(result.name, equals('report (1).pdf'));
     });
 
     test('parses a JSON object the stack returns as a plain-text string', () async {

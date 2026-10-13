@@ -111,6 +111,9 @@ Map<String, DriveOversizeTransferStatus> Function() _recordLastStatuses(Provider
 class _FakeWorkplaceRepository implements WorkplaceRepository {
   final Map<String, dynamic> outcomesByFileName;
 
+  /// Name Drive stores per sent fileName, as after a 409 suffix; defaults to the sent name.
+  final storedNames = <String, String>{};
+
   /// Every spec seen by [uploadFile], so a test can assert what reaches the wire.
   final capturedSpecs = <WorkplaceUploadFileSpec>[];
 
@@ -171,7 +174,10 @@ class _FakeWorkplaceRepository implements WorkplaceRepository {
       case 'not-a-uri':
         throw DioException(requestOptions: RequestOptions(path: ''), message: 'upload failed');
       default:
-        return DriveUploadedFile(fileId: 'file-${spec.fileName}', name: spec.fileName);
+        return DriveUploadedFile(
+          fileId: 'file-${spec.fileName}',
+          name: storedNames[spec.fileName] ?? spec.fileName,
+        );
     }
   }
 
@@ -339,6 +345,25 @@ void main() {
       expect(inserted, hasLength(1));
       expect(inserted.single, contains('sharecode=x'));
       expect(setup.container.read(driveOversizeTransferProvider), isEmpty);
+      setup.container.dispose();
+    });
+
+    testWidgets('card shows the name Drive stored when a conflict suffixed it', (tester) async {
+      final inserted = <String>[];
+      final setup = await _setUpRecovery(
+        tester,
+        outcomesByFileName: {'a.zip': Uri.parse('https://drive.example.com/public?sharecode=x')},
+        insertHtml: (html) async {
+          inserted.add(html);
+          return true;
+        },
+      );
+      setup.repository.storedNames['a.zip'] = 'a (1).zip';
+
+      await setup.recovery.recover(_failure, _makeRequest([_makeFile('a.zip')]));
+      await tester.pumpAndSettle();
+
+      expect(inserted.single, contains('a (1).zip'));
       setup.container.dispose();
     });
 

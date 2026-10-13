@@ -1,3 +1,4 @@
+import '../entity/drive_shared_file.dart';
 import '../entity/workplace_request_context.dart';
 import '../entity/workplace_upload_file_spec.dart';
 import '../entity/workplace_upload_transfer.dart';
@@ -9,6 +10,7 @@ typedef DriveFileProgressCallback = void Function(int count, int total);
 /// One oversize attachment: write it to the Mail magic folder, then mint a
 /// public link for it. Both calls share the caller's access mode, so an
 /// upload costs at most one token exchange.
+/// Returns the name Drive stored, which a name conflict may have suffixed.
 /// Throws [WorkplaceUploadCancelledException] once [cancelSignal] fires.
 class UploadDriveFileInteractor {
   /// A streamed upload outlives `WorkplaceDio`'s default request timeouts.
@@ -18,7 +20,7 @@ class UploadDriveFileInteractor {
 
   UploadDriveFileInteractor(this._repository);
 
-  Future<Uri> execute({
+  Future<DriveSharedFile> execute({
     required WorkplaceRequestContext context,
     required WorkplaceUploadFileSpec spec,
     DriveFileProgressCallback? onProgress,
@@ -41,6 +43,6 @@ class UploadDriveFileInteractor {
     final link = await _repository.createShareLink(context: context, fileId: uploaded.fileId);
     // Cancelled while minting: drop the link so it never reaches the mail.
     if (cancelled) throw WorkplaceUploadCancelledException();
-    return link;
+    return DriveSharedFile(name: uploaded.name, link: link);
   }
 }
