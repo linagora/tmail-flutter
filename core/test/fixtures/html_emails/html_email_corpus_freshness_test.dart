@@ -27,4 +27,13 @@ void main() {
     final source = buildHtmlEmailCorpusDart(dir);
     expect(source, contains(r'Total \$19.99 for \$customer'));
   });
+
+  test('rejects a sidecar key it does not know, so a typo cannot fall back to defaults', () {
+    final dir = Directory.systemTemp.createTempSync('corpus');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    Directory('${dir.path}/edge').createSync();
+    File('${dir.path}/edge/quote.html').writeAsStringSync('<blockquote>q</blockquote>');
+    File('${dir.path}/edge/quote.json').writeAsStringSync('{"expectQuotes": true}');
+    expect(() => buildHtmlEmailCorpusDart(dir), throwsA(isA<FormatException>()));
+  });
 }

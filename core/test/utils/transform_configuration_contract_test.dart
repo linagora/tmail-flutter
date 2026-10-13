@@ -26,6 +26,22 @@ void main() {
     );
   });
 
+  test('finds a pipeline declared as any factory or static member', () {
+    const source = '''
+      factory TransformConfiguration.create() => x;
+      factory TransformConfiguration.fromDomTransformers(List d) => x;
+      factory TransformConfiguration.forPreview() => x;
+      factory TransformConfiguration.quotedReply() => x;
+      static TransformConfiguration standard = x;
+      static final TransformConfiguration finalOne = x;
+      static TransformConfiguration get viaGetter => x;
+    ''';
+    expect(
+      htmlPipelineFactoryNamesFromSource(source),
+      {'forPreview', 'quotedReply', 'standard', 'finalOne', 'viaGetter'},
+    );
+  });
+
   group('TransformConfiguration contract — sanitizer vs input trust', () {
     for (final row in htmlPipelineRegistry()) {
       test('${row.name} ${row.trust.name} trust', () {
@@ -42,8 +58,9 @@ void main() {
               pipelineHasSanitizer(config, input: row.input),
               isFalse,
               reason:
-                  '${row.name} receives already-sanitized EmailLoaded; '
-                  'see html_loaded_provenance_test.dart',
+                  '${row.name} receives EmailLoaded HTML, which '
+                  'forPreviewEmailOnPlatform has already sanitized '
+                  '(see the pipeline_call_sites lock)',
             );
           case HtmlPipelineTrust.user:
             expect(

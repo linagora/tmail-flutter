@@ -99,8 +99,8 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.passesThrough,
-        knownGap: 'XSS: reply/forward whose original content is not loaded '
-            'yet fetches it through this pipeline, which has no sanitizer',
+        knownGap: '#4956 XSS: reply/forward whose original content is not '
+            'loaded yet fetches it through this pipeline, which has no sanitizer',
       ),
       HtmlPipelineRow(
         name: 'forDraftsEmail',
@@ -218,16 +218,20 @@ List<HtmlPipelineRow> _otherPipelines() => [
       ),
     ];
 
-Set<String> htmlPipelineFactoryNamesFromSource(String source) {
-  final factories = RegExp(r'factory TransformConfiguration\.(for[A-Z]\w*)\(')
-      .allMatches(source)
-      .map((match) => match.group(1)!)
-      .toSet();
-  if (source.contains('static TransformConfiguration standardConfiguration')) {
-    factories.add('standardConfiguration');
-  }
-  return factories;
-}
+/// Every public `factory TransformConfiguration.x(` or
+/// `static [final|const] TransformConfiguration [get] x` member.
+final _pipelineMember = RegExp(
+  r'(?:factory TransformConfiguration\.|static (?:final |const )?TransformConfiguration (?:get )?)([a-zA-Z]\w*)',
+);
+
+/// Generic builders that every pipeline is made from, not pipelines.
+const _pipelineBuilders = {'create', 'fromDomTransformers', 'fromTextTransformers'};
+
+Set<String> htmlPipelineFactoryNamesFromSource(String source) => _pipelineMember
+    .allMatches(source)
+    .map((match) => match.group(1)!)
+    .where((name) => !_pipelineBuilders.contains(name))
+    .toSet();
 
 String htmlPipelineTransformConfigurationSource() {
   final cwd = Directory.current.path;
