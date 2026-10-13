@@ -24,13 +24,12 @@ import 'package:tmail_ui_user/main/providers/workplace/drive_oversize_uploader_p
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workplace/domain/entity/drive_shared_file.dart';
 import 'package:workplace/domain/entity/workplace_request_context.dart';
 import 'package:workplace/domain/entity/workplace_upload_file_spec.dart';
 import 'package:workplace/domain/exceptions/workplace_exceptions.dart';
 import 'package:workplace/domain/usecase/drive_oversize_upload_call.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
-
-typedef _LinkedFile = ({String name, Uri link});
 
 class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
   final BuildContext _context;
@@ -102,7 +101,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     bool Function() isDialogRemoved,
   ) async {
     final notifier = container.read(driveOversizeTransferProvider.notifier);
-    final linked = <_LinkedFile>[];
+    final linked = <DriveSharedFile>[];
     final appLocalizations =
         currentContext == null ? null : AppLocalizations.of(currentContext!);
     var hasFailedUpload = false;
@@ -153,7 +152,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     Uri platformUrl,
     List<FileInfo> files,
     List<DriveOversizeTransferState> items,
-    List<_LinkedFile> linked,
+    List<DriveSharedFile> linked,
   ) async {
     final uploader = container.read(driveOversizeUploaderProvider);
     try {
@@ -190,7 +189,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     required DriveOversizeTransfer notifier,
     required List<FileInfo> files,
     required List<DriveOversizeTransferState> items,
-    required List<_LinkedFile> linked,
+    required List<DriveSharedFile> linked,
   }) async {
     for (var index = 0; index < items.length; index++) {
       final item = items[index];
@@ -208,12 +207,12 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
     DriveOversizeTransfer notifier,
     FileInfo file,
     DriveOversizeTransferState item,
-    List<_LinkedFile> linked,
+    List<DriveSharedFile> linked,
   ) async {
     try {
       notifier.markUploading(item.taskId);
       final body = UploadBody.of(file);
-      final link = await uploader.interactor.execute(
+      final shared = await uploader.interactor.execute(
         context: context,
         spec: WorkplaceUploadFileSpec(
           fileName: file.fileName,
@@ -224,7 +223,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
         onProgress: (count, total) => notifier.reportProgress(item.taskId, count, total),
         cancelSignal: item.cancelToken.whenCancel,
       );
-      linked.add((name: file.fileName, link: link));
+      linked.add(shared);
       notifier.markLinked(item.taskId);
     } on WorkplaceUploadCancelledException {
       // A cancel is the user's own doing — the row already says so.
@@ -240,7 +239,7 @@ class DriveOversizeAttachmentRecovery implements AttachmentUploadRecovery {
   }
 
   Future<bool> _insertLinks(
-    List<_LinkedFile> linked,
+    List<DriveSharedFile> linked,
     AppLocalizations? appLocalizations,
   ) async {
     final cards = linked
