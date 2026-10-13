@@ -1,9 +1,17 @@
 name: Security release scan
 
 on:
-  workflow_run:
-    workflows: ["Build Docker images with Sentry"]
-    types: [completed]
+  # called by image-sentry.yaml after the release image is built
+  workflow_call:
+    secrets:
+      SECURITY_GITLAB_TOKEN:
+      SECURITY_SMTP_URL:
+      SECURITY_SMTP_USER:
+      SECURITY_SMTP_PASSWORD:
+      SECURITY_REPORT_KEY:
+      SECURITY_LLM_API_KEY:
+      SECURITY_LLM_BASE_URL:
+      SECURITY_LLM_MODEL:
   workflow_dispatch:
     inputs:
       tag:
@@ -18,17 +26,14 @@ on:
 permissions: {}
 
 concurrency:
-  group: security-release-${{ github.event.workflow_run.head_branch || inputs.tag || github.ref }}
+  group: security-release-${{ inputs.tag || github.ref }}
   cancel-in-progress: false
 
 jobs:
   gate:
-    # release scans: image-sentry succeeded on a tag push of this repo; PRs: same-repo only
+    # release scans: tag push via image-sentry.yaml; PRs: same-repo only
     if: >-
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push' &&
-       github.event.workflow_run.head_repository.full_name == github.repository) ||
+      (github.event_name == 'push' && github.ref_type == 'tag') ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' &&
        github.event.pull_request.head.repo.full_name == github.repository)
@@ -49,18 +54,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}
-          RUN_TAG: ${{ github.event.workflow_run.head_branch }}
-          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_TAG: ${{ github.ref_name }}
+          RUN_SHA: ${{ github.sha }}
           INPUT_TAG: ${{ inputs.tag }}
           PR_SHA: ${{ github.sha }}
           PR_REF: ${{ github.ref }}
         run: |
-          # workflow_run runs in master's context: github.sha/ref are master, not the tag
           case "$EVENT" in
             pull_request)
               { echo "sha=$PR_SHA"; echo "ref=$PR_REF"; echo "tag="; } >> "$GITHUB_OUTPUT"
               exit 0 ;;
-            workflow_run) tag=$RUN_TAG; sha=$RUN_SHA ;;
+            push) tag=$RUN_TAG; sha=$RUN_SHA ;;
             *) tag=$INPUT_TAG; sha="" ;;
           esac
           if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z.-]*$ ]]; then
