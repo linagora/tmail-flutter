@@ -283,6 +283,18 @@ class RegressionTest(unittest.TestCase):
         self.assertIn('12345678901', report['leftovers']['longDigits'])
         self.assertIn('crm.acme-shop.shop', report['leftovers']['hosts'])
 
+    def test_markup_leftovers_skip_zeroed_values_and_file_names(self):
+        # itemtype is kept verbatim, so the address in it is still reported.
+        _, _, report = _convert_html(
+            '<div data-id="12345678901" data-phone="+1 415 555 0134" data-file="banner.png" '
+            'itemscope itemtype="https://schema.org/Person?contact=zoe@corp.example">x</div>')
+        self.assertEqual(report['leftovers'], {
+            'hosts': ['corp.example', 'schema.org'],
+            'emails': ['zoe@corp.example'],
+            'longDigits': [],
+            'phones': [],
+        })
+
     def test_names_first_name_case_entity_comment_and_title(self):
         body, _, _ = _convert_html(
             '<!-- Prepared for Alice Martin --><p title="Alice">Hi Alice, ALICE MARTIN, '
