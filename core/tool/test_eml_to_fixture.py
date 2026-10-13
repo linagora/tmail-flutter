@@ -233,6 +233,15 @@ class RegressionTest(unittest.TestCase):
         self.assertNotIn('#cafe {', body)
         self.assertNotIn('class="cafe"', body)
 
+    def test_css_function_and_inner_hex_colour_named_like_the_sender_are_kept(self):
+        # `calc` is no CSS vocabulary word, so only the function check keeps it.
+        body, _, _ = _convert_html(
+            '<p style="width:calc(100% - 8px);color:#0cafe0" class="CALC-box">x</p>',
+            sender='Calc Cafe <hi@calc-cafe.example>')
+        self.assertIn('style="width:calc(100% - 8px);color:#0cafe0"', body)
+        self.assertRegex(body, r'class="[A-Z]{4}-box"')
+        self.assertNotIn('CALC-box', body)
+
     def test_meta_data_and_aria_values_are_anonymized(self):
         body, _, _ = _convert_html(
             '<meta name="contact" content="bob@corp.example +1 415 555 0134">'
