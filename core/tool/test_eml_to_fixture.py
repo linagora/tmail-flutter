@@ -14,6 +14,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import unicodedata
 import unittest
 import zlib
 from email.message import EmailMessage
@@ -161,8 +162,29 @@ class ScramblerTest(unittest.TestCase):
         self.assertIn(words[6].lower(), vietnamese)            # Tiếng -> a Vietnamese syllable
 
     def test_long_words_become_two_real_words(self):
+        import fixture_words
         out = converter.TextScrambler('seed').text('internationalization')
         self.assertEqual(len(out), len('internationalization'))
+        english = {w.lower() for group in fixture_words.ENGLISH_BY_LENGTH.values() for w in group}
+        self.assertTrue(any(out[:i] in english and out[i:] in english for i in range(1, len(out))), out)
+
+    def test_accented_word_too_long_for_two_syllables_keeps_its_accents(self):
+        source = 'ÉlectroMénagères'
+        out = converter.TextScrambler('seed').text(source)
+        self.assertNotEqual(out.lower(), source.lower())
+        def marks(text):
+            return [unicodedata.normalize('NFD', ch)[1:] for ch in text]
+        self.assertEqual(marks(out), marks(source))
+        self.assertEqual([ch.isupper() for ch in out], [ch.isupper() for ch in source])
+
+    def test_non_ascii_digits_become_digits_of_the_same_script(self):
+        arabic, fullwidth = '٠٩١٢٣٤٥٦٧٨', '０９１２'
+        out = converter.TextScrambler('seed').text('Call %s or %s' % (arabic, fullwidth))
+        shown_arabic, shown_fullwidth = out[5:15], out[19:]
+        self.assertNotEqual(shown_arabic, arabic)
+        self.assertTrue(all('٠' <= ch <= '٩' for ch in shown_arabic), out)
+        self.assertNotEqual(shown_fullwidth, fullwidth)
+        self.assertTrue(all('０' <= ch <= '９' for ch in shown_fullwidth), out)
 
     def test_is_deterministic_per_seed(self):
         self.assertEqual(converter.TextScrambler('a').text('Hello world'),
