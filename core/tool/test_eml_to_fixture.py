@@ -168,6 +168,17 @@ class ScramblerTest(unittest.TestCase):
         english = {w.lower() for group in fixture_words.ENGLISH_BY_LENGTH.values() for w in group}
         self.assertTrue(any(out[:i] in english and out[i:] in english for i in range(1, len(out))), out)
 
+    def test_replacement_renders_about_as_wide_as_the_word(self):
+        import fixture_words
+        # 'mmmmm' has no 5-letter word within 3% of its width: the closest one is used.
+        for word in ('Hello', 'minimal', 'Wednesday', 'mmmmm'):
+            out = converter.TextScrambler('seed').text(word)
+            target = converter._text_width(word.lower())
+            closest = min(abs(converter._text_width(candidate) - target)
+                          for candidate in fixture_words.ENGLISH_BY_LENGTH[len(word)])
+            self.assertLessEqual(abs(converter._text_width(out.lower()) - target),
+                                 max(closest, 0.03 * target), word)
+
     def test_accented_word_too_long_for_two_syllables_keeps_its_accents(self):
         source = 'ÉlectroMénagères'
         out = converter.TextScrambler('seed').text(source)
