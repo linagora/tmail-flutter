@@ -1,0 +1,5 @@
+{
+  "source": "synthetic autoScale zoom-path case",
+  "purpose": "frame whose 900px min-width survives the reflow: the script must zoom it to fit",
+  "expect": ["autoScale"]
+}
