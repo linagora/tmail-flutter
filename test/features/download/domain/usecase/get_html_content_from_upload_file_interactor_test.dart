@@ -34,9 +34,8 @@ void main() {
         .execute(
           uploadFile: UploadFileState(
             const UploadTaskId('task'),
-            file: FileInfo(
+            file: FileBytesInfo(
               fileName: 'page.html',
-              fileSize: html.length,
               bytes: Uint8List.fromList(utf8.encode(html)),
             ),
             attachment: Attachment(name: 'page.html', type: null),
