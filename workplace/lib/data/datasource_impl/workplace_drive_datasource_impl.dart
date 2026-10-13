@@ -17,6 +17,9 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
   WorkplaceDriveDataSourceImpl({WorkplaceRequestExecutor? executor})
       : _executor = executor ?? const WorkplaceRequestExecutor();
 
+  /// Numbered names tried before a unique one; each attempt re-sends the body.
+  static const _maxNumberedAttempts = 10;
+
   final WorkplaceRequestExecutor _executor;
 
   Map<String, dynamic> _asJsonMap(dynamic data) {
@@ -33,12 +36,14 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
   }) async {
     final requestTransfer = _toRequestTransfer(transfer);
     for (var attempt = 0;; attempt++) {
+      final isLast = attempt == _maxNumberedAttempts;
+      final name = isLast ? _uniqueNameFor(spec.fileName) : _nameFor(spec.fileName, attempt);
       try {
-        return await _uploadOnce(context, _nameFor(spec.fileName, attempt), spec, requestTransfer);
+        return await _uploadOnce(context, name, spec, requestTransfer);
       } on DioException catch (exception) {
         if (exception.type == DioExceptionType.cancel) throw WorkplaceUploadCancelledException();
-        // The stack already holds a file by that name; retry with the next suffix until one is free.
-        if (exception.response?.statusCode != 409) rethrow;
+        // The stack already holds a file by that name; retry with the next suffix.
+        if (exception.response?.statusCode != 409 || isLast) rethrow;
       }
     }
   }
@@ -89,6 +94,10 @@ class WorkplaceDriveDataSourceImpl implements WorkplaceDriveDataSource {
     if (dot <= 0) return '$fileName ($attempt)';
     return '${fileName.substring(0, dot)} ($attempt)${fileName.substring(dot)}';
   }
+
+  /// `report.pdf` → `report (1760345000000).pdf`: no earlier upload can hold this name.
+  static String _uniqueNameFor(String fileName) =>
+      _nameFor(fileName, DateTime.now().millisecondsSinceEpoch);
 
   DriveUploadedFile _parseUploadedFile(dynamic data) {
     final parsed = WorkplaceFileResponse.fromJson(_asJsonMap(data));

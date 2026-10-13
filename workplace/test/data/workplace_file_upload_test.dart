@@ -251,14 +251,29 @@ void main() {
       );
     });
 
-    test('keeps retrying past ten taken names until one is free', () async {
-      final adapter = _QueueAdapter([...List.filled(12, 409), fileResponse]);
+    test('uploads under a timestamp name once ten numbered names are taken', () async {
+      final adapter = _QueueAdapter([...List.filled(10, 409), fileResponse]);
       WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
 
       await datasource.uploadFile(context: context, spec: spec);
 
-      expect(adapter.capturedOptions, hasLength(13));
-      expect(adapter.capturedOptions.last.uri.queryParameters['Name'], equals('report (12).pdf'));
+      expect(adapter.capturedOptions, hasLength(11));
+      expect(adapter.capturedOptions[9].uri.queryParameters['Name'], equals('report (9).pdf'));
+      expect(
+        adapter.capturedOptions.last.uri.queryParameters['Name'],
+        matches(RegExp(r'^report \(\d{13,}\)\.pdf$')),
+      );
+    });
+
+    test('rethrows the 409 when the timestamp name is taken too, after 11 sends', () async {
+      final adapter = _QueueAdapter(List.filled(11, 409));
+      WorkplaceDio.setInstance(Dio()..httpClientAdapter = adapter);
+
+      await expectLater(
+        datasource.uploadFile(context: context, spec: spec),
+        throwsA(isA<DioException>().having((e) => e.response?.statusCode, 'status', 409)),
+      );
+      expect(adapter.capturedOptions, hasLength(11));
     });
 
     test('reads a fresh body for the 409 retry', () async {
