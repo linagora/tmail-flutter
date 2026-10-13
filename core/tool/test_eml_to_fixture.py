@@ -317,6 +317,14 @@ class RegressionTest(unittest.TestCase):
         for scheme in ('sms:', 'geo:', 'zoommtg:', 'webcal:'):
             self.assertIn('href="' + scheme, body)
 
+    def test_other_scheme_values_keep_their_shape_and_length(self):
+        phone, meeting = '+84901234567', '//zoom.us/join?confno=98765432101'
+        body, _, _ = _convert_html('<a href="sms:%s">s</a><a href="zoommtg:%s">z</a>' % (phone, meeting))
+        self.assertIn('href="sms:%s"' % ('0' * len(phone)), body)
+        shown = re.search(r'href="zoommtg:([^"]*)"', body).group(1)
+        self.assertRegex(shown, r'^//link\d+\.invalid/x+$')
+        self.assertEqual(len(shown), len(meeting))
+
     def test_rendering_metadata_and_namespaces_are_kept(self):
         body, _, _ = _convert_html(
             '<html xmlns="http://www.w3.org/1999/xhtml"><head>'
