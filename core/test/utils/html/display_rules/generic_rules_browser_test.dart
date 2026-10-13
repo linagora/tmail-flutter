@@ -12,19 +12,28 @@ import 'generic_rules.dart';
 /// with any trimmed quote expanded); a case reports all its violations.
 void main() {
   group('rules catch what the reviewer probed', () {
-    Future<List<Violation>> violationsOf(String html, {int width = 296}) async {
-      final displayCase = DisplayCase(
-        HtmlEmailCorpusFixture(name: 'probe', category: 'rules', html: html),
-        DisplayViewer.ios,
-        width,
-      );
-      final render = await renderDisplayCase(displayCase);
+    Future<List<Violation>> violationsFor(
+      HtmlEmailCorpusFixture fixture, {
+      int width = 296,
+      DisplayMutation? mutation,
+    }) async {
+      final displayCase = DisplayCase(fixture, DisplayViewer.ios, width);
+      final render = await renderDisplayCase(displayCase, mutation: mutation);
       try {
         return await runGenericRules(render);
       } finally {
         render.dispose();
       }
     }
+
+    Future<List<Violation>> violationsOf(String html, {int width = 296}) =>
+        violationsFor(
+          HtmlEmailCorpusFixture(name: 'probe', category: 'rules', html: html),
+          width: width,
+        );
+
+    List<String> described(List<Violation> violations) =>
+        [for (final v in violations) '${v.rule} ${v.path} ${v.detail}'];
 
     test('G-overflow catches text that runs past its box', () async {
       final violations = await violationsOf(
@@ -39,6 +48,49 @@ void main() {
         'style="display:inline-block;width:183px !important;min-width:250px">f</a>',
       );
       expect(violations.map((v) => v.rule), contains('G-link-fill'));
+    });
+
+    test('G-image-fit catches an image squashed out of its ratio', () async {
+      final violations = await violationsOf(
+        '<style>img { height: 20px !important; }</style>'
+        '<img src="https://fixture.invalid/img/200x100" width="200" height="100">',
+      );
+      expect(described(violations), [
+        'G-image-fit .tmail-content > img aspect 10.00, expected 2.00 or 2.00',
+      ]);
+    });
+
+    test('G-text catches an email that shows nothing', () async {
+      expect(described(await violationsOf('<p></p>')), [
+        'G-text .tmail-content nothing visible',
+      ]);
+    });
+
+    test('G-text accepts an empty email its fixture allows', () async {
+      final violations = await violationsFor(const HtmlEmailCorpusFixture(
+        name: 'probe',
+        category: 'rules',
+        html: '<p></p>',
+        allowEmptyBody: true,
+      ));
+      expect(violations, isEmpty);
+    });
+
+    test('G-rtl catches a right-to-left email rendered without dir="rtl"', () async {
+      const fixture = HtmlEmailCorpusFixture(
+        name: 'probe',
+        category: 'rules',
+        html: '<p>مرحبا</p>',
+        rtl: true,
+      );
+      expect(await violationsFor(fixture), isEmpty);
+      final violations = await violationsFor(
+        fixture,
+        mutation: DisplayMutation(
+          document: (document) => document.replaceFirst('<body dir="rtl"', '<body'),
+        ),
+      );
+      expect(described(violations), ['G-rtl body dir=""']);
     });
 
     test('G-text looks inside a collapsed quote', () async {
