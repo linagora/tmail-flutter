@@ -348,6 +348,12 @@ class RegressionTest(unittest.TestCase):
         self.assertIn('data-id="00000000000"', body)
         self.assertIn('public-asset-id="xx00-0x0x"', body)
 
+    def test_url_named_attribute_is_replaced_without_a_known_name(self):
+        # Zoe is in no header, so only the URL rewrite can remove her.
+        path = '/users/zoe.lambert/card'
+        body, _, _ = _convert_html('<div data-profile-url="%s">x</div>' % path)
+        self.assertIn('data-profile-url="rel1/%s"' % ('x' * (len(path) - len('rel1/'))), body)
+
     def test_data_uri_image_is_measured_and_replaced(self):
         uri = 'data:image/png;base64,' + base64.b64encode(_png(64, 32)).decode()
         body, fields, _ = _convert_html('<img src="%s">' % uri)
