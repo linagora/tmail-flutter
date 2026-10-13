@@ -4,9 +4,11 @@ import 'dart:convert';
 
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../fixtures/html_emails/html_email_corpus.g.dart';
+import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import '../html_transform_text_html_test.mocks.dart';
 import 'mobile_email_responsive_layout_fixture.dart';
 
@@ -40,11 +42,13 @@ void main() {
         await withEmail(
           EmailFixture(
             transformed,
+            direction: fixture.direction,
             viewportWidth: 1280,
             quoteToggle: fixture.expectQuote || hasQuote,
             includeMobileScript: false,
           ),
           (viewport) async {
+            expect(viewport.element('body').getAttribute('dir'), fixture.rtl ? 'rtl' : null);
             expect(viewport.overflowsHorizontally, isFalse);
             if (!fixture.allowEmptyBody) {
               expect(viewport.element('.tmail-content').textContent, isNotEmpty);
@@ -68,11 +72,13 @@ void main() {
         await withEmail(
           EmailFixture(
             transformed,
+            direction: fixture.direction,
             viewportWidth: 360,
             quoteToggle: fixture.expectQuote || hasQuote,
             includeMobileScript: true,
           ),
           (viewport) async {
+            expect(viewport.element('body').getAttribute('dir'), fixture.rtl ? 'rtl' : null);
             expect(viewport.overflowsHorizontally, isFalse);
             if (!fixture.allowEmptyBody) {
               expect(viewport.element('.tmail-content').textContent, isNotEmpty);
@@ -88,4 +94,10 @@ void main() {
       });
     }
   });
+}
+
+extension on HtmlEmailCorpusFixture {
+  /// A fixture whose sidecar says `"rtl": true` is shown right to left, as the
+  /// email view does for an RTL email.
+  TextDirection? get direction => rtl ? TextDirection.rtl : null;
 }
