@@ -10,6 +10,9 @@ on:
 env:
   FLUTTER_VERSION: 3.38.9
 
+permissions:
+  contents: read
+
 jobs:
   web_integration_test:
     permissions:

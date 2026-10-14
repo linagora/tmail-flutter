@@ -9,11 +9,13 @@ name: Test Reports
 
 permissions:
   contents: read
-  actions: read
-  checks: write
 
 jobs:
   reports:
+    permissions:
+      contents: read
+      actions: read
+      checks: write
     name: Upload test reports
     runs-on: ubuntu-latest
     steps:

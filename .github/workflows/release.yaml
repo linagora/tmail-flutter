@@ -9,6 +9,9 @@ env:
   FLUTTER_VERSION: 3.38.9
   XCODE_VERSION: 26.2
 
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Release

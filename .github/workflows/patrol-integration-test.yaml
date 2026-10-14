@@ -13,6 +13,9 @@ env:
   ARCH: x86_64
   PROFILE: pixel_6
 
+permissions:
+  contents: read
+
 jobs:
   mobile_integration_test:
     name: Run integration tests
