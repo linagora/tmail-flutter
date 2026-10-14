@@ -41,6 +41,8 @@ Run the same LLM security review as the CI release scan, with your own agent.
 - Also runs by hand: Actions → Security release scan → tag input.
 - Emails one report to the owners/maintainers of the private GitLab project.
 - Members need a public email on ci.linagora.com to receive it.
+- One runner runs every scanner and LLM area in parallel; a separate job sends the email.
+- `SECURITY_LLM_MAX_PARALLEL` caps concurrent area audits (default 8); the `changes` area runs on top, after the scanners.
 - The scanned tag must contain `.github/security/`; tags cut before this change cannot be scanned.
 
 ## CI configuration

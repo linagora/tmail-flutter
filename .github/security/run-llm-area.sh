@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Runs one opencode review area and encrypts its report the moment it ends.
+# Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_* REPORT_KEY OUT RUNNER_TEMP
+set -uo pipefail
+area=${1:?usage: run-llm-area.sh <area>}
+bin="$PWD/.github/security/opencode/node_modules/.bin/opencode"
+home="$RUNNER_TEMP/opencode-$area"
+# own session store per process: parallel runs never share one
+export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
+mkdir -p "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME" "$OUT/llm-status"
+report=".security-review/llm-$area.md"
+timeout 40m "$bin" run "$(cat ".security-review/prompt-$area.md")" > "$report"
+code=$?
+echo "$code" > "$OUT/llm-status/$area"
+echo "LLM area $area: exit $code"
+{
+  echo "## LLM review: $area"; echo
+  if [[ -s "$report" ]]; then cat "$report"; else echo "(no output)"; fi
+} | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:REPORT_KEY -out "$OUT/llm-$area.enc"
