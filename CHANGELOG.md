@@ -1,3 +1,7 @@
+## [0.40.1] - 2026-10-14
+### Fixed
+- Fix Android release build failing in R8 after the file_picker 13 upgrade
+
 ## [0.40.0] - 2026-10-13
 ### Added
 - #4827 Upload oversize attachments to Drive and attach them as a link
