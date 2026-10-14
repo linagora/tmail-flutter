@@ -133,11 +133,16 @@ jobs:
       actions: read # zizmor and scorecard read workflow runs
     outputs:
       results: ${{ steps.scan.outputs.results }}
-    env:
-      BIN: ${{ runner.temp }}/bin
-      VENVS: ${{ runner.temp }}/venvs
-      OUT: ${{ runner.temp }}/out
     steps:
+      # the runner context is not available in job-level env
+      - name: Set tool paths
+        run: |
+          {
+            echo "BIN=$RUNNER_TEMP/bin"
+            echo "VENVS=$RUNNER_TEMP/venvs"
+            echo "OUT=$RUNNER_TEMP/out"
+          } >> "$GITHUB_ENV"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.gate.outputs.sha }}
