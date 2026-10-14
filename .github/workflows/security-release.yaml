@@ -615,7 +615,8 @@ jobs:
             for f in "$RUNNER_TEMP"/findings/*.enc; do
               echo; echo "## Findings: $(basename "$f" .enc | sed 's/^findings-//')"
               openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$f" \
-                | jq -r '.[:100][] | "- [\(.level)] \(.rule) \(.at): \(.text | split("\n")[0] | .[0:200])"' \
+                | jq -r '(.[:100][] | "- [\(.level)] \(.rule) \(.at): \(.text | gsub("\\s+"; " ") | ltrimstr(" ") | if length > 1000 then .[0:1000] + "…" else . end)"),
+                    (if length > 100 then "- … \(length - 100) more not shown" else empty end)' \
                 || echo "(could not decrypt $(basename "$f"))"
             done
             compgen -G "$RUNNER_TEMP/llm/*.enc" > /dev/null || printf '\n(no LLM area reports were produced; see the run log)\n'

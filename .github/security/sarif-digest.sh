@@ -6,4 +6,5 @@ set -euo pipefail
 jq -s '[.[].runs[] | .tool.driver.name as $t | .results[]?
   | select((.level // "warning") | IN("error", "warning"))
   | {tool: $t, rule: .ruleId, level: (.level // "warning"), text: .message.text,
-     at: "\(.locations[0].physicalLocation.artifactLocation.uri // "?"):\(.locations[0].physicalLocation.region.startLine // 0)"}]' "$@"
+     at: "\(.locations[0].physicalLocation.artifactLocation.uri // "?"):\(.locations[0].physicalLocation.region.startLine // 0)"}]
+  | unique_by([.tool, .rule, .at, .text])' "$@"
