@@ -31,8 +31,12 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+// Redirect every build dir before forcing :app evaluation. Otherwise a plugin sorting
+// before "app" evaluates :app early and R8 loses the default rules file path.
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
     project.evaluationDependsOn(':app')
 }
 
