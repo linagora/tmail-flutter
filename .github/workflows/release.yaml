@@ -106,8 +106,14 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         run: |
-          # 1. Install Sentry CLI
-          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
+          # 1. Install Sentry CLI (pinned binary, checksum-verified)
+          case "$RUNNER_OS" in
+            Linux) asset=Linux-x86_64; sum=7d5e69080cac84468547796a1123a2db05133dc4da5b4b042f5f1b5f32050cc5 ;;
+            macOS) asset=Darwin-universal; sum=957bb8224e5d1304e97793ad674e5c42426fe0023dcdd937cfc2a5f8ce2e0b6a ;;
+          esac
+          curl -sSfL -o "$RUNNER_TEMP/sentry-cli" "https://github.com/getsentry/sentry-cli/releases/download/2.42.2/sentry-cli-$asset"
+          echo "$sum  $RUNNER_TEMP/sentry-cli" | shasum -a 256 -c -
+          sudo install -m 755 "$RUNNER_TEMP/sentry-cli" /usr/local/bin/sentry-cli
 
           # 2. Validate tag base version matches pubspec.yaml base version (ignoring -rc* suffix).
           # pubspec version is always X.Y.Z (no -rc suffix) — RC distinction lives only in the git tag.
@@ -159,8 +165,14 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         run: |
-          # 1. Install Sentry CLI
-          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
+          # 1. Install Sentry CLI (pinned binary, checksum-verified)
+          case "$RUNNER_OS" in
+            Linux) asset=Linux-x86_64; sum=7d5e69080cac84468547796a1123a2db05133dc4da5b4b042f5f1b5f32050cc5 ;;
+            macOS) asset=Darwin-universal; sum=957bb8224e5d1304e97793ad674e5c42426fe0023dcdd937cfc2a5f8ce2e0b6a ;;
+          esac
+          curl -sSfL -o "$RUNNER_TEMP/sentry-cli" "https://github.com/getsentry/sentry-cli/releases/download/2.42.2/sentry-cli-$asset"
+          echo "$sum  $RUNNER_TEMP/sentry-cli" | shasum -a 256 -c -
+          sudo install -m 755 "$RUNNER_TEMP/sentry-cli" /usr/local/bin/sentry-cli
 
           # 2. Validate tag base version matches pubspec.yaml base version (ignoring -rc* suffix).
           # pubspec version is always X.Y.Z (no -rc suffix) — RC distinction lives only in the git tag.
