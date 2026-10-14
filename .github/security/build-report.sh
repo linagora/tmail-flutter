@@ -12,7 +12,8 @@ for f in "$dir"/findings-*.enc; do
   printf '\n## %s findings\n\n' "$t"
   dec "$f" | jq -r '
     def cell: gsub("\\s+"; " ") | ltrimstr(" ") | gsub("&"; "&amp;") | gsub("<"; "&lt;")
-      | gsub(">"; "&gt;") | gsub("\\|"; "\\|");
+      | gsub(">"; "&gt;") | gsub("\\|"; "\\|")
+      | gsub("(?<c>[*`\\[\\]])"; "\\\(.c)");
     def clip: if length > 1000 then .[0:1000] + "…" else . end;
     if length == 0 then "None." else
       "| Level | Rule | Location | Message |", "|---|---|---|---|",

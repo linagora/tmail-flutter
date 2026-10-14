@@ -66,7 +66,10 @@ export -f scan_gitleaks scan_trivy scan_osv scan_semgrep scan_mobsfscan scan_ziz
 tools=(gitleaks trivy osv semgrep mobsfscan zizmor scorecard)
 pids=()
 for t in "${tools[@]}"; do
-  timeout 20m bash -c "scan_$t" > "$logs/$t.log" 2>&1 &
+  # scanners are third-party code: they never see the report key; only zizmor and scorecard get the GitHub token
+  drop=(-u REPORT_KEY)
+  [[ $t == zizmor || $t == scorecard ]] || drop+=(-u GH_TOKEN)
+  env "${drop[@]}" timeout 20m bash -c "scan_$t" > "$logs/$t.log" 2>&1 &
   pids+=($!)
 done
 

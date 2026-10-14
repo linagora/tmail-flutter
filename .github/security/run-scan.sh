@@ -24,7 +24,7 @@ if [[ "$LLM_ENABLED" == "true" ]]; then
   audits=$(jq -r '.[] | select(. != "changes")' <<< "$AREAS")
   for a in $audits; do bash "$sec/prepare-review.sh" "$a"; done
   # area audits don't need scanner output: start them before the scanners
-  env -u GH_TOKEN xargs -P "$PARALLEL" -I{} bash "$sec/run-llm-area.sh" {} <<< "$audits" &
+  env -u GH_TOKEN xargs -r -P "$PARALLEL" -I{} bash "$sec/run-llm-area.sh" {} <<< "$audits" &
   llm_pid=$!
 fi
 env -u LLM_API_KEY -u LLM_BASE_URL -u LLM_MODEL bash "$sec/run-scanners.sh"

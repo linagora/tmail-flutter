@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Renders the markdown report as sanitized, inline-styled HTML for email clients."""
+import re
 import sys
 
 import markdown
@@ -22,7 +23,7 @@ def render(text: str) -> str:
     # report text comes from scanned code and LLM output: no links, images or raw HTML survive
     html = nh3.clean(html, tags=TAGS, attributes={})
     for tag, css in STYLE.items():
-        html = html.replace(f"<{tag}>", f'<{tag} style="{css}">')
+        html = re.sub(rf"<{tag}(?=[\s>])", f'<{tag} style="{css}"', html)
     return ('<!doctype html><html><body style="font-family:-apple-system,Segoe UI,sans-serif;'
             'font-size:14px;line-height:1.45;color:#1f2328">' + html + "</body></html>\n")
 
