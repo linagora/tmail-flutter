@@ -1,0 +1,32 @@
+appId: com.linagora.android.teammail
+---
+# Signs in with basic authentication, from the first screen of a fresh install (start.sh
+# --mobile-version), as integration_test/robots/mobile/mobile_login_robot.dart does. Flutter does
+# not expose the keys of the widgets as resource ids: the fields are found by their hint.
+#   maestro --device <serial> test -e USERNAME=alice -e SERVER=10.0.2.2:<QA_JMAPS_PORT> \
+#     -e EMAIL=alice@example.com -e PASSWORD=alice sign-in.yaml
+# SERVER without scheme: the field shows https:// in front of it.
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'Use company server'
+    timeout: 120000
+- tapOn: 'Use company server'
+- tapOn: 'email'
+- inputText: ${USERNAME}
+- tapOn: 'Next'
+- tapOn: 'https://'
+- inputText: ${SERVER}
+- tapOn: 'Next'
+- extendedWaitUntil:
+    visible: '.*Enter your credentials to sign in.*'
+    timeout: 60000
+- tapOn: 'email'
+- inputText: ${EMAIL}
+- tapOn: 'password'
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn: 'Sign In'
+- extendedWaitUntil:
+    notVisible: 'Sign In'
+    timeout: 120000

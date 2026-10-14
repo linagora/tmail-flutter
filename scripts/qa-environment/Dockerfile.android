@@ -1,0 +1,26 @@
+# Release APK of the Android app for build.sh --mobile-version, at /tmail-qa.apk of the image. The
+# release key is not available here: the build is signed with a key generated in the image. The
+# caches survive the builds.
+ARG FLUTTER_VERSION=3.38.9
+
+FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
+
+WORKDIR /app
+COPY . .
+
+# local.properties and key.properties of the checkout would point at the host's SDK and key
+RUN rm -f android/local.properties android/key.properties && \
+    keytool -genkeypair -keystore /root/qa.keystore -storepass android -alias qa -keypass android \
+      -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Twake QA,O=Linagora,C=FR" 2>/dev/null && \
+    printf 'storeFile=/root/qa.keystore\nstorePassword=android\nkeyAlias=qa\nkeyPassword=android\n' \
+      > android/key.properties
+
+RUN --mount=type=cache,target=/root/.pub-cache \
+    --mount=type=cache,target=/root/.gradle \
+    --mount=type=cache,target=/opt/android-sdk-linux/ndk \
+    ./scripts/prebuild.sh && \
+    flutter build apk --release && \
+    mkdir /out && cp build/app/outputs/flutter-apk/app-release.apk /out/tmail-qa.apk
+
+FROM scratch
+COPY --from=build-env /out/tmail-qa.apk /

@@ -1,0 +1,6 @@
+# Build context of Dockerfile.android: the checkout, without the build outputs and caches
+**/build/
+**/.dart_tool/
+.docker-pub-cache/
+android/.gradle/
+scripts/qa-environment/.generated/
