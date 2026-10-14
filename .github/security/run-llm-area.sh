@@ -9,11 +9,25 @@ home="$RUNNER_TEMP/opencode-$area"
 export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
 mkdir -p "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME" "$OUT/llm-status"
 report=".security-review/llm-$area.md"
-timeout 40m "$bin" run "$(cat ".security-review/prompt-$area.md")" > "$report"
+timeout 40m "$bin" run "$(cat ".security-review/prompt-$area.md")" > "$report" 2> "$home/stderr.log"
 code=$?
 echo "$code" > "$OUT/llm-status/$area"
 echo "LLM area $area: exit $code"
 {
   echo "## LLM review: $area"; echo
   if [[ -s "$report" ]]; then cat "$report"; else echo "(no output)"; fi
+  if (( code != 0 )); then
+    reason=""; [[ $code != 124 ]] || reason=" (40m timeout)"
+    printf '\n**opencode exited with code %s%s; the output above may be incomplete.**\n' "$code" "$reason"
+    # stderr and the session go only into the encrypted report: run logs are public
+    printf '\n### stderr (last 40 lines)\n\n~~~~\n'; tail -n 40 "$home/stderr.log"; printf '~~~~\n'
+    sid=$("$bin" session list --format json --max-count 1 2>/dev/null | jq -r '.[0].id // empty')
+    if [[ -n "$sid" ]]; then
+      printf '\n### Session text before the failure (last 200 lines)\n\n~~~~\n'
+      "$bin" export "$sid" 2>/dev/null \
+        | jq -r '.messages[] | select(.info.role == "assistant") | .parts[] | select(.type == "text") | .text' \
+        | tail -n 200
+      printf '~~~~\n'
+    fi
+  fi
 } | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:REPORT_KEY -out "$OUT/llm-$area.enc"

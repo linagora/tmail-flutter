@@ -6,7 +6,8 @@ For each category above that fits this area, report real issues an attacker from
 ## Output (markdown only, nothing else)
 ### Issues in this area
 | Severity | Category | file:line | Issue | Fix direction |
-(or "None found.")
+Print the table header first, then print each row the moment you confirm the issue; never hold rows back for a final answer.
+If you confirm nothing, print "None found." under the header.
 
 ### Notes
 - Max 5 bullets: anything you could not verify.

@@ -11,10 +11,12 @@ B. Triage the entries in `findings.json` (max 40, highest severity first). For e
 ## Output (markdown only, nothing else)
 ### New issues in this change set
 | Severity | Category | file:line | Issue | Fix direction |
-(or "None found.")
+Print the table header first, then print each row the moment you confirm the issue; never hold rows back for a final answer.
+If you confirm nothing, print "None found." under the header.
 
 ### Scanner triage
 | Tool | Rule | file:line | Verdict | Reason |
+Print each row as soon as you decide it.
 
 ### Notes
 - Max 5 bullets: anything you could not verify.
