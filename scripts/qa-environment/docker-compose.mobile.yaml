@@ -1,0 +1,20 @@
+# start.sh --mobile-version, on top of docker-compose.yaml: no web app (the APK on the emulator is
+# the client). The app requires HTTPS: a TLS proxy in front of the backend, with the certificate of
+# 10.0.2.2 that start.sh issues from its QA CA, which the emulator trusts. The plain JMAP port and
+# the WebAdmin API stay published for the agent's curl.
+services:
+  tmail-backend:
+    ports:
+      - "127.0.0.1:${QA_WEBADMIN_PORT:?}:8000"
+
+  tls:
+    image: nginx:alpine
+    depends_on:
+      - tmail-backend
+    volumes:
+      - ./.generated/nginx-tls.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./.generated/tls.pem:/etc/nginx/tls.pem:ro
+      - ./.generated/tls.key:/etc/nginx/tls.key:ro
+    ports:
+      # The emulator reaches the host's 127.0.0.1 as 10.0.2.2
+      - "127.0.0.1:${QA_JMAPS_PORT:?}:443"
