@@ -251,6 +251,11 @@ jobs:
           name: security-reports
           path: ${{ runner.temp }}/reports
 
+      - if: needs.gate.outputs.report == 'true'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
       - name: Email report to GitLab owners/maintainers
         if: needs.gate.outputs.report == 'true'
         env:
@@ -269,28 +274,13 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -o pipefail
-          body="$RUNNER_TEMP/report.md"
-          shopt -s nullglob
-          {
-            printf 'Run: %s\nRange: %s..%s\n\n' "$RUN_URL" "${BASE:-full}" "$SHA"
-            cat "$RUNNER_TEMP/summary.md"
-            for f in "$RUNNER_TEMP"/reports/findings-*.enc; do
-              echo; echo "## Findings: $(basename "$f" .enc | sed 's/^findings-//')"
-              openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$f" \
-                | jq -r '(.[:100][] | "- [\(.level)] \(.rule) \(.at): \(.text | gsub("\\s+"; " ") | ltrimstr(" ") | if length > 1000 then .[0:1000] + "…" else . end)"),
-                    (if length > 100 then "- … \(length - 100) more not shown" else empty end)' \
-                || echo "(could not decrypt $(basename "$f"))"
-            done
-            compgen -G "$RUNNER_TEMP/reports/llm-*.enc" > /dev/null || printf '\n(no LLM area reports were produced; see the run log)\n'
-            for f in "$RUNNER_TEMP"/reports/llm-*.enc; do
-              echo
-              openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$f" \
-                || echo "(could not decrypt $(basename "$f"))"
-            done
-          } > "$body"
+          python3 -m venv "$RUNNER_TEMP/rvenv"
+          "$RUNNER_TEMP/rvenv/bin/pip" install --quiet --require-hashes --no-deps -r .github/security/requirements-report.txt
+          bash .github/security/build-report.sh "$RUNNER_TEMP/summary.md" "$RUNNER_TEMP/reports" > "$RUNNER_TEMP/report.md"
+          "$RUNNER_TEMP/rvenv/bin/python" .github/security/render-report.py "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
           subject="Security scan ${TAG:-${SHA::9}} $(date -u +%F)"
           [[ "$EVENT" != "pull_request" ]] || subject="[PR #$PR_NUMBER] $subject"
-          MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$body"
+          MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
 
       - name: Fail on new secrets or high/critical vulnerabilities
         if: fromJSON(needs.scan.outputs.results || '{}').gitleaks.found || fromJSON(needs.scan.outputs.results || '{}').trivy.found
