@@ -226,6 +226,7 @@ jobs:
           sparse-checkout: .github/security
 
       - name: Write summary
+        id: summary
         env:
           RESULTS: ${{ needs.scan.outputs.results }}
           SCAN_RESULT: ${{ needs.scan.result }}
@@ -246,6 +247,12 @@ jobs:
             echo "Details: the emailed report."
           } > "$RUNNER_TEMP/summary.md"
           cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          # a crashed scanner, LLM area or scan job must not read as a clean run
+          if [[ "$SCAN_RESULT" == success ]] && jq -e 'all(.[]; .status != "failure")' <<< "$RESULTS" > /dev/null; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Download reports
         if: needs.gate.outputs.report == 'true'
@@ -276,6 +283,7 @@ jobs:
           EVENT: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMPLETE: ${{ steps.summary.outputs.complete }}
         run: |
           set -o pipefail
           python3 -m venv "$RUNNER_TEMP/rvenv"
@@ -284,6 +292,7 @@ jobs:
           "$RUNNER_TEMP/rvenv/bin/python" .github/security/render-report.py "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
           subject="Security scan ${TAG:-${SHA::9}} $(date -u +%F)"
           [[ "$EVENT" != "pull_request" ]] || subject="[PR #$PR_NUMBER] $subject"
+          [[ "$COMPLETE" == true ]] || subject="SCAN INCOMPLETE: $subject"
           MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
 
       - name: Fail on new secrets or high/critical vulnerabilities
@@ -292,4 +301,10 @@ jobs:
           RESULTS: ${{ needs.scan.outputs.results }}
         run: |
           echo "::error::$(jq -r '"gitleaks found=\(.gitleaks.found), trivy found=\(.trivy.found)"' <<< "$RESULTS"). See the emailed report."
+          exit 1
+
+      - name: Fail on incomplete scan
+        if: steps.summary.outputs.complete != 'true'
+        run: |
+          echo "::error::A scanner, LLM area or the scan job failed; see the scan job log."
           exit 1
