@@ -18,11 +18,12 @@ scan_gitleaks() {
 }
 scan_trivy() {
   local code
+  # exit 5 = vulns found; 1 = trivy itself failed (e.g. DB download)
   "$BIN/trivy" fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
-    --format sarif --output "$sarif/trivy-vuln.sarif" --exit-code 1 .
+    --format sarif --output "$sarif/trivy-vuln.sarif" --exit-code 5 .
   code=$?
-  [[ $code -ne 1 ]] || touch "$sarif/trivy.found"
-  (( code <= 1 )) || return "$code"
+  [[ $code -ne 5 ]] || touch "$sarif/trivy.found"
+  (( code == 0 || code == 5 )) || return "$code"
   # misconfig is advisory; run after vuln so the two never race on trivy's cache
   "$BIN/trivy" fs --scanners misconfig --severity HIGH,CRITICAL \
     --format sarif --output "$sarif/trivy-misconfig.sarif" --exit-code 0 .
