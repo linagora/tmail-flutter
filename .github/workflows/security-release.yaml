@@ -246,7 +246,8 @@ jobs:
             echo
             echo "Details: the emailed report."
           } > "$RUNNER_TEMP/summary.md"
-          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          # public run page: pass/fail only; per-tool status and counts go to the email
+          echo "## Security scan — ${TAG:-PR} \`${SHA::9}\`: details in the emailed report." >> "$GITHUB_STEP_SUMMARY"
           # a crashed scanner, LLM area or scan job must not read as a clean run
           if [[ "$SCAN_RESULT" == success ]] && jq -e 'all(.[]; .status != "failure")' <<< "$RESULTS" > /dev/null; then
             echo "complete=true" >> "$GITHUB_OUTPUT"
@@ -295,12 +296,10 @@ jobs:
           [[ "$COMPLETE" == true ]] || subject="SCAN INCOMPLETE: $subject"
           MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
 
-      - name: Fail on new secrets or high/critical vulnerabilities
+      - name: Fail on blocking findings
         if: fromJSON(needs.scan.outputs.results || '{}').gitleaks.found || fromJSON(needs.scan.outputs.results || '{}').trivy.found
-        env:
-          RESULTS: ${{ needs.scan.outputs.results }}
         run: |
-          echo "::error::$(jq -r '"gitleaks found=\(.gitleaks.found), trivy found=\(.trivy.found)"' <<< "$RESULTS"). See the emailed report."
+          echo "::error::Blocking findings. See the emailed report."
           exit 1
 
       - name: Fail on incomplete scan

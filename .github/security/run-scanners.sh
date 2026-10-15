@@ -78,7 +78,9 @@ results='{}'
 for i in "${!tools[@]}"; do
   t=${tools[$i]}
   if wait "${pids[$i]}"; then status=success; else status=failure; fi
-  echo "::group::$t ($status)"; cat "$logs/$t.log"; echo "::endgroup::"
+  echo "$t: $status"
+  # scanner logs carry finding counts: public only when the tool itself failed
+  [[ $status == success ]] || { echo "::group::$t log"; cat "$logs/$t.log"; echo "::endgroup::"; }
   files=()
   for f in "$sarif/$t"*.sarif; do [[ ! -s "$f" ]] || files+=("$f"); done
   digest="$RUNNER_TEMP/findings-$t.json"
