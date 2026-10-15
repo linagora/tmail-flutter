@@ -38,7 +38,7 @@ Run the same LLM security review as the CI release scan, with your own agent.
 
 ## CI release scan
 - Runs after "Build Docker images with Sentry" succeeds on a `v*` tag.
-- Also runs by hand: Actions → Security release scan → tag input.
+- Also runs by hand: Actions → Security release scan → run from `master` → tag input.
 - Emails one report to the owners/maintainers of the private GitLab project.
 - Members need a public email on ci.linagora.com to receive it.
 - One runner runs every scanner and LLM area in parallel; a separate job sends the email.
@@ -46,6 +46,8 @@ Run the same LLM security review as the CI release scan, with your own agent.
 - The scanned tag must contain `.github/security/`; tags cut before this change cannot be scanned.
 
 ## CI configuration
+- Environment `security-release` (deployment refs: tags `v*`, branch `master`) holds every secret below; repo-level secrets are not read.
+- PR runs use no environment, so they run without secrets (dry run).
 - Secrets: `SECURITY_GITLAB_TOKEN` (`read_api`), `SECURITY_SMTP_URL` (e.g. `smtps://host:465`), `SECURITY_SMTP_USER`, `SECURITY_SMTP_PASSWORD`, `SECURITY_REPORT_KEY` (`openssl rand -base64 32`)
 - Secrets for the LLM: `SECURITY_LLM_API_KEY`, `SECURITY_LLM_BASE_URL`, `SECURITY_LLM_MODEL`
 - Variables: `SECURITY_GITLAB_PROJECT`, `SECURITY_MAIL_FROM` (bare address, no display name), optional `SECURITY_LLM_MAX_PARALLEL`
