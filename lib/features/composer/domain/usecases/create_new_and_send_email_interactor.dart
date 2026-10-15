@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/check_sending_allowed_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/create_email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -17,10 +18,12 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_
 class CreateNewAndSendEmailInteractor {
   final EmailRepository _emailRepository;
   final ComposerRepository _composerRepository;
+  final CheckSendingAllowedInteractor _checkSendingAllowedInteractor;
 
   CreateNewAndSendEmailInteractor(
     this._emailRepository,
     this._composerRepository,
+    this._checkSendingAllowedInteractor,
   );
 
   Stream<dartz.Either<Failure, Success>> execute({
@@ -29,6 +32,12 @@ class CreateNewAndSendEmailInteractor {
     SendingEmailArguments? sendingEmailArguments;
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
+
+      // Before generating the email, so a refused send uploads nothing.
+      await _checkSendingAllowedInteractor.execute(
+        createEmailRequest.session,
+        createEmailRequest.accountId,
+      );
 
       sendingEmailArguments = await _createEmailObject(createEmailRequest);
 
