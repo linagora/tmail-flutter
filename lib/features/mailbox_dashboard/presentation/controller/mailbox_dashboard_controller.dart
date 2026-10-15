@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
@@ -55,6 +56,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_ide
 import 'package:tmail_ui_user/features/composer/presentation/extensions/shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
@@ -2582,15 +2584,19 @@ class MailboxDashBoardController extends ReloadableController
       storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
     final exception = failure.exception;
-    if (exception is InvalidRecipientsException) {
-      deleteEmailPermanentlyInBackground(exception.createdEmailId);
-    }
+    deleteEmailPermanentlyInBackground(switch (exception) {
+      InvalidRecipientsException() => exception.createdEmailId,
+      ForbiddenToSendException() => exception.createdEmailId,
+      _ => null,
+    });
     if (currentContext == null) {
       clearState();
       return;
     }
     logWarning('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
-    if (exception is InvalidRecipientsException) {
+    if (exception is ForbiddenToSendException) {
+      showDomainActivationPendingDialog();
+    } else if (exception is InvalidRecipientsException) {
       _showToastSendMessageFailure(
         AppLocalizations.of(currentContext!).sendMessageFailureWithInvalidRecipients(
           exception.invalidRecipients.join(', '),
