@@ -23,13 +23,12 @@ Run the same LLM security review as the CI release scan, with your own agent.
 
 ## Agent
 - Headless: the prompt is passed as the last argument; the report goes to `.security-review/report-<area>.md`.
-  - `--agent "claude -p"`
-  - `--agent "codex exec"`
-  - `--agent "opencode run"`
-  - `--agent "gemini -p"`
+  - `--agent "claude -p --permission-mode plan"`
+  - `--agent "codex exec --sandbox read-only"`
+  - `OPENCODE_PERMISSION='{"bash":"deny","edit":"deny","webfetch":"deny"}' bash scripts/security-review.sh --agent "opencode run" changes`
 - Interactive: run without `--agent`, then tell your agent:
   "Follow `.security-review/prompt-<area>.md` and write the report to `.security-review/report-<area>.md`."
-- The prompt is read-only by design: run the agent in a read-only or plan mode.
+- The prompt carries diffs and commit text, which can hold prompt injection: always run the agent read-only, as above.
 
 ## Output
 - Everything stays in `.security-review/` (gitignored).
