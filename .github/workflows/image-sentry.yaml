@@ -142,7 +142,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    uses: $/.github/workflows/security-release.yaml
+    uses: ./.github/workflows/security-release.yaml # zizmor: ignore[self-repository]
     secrets:
       SECURITY_GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
       SECURITY_SMTP_URL: ${{ secrets.SECURITY_SMTP_URL }}
