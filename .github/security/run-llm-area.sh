@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs one opencode review area and encrypts its report the moment it ends.
-# Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_* REPORT_KEY OUT RUNNER_TEMP
+# Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_* REPORT_PUBLIC_KEY OUT RUNNER_TEMP
 set -uo pipefail
 area=${1:?usage: run-llm-area.sh <area>}
 bin="$PWD/.github/security/opencode/node_modules/.bin/opencode"
@@ -30,4 +30,4 @@ echo "LLM area $area: exit $code"
       printf '~~~~\n'
     fi
   fi
-} | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:REPORT_KEY -out "$OUT/llm-$area.enc"
+} | bash "$(dirname "$0")/seal.sh" "$OUT/llm-$area.enc"

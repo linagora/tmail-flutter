@@ -4,7 +4,13 @@
 set -uo pipefail
 summary=${1:?usage: build-report.sh <summary.md> <reports-dir>}; dir=${2:?}
 shopt -s nullglob
-dec() { openssl enc -d -aes-256-cbc -pbkdf2 -pass env:REPORT_KEY -in "$1"; }
+# opens seal.sh output with the RSA private key
+dec() {
+  local K
+  K=$(head -n1 "$1" | openssl base64 -d -A | openssl pkeyutl -decrypt -inkey <(printf '%s\n' "$REPORT_KEY") \
+    -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256) || return 1
+  tail -n +2 "$1" | K=$K openssl enc -d -aes-256-cbc -pbkdf2 -a -A -pass env:K
+}
 printf '**Run:** %s  \n**Range:** `%s..%s`\n\n' "$RUN_URL" "${BASE:-full history}" "$SHA"
 cat "$summary"
 for f in "$dir"/findings-*.enc; do

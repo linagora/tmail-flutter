@@ -92,6 +92,7 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SECURITY_SMTP_PASSWORD }}
           MAIL_FROM: ${{ vars.SECURITY_MAIL_FROM }}
           REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+          REPORT_PUBLIC_KEY: ${{ vars.SECURITY_REPORT_PUBLIC_KEY }}
           MAX_PARALLEL: ${{ vars.SECURITY_LLM_MAX_PARALLEL }}
         run: |
           if [[ "$EVENT" == "pull_request" ]]; then
@@ -110,11 +111,12 @@ jobs:
           t=$(( w + 20 )); (( t <= 360 )) || t=360
           { echo "llm_parallel=$p"; echo "llm_timeout=$t"; } >> "$GITHUB_OUTPUT"
           if [[ -n "$GITLAB_TOKEN" && -n "$GITLAB_PROJECT" && -n "$SMTP_URL" && -n "$SMTP_USER" \
-                && -n "$SMTP_PASSWORD" && -n "$MAIL_FROM" && -n "$REPORT_KEY" ]]; then
+                && -n "$SMTP_PASSWORD" && -n "$MAIL_FROM" && -n "$REPORT_KEY" \
+                && -n "$REPORT_PUBLIC_KEY" ]]; then
             echo "report=true" >> "$GITHUB_OUTPUT"
           else
             echo "report=false" >> "$GITHUB_OUTPUT"
-            echo "Private report skipped: SECURITY_GITLAB_*, SECURITY_SMTP_*, SECURITY_MAIL_FROM or SECURITY_REPORT_KEY not configured." >> "$GITHUB_STEP_SUMMARY"
+            echo "Private report skipped: SECURITY_GITLAB_*, SECURITY_SMTP_*, SECURITY_MAIL_FROM, SECURITY_REPORT_KEY or SECURITY_REPORT_PUBLIC_KEY not configured." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   scan:
@@ -184,7 +186,7 @@ jobs:
         id: scan
         env:
           GH_TOKEN: ${{ github.token }}
-          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+          REPORT_PUBLIC_KEY: ${{ vars.SECURITY_REPORT_PUBLIC_KEY }}
           LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
@@ -207,7 +209,7 @@ jobs:
           name: security-reports
           path: ${{ runner.temp }}/out/*.enc
           retention-days: 1
-          if-no-files-found: ignore # REPORT_KEY unset
+          if-no-files-found: ignore # SECURITY_REPORT_PUBLIC_KEY unset
 
   report:
     needs: [gate, scan]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs every scanner in parallel; writes encrypted digests and results.json to $OUT.
-# Usage: run-scanners.sh   env: BIN VENVS OUT BASE REPO EVENT GH_TOKEN REPORT_KEY(optional) RUNNER_TEMP
+# Usage: run-scanners.sh   env: BIN VENVS OUT BASE REPO EVENT GH_TOKEN REPORT_PUBLIC_KEY(optional) RUNNER_TEMP
 set -uo pipefail
 sec=$(cd "$(dirname "$0")" && pwd)
 sarif="$RUNNER_TEMP/sarif"; logs="$RUNNER_TEMP/scan-logs"
@@ -67,10 +67,10 @@ export -f scan_gitleaks scan_trivy scan_osv scan_semgrep scan_mobsfscan scan_ziz
 tools=(gitleaks trivy osv semgrep mobsfscan zizmor scorecard)
 pids=()
 for t in "${tools[@]}"; do
-  # scanners are third-party code: they never see the report key; only zizmor and scorecard get the GitHub token
-  drop=(-u REPORT_KEY)
-  [[ $t == zizmor || $t == scorecard ]] || drop+=(-u GH_TOKEN)
-  env "${drop[@]}" timeout 20m bash -c "scan_$t" > "$logs/$t.log" 2>&1 &
+  # scanners are third-party code: only zizmor and scorecard get the GitHub token
+  drop=()
+  [[ $t == zizmor || $t == scorecard ]] || drop=(-u GH_TOKEN)
+  env ${drop[@]+"${drop[@]}"} timeout 20m bash -c "scan_$t" > "$logs/$t.log" 2>&1 &
   pids+=($!)
 done
 
@@ -85,8 +85,7 @@ for i in "${!tools[@]}"; do
   bash "$sec/sarif-digest.sh" ${files[@]+"${files[@]}"} > "$digest" || echo '[]' > "$digest"
   found=false; [[ ! -e "$sarif/$t.found" ]] || found=true
   # artifacts of a public repo are downloadable: ship only ciphertext
-  [[ -z "${REPORT_KEY:-}" ]] \
-    || openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:REPORT_KEY -in "$digest" -out "$OUT/findings-$t.enc"
+  [[ -z "${REPORT_PUBLIC_KEY:-}" ]] || bash "$sec/seal.sh" "$OUT/findings-$t.enc" < "$digest"
   results=$(jq -c --arg t "$t" --arg s "$status" --argjson c "$(jq length "$digest")" --argjson f "$found" \
     '.[$t] = {status: $s, count: $c, found: $f}' <<< "$results")
 done
