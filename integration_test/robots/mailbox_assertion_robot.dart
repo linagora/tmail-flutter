@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -95,6 +96,7 @@ class MailboxAssertionRobot extends CoreRobot implements AbstractMailboxAssertio
   @override
   Future<void> expectLabelSelected(PatrolFinder label) async {
     final selectedLabel = label.which<SidebarLabelItem>((w) => w.isSelected);
+    await $(selectedLabel).scrollTo(scrollDirection: AxisDirection.down);
     await waitForCondition(() => selectedLabel.exists);
   }
 }
