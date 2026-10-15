@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /.github/security
+    schedule:
+      interval: weekly
+    groups:
+      security-pip:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /.github/security/opencode
+    schedule:
+      interval: weekly
