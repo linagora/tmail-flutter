@@ -233,6 +233,11 @@ extension SessionExtensions on Session {
     }
   }
 
+  /// True unless the SaaS capability says the domain awaits DNS validation.
+  bool isMailDnsConfigurationValidated(AccountId accountId) =>
+      getSaaSAccountCapability(accountId)?.mailDnsConfigurationValidated ??
+      true;
+
   AICapability? getAICapability(AccountId accountId) {
     try {
       if (!AiCapabilities.aiCapability.isSupported(this, accountId)) {
