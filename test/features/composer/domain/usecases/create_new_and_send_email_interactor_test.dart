@@ -6,9 +6,11 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/check_sending_allowed_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -21,13 +23,16 @@ import 'create_new_and_send_email_interactor_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<EmailRepository>(),
   MockSpec<ComposerRepository>(),
+  MockSpec<CheckSendingAllowedInteractor>(),
 ])
 void main() {
   final emailRepository = MockEmailRepository();
   final composerRepository = MockComposerRepository();
+  final checkSendingAllowedInteractor = MockCheckSendingAllowedInteractor();
   final createNewAndSendEmailInteractor = CreateNewAndSendEmailInteractor(
     emailRepository,
-    composerRepository);
+    composerRepository,
+    checkSendingAllowedInteractor);
 
   CreateEmailRequest buildCreateEmailRequest({EmailId? draftsEmailId}) {
     return CreateEmailRequest(
@@ -46,6 +51,7 @@ void main() {
   setUp(() {
     reset(emailRepository);
     reset(composerRepository);
+    reset(checkSendingAllowedInteractor);
     when(composerRepository.generateEmail(
       any,
       withIdentityHeader: anyNamed('withIdentityHeader'),
@@ -317,6 +323,79 @@ void main() {
         any,
         draftsEmailId,
       )).called(1);
+    });
+
+    test(
+      'should check that the account may send before generating the email',
+    () async {
+      // arrange
+      final createEmailRequest = buildCreateEmailRequest();
+
+      // act
+      await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      verifyInOrder([
+        checkSendingAllowedInteractor.execute(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+        ),
+        composerRepository.generateEmail(
+          any,
+          withIdentityHeader: anyNamed('withIdentityHeader'),
+          isDraft: anyNamed('isDraft'),
+        ),
+        emailRepository.sendEmail(
+          any,
+          any,
+          any,
+          mailboxRequest: anyNamed('mailboxRequest'),
+        ),
+      ]);
+    });
+
+    test(
+      'should emit SendEmailFailure with ForbiddenToSendException '
+      'and neither generate nor send the email '
+      'when the account may not send',
+    () async {
+      // arrange
+      final createEmailRequest = buildCreateEmailRequest();
+      when(checkSendingAllowedInteractor.execute(any, any))
+        .thenThrow(ForbiddenToSendException());
+
+      // act
+      final states = await createNewAndSendEmailInteractor
+        .execute(createEmailRequest: createEmailRequest)
+        .toList();
+
+      // assert
+      final failure = states
+        .whereType<Left>()
+        .map((left) => left.value)
+        .single;
+      expect(failure, isA<SendEmailFailure>());
+      expect(
+        (failure as SendEmailFailure).exception,
+        isA<ForbiddenToSendException>(),
+      );
+      expect(
+        states.whereType<Right>().map((right) => right.value.runtimeType),
+        [GenerateEmailLoading],
+      );
+      verifyNever(composerRepository.generateEmail(
+        any,
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      ));
+      verifyNever(emailRepository.sendEmail(
+        any,
+        any,
+        any,
+        mailboxRequest: anyNamed('mailboxRequest'),
+      ));
     });
   });
 }
