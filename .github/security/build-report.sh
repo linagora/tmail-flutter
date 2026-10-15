@@ -29,4 +29,8 @@ for f in "$dir"/findings-*.enc; do
 done
 llm=("$dir"/llm-*.enc)
 (( ${#llm[@]} )) || printf '\n_No LLM area reports were produced; see the run log._\n'
-for f in ${llm[@]+"${llm[@]}"}; do echo; dec "$f" || echo "(could not decrypt $(basename "$f"))"; done
+for f in ${llm[@]+"${llm[@]}"}; do
+  # model output can carry prompt injection from commits or code: label it, defang links
+  printf '\n> **Untrusted model output below.** Verify each claim; links are defanged (hxxp).\n\n'
+  dec "$f" | sed -E 's#[Hh][Tt][Tt][Pp]([Ss]?)://#hxxp\1://#g' || echo "(could not decrypt $(basename "$f"))"
+done
