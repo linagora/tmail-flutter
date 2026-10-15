@@ -203,6 +203,8 @@ jobs:
           EVENT: ${{ github.event_name }}
           # ignore repo .opencode config/plugins in the key-bearing step
           OPENCODE_DISABLE_PROJECT_CONFIG: "true"
+          # LSP servers would be fetched unpinned and run with the LLM key
+          OPENCODE_DISABLE_LSP_DOWNLOAD: "true"
         run: bash .github/security/run-scan.sh
 
       - if: always()
