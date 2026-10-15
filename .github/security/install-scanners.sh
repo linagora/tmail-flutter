@@ -7,14 +7,12 @@ mkdir -p "$BIN" "$VENVS"
 cd "$RUNNER_TEMP"
 get() { curl -sSfLO "$1"; }
 
-u=https://github.com/gitleaks/gitleaks/releases/download/v8.30.1
-get "$u/gitleaks_8.30.1_linux_x64.tar.gz"; get "$u/gitleaks_8.30.1_checksums.txt"
-grep " gitleaks_8.30.1_linux_x64.tar.gz$" gitleaks_8.30.1_checksums.txt | sha256sum -c -
+get https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks_8.30.1_linux_x64.tar.gz" | sha256sum -c -
 tar -xzf gitleaks_8.30.1_linux_x64.tar.gz -C "$BIN" gitleaks
 
-u=https://github.com/google/osv-scanner/releases/download/v2.6.0
-get "$u/osv-scanner_linux_amd64"; get "$u/osv-scanner_SHA256SUMS"
-grep " osv-scanner_linux_amd64$" osv-scanner_SHA256SUMS | sha256sum -c -
+get https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_amd64
+echo "ca69b3d3cd08f889a49dc0a383122f71cc528b83803671df5fd874d97485b108  osv-scanner_linux_amd64" | sha256sum -c -
 install -m 755 osv-scanner_linux_amd64 "$BIN/osv-scanner"
 
 get https://github.com/aquasecurity/trivy/releases/download/v0.70.0/trivy_0.70.0_Linux-64bit.tar.gz
