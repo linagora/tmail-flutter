@@ -1480,8 +1480,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: d44200dfde84d60db7091934724dff717218f35e
+      ref: "feature/linagora-dialog"
+      resolved-ref: "48d22f06e5e56eeab298fe79eab3bf684d7af961"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.3.4"
