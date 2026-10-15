@@ -8,7 +8,15 @@ class SaaSAccountCapability extends CapabilityProperties {
   final bool isPaying;
   final bool canUpgrade;
 
-  SaaSAccountCapability({this.isPaying = false, this.canUpgrade = false});
+  /// False while the domain awaits mail DNS validation, when the server
+  /// refuses to send. Missing means validated.
+  final bool mailDnsConfigurationValidated;
+
+  SaaSAccountCapability({
+    this.isPaying = false,
+    this.canUpgrade = false,
+    this.mailDnsConfigurationValidated = true,
+  });
 
   factory SaaSAccountCapability.fromJson(Map<String, dynamic> json) =>
       _$SaaSAccountCapabilityFromJson(json);
@@ -24,5 +32,9 @@ class SaaSAccountCapability extends CapabilityProperties {
   bool get isAlreadyHighestSubscription => isPaying && !canUpgrade;
 
   @override
-  List<Object?> get props => [isPaying, canUpgrade];
+  List<Object?> get props => [
+    isPaying,
+    canUpgrade,
+    mailDnsConfigurationValidated,
+  ];
 }
