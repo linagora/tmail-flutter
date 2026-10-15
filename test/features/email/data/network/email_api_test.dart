@@ -14,6 +14,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -1273,6 +1274,98 @@ void main() {
                 'createdEmailId',
                 EmailId(Id('email-1')),
               )),
+        );
+      });
+
+      Map<String, dynamic> refusedSubmissionResponse(
+        Map<String, dynamic> setError,
+      ) => {
+        "sessionState": "state-1",
+        "methodResponses": [
+          [
+            "Email/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-1",
+              "newState": "state-1",
+              "created": <String, dynamic>{
+                "draft-1": <String, dynamic>{"id": "email-1"},
+              },
+            },
+            "c0"
+          ],
+          [
+            "EmailSubmission/set",
+            <String, dynamic>{
+              "accountId": AccountFixtures.aliceAccountId.asString,
+              "oldState": "state-1",
+              "newState": "state-1",
+              "notCreated": <String, dynamic>{"draft-1": setError},
+            },
+            "c1"
+          ]
+        ]
+      };
+
+      test(
+        'SHOULD throw ForbiddenToSendException carrying the created email\n'
+        'WHEN EmailSubmission/set reports a forbiddenToSend SetError',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => refusedSubmissionResponse({
+          "type": "forbiddenToSend",
+          "description": "Domain activation is pending: mail DNS configuration is not validated",
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(isA<ForbiddenToSendException>()
+              .having(
+                (exception) => exception.createdEmailId,
+                'createdEmailId',
+                EmailId(Id('email-1')),
+              )
+              .having(
+                (exception) => exception.mapErrors.values.single.type,
+                'error type',
+                ForbiddenToSendException.errorType,
+              )),
+        );
+      });
+
+      test(
+        'SHOULD throw a plain SetMethodException, not ForbiddenToSendException\n'
+        'WHEN EmailSubmission/set reports another SetError',
+      () async {
+        when(uuid.v1()).thenReturn('draft-1');
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => refusedSubmissionResponse({
+          "type": "forbiddenFrom",
+          "description": "Not allowed to send from this address",
+        }));
+
+        await expectLater(
+          emailApi.sendEmail(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailRequest,
+          ),
+          throwsA(allOf(
+            isA<SetMethodException>(),
+            isNot(isA<ForbiddenToSendException>()),
+            isNot(isA<InvalidRecipientsException>()),
+          )),
         );
       });
 

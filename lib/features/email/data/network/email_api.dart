@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mix
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -281,8 +282,8 @@ class EmailAPI
   }
 
   /// `EmailSubmission/set` is checked on its own response, not fused with
-  /// `Email/set`, so an `invalidRecipients` SetError there is never confused
-  /// with an `Email/set` failure.
+  /// `Email/set`, so a `forbiddenToSend` or `invalidRecipients` SetError there
+  /// is never confused with an `Email/set` failure.
   void _throwIfSubmissionFailed(
     ResponseObject response,
     RequestInvocation submissionInvocation,
@@ -295,6 +296,16 @@ class EmailAPI
 
     final submissionErrors = handleSetResponse([setEmailSubmissionResponse]);
     if (submissionErrors.isEmpty) return;
+
+    final isForbiddenToSend = submissionErrors.values.any(
+      (setError) => setError.type == ForbiddenToSendException.errorType,
+    );
+    if (isForbiddenToSend) {
+      throw ForbiddenToSendException(
+        mapErrors: submissionErrors,
+        createdEmailId: createdEmailId,
+      );
+    }
 
     final invalidRecipients = response.parseInvalidRecipients(
       submissionInvocation.methodCallId,
