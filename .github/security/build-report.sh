@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Prints the markdown email body: run info, summary, scanner findings tables, LLM area reports.
-# Usage: build-report.sh <summary.md> <reports-dir>   env: REPORT_KEY RUN_URL BASE SHA
+# Usage: build-report.sh <reports-dir>   env: REPORT_KEY RUN_URL BASE SHA TAG SCAN_RESULT
 set -uo pipefail
-summary=${1:?usage: build-report.sh <summary.md> <reports-dir>}; dir=${2:?}
+dir=${1:?usage: build-report.sh <reports-dir>}
 shopt -s nullglob
 # opens seal.sh output with the RSA private key
 dec() {
@@ -12,7 +12,14 @@ dec() {
   tail -n +2 "$1" | K=$K openssl enc -d -aes-256-cbc -pbkdf2 -a -A -pass env:K
 }
 printf '**Run:** %s  \n**Range:** `%s..%s`\n\n' "$RUN_URL" "${BASE:-full history}" "$SHA"
-cat "$summary"
+printf '## Security scan — %s `%s`\n\n| Tool | Result | Findings |\n|---|---|---|\n' "${TAG:-PR}" "${SHA::9}"
+if [[ ! -f "$dir/results.enc" ]]; then
+  printf '| scan job | %s | - |\n' "${SCAN_RESULT:-unknown}"
+elif res=$(dec "$dir/results.enc"); then
+  jq -r 'to_entries[] | "| \(.key) | \(.value.status) | \(.value.count) |"' <<< "$res"
+else
+  echo '| results | could not decrypt | - |'
+fi
 for f in "$dir"/findings-*.enc; do
   t=$(basename "$f" .enc); t=${t#findings-}
   printf '\n## %s findings\n\n' "$t"

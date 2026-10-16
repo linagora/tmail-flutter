@@ -128,7 +128,8 @@ jobs:
       contents: read
       actions: read # zizmor and scorecard read workflow runs
     outputs:
-      results: ${{ steps.scan.outputs.results }}
+      complete: ${{ steps.scan.outputs.complete }}
+      blocking: ${{ steps.scan.outputs.blocking }}
     steps:
       # the runner context is not available in job-level env
       - name: Set tool paths
@@ -235,28 +236,15 @@ jobs:
       - name: Write summary
         id: summary
         env:
-          RESULTS: ${{ needs.scan.outputs.results }}
           SCAN_RESULT: ${{ needs.scan.result }}
+          SCAN_COMPLETE: ${{ needs.scan.outputs.complete }}
           TAG: ${{ needs.gate.outputs.tag }}
           SHA: ${{ needs.gate.outputs.sha }}
         run: |
-          {
-            echo "## Security scan — ${TAG:-PR} \`${SHA::9}\`"
-            echo
-            echo "| Tool | Result | Findings |"
-            echo "|---|---|---|"
-            if [[ -n "$RESULTS" ]]; then
-              jq -r 'to_entries[] | "| \(.key) | \(.value.status) | \(.value.count) |"' <<< "$RESULTS"
-            else
-              echo "| scan job | $SCAN_RESULT | - |"
-            fi
-            echo
-            echo "Details: the emailed report."
-          } > "$RUNNER_TEMP/summary.md"
           # public run page: pass/fail only; per-tool status and counts go to the email
           echo "## Security scan — ${TAG:-PR} \`${SHA::9}\`: details in the emailed report." >> "$GITHUB_STEP_SUMMARY"
           # a crashed scanner, LLM area or scan job must not read as a clean run
-          if [[ "$SCAN_RESULT" == success ]] && jq -e 'all(.[]; .status != "failure")' <<< "$RESULTS" > /dev/null; then
+          if [[ "$SCAN_RESULT" == success && "$SCAN_COMPLETE" == true ]]; then
             echo "complete=true" >> "$GITHUB_OUTPUT"
           else
             echo "complete=false" >> "$GITHUB_OUTPUT"
@@ -292,11 +280,12 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           COMPLETE: ${{ steps.summary.outputs.complete }}
+          SCAN_RESULT: ${{ needs.scan.result }}
         run: |
           set -o pipefail
           python3 -m venv "$RUNNER_TEMP/rvenv"
           "$RUNNER_TEMP/rvenv/bin/pip" install --quiet --require-hashes --no-deps -r .github/security/requirements-report.txt
-          bash .github/security/build-report.sh "$RUNNER_TEMP/summary.md" "$RUNNER_TEMP/reports" > "$RUNNER_TEMP/report.md"
+          bash .github/security/build-report.sh "$RUNNER_TEMP/reports" > "$RUNNER_TEMP/report.md"
           "$RUNNER_TEMP/rvenv/bin/python" .github/security/render-report.py "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
           subject="Security scan ${TAG:-${SHA::9}} $(date -u +%F)"
           [[ "$EVENT" != "pull_request" ]] || subject="[PR #$PR_NUMBER] $subject"
@@ -304,7 +293,7 @@ jobs:
           MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
 
       - name: Fail on blocking findings
-        if: fromJSON(needs.scan.outputs.results || '{}').gitleaks.found || fromJSON(needs.scan.outputs.results || '{}').trivy.found
+        if: needs.scan.outputs.blocking == 'true'
         run: |
           echo "::error::Blocking findings. See the emailed report."
           exit 1

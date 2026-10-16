@@ -44,4 +44,12 @@ if [[ "$LLM_ENABLED" == "true" ]]; then
 fi
 jq -c --argjson llm "$llm" '. + {"llm-review": $llm}' "$OUT/results.json" > "$OUT/results.tmp" \
   && mv "$OUT/results.tmp" "$OUT/results.json"
-echo "results=$(cat "$OUT/results.json")" >> "$GITHUB_OUTPUT"
+# public job outputs carry pass/fail only; per-tool results go sealed to the report
+if [[ -n "${REPORT_PUBLIC_KEY:-}" ]] && ! bash "$sec/seal.sh" "$OUT/results.enc" < "$OUT/results.json"; then
+  echo "::error::Could not encrypt scan results."
+  exit 1
+fi
+{
+  echo "complete=$(jq -r 'all(.[]; .status != "failure")' "$OUT/results.json")"
+  echo "blocking=$(jq -r '.gitleaks.found or .trivy.found' "$OUT/results.json")"
+} >> "$GITHUB_OUTPUT"
