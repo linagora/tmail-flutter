@@ -1,0 +1,305 @@
+name: Security release scan
+
+on:
+  # called by image-sentry.yaml after the release image is built
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to scan (e.g. v1.2.3)"
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - ".github/workflows/security-release.yaml"
+      - ".github/security/**"
+
+permissions: {}
+
+concurrency:
+  group: security-release-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    # release scans: tag push via image-sentry.yaml; PRs: same-repo only
+    if: >-
+      (github.event_name == 'push' && github.ref_type == 'tag') ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    # secrets live only here (v* tags + master); PR runs get none: dry run
+    environment: ${{ github.event_name != 'pull_request' && 'security-release' || '' }}
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.scope.outputs.sha }}
+      ref: ${{ steps.scope.outputs.ref }}
+      tag: ${{ steps.scope.outputs.tag }}
+      base: ${{ steps.check.outputs.base }}
+      areas: ${{ steps.check.outputs.areas }}
+      report: ${{ steps.check.outputs.report }}
+      llm_parallel: ${{ steps.check.outputs.llm_parallel }}
+      llm_timeout: ${{ steps.check.outputs.llm_timeout }}
+    steps:
+      - name: Resolve scan scope
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          RUN_TAG: ${{ github.ref_name }}
+          RUN_SHA: ${{ github.sha }}
+          INPUT_TAG: ${{ inputs.tag }}
+          PR_SHA: ${{ github.sha }}
+          PR_REF: ${{ github.ref }}
+        run: |
+          case "$EVENT" in
+            pull_request)
+              { echo "sha=$PR_SHA"; echo "ref=$PR_REF"; echo "tag="; } >> "$GITHUB_OUTPUT"
+              exit 0 ;;
+            push) tag=$RUN_TAG; sha=$RUN_SHA ;;
+            *) tag=$INPUT_TAG; sha="" ;;
+          esac
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z.-]*$ ]]; then
+            echo "::error::Not a release tag: $tag"
+            exit 1
+          fi
+          if [[ -z "$sha" ]]; then
+            sha=$(gh api "repos/$REPO/commits/refs/tags/$tag" --jq .sha) \
+              || { echo "::error::Tag $tag does not exist."; exit 1; }
+          fi
+          { echo "sha=$sha"; echo "ref=refs/tags/$tag"; echo "tag=$tag"; } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.scope.outputs.sha }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+
+      - name: Pick scan range and report sink
+        id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          SHA: ${{ steps.scope.outputs.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
+          GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
+          SMTP_URL: ${{ secrets.SECURITY_SMTP_URL }}
+          SMTP_USER: ${{ secrets.SECURITY_SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SECURITY_SMTP_PASSWORD }}
+          MAIL_FROM: ${{ vars.SECURITY_MAIL_FROM }}
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+          REPORT_PUBLIC_KEY: ${{ vars.SECURITY_REPORT_PUBLIC_KEY }}
+          MAX_PARALLEL: ${{ vars.SECURITY_LLM_MAX_PARALLEL }}
+        run: |
+          if [[ "$EVENT" == "pull_request" ]]; then
+            base=$PR_BASE_SHA
+          else
+            # previous release tag; empty = first release, full history
+            prev=$(git describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*' "$SHA^" 2>/dev/null || true)
+            base=$([[ -z "$prev" ]] || git rev-parse "$prev^{commit}")
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "areas=$(jq -c '["changes"] + map(.area)' .github/security/areas.json)" >> "$GITHUB_OUTPUT"
+          # scan job timeout: area-audit waves (40m each) vs scanners (<=20m) + changes area (40m)
+          p=${MAX_PARALLEL:-8}; [[ "$p" =~ ^[1-9][0-9]*$ ]] || p=8
+          n=$(jq length .github/security/areas.json)
+          w=$(( (n + p - 1) / p * 40 )); (( w >= 60 )) || w=60
+          t=$(( w + 20 )); (( t <= 360 )) || t=360
+          { echo "llm_parallel=$p"; echo "llm_timeout=$t"; } >> "$GITHUB_OUTPUT"
+          if [[ -n "$GITLAB_TOKEN" && -n "$GITLAB_PROJECT" && -n "$SMTP_URL" && -n "$SMTP_USER" \
+                && -n "$SMTP_PASSWORD" && -n "$MAIL_FROM" && -n "$REPORT_KEY" \
+                && -n "$REPORT_PUBLIC_KEY" ]]; then
+            echo "report=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "report=false" >> "$GITHUB_OUTPUT"
+            echo "Private report skipped: SECURITY_GITLAB_*, SECURITY_SMTP_*, SECURITY_MAIL_FROM, SECURITY_REPORT_KEY or SECURITY_REPORT_PUBLIC_KEY not configured." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  scan:
+    needs: gate
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name != 'pull_request' && 'security-release' || '' }}
+    timeout-minutes: ${{ fromJSON(needs.gate.outputs.llm_timeout || '80') }}
+    permissions:
+      contents: read
+      actions: read # zizmor and scorecard read workflow runs
+    outputs:
+      complete: ${{ steps.scan.outputs.complete }}
+      blocking: ${{ steps.scan.outputs.blocking }}
+    steps:
+      # the runner context is not available in job-level env
+      - name: Set tool paths
+        run: |
+          {
+            echo "BIN=$RUNNER_TEMP/bin"
+            echo "VENVS=$RUNNER_TEMP/venvs"
+            echo "OUT=$RUNNER_TEMP/out"
+          } >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Check LLM config
+        id: cfg
+        env:
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+          REPORT: ${{ needs.gate.outputs.report }}
+        run: |
+          # no private sink, no LLM run: the report is never published publicly
+          if [[ "$REPORT" != "true" || -z "$LLM_API_KEY" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "LLM review skipped: private report or SECURITY_LLM_* not configured." >> "$GITHUB_STEP_SUMMARY"
+          else
+            # the key goes in an Authorization header; refuse cleartext endpoints
+            if [[ "$LLM_BASE_URL" != https://* ]]; then
+              echo "::error::SECURITY_LLM_BASE_URL must use https."
+              exit 1
+            fi
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cfg.outputs.enabled == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Install scanners and opencode
+        env:
+          LLM_ENABLED: ${{ steps.cfg.outputs.enabled }}
+        run: |
+          bash .github/security/install-scanners.sh
+          if [[ "$LLM_ENABLED" == "true" ]]; then
+            # outside the checkout: scanners would scan opencode's dependencies
+            mkdir -p "$RUNNER_TEMP/opencode"
+            cp .github/security/opencode/package.json .github/security/opencode/package-lock.json "$RUNNER_TEMP/opencode/"
+            npm ci --silent --prefix "$RUNNER_TEMP/opencode"
+          fi
+
+      - name: Scan
+        id: scan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_PUBLIC_KEY: ${{ vars.SECURITY_REPORT_PUBLIC_KEY }}
+          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
+          LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
+          LLM_ENABLED: ${{ steps.cfg.outputs.enabled }}
+          AREAS: ${{ needs.gate.outputs.areas || '["changes"]' }}
+          # repo variable SECURITY_LLM_MAX_PARALLEL caps concurrent area audits (default 8)
+          PARALLEL: ${{ needs.gate.outputs.llm_parallel || '8' }}
+          BASE: ${{ needs.gate.outputs.base }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          # ignore repo .opencode config/plugins in the key-bearing step
+          OPENCODE_DISABLE_PROJECT_CONFIG: "true"
+          # LSP servers would be fetched unpinned and run with the LLM key
+          OPENCODE_DISABLE_LSP_DOWNLOAD: "true"
+          # plain stderr in the emailed report
+          NO_COLOR: "1"
+        run: bash .github/security/run-scan.sh
+
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-reports
+          path: ${{ runner.temp }}/out/*.enc
+          retention-days: 1
+          if-no-files-found: ignore # SECURITY_REPORT_PUBLIC_KEY unset
+
+  report:
+    needs: [gate, scan]
+    if: ${{ !cancelled() && needs.gate.result == 'success' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name != 'pull_request' && 'security-release' || '' }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+          persist-credentials: false
+          sparse-checkout: .github/security
+
+      - name: Write summary
+        id: summary
+        env:
+          SCAN_RESULT: ${{ needs.scan.result }}
+          SCAN_COMPLETE: ${{ needs.scan.outputs.complete }}
+          TAG: ${{ needs.gate.outputs.tag }}
+          SHA: ${{ needs.gate.outputs.sha }}
+        run: |
+          # public run page: pass/fail only; per-tool status and counts go to the email
+          echo "## Security scan — ${TAG:-PR} \`${SHA::9}\`: details in the emailed report." >> "$GITHUB_STEP_SUMMARY"
+          # a crashed scanner, LLM area or scan job must not read as a clean run
+          if [[ "$SCAN_RESULT" == success && "$SCAN_COMPLETE" == true ]]; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download reports
+        if: needs.gate.outputs.report == 'true'
+        continue-on-error: true # none exist when the scan job failed early
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: security-reports
+          path: ${{ runner.temp }}/reports
+
+      - if: needs.gate.outputs.report == 'true'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Email report to GitLab owners/maintainers
+        if: needs.gate.outputs.report == 'true'
+        env:
+          GITLAB_TOKEN: ${{ secrets.SECURITY_GITLAB_TOKEN }}
+          GITLAB_PROJECT: ${{ vars.SECURITY_GITLAB_PROJECT }}
+          SMTP_URL: ${{ secrets.SECURITY_SMTP_URL }}
+          SMTP_USER: ${{ secrets.SECURITY_SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SECURITY_SMTP_PASSWORD }}
+          MAIL_FROM: ${{ vars.SECURITY_MAIL_FROM }}
+          REPORT_KEY: ${{ secrets.SECURITY_REPORT_KEY }}
+          TAG: ${{ needs.gate.outputs.tag }}
+          SHA: ${{ needs.gate.outputs.sha }}
+          BASE: ${{ needs.gate.outputs.base }}
+          EVENT: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMPLETE: ${{ steps.summary.outputs.complete }}
+          SCAN_RESULT: ${{ needs.scan.result }}
+        run: |
+          set -o pipefail
+          python3 -m venv "$RUNNER_TEMP/rvenv"
+          "$RUNNER_TEMP/rvenv/bin/pip" install --quiet --require-hashes --no-deps -r .github/security/requirements-report.txt
+          bash .github/security/build-report.sh "$RUNNER_TEMP/reports" > "$RUNNER_TEMP/report.md"
+          "$RUNNER_TEMP/rvenv/bin/python" .github/security/render-report.py "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
+          subject="Security scan ${TAG:-${SHA::9}} $(date -u +%F)"
+          [[ "$EVENT" != "pull_request" ]] || subject="[PR #$PR_NUMBER] $subject"
+          [[ "$COMPLETE" == true ]] || subject="SCAN INCOMPLETE: $subject"
+          MAIL_SUBJECT="$subject" bash .github/security/send-report.sh "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/report.html"
+
+      - name: Fail on blocking findings
+        if: needs.scan.outputs.blocking == 'true'
+        run: |
+          echo "::error::Blocking findings. See the emailed report."
+          exit 1
+
+      - name: Fail on incomplete scan
+        if: steps.summary.outputs.complete != 'true'
+        run: |
+          echo "::error::A scanner, LLM area or the scan job failed; see the scan job log."
+          exit 1

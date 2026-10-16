@@ -1,0 +1,16 @@
+[
+  {"area": "html-xss", "focus": "Email/HTML rendering, sanitizer setup, composer, reply/forward quoting, print",
+   "paths": ["core/lib/utils/html", "core/lib/presentation/utils/html_transformer", "lib/features/email", "lib/features/email_previewer", "lib/features/composer", "lib/features/thread_detail"]},
+  {"area": "navigation", "focus": "Link opening, deep links, mailto, routing, notification taps",
+   "paths": ["lib/main/deep_links", "lib/main/routes", "lib/features/mailto", "lib/features/push_notification", "core/lib/utils/external_link_policy.dart", "core/lib/utils/web_uri_parser.dart", "core/lib/utils/web_link_generator.dart"]},
+  {"area": "storage", "focus": "Local storage, cache encryption, offline data, downloads, logout wipe",
+   "paths": ["lib/features/caching", "lib/features/offline_mode", "lib/features/sending_queue", "lib/features/cleanup", "lib/features/download", "lib/features/upload"]},
+  {"area": "auth", "focus": "Login, OIDC, autodiscovery, token handling, logout",
+   "paths": ["lib/features/login", "lib/features/starting_page", "lib/features/home", "lib/main/bindings"]},
+  {"area": "platform", "focus": "Android/iOS config, exported components, URL schemes, entitlements, native code, FCM",
+   "paths": ["android", "ios", "fcm"]},
+  {"area": "web-shell", "focus": "Web shell pages, OIDC callbacks, service worker, CSP, nginx serving",
+   "paths": ["web", "Dockerfile", "server"]},
+  {"area": "deps", "focus": "Dependencies and supply chain, git-pinned forks, CI workflows, patches",
+   "paths": ["pubspec.yaml", "pubspec.lock", ".github/workflows", "patchs"]}
+]
