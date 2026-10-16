@@ -10,35 +10,34 @@ void main() {
   final interactor = CheckSendingAllowedInteractor();
 
   group('CheckSendingAllowedInteractor::execute', () {
-    test('SHOULD allow sending WHEN the session has no SaaS capability',
-        () async {
-      await expectLater(
-        interactor.execute(SessionFixtures.aliceSession, accountId),
-        completes,
+    test('SHOULD allow sending WHEN the session has no SaaS capability', () {
+      expect(
+        () => interactor.execute(SessionFixtures.aliceSession, accountId),
+        returnsNormally,
       );
     });
 
     test(
       'SHOULD allow sending '
       'WHEN the session says the mail DNS configuration is validated',
-    () async {
-      await expectLater(
-        interactor.execute(
+    () {
+      expect(
+        () => interactor.execute(
           SessionFixtures.getAliceSessionWithSaaSCapability(
             mailDnsConfigurationValidated: true,
           ),
           accountId,
         ),
-        completes,
+        returnsNormally,
       );
     });
 
     test(
       'SHOULD throw ForbiddenToSendException '
       'WHEN the session says the domain is pending',
-    () async {
-      await expectLater(
-        interactor.execute(
+    () {
+      expect(
+        () => interactor.execute(
           SessionFixtures.getAliceSessionWithSaaSCapability(
             mailDnsConfigurationValidated: false,
           ),

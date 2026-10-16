@@ -31,7 +31,7 @@ class SendEmailInteractor {
     try {
       yield Right<Failure, Success>(SendEmailLoading());
 
-      await _checkSendingAllowedInteractor.execute(session, accountId);
+      _checkSendingAllowedInteractor.execute(session, accountId);
 
       await _emailRepository.sendEmail(
         session,

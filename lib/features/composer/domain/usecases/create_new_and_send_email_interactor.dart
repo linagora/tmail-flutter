@@ -34,7 +34,7 @@ class CreateNewAndSendEmailInteractor {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
 
       // Before generating the email, so a refused send uploads nothing.
-      await _checkSendingAllowedInteractor.execute(
+      _checkSendingAllowedInteractor.execute(
         createEmailRequest.session,
         createEmailRequest.accountId,
       );

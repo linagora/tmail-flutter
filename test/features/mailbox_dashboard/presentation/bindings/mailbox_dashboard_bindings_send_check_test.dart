@@ -21,7 +21,7 @@ class _MockEmailRepository extends Mock implements EmailRepository {}
 class _RefusingCheckSendingAllowedInteractor
     implements CheckSendingAllowedInteractor {
   @override
-  Future<void> execute(Session session, AccountId accountId) async =>
+  void execute(Session session, AccountId accountId) =>
       throw ForbiddenToSendException();
 }
 
