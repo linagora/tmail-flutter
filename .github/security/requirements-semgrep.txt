@@ -935,7 +935,7 @@ semgrep==1.179.0 \
     --hash=sha256:c23d79c4839540372acc39b59aad167c1c7f3dc21bacacb27f19aa2edd79d271 \
     --hash=sha256:c7e32b952990434b591003547f26b46c89a5bd56033715b00ff26327a8abe8c5 \
     --hash=sha256:dc6317fbfad49b1dbe396df7da7d9702cffc5ea9ea62cb3b4b2209824496b425
-    # via -r /private/tmp/claude-501/-Users-dangdat-Desktop-dev-linagora-master-tmail-flutter/d2762f3a-7a2a-4c68-bfc1-9e648ebbab15/scratchpad/semgrep.in
+    # via -r semgrep.in
 sse-starlette==3.5.0 \
     --hash=sha256:3e6e1070df3f0f5d9cea81496de92dbb72f6721871d99748ece67441dd8b7997 \
     --hash=sha256:75de713aa8a9441513cc283220826da079d982770965b951e9437720e8bafdb2
