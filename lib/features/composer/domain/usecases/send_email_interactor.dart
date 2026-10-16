@@ -5,14 +5,19 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/check_sending_allowed_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 
 class SendEmailInteractor {
   final EmailRepository _emailRepository;
+  final CheckSendingAllowedInteractor _checkSendingAllowedInteractor;
 
-  SendEmailInteractor(this._emailRepository);
+  SendEmailInteractor(
+    this._emailRepository,
+    this._checkSendingAllowedInteractor,
+  );
 
   Stream<Either<Failure, Success>> execute(
     Session session,
@@ -25,6 +30,8 @@ class SendEmailInteractor {
   ) async* {
     try {
       yield Right<Failure, Success>(SendEmailLoading());
+
+      _checkSendingAllowedInteractor.execute(session, accountId);
 
       await _emailRepository.sendEmail(
         session,

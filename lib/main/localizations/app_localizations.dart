@@ -6136,4 +6136,18 @@ class AppLocalizations {
       name: 'messageDialogSendEmailContentLoadFailed',
     );
   }
+
+  String get domainActivationPendingTitle {
+    return Intl.message(
+      'Your email domain is pending activation',
+      name: 'domainActivationPendingTitle',
+    );
+  }
+
+  String get domainActivationPendingMessage {
+    return Intl.message(
+      'You cannot send emails at this time. Contact your administrator if the problem persists.',
+      name: 'domainActivationPendingMessage',
+    );
+  }
 }

@@ -13,7 +13,9 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/ai/ai_capabilities.dart';
+import 'package:model/saas/saas_account_capability.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_capability.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 import 'account_fixtures.dart';
 
@@ -252,4 +254,38 @@ class SessionFixtures {
         'http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
     State('2c9f1b12-b35a-43e6-9af2-0106fb53a943'),
   );
+
+  static Session getAliceSessionWithSaaSCapability({
+    required bool mailDnsConfigurationValidated,
+  }) {
+    final capability = SaaSAccountCapability(
+      mailDnsConfigurationValidated: mailDnsConfigurationValidated,
+    );
+    return Session(
+      {
+        SessionExtensions.linagoraSaaSCapability: capability,
+      },
+      {
+        AccountFixtures.aliceAccountId: Account(
+          AccountName('alice@domain.tld'),
+          true,
+          false,
+          {
+            SessionExtensions.linagoraSaaSCapability: capability,
+          },
+        )
+      },
+      {
+        SessionExtensions.linagoraSaaSCapability: AccountFixtures.aliceAccountId,
+      },
+      UserName('alice@domain.tld'),
+      Uri.parse('http://domain.com/jmap'),
+      Uri.parse(
+          'http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
+      Uri.parse('http://domain.com/upload/{accountId}'),
+      Uri.parse(
+          'http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
+      State('2c9f1b12-b35a-43e6-9af2-0106fb53a943'),
+    );
+  }
 }

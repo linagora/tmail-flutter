@@ -5787,5 +5787,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "domainActivationPendingTitle": "Your email domain is pending activation",
+  "@domainActivationPendingTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingMessage": "You cannot send emails at this time. Contact your administrator if the problem persists.",
+  "@domainActivationPendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

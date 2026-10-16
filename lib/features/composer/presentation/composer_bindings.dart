@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/data/repository/contact_reposito
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/transformer/html_email_transformer.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/check_sending_allowed_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
@@ -306,6 +307,7 @@ abstract class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => CreateNewAndSendEmailInteractor(
       Get.find<EmailRepository>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
+      Get.find<CheckSendingAllowedInteractor>(),
     ), tag: composerId);
     Get.lazyPut(() => CreateNewAndSaveEmailToDraftsInteractor(
       Get.find<EmailRepository>(tag: composerId),

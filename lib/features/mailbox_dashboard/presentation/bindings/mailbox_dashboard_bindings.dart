@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_ma
 import 'package:tmail_ui_user/features/cleanup/presentation/cleanup_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/check_sending_allowed_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_all_attachments_for_web_interactor.dart';
@@ -412,7 +413,7 @@ abstract class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetSpamMailboxCachedInteractor(Get.find<SpamReportRepository>()));
-    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>(), Get.find<CheckSendingAllowedInteractor>()));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
     Get.lazyPut(() => UnsubscribeEmailInteractor(Get.find<EmailRepository>()));

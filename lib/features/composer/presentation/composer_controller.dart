@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/set_method_exception_description_extension.dart';
@@ -65,6 +66,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_m
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/forbidden_to_send_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
@@ -1091,6 +1093,9 @@ class ComposerController extends BaseController
       } else if (exception is InvalidRecipientsException) {
         _sendButtonState = ButtonState.enabled;
         handleInvalidRecipientsFailure(exception);
+      } else if (exception is ForbiddenToSendException) {
+        _sendButtonState = ButtonState.enabled;
+        await handleForbiddenToSendFailure(exception);
       } else if (context.mounted) {
         await _showConfirmDialogWhenSendMessageFailure(
           context: context,
