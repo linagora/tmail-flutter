@@ -84,7 +84,10 @@ for i in "${!tools[@]}"; do
   files=()
   for f in "$sarif/$t"*.sarif; do [[ ! -s "$f" ]] || files+=("$f"); done
   digest="$RUNNER_TEMP/findings-$t.json"
-  bash "$sec/sarif-digest.sh" ${files[@]+"${files[@]}"} > "$digest" || echo '[]' > "$digest"
+  if ! bash "$sec/sarif-digest.sh" ${files[@]+"${files[@]}"} > "$digest"; then
+    status=failure
+    echo '[]' > "$digest"
+  fi
   found=false; [[ ! -e "$sarif/$t.found" ]] || found=true
   # artifacts of a public repo are downloadable: ship only ciphertext
   [[ -z "${REPORT_PUBLIC_KEY:-}" ]] || bash "$sec/seal.sh" "$OUT/findings-$t.enc" < "$digest"
