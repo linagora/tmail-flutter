@@ -41,6 +41,7 @@ unfence() {
 for f in ${llm[@]+"${llm[@]}"}; do
   # model output can carry prompt injection: quote every line so it can't forge report sections
   printf '\n> **Untrusted model output.** Every quoted line comes from the model; verify each claim; links are defanged (hxxp).\n>\n'
-  dec "$f" | unfence | sed -E 's#[Hh][Tt][Tt][Pp]([Ss]?)://#hxxp\1://#g; s/^/> /' \
+  # a lone CR becomes a line break in the renderer, after quoting: strip it
+  dec "$f" | tr -d '\r' | unfence | sed -E 's#[Hh][Tt][Tt][Pp]([Ss]?)://#hxxp\1://#g; s/^/> /' \
     || echo "(could not decrypt $(basename "$f"))"
 done
