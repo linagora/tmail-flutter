@@ -335,7 +335,7 @@ dependency_overrides:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      ref: feature/linagora-dialog
+      ref: master
 
   ### Original dependency is abandoned, so we use fork
   intl_generator:
