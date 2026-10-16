@@ -20,6 +20,9 @@ class LoginWithBasicAuthScenario extends BaseTestScenario {
 
   // Skip credential seeding — test the actual login UI flow.
   @override
+  Future<void> prepare() async {}
+
+  @override
   Future<void> execute() async {
     await robots.loginRobot().loginWithBasicAuth(
       username: username,
