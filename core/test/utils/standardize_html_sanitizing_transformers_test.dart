@@ -197,6 +197,15 @@ void main() {
             equals('<a href="https://example.com">plain link</a><div>editable island</div>'));
       });
 
+      test('SHOULD strip contenteditable FROM a non-<a> element that borrows the Drive card class', () {
+        const driveCardTransformer =
+            StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']);
+        const html = '<div class="tmail-file-link-card" contenteditable="true">editable island</div>';
+        expect(
+            driveCardTransformer.process(html, htmlEscape).trim(),
+            equals('<div class="tmail-file-link-card">editable island</div>'));
+      });
+
       test('SHOULD strip mixed-case CONTENTEDITABLE FROM non-Drive-card elements WHEN allowAttributes opts in', () {
         const driveCardTransformer =
             StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']);

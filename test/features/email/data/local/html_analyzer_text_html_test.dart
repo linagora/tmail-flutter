@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:uuid/uuid.dart';
@@ -222,5 +225,27 @@ void main() {
         expect(output, allOf(contains('日本語'), contains('中文'), contains('한국어')));
       });
     });
+  });
+
+  test('SHOULD load inline cid images from the download URLs it is given', () async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    final dioClient = MockDioClient();
+    when(dioClient.get('https://jmap.example.com/download/img-1', options: anyNamed('options')))
+        .thenAnswer((_) async => Uint8List.fromList([1, 2, 3, 4]));
+    final htmlAnalyzer = HtmlAnalyzer(
+      HtmlTransform(dioClient, const HtmlEscape()),
+      MockFileUploader(),
+      MockUuid(),
+    );
+
+    final result = await htmlAnalyzer.transformEmailContent(
+      EmailContent(EmailContentType.textHtml, '<img src="cid:img-1" alt="inline">'),
+      {'img-1': 'https://jmap.example.com/download/img-1'},
+      TransformConfiguration.forPreviewEmailOnWeb(),
+    );
+
+    expect(result.content, contains('src="data:image/'));
+    expect(result.content, isNot(contains('src="cid:img-1"')));
   });
 }

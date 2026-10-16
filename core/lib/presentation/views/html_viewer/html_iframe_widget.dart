@@ -22,6 +22,7 @@ class HtmlIframeWidget extends StatelessWidget {
       key: key,
       tagName: 'iframe',
       onElementCreated: (element) {
+        // No sandbox: the viewer needs allow-scripts + allow-same-origin, which together void it.
         final iframe = element as IFrameElement;
         onIframeCreated?.call(iframe);
         iframe

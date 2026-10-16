@@ -73,6 +73,23 @@ void main() {
         isFalse,
       );
     });
+
+    test('does not apply the mobile responsive layout when the view has not opted in', () {
+      expect(
+        HtmlContentViewer.shouldApplyMobileResponsiveLayout(
+          const HtmlContentViewerConfiguration(
+            content: HtmlContentViewerContent(html: ''),
+            layout: HtmlContentViewerLayout(
+              viewport: HtmlContentViewerViewport(
+                constraints: BoxConstraints.tightFor(width: 360),
+              ),
+            ),
+          ),
+          HtmlContentViewerPlatform.mobile,
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('HtmlContentViewerConfiguration', () {

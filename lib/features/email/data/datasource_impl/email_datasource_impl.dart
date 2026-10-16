@@ -8,7 +8,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
@@ -487,9 +486,8 @@ class EmailDataSourceImpl extends EmailDataSource {
     Map<String, String> mapCidImageDownloadUrl,
   ) async {
     try {
-      final transformConfiguration = PlatformInfo.isWeb
-        ? TransformConfiguration.forPreviewEmailOnWeb()
-        : TransformConfiguration.forPreviewEmail();
+      final transformConfiguration =
+          TransformConfiguration.forPreviewEmailOnPlatform();
 
       final listEmailContent = await Future.wait(emailContents
         .map((emailContent) async => await _htmlAnalyzer.transformEmailContent(

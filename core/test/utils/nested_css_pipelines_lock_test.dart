@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fixtures/newsletter_stylesheets.dart';
+import 'html_pipeline_registry.dart';
 import 'html_transform_text_html_test.mocks.dart';
 
 /// Every HTML pipeline shares one sanitizer, so a change to how it treats
@@ -17,30 +18,16 @@ void main() {
     htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
   });
 
-  // Pipelines that run the HTML sanitizer.
-  final sanitizingPipelines = <String, TransformConfiguration Function()>{
-    'drafts': TransformConfiguration.forDraftsEmail,
-    'edit drafts': TransformConfiguration.forEditDraftsEmail,
-    'web viewer': TransformConfiguration.forPreviewEmailOnWeb,
-    'mobile viewer': TransformConfiguration.forPreviewEmail,
-    'restore': TransformConfiguration.forRestoreEmail,
-    'signature identity': TransformConfiguration.forSignatureIdentity,
-    'calendar event': TransformConfiguration.forCalendarEvent,
-    'standard': () => TransformConfiguration.standardConfiguration,
-  };
-
-  // Pipelines without the HTML sanitizer: their CSS must come out unchanged.
-  // Print is left out: it removes every <style> by design.
-  final passThroughPipelines = <String, TransformConfiguration Function()>{
-    'reply forward': TransformConfiguration.forReplyForwardEmail,
-    'reply forward empty': TransformConfiguration.forReplyForwardEmptyEmail,
-    'composer signature': TransformConfiguration.forComposerSignature,
-  };
-
+  final sanitizingPipelines = pipelineFactoriesWired(HtmlPipelineWiring.sanitizes);
+  final passThroughPipelines = pipelineFactoriesWired(HtmlPipelineWiring.passesThrough);
   final allPipelines = {...sanitizingPipelines, ...passThroughPipelines};
 
-  // Pipelines whose output is saved back to the server.
-  const savedPipelines = ['drafts', 'edit drafts', 'restore', 'signature identity'];
+  const savedPipelines = [
+    'forDraftsEmail',
+    'forEditDraftsEmail',
+    'forRestoreEmail',
+    'forSignatureIdentity',
+  ];
 
   String normalize(String css) => css
       .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '')

@@ -11,7 +11,8 @@ set -euo pipefail
 
 : "${MODULES:?MODULES must be set to default or a package folder}"
 
-PLATFORM_METADATA='TestOn|testOn|OnPlatform|onPlatform'
+# Whole names only, so an identifier such as forPreviewEmailOnPlatform is not metadata.
+PLATFORM_METADATA='(^|[^[:alnum:]_])(TestOn|testOn|OnPlatform|onPlatform)([^[:alnum:]_]|$)'
 SUPPORTED_TEST_ON="@TestOn\(['\"](vm|chrome)['\"]\)$"
 CHROME_TEST_ON="^@TestOn\(['\"]chrome['\"]\)$"
 

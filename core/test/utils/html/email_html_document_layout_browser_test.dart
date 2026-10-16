@@ -1,0 +1,103 @@
+@TestOn('chrome')
+
+import 'dart:convert';
+
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../fixtures/html_emails/html_email_corpus.g.dart';
+import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
+import '../html_transform_text_html_test.mocks.dart';
+import 'mobile_email_responsive_layout_fixture.dart';
+
+void main() {
+  late HtmlTransform htmlTransform;
+
+  setUp(() {
+    htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
+  });
+
+  Future<String> transform(
+    String html,
+    TransformConfiguration configuration,
+  ) =>
+      htmlTransform.transformToHtml(
+        htmlContent: html,
+        transformConfiguration: configuration,
+      );
+
+  // These lay the transformed corpus out in the shared document template
+  // (HtmlUtils.generateHtmlDocument), not in the full web viewer document;
+  // the viewer document itself is locked in viewer_document_lock_test.dart.
+  group('corpus layout through HtmlTransform', () {
+    for (final fixture in htmlEmailCorpus) {
+      test('${fixture.category}/${fixture.name} web pipeline output, 1280px, shared template', () async {
+        final transformed = await transform(
+          fixture.html,
+          TransformConfiguration.forPreviewEmailOnWeb(),
+        );
+        final hasQuote = transformed.contains('<blockquote');
+        await withEmail(
+          EmailFixture(
+            transformed,
+            direction: fixture.direction,
+            viewportWidth: 1280,
+            quoteToggle: fixture.expectQuote || hasQuote,
+            includeMobileScript: false,
+          ),
+          (viewport) async {
+            expect(viewport.element('body').getAttribute('dir'), fixture.rtl ? 'rtl' : null);
+            expect(viewport.overflowsHorizontally, isFalse);
+            if (!fixture.allowEmptyBody) {
+              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
+            }
+            if (fixture.expectQuote || hasQuote) {
+              expect(viewport.element('.quote-toggle-button'), isNotNull);
+              expect(viewport.isQuoteVisible, isFalse);
+              await viewport.expandQuote();
+              expect(viewport.isQuoteVisible, isTrue);
+            }
+          },
+        );
+      });
+
+      test('${fixture.category}/${fixture.name} mobile pipeline output, 360px, mobile script', () async {
+        final transformed = await transform(
+          fixture.html,
+          TransformConfiguration.forPreviewEmail(),
+        );
+        final hasQuote = transformed.contains('<blockquote');
+        await withEmail(
+          EmailFixture(
+            transformed,
+            direction: fixture.direction,
+            viewportWidth: 360,
+            quoteToggle: fixture.expectQuote || hasQuote,
+            includeMobileScript: true,
+          ),
+          (viewport) async {
+            expect(viewport.element('body').getAttribute('dir'), fixture.rtl ? 'rtl' : null);
+            expect(viewport.overflowsHorizontally, isFalse);
+            if (!fixture.allowEmptyBody) {
+              expect(viewport.element('.tmail-content').textContent, isNotEmpty);
+            }
+            for (final img in viewport.images) {
+              expect(
+                img.getBoundingClientRect().width <= viewport.contentWidth + 1,
+                isTrue,
+              );
+            }
+          },
+        );
+      });
+    }
+  });
+}
+
+extension on HtmlEmailCorpusFixture {
+  /// A fixture whose sidecar says `"rtl": true` is shown right to left, as the
+  /// email view does for an RTL email.
+  TextDirection? get direction => rtl ? TextDirection.rtl : null;
+}

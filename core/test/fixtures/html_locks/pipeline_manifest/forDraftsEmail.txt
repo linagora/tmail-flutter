@@ -1,0 +1,5 @@
+text:
+  - StandardizeHtmlSanitizingTransformers
+dom:
+  - ImageTransformer
+  - NormalizeLineHeightInStyleTransformer

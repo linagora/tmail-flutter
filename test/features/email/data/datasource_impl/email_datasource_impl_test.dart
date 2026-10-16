@@ -1,4 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:flutter/widgets.dart';
@@ -11,12 +13,14 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
+import 'package:model/email/email_content.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -28,6 +32,21 @@ class _FakeFileUtils extends Fake implements FileUtils {
 }
 
 class _FakeHtmlAnalyzer extends Fake implements HtmlAnalyzer {}
+
+/// Records the configuration the data source transforms the body with.
+class _CapturingHtmlAnalyzer extends Fake implements HtmlAnalyzer {
+  final List<TransformConfiguration> configurations = [];
+
+  @override
+  Future<EmailContent> transformEmailContent(
+    EmailContent emailContent,
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration,
+  ) async {
+    configurations.add(transformConfiguration);
+    return emailContent;
+  }
+}
 
 class _FakeEmailAPI extends Fake implements EmailAPI {}
 
@@ -118,5 +137,38 @@ void main() {
       final document = parse(html);
       expect(document.querySelector('.file-name')!.text, 'invoicefdp.exe');
     });
+  });
+
+  test('generatePreviewEmailEMLContent SHOULD sanitize the email body', () async {
+    final htmlAnalyzer = _CapturingHtmlAnalyzer();
+    Get.replace<HtmlAnalyzer>(htmlAnalyzer);
+    final dataSource = EmailDataSourceImpl(_FakeEmailAPI(), _FakeExceptionThrower());
+
+    await dataSource.generatePreviewEmailEMLContent(PreviewEmailEMLRequest(
+      accountId: AccountFixtures.aliceAccountId,
+      session: SessionFixtures.aliceSession,
+      ownEmailAddress: 'alice@example.com',
+      blobId: Id('emlBlobId'),
+      email: Email(
+        id: EmailId(Id('emailId')),
+        htmlBody: {EmailBodyPart(partId: PartId('1'), type: MediaType('text', 'html'))},
+        bodyValues: {
+          PartId('1'): EmailBodyValue(
+            value: '<p>body</p>',
+            isEncodingProblem: false,
+            isTruncated: false,
+          ),
+        },
+      ),
+      locale: const Locale('en'),
+      appLocalizations: AppLocalizations(),
+      baseDownloadUrl: 'https://jmap.example.com/download/{accountId}/{blobId}/?type={type}&name={name}',
+    ));
+
+    expect(htmlAnalyzer.configurations, hasLength(1));
+    expect(
+      htmlAnalyzer.configurations.single.textTransformers,
+      contains(isA<StandardizeHtmlSanitizingTransformers>()),
+    );
   });
 }
