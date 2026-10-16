@@ -206,6 +206,8 @@ jobs:
           OPENCODE_DISABLE_PROJECT_CONFIG: "true"
           # LSP servers would be fetched unpinned and run with the LLM key
           OPENCODE_DISABLE_LSP_DOWNLOAD: "true"
+          # plain stderr in the emailed report
+          NO_COLOR: "1"
         run: bash .github/security/run-scan.sh
 
       - if: always()
