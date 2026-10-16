@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 /// refuses the submission with `forbiddenToSend`.
 class CheckSendingAllowedInteractor {
   /// Throws [ForbiddenToSendException] if the session is not validated.
-  Future<void> execute(Session session, AccountId accountId) async {
+  void execute(Session session, AccountId accountId) {
     if (!session.isMailDnsConfigurationValidated(accountId)) {
       throw ForbiddenToSendException();
     }
