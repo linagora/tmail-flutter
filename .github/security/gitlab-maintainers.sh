@@ -5,7 +5,13 @@ set -euo pipefail
 api=https://ci.linagora.com/api/v4
 get() { curl -sSf --retry 3 -H "PRIVATE-TOKEN: $GITLAB_TOKEN" "$api/$1"; }
 project=$(jq -rn --arg p "$GITLAB_PROJECT" '$p | @uri')
-members=$(get "projects/$project/members/all?per_page=100")
+# members/all is paginated: read until a page comes back empty
+members='[]'
+for (( page = 1; ; page++ )); do
+  batch=$(get "projects/$project/members/all?per_page=100&page=$page")
+  [[ $(jq length <<< "$batch") -gt 0 ]] || break
+  members=$(jq -c --argjson b "$batch" '. + $b' <<< "$members")
+done
 # filter client-side: the members API ignores min_access_level
 ids=$(jq -r '.[] | select(.state == "active" and .access_level >= 40) | .id' <<< "$members")
 missing=0
