@@ -33,7 +33,7 @@ class SessionBindings extends InteractorsBindings {
   @override
   void bindingsInteractor() {
     Get.put(GetSessionInteractor(Get.find<SessionRepository>()));
-    Get.put(CheckSendingAllowedInteractor(Get.find<SessionRepository>()));
+    Get.put(CheckSendingAllowedInteractor());
   }
 
   @override
