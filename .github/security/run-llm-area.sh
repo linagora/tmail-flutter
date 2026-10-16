@@ -3,7 +3,7 @@
 # Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_* REPORT_PUBLIC_KEY OUT RUNNER_TEMP
 set -uo pipefail
 area=${1:?usage: run-llm-area.sh <area>}
-bin="$PWD/.github/security/opencode/node_modules/.bin/opencode"
+bin="$RUNNER_TEMP/opencode/node_modules/.bin/opencode"
 home="$RUNNER_TEMP/opencode-$area"
 # own session store per process: parallel runs never share one
 export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"

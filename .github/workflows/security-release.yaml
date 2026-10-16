@@ -180,7 +180,12 @@ jobs:
           LLM_ENABLED: ${{ steps.cfg.outputs.enabled }}
         run: |
           bash .github/security/install-scanners.sh
-          [[ "$LLM_ENABLED" != "true" ]] || npm ci --silent --prefix .github/security/opencode
+          if [[ "$LLM_ENABLED" == "true" ]]; then
+            # outside the checkout: scanners would scan opencode's dependencies
+            mkdir -p "$RUNNER_TEMP/opencode"
+            cp .github/security/opencode/package.json .github/security/opencode/package-lock.json "$RUNNER_TEMP/opencode/"
+            npm ci --silent --prefix "$RUNNER_TEMP/opencode"
+          fi
 
       - name: Scan
         id: scan
