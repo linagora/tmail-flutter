@@ -158,7 +158,8 @@ class ThreadController extends BaseController with EmailActionController {
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
-  bool get _shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
+  @visibleForTesting
+  bool get shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
 
@@ -722,8 +723,11 @@ class ThreadController extends BaseController with EmailActionController {
     log('ThreadController::_handleOnDoneGetAllEmailSuccess: EmailCount = ${emailList.length}');
     final hasMore = emailList.length >= ThreadConstants.maxCountEmails;
     canLoadMore = hasMore;
-    if (_isAutoLoadMore && emailList.isNotEmpty) {
-      // collapseThreads can return < limit; re-enable so _loadMoreEmails guard passes.
+    // collapseThreads can return < limit although more emails remain. Without
+    // collapsing, a short page means the mailbox is exhausted.
+    final mayHaveMoreCollapsedThreads = shouldCollapseThreads && emailList.isNotEmpty;
+    if (_isAutoLoadMore && (hasMore || mayHaveMoreCollapsedThreads)) {
+      // Re-enable so _loadMoreEmails guard passes.
       // _loadMoreEmailsSuccess will reset canLoadMore from serverEmailCount afterward.
       canLoadMore = true;
       _performAutomaticallyLoadMoreEmails();
@@ -809,7 +813,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
-        collapseThreads: _shouldCollapseThreads,
+        collapseThreads: shouldCollapseThreads,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -909,7 +913,7 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
     final refreshViewState = await _refreshChangeListEmailCache(
-      collapseThreads: _shouldCollapseThreads,
+      collapseThreads: shouldCollapseThreads,
     );
 
     final refreshState = refreshViewState
@@ -945,7 +949,7 @@ class ThreadController extends BaseController with EmailActionController {
             _accountId!,
           ),
           useCache: false,
-          collapseThreads: _shouldCollapseThreads,
+          collapseThreads: shouldCollapseThreads,
         )
         .last;
 
@@ -994,7 +998,7 @@ class ThreadController extends BaseController with EmailActionController {
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
-          collapseThreads: _shouldCollapseThreads,
+          collapseThreads: shouldCollapseThreads,
         )
       ));
     } else {
