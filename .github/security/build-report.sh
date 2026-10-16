@@ -29,8 +29,18 @@ for f in "$dir"/findings-*.enc; do
 done
 llm=("$dir"/llm-*.enc)
 (( ${#llm[@]} )) || printf '\n_No LLM area reports were produced; see the run log._\n'
+# fenced code doesn't render inside a blockquote: indent it instead
+unfence() {
+  awk '{
+    t = $0; sub(/^[ \t]+/, "", t)
+    if (fence == "" && match(t, /^(```+|~~~+)/)) { fence = substr(t, 1, RLENGTH); print ""; next }
+    if (fence != "" && index(t, fence) == 1 && t ~ /^[`~]+[ \t]*$/) { fence = ""; print ""; next }
+    print (fence != "" ? "    " : "") $0
+  }'
+}
 for f in ${llm[@]+"${llm[@]}"}; do
-  # model output can carry prompt injection from commits or code: label it, defang links
-  printf '\n> **Untrusted model output below.** Verify each claim; links are defanged (hxxp).\n\n'
-  dec "$f" | sed -E 's#[Hh][Tt][Tt][Pp]([Ss]?)://#hxxp\1://#g' || echo "(could not decrypt $(basename "$f"))"
+  # model output can carry prompt injection: quote every line so it can't forge report sections
+  printf '\n> **Untrusted model output.** Every quoted line comes from the model; verify each claim; links are defanged (hxxp).\n>\n'
+  dec "$f" | unfence | sed -E 's#[Hh][Tt][Tt][Pp]([Ss]?)://#hxxp\1://#g; s/^/> /' \
+    || echo "(could not decrypt $(basename "$f"))"
 done
