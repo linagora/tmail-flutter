@@ -183,6 +183,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                               ?.getOwnEmailAddressOrUsername() ?? '';
                                           }
                                           return ProfileSettingIcon(
+                                            key: const ValueKey(UiKeys.workplaceSettingsButton),
                                             ownEmailAddress: accountDisplayName,
                                             settingActionTypes: ProfileSettingActionType.values,
                                             onProfileSettingActionTypeClick: (actionType) =>
