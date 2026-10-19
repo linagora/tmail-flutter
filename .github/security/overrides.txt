@@ -1,0 +1,5 @@
+# Applied to mobsfscan.in only: semgrep 1.172 (pinned by mobsfscan) pins vulnerable mcp 1.23.3.
+# Both packages serve only "semgrep mcp", which mobsfscan never runs.
+# compile-requirements.sh syncs these versions from requirements-mobsfscan.txt, so Dependabot bumps land here.
+mcp==1.30.0
+pyjwt==2.15.1
