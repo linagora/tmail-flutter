@@ -27,7 +27,7 @@ RUN ./scripts/prebuild.sh && \
     --dart-define=SENTRY_DIST=$GITHUB_SHA && \
     SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-} ./scripts/run-sentry.sh
 
-FROM nginx:alpine@sha256:df221db836e1754089190208cee7eeda94f233197056426eda74a43ab1abeac2
+FROM nginx:alpine@sha256:892bb2152464f0c5d8972593a5f5afaf8054552580b699d95f8ff4af08c2d33d
 RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
