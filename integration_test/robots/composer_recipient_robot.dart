@@ -21,7 +21,8 @@ import 'composer_recipient_assertion_robot.dart';
 
 class ComposerRecipientRobot extends CoreRobot
     implements AbstractComposerRecipientRobot {
-  static const _maxChips = 20;
+  // Floor for the attempts; wide editors get more (see [_maxAttempts]).
+  static const _minAttempts = 20;
   // Short, so the narrowest chip leaves a wide range of reachable widths.
   static const _domain = '@x.io';
   // Kept under the chip's 267 px max width, so its label never ellipsizes.
@@ -61,7 +62,8 @@ class ComposerRecipientRobot extends CoreRobot
     required double maxGap,
   }) async {
     await enterRecipient(prefix, 'filler$_domain');
-    for (var index = 0; index < _maxChips; index++) {
+    final maxAttempts = _maxAttempts(prefix);
+    for (var index = 0; index < maxAttempts; index++) {
       final gap = _lineGap(prefix);
       if (gap >= minGap && gap < maxGap) return;
       final chipWidth = _nextChipWidth(prefix, gap, (minGap + maxGap) / 2);
@@ -75,10 +77,21 @@ class ComposerRecipientRobot extends CoreRobot
     await _field(prefix).$(TextField).tap();
   }
 
+  PatrolFinder _editor(PrefixEmailAddress prefix) =>
+      _field(prefix).$(TagEditor<SuggestionEmailAddress>);
+
+  /// Enough chips to fill two lines of the narrowest chips: the current line,
+  /// then a new one when no gap in range is reachable on it.
+  int _maxAttempts(PrefixEmailAddress prefix) {
+    const spacing = RecipientComposerWidgetStyle.tagSpacing;
+    final lineWidth = $.tester.getSize(_editor(prefix)).width;
+    final minChipWidth = _chipWidth(prefix, '00$_domain');
+    return max(_minAttempts, 2 * (lineWidth / (minChipWidth + spacing)).ceil() + 2);
+  }
+
   /// Free width after the last chip, up to the end of its line.
   double _lineGap(PrefixEmailAddress prefix) {
-    final editor = _field(prefix).$(TagEditor<SuggestionEmailAddress>);
-    return $.tester.getRect(editor).right - $.tester.getRect(_chips(prefix).last).right;
+    return $.tester.getRect(_editor(prefix)).right - $.tester.getRect(_chips(prefix).last).right;
   }
 
   /// Width of the next chip: one that leaves [targetGap] after it when it
