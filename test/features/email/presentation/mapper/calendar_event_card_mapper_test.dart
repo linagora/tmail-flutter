@@ -553,6 +553,12 @@ void main() {
       expect(mapper.status?.message, isNotEmpty);
     });
 
+    test('SHOULD omit the answers WHEN there is nobody to answer or mail', () {
+      final mapper = _mapper(event: _event(method: EventMethod.request));
+
+      expect(mapper.attending, isNull);
+    });
+
     test('SHOULD offer the three answers to an invitation', () {
       final mapper = _mapper(event: _invitation());
 
