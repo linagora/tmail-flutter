@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -15,20 +16,25 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 const _prefix = PrefixEmailAddress.to;
 const _fieldWidth = 360.0;
+const _minInputWidth = RecipientComposerWidgetStyle.minTextFieldWidth;
 
 void main() {
   setUpAll(() => Get.put(ResponsiveUtils()));
   tearDownAll(Get.reset);
 
   group('RecipientComposerWidget input area after chips test', () {
-    testWidgets(
-      'WHEN chips leave less room than the minimum input width AND the field is unfocused\n'
-      'THEN the input SHOULD stay on its own line below the chips AND tapping it SHOULD focus it',
-      _expectInputOnOwnLineIsFocusable,
-    );
+    // 10 and 30 are a nearly full line, below and above the former 20 px
+    // minimum; the last one is just under the current minimum.
+    for (final leftOverWidth in [10.0, 30.0, _minInputWidth - 1]) {
+      testWidgets(
+        'WHEN chips leave $leftOverWidth px on their line AND the field is unfocused\n'
+        'THEN the input SHOULD take its own full line AND tapping it SHOULD focus it',
+        (tester) => _expectInputOnOwnLineIsFocusable(tester, leftOverWidth),
+      );
+    }
 
     testWidgets(
-      'WHEN the last line still has room for the input\n'
+      'WHEN chips leave just over the minimum input width on their line\n'
       'THEN the input SHOULD NOT move to a new line',
       _expectInputStaysOnChipLine,
     );
@@ -111,15 +117,24 @@ FocusNode _createFocusNode() {
   return focusNode;
 }
 
-Future<void> _expectInputOnOwnLineIsFocusable(WidgetTester tester) async {
+Future<void> _expectInputOnOwnLineIsFocusable(
+  WidgetTester tester,
+  double leftOverWidth,
+) async {
   final focusNode = _createFocusNode();
-  final width = await _fieldWidthLeaving(tester, leftOverWidth: 10);
+  final width = await _fieldWidthLeaving(tester, leftOverWidth: leftOverWidth);
   await _pumpRecipientField(tester, width: width, chipCount: 1, focusNode: focusNode);
 
   final chipRect = tester.getRect(_chipFinder);
   final inputRect = tester.getRect(_inputFinder);
   expect(focusNode.hasFocus, isFalse);
   expect(inputRect.top, greaterThanOrEqualTo(chipRect.bottom));
+  expect(inputRect.left, chipRect.left);
+  // The editor border takes 0.5 px on each side.
+  expect(
+    inputRect.width,
+    moreOrLessEquals(tester.getSize(find.byType(TagEditor<SuggestionEmailAddress>)).width, epsilon: 1),
+  );
   expect(inputRect.height, greaterThan(0));
 
   await tester.tapAt(inputRect.center);
@@ -129,13 +144,14 @@ Future<void> _expectInputOnOwnLineIsFocusable(WidgetTester tester) async {
 }
 
 Future<void> _expectInputStaysOnChipLine(WidgetTester tester) async {
-  final width = await _fieldWidthLeaving(tester, leftOverWidth: 100);
+  final width = await _fieldWidthLeaving(tester, leftOverWidth: _minInputWidth + 1);
   await _pumpRecipientField(tester, width: width, chipCount: 1);
 
   final chipRect = tester.getRect(_chipFinder);
   final inputRect = tester.getRect(_inputFinder);
   expect(inputRect.top, lessThan(chipRect.bottom));
   expect(inputRect.left, greaterThanOrEqualTo(chipRect.right));
+  expect(inputRect.width, greaterThanOrEqualTo(_minInputWidth));
 }
 
 Future<void> _expectBlankSpaceTapFocusesInput(WidgetTester tester) async {
