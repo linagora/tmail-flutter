@@ -1,4 +1,4 @@
-# uv pip compile --generate-hashes --python-version 3.12 --python-platform x86_64-manylinux_2_28 uv.in
+# uv pip compile --no-build --generate-hashes --python-version 3.12 --python-platform x86_64-manylinux_2_34 uv.in
 uv==0.11.17 \
     --hash=sha256:036d6e2940afe8b79637530b01b9241d8cfd174b07f1179a1ebbd42409c38ca3 \
     --hash=sha256:12b701fa32c5be3691759a73956e4462f30fa7b0dfa52ec66cb305bbb6ea4129 \
