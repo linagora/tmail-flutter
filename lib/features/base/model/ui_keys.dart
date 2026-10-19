@@ -24,6 +24,9 @@ class UiKeys {
       'tablet_email_selection_avatar';
   // Suggestion-overlay chips; compose with the filter name. Distinct from the result-bar keys.
   static const String quickSearchFilterButtonPrefix = 'quick_search_filter_button_';
+  // Recipient field buttons; compose as 'prefix_<field name>' + suffix.
+  static const String recipientCcButtonSuffix = '_recipient_cc_button';
+  static const String recipientExpandButtonSuffix = '_recipient_expand_button';
 
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';

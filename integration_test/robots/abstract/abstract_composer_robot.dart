@@ -6,9 +6,12 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import 'abstract_composer_editor_keyboard_robot.dart';
+import 'abstract_composer_recipient_robot.dart';
 import 'abstract_composer_reload_robot.dart';
 
 abstract class AbstractComposerRobot {
+  AbstractComposerRecipientRobot get recipient;
+
   AbstractComposerReloadRobot? get reload;
 
   /// Web only: real key presses in the Summernote editor.
