@@ -21,7 +21,6 @@ import 'abstract/abstract_mailbox_folder_robot.dart';
 import 'abstract/abstract_mailbox_label_robot.dart';
 import 'abstract/abstract_mailbox_menu_robot.dart';
 import 'abstract/abstract_mailbox_navigation_robot.dart';
-import 'abstract/abstract_workplace_profile_menu_robot.dart';
 import 'mailbox_assertion_robot.dart';
 import 'mailbox_empty_trash_robot.dart';
 import 'mailbox_folder_robot.dart';
@@ -44,14 +43,10 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
   @override
   final AbstractMailboxAssertionRobot assertion;
 
-  @override
-  final AbstractWorkplaceProfileMenuRobot? workplaceProfileMenu;
-
   MailboxMenuRobot(
     PatrolIntegrationTester $, {
     AbstractMailboxNavigationRobot? navigationRobot,
     AbstractMailboxLabelRobot? labelRobot,
-    this.workplaceProfileMenu,
   })  : navigation = navigationRobot ?? MailboxNavigationRobot($),
         folder = MailboxFolderRobot($),
         emptyTrash = MailboxEmptyTrashRobot($),

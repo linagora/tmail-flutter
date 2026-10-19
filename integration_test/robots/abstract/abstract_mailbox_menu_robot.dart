@@ -5,7 +5,6 @@ import 'abstract_mailbox_empty_trash_robot.dart';
 import 'abstract_mailbox_folder_robot.dart';
 import 'abstract_mailbox_label_robot.dart';
 import 'abstract_mailbox_navigation_robot.dart';
-import 'abstract_workplace_profile_menu_robot.dart';
 
 abstract class AbstractMailboxMenuRobot {
   PatrolFinder mailboxItemByName(String name);
@@ -19,7 +18,4 @@ abstract class AbstractMailboxMenuRobot {
   AbstractMailboxEmptyTrashRobot get emptyTrash;
   AbstractMailboxLabelRobot get label;
   AbstractMailboxAssertionRobot get assertion;
-
-  /// Web only: the profile menu while embedded in Twake Workplace.
-  AbstractWorkplaceProfileMenuRobot? get workplaceProfileMenu;
 }
