@@ -1,3 +1,21 @@
+## [0.40.2] - 2026-10-19
+### Added
+- #4623 Pin the "no attending" row when nobody can be answered or mailed
+- #4892 Allow picking team mailbox folders as the advanced search scope
+- #4882 Tab and Shift+Tab nest and un-nest list items in the web composer
+- #4942 Preselect the user's own address when creating a new identity
+
+### Fixed
+- #4874 Drop scheme-added hrefs that SanitizeUrl fails to decode
+- #4882 Skip Tab list handling on the first list item and inside table cells
+- #4896 Refuse to send while the email body is loading or failed to load
+- #4898 Go back to Inbox when the open label is deleted; keep labels on fetch failure
+- #4942 Sort identities with null sortOrder after any defined sortOrder
+- #4953 Block sending and show a dialog while the email domain is pending activation
+
+### Changed
+- Translate vi, ru, fr, mn
+
 ## [0.40.1] - 2026-10-14
 ### Fixed
 - Fix Android release build failing in R8 after the file_picker 13 upgrade
