@@ -3459,6 +3459,38 @@ void main() {
           AppLocalizations.of(context).messageDialogSendEmailContentLoadFailed,
         );
       });
+
+      testWidgets(
+        'Should send the email again\n'
+        'When send is clicked again after dismissing the domain activation pending dialog',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.composerArguments.value = ComposerArguments();
+        when(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        )).thenAnswer((_) => Stream.value(
+          Left(SendEmailFailure(exception: ForbiddenToSendException())),
+        ));
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(LinagoraDialog.primaryActionKey));
+        await tester.pumpAndSettle();
+        expect(find.byType(DomainActivationPendingDialog), findsNothing);
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DomainActivationPendingDialog), findsOneWidget);
+        verify(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        )).called(2);
+        verify(mockMailboxDashBoardController
+            .deleteEmailPermanentlyInBackground(null))
+            .called(2);
+      });
     });
   });
 }
