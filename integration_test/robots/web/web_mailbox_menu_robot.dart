@@ -7,7 +7,6 @@ import '../mailbox_navigation_robot.dart';
 import '../mobile/mobile_mailbox_menu_robot.dart';
 import 'web_hover_tap.dart';
 import 'web_mailbox_label_robot.dart';
-import 'web_workplace_profile_menu_robot.dart';
 
 /// Web-specific navigation robot that simulates "long-press" via mouse hover
 /// then tapping the more-action button, because mobile long-press gestures
@@ -31,7 +30,6 @@ class WebMailboxMenuRobot extends MobileMailboxMenuRobot {
       : super(
           navigationRobot: WebMailboxNavigationRobot($),
           labelRobot: WebMailboxLabelRobot($),
-          workplaceProfileMenu: WebWorkplaceProfileMenuRobot($),
         );
 
   @override

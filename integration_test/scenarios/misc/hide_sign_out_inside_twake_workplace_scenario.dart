@@ -1,4 +1,5 @@
 import '../../base/base_test_scenario.dart';
+import '../../robots/web/web_workplace_profile_menu_robot.dart';
 import '../../utils/twake_workplace_simulator.dart';
 
 class HideSignOutInsideTwakeWorkplaceScenario extends BaseTestScenario {
@@ -16,7 +17,7 @@ class HideSignOutInsideTwakeWorkplaceScenario extends BaseTestScenario {
   Future<void> runTestLogic() async {
     await robots.commonRobot().waitForMailboxReady();
 
-    final profileMenuRobot = robots.mailboxMenuRobot().workplaceProfileMenu!;
+    final profileMenuRobot = WebWorkplaceProfileMenuRobot($);
     await profileMenuRobot.openProfileMenu();
 
     await profileMenuRobot.assertion.expectManageAccountVisible();
