@@ -226,7 +226,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     minTextFieldWidth: RecipientComposerWidgetStyle.minTextFieldWidth,
                     resetTextOnSubmitted: true,
                     autoScrollToInput: false,
-                    autoHideTextInputField: true,
                     cursorColor: RecipientComposerWidgetStyle.cursorColor,
                     suggestionsBoxElevation:
                     RecipientComposerWidgetStyle.suggestionsBoxElevation,
@@ -312,7 +311,13 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
                   return DragTarget<DraggableEmailAddress>(
                     builder: (context, candidateData, rejectedData) {
-                      return tagEditor;
+                      // The input is always laid out, even on its own line
+                      // when chips fill the last one; taps on the blank space
+                      // around chips still focus it.
+                      return GestureDetector(
+                        onTap: widget.focusNode?.requestFocus,
+                        child: tagEditor,
+                      );
                     },
                     onAcceptWithDetails: (draggableEmailAddress) =>
                         _handleAcceptDraggableEmailAddressAction(
