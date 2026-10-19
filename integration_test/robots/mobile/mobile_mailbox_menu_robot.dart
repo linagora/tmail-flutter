@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import '../abstract/abstract_mailbox_label_robot.dart';
 import '../abstract/abstract_mailbox_menu_robot.dart';
 import '../abstract/abstract_mailbox_navigation_robot.dart';
+import '../abstract/abstract_workplace_profile_menu_robot.dart';
 import '../mailbox_menu_robot.dart';
 
 class MobileMailboxMenuRobot extends MailboxMenuRobot implements AbstractMailboxMenuRobot {
@@ -12,7 +13,13 @@ class MobileMailboxMenuRobot extends MailboxMenuRobot implements AbstractMailbox
     PatrolIntegrationTester $, {
     AbstractMailboxNavigationRobot? navigationRobot,
     AbstractMailboxLabelRobot? labelRobot,
-  }) : super($, navigationRobot: navigationRobot, labelRobot: labelRobot);
+    AbstractWorkplaceProfileMenuRobot? workplaceProfileMenu,
+  }) : super(
+          $,
+          navigationRobot: navigationRobot,
+          labelRobot: labelRobot,
+          workplaceProfileMenu: workplaceProfileMenu,
+        );
 
   @override
   Future<void> openSetting() async {

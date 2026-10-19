@@ -33,6 +33,8 @@ class UiKeys {
   static const String addActionButton = 'addActionButton';
   static const String mobileMailboxMenuButton = 'mobileMailboxMenuButton';
   static const String userAvatar = 'userAvatar';
+  // Settings button that replaces the avatar inside Twake Workplace.
+  static const String workplaceSettingsButton = 'workplace_settings_button';
 
   // Advanced search
   static const String openAdvancedSearchButton = 'open_advanced_search_button';
