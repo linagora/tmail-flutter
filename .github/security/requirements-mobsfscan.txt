@@ -1,5 +1,5 @@
 # uv pip compile --generate-hashes --python-version 3.12 --python-platform x86_64-manylinux_2_28 --override overrides.txt mobsfscan.in
-# overrides.txt: mcp==1.29.0, pyjwt==2.15.1 (semgrep 1.172 pins vulnerable mcp 1.23.3; both serve only "semgrep mcp", which mobsfscan never runs)
+# overrides.txt: mcp==1.30.0, pyjwt==2.15.1 (semgrep 1.172 pins vulnerable mcp 1.23.3; both serve only "semgrep mcp", which mobsfscan never runs)
 annotated-types==0.8.0 \
     --hash=sha256:13b2beaad985e05e2d6407ee4c4f35590b11f8d693a258a561055cac8f64cab7 \
     --hash=sha256:f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
@@ -306,7 +306,7 @@ markdown-it-py==4.2.0 \
     --hash=sha256:04a21681d6fbb623de53f6f364d352309d4094dd4194040a10fd51833e418d49 \
     --hash=sha256:9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a
     # via rich
-mcp==1.29.0 \
+mcp==1.30.0 \
     --hash=sha256:52d01f334de1868cc3bb2d6604931126a67631f99a6c5d3b82ba47290315ec36 \
     --hash=sha256:f5a075bb611f23d6f4d080c6a1699fa62772eebc562ba9e66b306ddde1c755f7
     # via
