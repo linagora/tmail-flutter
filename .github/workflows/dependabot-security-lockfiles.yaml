@@ -1,0 +1,63 @@
+name: Recompile Dependabot security lockfiles
+
+# Dependabot edits the hash-pinned .github/security/requirements-*.txt line by line: a bump can keep
+# stale hashes or break a parent's exact pin. Recompile them with uv and push the result onto its PR.
+on:
+  pull_request:
+    paths:
+      - ".github/security/*.in"
+      - ".github/security/overrides.txt"
+      - ".github/security/requirements-*.txt"
+      - ".github/security/compile-requirements.sh"
+
+permissions: {}
+
+concurrency:
+  group: dependabot-security-lockfiles-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  recompile:
+    # Dependabot's own PRs only; a push made with GITHUB_TOKEN does not retrigger this workflow
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Recompile lockfiles
+        run: |
+          python3 -m venv "$RUNNER_TEMP/uv"
+          "$RUNNER_TEMP/uv/bin/pip" install --quiet --require-hashes --no-deps -r .github/security/requirements-uv.txt
+          PATH="$RUNNER_TEMP/uv/bin:$PATH" bash .github/security/compile-requirements.sh
+
+      - name: Check every lockfile installs as install-scanners.sh does
+        run: |
+          for f in .github/security/requirements-*.txt; do
+            t=$(basename "$f" .txt)
+            python3 -m venv "$RUNNER_TEMP/check-$t"
+            "$RUNNER_TEMP/check-$t/bin/pip" install --quiet --require-hashes --no-deps -r "$f"
+          done
+
+      - name: Push recompiled lockfiles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          git add .github/security
+          if git diff --cached --quiet; then echo "Lockfiles already consistent"; exit 0; fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Build(deps): Recompile security lockfiles with uv"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/${BRANCH}"
