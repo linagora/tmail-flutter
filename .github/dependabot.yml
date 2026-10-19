@@ -1,24 +1,22 @@
 version: 2
+
+# Security-scan tooling only, in one weekly PR. Nothing that ships (Dockerfile, app packages)
+# or other CI workflows is watched. dependabot-security-lockfiles.yaml fixes the pip hashes.
+multi-ecosystem-groups:
+  security-scan:
+    schedule:
+      interval: weekly
+
 updates:
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-    groups:
-      github-actions:
-        patterns: ["*"]
-  - package-ecosystem: docker
-    directory: /
-    schedule:
-      interval: weekly
   - package-ecosystem: pip
     directory: /.github/security
     schedule:
       interval: weekly
-    groups:
-      security-pip:
-        patterns: ["*"]
+    patterns: ["*"]
+    multi-ecosystem-group: security-scan
   - package-ecosystem: npm
     directory: /.github/security/opencode
     schedule:
       interval: weekly
+    patterns: ["*"]
+    multi-ecosystem-group: security-scan
