@@ -6143,5 +6143,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoading": "Không thể gửi thư vì nội dung vẫn đang được tải. Vui lòng đợi và thử lại.",
+  "@messageDialogSendEmailContentLoading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoadFailed": "Không thể gửi thư vì không tải được nội dung. Vui lòng đóng trình soạn thảo và mở lại email.",
+  "@messageDialogSendEmailContentLoadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingTitle": "Tên miền email của bạn đang chờ kích hoạt",
+  "@domainActivationPendingTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingMessage": "Hiện tại bạn không thể gửi email. Hãy liên hệ quản trị viên nếu sự cố vẫn tiếp diễn.",
+  "@domainActivationPendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -5783,6 +5783,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "messageDialogSendEmailContentLoading": "Агуулга нь одоо ачаалж байгаа тул таны мессежийг илгээж чадсангүй. Түр хүлээгээд дахин оролдоно уу.",
+  "@messageDialogSendEmailContentLoading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoadFailed": "Агуулгыг нь ачаалж чадаагүй тул таны мессежийг илгээж чадсангүй. Бичих цонхыг хаагаад имэйлийг дахин нээнэ үү.",
+  "@messageDialogSendEmailContentLoadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingTitle": "Таны имэйл домэйн идэвхжихийг хүлээж байна",
+  "@domainActivationPendingTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingMessage": "Одоогоор та имэйл илгээх боломжгүй байна. Асуудал үргэлжилбэл администратортайгаа холбогдоно уу.",
+  "@domainActivationPendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "ssoRedirectFailedMessage": "Нэг удаагийн нэвтрэлтийн (SSO) чиглүүлэлтийг гүйцээж чадсангүй. Дахин оролдоно уу.",
   "@ssoRedirectFailedMessage": {
     "type": "text",

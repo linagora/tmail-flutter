@@ -6155,5 +6155,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoading": "Не удалось отправить сообщение, так как его содержимое всё ещё загружается. Подождите и повторите попытку.",
+  "@messageDialogSendEmailContentLoading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoadFailed": "Не удалось отправить сообщение, так как не удалось загрузить его содержимое. Закройте редактор и снова откройте письмо.",
+  "@messageDialogSendEmailContentLoadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingTitle": "Ваш почтовый домен ожидает активации",
+  "@domainActivationPendingTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingMessage": "В данный момент вы не можете отправлять письма. Обратитесь к администратору, если проблема не исчезнет.",
+  "@domainActivationPendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

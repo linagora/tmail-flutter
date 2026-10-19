@@ -6137,5 +6137,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoading": "Votre message n'a pas pu être envoyé car son contenu est encore en cours de chargement. Veuillez patienter et réessayer.",
+  "@messageDialogSendEmailContentLoading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailContentLoadFailed": "Votre message n'a pas pu être envoyé car son contenu n'a pas pu être chargé. Veuillez fermer l'éditeur et rouvrir l'e-mail.",
+  "@messageDialogSendEmailContentLoadFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingTitle": "Votre domaine de messagerie est en attente d'activation",
+  "@domainActivationPendingTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "domainActivationPendingMessage": "Vous ne pouvez pas envoyer d'e-mails pour le moment. Contactez votre administrateur si le problème persiste.",
+  "@domainActivationPendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
