@@ -1,0 +1,21 @@
+# ios/Podfile.lock: CocoaPods SPEC CHECKSUMS (sha1), not keys
+623826d29fafd3ab2e439d2116fbd17c4be0638d:ios/Podfile.lock:generic-api-key:366
+8a2fb81ff008d6c726ff694004393dbe502e00c6:ios/Podfile.lock:generic-api-key:288
+8a2fb81ff008d6c726ff694004393dbe502e00c6:ios/Podfile.lock:generic-api-key:306
+a904c69d45bc5727dfefcc5069166a7e5712ed40:ios/Podfile.lock:generic-api-key:288
+a904c69d45bc5727dfefcc5069166a7e5712ed40:ios/Podfile.lock:generic-api-key:307
+bbcaaa549d4a05f2a9984fed4793b671469befc8:ios/Podfile.lock:generic-api-key:278
+bbcaaa549d4a05f2a9984fed4793b671469befc8:ios/Podfile.lock:generic-api-key:295
+e33cd29aa82a2361b88390f14b551074d661548c:ios/Podfile.lock:generic-api-key:390
+e33cd29aa82a2361b88390f14b551074d661548c:ios/Podfile.lock:generic-api-key:400
+e6f5d6f5725447f55260a22a30f7f8205eaef81b:ios/Podfile.lock:generic-api-key:366
+e6f5d6f5725447f55260a22a30f7f8205eaef81b:ios/Podfile.lock:generic-api-key:385
+fb19c5a66c1eb36049c17b8496f56bac4ead3f92:ios/Podfile.lock:generic-api-key:211
+fb19c5a66c1eb36049c17b8496f56bac4ead3f92:ios/Podfile.lock:generic-api-key:221
+# configurations/env.fcm: old Firebase client API keys (public by design), now placeholders
+a3dae605a411e011b118b0aa02ade541345349a6:configurations/env.fcm:gcp-api-key:1
+a3dae605a411e011b118b0aa02ade541345349a6:configurations/env.fcm:gcp-api-key:8
+a3dae605a411e011b118b0aa02ade541345349a6:configurations/env.fcm:gcp-api-key:17
+dadd7d005aaaf1845c3d761e81b5383890efb304:configurations/env.fcm:gcp-api-key:1
+dadd7d005aaaf1845c3d761e81b5383890efb304:configurations/env.fcm:gcp-api-key:8
+dadd7d005aaaf1845c3d761e81b5383890efb304:configurations/env.fcm:gcp-api-key:17
