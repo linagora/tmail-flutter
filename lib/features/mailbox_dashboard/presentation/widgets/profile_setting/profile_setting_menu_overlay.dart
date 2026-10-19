@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/copy_subaddress_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/popup_menu_item_profile_setting_type_action.dart';
@@ -70,18 +71,9 @@ class ProfileSettingMenuOverlay extends StatelessWidget {
                   color: AppColor.profileMenuDivider.withValues(alpha: 0.12),
                   height: 1,
                 ),
-                ...settingActionTypes
-                    .map((actionType) => PopupMenuItemActionWidget(
-                          menuAction: PopupMenuItemProfileSettingTypeAction(
-                            actionType,
-                            AppLocalizations.of(context),
-                            imagePaths,
-                          ),
-                          menuActionClick: (menuAction) {
-                            onProfileSettingActionTypeClick(menuAction.action);
-                          },
-                        ))
-                    .toList(),
+                ...settingActionTypes.map(
+                  (actionType) => _buildMenuItem(context, actionType),
+                ),
                 const SizedBox(height: 8),
               ],
             ),
@@ -102,5 +94,25 @@ class ProfileSettingMenuOverlay extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildMenuItem(
+    BuildContext context,
+    ProfileSettingActionType actionType,
+  ) {
+    final menuItem = PopupMenuItemActionWidget(
+      menuAction: PopupMenuItemProfileSettingTypeAction(
+        actionType,
+        AppLocalizations.of(context),
+        imagePaths,
+      ),
+      menuActionClick: (menuAction) {
+        onProfileSettingActionTypeClick(menuAction.action);
+      },
+    );
+    // Twake Workplace owns sign out in its own top bar.
+    return actionType == ProfileSettingActionType.signOut
+        ? HideInsideCozyWidget(child: menuItem)
+        : menuItem;
   }
 }
