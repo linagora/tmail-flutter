@@ -157,8 +157,8 @@ Future<List<Violation>> _preservation(DisplayRender render) async {
   return [
     if (kept < fixture.minPreservation)
       Violation('G-preserve', '.tmail-content', '${(kept * 100).toStringAsFixed(1)}% of the words kept'),
-    if (bodyLinkCount(render.transformedHtml) != bodyLinkCount(fixture.html))
-      const Violation('G-preserve', 'a[href]', 'link count changed'),
+    if (bodyLinkDestinations(render.transformedHtml).join(' ') != bodyLinkDestinations(fixture.html).join(' '))
+      const Violation('G-preserve', 'a[href]', 'link destinations changed'),
   ];
 }
 
