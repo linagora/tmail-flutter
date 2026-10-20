@@ -31,7 +31,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
              && Preferences › "Delegation"   // local, default off, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
-- Toggle off or no delegated account: `active` = `mine` and no switcher, so the app is exactly today's. Turning it off while a delegated mailbox is shown switches back to `mine`. Once stable, the toggle defaults to on and leaves the reveal.
+- Toggle off or no delegated account: `active` = `mine` and no switcher, so the app is exactly today's. Turning it off while a delegated mailbox is shown runs the normal switch back to `mine`: while a composer is open it is refused with a toast and the toggle stays on. Once stable, the toggle defaults to on and leaves the reveal.
 - One mailbox at a time, never merged into my tree. Sign-in, reload and restart start on `mine`.
 - `active` lives in a Riverpod notifier, bridged once into the GetX dashboard.
 - An owner is shown by name and address when a name is known, otherwise by address only (the session gives only the address).
