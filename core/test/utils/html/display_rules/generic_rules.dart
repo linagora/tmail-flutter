@@ -34,29 +34,34 @@ const genericRules = <String, DisplayRule>{
 /// overflow too). G-text is judged on the expanded state only, so an email
 /// that is entirely a collapsed quote still has to reveal content.
 Future<List<Violation>> runGenericRules(DisplayRender render) async {
-  final seen = <String>{};
-  final violations = <Violation>[];
-  void collect(Iterable<Violation> found) {
-    for (final violation in found) {
-      if (seen.add('${violation.rule}|${violation.path}|${violation.detail}')) {
-        violations.add(violation);
-      }
-    }
-  }
-
+  final violations = _Violations();
   final frame = render.frame;
   final collapsed = frame.hasQuoteToggle && !frame.isQuoteExpanded;
-  for (final entry in genericRules.entries) {
-    if (collapsed && entry.value == textRule) continue;
-    collect(entry.value(render));
+  for (final rule in genericRules.values) {
+    if (collapsed && rule == textRule) continue;
+    violations.addAll(rule(render));
   }
   if (collapsed) {
     await frame.toggleQuote();
     for (final rule in genericRules.values) {
-      collect(rule(render));
+      violations.addAll(rule(render));
     }
   }
-  return violations;
+  return violations.list;
+}
+
+/// Violations without repeats (the same rule, path and detail).
+class _Violations {
+  final _seen = <String>{};
+  final list = <Violation>[];
+
+  void addAll(Iterable<Violation> found) {
+    for (final violation in found) {
+      if (_seen.add('${violation.rule}|${violation.path}|${violation.detail}')) {
+        list.add(violation);
+      }
+    }
+  }
 }
 
 String _px(num value) => '${value.toStringAsFixed(1)}px';
@@ -90,36 +95,42 @@ List<Violation> imageFitRule(DisplayRender render) {
   final frame = render.frame;
   final declared = _declaredImageRatios(render.transformedHtml);
   final images = frame.images;
-  final violations = <Violation>[];
-  for (var i = 0; i < images.length; i++) {
-    final image = images[i];
-    if (image.width <= 2 || image.height <= 2) continue; // hidden or a pixel
-    if (image.width > frame.contentWidth + 1) {
-      violations.add(Violation(
+  return [
+    for (var i = 0; i < images.length; i++)
+      ..._imageViolations(frame, images[i], i < declared.length ? declared[i] : null),
+  ];
+}
+
+List<Violation> _imageViolations(DisplayFrame frame, DisplayImage image, double? declared) {
+  if (image.width <= 2 || image.height <= 2) return const []; // hidden or a pixel
+  return [
+    if (image.width > frame.contentWidth + 1)
+      Violation(
         'G-image-fit',
         image.path,
         '${_px(image.width)} wide in a ${_px(frame.contentWidth)} pane',
-      ));
-    }
-    final rendered = image.width / image.height;
-    final natural = image.naturalHeight == 0
-        ? null
-        : image.naturalWidth / image.naturalHeight;
-    final intended = [
-      if (i < declared.length && declared[i] != null) declared[i]!,
-      if (natural != null) natural,
-    ];
-    if (intended.isNotEmpty &&
-        intended.every((ratio) => (rendered / ratio - 1).abs() > 0.02)) {
-      violations.add(Violation(
-        'G-image-fit',
-        image.path,
-        'aspect ${rendered.toStringAsFixed(2)}, expected '
-            '${intended.map((r) => r.toStringAsFixed(2)).join(' or ')}',
-      ));
-    }
+      ),
+    if (_ratioViolation(image, declared) case final violation?) violation,
+  ];
+}
+
+/// The rendered ratio must match the declared or the natural one.
+Violation? _ratioViolation(DisplayImage image, double? declared) {
+  final rendered = image.width / image.height;
+  final natural = image.naturalHeight == 0 ? null : image.naturalWidth / image.naturalHeight;
+  final intended = [
+    if (declared != null) declared,
+    if (natural != null) natural,
+  ];
+  if (intended.isEmpty || intended.any((ratio) => (rendered / ratio - 1).abs() <= 0.02)) {
+    return null;
   }
-  return violations;
+  return Violation(
+    'G-image-fit',
+    image.path,
+    'aspect ${rendered.toStringAsFixed(2)}, expected '
+        '${intended.map((r) => r.toStringAsFixed(2)).join(' or ')}',
+  );
 }
 
 /// Width/height the sender declared for each `<img>`, in document order,
@@ -160,29 +171,30 @@ List<Violation> textRule(DisplayRender render) {
 List<Violation> linkFillRule(DisplayRender render) {
   final frame = render.frame;
   if (frame.paneWidth > 600) return const [];
-  final violations = <Violation>[];
-  for (final card in frame.queryAll('.tmail-content a.tmail-file-link-card')) {
-    final declared = double.tryParse(
-      RegExp(r'(?:^|;)\s*width\s*:\s*([\d.]+)px')
-              .firstMatch(card.getAttribute('style') ?? '')
-              ?.group(1) ??
-          '',
-    );
-    if (declared == null) {
-      violations.add(Violation('G-link-fill', frame.cssPath(card), 'file card declares no width'));
-      continue;
-    }
-    if (declared > frame.contentWidth) continue;
-    final width = card.getBoundingClientRect().width / frame.zoomOf(card);
-    if ((width - declared).abs() > 1) {
-      violations.add(Violation(
-        'G-link-fill',
-        frame.cssPath(card),
-        'file card ${_px(width)} instead of ${_px(declared)}',
-      ));
-    }
+  return [
+    for (final card in frame.queryAll('.tmail-content a.tmail-file-link-card'))
+      if (_linkFillViolation(frame, card) case final violation?) violation,
+  ];
+}
+
+Violation? _linkFillViolation(DisplayFrame frame, web.Element card) {
+  final declared = double.tryParse(
+    RegExp(r'(?:^|;)\s*width\s*:\s*([\d.]+)px')
+            .firstMatch(card.getAttribute('style') ?? '')
+            ?.group(1) ??
+        '',
+  );
+  if (declared == null) {
+    return Violation('G-link-fill', frame.cssPath(card), 'file card declares no width');
   }
-  return violations;
+  if (declared > frame.contentWidth) return null;
+  final width = card.getBoundingClientRect().width / frame.zoomOf(card);
+  if ((width - declared).abs() <= 1) return null;
+  return Violation(
+    'G-link-fill',
+    frame.cssPath(card),
+    'file card ${_px(width)} instead of ${_px(declared)}',
+  );
 }
 
 /// A right-to-left fixture renders with `dir="rtl"` on `<body>`; its

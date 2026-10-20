@@ -1,4 +1,5 @@
 import 'package:core/presentation/constants/constants_ui.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:web/web.dart' as web;
 
@@ -40,13 +41,7 @@ bool _hiddenBySender(web.Element image) =>
 Future<List<Violation>> fullDisplayChecker(DisplayRender render) async {
   final frame = render.frame;
   final violations = await runGenericRules(render);
-  for (final image in frame.images) {
-    if (!_isRendered(image.element) || _hiddenBySender(image.element)) continue;
-    if (image.width <= 0 || image.height <= 0) {
-      violations.add(Violation('fullDisplay', image.path,
-          'image box ${image.width}x${image.height}'));
-    }
-  }
+  violations.addAll(_imageBoxViolations(frame));
   final height = frame.content.getBoundingClientRect().height;
   if (height <= 0 || height >= ConstantsUI.htmlContentMaxHeight) {
     violations.add(Violation('fullDisplay', '.tmail-content', 'body height ${height}px'));
@@ -54,54 +49,89 @@ Future<List<Violation>> fullDisplayChecker(DisplayRender render) async {
   return violations;
 }
 
+bool _isShown(DisplayImage image) =>
+    _isRendered(image.element) && !_hiddenBySender(image.element);
+
+bool _isEmptyBox(DisplayImage image) => image.width <= 0 || image.height <= 0;
+
+List<Violation> _imageBoxViolations(DisplayFrame frame) => [
+      for (final image in frame.images)
+        if (_isShown(image) && _isEmptyBox(image))
+          Violation('fullDisplay', image.path, 'image box ${image.width}x${image.height}'),
+    ];
+
 /// lazyImages (B5, B6, D2): on the transform output, every remote `<img>`
 /// without its own `loading` becomes `loading="lazy"` (a sender's value is
 /// kept, as `ImageTransformer` does) and every inline background image moves
 /// to `lazy` + `data-src`. In the frame, a lazy background below the fold is
 /// still unloaded, and once scrolled into view gets exactly its `data-src`.
 Future<List<Violation>> lazyImagesChecker(DisplayRender render) async {
-  final violations = <Violation>[];
   final source = html_parser.parse(render.displayCase.fixture.html).querySelectorAll('img');
   final transformed = html_parser.parse(render.transformedHtml);
-  final images = transformed.querySelectorAll('img');
-  final remote = RegExp(r'^https?://', caseSensitive: false);
-  for (var i = 0; i < images.length; i++) {
-    final src = images[i].attributes['src'] ?? '';
-    final senderLoading = i < source.length ? source[i].attributes['loading'] : null;
-    final expected = senderLoading ?? 'lazy';
-    if (remote.hasMatch(src) && images[i].attributes['loading'] != expected) {
-      violations.add(Violation('lazyImages', 'img[src="$src"]',
-          'loading="${images[i].attributes['loading']}", expected "$expected"'));
-    }
-  }
-  for (final element in transformed.querySelectorAll('[style]')) {
-    final style = element.attributes['style']!;
-    if (RegExp(r'background-image\s*:\s*url\(', caseSensitive: false).hasMatch(style)) {
-      violations.add(Violation('lazyImages', element.localName ?? '?',
-          'background-image still inline: $style'));
-    }
-  }
-  for (final element in transformed.querySelectorAll('[lazy]')) {
-    if ((element.attributes['data-src'] ?? '').isEmpty) {
-      violations.add(Violation('lazyImages', element.localName ?? '?', 'lazy without data-src'));
-    }
-  }
+  return [
+    ..._imageLoadingViolations(source, transformed.querySelectorAll('img')),
+    ..._inlineBackgroundViolations(transformed),
+    ..._lazyWithoutDataSrcViolations(transformed),
+    ...await _lazyFrameViolations(render.frame),
+  ];
+}
 
-  final frame = render.frame;
-  final viewportBottom = web.window.innerHeight;
+final _remoteUrl = RegExp(r'^https?://', caseSensitive: false);
+final _inlineBackground = RegExp(r'background-image\s*:\s*url\(', caseSensitive: false);
+
+List<Violation> _imageLoadingViolations(List<dom.Element> source, List<dom.Element> images) => [
+      for (var i = 0; i < images.length; i++)
+        if (_imgLoadingViolation(images[i], i < source.length ? source[i].attributes['loading'] : null)
+            case final violation?)
+          violation,
+    ];
+
+Violation? _imgLoadingViolation(dom.Element image, String? senderLoading) {
+  final src = image.attributes['src'] ?? '';
+  final expected = senderLoading ?? 'lazy';
+  if (!_remoteUrl.hasMatch(src) || image.attributes['loading'] == expected) return null;
+  return Violation('lazyImages', 'img[src="$src"]',
+      'loading="${image.attributes['loading']}", expected "$expected"');
+}
+
+List<Violation> _inlineBackgroundViolations(dom.Document transformed) => [
+      for (final element in transformed.querySelectorAll('[style]'))
+        if (_inlineBackground.hasMatch(element.attributes['style']!))
+          Violation('lazyImages', element.localName ?? '?',
+              'background-image still inline: ${element.attributes['style']}'),
+    ];
+
+List<Violation> _lazyWithoutDataSrcViolations(dom.Document transformed) => [
+      for (final element in transformed.querySelectorAll('[lazy]'))
+        if ((element.attributes['data-src'] ?? '').isEmpty)
+          Violation('lazyImages', element.localName ?? '?', 'lazy without data-src'),
+    ];
+
+Future<List<Violation>> _lazyFrameViolations(DisplayFrame frame) async {
+  final violations = <Violation>[];
   for (final element in frame.queryAll('.tmail-content [data-src]')) {
-    final path = frame.cssPath(element);
-    final dataSrc = element.getAttribute('data-src')!;
-    final style = (element as web.HTMLElement).style;
-    final belowFold = frame.topInWindow + element.getBoundingClientRect().top > viewportBottom;
-    if (belowFold && (!element.hasAttribute('lazy') || style.backgroundImage.isNotEmpty)) {
-      violations.add(Violation('lazyImages', path, 'loaded before it was scrolled into view'));
-    }
-    await frame.scrollIntoView(element);
-    if (element.hasAttribute('lazy') || !style.backgroundImage.contains(dataSrc)) {
-      violations.add(Violation('lazyImages', path,
-          'background not restored to its data-src after scrolling into view'));
-    }
+    violations.addAll(await _lazyBackgroundViolations(frame, element));
+  }
+  return violations;
+}
+
+bool _loadedBeforeScroll(web.HTMLElement element) =>
+    !element.hasAttribute('lazy') || element.style.backgroundImage.isNotEmpty;
+
+Future<List<Violation>> _lazyBackgroundViolations(DisplayFrame frame, web.Element element) async {
+  final path = frame.cssPath(element);
+  final dataSrc = element.getAttribute('data-src')!;
+  final html = element as web.HTMLElement;
+  final belowFold =
+      frame.topInWindow + element.getBoundingClientRect().top > web.window.innerHeight;
+  final violations = <Violation>[
+    if (belowFold && _loadedBeforeScroll(html))
+      Violation('lazyImages', path, 'loaded before it was scrolled into view'),
+  ];
+  await frame.scrollIntoView(element);
+  if (element.hasAttribute('lazy') || !html.style.backgroundImage.contains(dataSrc)) {
+    violations.add(Violation('lazyImages', path,
+        'background not restored to its data-src after scrolling into view'));
   }
   return violations;
 }
@@ -127,37 +157,48 @@ AutoScalePath autoScalePathOf(DisplayFrame frame) {
 /// mistaken for the script.
 Future<List<Violation>> autoScaleChecker(DisplayRender render) async {
   final frame = render.frame;
-  final violations = <Violation>[
+  return [
     for (final violation in overflowRule(render))
       Violation('autoScale', violation.path, 'still overflows ${violation.detail}'),
+    if (autoScalePathOf(frame) == AutoScalePath.none)
+      const Violation('autoScale', '.tmail-content', 'neither reflowed nor zoomed'),
+    ..._zoomViolations(frame),
+    if (frame.paneWidth <= 480) ..._reflowFloorViolations(frame),
   ];
-  if (autoScalePathOf(frame) == AutoScalePath.none) {
-    violations.add(const Violation('autoScale', '.tmail-content', 'neither reflowed nor zoomed'));
-  }
-  for (final element in frame.queryAll('.tmail-content .tmail-responsive-scale')) {
-    final zoom = double.tryParse(frame.computedStyle(element).zoom) ?? 1;
-    if (zoom >= 1) {
-      violations.add(Violation('autoScale', frame.cssPath(element), 'scaled but zoom $zoom'));
-    }
-  }
-  if (frame.paneWidth <= 480) {
-    for (final element in frame.queryAll('.tmail-content .tmail-responsive-layout, '
-        '.tmail-content .tmail-responsive-layout *')) {
+}
+
+List<Violation> _zoomViolations(DisplayFrame frame) => [
+      for (final element in frame.queryAll('.tmail-content .tmail-responsive-scale'))
+        if (_zoomViolation(frame, element) case final violation?) violation,
+    ];
+
+Violation? _zoomViolation(DisplayFrame frame, web.Element element) {
+  final zoom = double.tryParse(frame.computedStyle(element).zoom) ?? 1;
+  if (zoom < 1) return null;
+  return Violation('autoScale', frame.cssPath(element), 'scaled but zoom $zoom');
+}
+
+List<Violation> _reflowFloorViolations(DisplayFrame frame) => [
+      for (final element in frame.queryAll('.tmail-content .tmail-responsive-layout, '
+          '.tmail-content .tmail-responsive-layout *'))
+        ..._reflowElementViolations(frame, element),
+    ];
+
+List<Violation> _reflowElementViolations(DisplayFrame frame, web.Element element) => [
       if (frame.changedByScript(element, 'font-size') &&
-          frame.renderedFontSize(element) < 12 - 0.01) {
-        violations.add(Violation('autoScale', frame.cssPath(element),
-            'shrunk to ${frame.renderedFontSize(element).toStringAsFixed(2)}px'));
-      }
-      for (final side in ['padding-left', 'padding-right']) {
-        if (!frame.changedByScript(element, side)) continue;
-        final value = frame.computedStyle(element).getPropertyValue(side);
-        if ((double.tryParse(value.replaceAll('px', '')) ?? 0) > 12) {
-          violations.add(Violation('autoScale', frame.cssPath(element), '$side $value'));
-        }
-      }
-    }
-  }
-  return violations;
+          frame.renderedFontSize(element) < 12 - 0.01)
+        Violation('autoScale', frame.cssPath(element),
+            'shrunk to ${frame.renderedFontSize(element).toStringAsFixed(2)}px'),
+      for (final side in ['padding-left', 'padding-right'])
+        if (_paddingTooWide(frame, element, side))
+          Violation('autoScale', frame.cssPath(element),
+              '$side ${frame.computedStyle(element).getPropertyValue(side)}'),
+    ];
+
+bool _paddingTooWide(DisplayFrame frame, web.Element element, String side) {
+  if (!frame.changedByScript(element, side)) return false;
+  final value = frame.computedStyle(element).getPropertyValue(side);
+  return (double.tryParse(value.replaceAll('px', '')) ?? 0) > 12;
 }
 
 /// What the script changed for [autoScaleChecker]'s reflow path at a pane
@@ -221,41 +262,43 @@ Future<List<Violation>> quoteToggleChecker(DisplayRender render) async {
   if (button == null) {
     return const [Violation('quoteToggle', '.quote-toggle-button', 'missing')];
   }
-  final violations = <Violation>[];
-  final expected = _expectedToggledQuote(frame);
-  if (expected == null || button.nextElementSibling != expected) {
-    violations.add(Violation('quoteToggle', frame.cssPath(button),
-        'not right before ${expected == null ? 'a reachable blockquote' : frame.cssPath(expected)}'));
-  }
-  if (frame.isQuoteExpanded) {
-    violations.add(const Violation('quoteToggle', 'blockquote', 'not collapsed by default'));
-  }
-  await frame.toggleQuote();
-  if (!frame.isQuoteExpanded) {
-    violations.add(const Violation('quoteToggle', 'blockquote', 'does not expand on click'));
-  }
-  // E13: the native responsive script lays the email out again when a quote
-  // opens. Web has no such script; its overflow is reported by G-overflow.
-  if (render.displayCase.viewer == DisplayViewer.native) {
-    for (final violation in overflowRule(render)) {
-      violations.add(Violation('quoteToggle', violation.path,
-          'overflows after expanding ${violation.detail}'));
-    }
-  }
-  if (frame.paneWidth <= 480) {
-    for (final quote in frame.queryAll('.tmail-content blockquote.tmail-responsive-quote')) {
-      for (final element in [quote, ...frame.queryAll('${frame.cssPath(quote)} *')]) {
-        if (!_hasOwnText(element)) continue;
-        final size = frame.renderedFontSize(element);
-        if (size < 13 - 0.01) {
-          violations.add(Violation('quoteToggle', frame.cssPath(element),
-              'quote text ${size.toStringAsFixed(2)}px'));
-        }
-      }
-    }
-  }
-  return violations;
+  return [
+    if (_placementViolation(frame, button) case final violation?) violation,
+    if (frame.isQuoteExpanded)
+      const Violation('quoteToggle', 'blockquote', 'not collapsed by default'),
+    ...await _expandViolations(render),
+    if (frame.paneWidth <= 480) ..._quoteFontViolations(frame),
+  ];
 }
+
+Violation? _placementViolation(DisplayFrame frame, web.Element button) {
+  final expected = _expectedToggledQuote(frame);
+  if (expected != null && button.nextElementSibling == expected) return null;
+  return Violation('quoteToggle', frame.cssPath(button),
+      'not right before ${expected == null ? 'a reachable blockquote' : frame.cssPath(expected)}');
+}
+
+Future<List<Violation>> _expandViolations(DisplayRender render) async {
+  final frame = render.frame;
+  await frame.toggleQuote();
+  return [
+    if (!frame.isQuoteExpanded)
+      const Violation('quoteToggle', 'blockquote', 'does not expand on click'),
+    // E13: the native responsive script lays the email out again when a quote
+    // opens. Web has no such script; its overflow is reported by G-overflow.
+    if (render.displayCase.viewer == DisplayViewer.native)
+      for (final violation in overflowRule(render))
+        Violation('quoteToggle', violation.path, 'overflows after expanding ${violation.detail}'),
+  ];
+}
+
+List<Violation> _quoteFontViolations(DisplayFrame frame) => [
+      for (final quote in frame.queryAll('.tmail-content blockquote.tmail-responsive-quote'))
+        for (final element in [quote, ...frame.queryAll('${frame.cssPath(quote)} *')])
+          if (_hasOwnText(element) && frame.renderedFontSize(element) < 13 - 0.01)
+            Violation('quoteToggle', frame.cssPath(element),
+                'quote text ${frame.renderedFontSize(element).toStringAsFixed(2)}px'),
+    ];
 
 bool _hasOwnText(web.Element element) {
   final nodes = element.childNodes;

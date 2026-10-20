@@ -290,22 +290,25 @@ class DisplayFrame {
     final parts = <String>[];
     web.Element? current = element;
     while (current != null && !current.classList.contains('tmail-content')) {
-      final tag = current.localName;
-      final parent = current.parentElement;
-      var index = 1;
-      var sameTag = 0;
-      if (parent != null) {
-        for (var i = 0; i < parent.children.length; i++) {
-          final sibling = parent.children.item(i)!;
-          if (sibling.localName != tag) continue;
-          sameTag++;
-          if (sibling == current) index = sameTag;
-        }
-      }
-      parts.add(sameTag > 1 ? '$tag:nth-of-type($index)' : tag);
-      current = parent;
+      parts.add(_pathStep(current));
+      current = current.parentElement;
     }
     return ['.tmail-content', ...parts.reversed].join(' > ');
+  }
+
+  String _pathStep(web.Element element) {
+    final tag = element.localName;
+    final parent = element.parentElement;
+    if (parent == null) return tag;
+    var index = 1;
+    var sameTag = 0;
+    for (var i = 0; i < parent.children.length; i++) {
+      final sibling = parent.children.item(i)!;
+      if (sibling.localName != tag) continue;
+      sameTag++;
+      if (sibling == element) index = sameTag;
+    }
+    return sameTag > 1 ? '$tag:nth-of-type($index)' : tag;
   }
 
   void dispose() => _frame.remove();
