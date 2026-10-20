@@ -67,7 +67,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 - Noticed on resume or at the first `accountNotFound`, since the server does not push it and James keeps the session `state` fixed. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, it is not checked again before the next resume.
 - If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it.
 - A switch in flight to the removed account is cancelled and its late results are ignored. A switch away from it goes on and falls back to `mine` on failure.
-- The removed account's cache, content files, send queue and composer snapshots are deleted, also with the toggle off. On mobile an offline start waits for the next online session. `mine` is always in the session, so it is never deleted.
+- The removed account's cache, content files, send queue and composer snapshots are deleted, also with the toggle off. If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. On mobile an offline start waits for the next online session. `mine` is always in the session, so it is never deleted.
 - When the account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 
 ### Tickets and merge order
