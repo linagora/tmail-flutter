@@ -43,8 +43,8 @@ What it does:
 ## Review before committing
 
 - The console report must show `LEFTOVER ... 0` for every row (hosts, emails,
-  long numbers, phone numbers in the visible text, SVG or text `data:` URIs
-  anywhere; the tool does not rewrite those). Otherwise run
+  long numbers, phone numbers in the visible text, image or text `data:` URIs
+  outside `<img>`; the tool does not rewrite those). Otherwise run
   again with `--show-samples` (prints the values locally, may show private data)
   and fix them by hand in the `.html`.
 - Skim the `.html` for names, subjects, order numbers or tracking IDs that are

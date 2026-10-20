@@ -488,7 +488,7 @@ def suspicious_leftovers(text):
                          if not e.lower().endswith('@example.invalid')),
         'longDigits': sorted(set(_LONG_DIGITS_RE.findall(visible))),
         'phones': sorted(set(_PHONE_RE.findall(visible))),
-        'dataUris': sorted(set(re.findall(r'(?i)\bdata:(image/svg\+xml|text/[\w.+-]+)[;,]', text))),
+        'dataUris': sorted(set(re.findall(r'(?i)\bdata:((?:image|text)/[\w.+-]+)[;,]', text))),
     }
 
 

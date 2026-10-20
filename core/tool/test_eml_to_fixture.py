@@ -220,10 +220,11 @@ class RegressionTest(unittest.TestCase):
         converter.convert(_eml(html='<p>%s</p>' % ('Ab-' * 20000)))
         self.assertLess(time.monotonic() - started, 5)
 
-    def test_text_data_uris_are_listed_in_the_report(self):
-        html = '<div style="background:url(data:image/svg+xml;base64,PHN2Zy8+)">x</div>'
+    def test_image_and_text_data_uris_are_listed_in_the_report(self):
+        html = ('<div style="background:url(data:image/svg+xml;base64,PHN2Zy8+)">x</div>'
+                '<div style="background:url(data:image/png;base64,iVBORw0KGgo=)">y</div>')
         _, _, report = converter.convert(_eml(html=html))
-        self.assertEqual(report['leftovers']['dataUris'], ['image/svg+xml'])
+        self.assertEqual(report['leftovers']['dataUris'], ['image/png', 'image/svg+xml'])
 
     def test_unknown_charset_is_decoded_loosely(self):
         raw = (b'From: A <a@acme-corp.com>\r\nSubject: s\r\nMIME-Version: 1.0\r\n'
