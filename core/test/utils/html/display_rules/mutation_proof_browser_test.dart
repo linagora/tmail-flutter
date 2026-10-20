@@ -22,7 +22,7 @@ import 'generic_rules.dart';
 /// a violation it does not show unbroken. The matrix is red on purpose in
 /// places (recorded findings), so a violation only counts when it is new.
 ///
-/// Local: `fvm flutter test --platform chrome -t mutation --run-skipped
+/// Local: `flutter test --platform chrome -t mutation --run-skipped
 /// test/utils/html/display_rules/mutation_proof_browser_test.dart`.
 void main() {
   for (final mutation in _mutations) {

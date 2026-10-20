@@ -73,7 +73,7 @@ Older fields still work: `expectQuote`, `rtl`, `allowEmptyBody`.
 
 ```sh
 cd core
-fvm dart run tool/generate_html_email_corpus.dart
-fvm flutter test test/fixtures/html_emails
+dart run tool/generate_html_email_corpus.dart
+flutter test test/fixtures/html_emails
 python3 -m unittest discover -s tool -p 'test_*.py'
 ```
