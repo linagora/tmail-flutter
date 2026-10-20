@@ -76,7 +76,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | Id | Ticket | Depends on |
 |---|---|---|
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card | — |
-| T-01 | `mine` / `active` foundation, no UI | — |
+| T-01 | `mine` / `active` foundation and the switch flow, no UI | — |
 | T-02 | Loading dialog | T-01 |
 | T-03 | Web Workplace switcher chip (#4977 §8) | T-02, T-05, T-06, T-07, T-12, DS-2 |
 | T-04 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02, T-05, T-06, T-07, T-12, DS-3 |
@@ -87,7 +87,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | — |
 | T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | T-06, T-09, T-12, DS-1, DS-4 |
 | T-11 | E2E scenarios, with each release | — |
-| T-12 | Experimental "Delegation" toggle in Preferences | — |
+| T-12 | Experimental "Delegation" toggle in Preferences | T-01 |
 
 The entry points (T-03, T-04, T-08) merge last, after T-05: without T-05, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 
