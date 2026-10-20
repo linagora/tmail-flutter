@@ -506,6 +506,13 @@ def _cid_sizes(message):
     return sizes
 
 
+def _body_text(part):
+    try:
+        return part.get_content()
+    except LookupError:  # unknown charset: decode loosely instead of stopping
+        return (part.get_payload(decode=True) or b'').decode('latin-1', errors='replace')
+
+
 def convert(eml_bytes):
     """Returns (body, sidecar_fields, report) for raw EML bytes."""
     message = email.message_from_bytes(eml_bytes, policy=email.policy.default)
@@ -513,7 +520,7 @@ def convert(eml_bytes):
     if part is None:
         raise ValueError('no text/html or text/plain body')
     content_type = part.get_content_type()
-    body = part.get_content()
+    body = _body_text(part)
 
     names, domains = header_identities(message)
     body_names, body_domains = body_identities(body)

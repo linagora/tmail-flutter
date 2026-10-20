@@ -225,6 +225,13 @@ class RegressionTest(unittest.TestCase):
         _, _, report = converter.convert(_eml(html=html))
         self.assertEqual(report['leftovers']['dataUris'], ['image/svg+xml'])
 
+    def test_unknown_charset_is_decoded_loosely(self):
+        raw = (b'From: A <a@acme-corp.com>\r\nSubject: s\r\nMIME-Version: 1.0\r\n'
+               b'Content-Type: text/html; charset="x-unknown-8"\r\n\r\n<p>caf\xe9</p>\r\n')
+        body, fields, _ = converter.convert(raw)
+        self.assertEqual(fields['contentType'], 'text/html')
+        self.assertIn('<p>caf\xe9</p>', body)
+
     def test_malformed_header_does_not_hide_the_sender(self):
         raw = (b'From: Good Person <good@safe.example>\r\nDelivered-To: a@x.com >\r\n'
                b'Subject: s\r\nContent-Type: text/html\r\n\r\n<p>Good Person</p>\r\n')
