@@ -31,7 +31,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
              && Preferences › "Delegation"   // local, default off, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
-- Toggle off or no delegated account: `active` = `mine` and no switcher, so the app is exactly today's. Turning it off while a delegated mailbox is shown runs the normal switch back to `mine`: while a composer is open it is refused with a toast and the toggle stays on. Once stable, the toggle defaults to on and leaves the reveal.
+- Toggle off or no delegated account: `active` = `mine` and no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning it off while a delegated mailbox is shown runs the normal switch back to `mine`: while a composer is open it is refused with a toast and the toggle stays on. Once stable, the toggle defaults to on and leaves the reveal.
 - One mailbox at a time, never merged into my tree. Sign-in, reload and restart start on `mine`.
 - `active` lives in a Riverpod notifier, bridged once into the GetX dashboard.
 - An owner is shown by name and address when a name is known, otherwise by address only (the session gives only the address).
@@ -46,7 +46,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | Composer, identities, "me" in views and filters | `active`: owner's identities and folders, reply-all drops the owner | Same |
 | Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine` | Untouched, so the owner's settings are unreachable |
 | FCM push, system notifications | `changed[mine]` | Untouched |
-| Foreground WebSocket | One connection per session, kept across switches. `changed[active]` refreshes the view, `changed[mine]` keeps the mobile extras (delivery state, notification removal, offline bodies). Other accounts are dropped and catch up through `/changes`. The 2 s debouncer merges the `changed` maps of its window per account instead of keeping only the last `StateChange`, so one account's push never hides another's | Same filter while `active` = `mine` |
+| Foreground WebSocket | One connection per session, kept across switches. `changed[active]` refreshes the view, `changed[mine]` keeps the mobile extras (delivery state, notification removal, offline bodies). Other accounts are dropped and catch up through `/changes`. The 2 s debouncer merges the `changed` maps of its window per account instead of keeping only the last `StateChange`, so one account's push never hides another's | Same filter while `active` = `mine`. The merge only keeps events today's debouncer drops |
 | Notification tap, share and `mailto` intents (mobile) | With `active` ≠ `mine`, switch to `mine` first, then open the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
 | Caches | Per account. No email body is stored for a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only. Each mail in the send queue stays bound to its account | Keys already carry the account |
 | Web URL and history | Delegated ids stay out of the URL, history is reset on switch, "Open in new tab" is hidden in a delegated mailbox | Unchanged on `mine` |
@@ -65,7 +65,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 ### Revocation and ended delegations
 
 - Noticed on resume or at the first `accountNotFound`, since the server does not push it and James keeps the session `state` fixed. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, it is not checked again before the next resume.
-- If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it.
+- If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it, counted in the warning below.
 - A switch in flight to the removed account is cancelled and its late results are ignored. A switch away from it goes on and falls back to `mine` on failure.
 - The removed account's cache, content files, send queue and composer snapshots are deleted, also with the toggle off (on the session read at start). If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. On mobile an offline start waits for the next online session. `mine` is always in the session, so it is never deleted.
 - When the account list changes, WebSocket push is re-enabled, so a new delegation is live too.
