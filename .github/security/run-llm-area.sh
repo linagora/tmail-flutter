@@ -15,7 +15,7 @@ key_error='quota|rate.?limit|too many requests|resource.?exhausted|insufficient.
 report=".security-review/llm-$area.md"
 # one 40m budget for the area across all keys
 deadline=$((SECONDS + 2400))
-code=1; used=0
+code=1; used=0; switched=""
 for i in "${!keys[@]}"; do
   # a rate limit resets: a dead key is skipped for 10 minutes, then tried again
   [[ -z $(find "$dead/$i" -mmin -10 2>/dev/null) ]] || continue
@@ -31,16 +31,19 @@ for i in "${!keys[@]}"; do
   code=$?
   if (( code == 0 || code == 124 )) || ! grep -Eiq "$key_error" "$home/stderr.log"; then break; fi
   touch "$dead/$i"
-  echo "LLM area $area: key $used of ${#keys[@]} out of quota or rejected"
+  # key counts and quota state go only into the sealed report: run logs are public
+  switched+="${switched:+, }$used"
 done
 if (( used == 0 )); then
   mkdir -p "$home"; : > "$report"
   echo "No usable LLM key left: all ${#keys[@]} out of quota or rejected." > "$home/stderr.log"
 fi
 echo "$code" > "$OUT/llm-status/$area"
-echo "LLM area $area: exit $code (key $used of ${#keys[@]})"
+echo "LLM area $area: exit $code"
 {
-  echo "## LLM review: $area"; echo "Key $used of ${#keys[@]}."; echo
+  echo "## LLM review: $area"; echo "Key $used of ${#keys[@]}."
+  [[ -z $switched ]] || echo "Out of quota or rejected: key $switched."
+  echo
   if [[ -s "$report" ]]; then cat "$report"; else echo "(no output)"; fi
   if (( code != 0 )); then
     reason=""; [[ $code != 124 ]] || reason=" (40m timeout)"
