@@ -87,6 +87,7 @@ jobs:
               - "core/test/utils/html/display_harness/**"
               - "core/tool/generate_html_email_corpus.dart"
               - "core/dart_test.yaml"
+              - ".github/workflows/html-display.yaml"
 
   # Proof that each display rule still bites: every test breaks one
   # mechanism in the test and expects a new violation. Tagged `mutation`,
