@@ -9,7 +9,7 @@ Proposed
 ## Related ADRs
 
 - [ADR-0017](./0017-email-cache-guideline.md), [ADR-0027](./0027-use-tuplekey-store-data-cache.md) — cache keys carry the account
-- [ADR-0086](./0086-android-composer-draft-loss-on-background.md) — Android composer restore
+- [ADR-0086](./0086-android-composer-draft-loss-on-background.md), [ADR-0112](./0112-web-composer-reload-snapshot.md) — composer restore (Android, web reload)
 - [ADR-0092](./0092-upgrade-flutter-riverpod-3.md), [ADR-0103](./0103-urgent-exception-handling-for-riverpod-flows.md) — new state in Riverpod
 
 ## Context
