@@ -46,7 +46,7 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 ### My delegates tab
 
 - States: loading, error with Retry, empty ("No one has access yet" + **+ Add**), list ("Who has access to me", a trash icon per row, then **+ Add**).
-- Only the latest read updates the tab, so a slow earlier read never overwrites a newer list. Add and remove carry their own `Delegate/get` in the same request, so there is no second request to fail: if the request fails, the list stays as it was with an error toast.
+- Only the latest read updates the tab, so a slow earlier read never overwrites a newer list. Add and remove carry their own `Delegate/get` in the same request, and JMAP answers each method on its own. `Delegate/set` done but `Delegate/get` failed: the result toast is shown, the list is marked stale with Retry, and Retry re-reads only (the change is never sent again). The whole request failed: the outcome is unknown, so the list stays as it was with an error toast, and sending again is safe since a repeated add or remove is a no-op.
 - No realtime: a change from another device or by the delegate shows at the next open. Both stale actions are safe: a stale add is a no-op and a stale remove counts as removed.
 
 ### Add delegates
