@@ -96,6 +96,7 @@ System notifications stay for my own mailbox, so the FCM path cannot regress. Fo
 
 - The session is re-read on app or tab resume (at most once a minute) and after "Remove your access". When its account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 - If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in that mailbox is closed, since its draft can no longer be saved there.
+- An `accountNotFound` on the target during a switch re-reads the session, so a revoked mailbox shown from cache is closed and the rules here apply.
 - When an account leaves the session, a switch in flight to it is cancelled and its late results are ignored, so nothing is shown or cached for it after the cleanup. A switch away from it goes on, and if it fails it falls back to `mine`, not to the account that left.
 - Cached data of an account that left the session is deleted (cache entries and their content files), unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
 
@@ -149,7 +150,7 @@ flowchart LR
 
 ## Open points
 
-- **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` can narrow the gap, a server push of session changes would close it.
+- **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
 - **No display name** in the session: the owner's address is shown everywhere.
 - **Settings › Delegation** appears for every user on a server with the capability, even with an empty list. Product decides whether to hide it until the owner side ships.
 - **Privacy**: owner addresses and mail are never logged.
