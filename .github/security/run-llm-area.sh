@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs one opencode review area and encrypts its report the moment it ends.
-# A key failing on quota or auth is marked dead for all areas; the area reruns on the next key.
+# A key failing on quota or auth is skipped by all areas for 10 minutes; the area reruns on the next key.
 # Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_API_KEYS (one per line) LLM_* REPORT_PUBLIC_KEY OUT RUNNER_TEMP
 set -uo pipefail
 area=${1:?usage: run-llm-area.sh <area>}
@@ -17,7 +17,8 @@ report=".security-review/llm-$area.md"
 deadline=$((SECONDS + 2400))
 code=1; used=0
 for i in "${!keys[@]}"; do
-  [[ ! -e "$dead/$i" ]] || continue
+  # a rate limit resets: a dead key is skipped for 10 minutes, then tried again
+  [[ -z $(find "$dead/$i" -mmin -10 2>/dev/null) ]] || continue
   left=$((deadline - SECONDS))
   (( left > 60 )) || { code=124; break; }
   used=$((i + 1))
