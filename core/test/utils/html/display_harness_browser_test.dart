@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:web/web.dart' as web;
 
 import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import 'display_harness/display_case.dart';
@@ -103,6 +104,43 @@ void main() {
       ],
     };
     expect(knownDisplayFailures.keys.toSet().difference(names), isEmpty);
+  });
+
+  test('fails a render that fetches anything outside the test server', () async {
+    final origin = web.window.location.origin;
+    final other = origin.contains('localhost')
+        ? origin.replaceFirst('localhost', '127.0.0.1')
+        : origin.replaceFirst('127.0.0.1', 'localhost');
+    await expectLater(
+      DisplayFrame.render(
+        '<html><body><div class="tmail-content"><img src="$other/probe.png"></div></body></html>',
+        336,
+        label: 'probe',
+      ),
+      throwsA(isA<StateError>().having((e) => e.message, 'message', contains('/probe.png'))),
+    );
+  });
+
+  test('fails when expanding a quote fetches something outside the test server', () async {
+    final origin = web.window.location.origin;
+    final other = origin.contains('localhost')
+        ? origin.replaceFirst('localhost', '127.0.0.1')
+        : origin.replaceFirst('127.0.0.1', 'localhost');
+    final frame = await DisplayFrame.render(
+      '<html><body><div class="tmail-content">'
+      '<button class="quote-toggle-button" onclick="'
+      "this.nextElementSibling.style.display='block'; new Image().src='$other/deferred.png'\">"
+      'toggle</button>'
+      '<blockquote style="display:none">quoted</blockquote>'
+      '</div></body></html>',
+      336,
+      label: 'deferred',
+    );
+    addTearDown(frame.dispose);
+    await expectLater(
+      frame.toggleQuote(),
+      throwsA(isA<StateError>().having((e) => e.message, 'message', contains('/deferred.png'))),
+    );
   });
 
   test('labels failures as <category>/<fixture> @<viewer> <W>px', () {

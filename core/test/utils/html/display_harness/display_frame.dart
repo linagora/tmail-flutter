@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 import 'package:web/web.dart' as web;
 
@@ -36,10 +37,11 @@ class DisplayImage {
 /// its layout scripts have settled. Holds the measurements the display
 /// rules check.
 class DisplayFrame {
-  DisplayFrame._(this._frame, this.paneWidth);
+  DisplayFrame._(this._frame, this.paneWidth, this.label);
 
   final web.HTMLIFrameElement _frame;
   final int paneWidth;
+  final String label;
 
   static const settleTimeout = Duration(seconds: 10);
   static const _initialHeight = 400;
@@ -69,13 +71,14 @@ class DisplayFrame {
       }.toJS,
     );
     web.document.body!.append(frame);
-    final display = DisplayFrame._(frame, paneWidth);
+    final display = DisplayFrame._(frame, paneWidth, label);
     try {
       await () async {
         await loaded.future;
         await display._settleAndGrow();
       }()
           .timeout(settleTimeout);
+      display._checkOffline();
     } on TimeoutException {
       display.dispose();
       throw TimeoutException(
@@ -162,13 +165,24 @@ class DisplayFrame {
     return result;
   }
 
-  /// URLs the document fetched over http(s); must stay empty (offline).
+  /// URLs the document fetched from outside the test server (which serves
+  /// the viewer's own font); must stay empty (offline).
   List<String> get remoteRequests {
-    final entries = _window.performance.getEntriesByType('resource').toDart;
+    // The list comes from the iframe's JS realm: the typed getter rejects it.
+    final entries = (_window.performance as JSObject)
+        .callMethod<JSObject>('getEntriesByType'.toJS, 'resource'.toJS);
+    final length = entries.getProperty<JSNumber>('length'.toJS).toDartInt;
     return [
-      for (final entry in entries)
-        if (entry.name.startsWith('http')) entry.name,
+      for (var i = 0; i < length; i++)
+        if (entries.getProperty<web.PerformanceEntry>(i.toJS).name case final name
+            when name.startsWith('http') && !name.startsWith(web.window.location.origin))
+          name,
     ];
+  }
+
+  void _checkOffline() {
+    final fetched = remoteRequests;
+    if (fetched.isNotEmpty) throw StateError('$label: fetched over the network: $fetched');
   }
 
   /// Elements whose own content (text that cannot wrap, a `pre` line) runs
@@ -228,6 +242,7 @@ class DisplayFrame {
   Future<void> toggleQuote() async {
     (query('.quote-toggle-button')! as web.HTMLElement).click();
     await _settleAndGrow().timeout(settleTimeout);
+    _checkOffline();
   }
 
   /// Scrolls [element] into view the way the app's scrolling viewer does:
@@ -245,6 +260,7 @@ class DisplayFrame {
     }
     _window.scrollTo(0.toJS, 0);
     await _settleAndGrow().timeout(settleTimeout);
+    _checkOffline();
   }
 
   /// The inline value of [property] the sender wrote on [element] (the
