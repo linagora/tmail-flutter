@@ -81,6 +81,14 @@ def _eml(html=HTML, with_plain=True):
     return message.as_bytes()
 
 
+def _eml_from(sender, html):
+    message = EmailMessage()
+    message['From'] = sender
+    message['Subject'] = 's'
+    message.set_content(html, subtype='html')
+    return message.as_bytes()
+
+
 class ConvertTest(unittest.TestCase):
 
     def setUp(self):
@@ -190,6 +198,21 @@ class RegressionTest(unittest.TestCase):
         self.assertNotIn('Order', body)
         self.assertNotIn('Bob', body)
         self.assertIn('href="mailto:user1@example.invalid', body)
+
+    def test_unquoted_css_url_keeps_the_rest_of_the_style(self):
+        html = ('<div style="background:url(https://cdn.example/bg.png);width:300px;padding:0">x</div>'
+                '<style>.a{background:url(https://cdn.example/bg.png);height:200px}</style>')
+        body, _, _ = converter.convert(_eml(html=html))
+        self.assertIn(');width:300px;padding:0"', body)
+        self.assertIn(');height:200px}', body)
+        self.assertNotIn('cdn.example', body)
+
+    def test_names_in_css_change_only_inside_comments(self):
+        html = '<style>.Hero{display:block} /* Hero Block */</style><p class="Hero">Hero</p>'
+        body, _, _ = converter.convert(_eml_from('Hero Block <hero@acme-corp.com>', html))
+        self.assertIn('.Hero{display:block}', body)
+        self.assertNotIn('Hero Block', body)
+        self.assertNotIn('>Hero<', body)
 
     def test_malformed_header_does_not_hide_the_sender(self):
         raw = (b'From: Good Person <good@safe.example>\r\nDelivered-To: a@x.com >\r\n'

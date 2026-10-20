@@ -48,6 +48,7 @@ _SLUG_RE = re.compile(r'^[a-z0-9_]+$')
 _ATTR_RE = re.compile(r'''(\s+)([^\s=/>]+)(?:(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+))?''')
 _PLACEHOLDER_HOST_RE = re.compile(r'(?i)^(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid(?:/|$)')
 
+_CSS_COMMENT_RE = re.compile(r'/\*[^*]*\*+(?:[^/*][^*]*\*+)*/')
 _KEPT_SCHEMES = ('cid:', 'data:', 'javascript:', 'about:')
 _CSS_URL_RE = re.compile(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''')
 
@@ -244,16 +245,17 @@ class Anonymizer:
     def attribute_text(self, name, value):
         """A non-URL attribute value: addresses and URLs always, CSS urls in
         style, names in the text attributes."""
-        value = self.urls_and_emails(value)
         if name == 'style':
-            value = self.css_urls(value)
+            value = self.css_urls(value)  # before the generic URL pass: it would eat the ')'
+        value = self.urls_and_emails(value)
         return self.identities(value) if name in TEXT_ATTRIBUTES else value
 
-    def text(self, text):
-        """URLs, addresses and identities in free text (body, comments, CSS)."""
-        text = _URL_RE.sub(lambda m: self.fake_url(m.group(0)), text)
-        text = self.css_urls(text)
-        text = _EMAIL_RE.sub(lambda m: self.fake_email(m.group(0)), text)
+    def text(self, text, css=False):
+        """URLs, addresses and identities in free text; in CSS, names only
+        inside /* comments */ so selectors and keywords stay."""
+        text = self.urls_and_emails(self.css_urls(text))
+        if css:
+            return _CSS_COMMENT_RE.sub(lambda m: self.identities(m.group(0)), text)
         return self.identities(text)
 
     def identities(self, text):
@@ -429,9 +431,12 @@ def rewrite_html(html, cid_sizes, anonymizer):
         out = out[:start] + replacement + out[end:]
     # Free text, comments and <style> CSS; start tags were rewritten above.
     parts = re.split(r'(?s)(<!--.*?-->|<[^>]*>)', out)
+    in_style = False
     for index, part in enumerate(parts):
         if part.startswith('<!--') or not part.startswith('<'):
-            parts[index] = anonymizer.text(part)
+            parts[index] = anonymizer.text(part, css=in_style)
+        else:
+            in_style = re.match(r'(?i)<style\b', part) is not None
     return ''.join(parts), parser.size_counts
 
 
