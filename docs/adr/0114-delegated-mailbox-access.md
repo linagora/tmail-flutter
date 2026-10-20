@@ -98,5 +98,5 @@ flowchart LR
 ## Consequences
 
 - Main regression risk: a reader classified on the wrong account. T-05 covers each existing reader with a test, and new code must pick `mine` or `active`.
-- Toggle off or no delegation: nothing changes for the user.
+- Toggle off or no delegation: the mailbox view, settings and push work as today. Only the throttled session re-read on resume and the cleanup of ended delegations run.
 - A revocation shows up only at the first failing request or the next resume.
