@@ -33,7 +33,7 @@ active = account picked in switcher  // mailboxes, emails, identities, quota, se
 - One mailbox at a time. Switching replaces `active` and reloads the mailbox view. Delegated folders are never merged into my tree.
 - The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when at least one non-personal account is listed.
 - Sign-in, reload and restart always start on `mine`.
-- `active` lives in a Riverpod notifier. One bridge pushes it into the GetX dashboard, whose listeners reload the view.
+- `active` lives in a Riverpod notifier. One bridge pushes it into the GetX dashboard, whose listeners reload the view. The dashboard's existing `accountId` keeps meaning `mine` and a new `activeAccountId` drives the view, so a reader T-05 missed stays on my account and can never change the owner's settings.
 
 ### Switching
 
