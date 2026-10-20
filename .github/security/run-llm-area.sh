@@ -17,13 +17,13 @@ partial="$RUNNER_TEMP/llm-partial-$area.md"; : > "$partial"
 # one 40m budget for the area across all keys
 deadline=$((SECONDS + 2400))
 stall=${LLM_STALL_SECONDS:-600}
-code=1; used=0; switched=""
+code=1; used=0; switched=""; moved=0
 for i in "${!keys[@]}"; do
   # a rate limit resets: a dead key is skipped for 10 minutes, then tried again
   [[ -z $(find "$dead/$i" -mmin -10 2>/dev/null) ]] || continue
   left=$((deadline - SECONDS))
   (( left > 60 )) || { code=124; break; }
-  used=$((i + 1))
+  used=$((i + 1)); moved=0
   # own session store per process and attempt: parallel runs never share one
   rm -rf "$home"
   export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
@@ -52,6 +52,7 @@ for i in "${!keys[@]}"; do
   # the next attempt truncates $report: keep what this key already printed
   if [[ -s "$report" ]]; then
     { printf '\n### Output of key %s before it failed\n\n' "$used"; cat "$report"; } >> "$partial"
+    moved=1
   fi
   # key counts and quota state go only into the sealed report: run logs are public
   switched+="${switched:+, }$used"
@@ -66,7 +67,8 @@ echo "LLM area $area: exit $code"
   echo "## LLM review: $area"; echo "Key $used of ${#keys[@]}."
   [[ -z $switched ]] || echo "Out of quota or rejected: key $switched."
   echo
-  if [[ -s "$report" ]]; then cat "$report"; else echo "(no output)"; fi
+  # output already moved into $partial is not printed twice
+  if [[ -s "$report" ]] && (( ! moved )); then cat "$report"; elif [[ ! -s "$partial" ]]; then echo "(no output)"; fi
   [[ ! -s "$partial" ]] || cat "$partial"
   if (( code != 0 )); then
     reason=""; [[ $code != 124 ]] || reason=" (40m timeout)"
