@@ -87,7 +87,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | T-11 | E2E scenarios, with each release | — |
 | T-12 | Experimental "Delegation" toggle in Preferences | — |
 
-The entry points (T-03, T-04, T-08) merge last: merged before T-05, a switch would let settings follow the owner's account. The toggle keeps them hidden from users while testers can turn them on.
+The entry points (T-03, T-04, T-08) merge last, after T-05: without T-05, a switch would let settings follow the owner's account. The toggle keeps them hidden from users while testers can turn them on.
 
 ```mermaid
 flowchart LR
