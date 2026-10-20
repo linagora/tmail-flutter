@@ -27,7 +27,7 @@ if [[ "$LLM_ENABLED" == "true" ]]; then
   env -u GH_TOKEN xargs -r -P "$PARALLEL" -I{} bash "$sec/run-llm-area.sh" {} <<< "$audits" &
   llm_pid=$!
 fi
-env -u LLM_API_KEY -u LLM_BASE_URL -u LLM_MODEL bash "$sec/run-scanners.sh"
+env -u LLM_API_KEYS -u LLM_BASE_URL -u LLM_MODEL bash "$sec/run-scanners.sh"
 llm='{"status": "skipped", "count": 0, "found": false}'
 if [[ "$LLM_ENABLED" == "true" ]]; then
   if jq -e 'index("changes")' <<< "$AREAS" > /dev/null; then

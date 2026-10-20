@@ -153,13 +153,13 @@ jobs:
       - name: Check LLM config
         id: cfg
         env:
-          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_API_KEYS: ${{ secrets.SECURITY_LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
           REPORT: ${{ needs.gate.outputs.report }}
         run: |
           # no private sink, no LLM run: the report is never published publicly
-          if [[ "$REPORT" != "true" || -z "$LLM_API_KEY" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
+          if [[ "$REPORT" != "true" || -z "$(tr -d ' \t\r\n' <<< "$LLM_API_KEYS")" || -z "$LLM_BASE_URL" || -z "$LLM_MODEL" ]]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "LLM review skipped: private report or SECURITY_LLM_* not configured." >> "$GITHUB_STEP_SUMMARY"
           else
@@ -193,7 +193,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPORT_PUBLIC_KEY: ${{ vars.SECURITY_REPORT_PUBLIC_KEY }}
-          LLM_API_KEY: ${{ secrets.SECURITY_LLM_API_KEY }}
+          LLM_API_KEYS: ${{ secrets.SECURITY_LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.SECURITY_LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.SECURITY_LLM_MODEL }}
           LLM_ENABLED: ${{ steps.cfg.outputs.enabled }}

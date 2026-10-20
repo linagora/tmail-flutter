@@ -1,20 +1,45 @@
 #!/usr/bin/env bash
 # Runs one opencode review area and encrypts its report the moment it ends.
-# Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_* REPORT_PUBLIC_KEY OUT RUNNER_TEMP
+# A key failing on quota or auth is marked dead for all areas; the area reruns on the next key.
+# Usage: run-llm-area.sh <area>   env: OPENCODE_CONFIG LLM_API_KEYS (one per line) LLM_* REPORT_PUBLIC_KEY OUT RUNNER_TEMP
 set -uo pipefail
 area=${1:?usage: run-llm-area.sh <area>}
 bin="$RUNNER_TEMP/opencode/node_modules/.bin/opencode"
 home="$RUNNER_TEMP/opencode-$area"
-# own session store per process: parallel runs never share one
-export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
-mkdir -p "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME" "$OUT/llm-status"
+dead="$RUNNER_TEMP/llm-dead-keys"
+mkdir -p "$dead" "$OUT/llm-status"
+mapfile -t keys < <(tr -d ' \t\r' <<< "${LLM_API_KEYS:-}" | grep .)
+# opencode processes see one key at most, never the list
+unset LLM_API_KEYS
+key_error='quota|rate.?limit|too many requests|resource.?exhausted|insufficient.?(quota|balance|funds|credits?)|(credit|account) balance|out of credits|billing.?(hard.?)?limit|payment required|unauthori[sz]ed|forbidden|authentication (failed|error)|invalid.{0,20}key|incorrect.{0,20}key|key not valid|valid api key|(status|code)[^0-9]{0,3}(401|402|403|429)'
 report=".security-review/llm-$area.md"
-timeout 40m "$bin" run "$(cat ".security-review/prompt-$area.md")" > "$report" 2> "$home/stderr.log"
-code=$?
+# one 40m budget for the area across all keys
+deadline=$((SECONDS + 2400))
+code=1; used=0
+for i in "${!keys[@]}"; do
+  [[ ! -e "$dead/$i" ]] || continue
+  left=$((deadline - SECONDS))
+  (( left > 60 )) || { code=124; break; }
+  used=$((i + 1))
+  # own session store per process and attempt: parallel runs never share one
+  rm -rf "$home"
+  export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
+  mkdir -p "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME"
+  LLM_API_KEY=${keys[$i]} timeout "${left}s" "$bin" run "$(cat ".security-review/prompt-$area.md")" \
+    > "$report" 2> "$home/stderr.log"
+  code=$?
+  if (( code == 0 || code == 124 )) || ! grep -Eiq "$key_error" "$home/stderr.log"; then break; fi
+  touch "$dead/$i"
+  echo "LLM area $area: key $used of ${#keys[@]} out of quota or rejected"
+done
+if (( used == 0 )); then
+  mkdir -p "$home"; : > "$report"
+  echo "No usable LLM key left: all ${#keys[@]} out of quota or rejected." > "$home/stderr.log"
+fi
 echo "$code" > "$OUT/llm-status/$area"
-echo "LLM area $area: exit $code"
+echo "LLM area $area: exit $code (key $used of ${#keys[@]})"
 {
-  echo "## LLM review: $area"; echo
+  echo "## LLM review: $area"; echo "Key $used of ${#keys[@]}."; echo
   if [[ -s "$report" ]]; then cat "$report"; else echo "(no output)"; fi
   if (( code != 0 )); then
     reason=""; [[ $code != 124 ]] || reason=" (40m timeout)"
