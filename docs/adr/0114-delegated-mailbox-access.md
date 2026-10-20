@@ -155,4 +155,3 @@ flowchart LR
 
 - **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
 - **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
-- **Privacy**: owner addresses and mail are never logged.
