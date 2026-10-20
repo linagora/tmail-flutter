@@ -57,7 +57,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 
 - Refused while a composer is open or another switch runs: the switcher stays disabled until the switch ends, so no late result can overwrite a newer one.
 - Saves the previous selection and search, sets `active`, then loads folders, the first page of emails and identities (cache first, then `/changes`).
-- A modal loading dialog appears after 300 ms, stays at least 500 ms and closes on success or failure (no design yet).
+- A modal loading dialog appears after 300 ms, stays at least 500 ms and closes when the switch ends: success, failure or cancel (no design yet).
 - On failure `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox".
 - `StateChange` events for the target are not applied while the switch runs. The switch ends with `/changes` from the loaded state, which picks up what arrived meanwhile.
 
