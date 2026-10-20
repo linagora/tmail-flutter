@@ -16,7 +16,7 @@ Proposed
 
 - [#4977](https://github.com/linagora/tmail-flutter/issues/4977) phase 1, delegate side: see the mailboxes delegated to me and switch to one. The owner side and the link of the §5 email come later.
 - Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each delegated account is in `Session.accounts` with `isPersonal: false` and `name` = owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities. Delegates are refused on `Forward/*`, `Keystore/set`, `LongLivedToken/*`, `Delegate/*` and Firebase methods. Switching needs no new method, only "Remove your access" needs `DelegatedAccount/get|set`.
-- Today one id, `MailboxDashBoardController.accountId` (the personal account), drives the view, settings, push and caches.
+- Today one id, `MailboxDashBoardController.accountId` (the personal account), drives the view, push and caches. Settings keep their own copy of `session.accountId` and only take the quota from the dashboard.
 - Design: [Figma web](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12064-19139), [Figma mobile](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12712-45634).
 
 ## Decision
@@ -88,7 +88,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | T-11 | E2E scenarios, with each release | — |
 | T-12 | Experimental "Delegation" toggle in Preferences | — |
 
-The entry points (T-03, T-04, T-08) merge last, after T-05: without T-05, a switch would let settings follow the owner's account. The toggle keeps them hidden from users while testers can turn them on.
+The entry points (T-03, T-04, T-08) merge last, after T-05: without T-05, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 
 ```mermaid
 flowchart LR
