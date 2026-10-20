@@ -37,8 +37,7 @@ Future<List<Violation>> runGenericRules(DisplayRender render) async {
   final violations = _Violations();
   final frame = render.frame;
   final collapsed = frame.hasQuoteToggle && !frame.isQuoteExpanded;
-  for (final rule in genericRules.values) {
-    if (collapsed && rule == textRule) continue;
+  for (final rule in _firstPassRules(collapsed)) {
     violations.addAll(rule(render));
   }
   if (collapsed) {
@@ -49,6 +48,9 @@ Future<List<Violation>> runGenericRules(DisplayRender render) async {
   }
   return violations.list;
 }
+
+Iterable<DisplayRule> _firstPassRules(bool collapsed) =>
+    collapsed ? genericRules.values.where((rule) => rule != textRule) : genericRules.values;
 
 /// Violations without repeats (the same rule, path and detail).
 class _Violations {
