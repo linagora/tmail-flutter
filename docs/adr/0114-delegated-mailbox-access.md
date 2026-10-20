@@ -107,7 +107,7 @@ The logic is shared. Differences:
 |---|---|---|
 | Entry point | Workplace: "Viewing [name]" chip (#4977 §8). Stand-alone: avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | Figma mobile. Tablet and mobile web layouts follow it |
 | URL | Ids of a delegated mailbox stay out of the URL, history reset on switch, "Open in new tab" hidden for its emails and folders, so a reload, Back or new tab never looks them up in my account | — |
-| Composer | Several floating. One written in a delegated mailbox is restored after a reload only when that mailbox is opened again. Logout and the cleanup of an account that left the session remove its snapshots too | Full-screen |
+| Composer | Several floating. One written in a delegated mailbox is restored after a reload only when that mailbox is opened again. Logout and the cleanup of an account that left the session remove its snapshots too | Full-screen. A draft from a delegated mailbox kept by the Android restore ([ADR-0086](./0086-android-composer-draft-loss-on-background.md)) follows the same rules |
 | Realtime | WebSocket on `active` | WebSocket on `active`, FCM on `mine` |
 | Offline | — | Offline start uses the cached session, so the cleanup waits for the next online session |
 
