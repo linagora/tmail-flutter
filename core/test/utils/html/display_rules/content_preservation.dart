@@ -3,11 +3,13 @@ import 'package:html/parser.dart' show parse;
 /// Share of the source words the output still shows, occurrence by
 /// occurrence: a word the source repeats five times and the output shows
 /// once counts as one of five kept.
-double bodyWordPreservation(String source, String transformed) {
-  final sourceWords = _bodyWords(source);
+double bodyWordPreservation(String source, String transformed) =>
+    _keptShare(_bodyWords(source), _bodyWords(transformed));
+
+double _keptShare(List<String> sourceWords, List<String> outputWords) {
   if (sourceWords.isEmpty) return 1;
   final available = <String, int>{};
-  for (final word in _bodyWords(transformed)) {
+  for (final word in outputWords) {
     available[word] = (available[word] ?? 0) + 1;
   }
   var kept = 0;
@@ -25,10 +27,10 @@ double bodyWordPreservation(String source, String transformed) {
 /// without their scheme, so schemes are ignored on both sides.
 double plainTextWordPreservation(String source, String transformed) {
   String withoutScheme(String word) => word.replaceFirst(RegExp(r'^https?://'), '');
-  final sourceWords = _words(source).map(withoutScheme).toList();
-  if (sourceWords.isEmpty) return 1;
-  final outputWords = _bodyWords(transformed).map(withoutScheme).toSet();
-  return sourceWords.where(outputWords.contains).length / sourceWords.length;
+  return _keptShare(
+    _words(source).map(withoutScheme).toList(),
+    _bodyWords(transformed).map(withoutScheme).toList(),
+  );
 }
 
 /// Every link destination in the body, sorted, so a transform that keeps the
