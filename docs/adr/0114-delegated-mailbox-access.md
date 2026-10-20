@@ -132,7 +132,7 @@ The logic is shared. Differences:
 | T-07 | Local data: no offline bodies, cleanup of ended delegations, composer snapshots | Runs only when an account disappears | T-01 |
 | T-08 | Mobile app, tablet and mobile web | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-1, DS-3 |
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | None at runtime | — |
-| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | New Settings entry | T-09, T-06, DS-1, DS-4 |
+| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | New Settings entry, shown only with the delegation capability | T-09, T-06, DS-1, DS-4 |
 | T-11 | E2E scenarios, added with each release | — | — |
 
 ### Merge order
@@ -155,5 +155,4 @@ flowchart LR
 
 - **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
 - **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
-- **Settings › Delegation** appears for every user on a server with the capability, even with an empty list. Product decides whether to hide it until the owner side ships.
 - **Privacy**: owner addresses and mail are never logged.
