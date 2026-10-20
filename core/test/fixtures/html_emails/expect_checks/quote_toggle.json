@@ -1,0 +1,6 @@
+{
+  "source": "synthetic quoteToggle positive case",
+  "purpose": "reply with a nested quote: toggle before the top-level quote, collapsed, expands",
+  "expectQuote": true,
+  "expect": ["quoteToggle"]
+}

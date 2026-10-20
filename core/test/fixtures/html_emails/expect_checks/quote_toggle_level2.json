@@ -1,0 +1,6 @@
+{
+  "source": "synthetic quoteToggle case at div level 2",
+  "purpose": "a blockquote nested exactly two div levels deep still gets the toggle",
+  "expectQuote": true,
+  "expect": ["quoteToggle"]
+}

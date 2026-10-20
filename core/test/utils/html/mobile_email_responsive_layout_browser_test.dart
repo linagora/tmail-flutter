@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'display_harness/offline_images.dart';
 import 'mobile_email_responsive_layout_fixture.dart';
 
 const _readableFontSize = 12;
@@ -153,11 +154,13 @@ void verifyNonWrappingContentReflow() {
 
 void verifyScalingFallback() {
   test('scales an oversized image without distorting it', () async {
+    // The production document normalizes oversized images to
+    // `height:auto`, so the file itself must be 800x400 like a real banner.
     await withEmail(
-      const EmailFixture(
+      EmailFixture(
         '<img id="banner" width="800" height="400" '
         'style="width:800px;height:400px" '
-        'src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">',
+        'src="${offlineSvgDataUri(800, 400)}">',
       ),
       (viewport) async {
         expect(viewport.overflowsHorizontally, isFalse);

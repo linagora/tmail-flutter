@@ -10,7 +10,7 @@ import 'package:html/parser.dart' show parse;
 
 import '../fixtures/html_emails/html_email_corpus.g.dart';
 import '../fixtures/html_emails/html_email_corpus_fixture.dart';
-import 'html/html_content_preservation.dart';
+import 'html/display_rules/content_preservation.dart';
 import 'html_pipeline_registry.dart';
 import 'html_transform_text_html_test.mocks.dart';
 
