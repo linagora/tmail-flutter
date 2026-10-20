@@ -20,6 +20,7 @@ import binascii
 import email
 import email.policy
 import email.utils
+import functools
 import html as html_lib
 import json
 import os
@@ -47,6 +48,9 @@ _SLUG_RE = re.compile(r'^[a-z0-9_]+$')
 _ATTR_RE = re.compile(r'''(\s+)([^\s=/>]+)(?:(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+))?''')
 _PLACEHOLDER_HOST_RE = re.compile(r'(?i)^(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid(?:/|$)')
 
+_KEPT_SCHEMES = ('cid:', 'data:', 'javascript:', 'about:')
+_CSS_URL_RE = re.compile(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''')
+
 # Attributes whose value is a URL (or a srcset list of URLs).
 URL_ATTRIBUTES = {'href', 'src', 'background', 'action', 'poster', 'srcset',
                   'data-src', 'longdesc', 'cite'}
@@ -70,28 +74,49 @@ def _pad(base, length, filler='x'):
 
 # ---------------------------------------------------------------- images
 
-def image_size_from_bytes(data):
-    """Returns (width, height) for PNG/GIF/JPEG bytes, else None."""
+def _png_size(data):
     if data[:8] == b'\x89PNG\r\n\x1a\n' and len(data) >= 24:
         return struct.unpack('>II', data[16:24])
+    return None
+
+
+def _gif_size(data):
     if data[:6] in (b'GIF87a', b'GIF89a') and len(data) >= 10:
         return struct.unpack('<HH', data[6:10])
-    if data[:2] == b'\xff\xd8':
-        i = 2
-        while i + 9 < len(data):
-            if data[i] != 0xFF:
-                i += 1
-                continue
-            marker = data[i + 1]
-            if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
-                i += 2
-                continue
-            length = struct.unpack('>H', data[i + 2:i + 4])[0]
-            if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
-                height, width = struct.unpack('>HH', data[i + 5:i + 9])
-                return width, height
-            i += 2 + length
     return None
+
+
+def _is_standalone_marker(marker):
+    return marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7
+
+
+def _is_frame_marker(marker):
+    return 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC)
+
+
+def _jpeg_size(data):
+    if data[:2] != b'\xff\xd8':
+        return None
+    i = 2
+    while i + 9 < len(data):
+        if data[i] != 0xFF:
+            i += 1
+            continue
+        marker = data[i + 1]
+        if _is_standalone_marker(marker):
+            i += 2
+            continue
+        length = struct.unpack('>H', data[i + 2:i + 4])[0]
+        if _is_frame_marker(marker):
+            height, width = struct.unpack('>HH', data[i + 5:i + 9])
+            return width, height
+        i += 2 + length
+    return None
+
+
+def image_size_from_bytes(data):
+    """Returns (width, height) for PNG/GIF/JPEG bytes, else None."""
+    return _png_size(data) or _gif_size(data) or _jpeg_size(data)
 
 
 def _data_uri_size(uri):
@@ -102,6 +127,13 @@ def _data_uri_size(uri):
         return image_size_from_bytes(base64.b64decode(match.group(1)[:4096] + '==='))
     except (binascii.Error, ValueError):
         return None
+
+
+def _kept_url(stripped):
+    """Values with no host to anonymize."""
+    return (not stripped or stripped.startswith('#')
+            or stripped.lower().startswith(_KEPT_SCHEMES)
+            or _PLACEHOLDER_HOST_RE.match(stripped) is not None)
 
 
 def _px(value):
@@ -171,22 +203,22 @@ class Anonymizer:
             self.emails[key] = local + domain
         return self.emails[key]
 
+    def _fake_mailto(self, stripped):
+        self.counts['mailto'] += 1
+        rest = stripped[len('mailto:'):]
+        address = _EMAIL_RE.search(rest)
+        fake = self.fake_email(address.group(0)) if address else 'user@example.invalid'
+        extra = len(rest) - len(fake)
+        return 'mailto:' + fake + ('?' + 'x' * (extra - 1) if extra > 0 else '')
+
     def url_value(self, value):
         """Anonymizes one URL-valued attribute value."""
         stripped = value.strip()
-        lower = stripped.lower()
-        if not stripped or stripped.startswith('#') or _PLACEHOLDER_HOST_RE.match(stripped):
+        if _kept_url(stripped):
             return value
-        if lower.startswith(('cid:', 'data:', 'javascript:', 'about:')):
-            return value
-        if lower.startswith('mailto:'):
-            self.counts['mailto'] += 1
-            rest = stripped[len('mailto:'):]
-            address = _EMAIL_RE.search(rest)
-            fake = self.fake_email(address.group(0)) if address else 'user@example.invalid'
-            extra = len(rest) - len(fake)
-            return 'mailto:' + fake + ('?' + 'x' * (extra - 1) if extra > 0 else '')
-        if lower.startswith('tel:'):
+        if stripped.lower().startswith('mailto:'):
+            return self._fake_mailto(stripped)
+        if stripped.lower().startswith('tel:'):
             self.counts['tel'] += 1
             return 'tel:' + _pad('+1555', len(stripped) - 4, '0')
         if _URL_RE.match(stripped):
@@ -201,12 +233,26 @@ class Anonymizer:
             for item in value.split(',') if item.strip())
 
     # -- text
+    def css_urls(self, text):
+        return _CSS_URL_RE.sub(
+            lambda m: 'url(%s%s%s)' % (m.group(1), self.url_value(m.group(2)), m.group(1)), text)
+
+    def urls_and_emails(self, text):
+        text = _URL_RE.sub(lambda m: self.fake_url(m.group(0)), text)
+        return _EMAIL_RE.sub(lambda m: self.fake_email(m.group(0)), text)
+
+    def attribute_text(self, name, value):
+        """A non-URL attribute value: addresses and URLs always, CSS urls in
+        style, names in the text attributes."""
+        value = self.urls_and_emails(value)
+        if name == 'style':
+            value = self.css_urls(value)
+        return self.identities(value) if name in TEXT_ATTRIBUTES else value
+
     def text(self, text):
         """URLs, addresses and identities in free text (body, comments, CSS)."""
         text = _URL_RE.sub(lambda m: self.fake_url(m.group(0)), text)
-        text = re.sub(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''',
-                      lambda m: 'url(%s%s%s)' % (m.group(1), self.url_value(m.group(2)), m.group(1)),
-                      text)
+        text = self.css_urls(text)
         text = _EMAIL_RE.sub(lambda m: self.fake_email(m.group(0)), text)
         return self.identities(text)
 
@@ -230,33 +276,51 @@ class Anonymizer:
 
 # ------------------------------------------------------ start-tag rewrite
 
+def _tag_end(tag_text):
+    closing = re.search(r'\s*/?>$', tag_text)
+    return len(tag_text) - len(closing.group(0)) if closing else len(tag_text)
+
+
+def _rewritten_raw(name, raw, rewrite):
+    """The raw (quoted or bare) value after rewrite; the same bytes if unchanged."""
+    quote = raw[0] if raw[0] in '"\'' else ''
+    value = raw[1:-1] if quote else raw
+    new_value = rewrite(name.lower(), value)
+    if new_value == value:
+        return raw
+    quote = quote or '"'
+    return quote + new_value.replace(quote, '&quot;' if quote == '"' else '&#39;') + quote
+
+
 def rewrite_attributes(tag_text, rewrite):
     """Rebuilds a start tag, calling rewrite(name, value) for each attribute
     value in order. Unchanged values are kept byte for byte."""
     head = re.match(r'(?s)<[^\s/>]+', tag_text)
     if not head:
         return tag_text
-    end = len(tag_text) - len(re.search(r'\s*/?>$', tag_text).group(0)) \
-        if re.search(r'\s*/?>$', tag_text) else len(tag_text)
     out = [head.group(0)]
     position = head.end()
-    for match in _ATTR_RE.finditer(tag_text, position, end):
+    for match in _ATTR_RE.finditer(tag_text, position, _tag_end(tag_text)):
         if match.start() != position:
             break
         space, name, equals, raw = match.groups()
         out.append(space + name)
         if raw is not None:
-            quote = raw[0] if raw[0] in '"\'' else ''
-            value = raw[1:-1] if quote else raw
-            new_value = rewrite(name.lower(), value)
-            if new_value != value:
-                if not quote:
-                    quote = '"'
-                raw = quote + new_value.replace(quote, '&quot;' if quote == '"' else '&#39;') + quote
-            out.append(equals + raw)
+            out.append(equals + _rewritten_raw(name, raw, rewrite))
         position = match.end()
     out.append(tag_text[position:])
     return ''.join(out)
+
+
+def _declared_size(attrs):
+    """width/height attributes, else inline CSS; a missing height is half the width."""
+    style = attrs.get('style')
+    for source, width, height in (
+            ('attr', _px(attrs.get('width')), _px(attrs.get('height'))),
+            ('css', _style_px(style, 'width'), _style_px(style, 'height'))):
+        if width is not None:
+            return source, (width, height if height is not None else width // 2)
+    return None
 
 
 class _TagRewriter(HTMLParser):
@@ -293,35 +357,34 @@ class _TagRewriter(HTMLParser):
 
     def _start(self, tag, attrs, closes):
         attr_map = {name: value or '' for name, value in attrs}
-        if tag in ('td', 'th') and self.containers and self.containers[-1][0] in ('td', 'th'):
-            self.containers.pop()  # implicitly closed cell
-        if tag in ('td', 'th', 'table') and not closes:
-            width = _px(attr_map.get('width')) or _style_px(attr_map.get('style'), 'width')
-            self.containers.append((tag, width))
+        self._track_container(tag, attr_map, closes)
         raw = self.get_starttag_text()
         image = self._image_placeholder(attr_map) if tag == 'img' else None
-
-        def rewrite(name, value):
-            if image and name in ('src', 'srcset'):
-                return image
-            if name == 'srcset':
-                return self.anonymizer.srcset_value(value)
-            if name in URL_ATTRIBUTES:
-                return self.anonymizer.url_value(value)
-            value = _EMAIL_RE.sub(lambda m: self.anonymizer.fake_email(m.group(0)),
-                                  _URL_RE.sub(lambda m: self.anonymizer.fake_url(m.group(0)), value))
-            if name == 'style':
-                value = re.sub(r'''(?i)url\(\s*(['"]?)([^'")]+)\1\s*\)''',
-                               lambda m: 'url(%s%s%s)' % (m.group(1), self.anonymizer.url_value(m.group(2)), m.group(1)),
-                               value)
-            if name in TEXT_ATTRIBUTES:
-                value = self.anonymizer.identities(value)
-            return value
-
-        replacement = rewrite_attributes(raw, rewrite)
+        replacement = rewrite_attributes(raw, functools.partial(self._rewrite_value, image))
         if replacement != raw:
             start = self._offset()
             self.edits.append((start, start + len(raw), replacement))
+
+    def _rewrite_value(self, image, name, value):
+        if image and name in ('src', 'srcset'):
+            return image
+        if name == 'srcset':
+            return self.anonymizer.srcset_value(value)
+        if name in URL_ATTRIBUTES:
+            return self.anonymizer.url_value(value)
+        return self.anonymizer.attribute_text(name, value)
+
+    def _in_cell(self):
+        return bool(self.containers) and self.containers[-1][0] in ('td', 'th')
+
+    def _track_container(self, tag, attr_map, closes):
+        if tag not in ('td', 'th', 'table'):
+            return
+        if tag != 'table' and self._in_cell():
+            self.containers.pop()  # implicitly closed cell
+        if not closes:
+            width = _px(attr_map.get('width')) or _style_px(attr_map.get('style'), 'width')
+            self.containers.append((tag, width))
 
     def _container_width(self):
         for _, width in reversed(self.containers):
@@ -330,25 +393,25 @@ class _TagRewriter(HTMLParser):
         return None
 
     def _measure(self, src, attrs):
-        if src.lower().startswith('cid:'):
-            size = self.cid_sizes.get(src[4:].strip('<>'))
-            if size:
-                return 'cid', size
-        if src.lower().startswith('data:'):
-            size = _data_uri_size(src)
-            if size:
-                return 'data', size
-        style = attrs.get('style')
-        attr_w, attr_h = _px(attrs.get('width')), _px(attrs.get('height'))
-        if attr_w is not None:
-            return 'attr', (attr_w, attr_h if attr_h is not None else attr_w // 2)
-        css_w, css_h = _style_px(style, 'width'), _style_px(style, 'height')
-        if css_w is not None:
-            return 'css', (css_w, css_h if css_h is not None else css_w // 2)
+        return (self._embedded_size(src) or _declared_size(attrs)
+                or self._container_size(attrs) or ('default', DEFAULT_IMAGE_SIZE))
+
+    def _embedded_size(self, src):
+        lower = src.lower()
+        if lower.startswith('cid:'):
+            source, size = 'cid', self.cid_sizes.get(src[4:].strip('<>'))
+        elif lower.startswith('data:'):
+            source, size = 'data', _data_uri_size(src)
+        else:
+            return None
+        return (source, size) if size else None
+
+    def _container_size(self, attrs):
         container = self._container_width()
-        if container:
-            return 'container', (container, attr_h or css_h or container // 2)
-        return 'default', DEFAULT_IMAGE_SIZE
+        if not container:
+            return None
+        height = _px(attrs.get('height')) or _style_px(attrs.get('style'), 'height')
+        return 'container', (container, height or container // 2)
 
     def _image_placeholder(self, attrs):
         source, (width, height) = self._measure(attrs.get('src') or '', attrs)
@@ -374,15 +437,23 @@ def rewrite_html(html, cid_sizes, anonymizer):
 
 # ------------------------------------------------------------ identities
 
+_IDENTITY_HEADERS = ('from', 'to', 'cc', 'bcc', 'reply-to', 'sender', 'delivered-to')
+
+
+def _header_addresses(message):
+    # One getaddresses call per value: a malformed header must not void the others.
+    for header in _IDENTITY_HEADERS:
+        for value in message.get_all(header, []):
+            yield from email.utils.getaddresses([str(value)])
+
+
 def header_identities(message):
     names, domains = set(), set()
-    for header in ('from', 'to', 'cc', 'bcc', 'reply-to', 'sender', 'delivered-to'):
-        for value in message.get_all(header, []):
-            for name, address in email.utils.getaddresses([str(value)]):
-                if name:
-                    names.add(name.strip().strip('"'))
-                if '@' in address:
-                    domains.add(address.rsplit('@', 1)[1].lower())
+    for name, address in _header_addresses(message):
+        if name:
+            names.add(name.strip().strip('"'))
+        if '@' in address:
+            domains.add(address.rsplit('@', 1)[1].lower())
     return names, domains
 
 

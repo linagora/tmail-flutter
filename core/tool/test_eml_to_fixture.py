@@ -191,6 +191,12 @@ class RegressionTest(unittest.TestCase):
         self.assertNotIn('Bob', body)
         self.assertIn('href="mailto:user1@example.invalid', body)
 
+    def test_malformed_header_does_not_hide_the_sender(self):
+        raw = (b'From: Good Person <good@safe.example>\r\nDelivered-To: a@x.com >\r\n'
+               b'Subject: s\r\nContent-Type: text/html\r\n\r\n<p>Good Person</p>\r\n')
+        body, _, _ = converter.convert(raw)
+        self.assertNotIn('Good Person', body)
+
     def test_attribute_names_and_classes_are_kept(self):
         body, _, _ = _convert_html(
             '<p class="Hero" id="Hero-top" style="font-family:Hero">Hero</p>',
