@@ -85,7 +85,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | T-07 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01 |
 | T-08 | Mobile app, tablet, mobile web (Figma mobile) | T-02, T-05, T-06, T-07, T-12, DS-1, DS-3 |
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | — |
-| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens the default settings page while the entry is hidden | T-06, T-09, T-12, DS-1, DS-4 |
+| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-09, T-12, DS-1, DS-4 |
 | T-11 | E2E scenarios, with each release | — |
 | T-12 | Experimental "Delegation" toggle in Preferences | T-01 |
 
