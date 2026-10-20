@@ -32,6 +32,7 @@ active = account picked in switcher  // mailboxes, emails, identities, quota, se
 
 - One mailbox at a time. Switching replaces `active` and reloads the mailbox view. Delegated folders are never merged into my tree.
 - The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when at least one non-personal account is listed.
+- An owner is shown by display name and address when a name is known, otherwise by address only. The session gives only the address today.
 - Sign-in, reload and restart always start on `mine`.
 - `active` lives in a Riverpod notifier. One bridge pushes it into the GetX dashboard, whose listeners reload the view. The dashboard's existing `accountId` keeps meaning `mine` and a new `activeAccountId` drives the view. T-05 moves every reader of the shown mailbox to `activeAccountId` (mailbox and email actions such as emptying spam, navigation, cache, realtime) and keeps the others on `accountId`. A reader it missed stays on my account, so it can never change the owner's settings, and the entry points merge only after T-05.
 
@@ -154,6 +155,5 @@ flowchart LR
 
 - **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
 - **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
-- **No display name** in the session: the owner's address is shown everywhere.
 - **Settings › Delegation** appears for every user on a server with the capability, even with an empty list. Product decides whether to hide it until the owner side ships.
 - **Privacy**: owner addresses and mail are never logged.
