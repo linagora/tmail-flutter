@@ -53,14 +53,14 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 
 - Contacts autocomplete with chips, several at once. My own address and current delegates are left out and refused when typed. Contacts outside the server are kept: the server rejects an unknown user and that chip shows the error.
 - **Next** is enabled once one valid address is picked. The confirmation step lists the chosen people with **Add**, and Back to edit them.
-- One `Delegate/set` for all addresses. While it runs the dialog cannot be dismissed (Add, Cancel, Escape, Back), so a double tap sends one request.
+- One `Delegate/set` for all addresses. While it runs, **Add** is disabled and repeat taps are ignored, so a double tap sends one request. The dialog cannot be dismissed either (Cancel, Escape, Back).
 - All created: the dialog closes, the list refreshes, toast "[Delegate] has been added" (or "[n] delegates have been added").
 - Some or all rejected: created chips leave the field with that toast (none when nothing was created), the list refreshes, and the dialog goes back to the chips step with the rejected chips and their error. **Next** stays disabled until they are removed.
 - Request failed: every chip stays, error toast.
 
 ### Remove a delegate
 
-- "Remove delegate access?" modal with the delegate's card, **Cancel** and **Remove access** (destructive). The modal cannot be dismissed while the request runs. No "Delegated N days ago" line: the backend keeps no creation date.
+- "Remove delegate access?" modal with the delegate's card, **Cancel** and **Remove access** (destructive). While the request runs, **Remove access** is disabled, repeat taps are ignored and the modal cannot be dismissed. No "Delegated N days ago" line: the backend keeps no creation date.
 - Success: the row leaves, toast "[Delegate] has been removed", empty state after the last one. A stale id is answered `destroyed`, so it counts as removed. Any failure keeps the row and shows an error toast.
 
 ### Links in the delegation emails
