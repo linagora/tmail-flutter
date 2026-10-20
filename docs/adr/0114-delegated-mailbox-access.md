@@ -137,7 +137,7 @@ The entry points (T-03, T-04, T-08) are the only way into a delegated mailbox, s
 
 ```mermaid
 flowchart LR
-  S1["1. No visible change<br/>T-01, T-05, T-06, T-07"] --> S2["2. Web release<br/>T-02, T-03, T-04, DS-1..3"] --> S3["3. Mobile release<br/>T-08"]
+  S1["1. No visible change<br/>T-01, T-05, T-06, T-07, DS-1"] --> S2["2. Web release<br/>T-02, T-03, T-04, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-08"]
   S1 --> S4["Later, not blocking<br/>T-09, T-10, DS-4"]
 ```
 
