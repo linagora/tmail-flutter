@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fixtures/html_emails/html_email_corpus.g.dart';
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
+import '../../html_pipeline_registry.dart';
 import '../../html_transform_text_html_test.mocks.dart';
 import 'content_preservation.dart';
 
@@ -18,17 +19,13 @@ void main() {
     htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
   });
 
-  final displayPipelines = <String, TransformConfiguration Function()>{
-    'forPreviewEmail': TransformConfiguration.forPreviewEmail,
-    'forPreviewEmailOnWeb': TransformConfiguration.forPreviewEmailOnWeb,
-    'standardConfiguration': () => TransformConfiguration.standardConfiguration,
-  };
-
   group('content preservation', () {
     for (final fixture in htmlEmailCorpus) {
-      final pipelines = fixture.isPlainText
-          ? {'forPlainTextEmail': TransformConfiguration.forPlainTextEmail}
-          : displayPipelines;
+      final pipelines = <String, TransformConfiguration Function()>{
+        for (final row in htmlPipelineRegistry())
+          if (row.rules.preservation && row.takesHtml != fixture.isPlainText)
+            row.name: row.build,
+      };
       for (final entry in pipelines.entries) {
         test('${fixture.category}/${fixture.name} through ${entry.key}', () async {
           final out = fixture.isPlainText

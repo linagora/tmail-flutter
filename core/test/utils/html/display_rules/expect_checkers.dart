@@ -21,12 +21,13 @@ const expectCheckers = <HtmlEmailExpect, ExpectChecker>{
   HtmlEmailExpect.noQuoteToggle: noQuoteToggleChecker,
 };
 
-/// `expect` checkers apply to the native and web viewers (the iOS viewer
-/// runs generic rules only); `autoScale` needs the native responsive script.
+/// `expect` checkers apply to the native and web reading viewers (the other
+/// viewers run generic rules only); `autoScale` needs the native responsive
+/// script.
 bool expectApplies(HtmlEmailExpect expect, DisplayViewer viewer) =>
     switch (expect) {
       HtmlEmailExpect.autoScale => viewer == DisplayViewer.native,
-      _ => viewer != DisplayViewer.ios,
+      _ => viewer == DisplayViewer.native || viewer == DisplayViewer.web,
     };
 
 bool _isRendered(web.Element element) => element.getClientRects().length > 0;

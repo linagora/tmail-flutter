@@ -1,6 +1,7 @@
 import 'package:core/presentation/utils/html_transformer/dom/hide_draft_signature_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -138,5 +139,54 @@ void main() {
         isTrue,
       );
     });
+  });
+
+  group('TransformConfiguration contract — rule sets', () {
+    test('every pipeline is checked by at least one rule set', () {
+      expect(
+        rowsWithoutRules(htmlPipelineRegistry()),
+        isEmpty,
+        reason: 'give the row rules: in htmlPipelineRegistry()',
+      );
+    });
+
+    test('the guard reports a row with no rule set', () {
+      const uncovered = HtmlPipelineRow(
+        name: 'probe',
+        create: TransformConfiguration.forPreviewEmail,
+        trust: HtmlPipelineTrust.raw,
+        wiring: HtmlPipelineWiring.sanitizes,
+        rules: HtmlPipelineRules(),
+      );
+
+      expect(rowsWithoutRules([...htmlPipelineRegistry(), uncovered]), ['probe']);
+    });
+
+    test('every display viewer shows exactly one HTML pipeline', () {
+      for (final viewer in DisplayViewer.values) {
+        final rows = htmlPipelineRegistry()
+            .where((row) => row.takesHtml && row.rules.displayOn.contains(viewer));
+
+        expect(rows.length, 1, reason: '${viewer.label}: ${rows.map((r) => r.name)}');
+      }
+    });
+
+    for (final row in htmlPipelineRegistry().where((row) => row.rules.sameAs != null)) {
+      test('${row.name} runs the same transformers as ${row.rules.sameAs}', () {
+        final target = htmlPipelineRegistry()
+            .singleWhere((other) => other.name == row.rules.sameAs)
+            .build();
+        final config = row.build();
+        List<Type> types(List<Object> list) => [for (final t in list) t.runtimeType];
+        Set<String>? allowed(TransformConfiguration c) => c.textTransformers
+            .whereType<StandardizeHtmlSanitizingTransformers>()
+            .map((t) => t.allowAttributes?.toSet() ?? <String>{})
+            .firstOrNull;
+
+        expect(types(config.domTransformers), types(target.domTransformers));
+        expect(types(config.textTransformers), types(target.textTransformers));
+        expect(allowed(config), allowed(target));
+      });
+    }
   });
 }

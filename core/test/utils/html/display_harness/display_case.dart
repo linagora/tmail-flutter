@@ -8,8 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fixtures/html_emails/html_email_corpus.g.dart';
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
+import '../../html_pipeline_registry.dart';
 import 'display_frame.dart';
-import 'display_viewer.dart';
 import 'offline_images.dart';
 
 export 'display_frame.dart';
@@ -31,6 +31,10 @@ class DisplayCase {
       '$label: $rule: $path${detail.isEmpty ? '' : ' $detail'}';
 
   TextDirection? get direction => fixture.rtl ? TextDirection.rtl : null;
+
+  /// The pipeline this viewer runs for the fixture's body type.
+  HtmlPipelineRow get pipeline =>
+      displayPipelineFor(viewer, plainText: fixture.isPlainText)!;
 }
 
 /// A [DisplayCase] after the app pipeline: [transformedHtml] is the
@@ -102,16 +106,24 @@ Future<DisplayRender> renderDisplayCase(
   DisplayMutation? mutation,
 }) async {
   final fixture = displayCase.fixture;
-  final transformed = fixture.isPlainText
-      ? _htmlTransform.transformToTextPlain(
-          content: fixture.html,
-          transformConfiguration: TransformConfiguration.forPlainTextEmail(),
-        )
+  final upstream = displayCase.viewer.upstreamConfiguration;
+  final source = upstream == null || fixture.isPlainText
+      ? fixture.html
       : await _htmlTransform.transformToHtml(
           htmlContent: fixture.html,
-          transformConfiguration:
-              mutation?.transformConfiguration?.call(displayCase.viewer) ??
-                  displayCase.viewer.transformConfiguration(),
+          transformConfiguration: upstream,
+        );
+  final configuration =
+      mutation?.transformConfiguration?.call(displayCase.viewer) ??
+          displayCase.pipeline.build();
+  final transformed = displayCase.pipeline.takesHtml
+      ? await _htmlTransform.transformToHtml(
+          htmlContent: source,
+          transformConfiguration: configuration,
+        )
+      : _htmlTransform.transformToTextPlain(
+          content: source,
+          transformConfiguration: configuration,
         );
   final built = displayCase.viewer.buildDocument(
     swapImagesForOffline(transformed),
@@ -128,13 +140,18 @@ Future<DisplayRender> renderDisplayCase(
   return DisplayRender(displayCase, transformed, document, frame);
 }
 
-/// Every fixture of [corpus] on every viewer and width.
+/// Every fixture of [corpus] on every viewer that shows it and whose registry
+/// row takes its body type, at every width of the viewer.
 Iterable<DisplayCase> displayCases({
   List<HtmlEmailCorpusFixture> corpus = htmlEmailCorpus,
   Iterable<DisplayViewer> viewers = DisplayViewer.values,
 }) sync* {
   for (final fixture in corpus) {
     for (final viewer in viewers) {
+      if (!viewer.shows(fixture)) continue;
+      if (displayPipelineFor(viewer, plainText: fixture.isPlainText) == null) {
+        continue;
+      }
       for (final width in viewer.widths) {
         yield DisplayCase(fixture, viewer, width);
       }
