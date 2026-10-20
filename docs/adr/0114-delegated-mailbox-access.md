@@ -31,10 +31,22 @@ active = account picked in switcher  // mailboxes, emails, identities, quota, se
 ```
 
 - One mailbox at a time. Switching replaces `active` and reloads the mailbox view. Delegated folders are never merged into my tree.
-- The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when at least one non-personal account is listed.
+- The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when the delegation toggle is on and at least one non-personal account is listed.
 - An owner is shown by display name and address when a name is known, otherwise by address only. The session gives only the address today.
 - Sign-in, reload and restart always start on `mine`.
 - `active` lives in a Riverpod notifier. One bridge pushes it into the GetX dashboard, whose listeners reload the view. The dashboard's existing `accountId` keeps meaning `mine` and a new `activeAccountId` drives the view. T-05 moves every reader of the shown mailbox to `activeAccountId` (mailbox and email actions such as emptying spam, navigation, cache, realtime) and keeps the others on `accountId`. A reader it missed stays on my account, so it can never change the owner's settings, and the entry points merge only after T-05.
+
+### Experimental toggle
+
+```
+delegation on = session has urn:apache:james:params:jmap:delegation   // never shown without it
+             && Preferences › "Delegation" toggle                     // local, default off, experimental
+```
+
+- The toggle is a local preference hidden behind the experimental reveal of Settings (7 taps on the title), as Drive was before it shipped. It is listed only when the server has the delegation capability.
+- Off: the app works as today, with `active` = `mine`, even when the session lists delegated accounts. No switcher, no Settings › Delegation. Turning it off while a delegated mailbox is shown switches back to `mine`.
+- The session re-read and the cleanup of ended delegations run with the toggle off too, so no cached data outlives a delegation.
+- Once the feature is stable, the toggle is turned on by default and leaves the experimental reveal, as Drive did.
 
 ### Switching
 
@@ -125,29 +137,30 @@ The logic is shared. Differences:
 | DS-4 | Empty-state card (design system) | — | — |
 | T-01 | Active account foundation, no UI | None while `active` = `mine` | — |
 | T-02 | Loading dialog | Shown only on a switch | T-01 |
-| T-03 | Web Workplace switcher | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-2 |
-| T-04 | Web stand-alone avatar menu + banner | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-3 |
+| T-03 | Web Workplace switcher | Shown only with a delegation and the toggle on | T-02, T-05, T-06, T-07, T-12, DS-2 |
+| T-04 | Web stand-alone avatar menu + banner | Shown only with a delegation and the toggle on | T-02, T-05, T-06, T-07, T-12, DS-3 |
 | T-05 | `mine` vs `active` for every reader, composer, "me", URL and new tab, notification tap | None while `active` = `mine`, tested per reader | T-01 |
 | T-06 | Session re-read, revocation, realtime on `active` (mobile sync extras stay on `mine`, push re-enabled on account change) | One throttled request on resume, for every user | T-01 |
 | T-07 | Local data: no offline bodies, cleanup of ended delegations, composer snapshots | Runs only when an account disappears | T-01 |
-| T-08 | Mobile app, tablet and mobile web | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-1, DS-3 |
+| T-08 | Mobile app, tablet and mobile web | Shown only with a delegation and the toggle on | T-02, T-05, T-06, T-07, T-12, DS-1, DS-3 |
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | None at runtime | — |
-| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | New Settings entry, shown only with the delegation capability | T-09, T-06, DS-1, DS-4 |
+| T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | New Settings entry, shown only when the delegation toggle is on | T-09, T-06, T-12, DS-1, DS-4 |
 | T-11 | E2E scenarios, added with each release | — | — |
+| T-12 | Experimental "Delegation" toggle in Preferences | Listed only after the experimental reveal, with the capability | — |
 
 ### Merge order
 
-The entry points (T-03, T-04, T-08) are the only way into a delegated mailbox, so they merge last. Merged earlier, a user could switch while settings still follow the shown account and change the owner's. No feature flag is needed.
+The entry points (T-03, T-04, T-08) are the only way into a delegated mailbox, so they merge last. Merged earlier, a user could switch while settings still follow the shown account and change the owner's. The experimental toggle (T-12) keeps them off for users until the feature is stable, while testers can turn it on.
 
 ```mermaid
 flowchart LR
-  S1["1. No visible change<br/>T-01, T-05, T-06, T-07, DS-1"] --> S2["2. Web release<br/>T-02, T-03, T-04, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-08"]
+  S1["1. No visible change<br/>T-01, T-05, T-06, T-07, T-12, DS-1"] --> S2["2. Web release<br/>T-02, T-03, T-04, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-08"]
   S1 --> S4["Later, not blocking<br/>T-09, T-10, DS-4"]
 ```
 
 ## Consequences
 
 - Main regression risk: a reader left unclassified would use the owner's data as mine, or the reverse. T-05 classifies every existing reader, and new code must pick `mine` or `active`.
-- Without a delegation nothing changes: no switcher, `active` = `mine`, push as today.
+- Without a delegation, or with the toggle off, nothing changes: no switcher, `active` = `mine`, push as today.
 - Revocation is not pushed by the server: the app learns it at the first failing request on that account or at the next resume.
 - The owner side later reuses the account model, Settings screen, data layer and components.
