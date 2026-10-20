@@ -89,7 +89,7 @@ background push (FCM, mobile)   : stateChange.changed[mine]     // unchanged
 foreground realtime (WebSocket) : stateChange.changed[active]   // was: mine
 ```
 
-System notifications stay for my own mailbox, so the FCM path cannot regress. For `active` ≠ `mine`, the foreground sync only refreshes the view: the mobile extras of that sync (new-email bodies kept for offline, FCM delivery state, notification removal) stay on `mine`. Tapping a notification first switches to `mine` through the normal switch, and the email opens only once `mine` is shown. If the switch is refused (open composer, running switch), the tap is dropped with the usual toast. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
+System notifications stay for my own mailbox, so the FCM path cannot regress. For `active` ≠ `mine`, the foreground sync only refreshes the view: the mobile extras of that sync (new-email bodies kept for offline, FCM delivery state, notification removal) stay on `mine`. With `active` = `mine`, tapping a notification works as today. Otherwise it first switches to `mine` through the normal switch, and the email opens only once `mine` is shown. If the switch is refused (open composer, running switch), the tap is dropped with the usual toast. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
 
 ### Session changes and revocation
 
