@@ -79,8 +79,8 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | T-02 | Loading dialog | T-01 |
 | T-03 | Web Workplace switcher chip (#4977 §8) | T-02, T-05, T-06, T-07, T-12, DS-2 |
 | T-04 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02, T-05, T-06, T-07, T-12, DS-3 |
-| T-05 | Classify every reader (table above), composer, URL, notification tap, one test per reader | T-01 |
-| T-06 | Session re-read, revocation, realtime filter | T-01 |
+| T-05 | Classify every reader (table above), stale view results, Settings quota, composer, URL, notification tap and intents, one test per reader | T-01 |
+| T-06 | Session re-read, revocation, realtime filter and per-account debounce | T-01 |
 | T-07 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01 |
 | T-08 | Mobile app, tablet, mobile web (Figma mobile) | T-02, T-05, T-06, T-07, T-12, DS-1, DS-3 |
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | — |
