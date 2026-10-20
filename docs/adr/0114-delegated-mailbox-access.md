@@ -43,8 +43,8 @@ sequenceDiagram
   participant D as Dashboard
   participant J as JMAP
   U->>D: pick "Viewing [Owner]"
-  alt composer open
-    D-->>U: refused, toast
+  alt composer open or a switch already running
+    D-->>U: refused (toast for the composer)
   else
     D->>D: save the previous account's selection and search, active = owner
     D->>U: loading dialog if > 300 ms
@@ -68,7 +68,7 @@ The first switch to an account has no cache, so we propose a loading dialog (no 
 └──────────────────────────────────────┘
 ```
 
-It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no flicker), and closes once the folders and the first page of emails are shown, or when the switch fails.
+It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no flicker), and closes once the folders and the first page of emails are shown, or when the switch fails. One switch runs at a time: the switcher is disabled from the pick until the switch ends, so no late result or delayed dialog of an older switch can overwrite a newer one.
 
 ### In a delegated mailbox
 
@@ -76,10 +76,11 @@ It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no f
 |---|---|
 | Read, search, flag, move, delete, labels, spam | On the owner's mailbox |
 | Compose, reply, forward | Owner's identities and folders, reply-all drops the owner |
-| "me" in views and "from/to me" filters | The owner |
+| "me" in views, "from/to me" filters, copied folder subaddress | The owner |
+| Contact autocomplete | Mine (unchanged) |
 | Settings and other `mine` features | Mine, the owner's settings are unreachable |
 | Storage bar | Owner's quota |
-| Local data | Cache per account, no offline copy of received email bodies. Mobile send queue kept: each queued mail stays bound to its account and is never sent from `mine` |
+| Local data | Cache per account. No received email body is stored: `StoreOpenedEmailInteractor` (mobile only, Hive + content file) and the new-email download of the mobile sync run for `mine` only. Web keeps opened emails in memory only. Mobile send queue kept: each queued mail stays bound to its account and is never sent from `mine` |
 
 ### Notifications
 
@@ -88,13 +89,13 @@ background push (FCM, mobile)   : stateChange.changed[mine]     // unchanged
 foreground realtime (WebSocket) : stateChange.changed[active]   // was: mine
 ```
 
-System notifications stay for my own mailbox, so the FCM path cannot regress. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
+System notifications stay for my own mailbox, so the FCM path cannot regress. For `active` ≠ `mine`, the foreground sync only refreshes the view: the mobile extras of that sync (new-email bodies kept for offline, FCM delivery state, notification removal) stay on `mine`. Tapping a notification first switches to `mine` through the normal switch (an open composer or a running switch is respected), then opens the email. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
 
 ### Session changes and revocation
 
-- The session is re-read on app or tab resume (at most once a minute) and after "Remove your access".
+- The session is re-read on app or tab resume (at most once a minute) and after "Remove your access". When its account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 - If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in it is closed, since its draft can no longer be saved there.
-- Cached data of an account that left the session is deleted, unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
+- Cached data of an account that left the session is deleted (cache entries and their content files), unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
 
 ### Web and mobile
 
@@ -103,8 +104,8 @@ The logic is shared. Differences:
 | | Web | Mobile app |
 |---|---|---|
 | Entry point | Workplace: "Viewing [name]" chip (#4977 §8). Stand-alone: avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | Figma mobile. Tablet and mobile web layouts follow it |
-| URL | Ids of a delegated mailbox stay out of the URL, history reset on switch, so reload or Back never looks them up in my account | — |
-| Composer | Several floating. One written in a delegated mailbox is restored after a reload only when that mailbox is opened again | Full-screen |
+| URL | Ids of a delegated mailbox stay out of the URL, history reset on switch, "Open in new tab" hidden for its emails and folders, so a reload, Back or new tab never looks them up in my account | — |
+| Composer | Several floating. One written in a delegated mailbox is restored after a reload only when that mailbox is opened again. Logout and the cleanup of an account that left the session remove its snapshots too | Full-screen |
 | Realtime | WebSocket on `active` | WebSocket on `active`, FCM on `mine` |
 | Offline | — | Offline start uses the cached session, so the cleanup waits for the next online session |
 
@@ -118,12 +119,12 @@ The logic is shared. Differences:
 | DS-4 | Empty-state card (design system) | — | — |
 | T-01 | Active account foundation, no UI | None while `active` = `mine` | — |
 | T-02 | Loading dialog | Shown only on a switch | T-01 |
-| T-03 | Web Workplace switcher | Shown only with a delegation | T-02, DS-2 |
-| T-04 | Web stand-alone avatar menu + banner | Shown only with a delegation | T-02, DS-3 |
-| T-05 | `mine` vs `active` for every reader, composer, "me", URL | None while `active` = `mine`, tested per reader | T-01 |
-| T-06 | Session re-read, revocation, realtime on `active` | One throttled request on resume, for every user | T-01 |
-| T-07 | Local data: no offline bodies, cleanup of ended delegations | Runs only when an account disappears | T-01 |
-| T-08 | Mobile app, tablet and mobile web | Shown only with a delegation | T-02, T-05, DS-1, DS-3 |
+| T-03 | Web Workplace switcher | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-2 |
+| T-04 | Web stand-alone avatar menu + banner | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-3 |
+| T-05 | `mine` vs `active` for every reader, composer, "me", URL and new tab, notification tap | None while `active` = `mine`, tested per reader | T-01 |
+| T-06 | Session re-read, revocation, realtime on `active` (mobile sync extras stay on `mine`, push re-enabled on account change) | One throttled request on resume, for every user | T-01 |
+| T-07 | Local data: no offline bodies, cleanup of ended delegations, composer snapshots | Runs only when an account disappears | T-01 |
+| T-08 | Mobile app, tablet and mobile web | Shown only with a delegation | T-02, T-05, T-06, T-07, DS-1, DS-3 |
 | T-09 | `DelegatedAccount/get\|set` extension + data layer | None at runtime | — |
 | T-10 | Settings › Delegation: "Delegated to me" + "Remove your access" | New Settings entry | T-09, T-06, DS-1, DS-4 |
 | T-11 | E2E scenarios, added with each release | — | — |
