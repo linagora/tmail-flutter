@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import '../display_harness/display_case.dart';
+import '../display_harness/known_display_failures.dart';
 import 'generic_rules.dart';
 
 /// Every generic rule on every fixture, viewer and email pane width (again
@@ -114,14 +115,18 @@ void main() {
   });
 
   for (final displayCase in displayCases()) {
-    test(displayCase.label, () async {
-      await withDisplayCase(displayCase, (render) async {
-        final violations = await runGenericRules(render);
-        expect(
-          violations.map((v) => v.describe(displayCase)).toList(),
-          isEmpty,
-        );
-      });
-    });
+    test(
+      displayCase.label,
+      () async {
+        await withDisplayCase(displayCase, (render) async {
+          final violations = await runGenericRules(render);
+          expect(
+            violations.map((v) => v.describe(displayCase)).toList(),
+            isEmpty,
+          );
+        });
+      },
+      skip: knownDisplayFailures[displayCase.label],
+    );
   }
 }

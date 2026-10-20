@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import 'display_harness/display_case.dart';
+import 'display_harness/known_display_failures.dart';
+import 'display_rules/expect_checkers.dart';
 
 /// The harness itself: what it reports must point at the right element.
 void main() {
@@ -89,6 +91,18 @@ void main() {
         expect(render.frame.query('a'), isNotNull);
       },
     );
+  });
+
+  test('every known display failure names a test that exists', () {
+    final names = {
+      for (final displayCase in displayCases()) ...[
+        displayCase.label,
+        for (final label in displayCase.fixture.expect)
+          if (expectApplies(label, displayCase.viewer))
+            '${displayCase.label} expect ${label.name}',
+      ],
+    };
+    expect(knownDisplayFailures.keys.toSet().difference(names), isEmpty);
   });
 
   test('labels failures as <category>/<fixture> @<viewer> <W>px', () {
