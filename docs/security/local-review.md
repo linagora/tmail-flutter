@@ -49,4 +49,4 @@ Run the same LLM security review as the CI release scan, with your own agent.
 - PR runs use no environment, so they run without secrets (dry run).
 - Secrets: `SECURITY_GITLAB_TOKEN` (`read_api`), `SECURITY_SMTP_URL` (e.g. `smtps://host:465`), `SECURITY_SMTP_USER`, `SECURITY_SMTP_PASSWORD`, `SECURITY_REPORT_KEY` (RSA private key PEM: `openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out report.pem`)
 - Secrets for the LLM: `SECURITY_LLM_API_KEYS` (one key per line; a key out of quota or rejected falls back to the next), `SECURITY_LLM_BASE_URL`, `SECURITY_LLM_MODEL`
-- Variables: `SECURITY_GITLAB_PROJECT`, `SECURITY_REPORT_PUBLIC_KEY` (`openssl pkey -in report.pem -pubout`), `SECURITY_MAIL_FROM` (bare address, no display name), optional `SECURITY_LLM_MAX_PARALLEL`
+- Variables: `SECURITY_GITLAB_PROJECT`, `SECURITY_REPORT_PUBLIC_KEY` (`openssl pkey -in report.pem -pubout`), `SECURITY_MAIL_FROM` (bare address, no display name), optional `SECURITY_LLM_MAX_PARALLEL`, optional `SECURITY_LLM_STALL_SECONDS` (default 600; silence after which a key counts as stuck)

@@ -200,6 +200,8 @@ jobs:
           AREAS: ${{ needs.gate.outputs.areas || '["changes"]' }}
           # repo variable SECURITY_LLM_MAX_PARALLEL caps concurrent area audits (default 8)
           PARALLEL: ${{ needs.gate.outputs.llm_parallel || '8' }}
+          # repo variable SECURITY_LLM_STALL_SECONDS: silence after which a key counts as stuck (default 600)
+          LLM_STALL_SECONDS: ${{ vars.SECURITY_LLM_STALL_SECONDS }}
           BASE: ${{ needs.gate.outputs.base }}
           REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}

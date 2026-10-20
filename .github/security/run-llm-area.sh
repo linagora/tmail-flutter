@@ -11,7 +11,7 @@ mkdir -p "$dead" "$OUT/llm-status"
 mapfile -t keys < <(tr -d ' \t\r' <<< "${LLM_API_KEYS:-}" | grep .)
 # opencode processes see one key at most, never the list
 unset LLM_API_KEYS
-key_error='quota|rate.?limit|too many requests|resource.?exhausted|insufficient.?(quota|balance|funds|credits?)|(credit|account) balance|out of credits|billing.?(hard.?)?limit|payment required|unauthori[sz]ed|forbidden|authentication (failed|error)|invalid.{0,20}key|incorrect.{0,20}key|key not valid|valid api key|(status|code)[^0-9]{0,3}(401|402|403|429)'
+key_error='quota|rate.?limit|too many requests|resource.?exhausted|insufficient.?(quota|balance|funds|credits?)|(credit|account) balance|out of credits|billing.?(hard.?)?limit|budget.{0,20}(limit|exceeded)|(spend|usage|monthly) limit|limit.{0,10}exceeded|credits? (exhausted|depleted)|payment required|unauthori[sz]ed|forbidden|authentication (failed|error)|invalid.{0,20}key|incorrect.{0,20}key|key not valid|valid api key|(status|code)[^0-9]{0,3}(401|402|403|429)'
 report=".security-review/llm-$area.md"
 partial="$RUNNER_TEMP/llm-partial-$area.md"; : > "$partial"
 # one 40m budget for the area across all keys
