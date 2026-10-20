@@ -38,7 +38,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
 
 ### What changes in the code base
 
-Every reader of `accountId` is classified: the shown mailbox moves to `activeAccountId`, everything personal stays on `accountId`. A reader that is missed stays on `mine`, so it can never change the owner's settings.
+Every reader of `accountId` is classified: the shown mailbox moves to `activeAccountId`, everything personal stays on `accountId`. A reader that is missed stays on `mine`, so it can never change the owner's settings. State loaded for `active` (quota, mailbox ids, identities) is never handed to a `mine` area: Settings loads its own quota instead of taking the dashboard's.
 
 | Area | With delegation | Why my own account does not regress |
 |---|---|---|
