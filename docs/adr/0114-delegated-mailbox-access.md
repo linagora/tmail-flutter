@@ -99,7 +99,7 @@ System notifications stay for my own mailbox, so the FCM path cannot regress. Fo
 
 - The session is re-read on app or tab resume (at most once a minute) and after "Remove your access". When its account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 - If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in that mailbox is closed, since its draft can no longer be saved there.
-- An `accountNotFound` on the target during a switch re-reads the session, so a revoked mailbox shown from cache is closed and the rules here apply.
+- An `accountNotFound` on the shown account, or on the target of a switch, re-reads the session (at most once a minute). A revocation is then caught at the first failing request, also for a mailbox shown from cache, and the rules here apply. `sessionState` in responses cannot signal it, since James keeps the session `state` fixed.
 - When an account leaves the session, a switch in flight to it is cancelled and its late results are ignored, so nothing is shown or cached for it after the cleanup. A switch away from it goes on, and if it fails it falls back to `mine`, not to the account that left.
 - Cached data of an account that left the session is deleted (cache entries and their content files), unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
 
@@ -149,9 +149,9 @@ flowchart LR
 
 - Main regression risk: a reader left unclassified would use the owner's data as mine, or the reverse. T-05 classifies every existing reader, and new code must pick `mine` or `active`.
 - Without a delegation nothing changes: no switcher, `active` = `mine`, push as today.
+- Revocation is not pushed by the server: the app learns it at the first failing request on that account or at the next resume.
 - The owner side later reuses the account model, Settings screen, data layer and components.
 
 ## Open points
 
-- **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
 - **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
