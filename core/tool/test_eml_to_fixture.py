@@ -102,7 +102,7 @@ class ConvertTest(unittest.TestCase):
         for secret in SECRETS:
             self.assertNotIn(secret, self.body, secret)
         self.assertEqual(self.report['leftovers'],
-                         {'hosts': [], 'emails': [], 'longDigits': [], 'phones': []})
+                         {'hosts': [], 'emails': [], 'longDigits': [], 'phones': [], 'dataUris': []})
 
     def test_cid_image_gets_exact_size(self):
         self.assertIn('src="https://fixture.invalid/cid/120x40"', self.body)
@@ -219,6 +219,11 @@ class RegressionTest(unittest.TestCase):
         started = time.monotonic()
         converter.convert(_eml(html='<p>%s</p>' % ('Ab-' * 20000)))
         self.assertLess(time.monotonic() - started, 5)
+
+    def test_text_data_uris_are_listed_in_the_report(self):
+        html = '<div style="background:url(data:image/svg+xml;base64,PHN2Zy8+)">x</div>'
+        _, _, report = converter.convert(_eml(html=html))
+        self.assertEqual(report['leftovers']['dataUris'], ['image/svg+xml'])
 
     def test_malformed_header_does_not_hide_the_sender(self):
         raw = (b'From: Good Person <good@safe.example>\r\nDelivered-To: a@x.com >\r\n'
