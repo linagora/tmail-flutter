@@ -31,7 +31,7 @@ active = account picked in switcher  // mailboxes, emails, identities, quota, se
 ```
 
 - One mailbox at a time. Switching replaces `active` and reloads the mailbox view. Delegated folders are never merged into my tree.
-- The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when there is one.
+- The switcher lists mine, then non-personal accounts with the mail capability, and is shown only when at least one non-personal account is listed.
 - Sign-in, reload and restart always start on `mine`.
 - `active` lives in a Riverpod notifier. One bridge pushes it into the GetX dashboard, whose listeners reload the view.
 
@@ -46,11 +46,13 @@ sequenceDiagram
   alt composer open
     D-->>U: refused, toast
   else
-    D->>D: active = owner, clear the previous account's selection and search
+    D->>D: save the previous account's selection and search, active = owner
     D->>U: loading dialog if > 300 ms
     D->>J: Mailbox/get, Email/query, Identity/get (cache first, then /changes)
-    alt failed
-      D->>D: active = previous account
+    alt loaded
+      D->>D: close the loading dialog, drop the saved state
+    else failed
+      D->>D: close the loading dialog, active = previous account, restore its selection and search
       D-->>U: toast "Couldn't open [Owner]'s mailbox"
     end
   end
@@ -66,7 +68,7 @@ The first switch to an account has no cache, so we propose a loading dialog (no 
 └──────────────────────────────────────┘
 ```
 
-It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no flicker), and closes once the folders and the first page of emails are shown.
+It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no flicker), and closes once the folders and the first page of emails are shown, or when the switch fails.
 
 ### In a delegated mailbox
 
@@ -77,7 +79,7 @@ It is modal, appears only after 300 ms and stays at least 500 ms (no flash, no f
 | "me" in views and "from/to me" filters | The owner |
 | Settings and other `mine` features | Mine, the owner's settings are unreachable |
 | Storage bar | Owner's quota |
-| Local data | Cache per account, no offline email bodies, mobile send queue kept |
+| Local data | Cache per account, no offline copy of received email bodies. Mobile send queue kept: each queued mail stays bound to its account and is never sent from `mine` |
 
 ### Notifications
 
@@ -92,7 +94,7 @@ System notifications stay for my own mailbox, so the FCM path cannot regress. No
 
 - The session is re-read on app or tab resume (at most once a minute) and after "Remove your access".
 - If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in it is closed, since its draft can no longer be saved there.
-- Cached data of an account that left the session is deleted. My own account is always in the session, so it is never deleted.
+- Cached data of an account that left the session is deleted, unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
 
 ### Web and mobile
 
