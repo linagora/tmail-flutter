@@ -13,7 +13,7 @@ Proposed
 
 ## Context
 
-- [#4977](https://github.com/linagora/tmail-flutter/issues/4977) covers both sides of delegation. The **delegate side** ships first: after sign-in, the user sees the mailboxes delegated to them and switches to one. Managing my own delegates is out of scope.
+- [#4977](https://github.com/linagora/tmail-flutter/issues/4977) covers both sides of delegation. The **delegate side** ships first: after sign-in, the user sees the mailboxes delegated to them and switches to one. Managing my own delegates is out of scope. So is the link of the delegate's notification email (#4977 §5): the backend sends that email when an owner adds a delegate, so the link comes with the owner side.
 - Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each delegated account is in `Session.accounts` with `isPersonal: false` and `name` = owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities, so mail is sent as the owner. Delegates are refused on `Forward/*`, `Keystore/set`, `LongLivedToken/*`, `Delegate/*` and Firebase methods.
 - Switching needs no new JMAP method. Only "Remove your access" needs `DelegatedAccount/get|set` (capability `urn:apache:james:params:jmap:delegation`).
 - Today `MailboxDashBoardController.accountId` (the personal account) drives the whole mailbox view, and push handlers keep only `stateChange.changed[accountId]`.
@@ -151,7 +151,3 @@ flowchart LR
 - Without a delegation nothing changes: no switcher, `active` = `mine`, push as today.
 - Revocation is not pushed by the server: the app learns it at the first failing request on that account or at the next resume.
 - The owner side later reuses the account model, Settings screen, data layer and components.
-
-## Open points
-
-- **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
