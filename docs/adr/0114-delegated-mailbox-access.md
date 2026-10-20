@@ -151,6 +151,7 @@ flowchart LR
 ## Open points
 
 - **Revocation is not pushed.** Until the next resume, requests on the revoked account fail. Re-reading the session on `accountNotFound` outside a switch too can narrow the gap, a server push of session changes would close it.
+- **Email link (#4977 §5)** to open the owner's mailbox from the delegate's notification email is deferred. Until it has its own ticket, the switchers stay the only way in.
 - **No display name** in the session: the owner's address is shown everywhere.
 - **Settings › Delegation** appears for every user on a server with the capability, even with an empty list. Product decides whether to hide it until the owner side ships.
 - **Privacy**: owner addresses and mail are never logged.
