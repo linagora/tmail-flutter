@@ -51,7 +51,7 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | Caches | Per account. No email body is stored for a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only. Each mail in the send queue stays bound to its account | Keys already carry the account |
 | Web URL and history | Delegated ids stay out of the URL, history is reset on switch, "Open in new tab" is hidden in a delegated mailbox | Unchanged on `mine` |
 | Composer restore (web reload, Android) | A delegated draft is restored only when that mailbox is opened again, and is removed on logout | Drafts of `mine` restore as today |
-| Session | Also re-read on resume (at most once a minute) and on `accountNotFound` | One throttled request on resume, the only change every user gets |
+| Session | Also re-read on resume (at most once a minute), after "Remove your access" and on `accountNotFound` | One throttled request on resume, the only change every user gets |
 
 ### Switching
 
