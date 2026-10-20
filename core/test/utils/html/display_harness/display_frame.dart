@@ -175,7 +175,7 @@ class DisplayFrame {
     return [
       for (var i = 0; i < length; i++)
         if (entries.getProperty<web.PerformanceEntry>(i.toJS).name case final name
-            when name.startsWith('http') && !name.startsWith(web.window.location.origin))
+            when name.startsWith('http') && !name.startsWith('${web.window.location.origin}/'))
           name,
     ];
   }

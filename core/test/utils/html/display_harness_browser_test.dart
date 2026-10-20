@@ -121,6 +121,18 @@ void main() {
     );
   });
 
+  test('fails a render whose request cannot even connect', () async {
+    await expectLater(
+      DisplayFrame.render(
+        '<html><body><div class="tmail-content">'
+        '<img src="http://fixture.invalid/unreachable.png"></div></body></html>',
+        336,
+        label: 'unreachable',
+      ),
+      throwsA(isA<StateError>().having((e) => e.message, 'message', contains('unreachable.png'))),
+    );
+  });
+
   test('fails when expanding a quote fetches something outside the test server', () async {
     final origin = web.window.location.origin;
     final other = origin.contains('localhost')
@@ -129,7 +141,8 @@ void main() {
     final frame = await DisplayFrame.render(
       '<html><body><div class="tmail-content">'
       '<button class="quote-toggle-button" onclick="'
-      "this.nextElementSibling.style.display='block'; new Image().src='$other/deferred.png'\">"
+      "this.nextElementSibling.style.display='block'; "
+      "var i=new Image(); i.src='$other/deferred.png'; document.body.appendChild(i)\">"
       'toggle</button>'
       '<blockquote style="display:none">quoted</blockquote>'
       '</div></body></html>',
