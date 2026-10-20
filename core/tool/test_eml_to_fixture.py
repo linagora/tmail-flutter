@@ -14,6 +14,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 import zlib
 from email.message import EmailMessage
@@ -213,6 +214,11 @@ class RegressionTest(unittest.TestCase):
         self.assertIn('.Hero{display:block}', body)
         self.assertNotIn('Hero Block', body)
         self.assertNotIn('>Hero<', body)
+
+    def test_long_unbroken_word_converts_in_linear_time(self):
+        started = time.monotonic()
+        converter.convert(_eml(html='<p>%s</p>' % ('Ab-' * 20000)))
+        self.assertLess(time.monotonic() - started, 5)
 
     def test_malformed_header_does_not_hide_the_sender(self):
         raw = (b'From: Good Person <good@safe.example>\r\nDelivered-To: a@x.com >\r\n'

@@ -38,9 +38,9 @@ SIZE_SOURCES = ('cid', 'data', 'attr', 'css', 'container', 'default')
 # Absolute (http/https/ftp) or protocol-relative URL.
 _URL_RE = re.compile(
     r'''(?i)(?:\b(?:https?|ftp):|(?<![\w:/]))//[a-z0-9\[][^\s"'<>\\]*''')
-_EMAIL_RE = re.compile(r'(?i)\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b')
+_EMAIL_RE = re.compile(r'(?i)(?<![\w.%+-])[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b')
 _PX_RE = re.compile(r'^\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*(?:!important)?\s*$', re.I)
-_HOST_RE = re.compile(r'(?i)\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b')
+_HOST_RE = re.compile(r'(?i)(?<![\w.-])(?:[a-z0-9-]+\.)+[a-z]{2,}\b')
 _LONG_DIGITS_RE = re.compile(r'\b\d{8,}\b')
 _PHONE_RE = re.compile(r'(?<![\w.])\+?\d(?:[ .-]?\d){8,}(?![\w.])')
 _ID_RE = re.compile(r'^\d+(?:-\d+)?$')
@@ -467,8 +467,8 @@ def body_identities(body):
     headers: 'From: Carol Doe <carol@x>' or 'Carol Doe &lt;carol@x&gt; wrote:'."""
     text = html_lib.unescape(re.sub(r'<[^>]*>', ' ', body))
     names, domains = set(), set()
-    pattern = r"([A-Z][\w'.-]+(?:[ \t\xa0]+[A-Z][\w'.-]+){0,3})[ \t\xa0]*[<\[(]\s*(?:mailto:)?" \
-              r"[^<>@\s]+@((?i:[a-z0-9.-]+\.[a-z]{2,}))"
+    pattern = r"(?<![\w'.-])([A-Z][\w'.-]+(?:[ \t\xa0]+[A-Z][\w'.-]+){0,3})[ \t\xa0]*[<\[(]\s*" \
+              r"(?:mailto:)?[^<>@\s]{1,64}@((?i:[a-z0-9.-]+\.[a-z]{2,}))"
     for match in re.finditer(pattern, text):
         names.add(re.sub(r'[ \t\xa0]+', ' ', match.group(1)))
         domains.add(match.group(2).lower())
@@ -478,9 +478,9 @@ def body_identities(body):
 def suspicious_leftovers(text):
     visible = re.sub(r'(?is)<(style|script)\b.*?</\1>', ' ', text)
     visible = html_lib.unescape(re.sub(r'(?s)<!--.*?-->|<[^>]*>', ' ', visible))
-    visible = re.sub(r'(?i)(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*', ' ', visible)
+    visible = re.sub(r'(?i)(?:(?<![a-z])[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*', ' ', visible)
     visible = re.sub(r'(?i)\b(?:d\d+x*|example|link\d+|fixture)\.invalid\b', ' ', visible)
-    everything = re.sub(r'(?i)(?:[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*', ' ', text)
+    everything = re.sub(r'(?i)(?:(?<![a-z])[a-z]+:)?//(?:fixture|link\d+)\.invalid/[^\s"\'<>)]*', ' ', text)
     return {
         'hosts': sorted(set(_HOST_RE.findall(visible))
                         | set(re.findall(r'(?i)//([a-z0-9-]+(?:\.[a-z0-9-]+)+)', everything))),
