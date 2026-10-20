@@ -89,12 +89,13 @@ background push (FCM, mobile)   : stateChange.changed[mine]     // unchanged
 foreground realtime (WebSocket) : stateChange.changed[active]   // was: mine
 ```
 
-System notifications stay for my own mailbox, so the FCM path cannot regress. For `active` ≠ `mine`, the foreground sync only refreshes the view: the mobile extras of that sync (new-email bodies kept for offline, FCM delivery state, notification removal) stay on `mine`. Tapping a notification first switches to `mine` through the normal switch (an open composer or a running switch is respected), then opens the email. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
+System notifications stay for my own mailbox, so the FCM path cannot regress. For `active` ≠ `mine`, the foreground sync only refreshes the view: the mobile extras of that sync (new-email bodies kept for offline, FCM delivery state, notification removal) stay on `mine`. Tapping a notification first switches to `mine` through the normal switch, and the email opens only once `mine` is shown. If the switch is refused (open composer, running switch), the tap is dropped with the usual toast. Notifications for someone else's mail need their own design and link handling, so they can come later as an opt-in. The shown mailbox stays live, and my own catches up through `/changes` when I switch back.
 
 ### Session changes and revocation
 
 - The session is re-read on app or tab resume (at most once a minute) and after "Remove your access". When its account list changes, WebSocket push is re-enabled, so a new delegation is live too.
-- If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in it is closed, since its draft can no longer be saved there.
+- If the shown mailbox leaves the session, the app switches to mine and warns. A composer open in that mailbox is closed, since its draft can no longer be saved there.
+- When an account leaves the session, a switch in flight to or from it is cancelled and its late results are ignored, so nothing is shown or cached for it after the cleanup.
 - Cached data of an account that left the session is deleted (cache entries and their content files), unsent mail in its send queue included. My own account is always in the session, so it is never deleted.
 
 ### Web and mobile
