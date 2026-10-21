@@ -47,7 +47,8 @@ Proposed
 - Workaround for a Flutter engine defect; removable once Flutter
   drops `lastInputConnection` together with the client.
 - `WebViewKeyboardTest` (androidTest) covers the routing.
-  It runs by class; the Patrol runner discovers only Dart tests.
+  It runs with every Android Patrol run (local and Firebase Test Lab),
+  next to the Dart tests.
 - Physical Bluetooth keyboards are not verified.
 
 [issue]: https://github.com/linagora/tmail-flutter/issues/4980
