@@ -88,8 +88,8 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 | T-13 | `Delegate/get\|set` in the delegation extension + data layer | ADR-0114 T-10 |
 | T-14 | Add delegates dialog | T-13, DS-1 |
 | T-15 | Remove delegate dialog | T-13, DS-1 |
-| T-16 | Tabs + "My delegates" list | T-13, T-14, T-15, DS-1, DS-4, DS-5, ADR-0114 T-02, T-11 |
-| T-17 | Email links: `?account=` on the dashboard, links kept across sign-in | ADR-0114 T-01, T-02, T-03, T-04, T-06, T-07, T-08, T-09 |
+| T-16 | Tabs + "My delegates" list | T-13, T-14, T-15, DS-1, DS-4, DS-5, ADR-0114 T-06, T-11 |
+| T-17 | Email links: `?account=` on the dashboard, links kept across sign-in | ADR-0114 T-01, T-02, T-03, T-05, T-06, T-07, T-08, T-09 |
 | T-18 | E2E scenarios, owner side | T-13..T-17 |
 | T-19 | Delegation toggle on by default, out of the experimental reveal | T-16, ADR-0114 T-07, T-08, T-09, T-11 |
 | BE-1 | tmail-backend: §5 email to the delegate on add, with the link above | T-16, T-17, T-19 |
@@ -100,7 +100,7 @@ Ticket ids continue ADR-0114 in implementation order. T-16 is the only way into 
 ```mermaid
 flowchart LR
   P1["ADR-0114 T-10"] --> S1["1. No visible change<br/>T-13, T-14, T-15, DS-5"] --> S2["2. Owner side release<br/>T-16"]
-  P2["ADR-0114 T-02, T-11"] --> S2
+  P2["ADR-0114 T-06, T-11"] --> S2
   P3["ADR-0114 entry points<br/>T-07, T-08, T-09"] --> S3["3. Email links<br/>T-17"]
   S2 & S3 --> S4["4. Toggle on by default, emails live, E2E<br/>T-18, T-19, BE-1, BE-2"]
 ```
