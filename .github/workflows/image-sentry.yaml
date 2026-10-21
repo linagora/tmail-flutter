@@ -144,3 +144,5 @@ jobs:
       contents: read
       actions: read
     uses: ./.github/workflows/security-release.yaml # zizmor: ignore[self-repository]
+    # the report secrets must reach the called workflow
+    secrets: inherit # zizmor: ignore[secrets-inherit]
