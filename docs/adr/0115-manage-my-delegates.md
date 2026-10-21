@@ -22,7 +22,7 @@ Proposed
 ### Calls
 
 ```
-accountId = Settings' own session.accountId   // never the dashboard's active account
+accountId = mine (Settings' own session.accountId)   // never ActiveAccount (ADR-0114)
 
 delegates = Delegate/get(accountId)              // on tab open, after each add or remove, on retry
 add(addresses)   → one request: Delegate/set create (all addresses), then Delegate/get
@@ -37,7 +37,8 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 | Area | Change | Why my mailbox and the delegate side do not regress |
 |---|---|---|
 | Settings menu | "Delegation" entry with two tabs | Hidden without the capability or with the toggle off. Other entries untouched |
-| Delegation requests | `Delegate/get\|set` on Settings' own `accountId` | Never the dashboard's `active`, so a delegate never reaches the owner's list (the server also answers `forbidden`) |
+| Delegation requests | `Delegate/get\|set` on Settings' own `accountId` | Never `ActiveAccount`, so a delegate never reaches the owner's list (the server also answers `forbidden`) |
+| Local data | None: the delegate list is not cached, it is read from the server each time | No schema change or migration |
 | Add dialog autocomplete | Existing contact suggestions and chips, minus my own address (from the session, not the dashboard's "me") and the current delegates | Composer autocomplete untouched |
 | Dashboard start, sign-in, settings route | Reads `?account=` once, keeps an email link across sign-in. `type=delegation` is refused while the entry is hidden (ADR-0114 T-10) | Without these links nothing runs |
 | Mailbox view, push, caches | Untouched | — |
@@ -46,12 +47,15 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 ### My delegates tab
 
 - States: loading, error with Retry, empty ("No one has access yet" + **+ Add**), list ("Who has access to me", a trash icon per row, then **+ Add**).
-- Only the latest read updates the tab, so a slow earlier read never overwrites a newer list. Add and remove carry their own `Delegate/get` in the same request, and JMAP answers each method on its own. `Delegate/set` done but `Delegate/get` failed: the result toast is shown, the list is marked stale with Retry, and Retry re-reads only (the change is never sent again). The whole request failed: the outcome is unknown, so the list stays as it was with an error toast, and sending again is safe since a repeated add or remove is a no-op.
+- Only the latest read updates the tab, so a slow earlier read never overwrites a newer list.
+- Add and remove send `Delegate/set` and `Delegate/get` in one request, and JMAP answers each method on its own:
+  - `Delegate/set` succeeded but `Delegate/get` failed: the result toast is shown and the list is marked stale with Retry. Retry only re-reads, the change is never sent again.
+  - The whole request failed: the outcome is unknown, so the list stays as it was with an error toast. Sending again is safe, since a repeated add or remove is a no-op.
 - No realtime: a change from another device or by the delegate shows at the next open. Both stale actions are safe: a stale add is a no-op and a stale remove counts as removed.
 
 ### Add delegates
 
-- Contacts autocomplete with chips, several at once. My own address and current delegates are left out and refused when typed. Contacts outside the server are kept: the server rejects an unknown user and that chip shows the error.
+- Contacts autocomplete with chips, several at once. My own address and current delegates are left out and refused when typed. Addresses that are not users of this server are not filtered out by the app: the server rejects them and their chip shows the error.
 - **Next** is enabled once one valid address is picked. The confirmation step lists the chosen people with **Add**, and Back to edit them.
 - One `Delegate/set` for all addresses. While it runs, **Add** is disabled and repeat taps are ignored, so a double tap sends one request. The dialog cannot be dismissed either (Cancel, Escape, Back).
 - All created: the dialog closes, the list refreshes, toast "[Delegate] has been added" (or "[n] delegates have been added").
@@ -102,6 +106,7 @@ flowchart LR
 
 ## Consequences
 
+- No database schema change or migration: the delegate list is not cached.
 - The mailbox view is untouched. Outside Settings, only the `account` parameter of T-17 is new, and it does nothing without it.
 - The list can be stale until the next open, which is safe since both stale actions are.
 - A removed delegate's switcher updates at their next resume or first failing request, not at once (#4977 §3 asks for at once): the server does not push session changes.
