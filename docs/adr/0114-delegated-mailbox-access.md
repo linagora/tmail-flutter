@@ -14,9 +14,9 @@ Proposed
 
 ## Context
 
-- [#4977](https://github.com/linagora/tmail-flutter/issues/4977) phase 1, delegate side: see the mailboxes delegated to me and switch to one. The owner side and the link of the §5 email come later.
-- Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each delegated account is in `Session.accounts` with `isPersonal: false` and `name` = owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities. Delegates are refused on `Forward/*`, `Keystore/set`, `LongLivedToken/*`, `Delegate/*` and Firebase methods. Switching needs no new method, only "Remove your access" needs `DelegatedAccount/get|set`.
-- Today one id, `MailboxDashBoardController.accountId` (the personal account), drives the view, push and caches. Settings keep their own copy of `session.accountId` and only take the quota from the dashboard.
+- Delegation ([#4977](https://github.com/linagora/tmail-flutter/issues/4977)): an owner lets a delegate read, send and organize mail in the owner's mailbox, without access to the owner's settings. This ADR is phase 1, the delegate side: see the mailboxes delegated to me and switch to one. The owner side and the link of the §5 email come later.
+- Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each mailbox delegated to me is an extra account in my `Session.accounts`, with `isPersonal: false` and `name` = the owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities. So switching needs no new method, only "Remove your access" needs `DelegatedAccount/get|set`. Delegates are refused on `Forward/*`, `Keystore/set`, `LongLivedToken/*`, `Delegate/*` and the Firebase methods.
+- Today one id, `MailboxDashBoardController.accountId` (my personal account), drives the view, push and caches. Settings keeps its own copy of `session.accountId` and only takes the quota from the dashboard.
 - Design: [Figma web](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12064-19139), [Figma mobile](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12712-45634).
 
 ## Decision
@@ -24,51 +24,81 @@ Proposed
 ### Two account ids, behind a toggle
 
 ```
-mine   = session.accountId                // dashboard.accountId, meaning unchanged
-active = account picked in the switcher   // new dashboard.activeAccountId, default mine
+mine   = session.accountId                  // my personal account, the existing dashboard.accountId
+active = the account picked in the switcher  // mine or a delegated account, mine by default
 
 delegation on = session has urn:apache:james:params:jmap:delegation
-             && Preferences › "Delegation"   // local, default off, hidden behind the 7-tap experimental reveal like Drive was
+             && Preferences › "Delegation" is on   // local, off by default, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
-- Toggle off or no delegated account: `active` = `mine` and no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning it off while a delegated mailbox is shown runs the normal switch back to `mine`: while a composer is open it is refused with a toast and the toggle stays on. Once stable, the toggle defaults to on and leaves the reveal.
-- One mailbox at a time, never merged into my tree. Sign-in, reload and restart start on `mine`.
-- `active` lives in a Riverpod notifier, bridged once into the GetX dashboard.
+- Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, the toggle defaults to on and leaves the reveal.
+- One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. Sign-in, reload and restart start on `mine`.
 - An owner is shown by name and address when a name is known, otherwise by address only (the session gives only the address).
+
+### One source for the shown account
+
+```dart
+class ActiveAccount {
+  final Session session;
+  final AccountId accountId;
+  final String ownerEmailAddress;
+
+  AccountId get personalAccountId => session.accountId;
+  bool get isDelegated => accountId != personalAccountId;
+  bool supportsCapability(CapabilityIdentifier capability) => capability.isSupported(session, accountId);
+}
+```
+
+- `ActiveAccount` is Riverpod state, bridged once into the GetX dashboard. Every reader of the shown mailbox depends on it, not on `MailboxDashBoardController`.
+- `ownerEmailAddress` is "me" in the shown mailbox: my address on `mine`, the owner's address on a delegated account. It replaces `ownEmailAddress`, `getOwnEmailAddress*` and `session.username` wherever they mean "me" in the view and the composer.
+- The view checks capabilities with `supportsCapability`, since a delegated account can lack a capability that `mine` has.
+- `personalAccountId` comes from the current session, and a change of signed-in user resets `accountId` to it. A later multi-account login then switches sessions above `ActiveAccount` without changing its readers.
 
 ### What changes in the code base
 
-Every reader of `accountId` is classified: the shown mailbox moves to `activeAccountId`, everything personal stays on `accountId`. A reader that is missed stays on `mine`, so it can never change the owner's settings. State loaded for `active` (quota, mailbox ids, identities) is never handed to a `mine` area: Settings loads its own quota instead of taking the dashboard's. "Me" has a second source not keyed on `accountId`: `ownEmailAddress`, `getOwnEmailAddress*` and `session.username` used as "me" follow `active` (the owner's address) in the view and the composer.
+Every reader of the dashboard `accountId` is classified: the shown mailbox moves to `ActiveAccount`, everything personal stays on `mine`. A missed reader stays on `mine`, so it can never change the owner's settings. State loaded for `active` (quota, mailbox ids, identities) is never handed to a `mine` area, so Settings loads its own quota instead of taking the dashboard's. A test lists the remaining readers of the dashboard `accountId` and fails on a new one, so new code picks `ActiveAccount` or `mine` explicitly.
 
-| Area | With delegation | Why my own account does not regress |
+| Area | Account | Why my own account does not regress |
 |---|---|---|
 | Mailbox view: folders, emails, search, flag, move, delete, labels, spam, quota | `active` | Same value while `active` = `mine` |
-| Composer, identities, "me" in views and filters | `active`: owner's identities and folders, reply-all drops the owner | Same |
+| Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves the owner out | Same |
 | Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine` | Untouched, so the owner's settings are unreachable |
-| FCM push, system notifications | `changed[mine]` | Untouched |
-| Foreground WebSocket | One connection per session, kept across switches. `changed[active]` refreshes the view, `changed[mine]` keeps the mobile extras (delivery state, notification removal, offline bodies). Other accounts are dropped and catch up through `/changes`. The 2 s debouncer merges the `changed` maps of its window per account instead of keeping only the last `StateChange`, so one account's push never hides another's | Same filter while `active` = `mine`. The merge only keeps events today's debouncer drops |
-| Notification tap, share and `mailto` intents (mobile) | With `active` ≠ `mine`, switch to `mine` first, then open the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
-| Caches | Per account. No email body is stored for a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only. Each mail in the send queue stays bound to its account | Keys already carry the account |
-| Web URL and history | Delegated ids stay out of the URL, history is reset on switch, "Open in new tab" is hidden in a delegated mailbox. An `.eml` attachment there is downloaded instead of previewed in a new tab, since that tab reads my account | Unchanged on `mine` |
-| Composer restore (web reload, Android) | A delegated draft is restored only when that mailbox is opened again, and is removed on logout | Drafts of `mine` restore as today |
-| Session | With delegation on, also re-read on resume (at most once a minute), after "Remove your access" and on `accountNotFound` | Delegation off: read at start only, as today |
+| Notification tap, share and `mailto` intents (mobile) | `mine`: with `active` ≠ `mine`, the app switches to `mine` first, then opens the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
+| Web URL and history | Delegated ids stay out of the URL, and history is reset on switch. "Open in new tab" is hidden in a delegated mailbox, and an `.eml` attachment there is downloaded instead of previewed in a new tab, since that tab reads my account | Unchanged on `mine` |
+
+### Local data
+
+- No database schema change or migration: cache keys already carry the account id (ADR-0027), so a delegated account's mailboxes and email lists are cached apart from mine.
+- No email body is stored for a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only.
+- Each mail in the send queue stays bound to the account it was written in.
+- A delegated draft (composer restore on web reload and Android) is restored only when that mailbox is opened again, and is removed on logout. Drafts of `mine` restore as today.
+- The cleanup of ended delegations is described under Revocation.
+
+### Sync
+
+- Foreground WebSocket: one connection per session, kept across switches. Each `StateChange` is filtered by account: `changed[active]` refreshes the view, `changed[mine]` keeps the mobile extras (delivery state, notification removal, offline bodies), and other accounts are dropped, then caught up through `/changes` when they are opened. This is today's filter while `active` = `mine`.
+- The 2 s debouncer merges the `changed` maps of its window per account instead of keeping only the last `StateChange`, so one account's push never hides another's. It only keeps events that today's debouncer drops.
+- FCM push and system notifications: `changed[mine]` only, as today. A delegated mailbox gets no notification.
+- Session: with delegation on, it is also re-read on resume (at most once a minute), after "Remove your access" and on `accountNotFound`, since the server does not push session changes. With delegation off it is read at start only, as today.
 
 ### Switching
 
-- Refused while a composer is open or another switch runs: the switcher stays disabled until the switch ends, so no late result can overwrite a newer one.
-- Saves the previous selection and search, sets `active`, then loads folders, the first page of emails and identities (cache first, then `/changes`).
-- Input is blocked from the start of the switch, so no action on the old list goes out with the new account. A modal loading dialog appears after 300 ms, stays at least 500 ms, offers Cancel, and closes when the switch ends: success, failure, cancel or a 30 s timeout (no design yet).
-- On failure, cancel or timeout `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox".
-- A switch to `mine` (toggle off, revocation, notification tap, intent) never rolls back to a delegated account: on failure, cancel or timeout `mine` is shown from cache with the error toast, and a pending tap or intent is dropped.
-- Every view result (load more, search, opened email, refresh) carries the account it was requested for and is dropped when it no longer matches `active`.
+1. Refused while a composer is open or another switch runs. The switcher stays disabled until the switch ends, so no late result can overwrite a newer one.
+2. Input is blocked, so no action on the old list goes out with the new account. The current selection and search are saved, and `active` is set to the target.
+3. Folders, the first page of emails and identities load from cache first, then `/changes`. A modal loading dialog appears after 300 ms, stays at least 500 ms and offers Cancel (no design yet).
+4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox".
+
+- A switch to `mine` (toggle off, revocation, notification tap, intent) never rolls back to a delegated account. On failure, cancel or timeout `mine` is shown from cache with the error toast, and a pending tap or intent is dropped.
+- Every view result (load more, search, opened email, refresh) carries the account it was requested for. One check where view results are consumed drops it when that account is no longer `active`.
 - `StateChange` events for the target are not applied while the switch runs. The switch ends with `/changes` from the loaded state, which picks up what arrived meanwhile.
 
 ### Revocation and ended delegations
 
-- Noticed on resume or at the first `accountNotFound`, since the server does not push it and James keeps the session `state` fixed. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, it is not checked again before the next resume.
-- If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it, counted in the warning below.
+- The server does not push a revocation, and James keeps the session `state` fixed, so the app notices it on resume or at the first `accountNotFound`. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, later `accountNotFound` errors on it do not re-read the session before the next resume.
+- If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it (counted in the warning below).
 - A switch in flight to the removed account is cancelled and its late results are ignored. A switch away from it goes on and falls back to `mine` on failure.
-- The removed account's cache, content files, send queue and composer snapshots are deleted, also with the toggle off (on the session read at start). If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. On mobile an offline start uses the cached session: delegated accounts stay hidden from the switcher until an online session confirms them, and the cleanup waits for that session. `mine` is always in the session, so it is never deleted.
+- The removed account's cache, content files, send queue and composer snapshots are deleted, even with the toggle off (on the session read at start). If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. `mine` is always in the session, so it is never deleted.
+- On mobile an offline start uses the cached session: delegated accounts stay hidden from the switcher until an online session confirms them, and the cleanup waits for that session.
 - When the account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 
 ### Tickets and merge order
@@ -76,11 +106,11 @@ Every reader of `accountId` is classified: the shown mailbox moves to `activeAcc
 | Id | Ticket | Depends on |
 |---|---|---|
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card | — |
-| T-01 | `mine` / `active` foundation and the switch flow, no UI | — |
+| T-01 | `ActiveAccount` and the switch flow, no UI | — |
 | T-02 | Loading dialog | T-01 |
 | T-03 | Web Workplace switcher chip (#4977 §8) | T-02, T-05, T-06, T-07, T-12, DS-2 |
 | T-04 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02, T-05, T-06, T-07, T-12, DS-3 |
-| T-05 | Classify every reader (table above) and every "me" source, stale view results, Settings quota, composer, URL, notification tap and intents, one test per reader | T-01 |
+| T-05 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, composer, URL, notification tap and intents. One test per reader, plus the test on new readers | T-01 |
 | T-06 | Session re-read, revocation, "from cache" flag on the session result, realtime filter and per-account debounce | T-01 |
 | T-07 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01 |
 | T-08 | Mobile app, tablet, mobile web (Figma mobile) | T-02, T-05, T-06, T-07, T-12, DS-1, DS-3 |
@@ -99,6 +129,8 @@ flowchart LR
 
 ## Consequences
 
-- Main regression risk: a reader classified on the wrong account. T-05 covers each existing reader with a test, and new code must pick `mine` or `active`.
+- Main regression risk: a reader classified on the wrong account. T-05 covers each existing reader with a test, and the test on new readers makes new code pick `ActiveAccount` or `mine`.
+- No database schema change or migration.
 - Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
 - A revocation shows up only at the first failing request or the next resume.
+- One mailbox at a time: a unified view of several mailboxes would need several active accounts and is out of scope.
