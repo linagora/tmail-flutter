@@ -6,6 +6,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import androidx.test.core.app.ActivityScenario;
@@ -14,9 +15,18 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.Assert.*;
 
 public class WebViewKeyboardTest {
+    private static final long TIMEOUT_MILLIS = 5000;
+    private static final String EDITOR_HTML = "<div id=\"editor\" contenteditable=\"true\"></div>";
+    private static final String EDITOR = "document.getElementById('editor')";
+    private static final String EDITOR_TEXT = EDITOR + ".textContent";
+
     private ActivityScenario<MainActivity> scenario;
     private KeyConsumingLayout parent;
     private WebView webView;
@@ -44,6 +54,20 @@ public class WebViewKeyboardTest {
         assertWebViewCase(true,
             new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A),
             new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_A));
+    }
+
+    @Test
+    public void realEditorInsertsCharactersBeforeAnAncestorCanConsumeThem() throws InterruptedException {
+        WebView editor = loadEditor();
+        evaluate(editor, EDITOR + ".focus()");
+        awaitTextEditor(editor);
+
+        scenario.onActivity(activity -> {
+            activity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A));
+            activity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_A));
+        });
+
+        assertEquals("\"a\"", awaitEditorText(editor, "\"a\""));
     }
 
     @Test
@@ -95,6 +119,53 @@ public class WebViewKeyboardTest {
         webView = editor;
         focus(editor);
         return editor;
+    }
+
+    private WebView loadEditor() throws InterruptedException {
+        CountDownLatch loaded = new CountDownLatch(1);
+        scenario.onActivity(activity -> {
+            webView = new WebView(activity);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) { loaded.countDown(); }
+            });
+            webView.loadData(EDITOR_HTML, "text/html", "utf-8");
+            focus(webView);
+        });
+        assertTrue(loaded.await(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS));
+        return webView;
+    }
+
+    private String evaluate(WebView editor, String script) throws InterruptedException {
+        CountDownLatch evaluated = new CountDownLatch(1);
+        AtomicReference<String> result = new AtomicReference<>();
+        scenario.onActivity(activity -> editor.evaluateJavascript(script, value -> {
+            result.set(value);
+            evaluated.countDown();
+        }));
+        assertTrue(evaluated.await(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS));
+        return result.get();
+    }
+
+    // Chromium reports the focused editable asynchronously, as it does after a tap on the body.
+    private void awaitTextEditor(WebView editor) {
+        long deadline = SystemClock.uptimeMillis() + TIMEOUT_MILLIS;
+        AtomicBoolean ready = new AtomicBoolean();
+        while (!ready.get() && SystemClock.uptimeMillis() < deadline) {
+            scenario.onActivity(activity -> ready.set(editor.onCheckIsTextEditor()));
+        }
+        assertTrue(ready.get());
+    }
+
+    // Chromium inserts the character asynchronously, so poll the DOM until it matches or times out.
+    private String awaitEditorText(WebView editor, String expected) throws InterruptedException {
+        long deadline = SystemClock.uptimeMillis() + TIMEOUT_MILLIS;
+        String text = evaluate(editor, EDITOR_TEXT);
+        while (!expected.equals(text) && SystemClock.uptimeMillis() < deadline) {
+            text = evaluate(editor, EDITOR_TEXT);
+        }
+        return text;
     }
 
     private static void assertDispatchedTo(MainActivity activity, List<KeyEvent> recorded, KeyEvent... events) {
