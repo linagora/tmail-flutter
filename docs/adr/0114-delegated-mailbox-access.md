@@ -114,23 +114,23 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 |---|---|---|
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card | — |
 | T-01 | `ActiveAccount` and the switch flow, no UI | — |
-| T-02 | Experimental "Delegation" toggle in Preferences | T-01 |
-| T-03 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, composer, URL, notification tap and intents. One test per reader, plus the test on new readers | T-01 |
-| T-04 | Session re-read, revocation, "from cache" flag on the session result, realtime filter and per-account debounce | T-01 |
-| T-05 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-04 |
-| T-06 | Loading dialog | T-01 |
+| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, composer, URL, notification tap and intents. One test per reader, plus the test on new readers | T-01 |
+| T-03 | Realtime filter, per-account debounce and "from cache" flag on the session result | T-01 |
+| T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
+| T-05 | Loading dialog | T-01 |
+| T-06 | Experimental "Delegation" toggle in Preferences, with the session re-read and revocation it turns on | T-01, T-03, T-04 |
 | T-07 | Web Workplace switcher chip (#4977 §8) | T-02, T-03, T-04, T-05, T-06, DS-2 |
 | T-08 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02, T-03, T-04, T-05, T-06, DS-3 |
 | T-09 | Mobile app, tablet, mobile web (Figma mobile) | T-02, T-03, T-04, T-05, T-06, DS-1, DS-3 |
 | T-10 | `DelegatedAccount/get\|set` extension + data layer | — |
-| T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-02, T-04, T-10, DS-1, DS-4 |
+| T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-10, DS-1, DS-4 |
 | T-12 | E2E scenarios, with each release | — |
 
-Ticket ids follow the implementation order. The entry points (T-07, T-08, T-09) merge last, after T-03: without T-03, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
+Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour (the switch flow of T-01 is reached only from the entry points). The toggle (T-06) merges with its first reader, the session re-read, right before the entry points. The entry points (T-07, T-08, T-09) merge last, after T-02: without T-02, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 
 ```mermaid
 flowchart LR
-  S1["1. No visible change<br/>T-01, T-02, T-03, T-04, T-05, DS-1"] --> S2["2. Web release<br/>T-06, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
+  S1["1. No visible change<br/>T-01, T-02, T-03, T-04, DS-1"] --> S2["2. Web release<br/>T-05, T-06, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
   S1 --> S4["Later, not blocking<br/>T-10, T-11, DS-4"]
 ```
 
@@ -138,7 +138,7 @@ T-12 ships with every stage.
 
 ## Consequences
 
-- Main regression risk: a reader classified on the wrong account. T-03 covers each existing reader with a test, and the test on new readers makes new code pick `ActiveAccount` or `mine`.
+- Main regression risk: a reader classified on the wrong account. T-02 covers each existing reader with a test, and the test on new readers makes new code pick `ActiveAccount` or `mine`.
 - No database schema change or migration.
 - Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
 - A revocation shows up only at the first failing request or the next resume.
