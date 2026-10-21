@@ -46,6 +46,7 @@ void main() {
   final factories = <String, TransformConfiguration Function()>{
     'forEditDraftsEmail': TransformConfiguration.forEditDraftsEmail,
     'forRestoreEmail': TransformConfiguration.forRestoreEmail,
+    'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
   };
 
   for (final entry in factories.entries) {
