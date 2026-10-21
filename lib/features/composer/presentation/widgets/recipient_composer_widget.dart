@@ -18,6 +18,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_named_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
@@ -226,7 +227,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     minTextFieldWidth: RecipientComposerWidgetStyle.minTextFieldWidth,
                     resetTextOnSubmitted: true,
                     autoScrollToInput: false,
-                    autoHideTextInputField: true,
                     cursorColor: RecipientComposerWidgetStyle.cursorColor,
                     suggestionsBoxElevation:
                     RecipientComposerWidgetStyle.suggestionsBoxElevation,
@@ -312,7 +312,13 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
                   return DragTarget<DraggableEmailAddress>(
                     builder: (context, candidateData, rejectedData) {
-                      return tagEditor;
+                      // The input is always laid out, even on its own line
+                      // when chips fill the last one; taps on the blank space
+                      // around chips still focus it.
+                      return GestureDetector(
+                        onTap: widget.focusNode?.requestFocus,
+                        child: tagEditor,
+                      );
                     },
                     onAcceptWithDetails: (draggableEmailAddress) =>
                         _handleAcceptDraggableEmailAddressAction(
@@ -379,7 +385,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
         ),
       if (widget.ccState == PrefixRecipientState.disabled)
         TMailButtonWidget.fromText(
-          key: Key('prefix_${widget.prefix.name}_recipient_cc_button'),
+          key: Key('prefix_${widget.prefix.name}${UiKeys.recipientCcButtonSuffix}'),
           text: AppLocalizations.of(context).cc_email_address_prefix,
           textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
           backgroundColor: Colors.transparent,
@@ -433,7 +439,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   Widget _buildExpandButton() {
     return TMailButtonWidget.fromIcon(
-      key: Key('prefix_${widget.prefix.name}_recipient_expand_button'),
+      key: Key('prefix_${widget.prefix.name}${UiKeys.recipientExpandButtonSuffix}'),
       icon: _isAllRecipientInputEnabled
           ? widget.imagePaths.icChevronUp
           : widget.imagePaths.icChevronDownOutline,

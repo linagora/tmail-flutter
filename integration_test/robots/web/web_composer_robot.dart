@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import '../mobile/mobile_composer_robot.dart';
 import 'web_composer_controller_finder.dart';
 import 'web_composer_editor_keyboard_robot.dart';
+import 'web_composer_recipient_robot.dart';
 import 'web_composer_reload_robot.dart';
 
 /// Web-specific composer robot. Overrides [addContent] because InAppWebView
@@ -19,6 +20,7 @@ class WebComposerRobot extends MobileComposerRobot {
   WebComposerRobot(PatrolIntegrationTester $)
       : super(
           $,
+          recipientRobot: WebComposerRecipientRobot($),
           reload: WebComposerReloadRobot($),
           editorKeyboard: WebComposerEditorKeyboardRobot($),
         );

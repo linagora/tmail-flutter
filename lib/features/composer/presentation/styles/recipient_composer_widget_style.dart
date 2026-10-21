@@ -13,7 +13,9 @@ class RecipientComposerWidgetStyle {
   static const double suggestionsBoxMaxHeight = 300;
   static const double suggestionBoxWidth = 300;
   static const double suggestionBoxItemHeight = ComposerStyle.suggestionItemHeight;
-  static const double minTextFieldWidth = 20;
+  // Less room than this after the last chip moves the input to its own line,
+  // so it always stays easy to click.
+  static const double minTextFieldWidth = 100;
   static const double tagSpacing = 8;
 
   static const Duration suggestionDebounceDuration = Duration(milliseconds: 150);
