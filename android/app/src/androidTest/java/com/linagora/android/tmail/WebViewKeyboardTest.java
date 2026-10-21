@@ -80,6 +80,17 @@ public class WebViewKeyboardTest {
     }
 
     @Test
+    public void nonEditableWebViewKeepsNormalActivityDispatch() {
+        scenario.onActivity(activity -> {
+            RecordingWebView viewer = focusEditor(activity, true);
+            viewer.editable = false;
+            parent.consumeAll = true;
+            assertDispatchedTo(activity, parent.events, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
+            assertEquals(0, viewer.events.size());
+        });
+    }
+
+    @Test
     public void webViewReceivesOriginalModifiersRepeatsAndKeyUp() {
         long now = SystemClock.uptimeMillis();
         assertWebViewCase(true,
@@ -203,11 +214,15 @@ public class WebViewKeyboardTest {
     private static class RecordingWebView extends WebView {
         final List<KeyEvent> events = new ArrayList<>();
         final boolean handled;
+        boolean editable = true;
 
         RecordingWebView(Context context, boolean handled) {
             super(context);
             this.handled = handled;
         }
+
+        @Override
+        public boolean onCheckIsTextEditor() { return editable; }
 
         @Override
         public boolean dispatchKeyEvent(KeyEvent event) {

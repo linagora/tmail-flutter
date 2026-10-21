@@ -14,9 +14,9 @@ class MainActivity: FlutterFragmentActivity() {
 
     @SuppressLint("RestrictedApi") // AndroidX restricts the inherited public Activity callback.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        val focusedWebView = currentFocus as? WebView
+        val focusedEditor = (currentFocus as? WebView)?.takeIf { it.onCheckIsTextEditor() }
         // Flutter can retain a stale text-field connection after the editor gains focus.
-        if (!event.isSystem && focusedWebView?.dispatchKeyEvent(event) == true) {
+        if (!event.isSystem && focusedEditor?.dispatchKeyEvent(event) == true) {
             return true
         }
         return super.dispatchKeyEvent(event)

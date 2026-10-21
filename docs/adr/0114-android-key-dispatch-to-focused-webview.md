@@ -27,9 +27,11 @@ Proposed
 ## Decision
 
 - `MainActivity.dispatchKeyEvent` offers each non-system key
-  to `currentFocus` when it is a `WebView`.
+  to `currentFocus` when it is a `WebView` editing text
+  (`onCheckIsTextEditor()`).
 - Handled by the WebView: dispatch stops; Flutter never sees the key.
-- Unhandled, non-WebView focus, or system keys (Back, volume):
+- Unhandled, non-WebView or read-only WebView focus, or system keys
+  (Back, volume):
   `super.dispatchKeyEvent`.
 - The original event is forwarded unchanged
   (key-up, modifiers, repeats).
@@ -39,7 +41,9 @@ Proposed
 
 ## Consequences
 
-- Applies to every focused WebView in the app, not only the composer.
+- Applies to every focused editable WebView, not only the composer.
+- Read-only WebViews (email reader) keep normal dispatch,
+  so hardware-keyboard navigation still works.
 - Workaround for a Flutter engine defect; removable once Flutter
   drops `lastInputConnection` together with the client.
 - `WebViewKeyboardTest` (androidTest) covers the routing.
