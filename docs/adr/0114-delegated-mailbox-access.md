@@ -33,7 +33,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
 
 - Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
 - One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. Sign-in, reload and restart start on `mine`.
-- An owner is shown by name and address when a name is known, otherwise by address only (the session gives only the address).
+- An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
 
 ### One source for the shown account
 
