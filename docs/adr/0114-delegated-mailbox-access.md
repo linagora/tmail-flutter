@@ -15,7 +15,7 @@ Proposed
 ## Context
 
 - Delegation ([#4977](https://github.com/linagora/tmail-flutter/issues/4977)): an owner lets a delegate read, send and organize mail in the owner's mailbox, without access to the owner's settings. This ADR is phase 1, the delegate side: see the mailboxes delegated to me and switch to one. The owner side and the link of the §5 email come later.
-- Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each mailbox delegated to me is an extra account in my `Session.accounts`, with `isPersonal: false` and `name` = the owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities. So switching needs no new method, only "Remove your access" needs `DelegatedAccount/get|set`. Delegates are refused on `Forward/*`, `Keystore/set`, `LongLivedToken/*`, `Delegate/*` and the Firebase methods.
+- Backend ([James ADR-0064](https://github.com/apache/james-project/blob/master/src/adr/0064-account-delegation.md), [tmail-backend #530](https://github.com/linagora/tmail-backend/issues/530)): each mailbox delegated to me is an extra account in my `Session.accounts`, with `isPersonal: false` and `name` = the owner's address. Standard JMAP calls with its `accountId` act on the owner's mailbox, and `Identity/get` returns the owner's identities. So switching needs no new method, only "Remove your access" needs `DelegatedAccount/get|set`. Owner-only methods refuse a delegated `accountId`: `Forward/set`, `Settings/set`, `Keystore/set`, `LongLivedToken/*` and `Delegate/*`. The Firebase methods take no `accountId` and always act on my own account.
 - Today one id, `MailboxDashBoardController.accountId` (my personal account), drives the view, push and caches. Settings gets the session and the quota from the dashboard and derives its own `accountId` from `session.accountId`.
 - Design: [Figma web](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12064-19139), [Figma mobile](https://www.figma.com/design/XqLqMINlZw09BdEHI8yLb9/Teammail---1.1?node-id=12712-45634).
 
@@ -141,5 +141,5 @@ T-12 ships with every stage.
 - Main regression risk: a reader classified on the wrong account. T-02 covers each existing reader with a test, and the test on new readers makes new code pick `ActiveAccount` or `mine`.
 - No database schema change or migration.
 - Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
-- A revocation shows up only at the first failing request or the next resume.
+- A revocation by the owner shows up only at the first failing request or the next resume. Giving up access with "Remove your access" re-reads the session at once.
 - One mailbox at a time: a unified view of several mailboxes would need several active accounts and is out of scope.
