@@ -8,7 +8,7 @@ Proposed
 
 ## Related ADRs
 
-- ADR-0114 ([#5013](https://github.com/linagora/tmail-flutter/pull/5013)) — phase 1, delegate side: `mine` / `active`, the delegation toggle, switching, revocation, Settings › Delegation with "Delegated to me"
+- [ADR-0114](./0114-delegated-mailbox-access.md) — phase 1, delegate side: `mine` / `active`, the delegation toggle, switching, revocation, Settings › Delegation with "Delegated to me". This ADR merges after it.
 - [ADR-0092](./0092-upgrade-flutter-riverpod-3.md), [ADR-0103](./0103-urgent-exception-handling-for-riverpod-flows.md) — new state in Riverpod
 
 ## Context
@@ -59,7 +59,7 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 - **Next** is enabled once one valid address is picked. The confirmation step lists the chosen people with **Add**, and Back to edit them.
 - One `Delegate/set` for all addresses. While it runs, **Add** is disabled and repeat taps are ignored, so a double tap sends one request. The dialog cannot be dismissed either (Cancel, Escape, Back).
 - All created: the dialog closes, the list refreshes, toast "[Delegate] has been added" (or "[n] delegates have been added").
-- Some or all rejected: created chips leave the field with that toast (none when nothing was created), the list refreshes, and the dialog goes back to the chips step with the rejected chips and their error. **Next** stays disabled until they are removed.
+- Some or all rejected: the created chips leave the field and the "has been added" toast names them (no toast when nothing was created), the list refreshes, and the dialog goes back to the chips step with the rejected chips and their error. **Next** stays disabled until they are removed.
 - Request failed: every chip stays, error toast.
 
 ### Remove a delegate
@@ -91,23 +91,24 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 | T-16 | Remove delegate dialog | T-13, DS-1 |
 | T-17 | Email links: `?account=` on the dashboard, links kept across sign-in | ADR-0114 T-01, T-02, T-03, T-04, T-05, T-06, T-08, T-12 |
 | T-18 | E2E scenarios, owner side | T-14..T-17 |
-| BE-1 | tmail-backend: §5 email to the delegate on add, with the link above. Live once the ADR-0114 toggle defaults to on | T-17 |
-| BE-2 | tmail-backend: §7 email to the owner when a delegate gives up access. Live once the ADR-0114 toggle defaults to on | T-14, T-17 |
+| T-19 | Delegation toggle on by default, out of the experimental reveal | T-14, ADR-0114 T-03, T-04, T-08, T-10 |
+| BE-1 | tmail-backend: §5 email to the delegate on add, with the link above | T-14, T-17, T-19 |
+| BE-2 | tmail-backend: §7 email to the owner when a delegate gives up access | T-14, T-17, T-19 |
 
-T-14 is the only way into the owner side, so it merges last. T-17 merges after every ADR-0114 entry point (web and mobile), so a link never opens a delegated mailbox on a layout without the switcher. The emails go live after the app pages they open.
+T-14 is the only way into the owner side, so it merges after T-13, T-15 and T-16. T-17 merges after every ADR-0114 entry point (web and mobile), so a link never opens a delegated mailbox on a layout without the switcher. The emails go live after the app pages they open, once T-19 turns the toggle on by default.
 
 ```mermaid
 flowchart LR
   P1["ADR-0114 T-09"] --> S1["1. No visible change<br/>T-13, T-15, T-16, DS-5"] --> S2["2. Owner side release<br/>T-14"]
   P2["ADR-0114 T-10, T-12"] --> S2
   P3["ADR-0114 entry points<br/>T-03, T-04, T-08"] --> S3["3. Email links<br/>T-17"]
-  S2 & S3 --> S4["4. Emails live, E2E<br/>BE-1, BE-2, T-18"]
+  S2 & S3 --> S4["4. Toggle on by default, emails live, E2E<br/>T-19, BE-1, BE-2, T-18"]
 ```
 
 ## Consequences
 
 - No database schema change or migration: the delegate list is not cached.
-- The mailbox view is untouched. Outside Settings, only the `account` parameter of T-17 is new, and it does nothing without it.
+- The mailbox view is untouched. Outside Settings, only the email links of T-17 are new (`?account=` and keeping a link across sign-in), and they do nothing without a link.
 - The list can be stale until the next open, which is safe since both stale actions are.
 - A removed delegate's switcher updates at their next resume or first failing request, not at once (#4977 §3 asks for at once): the server does not push session changes.
 - Without the capability, or with the toggle off, nothing changes: no Delegation entry, no new request. A delegation link then only shows an info toast or the default settings page.
