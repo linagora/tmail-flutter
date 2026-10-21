@@ -120,8 +120,8 @@ public class WebViewKeyboardTest {
     private void assertWebViewCase(boolean handled, KeyEvent... events) {
         scenario.onActivity(activity -> {
             RecordingWebView editor = focusEditor(activity, handled);
-            assertDispatchedTo(activity, handled ? editor.events : parent.events, events);
-            if (handled) assertEquals(0, parent.events.size());
+            assertDispatchedTo(activity, editor.events, events);
+            assertEquals(handled ? 0 : events.length, parent.events.size());
         });
     }
 
