@@ -10,6 +10,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart' show parse;
 
 import '../../../fixtures/html_emails/html_email_corpus.g.dart';
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
@@ -66,7 +67,7 @@ void main() {
     final fixture = _fixture('expect_checks/full_display');
     final once = await _transform(fixture.html, config);
     final twice = await _transform(once, config);
-    expect(idempotenceFailures(once, twice), isEmpty);
+    expect(idempotenceFailures(parse(once), parse(twice)), isEmpty);
 
     final broken = TransformConfiguration(
       config.domTransformers,
@@ -74,21 +75,21 @@ void main() {
     );
     final brokenOnce = await _transform(fixture.html, broken);
     final brokenTwice = await _transform(brokenOnce, broken);
-    expect(idempotenceFailures(brokenOnce, brokenTwice), isNotEmpty);
+    expect(idempotenceFailures(parse(brokenOnce), parse(brokenTwice)), isNotEmpty);
   });
 
   test('display-only leaks catches lazy background markup', () async {
     final config = draftsConfig();
     final fixture = _fixture('expect_checks/lazy_images');
     final out = await _transform(fixture.html, config);
-    expect(displayOnlyLeaks(fixture.html, out), isEmpty);
+    expect(displayOnlyLeaks(parse(fixture.html), parse(out)), isEmpty);
 
     final broken = TransformConfiguration(
       [...config.domTransformers, const AddLazyLoadingForBackgroundImageTransformer()],
       config.textTransformers,
     );
     final brokenOut = await _transform(fixture.html, broken);
-    expect(displayOnlyLeaks(fixture.html, brokenOut), isNotEmpty);
+    expect(displayOnlyLeaks(parse(fixture.html), parse(brokenOut)), isNotEmpty);
   });
 
   test('drive cards catches missing contenteditable protection', () async {
@@ -102,14 +103,14 @@ void main() {
       ),
     )}';
     final out = await _transform(html, config);
-    expect(driveCardFailures(out), isEmpty);
+    expect(driveCardFailures(parse(out)), isEmpty);
 
     final broken = TransformConfiguration(
       config.domTransformers,
       [const StandardizeHtmlSanitizingTransformers()],
     );
     final brokenOut = await _transform(html, broken);
-    expect(driveCardFailures(brokenOut), isNotEmpty);
+    expect(driveCardFailures(parse(brokenOut)), isNotEmpty);
   });
 
   test('line-height only catches block code styling', () async {
@@ -118,13 +119,13 @@ void main() {
     final config = row.build();
     const html = '<pre style="color:red">x</pre>';
     final out = await _transform(html, config);
-    expect(lineHeightOnlyFailures(html, out), isEmpty);
+    expect(lineHeightOnlyFailures(parse(html), parse(out)), isEmpty);
 
     final broken = TransformConfiguration(
       [...config.domTransformers, const BlockCodeTransformer()],
       config.textTransformers,
     );
     final brokenOut = await _transform(html, broken);
-    expect(lineHeightOnlyFailures(html, brokenOut), isNotEmpty);
+    expect(lineHeightOnlyFailures(parse(html), parse(brokenOut)), isNotEmpty);
   });
 }

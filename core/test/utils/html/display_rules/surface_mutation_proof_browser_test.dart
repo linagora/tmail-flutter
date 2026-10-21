@@ -68,7 +68,6 @@ final _mutations = <DisplayMutationProof>[
         d,
         '<div class="tmail-content">',
         '<div class="tmail-content"><div style="width:900px">wide</div>',
-        'signature content div',
       ),
     ),
     check: overflowCheck,

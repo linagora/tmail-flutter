@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/html/file_link_card_html_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart' show parse;
 
 import '../../../fixtures/html_emails/html_email_corpus.g.dart';
 import '../../html_pipeline_registry.dart';
@@ -56,25 +57,25 @@ void main() {
         _composerTest('${row.name} $id is idempotent', () async {
           final once = await _transform(row, fixture.html);
           final twice = await _transform(row, once);
-          expect(idempotenceFailures(once, twice), isEmpty);
+          expect(idempotenceFailures(parse(once), parse(twice)), isEmpty);
         });
 
         _composerTest('${row.name} $id adds no display-only markup', () async {
           final out = await _transform(row, fixture.html);
-          expect(displayOnlyLeaks(fixture.html, out), isEmpty);
+          expect(displayOnlyLeaks(parse(fixture.html), parse(out)), isEmpty);
         });
 
         if (row.factoryName == 'forComposerSignature') {
           _composerTest('${row.name} $id changes only line-height', () async {
             final out = await _transform(row, fixture.html);
-            expect(lineHeightOnlyFailures(fixture.html, out), isEmpty);
+            expect(lineHeightOnlyFailures(parse(fixture.html), parse(out)), isEmpty);
           });
         }
       }
 
       _composerTest('${row.name} keeps drive cards uneditable', () async {
         final out = await _transform(row, '<p>See</p>$_driveCard');
-        expect(driveCardFailures(out), isEmpty);
+        expect(driveCardFailures(parse(out)), isEmpty);
       });
     });
   }

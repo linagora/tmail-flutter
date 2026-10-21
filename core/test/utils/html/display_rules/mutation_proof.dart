@@ -61,11 +61,11 @@ class DisplayMutationProof {
 /// already overflows does not count again because its size changed.
 String _key(Violation violation) => '${violation.rule}|${violation.path}';
 
-/// [replacement] applied once to [document]; fails loudly when the target is
+/// [replacement] applied once to [document]; fails loudly when [target] is
 /// gone, so a refactor cannot silently turn a mutation into a no-op.
-String replaceOnce(String document, Pattern target, String replacement, String what) {
+String replaceOnce(String document, Pattern target, String replacement) {
   final match = target.allMatches(document).firstOrNull;
-  if (match == null) throw StateError('mutation target not found: $what');
+  if (match == null) throw StateError('mutation target not found: $target');
   return document.replaceRange(match.start, match.end, replacement);
 }
 

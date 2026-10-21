@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:html/dom.dart';
-import 'package:html/parser.dart' show parse;
 
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import '../display_rules/content_preservation.dart';
@@ -23,12 +22,13 @@ List<String> preservationFailures(HtmlEmailCorpusFixture fixture, String out) {
 }
 
 /// A second pass over the output changes nothing.
-List<String> idempotenceFailures(String once, String twice) {
-  final first = parse(once).outerHtml;
-  final second = parse(twice).outerHtml;
+List<String> idempotenceFailures(Document once, Document twice) {
+  final first = once.outerHtml;
+  final second = twice.outerHtml;
   if (first == second) return const [];
+  final end = min(first.length, second.length);
   var at = 0;
-  while (at < first.length && at < second.length && first[at] == second[at]) {
+  while (at < end && first[at] == second[at]) {
     at++;
   }
   String window(String html) => html.substring(at, min(html.length, at + 120));
@@ -40,8 +40,7 @@ final _overflowWrap = RegExp(r'overflow-wrap:\s*anywhere');
 /// `loading="lazy"` is not counted: a standard attribute other clients handle.
 /// `tmail-signature-blocked` is not counted either: `SignatureTransformer`
 /// marks the quoted signature on purpose.
-Map<String, int> _displayMarkers(String html) {
-  final document = parse(html);
+Map<String, int> _displayMarkers(Document document) {
   int count(String selector) => document.querySelectorAll(selector).length;
   return {
     'lazy attribute': count('[lazy]'),
@@ -56,7 +55,7 @@ Map<String, int> _displayMarkers(String html) {
 }
 
 /// The pipeline adds no markup that only the display viewers use.
-List<String> displayOnlyLeaks(String source, String out) {
+List<String> displayOnlyLeaks(Document source, Document out) {
   final before = _displayMarkers(source);
   final after = _displayMarkers(out);
   return [
@@ -67,8 +66,8 @@ List<String> displayOnlyLeaks(String source, String out) {
 }
 
 /// Every drive card stays uneditable, and at least one card is there.
-List<String> driveCardFailures(String out) {
-  final cards = parse(out).querySelectorAll('a.tmail-file-link-card');
+List<String> driveCardFailures(Document out) {
+  final cards = out.querySelectorAll('a.tmail-file-link-card');
   if (cards.isEmpty) return const ['no drive card in the output'];
   return [
     for (final card in cards)
@@ -77,7 +76,7 @@ List<String> driveCardFailures(String out) {
   ];
 }
 
-String _normalizedStyle(String style) => style
+String _normalizedStyle(Element element) => element.attributes['style']!
     .split(';')
     .map((declaration) => declaration.trim())
     .where(
@@ -88,10 +87,11 @@ String _normalizedStyle(String style) => style
     .map((declaration) => declaration.replaceAll(RegExp(r'\s*:\s*'), ':'))
     .join(';');
 
-String _withoutLineHeight(String html) {
-  final document = parse(html);
+/// Works on a copy: the caller's document stays as it was.
+String _withoutLineHeight(Document source) {
+  final document = source.clone(true);
   for (final Element element in document.querySelectorAll('[style]')) {
-    final style = _normalizedStyle(element.attributes['style']!);
+    final style = _normalizedStyle(element);
     if (style.isEmpty) {
       element.attributes.remove('style');
     } else {
@@ -102,7 +102,7 @@ String _withoutLineHeight(String html) {
 }
 
 /// The output differs from the source in `line-height` declarations only.
-List<String> lineHeightOnlyFailures(String source, String out) =>
+List<String> lineHeightOnlyFailures(Document source, Document out) =>
     _withoutLineHeight(source) == _withoutLineHeight(out)
         ? const []
         : const ['changed more than line-height'];
