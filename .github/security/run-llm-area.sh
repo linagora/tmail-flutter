@@ -28,7 +28,7 @@ for i in "${!keys[@]}"; do
   rm -rf "$home"
   export XDG_DATA_HOME="$home/data" XDG_STATE_HOME="$home/state" XDG_CACHE_HOME="$home/cache"
   mkdir -p "$XDG_DATA_HOME" "$XDG_STATE_HOME" "$XDG_CACHE_HOME"
-  LLM_API_KEY=${keys[$i]} timeout "${left}s" "$bin" run "$(cat ".security-review/prompt-$area.md")" \
+  LLM_API_KEY=${keys[$i]} timeout --kill-after=10s "${left}s" "$bin" run "$(cat ".security-review/prompt-$area.md")" \
     > "$report" 2> "$home/stderr.log" &
   pid=$!
   # an exhausted key can make opencode wait out a long Retry-After in silence: no output for $stall s = stuck
