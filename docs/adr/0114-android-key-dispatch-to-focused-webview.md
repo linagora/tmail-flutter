@@ -49,13 +49,6 @@ Proposed
 - `WebViewKeyboardTest` (androidTest) covers the routing.
   It runs with every Android Patrol run (local and Firebase Test Lab),
   next to the Dart tests.
-- Composer e2e (Subject → body → OS keys, the issue sequence) is
-  `integration_test/tests/composer/composer_body_os_keys_test.dart`.
-  Android injects via `scripts/run-android-composer-body-keys-e2e.sh`
-  (`adb shell input` over a host HTTP handshake). iOS can reuse the
-  same scenario with a different `ComposerOsKeyInjector`.
-  `tester.sendKeyEvent` / `insertHtml` / IME `native.enterText` do
-  not cover this bug.
 - Physical Bluetooth keyboards are not verified.
 
 [issue]: https://github.com/linagora/tmail-flutter/issues/4980
