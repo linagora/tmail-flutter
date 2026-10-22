@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:patrol/patrol.dart';
 
+import '../robots/android/android_host_adb_key_injector.dart';
 import '../robots/abstract/abstract_common_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/mobile/mobile_common_robot.dart';
@@ -13,6 +16,7 @@ import '../robots/abstract/abstract_rules_filter_creator_robot.dart';
 import '../robots/abstract/abstract_search_robot.dart';
 import '../robots/abstract/abstract_thread_robot.dart';
 import '../robots/mobile/mobile_app_grid_robot.dart';
+import '../robots/mobile/mobile_composer_os_keyboard_robot.dart';
 import '../robots/mobile/mobile_composer_robot.dart';
 import '../robots/mobile/mobile_email_rules_setting_robot.dart';
 import '../robots/mobile/mobile_email_robot.dart';
@@ -39,7 +43,15 @@ class MobileRobotFactory implements RobotFactory {
   AbstractThreadRobot threadRobot() => MobileThreadRobot($);
 
   @override
-  AbstractComposerRobot composerRobot() => MobileComposerRobot($);
+  AbstractComposerRobot composerRobot() => MobileComposerRobot(
+        $,
+        osKeyboard: Platform.isAndroid
+            ? MobileComposerOsKeyboardRobot(
+                $,
+                injector: AndroidHostAdbKeyInjector(),
+              )
+            : null,
+      );
 
   @override
   AbstractAppGridRobot appGridRobot() => MobileAppGridRobot($);
