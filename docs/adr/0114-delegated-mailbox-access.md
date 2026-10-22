@@ -58,7 +58,7 @@ class ActiveAccount with EquatableMixin {
 
 - `ActiveAccount` is Riverpod state, bridged once into the GetX dashboard. Every reader of the shown mailbox depends on it, not on `MailboxDashBoardController`. `dashboard.accountId` keeps meaning `mine` and is never written by a switch.
 - `ownerEmailAddress` is "me" in the shown mailbox: my address on `mine`, the owner's address on a delegated account. It replaces `ownEmailAddress`, `getOwnEmailAddress*` and `session.username` wherever they mean "me" in the view and the composer.
-- A user can own several addresses (aliases). "Me" is shown with one address, `ownerEmailAddress`, in the avatar, in the switcher and as the sender when no identity is loaded. "Me" is matched against `ownerEmailAddresses`: `ownerEmailAddress` plus the email of every identity loaded for `active`, minus the addresses of the other accounts of the session, so an identity that sends as another account's owner is not "me". The match decides "sent by me", the addresses reply-all leaves out, the reply-all button and the "From me" filter (one `from` condition per address, joined by OR). On `mine` this also recognizes mail to or from my aliases, which today match only the username address.
+- A user can own several addresses (aliases). "Me" is shown with one address, `ownerEmailAddress`, in the avatar, in the switcher and as the sender when no identity is loaded. "Me" is matched against `ownerEmailAddresses`: `ownerEmailAddress` plus the email of every identity loaded for `active`, minus the addresses of the other accounts of the session and of my team mailboxes (`emailTeamMailBoxes`), so an identity that sends as another account's owner or as a team is not "me". `ownerEmailAddresses` is derived from `ActiveAccount` and those identities, and is `{ownerEmailAddress}` until they load. The match decides "sent by me", the addresses reply-all leaves out and the reply-all button. The "From me" chip sets `from` to `ownerEmailAddresses` (one `from` condition per address, joined by OR) and is shown selected when `from` equals that set. On `mine` this also recognizes mail to or from my aliases, which today match only the username address.
 - The view checks capabilities with `supportsCapability`, since a delegated account can lack a capability that `mine` has. `supportsCapability` reads only the `accountCapabilities` of that account, never the session-level `capabilities`. `getCapabilityProperties` falls back to the session-level `capabilities`, so on the shown mailbox it reads properties only after `supportsCapability` passed, and a support test written as `getCapabilityProperties(...) != null` (e.g. `validateCalendarEventCapability`) moves to `supportsCapability`.
 - Every session read rebuilds `ActiveAccount` from the new session. It keeps `accountId` while the session still lists it, otherwise it becomes `ActiveAccount.personal` (see Revocation). `ActiveAccount.delegated` is only built for an account the session lists.
 - A change of signed-in user also starts from `ActiveAccount.personal`, so a later multi-account login switches sessions above `ActiveAccount` without changing its readers.
@@ -93,7 +93,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 
 - Foreground WebSocket: one connection per session, kept across switches. Each `StateChange` is filtered by account: `changed[active]` refreshes the view, `changed[mine]` keeps the mobile extras (delivery state, notification removal, offline bodies), and other accounts are dropped, then caught up through `/changes` when they are opened. This is today's filter while `active` = `mine`.
 - The 2 s debouncer merges the `changed` maps of its window per account instead of keeping only the last `StateChange`, so one account's push never hides another's. The only difference from today is that events the current debouncer drops are kept.
-- FCM push and system notifications: `changed[mine]` only, as today. A delegated mailbox gets no notification.
+- FCM push and system notifications: `changed[mine]` only, as today, the iOS notification extension included: it reads the entry of `mine` in the payload instead of its first entry. A delegated mailbox gets no notification.
 - Session: with delegation on, it is also re-read on resume (at most once a minute), after "Remove your access" and on `accountNotFound`, since the server does not push session changes. Settings takes each re-read session from the dashboard, so "Delegated to me" never keeps a removed entry. With delegation off the session is read at start only, as today.
 
 ### Switching
@@ -129,7 +129,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card. The switcher takes generic groups of items (id, name, address, avatar): my mailbox, delegated to me, and later team mailboxes | — |
 | T-01 | `ActiveAccount` and the switch flow, no UI | — |
 | T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer, URL with `account`, the start on a delegated account (web URL, mobile last shown account), notification tap and intents. One test per reader and per Settings entry, plus the test on new readers | T-01 |
-| T-03 | Realtime filter, per-account debounce and "from cache" flag on the session result | T-01 |
+| T-03 | Realtime filter (the iOS notification extension included), per-account debounce and "from cache" flag on the session result | T-01 |
 | T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
 | T-05 | Loading dialog | T-01 |
 | T-06 | Experimental "Delegation" toggle in Preferences, with the session re-read and revocation it turns on | T-01, T-03, T-04 |
@@ -144,7 +144,7 @@ Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon a
 
 ```mermaid
 flowchart LR
-  S1["1. No visible change<br/>T-01, T-02, T-03, T-04, DS-1"] --> S2["2. Web release<br/>T-05, T-06, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
+  S1["1. No visible change apart from aliases as me<br/>T-01, T-02, T-03, T-04, DS-1"] --> S2["2. Web release<br/>T-05, T-06, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
   S1 --> S4["Later, not blocking<br/>T-10, T-11, DS-4"]
 ```
 
