@@ -1519,6 +1519,21 @@ void main() {
     );
 
     test(
+      'a mailto url share keeps the cc and bcc recipients of the mailto link',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          urlShare(
+            'mailto:user@example.com?cc=cc@example.com&bcc=bcc@example.com',
+          ),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.cc?.single.email, 'cc@example.com');
+        expect(arguments.bcc?.single.email, 'bcc@example.com');
+      },
+    );
+
+    test(
       'a non-mailto url share opens nothing on non-iOS platforms — Android '
       'url-type events are deep-link VIEW intents owned by DeepLinksManager',
       () {
