@@ -103,6 +103,16 @@ class ThreadRobot extends CoreRobot {
     await $.pumpAndSettle();
   }
 
+  Future<void> deepPullToRefreshByEmailSubject(String subject) async {
+    await $(subject).waitUntilVisible();
+    await $.tester.fling(
+      $(subject),
+      const Offset(0, 400),
+      2000,
+    );
+    await $.pumpAndSettle();
+  }
+
   Future<void> tapOnMailboxWithName(String name) async {
     await $(name).tap();
     await $.pumpAndSettle();

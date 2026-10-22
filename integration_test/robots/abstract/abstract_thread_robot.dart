@@ -10,4 +10,6 @@ abstract class AbstractThreadRobot {
   Future<void> openMailbox();
   Future<void> openEmailWithSubject(String subject);
   Future<void> tapOnSearchField();
+  Future<void> pullToRefreshByEmailSubject(String subject);
+  Future<void> deepPullToRefreshByEmailSubject(String subject);
 }
