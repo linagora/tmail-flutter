@@ -32,7 +32,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
 ```
 
 - Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
-- One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. Sign-in, reload and restart start on `mine`.
+- One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. Sign-in and a mobile app restart start on `mine`. A web reload keeps the shown account, folder and opened email (see Web URL and history). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
 - An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
 
 ### One source for the shown account
@@ -69,9 +69,15 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 |---|---|---|
 | Mailbox view: folders, emails, search, flag, move, delete, labels, spam, quota | `active` | Same value while `active` = `mine` |
 | Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves the owner out | Same |
-| Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine` | Untouched, so the owner's settings are unreachable |
+| Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine`, and Settings is hidden while a delegated account is shown (see Settings) | Untouched, so the owner's settings are unreachable |
 | Notification tap, share and `mailto` intents (mobile) | `mine`: with `active` ≠ `mine`, the app switches to `mine` first, then opens the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
-| Web URL and history | Mailbox and email ids of a delegated account are never written to the URL, and a switch replaces the URL with a plain `/dashboard`. "Open in new tab" is hidden in a delegated mailbox, and an `.eml` attachment there is downloaded instead of previewed in a new tab, since that tab reads my account | Unchanged on `mine` |
+| Web URL and history | Every URL of a delegated account carries `account=<accountId>` next to its mailbox and email ids, the `.eml` preview tab included. Reload, Back, a new tab and "Open in new tab" then show the same account, folder and email. A switch pushes the target's Inbox URL once it succeeds. A refused or rolled-back switch leaves the URL unchanged. Back or Forward to an entry of another account runs the normal switch (refused while a composer is open, the URL is put back). An entry whose account is no longer delegated is handled like a page load | Unchanged on `mine`: its URLs carry no `account` |
+
+### Settings
+
+- Settings is reached from `mine` only. With `active` delegated, one rule, `canOpenSettings = !active.isDelegated`, hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web identity-cache restore opens Settings on `mine` only.
+- `/settings` opened while a delegated account is shown goes to the dashboard of that account. A page load of `/settings` carries no `account`, so it starts on `mine`.
+- Settings still reads `mine` only, so an entry that a later change forgets to hide still cannot reach the owner's settings.
 
 ### Local data
 
@@ -99,6 +105,11 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 - Every view result (load more, search, opened email, refresh) carries the switch generation it was requested in. One check where view results are consumed drops it when that generation is no longer current, so a cancelled or timed-out switch never writes into a later one, even to the same account.
 - `StateChange` events for the target are not applied while the switch runs. The switch ends with `/changes` from the loaded state, which picks up what arrived meanwhile.
 
+### Page load on a delegated URL (web)
+
+- `account` is read once the session is loaded. If delegation is on, the session lists the account as delegated and the layout has its entry point (T-07, T-08, T-09), the app starts on it with the loading dialog of a switch, then opens the folder and email of the URL (the Inbox when they are gone). If that load fails, is cancelled or passes 30 s, the app starts on `mine` with the error toast.
+- Otherwise (toggle off, access ended, another user signed in, no entry point yet on that layout) the app starts on `mine`, rewrites the URL to a plain `/dashboard` and shows an info toast.
+
 ### Revocation and ended delegations
 
 - The server does not push a revocation, and James keeps the session `state` fixed, so the app notices it on resume or at the first `accountNotFound`. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, later `accountNotFound` errors on it do not re-read the session before the next resume.
@@ -112,9 +123,9 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 
 | Id | Ticket | Depends on |
 |---|---|---|
-| DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card | — |
+| DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card. The switcher takes generic groups of items (id, name, address, avatar): my mailbox, delegated to me, and later team mailboxes | — |
 | T-01 | `ActiveAccount` and the switch flow, no UI | — |
-| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, composer, URL, notification tap and intents. One test per reader, plus the test on new readers | T-01 |
+| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer, URL with `account` and page load, notification tap and intents. One test per reader and per Settings entry, plus the test on new readers | T-01 |
 | T-03 | Realtime filter, per-account debounce and "from cache" flag on the session result | T-01 |
 | T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
 | T-05 | Loading dialog | T-01 |
@@ -143,3 +154,13 @@ T-12 ships with every stage.
 - Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
 - A revocation by the owner shows up only at the first failing request or the next resume. Giving up access with "Remove your access" re-reads the session at once.
 - One mailbox at a time: a unified view of several mailboxes would need several active accounts and is out of scope.
+
+## Team mailboxes later
+
+Out of scope here, written down so the delegation code does not need rework when they come:
+
+- A team mailbox is a folder tree of `mine` (namespace `TeamMailbox[...]`), not an account. It is a second, separate dimension next to `ActiveAccount`: `MailboxScope` = whole account or one team root. The readers classified in T-02 keep their account.
+- `MailboxScope` only narrows what the folder tree, the search filter, the default folder, the composer identity, labels and virtual folders show. A team scope is valid on `mine` only.
+- From `mine` into a team only the scope changes: no account load, a new switch generation, the team's Inbox opens. From a delegated account it is one switch to `mine` with the team scope.
+- A team root that leaves the folder list goes back to the whole of `mine` with a toast. Settings stays reachable in a team mailbox, since it is `mine`.
+- The switcher shows team mailboxes as a third group of DS-2.
