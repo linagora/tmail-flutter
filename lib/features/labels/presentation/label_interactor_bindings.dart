@@ -17,17 +17,18 @@ import 'package:uuid/uuid.dart';
 class LabelInteractorBindings extends InteractorsBindings {
   @override
   void bindingsDataSource() {
-    Get.lazyPut<LabelDatasource>(() => Get.find<LabelDatasourceImpl>());
+    Get.lazyPut<LabelDatasource>(() => Get.find<LabelDatasourceImpl>(), fenix: true);
   }
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => LabelApi(Get.find<HttpClient>(), Get.find<Uuid>()));
+    Get.lazyPut(() => LabelApi(Get.find<HttpClient>(), Get.find<Uuid>()), fenix: true);
     Get.lazyPut(
       () => LabelDatasourceImpl(
         Get.find<LabelApi>(),
         Get.find<RemoteExceptionThrower>(),
       ),
+      fenix: true,
     );
   }
 
@@ -43,11 +44,12 @@ class LabelInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<LabelRepository>(() => Get.find<LabelRepositoryImpl>());
+    // fenix: the fenix dialog interactors rebuild from this chain after a route disposes it.
+    Get.lazyPut<LabelRepository>(() => Get.find<LabelRepositoryImpl>(), fenix: true);
   }
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => LabelRepositoryImpl(Get.find<LabelDatasource>()));
+    Get.lazyPut(() => LabelRepositoryImpl(Get.find<LabelDatasource>()), fenix: true);
   }
 }
