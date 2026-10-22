@@ -20,13 +20,17 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
     await Future.delayed(const Duration(milliseconds: 300)); // Create loading effect
     canLoadMore = false;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
-    getAllEmailAction();
+    getAllEmailAction(forceEmailQuery: shouldCollapseThreads);
   }
 
   Future<void> onCleanAndRefresh() async {
     log('HandlePullToRefreshListEmailExtension::onCleanAndRefresh:Started');
     resetToOriginalValue();
-    cleanAndGetAllEmailAction();
+    if (shouldCollapseThreads) {
+      await refreshAllEmail(shouldClearCache: true);
+    } else {
+      cleanAndGetAllEmailAction();
+    }
   }
 
   Future<void> cleanAndGetAllEmailAction() async {
