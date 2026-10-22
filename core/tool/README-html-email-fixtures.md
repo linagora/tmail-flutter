@@ -77,3 +77,9 @@ dart run tool/generate_html_email_corpus.dart
 flutter test test/fixtures/html_emails
 python3 -m unittest discover -s tool -p 'test_*.py'
 ```
+
+## Adding a pipeline or viewer
+
+- Give the registry row `rules:` in `core/test/utils/html_pipeline_registry.dart`.
+- For a new viewer, add a `DisplayViewer` value and its document function in `display_harness/other_viewer_documents.dart`.
+- Fixtures that are not emails (`signatures/`, `calendar_descriptions/`) are shown only on their own viewers.

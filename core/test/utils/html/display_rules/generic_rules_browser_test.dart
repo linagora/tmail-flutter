@@ -8,6 +8,7 @@ import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
 import '../display_harness/display_case.dart';
 import '../display_harness/known_display_failures.dart';
 import 'generic_rules.dart';
+import 'surface_rules.dart';
 
 /// Every generic rule on every fixture, viewer and email pane width (again
 /// with any trimmed quote expanded); a case reports all its violations.
@@ -119,7 +120,10 @@ void main() {
       displayCase.label,
       () async {
         await withDisplayCase(displayCase, (render) async {
-          final violations = await runGenericRules(render);
+          final violations = [
+            ...await runGenericRules(render),
+            ...runSurfaceRules(render),
+          ];
           expect(
             violations.map((v) => v.describe(displayCase)).toList(),
             isEmpty,

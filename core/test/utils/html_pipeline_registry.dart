@@ -8,6 +8,10 @@ import 'package:core/presentation/utils/html_transformer/text/standardize_html_s
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
 
+import 'html_pipeline_rules.dart';
+
+export 'html_pipeline_rules.dart';
+
 enum HtmlPipelineTrust { raw, sanitized, user }
 
 enum HtmlPipelineWiring { sanitizes, passesThrough, stripsStyles }
@@ -23,6 +27,7 @@ class HtmlPipelineRow {
     required this.create,
     required this.trust,
     required this.wiring,
+    required this.rules,
     this.setPlatform,
     this.allowsContentEditable = false,
     this.input = HtmlPipelineInput.html,
@@ -34,6 +39,7 @@ class HtmlPipelineRow {
   final TransformConfiguration Function() create;
   final HtmlPipelineTrust trust;
   final HtmlPipelineWiring wiring;
+  final HtmlPipelineRules rules;
   final void Function()? setPlatform;
   final bool allowsContentEditable;
   final HtmlPipelineInput input;
@@ -93,12 +99,14 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forReplyForwardEmail,
         trust: HtmlPipelineTrust.sanitized,
         wiring: HtmlPipelineWiring.passesThrough,
+        rules: const HtmlPipelineRules(composer: true),
       ),
       HtmlPipelineRow(
         name: 'forReplyForwardEmptyEmail',
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.passesThrough,
+        rules: const HtmlPipelineRules(composer: true),
         knownGap: '#4956 XSS: reply/forward whose original content is not '
             'loaded yet fetches it through this pipeline, which has no sanitizer',
       ),
@@ -107,6 +115,7 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forDraftsEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.drafts]),
       ),
       HtmlPipelineRow(
         name: 'forEditDraftsEmail-vm',
@@ -114,6 +123,7 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forEditDraftsEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(composer: true),
         setPlatform: () => PlatformInfo.isTestingForWeb = false,
         allowsContentEditable: true,
       ),
@@ -123,6 +133,7 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forEditDraftsEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(composer: true),
         setPlatform: () => PlatformInfo.isTestingForWeb = true,
         allowsContentEditable: true,
       ),
@@ -131,12 +142,16 @@ List<HtmlPipelineRow> _composerPipelines() => [
         create: TransformConfiguration.forSignatureIdentity,
         trust: HtmlPipelineTrust.user,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(
+          displayOn: [DisplayViewer.signatureNative, DisplayViewer.signatureWeb],
+        ),
       ),
       HtmlPipelineRow(
         name: 'forComposerSignature',
         create: TransformConfiguration.forComposerSignature,
         trust: HtmlPipelineTrust.user,
         wiring: HtmlPipelineWiring.passesThrough,
+        rules: const HtmlPipelineRules(composer: true),
       ),
     ];
 
@@ -147,6 +162,10 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: TransformConfiguration.forPreviewEmailOnWeb,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(
+          displayOn: [DisplayViewer.web],
+          preservation: true,
+        ),
         allowsContentEditable: true,
       ),
       HtmlPipelineRow(
@@ -154,6 +173,10 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: TransformConfiguration.forPreviewEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(
+          displayOn: [DisplayViewer.native, DisplayViewer.ios],
+          preservation: true,
+        ),
         allowsContentEditable: true,
       ),
       HtmlPipelineRow(
@@ -162,6 +185,7 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: TransformConfiguration.forPreviewEmailOnPlatform,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(sameAs: 'forPreviewEmail'),
         setPlatform: () => PlatformInfo.isTestingForWeb = false,
         allowsContentEditable: true,
       ),
@@ -171,6 +195,7 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: TransformConfiguration.forPreviewEmailOnPlatform,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(sameAs: 'forPreviewEmailOnWeb'),
         setPlatform: () => PlatformInfo.isTestingForWeb = true,
         allowsContentEditable: true,
       ),
@@ -179,6 +204,10 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: TransformConfiguration.forPlainTextEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(
+          displayOn: [DisplayViewer.native, DisplayViewer.web, DisplayViewer.ios],
+          preservation: true,
+        ),
         input: HtmlPipelineInput.plainText,
       ),
       HtmlPipelineRow(
@@ -186,12 +215,14 @@ List<HtmlPipelineRow> _readingPipelines() => [
         create: () => TransformConfiguration.standardConfiguration,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(preservation: true),
       ),
       HtmlPipelineRow(
         name: 'forAttachmentPreview',
         create: TransformConfiguration.forAttachmentPreview,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.attachment]),
       ),
     ];
 
@@ -202,6 +233,7 @@ List<HtmlPipelineRow> _otherPipelines() => [
         create: TransformConfiguration.forRestoreEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(composer: true),
         allowsContentEditable: true,
       ),
       HtmlPipelineRow(
@@ -209,12 +241,16 @@ List<HtmlPipelineRow> _otherPipelines() => [
         create: TransformConfiguration.forPrintEmail,
         trust: HtmlPipelineTrust.sanitized,
         wiring: HtmlPipelineWiring.stripsStyles,
+        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.print]),
       ),
       HtmlPipelineRow(
         name: 'forCalendarEvent',
         create: TransformConfiguration.forCalendarEvent,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
+        rules: const HtmlPipelineRules(
+          displayOn: [DisplayViewer.calendarNative, DisplayViewer.calendarWeb],
+        ),
       ),
     ];
 
@@ -253,3 +289,20 @@ Map<String, TransformConfiguration Function()> pipelineFactoriesWired(
       for (final row in htmlPipelineRegistry().reversed)
         if (row.takesHtml && row.wiring == wiring) row.factoryName: row.create,
     };
+
+/// Rows no rule suite checks; the contract test requires none.
+List<String> rowsWithoutRules(Iterable<HtmlPipelineRow> rows) =>
+    [for (final row in rows) if (row.rules.isEmpty) row.name];
+
+/// The row whose output [viewer] shows for an HTML or a text/plain body.
+HtmlPipelineRow? displayPipelineFor(
+  DisplayViewer viewer, {
+  required bool plainText,
+}) =>
+    htmlPipelineRegistry()
+        .where(
+          (row) =>
+              row.rules.displayOn.contains(viewer) &&
+              row.takesHtml != plainText,
+        )
+        .firstOrNull;
