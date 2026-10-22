@@ -32,7 +32,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
              && Preferences › "Delegation" is on   // local, off by default, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
-- Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
+- Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations and my aliases counting as "me". Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
 - One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. A web reload and a mobile app restart keep the shown account (see Start on a delegated account). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
 - An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
 
@@ -58,7 +58,8 @@ class ActiveAccount with EquatableMixin {
 
 - `ActiveAccount` is Riverpod state, bridged once into the GetX dashboard. Every reader of the shown mailbox depends on it, not on `MailboxDashBoardController`. `dashboard.accountId` keeps meaning `mine` and is never written by a switch.
 - `ownerEmailAddress` is "me" in the shown mailbox: my address on `mine`, the owner's address on a delegated account. It replaces `ownEmailAddress`, `getOwnEmailAddress*` and `session.username` wherever they mean "me" in the view and the composer.
-- The view checks capabilities with `supportsCapability`, since a delegated account can lack a capability that `mine` has.
+- A user can own several addresses (aliases). "Me" is shown with one address, `ownerEmailAddress`, in the avatar, in the switcher and as the sender when no identity is loaded. "Me" is matched against `ownerEmailAddresses`: `ownerEmailAddress` plus the email of every identity loaded for `active`, minus the addresses of the other accounts of the session, so an identity that sends as another account's owner is not "me". The match decides "sent by me", the addresses reply-all leaves out, the reply-all button and the "From me" filter (one `from` condition per address, joined by OR). On `mine` this also recognizes mail to or from my aliases, which today match only the username address.
+- The view checks capabilities with `supportsCapability`, since a delegated account can lack a capability that `mine` has. `supportsCapability` reads only the `accountCapabilities` of that account, never the session-level `capabilities`. `getCapabilityProperties` falls back to the session-level `capabilities`, so on the shown mailbox it reads properties only after `supportsCapability` passed, and a support test written as `getCapabilityProperties(...) != null` (e.g. `validateCalendarEventCapability`) moves to `supportsCapability`.
 - Every session read rebuilds `ActiveAccount` from the new session. It keeps `accountId` while the session still lists it, otherwise it becomes `ActiveAccount.personal` (see Revocation). `ActiveAccount.delegated` is only built for an account the session lists.
 - A change of signed-in user also starts from `ActiveAccount.personal`, so a later multi-account login switches sessions above `ActiveAccount` without changing its readers.
 
@@ -69,9 +70,9 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 | Area | Account | Why my own account does not regress |
 |---|---|---|
 | Mailbox view: folders, emails, search, flag, move, delete, labels, spam, quota | `active` | Same value while `active` = `mine` |
-| Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves the owner out | Same |
+| Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves every address of `ownerEmailAddresses` out | Same, plus my aliases now count as "me" |
 | Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine`, and Settings is hidden while a delegated account is shown (see Settings) | Untouched, so the owner's settings are unreachable |
-| Notification tap, share and `mailto` intents (mobile) | `mine`: with `active` ≠ `mine`, the app switches to `mine` first, then opens the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
+| Notification tap, share and `mailto` intents (mobile) | `mine`: notifications come only for mail received in `mine`, never for a delegated account (see Sync). A tap while a delegated account is shown switches to `mine` first, then opens the email. A share or `mailto` intent does the same, then opens the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
 | Web URL and history | Every URL of a delegated account carries `account=<accountId>` next to its mailbox and email ids, the `.eml` preview tab included. Reload, Back, a new tab and "Open in new tab" then show the same account, folder and email. A switch pushes the target's Inbox URL once it succeeds. A refused or rolled-back switch leaves the URL unchanged. Back or Forward to an entry of another account runs the normal switch (refused while a composer is open, the URL is put back). An entry whose account is no longer delegated is handled like a start (see Start on a delegated account) | Unchanged on `mine`: its URLs carry no `account` |
 
 ### Settings
@@ -139,7 +140,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 | T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-10, DS-1, DS-4 |
 | T-12 | E2E scenarios, with each release | — |
 
-Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour (the switch flow of T-01 is reached only from the entry points). The toggle (T-06) merges with its first reader, the session re-read, right before the entry points. The entry points (T-07, T-08, T-09) merge last, after T-02: without T-02, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
+Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour apart from my aliases counting as "me" (T-02). The switch flow of T-01 is reached only from the entry points. The toggle (T-06) merges with its first reader, the session re-read, right before the entry points. The entry points (T-07, T-08, T-09) merge last, after T-02: without T-02, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 
 ```mermaid
 flowchart LR
@@ -153,7 +154,7 @@ T-12 ships with every stage.
 
 - Main regression risk: a reader classified on the wrong account. T-02 covers each existing reader with a test, and the test on new readers makes new code pick `ActiveAccount` or `mine`.
 - No database schema change or migration.
-- Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
+- Toggle off or no delegation: the app works as today, apart from my aliases counting as "me". The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
 - A revocation by the owner shows up only at the first failing request or the next resume. Giving up access with "Remove your access" re-reads the session at once.
 - One mailbox at a time: a unified view of several mailboxes would need several active accounts and is out of scope.
 - Team mailboxes are planned in [ADR-0116](./0116-team-mailbox-switch.md), as a scope of `mine` next to `ActiveAccount`, so no delegation ticket changes for them.
