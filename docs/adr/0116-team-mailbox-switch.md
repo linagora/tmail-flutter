@@ -38,8 +38,8 @@ class TeamMailboxScope extends MailboxScope {
 
 ### Switching
 
-- `AccountSwitchNotifier` gets one more target, a team of an account. The rules of a switch apply (refused while a composer is open or another switch runs, input blocked, a new generation). For a team of the shown account no account is loaded: the scope changes and the team's Inbox opens.
-- Into a team of another account it is one switch: the account switch to that account, then the team scope, with one generation. A failed, cancelled or timed-out account switch rolls back both, as in ADR-0114. When the target is a team of `mine`, `mine` is shown from cache in `WholeAccountScope` with the error toast.
+- `AccountSwitchNotifier` gets one more target, a team of an account. The rules of a switch apply (refused while a composer is open or another switch runs, input blocked, a new attempt). For a team of the shown account no account is loaded: the scope changes and the team's Inbox opens.
+- Into a team of another account it is one switch: the account switch to that account, then the team scope, as one attempt. A failed, cancelled or timed-out account switch rolls back both, as in ADR-0114. When the target is a team of `mine`, `mine` is shown from cache in `WholeAccountScope` with the error toast.
 - Back to the whole account is the same scope change, to `WholeAccountScope`.
 - A team scope exists only while the switcher is shown. Otherwise a `team` URL parameter is dropped and a notification tap opens in `WholeAccountScope`, so a user without the switcher never ends up in a team scope with no way back.
 - A start keeps the scope like the account: `team=<rootId>` in the web URL, next to `account` on a delegated account, the last scope next to the last account in the Android and iOS app.
