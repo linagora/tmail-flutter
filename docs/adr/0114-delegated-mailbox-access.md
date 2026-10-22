@@ -11,6 +11,7 @@ Proposed
 - [ADR-0017](./0017-email-cache-guideline.md), [ADR-0027](./0027-use-tuplekey-store-data-cache.md) — cache keys carry the account
 - [ADR-0086](./0086-android-composer-draft-loss-on-background.md), [ADR-0112](./0112-web-composer-reload-snapshot.md) — composer restore (Android, web reload)
 - [ADR-0092](./0092-upgrade-flutter-riverpod-3.md), [ADR-0103](./0103-urgent-exception-handling-for-riverpod-flows.md) — new state in Riverpod
+- [ADR-0116](./0116-team-mailbox-switch.md) — team mailboxes in the same switcher
 
 ## Context
 
@@ -155,62 +156,5 @@ T-12 ships with every stage.
 - Toggle off or no delegation: the app works as today. The only extra work is the cleanup of ended delegations on the session read at start, which finds nothing to delete when no delegation was ever used.
 - A revocation by the owner shows up only at the first failing request or the next resume. Giving up access with "Remove your access" re-reads the session at once.
 - One mailbox at a time: a unified view of several mailboxes would need several active accounts and is out of scope.
+- Team mailboxes are planned in [ADR-0116](./0116-team-mailbox-switch.md), as a scope of `mine` next to `ActiveAccount`, so no delegation ticket changes for them.
 
-## Team mailboxes later
-
-Out of scope for the delegation tickets. This is the plan for the team mailbox switch, so the delegation code needs no rework when it comes.
-
-### Model
-
-A team mailbox is a folder tree of `mine` (root with namespace `TeamMailbox[...]`, `isTeamMailboxRoot`), not an account. It is a second dimension next to `ActiveAccount`:
-
-```dart
-sealed class MailboxScope {}
-class WholeAccountScope extends MailboxScope {}
-class TeamMailboxScope extends MailboxScope {
-  final MailboxId rootId;
-  final String teamEmailAddress; // root.emailTeamMailBoxes
-}
-```
-
-- `mailboxScopeProvider` is Riverpod state, `WholeAccountScope` by default. A team scope is valid on `mine` only, so every account switch resets it to `WholeAccountScope`.
-- Every account reader classified in T-02 keeps its account. Push, caches and URLs of folders and emails are those of `mine`, unchanged.
-
-### Switching
-
-- `AccountSwitchNotifier` gets one more target, a team of `mine`. The rules of a switch apply (refused while a composer is open or another switch runs, input blocked, a new generation), but no account is loaded: the scope changes and the team's Inbox opens.
-- From a delegated account into a team it is one switch: the account switch to `mine`, then the team scope, with one generation.
-- Back to the whole of `mine` is the same scope change, to `WholeAccountScope`.
-- A start keeps the scope like the account: `team=<rootId>` in the web URL, the last scope next to the last account in the Android and iOS app.
-- Back or Forward to an entry of another scope runs the scope change. A URL folder outside the team is handled as gone. A notification tap or an intent opens the email in the scope of its folder: the team for a team folder, `WholeAccountScope` otherwise.
-
-### What the scope narrows
-
-| Area | In a team scope |
-|---|---|
-| Folder tree | Only the children of the root, at the top level. No personal folders, no other team, no Starred or Action required, no labels section. The team's own Inbox is the only Inbox shown |
-| Default folder | The team's Inbox (`isFirstLevelTeamSystemFolder(map, PresentationMailbox.inboxRole)`, matched by name). A team with no Inbox opens its first folder |
-| Create folder | A new top-level folder goes under the team root |
-| Email list, flags, move, delete | Unchanged: they already act on the folder shown |
-| Search | A search with no folder is narrowed to an `OR` of `inMailbox` over the team's folders (a new filter, `inMailbox` takes one id today). A folder filter outside the team is replaced by the team |
-| Composer | The identity whose email is `teamEmailAddress` is preselected. Sent, Drafts and Outbox already follow that identity (`getSentMailboxIdForComposer` and the like). If no identity has that email, the default identity is used |
-| Settings | Reachable, since the account is `mine` |
-| "me" | My address, as on `mine` |
-
-### Ended membership
-
-- When the root is destroyed or missing from the folder list of `mine` (removed from the team, team deleted), the scope goes back to `WholeAccountScope` with a toast, even while a composer is open. The composer stays open, since it is `mine`. A start whose `team` is gone does the same.
-- No local data is deleted: the team's folders and emails are cached under `mine` and go away with the normal mailbox and email cache updates.
-
-### Switcher
-
-Team mailboxes are the third group of the DS-2 switcher ("Team mailboxes"), listed from the team roots of `mine`. While a delegated account is shown they come from the cache of `mine`, and a `Mailbox` change in `changed[mine]` refreshes them. No design system change is needed.
-
-### Tickets (own tracking issue, later)
-
-| Id | Ticket |
-|---|---|
-| TM-1 | `MailboxScope`, the team target of the switch, the start (`team` in the URL, last scope on mobile), Back and notification taps across scopes, ended membership |
-| TM-2 | Folder tree, default folder, folder creation under the root, virtual folders and labels hidden in a team scope |
-| TM-3 | Search narrowed to the team, composer identity preselected |
-| TM-4 | Third group of the switcher (web and mobile) and its E2E scenarios |
