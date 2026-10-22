@@ -105,7 +105,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch.
 
 - A switch to `mine` (toggle off, revocation, notification tap of `mine`, intent) never rolls back to a delegated account. On failure, cancel or timeout `mine` is shown from cache with the error toast, and a pending tap or intent is dropped.
-- Every view result (load more, search, opened email, refresh) carries the switch generation it was requested in. One check where view results are consumed drops it when that generation is no longer current, so a cancelled or timed-out switch never writes into a later one, even to the same account.
+- The switch state is `Idle(lastAttemptId)` or `Switching(attempt)`, where `SwitchAttempt(id, from, to)` is one try to change the shown account. Going back after a failure, cancel or timeout is a new attempt too. Every view result (load more, search, opened email, refresh) is stamped with the id of the attempt it was requested in, or of the last one when no switch runs. One check where view results are consumed drops a result whose attempt is no longer current, so a cancelled or timed-out switch never paints stale data into a later one, even to the same account.
 - `StateChange` events for the target are not applied while the switch runs. The switch ends with `/changes` from the loaded state, which picks up what arrived meanwhile.
 
 ### Start on a delegated account
