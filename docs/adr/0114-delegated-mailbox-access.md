@@ -32,7 +32,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
 ```
 
 - Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations. Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
-- One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. Sign-in and a mobile app restart start on `mine`. A web reload keeps the shown account, folder and opened email (see Web URL and history). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
+- One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. A web reload and a mobile app restart keep the shown account (see Start on a delegated account). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
 - An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
 
 ### One source for the shown account
@@ -71,7 +71,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 | Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves the owner out | Same |
 | Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, contact autocomplete | `mine`, and Settings is hidden while a delegated account is shown (see Settings) | Untouched, so the owner's settings are unreachable |
 | Notification tap, share and `mailto` intents (mobile) | `mine`: with `active` ≠ `mine`, the app switches to `mine` first, then opens the email or the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` |
-| Web URL and history | Every URL of a delegated account carries `account=<accountId>` next to its mailbox and email ids, the `.eml` preview tab included. Reload, Back, a new tab and "Open in new tab" then show the same account, folder and email. A switch pushes the target's Inbox URL once it succeeds. A refused or rolled-back switch leaves the URL unchanged. Back or Forward to an entry of another account runs the normal switch (refused while a composer is open, the URL is put back). An entry whose account is no longer delegated is handled like a page load | Unchanged on `mine`: its URLs carry no `account` |
+| Web URL and history | Every URL of a delegated account carries `account=<accountId>` next to its mailbox and email ids, the `.eml` preview tab included. Reload, Back, a new tab and "Open in new tab" then show the same account, folder and email. A switch pushes the target's Inbox URL once it succeeds. A refused or rolled-back switch leaves the URL unchanged. Back or Forward to an entry of another account runs the normal switch (refused while a composer is open, the URL is put back). An entry whose account is no longer delegated is handled like a start (see Start on a delegated account) | Unchanged on `mine`: its URLs carry no `account` |
 
 ### Settings
 
@@ -84,7 +84,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 - No database schema change or migration: cache keys already carry the account id (ADR-0027), so a delegated account's mailboxes and email lists are cached apart from mine.
 - No received email is stored for offline reading in a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only.
 - Each mail in the send queue stays bound to the account it was written in.
-- A delegated draft (composer restore on web reload and Android) is restored only when that mailbox is opened again, and is removed on logout. Drafts of `mine` restore as today.
+- A delegated draft (composer restore on web reload and Android) is restored only when that mailbox is shown, and is removed on logout. A start runs the switch to the remembered or URL account first, then restores the snapshot of the shown account. Drafts of `mine` restore as today.
 - The cleanup of ended delegations is described under Revocation.
 
 ### Sync
@@ -105,10 +105,11 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 - Every view result (load more, search, opened email, refresh) carries the switch generation it was requested in. One check where view results are consumed drops it when that generation is no longer current, so a cancelled or timed-out switch never writes into a later one, even to the same account.
 - `StateChange` events for the target are not applied while the switch runs. The switch ends with `/changes` from the loaded state, which picks up what arrived meanwhile.
 
-### Page load on a delegated URL (web)
+### Start on a delegated account
 
-- `account` is read once the session is loaded. If delegation is on, the session lists the account as delegated and the layout has its entry point (T-07, T-08, T-09), the app starts on it with the loading dialog of a switch, then opens the folder and email of the URL (the Inbox when they are gone). If that load fails, is cancelled or passes 30 s, the app starts on `mine` with the error toast.
-- Otherwise (toggle off, access ended, another user signed in, no entry point yet on that layout) the app starts on `mine`, rewrites the URL to a plain `/dashboard` and shows an info toast.
+- Web: the `account` of the URL, with its folder and email. Android and iOS app: the last shown account, kept per signed-in username in local storage. It is set to `mine` on sign-in and each time `mine` is shown, written after each successful switch, and removed on logout. A cold start from a notification tap or an intent starts on `mine`.
+- It is read once the session is loaded. If delegation is on, the session lists the account as delegated and the layout has its entry point (T-07, T-08, T-09), the app starts on it with the loading dialog of a switch, then opens the folder and email of the URL on web (the Inbox when they are gone) and the Inbox in the Android and iOS app. If that load fails, is cancelled or passes 30 s, the app starts on `mine` with the error toast.
+- Otherwise (toggle off, access ended, another user signed in, no entry point yet on that layout) the app starts on `mine` with an info toast, rewrites the URL to a plain `/dashboard` on web and forgets the account in the Android and iOS app.
 
 ### Revocation and ended delegations
 
@@ -116,7 +117,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 - If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it (counted in the warning below).
 - A switch in flight to the removed account is cancelled and its late results are ignored. A switch away from it goes on and falls back to `mine` on failure.
 - The removed account's cache, content files, send queue and composer snapshots under the signed-in username are deleted, even with the toggle off (on the session read at start). Data of other usernames in the shared database (ADR-0027) is never touched. If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. `mine` is always in the session, so it is never deleted.
-- On mobile an offline start uses the cached session: delegated accounts stay hidden from the switcher until an online session confirms them, and the cleanup waits for that session.
+- An offline start of the Android and iOS app uses the cached session and starts on the remembered account from cache. Identities and `/changes` wait for the network instead of failing the start. The other delegated accounts stay hidden from the switcher until an online session confirms them. That session then applies the rules above, and the cleanup waits for it.
 - When the account list changes, WebSocket push is re-enabled, so a new delegation is live too.
 
 ### Tickets and merge order
@@ -125,7 +126,7 @@ Every reader of the dashboard `accountId` is classified: the shown mailbox moves
 |---|---|---|
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card. The switcher takes generic groups of items (id, name, address, avatar): my mailbox, delegated to me, and later team mailboxes | — |
 | T-01 | `ActiveAccount` and the switch flow, no UI | — |
-| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer, URL with `account` and page load, notification tap and intents. One test per reader and per Settings entry, plus the test on new readers | T-01 |
+| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer, URL with `account`, the start on a delegated account (web URL, mobile last shown account), notification tap and intents. One test per reader and per Settings entry, plus the test on new readers | T-01 |
 | T-03 | Realtime filter, per-account debounce and "from cache" flag on the session result | T-01 |
 | T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
 | T-05 | Loading dialog | T-01 |
