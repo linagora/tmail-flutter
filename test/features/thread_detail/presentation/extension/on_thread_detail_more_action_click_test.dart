@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 import 'on_thread_detail_more_action_click_test.mocks.dart';
 
+
 /// TF-4894: on desktop the thread detail more menu dropped the « Label as »
 /// click and relied on a hover submenu that did not always show up.
 @GenerateNiceMocks([
@@ -91,6 +92,7 @@ MockThreadDetailController buildController() {
   // Labels available: setting on, capability supported for this account
   when(dashboard.labelController).thenReturn(labelController);
   when(dashboard.accountId).thenReturn(Rxn(AccountId(Id('account-1'))));
+  when(controller.activeAccountId).thenReturn(AccountId(Id('account-1')));
   when(dashboard.sessionCurrent).thenReturn(MockSession());
   when(labelController.isLabelSettingEnabled).thenReturn(RxBool(true));
   when(labelController.isLabelCapabilitySupported(any, any)).thenReturn(true);
