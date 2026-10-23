@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context_extension.dart';
 
 import '../../../../../fixtures/account_fixtures.dart';
+import '../../../../../fixtures/delegation_fixtures.dart';
 import '../../../../../fixtures/session_fixtures.dart';
 
 class _FakeDashboard extends Fake implements MailboxDashBoardController {
@@ -15,11 +16,16 @@ class _FakeDashboard extends Fake implements MailboxDashBoardController {
     required Session? session,
     required AccountId? accountId,
     required this.trashSpamMailboxIds,
+    AccountId? shownAccountId,
   })  : _session = session,
-        _accountId = Rxn<AccountId>(accountId);
+        _accountId = Rxn<AccountId>(accountId),
+        activeAccountId = shownAccountId ?? accountId;
 
   final Session? _session;
   final Rxn<AccountId> _accountId;
+
+  @override
+  final AccountId? activeAccountId;
 
   @override
   final Set<MailboxId>? trashSpamMailboxIds;
@@ -48,6 +54,19 @@ void main() {
     expect(context.collapseThreads, isTrue);
     expect(context.trashSpamMailboxIds, trashSpam);
     expect(context.properties, isNotNull);
+  });
+
+  test('buildSearchDispatchContext searches the shown account, not my own', () {
+    final dashboard = _FakeDashboard(
+      session: SessionFixtures.aliceSession,
+      accountId: AccountFixtures.aliceAccountId,
+      shownAccountId: DelegationFixtures.bobAccountId,
+      trashSpamMailboxIds: null,
+    );
+
+    final context = dashboard.buildSearchDispatchContext(collapseThreads: false);
+
+    expect(context!.accountId, DelegationFixtures.bobAccountId);
   });
 
   test('buildSearchDispatchContext returns null when session is missing', () {

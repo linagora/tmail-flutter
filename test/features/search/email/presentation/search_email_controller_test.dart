@@ -20,13 +20,16 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_bridge.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -62,12 +65,15 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../mailbox_dashboard/presentation/controller/advanced_filter_controller_test.mocks.dart'
     as advanced_mocks;
@@ -1233,4 +1239,33 @@ void main() {
     );
   });
 
+  test('reads the shown account for its search session, not my own', () {
+    ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+    expect(controller.accountId, DelegationFixtures.bobAccountId);
+  });
+
+  testWidgets('picking the folder filter opens the folder picker on the shown account, not on my own',
+      (tester) async {
+    ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    final ref = await pumpWidgetRef(tester);
+    final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+    controller.selectMailboxForSearchFilter(ref, null);
+    await tester.pumpAndSettle();
+
+    expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+  });
+
+  testWidgets('picking contacts for the filter reads the contacts of my own account, not of the shown one',
+      (tester) async {
+    ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    final ref = await pumpWidgetRef(tester);
+    final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.contact);
+
+    unawaited(controller.selectContactForSearchFilter(ref, recorder.context, PrefixEmailAddress.from));
+    await tester.pumpAndSettle();
+
+    expect((recorder.arguments as ContactArguments).accountId, AccountFixtures.aliceAccountId);
+  });
 }
