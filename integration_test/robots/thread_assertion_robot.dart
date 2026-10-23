@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -10,6 +12,16 @@ import 'abstract/abstract_thread_assertion_robot.dart';
 
 class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionRobot {
   ThreadAssertionRobot(super.$);
+
+  MailboxDashBoardController get _dashboard =>
+      Get.find<MailboxDashBoardController>();
+
+  List<int> _listedThreads(String subjectPrefix) =>
+      _dashboard.emailsInCurrentMailbox
+          .map((email) => email.subject ?? '')
+          .where((subject) => subject.contains(subjectPrefix))
+          .map((subject) => int.parse(subject.split(' ').last))
+          .toList();
 
   @override
   Future<void> expectAppGridButtonVisible() async {
@@ -25,6 +37,43 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
   Future<void> expectTrashBannerInvisible() async {
     await $(const Key(UiKeys.cleanMessageBannerNotVisible)).waitUntilExists();
     await waitForCondition(() => !$(CleanMessagesBanner).visible);
+  }
+
+  @override
+  Future<void> expectThreadsListedOnce(
+    List<int> threads,
+    String subjectPrefix,
+  ) async {
+    expect(
+      _listedThreads(subjectPrefix),
+      threads,
+      reason: 'every thread of the folder must be listed once, newest first',
+    );
+  }
+
+  @override
+  Future<void> expectListedThreadsArePrefixOf(
+    List<int> threads,
+    String subjectPrefix,
+  ) async {
+    final listed = _listedThreads(subjectPrefix);
+    expect(
+      listed,
+      threads.take(listed.length),
+      reason: 'precondition: the first page lists the newest threads',
+    );
+  }
+
+  @override
+  Future<void> expectListedThreadCountBelow(
+    int n,
+    String subjectPrefix,
+  ) async {
+    expect(
+      _listedThreads(subjectPrefix).length,
+      lessThan(n),
+      reason: 'precondition: older threads are left to load-more',
+    );
   }
 
   @override
