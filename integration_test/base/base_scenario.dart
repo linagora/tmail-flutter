@@ -7,6 +7,12 @@ abstract class BaseScenario {
 
   const BaseScenario(this.$);
 
+  /// Runs after app dependencies are initialized but before the app starts.
+  ///
+  /// Scenarios can use this hook to prepare state that startup reads, without
+  /// racing the first frame.
+  Future<void> prepare() async {}
+
   Future<void> execute();
 
   Future<void> expectViewVisible(
