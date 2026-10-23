@@ -17,7 +17,7 @@ import 'package:flutter/material.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:html_editor_enhanced/html_editor.dart' show HtmlEditorController;
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
