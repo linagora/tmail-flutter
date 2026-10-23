@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -22,6 +23,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -64,16 +66,21 @@ import 'package:tmail_ui_user/features/search/email/presentation/coordinator/get
 import 'package:tmail_ui_user/features/search/email/presentation/coordinator/search_email_layout_owner_registry.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import 'thread_controller_test.mocks.dart';
 
@@ -247,6 +254,9 @@ void main() {
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    final bridge = ActiveAccountBridgeFixtures.put(SessionFixtures.aliceSession);
+    when(mockMailboxDashBoardController.activeAccountId)
+        .thenAnswer((_) => bridge.accountId.value);
     // The central executor resolves these via Get.find, not the controller ctor.
     Get.put<SearchEmailInteractor>(mockSearchEmailInteractor);
     Get.put<SearchMoreEmailInteractor>(mockSearchMoreEmailInteractor);
@@ -553,14 +563,23 @@ void main() {
         obxListenerController.onClose();
       });
 
-      test(
-        'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
-        'when mailboxDashBoardController.selectedMailbox updated',
-      () async {
-        // arrange
-        final mailboxBefore = PresentationMailbox(MailboxId(Id('mailbox-before-id')));
-        final mailboxAfter = PresentationMailbox(MailboxId(Id('mailbox-after-id')));
-        final selectedMailbox = Rxn(mailboxBefore);
+      Stream<Either<Failure, Success>> fetchEmailsOf(dynamic accountId) =>
+          mockGetEmailsInMailboxInteractor.execute(
+            any,
+            accountId,
+            limit: anyNamed('limit'),
+            sort: anyNamed('sort'),
+            emailFilter: anyNamed('emailFilter'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            useCache: anyNamed('useCache'),
+            forceEmailQuery: anyNamed('forceEmailQuery'),
+            collapseThreads: anyNamed('collapseThreads'),
+            getLatestChanges: false,
+          );
+
+      Future<void> changeSelectedMailbox() async {
+        final selectedMailbox = Rxn(PresentationMailbox(MailboxId(Id('mailbox-before-id'))));
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(selectedMailbox);
@@ -572,37 +591,118 @@ void main() {
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
-        // act
+
         obxListenerController.onInit();
-        mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
-        await untilCalled(mockGetEmailsInMailboxInteractor.execute(
+        selectedMailbox.value = PresentationMailbox(MailboxId(Id('mailbox-after-id')));
+        await untilCalled(fetchEmailsOf(any));
+      }
+
+      test(
+        'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
+        'when mailboxDashBoardController.selectedMailbox updated',
+      () async {
+        await changeSelectedMailbox();
+
+        verify(fetchEmailsOf(any));
+      });
+
+      test('should fetch the emails of the shown account, not of my own', () async {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+        await changeSelectedMailbox();
+
+        verify(fetchEmailsOf(DelegationFixtures.bobAccountId));
+      });
+    });
+
+    group('email actions in the shown account:', () {
+      test('moveToSpam moves the email of the shown account, not of my own', () {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.spamMailboxId).thenReturn(MailboxId(Id('spam-id')));
+
+        threadController.moveToSpam(
+          PresentationEmail(id: EmailId(Id('email-1'))),
+          mailboxContain: PresentationMailbox(MailboxId(Id('inbox-id'))),
+        );
+
+        verify(mockMailboxDashBoardController.moveToMailbox(
+          any,
+          DelegationFixtures.bobAccountId,
           any,
           any,
+        )).called(1);
+      });
+
+      test('moveToTrash moves the email of the shown account, not of my own', () {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.mapDefaultMailboxIdByRole)
+            .thenReturn({PresentationMailbox.roleTrash: MailboxId(Id('trash-id'))});
+
+        threadController.moveToTrash(
+          PresentationEmail(id: EmailId(Id('email-1'))),
+          mailboxContain: PresentationMailbox(MailboxId(Id('inbox-id'))),
+        );
+
+        verify(mockMailboxDashBoardController.moveToMailbox(
+          any,
+          DelegationFixtures.bobAccountId,
+          any,
+          any,
+        )).called(1);
+      });
+
+      test('unSpam moves the email of the shown account back to its inbox, not of my own', () {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.spamMailboxId).thenReturn(MailboxId(Id('spam-id')));
+        when(mockMailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox))
+            .thenReturn(MailboxId(Id('inbox-id')));
+
+        threadController.unSpam(PresentationEmail(id: EmailId(Id('email-1'))));
+
+        verify(mockMailboxDashBoardController.moveToMailbox(
+          any,
+          DelegationFixtures.bobAccountId,
+          any,
+          any,
+        )).called(1);
+      });
+
+      testWidgets('moveToMailbox opens the folder picker on the shown account, not on my own', (tester) async {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+        threadController.moveToMailbox(
+          PresentationEmail(id: EmailId(Id('email-1'))),
+          mailboxContain: PresentationMailbox(MailboxId(Id('inbox-id'))),
+        );
+        await tester.pumpAndSettle();
+
+        expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+      });
+
+      test('pull to refresh reloads the emails of the shown account, not of my own', () async {
+        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+
+        await threadController.cleanAndGetAllEmailAction();
+
+        verify(mockCleanAndGetEmailsInMailboxInteractor.execute(
+          any,
+          DelegationFixtures.bobAccountId,
           limit: anyNamed('limit'),
           sort: anyNamed('sort'),
           emailFilter: anyNamed('emailFilter'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
           useCache: anyNamed('useCache'),
-          forceEmailQuery: anyNamed('forceEmailQuery'),
-          collapseThreads: anyNamed('collapseThreads'),
-          getLatestChanges: false,
-        ));
-        
-        // assert
-        verify(mockGetEmailsInMailboxInteractor.execute(
-          any,
-          any,
-          limit: anyNamed('limit'),
-          sort: anyNamed('sort'),
-          emailFilter: anyNamed('emailFilter'),
-          propertiesCreated: anyNamed('propertiesCreated'),
-          propertiesUpdated: anyNamed('propertiesUpdated'),
-          useCache: anyNamed('useCache'),
-          forceEmailQuery: anyNamed('forceEmailQuery'),
-          collapseThreads: anyNamed('collapseThreads'),
-          getLatestChanges: false,
-        ));
+        )).called(1);
       });
     });
 

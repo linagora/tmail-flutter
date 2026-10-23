@@ -62,7 +62,7 @@ extension AddLabelToThreadExtension on ThreadDetailController {
     required bool isSelected,
     List<EmailId>? currentEmailIds,
   }) {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
     final emailIds =
         currentEmailIds ?? emailsInThreadDetailInfo.emailIdsToDisplay(true);

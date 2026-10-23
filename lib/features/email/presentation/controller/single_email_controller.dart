@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
@@ -108,7 +109,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class SingleEmailController extends BaseController with AppLoaderMixin {
+class SingleEmailController extends BaseController
+    with AppLoaderMixin, ActiveAccountReader {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -170,7 +172,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
   bool get isCalendarEventFree => blobCalendarEvent.value?.isFree ?? true;
 
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
+
+  /// Email rule filters belong to my own account, also when another mailbox is shown.
+  AccountId? get _personalAccountId => mailboxDashBoardController.accountId.value;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
@@ -418,7 +423,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _injectAndGetInteractorBindings(Session? session, AccountId accountId) {
-    injectRuleFilterBindings(session, accountId);
+    injectRuleFilterBindings(session, _personalAccountId);
     injectMdnBindings(session, accountId);
     _injectCalendarEventBindings(session, accountId);
 
@@ -544,7 +549,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
       if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
-          accountId: mailboxDashBoardController.accountId.value!,
+          accountId: activeAccountId!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
         );
       } else {
@@ -584,7 +589,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
       if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
-          accountId: mailboxDashBoardController.accountId.value!,
+          accountId: activeAccountId!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
         );
       } else {
@@ -965,11 +970,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openEmailAddressDialog(EmailAddress emailAddress) {
-    if (session == null || accountId == null) return;
+    if (session == null || _personalAccountId == null) return;
 
     emailActionReactor.openEmailAddressDialog(
       session!,
-      accountId!,
+      _personalAccountId!,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
@@ -1190,10 +1195,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void quickCreatingRule(EmailAddress emailAddress) {
     popBack();
 
-    if (accountId != null && session != null) {
+    if (_personalAccountId != null && session != null) {
       consumeState(emailActionReactor.quickCreateRule(
         session!,
-        accountId!,
+        _personalAccountId!,
         emailAddress: emailAddress,
       ));
     }
