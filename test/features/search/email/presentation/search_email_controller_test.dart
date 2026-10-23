@@ -26,6 +26,7 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_bridge.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -66,6 +67,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../mailbox_dashboard/presentation/controller/advanced_filter_controller_test.mocks.dart'
     as advanced_mocks;
@@ -297,6 +299,8 @@ void main() {
     final accountId = Rxn(AccountFixtures.aliceAccountId);
 
     when(mailboxDashBoardController.accountId).thenReturn(accountId);
+    when(mailboxDashBoardController.activeAccountId)
+        .thenAnswer((_) => Get.find<ActiveAccountBridge>().accountId.value);
     when(
       mailboxDashBoardController.sessionCurrent,
     ).thenReturn(SessionFixtures.aliceSession);
@@ -348,6 +352,7 @@ void main() {
       thread_mocks.MockNetworkConnectionController(),
     );
     Get.put<MailboxDashBoardController>(mailboxDashBoardController);
+    ActiveAccountBridgeFixtures.put(SessionFixtures.aliceSession);
     Get.put<SearchEmailInteractor>(searchEmailInteractor);
     Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
 
@@ -1227,4 +1232,5 @@ void main() {
       },
     );
   });
+
 }

@@ -53,6 +53,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
   Widget buildMailboxAppBar() {
     return Obx(() {
       final dashboardController = controller.mailboxDashBoardController;
+      // My own menu, like the web navigation bar: contact support follows my account.
       final accountId = dashboardController.accountId.value;
       final session = dashboardController.sessionCurrent;
       String username = dashboardController.ownEmailAddress.value;

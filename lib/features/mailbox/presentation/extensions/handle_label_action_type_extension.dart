@@ -43,7 +43,7 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
   }) {
     labelController.handleLabelActionType(
       actionType: actionType,
-      accountId: accountId.value,
+      accountId: activeAccountId,
       label: label,
     );
   }

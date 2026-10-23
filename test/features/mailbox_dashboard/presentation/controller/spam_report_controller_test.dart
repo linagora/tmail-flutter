@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -27,13 +28,23 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spa
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/widget_fixtures.dart';
 import 'spam_report_controller_test.mocks.dart';
+
+mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
+const fallbackGenerators = {
+  #onStart: mockControllerCallback,
+  #onDelete: mockControllerCallback,
+};
 
 @GenerateNiceMocks([
   MockSpec<StoreSpamReportInteractor>(),
@@ -53,6 +64,7 @@ import 'spam_report_controller_test.mocks.dart';
   MockSpec<ResponsiveUtils>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
+  MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   late MockStoreSpamReportInteractor storeSpamReportInteractor;
@@ -191,6 +203,28 @@ void main() {
 
         expect(controller.presentationSpamMailbox.value, isNotNull);
       });
+    });
+  });
+
+  group('SpamReportController.dismissSpamReportAction', () {
+    testWidgets('marks the spam folder as read in the shown account, not in my own', (tester) async {
+      final dashboard = MockMailboxDashBoardController();
+      when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
+      Get.put<MailboxDashBoardController>(dashboard);
+      ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+      controller.setSpamPresentationMailbox(makeMailboxWithUnread(3));
+      late BuildContext context;
+      await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
+        child: Builder(builder: (builderContext) {
+          context = builderContext;
+          return const SizedBox.shrink();
+        }),
+      ));
+      await tester.pump();
+
+      controller.dismissSpamReportAction(context);
+
+      verify(dashboard.markAsReadMailbox(any, DelegationFixtures.bobAccountId, any, any, any)).called(1);
     });
   });
 }

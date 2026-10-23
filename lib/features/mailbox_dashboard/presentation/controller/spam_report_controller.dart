@@ -8,6 +8,7 @@ import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
@@ -23,7 +24,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class SpamReportController extends BaseController {
+class SpamReportController extends BaseController with ActiveAccountReader {
   final StoreSpamReportInteractor _storeSpamReportInteractor;
   final StoreSpamReportStateInteractor _storeSpamReportStateInteractor;
   final GetSpamReportStateInteractor _getSpamReportStateInteractor;
@@ -101,7 +102,7 @@ class SpamReportController extends BaseController {
       final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
       final spamMailbox = presentationSpamMailbox.value;
       final session = mailboxDashBoardController.sessionCurrent;
-      final accountId = mailboxDashBoardController.accountId.value;
+      final accountId = activeAccountId;
 
       if (spamMailbox != null && session != null && accountId != null) {
         _storeLastTimeDismissedSpamReportedAction();

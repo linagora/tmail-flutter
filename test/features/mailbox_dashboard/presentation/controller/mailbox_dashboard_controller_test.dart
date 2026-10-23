@@ -1,3 +1,34 @@
+import 'dart:async';
+import 'package:core/presentation/state/success.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/email/read_actions.dart';
+import 'package:model/email/mark_star_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/download/domain/usecase/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/restore_deleted_message_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_attachment_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'dart:io';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -5,6 +36,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +54,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
@@ -54,7 +88,9 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -80,12 +116,15 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/labels/label_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
@@ -103,6 +142,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -142,11 +182,16 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
+
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 const fallbackGenerators = {
@@ -204,6 +249,7 @@ const fallbackGenerators = {
   MockSpec<CreateDefaultMailboxInteractor>(),
   MockSpec<MoveFolderContentInteractor>(),
   MockSpec<TreeBuilder>(),
+  MockSpec<IOSSharingManager>(),
   MockSpec<VerifyNameInteractor>(),
   MockSpec<GetAllMailboxInteractor>(),
   MockSpec<RefreshAllMailboxInteractor>(),
@@ -221,6 +267,8 @@ const fallbackGenerators = {
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
+  MockSpec<DownloadAttachmentForWebInteractor>(),
+  MockSpec<ParseEmailByBlobIdInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveAllComposerCacheInteractor>(),
@@ -299,6 +347,8 @@ void main() {
   final imagePaths = ImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
+  final downloadAttachmentForWebInteractor = MockDownloadAttachmentForWebInteractor();
+  final parseEmailByBlobIdInteractor = MockParseEmailByBlobIdInteractor();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
 
@@ -368,6 +418,25 @@ void main() {
     );
     await tester.pump();
   }
+
+  /// onInit schedules onReady for the next frame, so a test that calls it never calls onReady too.
+  MailboxController newMailboxController({TreeBuilder? mailboxTreeBuilder}) => MailboxController(
+        createNewMailboxInteractor,
+        deleteMultipleMailboxInteractor,
+        renameMailboxInteractor,
+        moveMailboxInteractor,
+        subscribeMailboxInteractor,
+        subscribeMultipleMailboxInteractor,
+        subaddressingInteractor,
+        createDefaultMailboxInteractor,
+        moveFolderContentInteractor,
+        mailboxTreeBuilder ?? treeBuilder,
+        verifyNameInteractor,
+        getAllMailboxInteractor,
+        refreshAllMailboxInteractor,
+      );
+
+  setUp(() => ActiveAccountBridgeFixtures.putShowing(null));
 
   setUp(() {
     Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
@@ -733,6 +802,7 @@ void main() {
       mailboxDashboardController.sessionCurrent = testSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = testAccountId;
+      mailboxDashboardController.activeAccountBridge.accountId.value = testAccountId;
     });
 
     test('WHEN user search email by keyword, '
@@ -973,9 +1043,9 @@ void main() {
       () async {
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       when(context.mounted).thenReturn(true);
-      // onInit registers the mailboxUIAction listener that handles the action
-      // (the harness only calls onReady).
-      mailboxController.onInit();
+      // onInit registers the mailboxUIAction listener that handles the action. The harness
+      // controller already ran onReady, which a second onInit would schedule again.
+      mailboxController = newMailboxController()..onInit();
       // One inbox instance backs both tree and selection, so switching back
       // fires no mailbox change: only the restore can reload, making this a
       // real guard for the fix.
@@ -1289,10 +1359,8 @@ void main() {
         verifyNameInteractor,
         getAllMailboxInteractor,
         refreshAllMailboxInteractor);
-      // onInit registers the label list listener under test
-      mailboxController
-        ..onInit()
-        ..onReady();
+      // onInit registers the label list listener under test, and schedules onReady itself
+      mailboxController.onInit();
       mailboxController.defaultMailboxTree.value = MailboxTree(
         MailboxNode(
           MailboxNode.rootItem(),
@@ -1300,6 +1368,9 @@ void main() {
         ),
       );
     });
+
+    // Get.put in a later group would keep this dashboard registered.
+    tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
 
     test('should select the Inbox when the selected label is removed', () {
       mailboxDashboardController.selectedMailbox.value = workMailbox;
@@ -1332,6 +1403,566 @@ void main() {
       labels.value = [];
 
       expect(mailboxDashboardController.selectedMailbox.value, folder);
+    });
+  });
+
+  group('folders of the shown account:', () {
+    void startMailboxController() => mailboxController = newMailboxController()..onInit();
+
+    setUp(() {
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      clearInteractions(getAllMailboxInteractor);
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
+      Get.replace(mailboxDashboardController);
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = null;
+    });
+
+    // Get.put in a later group would keep this dashboard registered.
+    tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
+
+    test('loads the folders of my account once, when a new dashboard sets it up', () {
+      startMailboxController();
+
+      ActiveAccountBridgeFixtures.showForThisTest(testAccountId);
+      mailboxDashboardController.accountId.value = testAccountId;
+
+      verify(getAllMailboxInteractor.execute(testSession, testAccountId)).called(1);
+    });
+
+    test('loads the folders of a new dashboard that shows the account already shown before', () {
+      ActiveAccountBridgeFixtures.showForThisTest(testAccountId);
+      startMailboxController();
+
+      mailboxDashboardController.accountId.value = testAccountId;
+
+      verify(getAllMailboxInteractor.execute(testSession, testAccountId)).called(1);
+    });
+
+    test('loads the folders of the shown account at once when my account was set before it started', () {
+      mailboxDashboardController.accountId.value = testAccountId;
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      startMailboxController();
+
+      verify(getAllMailboxInteractor.execute(testSession, DelegationFixtures.bobAccountId)).called(1);
+    });
+
+    test('loads the folders of a newly shown account', () {
+      mailboxDashboardController.accountId.value = testAccountId;
+      startMailboxController();
+
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      verify(getAllMailboxInteractor.execute(testSession, DelegationFixtures.bobAccountId)).called(1);
+    });
+
+    testWidgets('moving a folder opens the folder picker on the shown account, not on my own', (tester) async {
+      mailboxDashboardController.accountId.value = testAccountId;
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      startMailboxController();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+      mailboxController.handleMailboxAction(
+        recorder.context,
+        MailboxActions.move,
+        PresentationMailbox(MailboxId(Id('folder-1'))),
+      );
+      await tester.pumpAndSettle();
+
+      expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+    });
+
+    testWidgets('disallowing subaddressing changes the folder of the shown account, not of my own', (tester) async {
+      clearInteractions(subaddressingInteractor);
+      when(subaddressingInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      mailboxDashboardController.accountId.value = testAccountId;
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      startMailboxController();
+      await pumpLocalizedApp(tester);
+
+      mailboxController.handleMailboxAction(
+        Get.context!,
+        MailboxActions.disallowSubaddressing,
+        PresentationMailbox(MailboxId(Id('folder-1'))),
+      );
+
+      verify(subaddressingInteractor.execute(any, DelegationFixtures.bobAccountId, any)).called(1);
+    });
+
+    group('default folders missing after the folders load:', () {
+      setUp(() {
+        clearInteractions(createDefaultMailboxInteractor);
+        when(uuid.v1()).thenReturn('default-folder-id');
+        // A real request ends with a state, so onDone does not see the folders load again.
+        when(createDefaultMailboxInteractor.execute(any, any, any))
+            .thenAnswer((_) => Stream.value(Left(CreateDefaultMailboxFailure(null))));
+        mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      });
+
+      Future<void> loadFoldersShowing(AccountId? shownAccountId) async {
+        when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => Stream.value(Right(GetAllMailboxSuccess(
+              mailboxList: [PresentationMailbox(MailboxId(Id('folder-1')), name: MailboxName('Folder'))],
+              currentMailboxState: State('mailbox-state'),
+            ))));
+        ActiveAccountBridgeFixtures.put(DelegationFixtures.session(), shownAccountId: shownAccountId);
+        // A real tree, so the loaded folders go through the same path as in the app.
+        mailboxController = newMailboxController(mailboxTreeBuilder: TreeBuilder())..onInit();
+        mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
+        await pumpEventQueue();
+        expect(mailboxDashboardController.refreshingAllMailboxState.value, Right(RefreshAllMailboxSuccess()));
+      }
+
+      test('are created in my own account', () async {
+        await loadFoldersShowing(null);
+
+        verify(createDefaultMailboxInteractor.execute(any, DelegationFixtures.aliceAccountId, any)).called(1);
+      });
+
+      test('are not created in a delegated account', () async {
+        await loadFoldersShowing(DelegationFixtures.bobAccountId);
+
+        verifyNever(createDefaultMailboxInteractor.execute(any, any, any));
+      });
+
+      group('on iOS:', () {
+        late MockIOSSharingManager iosSharingManager;
+
+        setUp(() {
+          debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+          addTearDown(() => debugDefaultTargetPlatformOverride = null);
+          iosSharingManager = MockIOSSharingManager();
+          when(iosSharingManager.isExistMailboxIdsBlockNotificationInKeyChain(any)).thenAnswer((_) async => true);
+          Get.put<IOSSharingManager>(iosSharingManager);
+          addTearDown(() => Get.delete<IOSSharingManager>());
+        });
+
+        test('the notification keychain gets the folders of my own account', () async {
+          await loadFoldersShowing(null);
+
+          verify(iosSharingManager.isExistMailboxIdsBlockNotificationInKeyChain(DelegationFixtures.aliceAccountId))
+              .called(1);
+        });
+
+        test('the notification keychain never gets the folders of a delegated account', () async {
+          await loadFoldersShowing(DelegationFixtures.bobAccountId);
+
+          verifyZeroInteractions(iosSharingManager);
+        });
+      });
+    });
+
+    test('a closed MailboxController no longer loads the folders of a newly shown account', () {
+      mailboxDashboardController.accountId.value = testAccountId;
+      startMailboxController();
+      mailboxController.onClose();
+
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      verifyNever(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId));
+    });
+  });
+
+  group('session setup:', () {
+    test('a new dashboard shows my account of the session it sets up', () {
+      ActiveAccountBridgeFixtures.put(DelegationFixtures.session(username: 'someone@else.tld'));
+
+      mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+
+      expect(mailboxDashboardController.activeAccountBridge.activeAccount,
+          ActiveAccount.personal(DelegationFixtures.session()));
+    });
+
+    test('a reader of a new dashboard loads only the account its session shows, not the one shown before', () {
+      ActiveAccountBridgeFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
+      mailboxDashboardController.accountId.value = null;
+      final loadedAccountIds = <AccountId>[];
+      final worker = _ShownAccountReader().everShownAccount(mailboxDashboardController.accountId, loadedAccountIds.add);
+      addTearDown(worker.dispose);
+
+      mailboxDashboardController.handleReloaded(DelegationFixtures.session(listsBob: false));
+
+      expect(loadedAccountIds, [DelegationFixtures.aliceAccountId]);
+    });
+  });
+
+  group('restored messages polling:', () {
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      clearInteractions(getRestoredDeletedMessageInteractor);
+      when(getRestoredDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+    });
+
+    test('stops once a logout cleared the shown account', () {
+      ActiveAccountBridgeFixtures.putShowing(null);
+
+      mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1')))));
+
+      verifyNever(getRestoredDeletedMessageInteractor.execute(any, any, any));
+    });
+  });
+
+  group('readers of the shown account:', () {
+    final bob = DelegationFixtures.bobAccountId;
+    final destinationId = MailboxId(Id('destination'));
+    final email = PresentationEmail(
+      id: EmailId(Id('email-1')),
+      mailboxIds: {testMailboxId: true},
+      mailboxContain: PresentationMailbox(testMailboxId),
+    );
+
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+      mailboxDashboardController.selectedMailbox.value = PresentationMailbox(
+        testMailboxId,
+        unreadEmails: UnreadEmails(UnsignedInt(3)),
+      );
+      mailboxDashboardController.setMapDefaultMailboxIdByRole({
+        PresentationMailbox.roleSpam: MailboxId(Id('spam')),
+        PresentationMailbox.roleInbox: MailboxId(Id('inbox')),
+        PresentationMailbox.roleArchive: MailboxId(Id('archive')),
+        PresentationMailbox.roleTrash: MailboxId(Id('trash')),
+      });
+      mailboxDashboardController.mapMailboxById = {
+        testMailboxId: PresentationMailbox(testMailboxId),
+      };
+      ActiveAccountBridgeFixtures.putShowing(bob);
+      clearInteractions(appToast);
+      for (final interactor in [
+        deleteEmailPermanentlyInteractor,
+        deleteMultipleEmailsPermanentlyInteractor,
+        markAsEmailReadInteractor,
+        markAsStarEmailInteractor,
+        markAsMultipleEmailReadInteractor,
+        markAsStarMultipleEmailInteractor,
+        markAsMailboxReadInteractor,
+        moveToMailboxInteractor,
+        moveMultipleEmailToMailboxInteractor,
+        unsubscribeEmailInteractor,
+        restoreDeletedMessageInteractor,
+        getRestoredDeletedMessageInteractor,
+        spamReportController,
+        downloadAttachmentForWebInteractor,
+        parseEmailByBlobIdInteractor,
+      ]) {
+        clearInteractions(interactor);
+      }
+      when(spamReportController.enableSpamReport).thenReturn(true);
+      when(downloadController.uuid).thenReturn(uuid);
+      when(uuid.v4()).thenReturn('task-1');
+      when(downloadController.dynamicUrlInterceptors).thenReturn(dynamicUrlInterceptors);
+      when(downloadController.downloadAttachmentForWebInteractor).thenReturn(downloadAttachmentForWebInteractor);
+      when(downloadController.parseEmailByBlobIdInteractor).thenReturn(parseEmailByBlobIdInteractor);
+      when(downloadAttachmentForWebInteractor.execute(
+        any,
+        any,
+        any,
+        any,
+        onReceiveController: anyNamed('onReceiveController'),
+        cancelToken: anyNamed('cancelToken'),
+        previewerSupported: anyNamed('previewerSupported'),
+        sourceView: anyNamed('sourceView'),
+      )).thenAnswer((_) => const Stream.empty());
+      when(parseEmailByBlobIdInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(deleteEmailPermanentlyInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(deleteMultipleEmailsPermanentlyInteractor.execute(any, any, any, any))
+          .thenAnswer((_) => const Stream.empty());
+      when(markAsEmailReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsStarEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsMultipleEmailReadInteractor.execute(any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsStarMultipleEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsMailboxReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(moveToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(moveMultipleEmailToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(unsubscribeEmailInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(restoreDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(getRestoredDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+    });
+
+    /// Runs [act] in a localized app, then taps the undo action of the move toast it shows.
+    Future<void> undoMove(WidgetTester tester, Success moveSuccess) async {
+      await pumpLocalizedApp(tester);
+      mailboxDashboardController.handleSuccessViewState(moveSuccess);
+      final undo = verify(appToast.showToastMessage(
+        any,
+        any,
+        actionName: anyNamed('actionName'),
+        onActionClick: captureAnyNamed('onActionClick'),
+        actionIcon: anyNamed('actionIcon'),
+        leadingSVGIcon: anyNamed('leadingSVGIcon'),
+        leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
+        backgroundColor: anyNamed('backgroundColor'),
+        textColor: anyNamed('textColor'),
+      )).captured.single as Function;
+      undo();
+    }
+
+    void expectDownloadInShownAccount() => verify(downloadAttachmentForWebInteractor.execute(
+          any,
+          any,
+          bob,
+          any,
+          onReceiveController: anyNamed('onReceiveController'),
+          cancelToken: anyNamed('cancelToken'),
+          previewerSupported: anyNamed('previewerSupported'),
+          sourceView: anyNamed('sourceView'),
+        )).called(1);
+
+    final interactorReaders = <({
+      String name,
+      Future<void> Function(WidgetTester tester) act,
+      void Function() expectShownAccount,
+    })>[
+      (
+        name: 'deleteEmailPermanently',
+        act: (_) async => mailboxDashboardController.deleteEmailPermanently(email),
+        expectShownAccount: () => verify(deleteEmailPermanentlyInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'markAsEmailRead',
+        act: (_) async => mailboxDashboardController.markAsEmailRead(
+            email.id!, ReadActions.markAsRead, MarkReadAction.tap, testMailboxId),
+        expectShownAccount: () =>
+            verify(markAsEmailReadInteractor.execute(any, bob, any, any, any, any)).called(1),
+      ),
+      (
+        name: 'markAsStarEmail',
+        act: (_) async => mailboxDashboardController.markAsStarEmail(email, MarkStarAction.markStar),
+        expectShownAccount: () => verify(markAsStarEmailInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'markAsReadSelectedMultipleEmail',
+        act: (_) async =>
+            mailboxDashboardController.markAsReadSelectedMultipleEmail([email], ReadActions.markAsRead),
+        expectShownAccount: () =>
+            verify(markAsMultipleEmailReadInteractor.execute(any, bob, any, any, any)).called(1),
+      ),
+      (
+        name: 'markAsStarSelectedMultipleEmail',
+        act: (_) async =>
+            mailboxDashboardController.markAsStarSelectedMultipleEmail([email], MarkStarAction.markStar),
+        expectShownAccount: () => verify(markAsStarMultipleEmailInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'dragging emails to the favorite folder',
+        act: (_) async => mailboxDashboardController.dragSelectedMultipleEmailToMailboxAction(
+            [email], PresentationMailbox(destinationId, role: PresentationMailbox.roleFavorite)),
+        expectShownAccount: () => verify(markAsStarMultipleEmailInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      for (final role in [PresentationMailbox.roleTrash, PresentationMailbox.roleSpam, null])
+        (
+          name: 'dragging an email to the ${role?.value ?? 'other'} folder',
+          act: (_) async => mailboxDashboardController.dragSelectedMultipleEmailToMailboxAction(
+              [email], PresentationMailbox(destinationId, role: role)),
+          expectShownAccount: () => verify(moveToMailboxInteractor.execute(any, bob, any, any)).called(1),
+        ),
+      (
+        name: 'archiveMessage',
+        act: (_) async => mailboxDashboardController.archiveMessage(email),
+        expectShownAccount: () => verify(moveToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'undoing the move of an email',
+        act: (tester) => undoMove(
+          tester,
+          MoveToMailboxSuccess(
+            email.id!,
+            testMailboxId,
+            destinationId,
+            MoveAction.moving,
+            EmailActionType.moveToMailbox,
+            originalMailboxIdsWithEmailIds: {testMailboxId: [email.id!]},
+            emailIdsWithReadStatus: {email.id!: false},
+          ),
+        ),
+        expectShownAccount: () => verify(moveToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'undoing the move of selected emails',
+        act: (tester) => undoMove(
+          tester,
+          MoveMultipleEmailToMailboxAllSuccess(
+            [email.id!],
+            destinationId,
+            MoveAction.moving,
+            EmailActionType.moveToMailbox,
+            originalMailboxIdsWithEmailIds: {testMailboxId: [email.id!]},
+            emailIdsWithReadStatus: {email.id!: false},
+          ),
+        ),
+        expectShownAccount: () =>
+            verify(moveMultipleEmailToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'unSpamSelectedMultipleEmail',
+        act: (_) async => mailboxDashboardController.unSpamSelectedMultipleEmail([email]),
+        expectShownAccount: () =>
+            verify(moveMultipleEmailToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'moveMultipleEmailInThreadDetail',
+        act: (_) async => mailboxDashboardController.moveMultipleEmailInThreadDetail(
+          [
+            EmailInThreadDetailInfo(
+              emailId: email.id!,
+              keywords: null,
+              mailboxIds: {testMailboxId: true},
+              isValidToDisplay: true,
+            ),
+          ],
+          destinationMailboxId: destinationId,
+          emailActionType: EmailActionType.moveToMailbox,
+        ),
+        expectShownAccount: () =>
+            verify(moveMultipleEmailToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'deleting the selected emails permanently',
+        act: (tester) async {
+          await pumpLocalizedApp(tester);
+          mailboxDashboardController.deleteSelectionEmailsPermanently(
+            Get.context!,
+            DeleteActionType.multiple,
+            listEmails: [email],
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(AppLocalizations.of(Get.context!).delete).last);
+          await tester.pumpAndSettle();
+        },
+        expectShownAccount: () =>
+            verify(deleteMultipleEmailsPermanentlyInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'markAsReadMailboxAction',
+        act: (tester) async {
+          await pumpLocalizedApp(tester);
+          mailboxDashboardController.markAsReadMailboxAction(Get.context!);
+        },
+        expectShownAccount: () =>
+            verify(markAsMailboxReadInteractor.execute(any, bob, any, any, any, any)).called(1),
+      ),
+      (
+        name: 'moving emails to the trash from a virtual folder',
+        act: (_) async {
+          mailboxDashboardController.selectedMailbox.value =
+              PresentationMailbox(destinationId, role: PresentationMailbox.roleFavorite);
+          mailboxDashboardController.moveEmailsToFolder([email], EmailActionType.moveToTrash);
+        },
+        expectShownAccount: () =>
+            verify(moveMultipleEmailToMailboxInteractor.execute(any, bob, any, any)).called(1),
+      ),
+      (
+        name: 'downloadMessageAsEML',
+        act: (_) async => mailboxDashboardController.downloadMessageAsEML(
+            presentationEmail: PresentationEmail(id: email.id, blobId: Id('blob-1'))),
+        expectShownAccount: expectDownloadInShownAccount,
+      ),
+      (
+        name: 'downloadAttachment',
+        act: (_) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          mailboxDashboardController.downloadAttachment(attachment: Attachment(blobId: Id('blob-1')));
+        },
+        expectShownAccount: expectDownloadInShownAccount,
+      ),
+      (
+        name: 'previewAttachment of an EML file',
+        act: (tester) async {
+          final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.emailEMLPreviewer);
+          mailboxDashboardController.previewAttachment(
+            context: recorder.context,
+            attachment: Attachment(blobId: Id('blob-1'), type: MediaType('message', 'rfc822')),
+            onPreviewOrDownloadAction: (_, __) {},
+          );
+          // The loading dialog it opens stays for a least loading time and waits for the parse
+          // result, which never comes here.
+          await tester.pump(SmartDialog.config.loading.leastLoadingTime);
+          unawaited(SmartDialog.dismiss());
+          await tester.pump(const Duration(seconds: 1));
+        },
+        expectShownAccount: () => verify(parseEmailByBlobIdInteractor.execute(bob, any, any, any)).called(1),
+      ),
+      (
+        name: 'refreshSpamReportBanner',
+        act: (_) async => mailboxDashboardController.refreshSpamReportBanner(),
+        expectShownAccount: () => verify(spamReportController.getSpamMailboxCached(bob, any)).called(1),
+      ),
+      (
+        name: 'unsubscribeMail',
+        act: (_) async => mailboxDashboardController.unsubscribeMail(email.id!),
+        expectShownAccount: () => verify(unsubscribeEmailInteractor.execute(any, bob, any)).called(1),
+      ),
+      (
+        name: 'handleRestoreEmailAction',
+        act: (_) async => mailboxDashboardController.handleRestoreEmailAction(EmailRecoveryAction()),
+        expectShownAccount: () => verify(restoreDeletedMessageInteractor.execute(any, bob, any)).called(1),
+      ),
+      (
+        name: 'polling the restored messages',
+        act: (_) async => mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
+            EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))))),
+        expectShownAccount: () => verify(getRestoredDeletedMessageInteractor.execute(any, bob, any)).called(1),
+      ),
+    ];
+
+    for (final reader in interactorReaders) {
+      testWidgets('${reader.name} acts on the shown account, not on my own', (tester) async {
+        await reader.act(tester);
+
+        reader.expectShownAccount();
+      });
+    }
+
+    final pickerReaders = <({String name, String route, Future<void> Function() open, AccountId? Function(Object?) accountIdOf})>[
+      (
+        name: 'moveEmailsToMailbox',
+        route: AppRoutes.destinationPicker,
+        open: () => mailboxDashboardController.moveEmailsToMailbox([email]),
+        accountIdOf: (arguments) => (arguments as DestinationPickerArguments).accountId,
+      ),
+      (
+        name: 'selectFolderSearchFilter',
+        route: AppRoutes.destinationPicker,
+        open: () => mailboxDashboardController.selectFolderSearchFilter(),
+        accountIdOf: (arguments) => (arguments as DestinationPickerArguments).accountId,
+      ),
+      (
+        name: 'gotoEmailRecovery',
+        route: AppRoutes.emailRecovery,
+        open: () async => mailboxDashboardController.gotoEmailRecovery(),
+        accountIdOf: (arguments) => (arguments as EmailRecoveryArguments).accountId,
+      ),
+    ];
+
+    for (final reader in pickerReaders) {
+      testWidgets('${reader.name} opens its page on the shown account, not on my own', (tester) async {
+        final recorder = await RouteArgumentsRecorder.pump(tester, reader.route);
+
+        unawaited(reader.open());
+        await tester.pumpAndSettle();
+
+        expect(reader.accountIdOf(recorder.arguments), bob);
+      });
+    }
+
+    testWidgets('moveEmailsToMailbox moves the emails in the shown account once a folder is picked', (tester) async {
+      await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+      unawaited(mailboxDashboardController.moveEmailsToMailbox([email]));
+      await tester.pumpAndSettle();
+      Get.back(result: PresentationMailbox(destinationId));
+      await tester.pumpAndSettle();
+
+      verify(moveMultipleEmailToMailboxInteractor.execute(any, bob, any, any)).called(1);
+    });
+
+    test('currentAccountId of the label mixins is the shown account', () {
+      expect(mailboxDashboardController.currentAccountId, bob);
     });
   });
 
@@ -1561,4 +2192,78 @@ void main() {
       },
     );
   });
+
+  group('shown account:', () {
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+      ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+      when(quickSearchEmailInteractor.execute(
+        any,
+        any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        filter: anyNamed('filter'),
+        properties: anyNamed('properties'),
+      )).thenAnswer((_) async => Right(QuickSearchEmailSuccess(const [])));
+    });
+
+    test('quickSearchEmails searches the shown account, not my own', () async {
+      await mailboxDashboardController.quickSearchEmails('invoice');
+
+      verify(quickSearchEmailInteractor.execute(
+        any,
+        DelegationFixtures.bobAccountId,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        filter: anyNamed('filter'),
+        properties: anyNamed('properties'),
+      )).called(1);
+    });
+
+    test('moveEmailsToFolder moves the selected emails in the shown account', () {
+      when(moveMultipleEmailToMailboxInteractor.execute(any, any, any, any))
+          .thenAnswer((_) => const Stream.empty());
+      mailboxDashboardController.selectedMailbox.value = PresentationMailbox(testMailboxId);
+
+      mailboxDashboardController.moveEmailsToFolder(
+        [PresentationEmail(id: EmailId(Id('email-1')))],
+        EmailActionType.moveToMailbox,
+        selectedMailboxId: MailboxId(Id('destination')),
+      );
+
+      verify(moveMultipleEmailToMailboxInteractor.execute(
+        any,
+        DelegationFixtures.bobAccountId,
+        any,
+        any,
+      )).called(1);
+    });
+
+    test('editing a label from its menu edits it in the shown account', () async {
+      when(labelController.openLabelMenuAction(any, any, any, any, position: anyNamed('position')))
+          .thenAnswer((invocation) async {
+        final onLabelActionType = invocation.positionalArguments[3] as OnLabelActionTypeCallback;
+        onLabelActionType(invocation.positionalArguments[2] as Label, LabelActionType.edit);
+      });
+      when(labelController.openEditLabelModal(params: anyNamed('params')))
+          .thenAnswer((_) async => null);
+
+      await mailboxDashboardController.openLabelPopupMenuAction(
+        _FakeBuildContext(),
+        ImagePaths(),
+        Label(id: Id('label-1'), displayName: 'Work'),
+        RelativeRect.fill,
+      );
+
+      final params = verify(labelController.openEditLabelModal(params: captureAnyNamed('params')))
+          .captured
+          .single as OpenEditLabelModalParams;
+      expect(params.accountId, DelegationFixtures.bobAccountId);
+    });
+  });
 }
+
+class _FakeBuildContext extends Fake implements BuildContext {}
+
+class _ShownAccountReader with ActiveAccountReader {}
