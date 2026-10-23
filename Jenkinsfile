@@ -26,7 +26,9 @@ pipeline {
         stage('Run Patrol Web Integration Tests') {
             steps {
                 // One Patrol job per agent: the backend container, ports and /tmp logs are host-wide.
-                sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
+                timeout(time: 90, unit: 'MINUTES') {
+                    sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
+                }
             }
         }
 
