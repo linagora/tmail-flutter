@@ -21,6 +21,7 @@ class DelegationFixtures {
 
   static final personalOnlyCapability = CapabilityIdentifier.jmapVacationResponse;
   static final delegatedOnlyCapability = CapabilityIdentifier.jmapMdn;
+  static final sharedCapability = CapabilityIdentifier.jmapQuota;
 
   static Session session({
     String username = aliceAddress,
@@ -35,7 +36,10 @@ class DelegationFixtures {
           AccountName(aliceAddress),
           true,
           false,
-          {personalOnlyCapability: DefaultCapability(<String, dynamic>{})},
+          {
+            personalOnlyCapability: DefaultCapability(<String, dynamic>{}),
+            sharedCapability: DefaultCapability(<String, dynamic>{}),
+          },
         ),
         if (listsBob) bobAccountId: _delegatedAccount(bobAddress),
         if (listsCarol) carolAccountId: _delegatedAccount(carolAddress),
@@ -54,6 +58,9 @@ class DelegationFixtures {
         AccountName(ownerAddress),
         false,
         false,
-        {delegatedOnlyCapability: DefaultCapability(<String, dynamic>{})},
+        {
+          delegatedOnlyCapability: DefaultCapability(<String, dynamic>{}),
+          sharedCapability: DefaultCapability(<String, dynamic>{}),
+        },
       );
 }
