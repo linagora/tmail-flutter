@@ -10,6 +10,26 @@
 #   ./scripts/patrol-integration-test-with-docker.sh
 set -e
 
+ROOT_DIR="$PWD"
+CI_LOGS="$ROOT_DIR/ci-logs"
+RESET_SERVER_LOG="/tmp/backend-reset-server.log"
+mkdir -p "$CI_LOGS"
+
+cleanup() {
+    echo "Cleaning up..."
+    kill "$BORE_BACKEND_PID" 2>/dev/null || true
+    kill "$BORE_RESET_PID" 2>/dev/null || true
+    kill "$RESET_SERVER_PID" 2>/dev/null || true
+    # Reap them so their ports are free before the agent lock is released.
+    wait "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" 2>/dev/null || true
+    cd "$ROOT_DIR/backend-docker" || return 0
+    docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
+    cp "$RESET_SERVER_LOG" /tmp/bore-backend.log /tmp/bore-reset.log "$CI_LOGS/" 2>/dev/null || true
+    docker compose down --remove-orphans 2>/dev/null || true
+    cd "$ROOT_DIR"
+}
+trap cleanup EXIT
+
 echo "Installing patrol CLI..."
 dart pub global activate patrol_cli 4.3.1
 
@@ -102,23 +122,11 @@ cd ..
 export BASIC_AUTH_URL="$BORE_BACKEND_URL"
 export RESET_PORT=9999
 
-RESET_SERVER_LOG="/tmp/backend-reset-server.log"
 echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
 BACKUP_ZIP="$PWD/provisioning/integration_test/backup.zip" \
     RESET_PORT="$RESET_PORT" \
     python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
-
-cleanup() {
-    echo "Cleaning up..."
-    kill "$BORE_BACKEND_PID" 2>/dev/null || true
-    kill "$BORE_RESET_PID" 2>/dev/null || true
-    kill "$RESET_SERVER_PID" 2>/dev/null || true
-    cd backend-docker
-    docker compose down --remove-orphans 2>/dev/null
-    cd ..
-}
-trap cleanup EXIT
 
 echo "Running Patrol tests..."
 flutter build apk --config-only --quiet
@@ -146,7 +154,8 @@ fi
 
 echo "start firebase tests"
 FTL_OUTPUT=$(mktemp)
-RESULTS_DIR="jenkins/${BUILD_NUMBER:-local-$(date +%s)}"
+# BUILD_TAG holds the job name, so PR jobs with the same build number do not share a GCS dir.
+RESULTS_DIR="jenkins/$(printf '%s' "${BUILD_TAG:-local-$(date +%s)}" | tr -c 'A-Za-z0-9._-' '_')"
 
 set +e
 gcloud firebase test android run \
@@ -192,14 +201,19 @@ if [ -n "$GCS_PATH" ]; then
     mkdir -p ftl-results
     echo "Results GCS path: $GCS_PATH"
     gsutil ls -r "${GCS_PATH}" 2>/dev/null \
-        | grep 'test_result_.*\.xml$' \
-        | while read -r xml_file; do
-            echo "  $xml_file"
-            gsutil cp "$xml_file" ftl-results/ 2>/dev/null || true
+        | grep -E '(test_result_.*\.xml|/logcat)$' \
+        | while read -r gcs_file; do
+            echo "  $gcs_file"
+            # Keep the GCS sub-path so per-device files do not overwrite each other.
+            rel="${gcs_file#"${GCS_PATH%/}"/}"
+            [ "$rel" = "$gcs_file" ] && rel="${gcs_file#gs://}"
+            mkdir -p "ftl-results/$(dirname "$rel")"
+            gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null || true
           done || true
 
-    if ls ftl-results/test_result_*.xml >/dev/null 2>&1; then
-        echo "Downloaded $(ls ftl-results/test_result_*.xml | wc -l) result file(s)"
+    xml_count=$(find ftl-results -name 'test_result_*.xml' | wc -l)
+    if [ "$xml_count" -gt 0 ]; then
+        echo "Downloaded $xml_count result file(s)"
     else
         echo "Warning: no test_result XML files found at $GCS_PATH"
     fi

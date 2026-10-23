@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -24,9 +25,24 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     String actionName,
     String selectActionHint,
   ) async {
+    await _hideKeyboard();
     await $(find.text(selectActionHint)).tap();
     await $.pumpAndTrySettle();
     await $(find.text(actionName)).tap();
+  }
+
+  // The creator autofocuses the name field; patrol_finders 3.2.0 enterText leaves its mock text input registered, which swallows every hide
+  Future<void> _hideKeyboard() async {
+    $.tester.testTextInput.unregister();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+    final view = $.tester.view;
+    for (var i = 0; i < 20 && view.viewInsets.bottom > 0; i++) {
+      await $.tester.pump(const Duration(milliseconds: 250));
+    }
+    if (view.viewInsets.bottom > 0) {
+      throw StateError('Keyboard still open after 5 s (inset ${view.viewInsets.bottom})');
+    }
   }
 
   @override
