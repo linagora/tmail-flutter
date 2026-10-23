@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_bridge.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -672,6 +673,7 @@ abstract class BaseController extends GetxController
         );
       }
     }
+    getBinding<ActiveAccountBridge>()?.clear();
     await _clearSentryForSessionEnd();
     try {
       // Read before clear() flips it to none.
