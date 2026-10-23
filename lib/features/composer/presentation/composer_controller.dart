@@ -1907,6 +1907,7 @@ class ComposerController extends BaseController
 
   Future<void> applySignature(String signature) async {
     final normalizedSignature = await _normalizeSignature(signature);
+    if (normalizedSignature == null) return;
     if (PlatformInfo.isWeb) {
       richTextWebController?.editorController.insertSignature(
         normalizedSignature,
@@ -1920,33 +1921,46 @@ class ComposerController extends BaseController
     }
   }
 
-  /// Identity signatures are stored raw on the server, so a degenerate
-  /// `line-height` (e.g. `0.1`) would overlap text once inserted into the
-  /// editor. Normalize it like the preview pipeline does. Fail-open: any
-  /// failure, unexpected state, empty result, or exception falls back to the
-  /// original signature so insertion never breaks.
-  Future<String> _normalizeSignature(String signature) async {
+  /// Identity signatures are stored raw on the server (other clients,
+  /// provisioning) and the editor inserts them with `innerHTML`, so only the
+  /// sanitized signature may reach it; a degenerate `line-height` (e.g.
+  /// `0.1`) is normalized as well. Fail-closed: any failure, unexpected
+  /// state, exception or blank result (a signature made only of active
+  /// content) returns null and no signature is inserted.
+  Future<String?> _normalizeSignature(String signature) async {
     try {
       final resultState = await _transformHtmlEmailContentInteractor
           .execute(signature, TransformConfiguration.forComposerSignature())
           .last;
       return resultState.fold(
-        (failure) => signature,
+        (failure) => _noSignatureInserted('sanitizing failed: $failure'),
         (success) {
-          if (success is! TransformHtmlEmailContentSuccess) return signature;
-
+          if (success is! TransformHtmlEmailContentSuccess) {
+            return _noSignatureInserted('unexpected state ${success.runtimeType}');
+          }
           // The transform returns a complete document while the editor
           // expects a fragment.
           final normalizedSignature = success.htmlContent.toHtmlFragment();
           return normalizedSignature.trim().isNotEmpty
               ? normalizedSignature
-              : signature;
+              : _noSignatureInserted('signature is empty after sanitizing');
         },
       );
     } catch (e) {
-      logWarning('ComposerController::_normalizeSignature: Exception = $e');
-      return signature;
+      return _noSignatureInserted('exception while sanitizing', exception: e);
     }
+  }
+
+  /// Logs why the composer inserted no signature (fail-closed) and returns
+  /// null. Forced to the web console so it is visible in profile/release web
+  /// builds, where a stripped signature would otherwise be silent.
+  String? _noSignatureInserted(String reason, {Object? exception}) {
+    logError(
+      'ComposerController::_normalizeSignature: $reason, no signature inserted',
+      exception: exception,
+      webConsoleEnabled: true,
+    );
+    return null;
   }
 
   Future<void> _removeSignature() async {
