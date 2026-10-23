@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -106,7 +107,8 @@ part 'thread_search_execution_observer.dart';
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController with EmailActionController {
+class ThreadController extends BaseController
+    with EmailActionController, ActiveAccountReader {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -149,7 +151,7 @@ class ThreadController extends BaseController with EmailActionController {
   late final SearchLayoutCoordinator searchLayoutCoordinator =
       _createSearchLayoutCoordinator();
 
-  AccountId? get _accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get _accountId => activeAccountId;
 
   Session? get _session => mailboxDashBoardController.sessionCurrent;
 

@@ -12,7 +12,7 @@ extension SearchDispatchContextDashboardExtension on MailboxDashBoardController 
     required bool collapseThreads,
   }) {
     final session = sessionCurrent;
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     if (session == null || currentAccountId == null) return null;
 
     return SearchDispatchContext(
