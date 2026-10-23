@@ -21,7 +21,9 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/null_session_or_accountid_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
@@ -63,6 +65,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
@@ -78,7 +81,8 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class SearchMailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
+class SearchMailboxController extends BaseMailboxController
+    with MailboxActionHandlerMixin, ActiveAccountReader {
 
   final SearchMailboxInteractor _searchMailboxInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
@@ -103,9 +107,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   PresentationEmail? get selectedEmail => dashboardController.selectedEmail.value;
 
-  AccountId? get accountId => dashboardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
 
   Session? get session => dashboardController.sessionCurrent;
+
+  bool get isDeletedMessageVaultSupported => MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
+
+  bool get isSubAddressingSupported => session?.isSubAddressingSupported(accountId) ?? false;
 
   SearchMailboxController(
     this._searchMailboxInteractor,
@@ -376,7 +384,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.move:
         moveMailboxAction(
           mailbox,
-          dashboardController,
+          accountId: accountId,
+          session: dashboardController.sessionCurrent,
           onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
         );
         break;
@@ -475,7 +484,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     Map<String, List<String>?>? currentRights,
     MailboxActions subAddressingAction,
   ) {
-    final accountId = dashboardController.accountId.value;
+    final accountId = activeAccountId;
     final session = dashboardController.sessionCurrent;
 
     if (session != null && accountId != null) {
