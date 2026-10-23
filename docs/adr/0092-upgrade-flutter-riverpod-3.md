@@ -203,6 +203,8 @@ notifier = container.read(composerAutoSaveProvider('test-id').notifier);
 
 `appProviderContainer` is frozen. No new `.read()` / `.listen()` / `.invalidate()` calls may be added to it. New features that need Riverpod state must use `ConsumerWidget` + `ref.watch/read` against the widget tree scope.
 
+One exception is recorded by [ADR-0114](./0114-delegated-mailbox-access.md). `DelegationBindings` hands the container once to `ActiveAccountBridge`, the only GetX access to the shown account. Its readers are GetX controllers with no `WidgetRef`, and the dashboard must write each session synchronously before any of them runs, which a delegate mounted by a view cannot guarantee.
+
 ### Six existing call sites to migrate
 
 | File | Operation | Migration target |
@@ -213,6 +215,7 @@ notifier = container.read(composerAutoSaveProvider('test-id').notifier);
 | `SearchEmailController` | `.read(localSettingsProvider)` | Migrate to `ConsumerWidget` + `ref.watch` |
 | `HandleMobileAutoSaveExtension` | `.read(composerAutoSaveProvider(id).notifier)` + `.invalidate(...)` | Migrate composer to `ConsumerStatefulWidget` |
 | `HandleComposerRestoreOnMobileExtension` | `.read(resolveComposerCacheForRestoreProvider)` | Migrate to `ref.read` within a `ConsumerWidget` |
+| `DelegationBindings` | Container handed to `ActiveAccountBridge` (`.read` / `.listen(activeAccountProvider)`) | Move each `ActiveAccountReader` to `ref.watch(activeAccountProvider)`, then delete the bridge |
 
 Each migration will be covered by a dedicated ADR and eliminates one `appProviderContainer` call site. When all six are gone:
 
