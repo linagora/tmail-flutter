@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/empty_folder_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -76,7 +77,7 @@ class EmptyFolderProviderListenerDelegate
     MailboxDashBoardController dashboardController,
   ) {
     final session = dashboardController.sessionCurrent;
-    final accountId = dashboardController.accountId.value;
+    final accountId = ref.read(activeAccountProvider)?.accountId;
     if (session == null || accountId == null) {
       _showEmptyFolderFailureToast(context, ref);
       return;

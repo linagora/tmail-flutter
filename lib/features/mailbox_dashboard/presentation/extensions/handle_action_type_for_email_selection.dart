@@ -54,7 +54,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
       destinationMailboxId = getMailboxIdByRole(PresentationMailbox.roleArchive);
     }
 
-    if (accountId.value == null ||
+    if (activeAccountId == null ||
         destinationMailboxId == null ||
         sessionCurrent == null) {
       consumeState(
@@ -114,7 +114,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
 
     moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
-      accountId.value!,
+      activeAccountId!,
       MoveToMailboxRequest(
         mapEmailIdsByMailboxId,
         destinationMailboxId,
@@ -127,7 +127,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
   }
 
   void _moveEmailsToTrashAcrossNamespaces(List<PresentationEmail> emails) {
-    if (accountId.value == null || sessionCurrent == null) {
+    if (activeAccountId == null || sessionCurrent == null) {
       consumeState(Stream.value(Left(MoveMultipleEmailToMailboxFailure(
         EmailActionType.moveToTrash,
         MoveAction.moving,
@@ -183,7 +183,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
       log('$runtimeType::_moveEmailsToTrashAcrossNamespaces: trashId=$trashId sources=${entry.value.sourceToEmails.keys}');
       moveSelectedEmailMultipleToMailboxAction(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         MoveToMailboxRequest(
           entry.value.sourceToEmails,
           trashId,

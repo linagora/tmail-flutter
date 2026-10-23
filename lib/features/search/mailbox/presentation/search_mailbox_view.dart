@@ -13,12 +13,10 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';
@@ -203,14 +201,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }
 
   List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
-    final session = controller.dashboardController.sessionCurrent;
-    final accountId = controller.dashboardController.accountId.value;
-
-    final deletedMessageVaultSupported =
-      MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
-
-    final isSubAddressingSupported =
-      session?.isSubAddressingSupported(accountId) ?? false;
+    final deletedMessageVaultSupported = controller.isDeletedMessageVaultSupported;
+    final isSubAddressingSupported = controller.isSubAddressingSupported;
 
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
@@ -265,14 +257,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     PresentationMailbox mailbox,
     {RelativeRect? position}
   ) {
-    final session = controller.dashboardController.sessionCurrent;
-    final accountId = controller.dashboardController.accountId.value;
-
-    final deletedMessageVaultSupported =
-      MailboxUtils.isDeletedMessageVaultSupported(session, accountId);
-
-    final isSubAddressingSupported =
-      session?.isSubAddressingSupported(accountId) ?? false;
+    final deletedMessageVaultSupported = controller.isDeletedMessageVaultSupported;
+    final isSubAddressingSupported = controller.isSubAddressingSupported;
 
     if (position == null) {
       final contextMenuActions = listContextMenuItemAction(
