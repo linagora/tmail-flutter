@@ -12,7 +12,7 @@ extension HandleDownloadAttachmentExtension on MailboxDashBoardController {
   }) =>
       downloadController.downloadMessageAsEML(
         presentationEmail: presentationEmail,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
         showBottomDownloadProgressBar: showBottomDownloadProgressBar,
       );
@@ -25,7 +25,7 @@ extension HandleDownloadAttachmentExtension on MailboxDashBoardController {
   }) =>
       downloadController.downloadAttachment(
         attachment: attachment,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
         previewerSupported: previewerSupported,
         showBottomDownloadProgressBar: showBottomDownloadProgressBar,
@@ -40,7 +40,7 @@ extension HandleDownloadAttachmentExtension on MailboxDashBoardController {
       downloadController.downloadAllAttachments(
         outputFileName: outputFileName,
         emailId: emailId,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
         showBottomDownloadProgressBar: showBottomDownloadProgressBar,
       );

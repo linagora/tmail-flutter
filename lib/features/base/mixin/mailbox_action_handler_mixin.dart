@@ -6,6 +6,7 @@ import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
@@ -23,6 +24,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 mixin MailboxActionHandlerMixin {
+  AccountId? get activeAccountId;
 
   void openMailboxInNewTabAction(PresentationMailbox mailbox) {
     AppUtils.launchLink(mailbox.mailboxRouteWeb.toString());
@@ -37,7 +39,7 @@ mixin MailboxActionHandlerMixin {
     }
   ) {
     final session = dashboardController.sessionCurrent;
-    final accountId = dashboardController.accountId.value;
+    final accountId = activeAccountId;
     final mailboxId = presentationMailbox.id;
     final countEmailsUnread = presentationMailbox.unreadEmails?.value.value ?? 0;
     if (session != null && accountId != null) {
@@ -164,7 +166,7 @@ mixin MailboxActionHandlerMixin {
     required BaseMailboxController baseMailboxController,
     required MailboxActionReactor mailboxActionReactor,
   }) {
-    final accountId = dashboardController.accountId.value;
+    final accountId = activeAccountId;
     final session = dashboardController.sessionCurrent;
 
     if (accountId == null || session == null) {
@@ -241,7 +243,7 @@ mixin MailboxActionHandlerMixin {
     required BaseMailboxController baseMailboxController,
     required MailboxActionReactor mailboxActionReactor,
   }) {
-    final accountId = dashboardController.accountId.value;
+    final accountId = activeAccountId;
     final session = dashboardController.sessionCurrent;
 
     if (accountId == null || session == null) {
