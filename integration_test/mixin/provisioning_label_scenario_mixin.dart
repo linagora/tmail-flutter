@@ -36,15 +36,23 @@ mixin ProvisioningLabelScenarioMixin {
       return [];
     }
 
-    final List<Label?> results = await Future.wait(provisioningLabels.map(
-      (label) => _createLabel(createLabelInteractor, accountId, label),
-    ));
-
-    final List<Label> createdLabels = results.whereType<Label>().toList();
-
-    if (createdLabels.isNotEmpty) {
-      labelController?.getAllLabels(accountId);
+    // Sequential: concurrent Label/set races in the memory backend
+    final List<Label> createdLabels = [];
+    for (final provisioningLabel in provisioningLabels) {
+      final label = await _createLabel(
+        createLabelInteractor,
+        accountId,
+        provisioningLabel,
+      );
+      if (label == null) {
+        throw StateError(
+          'Failed to provision label ${provisioningLabel.displayName}',
+        );
+      }
+      createdLabels.add(label);
     }
+
+    labelController?.getAllLabels(accountId);
 
     return createdLabels;
   }
