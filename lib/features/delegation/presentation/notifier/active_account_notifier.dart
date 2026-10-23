@@ -45,4 +45,7 @@ class ActiveAccountNotifier extends _$ActiveAccountNotifier {
     final session = state?.session;
     if (session != null) state = ActiveAccount.personal(session);
   }
+
+  /// On logout, so the next signed-in user never sees the account of the previous one.
+  void clear() => state = null;
 }

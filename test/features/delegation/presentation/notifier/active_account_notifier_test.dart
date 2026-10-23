@@ -130,6 +130,17 @@ void main() {
     });
   });
 
+  group('clear', () {
+    test('forgets the shown account', () {
+      notifierOf().applySession(DelegationFixtures.session());
+      notifierOf().select(DelegationFixtures.bobAccountId);
+
+      notifierOf().clear();
+
+      expect(stateOf(), isNull);
+    });
+  });
+
   group('selectPersonal', () {
     test('shows my own account', () {
       final session = DelegationFixtures.session();
