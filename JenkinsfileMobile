@@ -36,7 +36,7 @@ pipeline {
                 echo 'Running post-build cleanup...'
 
                 echo 'Archiving Firebase Test Lab results...'
-                archiveArtifacts artifacts: 'ftl-results/**/test_result_*.xml', allowEmptyArchive: true, fingerprint: true
+                archiveArtifacts artifacts: 'ftl-results/**, ci-logs/**', allowEmptyArchive: true, fingerprint: true
                 junit testResults: 'ftl-results/**/test_result_*.xml', allowEmptyResults: true
 
                 // Tear down the backend Docker stack if it is still running.

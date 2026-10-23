@@ -125,6 +125,8 @@ pipeline {
             script {
                 echo 'Running post-build cleanup...'
 
+                archiveArtifacts artifacts: 'ci-logs/**', allowEmptyArchive: true
+
                 // Tear down the backend Docker stack if it is still running.
                 sh '''
                     cd backend-docker

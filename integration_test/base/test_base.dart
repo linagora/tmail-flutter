@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
+import '../utils/failure_diagnostics.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -41,8 +42,13 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        await setupTest();
-        await scenarioBuilder($, createRobotFactory($)).execute();
+        try {
+          await setupTest();
+          await scenarioBuilder($, createRobotFactory($)).execute();
+        } catch (_) {
+          dumpFailureState($);
+          rethrow;
+        }
       },
     );
   }
