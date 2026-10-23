@@ -17,6 +17,8 @@ cleanup() {
     echo "Cleaning up test environment..."
     kill "$VMSTAT_PID" 2>/dev/null || true
     kill "$RESET_SERVER_PID" 2>/dev/null || true
+    # Reap them so their ports are free before the agent lock is released.
+    wait "$VMSTAT_PID" "$RESET_SERVER_PID" 2>/dev/null || true
     cd "$ROOT_DIR/backend-docker" || return 0
     docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
     cp "$RESET_SERVER_LOG" "$CI_LOGS/" 2>/dev/null || true

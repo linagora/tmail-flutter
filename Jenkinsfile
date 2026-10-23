@@ -25,7 +25,8 @@ pipeline {
 
         stage('Run Patrol Web Integration Tests') {
             steps {
-                sh './scripts/patrol-web-integration-test-with-docker.sh'
+                // One Patrol job per agent: the backend container, ports and /tmp logs are host-wide.
+                sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
             }
         }
 
@@ -127,10 +128,17 @@ pipeline {
 
                 archiveArtifacts artifacts: 'ci-logs/**', allowEmptyArchive: true
 
-                // Tear down the backend Docker stack if it is still running.
+                // Tear down the backend Docker stack if it is still running and belongs to this workspace.
                 sh '''
-                    cd backend-docker
-                    docker compose down --remove-orphans 2>/dev/null || true
+                    flock -o /tmp/tmail-patrol-backend.lock bash -c '
+                        cd backend-docker || exit 0
+                        owner=$(docker inspect tmail-backend --format "{{ index .Config.Labels \\"com.docker.compose.project.working_dir\\" }}" 2>/dev/null || true)
+                        if [ -n "$owner" ] && [ "$(realpath "$owner" 2>/dev/null)" = "$(pwd -P)" ]; then
+                            docker compose down --remove-orphans 2>/dev/null || true
+                        else
+                            echo "tmail-backend not owned by this workspace (${owner:-none}); skip teardown."
+                        fi
+                    ' || true
                 '''
             }
             deleteDir() /* clean up our workspace */
