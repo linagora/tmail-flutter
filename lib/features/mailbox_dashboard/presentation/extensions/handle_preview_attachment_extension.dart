@@ -27,7 +27,7 @@ extension HandlePreviewAttachmentExtension on MailboxDashBoardController {
       downloadController.previewAttachment(
         context: context,
         attachment: attachment,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
         ownEmailAddress: ownEmailAddress.value,
         sourceView: sourceView,
@@ -65,7 +65,7 @@ extension HandlePreviewAttachmentExtension on MailboxDashBoardController {
         onPreviewAction: (uri) => downloadController.openEMLPreviewer(
           appLocalizations: AppLocalizations.of(context),
           uri: uri,
-          accountId: accountId.value,
+          accountId: activeAccountId,
           session: sessionCurrent,
           ownEmailAddress: ownEmailAddress.value,
         ),

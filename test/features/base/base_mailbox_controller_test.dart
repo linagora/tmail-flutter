@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_sideba
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -58,19 +57,6 @@ class _TestMailboxController extends BaseMailboxController {
   }
 }
 
-class _FakeMailboxDashBoardController extends Fake
-    implements MailboxDashBoardController {
-  _FakeMailboxDashBoardController({
-    AccountId? accountId,
-    this.sessionCurrent,
-  }) : accountId = Rxn<AccountId>(accountId);
-
-  @override
-  final Rxn<AccountId> accountId;
-
-  @override
-  final Session? sessionCurrent;
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -146,11 +132,7 @@ void main() {
     });
 
     test('should update only the first tree containing the mailbox', () {
-      final mailboxId = MailboxId(Id('1'));
-      final defaultNode = _buildNodeWithChild(mailboxId);
-      final personalNode = _buildNodeWithChild(mailboxId);
-      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
-      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+      final (defaultNode, personalNode) = _putSameMailboxInTwoTrees(controller);
 
       expect(controller.toggleMailboxFolder(defaultNode), ExpandMode.EXPAND);
       expect(defaultNode.expandMode, ExpandMode.EXPAND);
@@ -187,11 +169,7 @@ void main() {
     });
 
     test('should update only the first tree containing the mailbox', () {
-      final mailboxId = MailboxId(Id('1'));
-      final defaultNode = _buildNodeWithChild(mailboxId);
-      final personalNode = _buildNodeWithChild(mailboxId);
-      controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
-      controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+      final (defaultNode, personalNode) = _putSameMailboxInTwoTrees(controller);
 
       controller.selectMailboxNode(defaultNode);
 
@@ -454,60 +432,54 @@ void main() {
   });
 
   group('BaseMailboxController::moveMailboxAction', () {
-    test('should forward a selected mailbox destination to the move callback', () async {
-      final sourceMailbox = _namedMailbox(
-        MailboxId(Id('source')),
-        MailboxName('Source'),
-      );
-      final selectedDestination = _namedMailbox(
-        MailboxId(Id('destination')),
-        MailboxName('Destination'),
-      );
-      PresentationMailbox? destinationMailbox;
-      controller.destinationMailbox = selectedDestination;
+    final selectedDestination = _namedMailbox(
+      MailboxId(Id('destination')),
+      MailboxName('Destination'),
+    );
+    for (final scenario in [
+      (
+        description: 'should forward a selected mailbox destination to the move callback',
+        picked: selectedDestination,
+        expectedDestination: selectedDestination,
+      ),
+      (
+        description: 'should map the unified mailbox destination to null',
+        picked: PresentationMailbox.unifiedMailbox,
+        expectedDestination: null,
+      ),
+    ]) {
+      test(scenario.description, () async {
+        final sourceMailbox = _namedMailbox(
+          MailboxId(Id('source')),
+          MailboxName('Source'),
+        );
+        controller.destinationMailbox = scenario.picked;
+        PresentationMailbox? destinationMailbox;
 
-      await controller.moveMailboxAction(
-        sourceMailbox,
-        _mockDashboardController(),
-        onMovingMailboxAction: (_, destination) => destinationMailbox = destination,
-      );
+        await controller.moveMailboxAction(
+          sourceMailbox,
+          accountId: AccountFixtures.aliceAccountId,
+          session: SessionFixtures.aliceSession,
+          onMovingMailboxAction: (_, destination) => destinationMailbox = destination,
+        );
 
-      expect(controller.destinationMailboxAction, MailboxActions.move);
-      expect(controller.destinationMailboxId, sourceMailbox.id);
-      expect(destinationMailbox, selectedDestination);
-    });
-
-    test('should map the unified mailbox destination to null', () async {
-      final dashboardController = _mockDashboardController();
-      final sourceMailbox = _namedMailbox(
-        MailboxId(Id('source')),
-        MailboxName('Source'),
-      );
-      controller.destinationMailbox = PresentationMailbox.unifiedMailbox;
-      PresentationMailbox? destinationMailbox;
-
-      await controller.moveMailboxAction(
-        sourceMailbox,
-        dashboardController,
-        onMovingMailboxAction: (_, destination) => destinationMailbox = destination,
-      );
-
-      expect(controller.destinationMailboxAction, MailboxActions.move);
-      expect(controller.destinationMailboxId, sourceMailbox.id);
-      expect(destinationMailbox, isNull);
-    });
+        expect(controller.destinationMailboxAction, MailboxActions.move);
+        expect(controller.destinationMailboxId, sourceMailbox.id);
+        expect(destinationMailbox, scenario.expectedDestination);
+      });
+    }
 
     for (final scenario in [
       (
         description: 'should not open the picker without an account',
-        dashboardController: _FakeMailboxDashBoardController(),
+        accountId: null,
+        session: SessionFixtures.aliceSession,
         exceptionType: NotFoundAccountIdException,
       ),
       (
         description: 'should not open the picker without a session',
-        dashboardController: _FakeMailboxDashBoardController(
-          accountId: AccountFixtures.aliceAccountId,
-        ),
+        accountId: AccountFixtures.aliceAccountId,
+        session: null,
         exceptionType: NotFoundSessionException,
       ),
     ]) {
@@ -516,7 +488,8 @@ void main() {
 
         await controller.moveMailboxAction(
           _namedMailbox(MailboxId(Id('source')), MailboxName('Source')),
-          scenario.dashboardController,
+          accountId: scenario.accountId,
+          session: scenario.session,
           onMovingMailboxAction: (_, __) => callbackCalls++,
         );
 
@@ -595,11 +568,15 @@ void main() {
   });
 }
 
-MailboxDashBoardController _mockDashboardController() =>
-    _FakeMailboxDashBoardController(
-      accountId: AccountFixtures.aliceAccountId,
-      sessionCurrent: SessionFixtures.aliceSession,
-    );
+/// The same mailbox in the default tree, then in the personal tree.
+(MailboxNode, MailboxNode) _putSameMailboxInTwoTrees(BaseMailboxController controller) {
+  final mailboxId = MailboxId(Id('1'));
+  final defaultNode = _buildNodeWithChild(mailboxId);
+  final personalNode = _buildNodeWithChild(mailboxId);
+  controller.defaultMailboxTree.value = _buildTreeWith(defaultNode);
+  controller.personalMailboxTree.value = _buildTreeWith(personalNode);
+  return (defaultNode, personalNode);
+}
 
 PresentationMailbox _namedMailbox(MailboxId id, MailboxName name) => PresentationMailbox(
   id,

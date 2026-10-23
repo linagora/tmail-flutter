@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -111,7 +112,8 @@ class MailboxController extends BaseMailboxController
     with MailboxActionHandlerMixin,
         ContactSupportMixin,
         LauncherApplicationMixin,
-        MailboxWidgetMixin {
+        MailboxWidgetMixin,
+        ActiveAccountReader {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final isMailboxListScrollable = false.obs;
@@ -134,6 +136,7 @@ class MailboxController extends BaseMailboxController
   NavigationRouter? _navigationRouter;
   WebSocketQueueHandler? _webSocketQueueHandler;
   Worker? isLabelsLoadedWorker;
+  Worker? _shownAccountWorker;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
@@ -143,7 +146,12 @@ class MailboxController extends BaseMailboxController
 
   PresentationEmail? get selectedEmail => mailboxDashBoardController.selectedEmail.value;
 
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
+
+  /// The shown account when it is my own: default folders and the iOS notification keychain are
+  /// kept for my own account only.
+  AccountId? get _shownPersonalAccountId =>
+      activeAccountBridge.activeAccount?.isDelegated == false ? accountId : null;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
@@ -200,6 +208,8 @@ class MailboxController extends BaseMailboxController
     _webSocketQueueHandler?.dispose();
     isLabelsLoadedWorker?.dispose();
     isLabelsLoadedWorker = null;
+    _shownAccountWorker?.dispose();
+    _shownAccountWorker = null;
     super.onClose();
   }
 
@@ -293,11 +303,12 @@ class MailboxController extends BaseMailboxController
   }
 
   void _registerObxStreamListener() {
-    ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId != null && session != null) {
-        getAllMailbox(session!, accountId);
-      }
-    });
+    _shownAccountWorker = everShownAccount(
+      mailboxDashBoardController.accountId,
+      (accountId) {
+        if (session != null) getAllMailbox(session!, accountId);
+      },
+    );
 
     ever<Map<String, dynamic>?>(
       mailboxDashBoardController.routerParameters,
@@ -732,7 +743,8 @@ class MailboxController extends BaseMailboxController
       .whereNot((role) => mapDefaultMailboxRole.containsKey(role) || findNodeByNameOnFirstLevel(role.value) != null)
       .toList();
 
-    if (listRoleMissing.isEmpty || accountId == null || session == null) {
+    final personalAccountId = _shownPersonalAccountId;
+    if (listRoleMissing.isEmpty || personalAccountId == null || session == null) {
       updateMailboxTree(
         mailboxCollection: updateMailboxCollection(currentMailboxCollection),
         isRefreshTrigger: false,
@@ -747,7 +759,7 @@ class MailboxController extends BaseMailboxController
     log('MailboxController::_handleCreateDefaultFolderIfMissing():mapRoles: $mapRoles');
     consumeState(_createDefaultMailboxInteractor.execute(
       session!,
-      accountId!,
+      personalAccountId,
       mapRoles,
     ));
   }
@@ -1235,7 +1247,8 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.move:
         moveMailboxAction(
           mailbox,
-          mailboxDashBoardController,
+          accountId: accountId,
+          session: session,
           onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
         );
         break;
@@ -1383,13 +1396,16 @@ class MailboxController extends BaseMailboxController
   }
 
   Future<void> _updateMailboxIdsBlockNotificationToKeychain(List<PresentationMailbox> mailboxes) async {
+    final personalAccountId = _shownPersonalAccountId;
+    if (personalAccountId == null) return;
+
     _iosSharingManager = getBinding<IOSSharingManager>();
-    if (accountId == null || _iosSharingManager == null || mailboxes.isEmpty) {
-      logWarning('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $accountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}');
+    if (_iosSharingManager == null || mailboxes.isEmpty) {
+      logWarning('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $personalAccountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}');
       return;
     }
 
-    if (await _iosSharingManager!.isExistMailboxIdsBlockNotificationInKeyChain(accountId!)) {
+    if (await _iosSharingManager!.isExistMailboxIdsBlockNotificationInKeyChain(personalAccountId)) {
       return;
     }
 
@@ -1399,7 +1415,7 @@ class MailboxController extends BaseMailboxController
       .toList();
     log('MailboxController::_updateMailboxIdsBlockNotificationToKeychain:MailboxIdsBlockNotification = $mailboxIdsBlockNotification');
     _iosSharingManager!.updateMailboxIdsBlockNotificationInKeyChain(
-      accountId: accountId!,
+      accountId: personalAccountId,
       mailboxIds: mailboxIdsBlockNotification);
   }
 
@@ -1538,7 +1554,7 @@ class MailboxController extends BaseMailboxController
   }
 
   void _handleSubaddressingAction(MailboxId mailboxId, Map<String, List<String>?>? currentRights, MailboxActions subaddressingAction) {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (session != null && accountId != null) {

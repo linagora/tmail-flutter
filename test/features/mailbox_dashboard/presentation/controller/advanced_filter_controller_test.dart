@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -48,11 +49,16 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'advanced_filter_controller_test.mocks.dart';
+
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 
 typedef _CommittedFlagReader = bool Function(SearchEmailFilter filter);
 typedef _CheckboxFinder = Finder Function();
@@ -191,6 +197,7 @@ void main() {
         .thenReturn(SearchEmailFilter.defaultSortOrder);
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    ActiveAccountBridgeFixtures.putShowing(null);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
     Get.put<StoreEmailSortOrderInteractor>(mockStoreEmailSortOrderInteractor);
 
@@ -720,6 +727,22 @@ void main() {
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isFalse);
       });
+    });
+  });
+
+  group('AdvancedFilterController::selectedMailBox', () {
+    testWidgets('opens the folder picker on the shown account, not on my own', (tester) async {
+      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(mockMailboxDashBoardController.sessionCurrent).thenReturn(DelegationFixtures.session());
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+      advancedFilterController.selectedMailBox(
+        recorder.context,
+        filterNotifier: appProviderContainer.read(searchFilterProvider.notifier),
+      );
+      await tester.pumpAndSettle();
+
+      expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
     });
   });
 }

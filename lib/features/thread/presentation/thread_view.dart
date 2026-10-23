@@ -684,7 +684,7 @@ class ThreadView extends GetWidget<ThreadController>
           }
           dashboardController.labelController.handleLabelActionType(
             actionType: LabelActionType.create,
-            accountId: dashboardController.accountId.value,
+            accountId: controller.activeAccountId,
             onLabelActionCallback: (label) =>
                 dashboardController.toggleLabelToEmail(emailId, label, true),
           );

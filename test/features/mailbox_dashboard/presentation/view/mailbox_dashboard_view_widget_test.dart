@@ -149,6 +149,8 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
 import '../../../../fixtures/recording_paywall_launcher.dart';
@@ -525,6 +527,7 @@ void main() {
     }
 
     void createDashboardController() {
+      ActiveAccountBridgeFixtures.putShowing(null);
       mailboxDashboardController = MailboxDashBoardController(
         moveToMailboxInteractor,
         deleteEmailPermanentlyInteractor,
@@ -606,6 +609,18 @@ void main() {
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
+      mailboxDashboardController.activeAccountBridge.applySession(SessionFixtures.aliceSession);
+    });
+
+    testWidgets('MailboxController loads the folders of the shown account when it changes',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
+
+      mailboxDashboardController.activeAccountBridge.accountId.value = DelegationFixtures.bobAccountId;
+
+      expect(mailboxController.accountId, DelegationFixtures.bobAccountId);
+      verify(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId)).called(1);
     });
 
     testWidgets('mailbox selection is hidden while email search is active',

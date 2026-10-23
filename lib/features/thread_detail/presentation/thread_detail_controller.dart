@@ -17,6 +17,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -65,7 +66,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ThreadDetailController extends BaseController {
+class ThreadDetailController extends BaseController with ActiveAccountReader {
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -133,7 +134,7 @@ class ThreadDetailController extends BaseController {
   StreamController<MailViewShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailViewShortcutActionViewEvent>? shortcutActionEventSubscription;
 
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
   Session? get session => mailboxDashBoardController.sessionCurrent;
   MailboxId? get sentMailboxId => mailboxDashBoardController.getMailboxIdByRole(
     PresentationMailbox.roleSent,

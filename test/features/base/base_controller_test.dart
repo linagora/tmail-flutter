@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_bridge.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -48,6 +49,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/compo
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/active_account_bridge_fixtures.dart';
+import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
@@ -428,6 +431,28 @@ void main() {
 
       verify(mockDeleteCredentialInteractor.execute()).called(1);
       verifyNever(mockDeleteAuthorityOidcInteractor.execute());
+    });
+
+    test('forgets the shown account, so the next user never starts on it', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      final bridge = ActiveAccountBridgeFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+      addTearDown(() => Get.delete<ActiveAccountBridge>());
+
+      await mockBaseController.clearAllData();
+
+      expect(bridge.activeAccount, isNull);
+    });
+
+    test('still clears account data when no dashboard is open', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData();
+
+      expect(Get.isRegistered<ActiveAccountBridge>(), isFalse);
+      verify(mockCachingManager.clearAll()).called(1);
     });
   });
 
