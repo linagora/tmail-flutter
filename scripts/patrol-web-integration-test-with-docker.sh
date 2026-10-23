@@ -23,6 +23,7 @@ cleanup() {
     cd "$ROOT_DIR/backend-docker" || return 0
     docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
     cp "$RESET_SERVER_LOG" "$CI_LOGS/" 2>/dev/null || true
+    gzip -c "$PATROL_LOG" > "$CI_LOGS/patrol-console.log.gz" 2>/dev/null || rm -f "$CI_LOGS/patrol-console.log.gz"
     docker compose down
     cd "$ROOT_DIR"
 }
