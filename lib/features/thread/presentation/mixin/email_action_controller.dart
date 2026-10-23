@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 mixin EmailActionController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  AccountId? get activeAccountId;
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
@@ -90,7 +91,7 @@ mixin EmailActionController {
       return;
     }
 
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     if (accountId == null) {
       mailboxDashBoardController.emitMoveToTrashFailure(
         NotFoundAccountIdException(),
@@ -145,7 +146,7 @@ mixin EmailActionController {
 
   void moveToSpam(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final spamMailboxId = mailboxDashBoardController.spamMailboxId;
 
     if (session != null && mailboxContain != null && accountId != null && spamMailboxId != null) {
@@ -164,7 +165,7 @@ mixin EmailActionController {
 
   void unSpam(PresentationEmail email) async {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
@@ -200,7 +201,7 @@ mixin EmailActionController {
     PresentationEmail email,
     {PresentationMailbox? mailboxContain}
   ) async {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (mailboxContain != null && accountId != null) {

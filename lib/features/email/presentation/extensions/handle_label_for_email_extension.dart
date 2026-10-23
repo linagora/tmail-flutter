@@ -162,7 +162,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     }
 
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final interactor =
         mailboxDashBoardController.removeALabelFromAnEmailInteractor;
 
