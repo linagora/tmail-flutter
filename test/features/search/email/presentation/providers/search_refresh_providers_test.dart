@@ -40,6 +40,9 @@ class _FakeDashboard extends Mock implements MailboxDashBoardController {
   final Rxn<AccountId> accountId = Rxn<AccountId>();
 
   @override
+  final AccountId? activeAccountId = AccountFixtures.aliceAccountId;
+
+  @override
   Session? sessionCurrent;
 
   @override

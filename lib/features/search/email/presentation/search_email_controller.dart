@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -98,6 +99,7 @@ typedef _SearchFilterMutationAction = void Function(
 
 class SearchEmailController extends BaseController
     with EmailActionController,
+        ActiveAccountReader,
         DateRangePickerMixin,
         SearchLabelFilterModalMixin,
         LabelSubMenuMixin,
@@ -130,7 +132,7 @@ class SearchEmailController extends BaseController
   PresentationMailbox? get currentMailbox =>
       mailboxDashBoardController.selectedMailboxForDisplay;
 
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
@@ -710,7 +712,7 @@ class SearchEmailController extends BaseController
     PresentationMailbox? mailbox,
   ) async {
     final arguments = DestinationPickerArguments(
-      mailboxDashBoardController.accountId.value!,
+      activeAccountId!,
       MailboxActions.select,
       mailboxDashBoardController.sessionCurrent,
       mailboxIdSelected: mailbox?.id);
@@ -736,11 +738,13 @@ class SearchEmailController extends BaseController
   ) async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    if (accountId == null || session == null) return;
+    // Contact autocomplete runs on my own account, also when another mailbox is shown.
+    final personalAccountId = mailboxDashBoardController.accountId.value;
+    if (personalAccountId == null || session == null) return;
 
     final selectedContactList = searchEmailFilter.getContactApplied(prefixEmailAddress);
     final arguments = ContactArguments(
-      accountId: accountId!,
+      accountId: personalAccountId,
       session: session!,
       selectedContactList: selectedContactList,
       contactViewTitle: '${AppLocalizations.of(context).findEmails} ${prefixEmailAddress.asName(context).toLowerCase()}'
