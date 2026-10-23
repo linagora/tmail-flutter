@@ -35,14 +35,14 @@ dump_state() {
     {
         echo "=== stall $(date -u +%FT%TZ): no progress for ${STALL_MINUTES} min ==="
         echo "--- processes by cpu"
-        ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,args --sort=-pcpu | head -30
+        ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,comm --sort=-pcpu | head -30
         echo "--- sockets"
         ss -tanp 2>/dev/null | grep -E ':(3000|9999|80)\b'
         echo "--- flutter web server"
         curl -sS -m 10 -o /dev/null -w 'GET / http=%{http_code} time=%{time_total}s\n' http://localhost:3000/
         curl -sS -m 10 -o /dev/null -w 'GET main.dart.js http=%{http_code} time=%{time_total}s\n' http://localhost:3000/main.dart.js
         echo "--- docker"
-        timeout 15 docker ps -a
+        timeout 15 docker ps -a --format 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}'
         timeout 15 docker stats --no-stream
     } >> "$DUMP_FILE" 2>&1
 }
