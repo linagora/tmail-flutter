@@ -138,10 +138,7 @@ class ManageAccountDashBoardController extends ReloadableController
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
       previousUri = arguments.previousUri;
-      _setUpComponentsFromSession(
-        session: arguments.session,
-        quota: arguments.quota,
-      );
+      _setUpComponentsFromSession(session: arguments.session);
       selectedMenu = arguments.menuSettingCurrent;
       if (selectedMenu != null && selectedMenu != AccountMenuItem.storage) {
         selectAccountMenuItem(selectedMenu!);
@@ -152,10 +149,7 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
-  void _setUpComponentsFromSession({
-    Session? session,
-    Quota? quota,
-  }) {
+  void _setUpComponentsFromSession({Session? session}) {
     sessionCurrent = session;
     accountId.value = session?.accountId;
     synchronizeOwnEmailAddress(session?.getOwnEmailAddressOrEmpty() ?? '');
@@ -176,9 +170,7 @@ class ManageAccountDashBoardController extends ReloadableController
     _getVacationResponse();
     injectAIScribeBindings(sessionCurrent, accountId.value);
 
-    if (quota != null) {
-      octetsQuota.value = quota;
-    } else if (isStorageCapabilitySupported) {
+    if (isStorageCapabilitySupported) {
       getQuotas(accountId.value);
     }
 
