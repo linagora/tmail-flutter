@@ -20,6 +20,8 @@ cleanup() {
     kill "$BORE_BACKEND_PID" 2>/dev/null || true
     kill "$BORE_RESET_PID" 2>/dev/null || true
     kill "$RESET_SERVER_PID" 2>/dev/null || true
+    # Reap them so their ports are free before the agent lock is released.
+    wait "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" 2>/dev/null || true
     cd "$ROOT_DIR/backend-docker" || return 0
     docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
     cp "$RESET_SERVER_LOG" /tmp/bore-backend.log /tmp/bore-reset.log "$CI_LOGS/" 2>/dev/null || true
@@ -152,7 +154,8 @@ fi
 
 echo "start firebase tests"
 FTL_OUTPUT=$(mktemp)
-RESULTS_DIR="jenkins/${BUILD_NUMBER:-local-$(date +%s)}"
+# BUILD_TAG holds the job name, so PR jobs with the same build number do not share a GCS dir.
+RESULTS_DIR="jenkins/$(printf '%s' "${BUILD_TAG:-local-$(date +%s)}" | tr -c 'A-Za-z0-9._-' '_')"
 
 set +e
 gcloud firebase test android run \
