@@ -1,5 +1,6 @@
 text:
 dom:
+  - RemoveScriptTransformer
   - SignatureTransformer
   - RemoveCollapsedSignatureButtonTransformer
   - NormalizeLineHeightInStyleTransformer

@@ -105,10 +105,9 @@ List<HtmlPipelineRow> _composerPipelines() => [
         name: 'forReplyForwardEmptyEmail',
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.passesThrough,
+        wiring: HtmlPipelineWiring.sanitizes,
         rules: const HtmlPipelineRules(composer: true),
-        knownGap: '#4956 XSS: reply/forward whose original content is not '
-            'loaded yet fetches it through this pipeline, which has no sanitizer',
+        allowsContentEditable: true,
       ),
       HtmlPipelineRow(
         name: 'forDraftsEmail',

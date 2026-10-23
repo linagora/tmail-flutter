@@ -1,5 +1,6 @@
 text:
 dom:
+  - RemoveScriptTransformer
   - RemoveLazyLoadingForBackgroundImageTransformer
   - RemoveLazyLoadingImageTransformer
   - RemoveCollapsedSignatureButtonTransformer
