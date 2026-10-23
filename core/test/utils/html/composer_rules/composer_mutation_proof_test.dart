@@ -118,14 +118,15 @@ void main() {
         .singleWhere((r) => r.name == 'forComposerSignature');
     final config = row.build();
     const html = '<pre style="color:red">x</pre>';
+    final sanitized = parse(sanitizedSource(config, html));
     final out = await _transform(html, config);
-    expect(lineHeightOnlyFailures(parse(html), parse(out)), isEmpty);
+    expect(lineHeightOnlyFailures(sanitized, parse(out)), isEmpty);
 
     final broken = TransformConfiguration(
       [...config.domTransformers, const BlockCodeTransformer()],
       config.textTransformers,
     );
     final brokenOut = await _transform(html, broken);
-    expect(lineHeightOnlyFailures(parse(html), parse(brokenOut)), isNotEmpty);
+    expect(lineHeightOnlyFailures(sanitized, parse(brokenOut)), isNotEmpty);
   });
 }

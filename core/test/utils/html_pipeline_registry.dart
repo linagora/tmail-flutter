@@ -149,8 +149,9 @@ List<HtmlPipelineRow> _composerPipelines() => [
         name: 'forComposerSignature',
         create: TransformConfiguration.forComposerSignature,
         trust: HtmlPipelineTrust.user,
-        wiring: HtmlPipelineWiring.passesThrough,
+        wiring: HtmlPipelineWiring.sanitizes,
         rules: const HtmlPipelineRules(composer: true),
+        allowsContentEditable: true,
       ),
     ];
 

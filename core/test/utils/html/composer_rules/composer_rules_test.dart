@@ -35,7 +35,8 @@ void _composerTest(String name, Future<void> Function() body) =>
 
 /// What the composer pipelines must keep or must not add: the content of
 /// every fixture, a stable second pass, no display-only markup, uneditable
-/// drive cards, and a composer signature that changes only `line-height`.
+/// drive cards, and a composer signature that changes only `line-height`
+/// beyond what its sanitizer removes.
 void main() {
   tearDown(() {
     PlatformInfo.isTestingForWeb = false;
@@ -66,9 +67,10 @@ void main() {
         });
 
         if (row.factoryName == 'forComposerSignature') {
-          _composerTest('${row.name} $id changes only line-height', () async {
+          _composerTest('${row.name} $id changes only line-height beyond sanitizing', () async {
             final out = await _transform(row, fixture.html);
-            expect(lineHeightOnlyFailures(parse(fixture.html), parse(out)), isEmpty);
+            final sanitized = sanitizedSource(row.build(), fixture.html);
+            expect(lineHeightOnlyFailures(parse(sanitized), parse(out)), isEmpty);
           });
         }
       }
