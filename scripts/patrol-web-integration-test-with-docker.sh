@@ -18,8 +18,9 @@ cleanup() {
     kill "$VMSTAT_PID" 2>/dev/null || true
     kill "$RESET_SERVER_PID" 2>/dev/null || true
     kill "${WATCHDOG_PID:-}" 2>/dev/null || true
+    kill "${KEEPER_PID:-}" 2>/dev/null || true
     # Reap them so their ports are free before the agent lock is released.
-    wait "$VMSTAT_PID" "$RESET_SERVER_PID" "${WATCHDOG_PID:-}" 2>/dev/null || true
+    wait "$VMSTAT_PID" "$RESET_SERVER_PID" "${WATCHDOG_PID:-}" "${KEEPER_PID:-}" 2>/dev/null || true
     cd "$ROOT_DIR/backend-docker" || return 0
     docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
     cp "$RESET_SERVER_LOG" "$CI_LOGS/" 2>/dev/null || true
@@ -82,6 +83,10 @@ PATROL_LOG=/tmp/tmail-patrol-web-console.log
 bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" &
 WATCHDOG_PID=$!
 
+WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]'
+node scripts/ci-web-dev-server-keeper.js "http://localhost:3000" "$ROOT_DIR" "$WEB_BROWSER_ARGS" > "$CI_LOGS/dev-server-keeper.log" 2>&1 &
+KEEPER_PID=$!
+
 patrol test -v \
     --tags=web \
     --device=chrome \
@@ -93,7 +98,7 @@ patrol test -v \
     --web-video=retain-on-failure \
     --web-results-dir="$CI_LOGS/web-results" \
     --web-report-dir="$CI_LOGS/playwright-report" \
-    --web-browser-args='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]' \
+    --web-browser-args="$WEB_BROWSER_ARGS" \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
