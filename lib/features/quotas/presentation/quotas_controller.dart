@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
@@ -13,7 +15,7 @@ import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class QuotasController extends BaseController {
+class QuotasController extends BaseController with ActiveAccountReader {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -23,10 +25,15 @@ class QuotasController extends BaseController {
 
   late Worker accountIdListener;
 
+  StreamSubscription<Either<Failure, Success>>? _quotaRequest;
+
   QuotasController(this._getQuotasInteractor);
 
-  void _getQuotasAction(AccountId accountId) {
-    consumeState(_getQuotasInteractor.execute(accountId));
+  /// Only the quota of the account shown last may reach the view, so a new request drops the
+  /// result of the one still running.
+  void _requestQuota(Stream<Either<Failure, Success>> request) {
+    _quotaRequest?.cancel();
+    _quotaRequest = request.listen(onData, onError: onError, onDone: onDone);
   }
 
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
@@ -36,14 +43,14 @@ class QuotasController extends BaseController {
   }
 
   void _initWorker() {
-    accountIdListener = ever(
+    accountIdListener = everShownAccount(
       mailboxDashBoardController.accountId,
       (_) => reloadQuota(),
     );
   }
 
   bool get isStorageCapabilitySupported {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (accountId != null && session != null) {
@@ -55,9 +62,9 @@ class QuotasController extends BaseController {
 
   void reloadQuota() {
     if (isStorageCapabilitySupported) {
-      _getQuotasAction(mailboxDashBoardController.accountId.value!);
+      _requestQuota(_getQuotasInteractor.execute(activeAccountId!));
     } else {
-      consumeState(
+      _requestQuota(
         Stream.value(
           Left(GetQuotasFailure(NotFoundAccountIdException())),
         ),
@@ -74,6 +81,7 @@ class QuotasController extends BaseController {
   @override
   void onClose() {
     accountIdListener.dispose();
+    _quotaRequest?.cancel();
     super.onClose();
   }
 
