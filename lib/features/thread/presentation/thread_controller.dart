@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -164,7 +165,6 @@ class ThreadController extends BaseController with EmailActionController {
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
-  @visibleForTesting
   bool get shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
@@ -714,6 +714,12 @@ class ThreadController extends BaseController with EmailActionController {
       'EmailState = ${success.currentEmailState?.value}',
     );
     mailboxDashBoardController.updateEmailList(newListEmail);
+    if (shouldCollapseThreads) {
+      // Collapsed pages count rows from the top, so a page requested against
+      // the previous rows would not line up with the new ones.
+      _folderLoadMore.listLoadedFromTop();
+      _syncLoadMoreStatus();
+    }
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
@@ -858,6 +864,18 @@ class ThreadController extends BaseController with EmailActionController {
         : UnsignedInt(_peakEmailCount);
   }
 
+  /// [limitEmailFetched] for a read that goes to the server, which rejects
+  /// more ids than the session's maxObjectsInGet. The local cache has no cap.
+  UnsignedInt get _networkLimitEmailFetched {
+    final session = _session;
+    final accountId = _accountId;
+    final cap = session != null && accountId != null
+        ? session.getMaxObjectsInGet(accountId)?.value.toInt()
+        : null;
+    if (cap == null) return limitEmailFetched;
+    return UnsignedInt(min(limitEmailFetched.value.toInt(), cap));
+  }
+
   void _refreshEmailChanges({required jmap.State newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (_accountId == null) return;
@@ -895,7 +913,8 @@ class ThreadController extends BaseController with EmailActionController {
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
       sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-      limit: limitEmailFetched,
+      // A collapsed refresh reads the server; the others read the cache.
+      limit: collapseThreads ? _networkLimitEmailFetched : limitEmailFetched,
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
         _accountId!,
@@ -922,19 +941,28 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
-    final refreshViewState = await _refreshChangeListEmailCache(
-      collapseThreads: shouldCollapseThreads,
-    );
+    final collapseThreads = shouldCollapseThreads;
+    // A collapsed refresh reads the first rows again from the server and
+    // replaces the list, so load-more waits for it. Without collapsing, the
+    // date cursor stays valid and a running page is kept.
+    if (collapseThreads) _holdLoadMoreForRefresh();
+    try {
+      final refreshViewState = await _refreshChangeListEmailCache(
+        collapseThreads: collapseThreads,
+      );
 
-    final refreshState = refreshViewState
-        .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
+      final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
 
-    dispatchState(refreshViewState);
+      dispatchState(refreshViewState);
 
-    if (refreshState is RefreshChangesAllEmailSuccess) {
-      _refreshChangesAllEmailSuccess(refreshState);
-    } else if (refreshState != null) {
-      onDataFailureViewState(refreshState);
+      if (refreshState is RefreshChangesAllEmailSuccess) {
+        _refreshChangesAllEmailSuccess(refreshState);
+      } else if (refreshState != null) {
+        onDataFailureViewState(refreshState);
+      }
+    } finally {
+      if (collapseThreads) _releaseLoadMoreAfterRefresh();
     }
   }
 
@@ -950,7 +978,7 @@ class ThreadController extends BaseController with EmailActionController {
           .execute(
             _session!,
             _accountId!,
-            limit: limitEmailFetched,
+            limit: _networkLimitEmailFetched,
             sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
             emailFilter: getEmailFilterForLoadMailbox(),
             propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
@@ -962,6 +990,7 @@ class ThreadController extends BaseController with EmailActionController {
               _accountId!,
             ),
             useCache: false,
+            forceEmailQuery: shouldCollapseThreads,
             collapseThreads: shouldCollapseThreads,
           )
           .last;
@@ -1003,19 +1032,21 @@ class ThreadController extends BaseController with EmailActionController {
     if (!canLoadMore || loadingMoreStatus.value.isRunning) return;
 
     if (_session != null && _accountId != null) {
-      final token = _folderLoadMore.begin();
-      if (token == null) return;
+      final collapseThreads = shouldCollapseThreads;
+      final request = _folderLoadMore.begin(
+        mailboxDashBoardController.emailsInCurrentMailbox,
+        collapseThreads: collapseThreads,
+      );
+      if (request == null) return;
 
-      final currentListEmail =
-          mailboxDashBoardController.emailsInCurrentMailbox;
-      final oldestEmail =
-          currentListEmail.isNotEmpty ? currentListEmail.last : null;
+      final oldestEmail = request.oldestEmail;
       final useCache = selectedMailbox?.isCacheable ?? false;
       final filterOption = mailboxDashBoardController.filterMessageOption.value;
 
       logTrace(
         'ThreadController::_loadMoreEmails: '
         'OldestEmailID = ${oldestEmail?.id?.asString}, '
+        'Position = ${request.position}, '
         'useCache = $useCache, '
         'filterOption = ${filterOption.name}',
       );
@@ -1026,15 +1057,16 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
+          position: request.position,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
-          collapseThreads: shouldCollapseThreads,
+          collapseThreads: collapseThreads,
         )
-      ).where((_) => _folderLoadMore.accepts(token)));
+      ).where((_) => _folderLoadMore.accepts(request.token)));
     } else {
       consumeState(
         Stream.value(Left(LoadMoreEmailsFailure(NotFoundSessionException()))),
@@ -1042,21 +1074,19 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  bool _validatePresentationEmail(PresentationEmail email) {
-    return (_belongToCurrentMailboxId(email) ||
-            selectedMailbox?.isVirtualFolder == true ||
-            selectedMailbox?.isLabelMailbox == true) &&
-        _notDuplicatedInCurrentList(email);
+  bool _belongsToSelectedList(PresentationEmail email) {
+    return _belongToCurrentMailboxId(email) ||
+        selectedMailbox?.isVirtualFolder == true ||
+        selectedMailbox?.isLabelMailbox == true;
   }
 
   bool _belongToCurrentMailboxId(PresentationEmail email) {
     return email.mailboxIds != null && email.mailboxIds!.keys.contains(selectedMailboxId);
   }
 
-  bool _notDuplicatedInCurrentList(PresentationEmail email) {
-    final emailsInCurrentMailbox = mailboxDashBoardController.emailsInCurrentMailbox;
-    return emailsInCurrentMailbox.isEmpty ||
-      !emailsInCurrentMailbox.map((element) => element.id).contains(email.id);
+  /// A collapsed row stands for its whole thread, so rows match by thread.
+  Object? _rowKey(PresentationEmail email, {required bool collapseThreads}) {
+    return collapseThreads ? (email.threadId ?? email.id) : email.id;
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
@@ -1076,6 +1106,7 @@ class ThreadController extends BaseController with EmailActionController {
     _folderLoadMore.pageLoaded(
       serverCount: success.serverEmailCount,
       appendedCount: appendableList.length,
+      collapseThreads: shouldCollapseThreads,
     );
     _syncLoadMoreStatus();
     if (_isAutoLoadMore && canLoadMore) {
@@ -1085,8 +1116,15 @@ class ThreadController extends BaseController with EmailActionController {
 
   List<PresentationEmail> validateListEmailsLoadMore(List<PresentationEmail> emailList) {
     log('ThreadController::validateListEmailsLoadMore: BEFORE_EMAIL_LIST = ${emailList.length}');
+    final collapseThreads = shouldCollapseThreads;
+    final listedKeys = {
+      for (final email in mailboxDashBoardController.emailsInCurrentMailbox)
+        _rowKey(email, collapseThreads: collapseThreads),
+    };
     final appendableList = emailList
-      .where(_validatePresentationEmail)
+      .where((email) =>
+          _belongsToSelectedList(email) &&
+          !listedKeys.contains(_rowKey(email, collapseThreads: collapseThreads)))
       .toList()
       .syncPresentationEmail(
         mapMailboxById: mailboxDashBoardController.mapMailboxById,

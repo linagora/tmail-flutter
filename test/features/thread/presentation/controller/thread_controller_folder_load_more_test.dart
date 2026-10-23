@@ -726,6 +726,18 @@ void main() {
         expect(displayedEmails.map((email) => email.id), refreshed.map((email) => email.id));
       });
 
+      test('caps the server read at the session get limit', () async {
+        final listed = makeEmails(600, mailboxId: otherMailboxId);
+        final controller = createController(mailbox: PresentationMailbox.favoriteFolder);
+        answerRefresh(listed);
+        answerGetAll(() => const Stream.empty());
+        await startAndList(controller, listed);
+
+        await pushEmailStateChange();
+
+        verifyGetAll(limit: UnsignedInt(500), useCache: false).called(1);
+      });
+
       test('turns load-more off when the read fails', () async {
         final listed = makeEmails(40, mailboxId: otherMailboxId);
         final controller = createController(mailbox: PresentationMailbox.favoriteFolder);

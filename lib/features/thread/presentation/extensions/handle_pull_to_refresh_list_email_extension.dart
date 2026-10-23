@@ -20,13 +20,22 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
     await Future.delayed(const Duration(milliseconds: 300)); // Create loading effect
     canLoadMore = false;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
-    getAllEmailAction();
+    // The server collapses threads only on a forced query.
+    getAllEmailAction(forceEmailQuery: shouldCollapseThreads);
   }
 
   Future<void> onCleanAndRefresh() async {
     log('HandlePullToRefreshListEmailExtension::onCleanAndRefresh:Started');
     resetToOriginalValue();
-    cleanAndGetAllEmailAction();
+    if (shouldCollapseThreads) {
+      // The clean-cache path reads the cache-backed list, which is never
+      // collapsed. Clear the cache and force the server query instead.
+      await cachingManager.clearAllEmailAndStateCache();
+      consumeState(Stream.value(Right(GetAllEmailLoading())));
+      getAllEmailAction(forceEmailQuery: true);
+    } else {
+      cleanAndGetAllEmailAction();
+    }
   }
 
   Future<void> cleanAndGetAllEmailAction() async {
