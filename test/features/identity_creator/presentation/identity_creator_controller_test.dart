@@ -811,6 +811,30 @@ void main() {
     });
 
     test(
+      'should expose a sanitized stored signature as the editor initial text '
+      'before onReady runs',
+    () async {
+      // The web editor reads contentHtmlEditor as its initialText during the
+      // first build, which happens before onReady sanitizes the stored copy.
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+        identity: Identity(
+          id: IdentityId(Id('identity-1')),
+          name: 'Test Identity',
+          email: ownEmailAddress,
+          htmlSignature: Signature('<p>Sig</p><img src="https://x/a.png" onerror="alert(1)">'),
+          mayDelete: true,
+        ),
+        actionType: IdentityActionType.edit,
+      );
+
+      expect(identityCreatorController.contentHtmlEditor, contains('Sig'));
+      expect(identityCreatorController.contentHtmlEditor, isNot(contains('onerror')));
+    });
+
+    test(
       'should set the sanitized stored signature '
       'in the web editor',
     () async {
@@ -880,6 +904,74 @@ void main() {
       final saved = cache.identity?.htmlSignature?.value ?? '';
       expect(saved, contains('Sig'));
       expect(saved, isNot(contains('onerror')));
+    });
+
+    group('when editing an identity with a stored signature', () {
+      const storedSignature =
+          '<p style="float: left">Sig</p><a href="https://x.example" target="_blank">site</a>';
+
+      Future<String> saveAfter(void Function() edit) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        identityCreatorController.arguments = IdentityCreatorArguments(
+          accountId,
+          session,
+          ownEmailAddress,
+          identity: Identity(
+            id: IdentityId(Id('identity-1')),
+            name: 'Test Identity',
+            email: ownEmailAddress,
+            htmlSignature: Signature(storedSignature),
+            mayDelete: true,
+          ),
+          actionType: IdentityActionType.edit,
+        );
+        when(mockGetAllIdentitiesInteractor.execute(
+          any,
+          any,
+          properties: anyNamed('properties'),
+        )).thenAnswer((_) => const Stream.empty());
+        when(mockVerifyNameInteractor.execute(any, any))
+            .thenAnswer((_) => Right(VerifyNameViewState()));
+
+        identityCreatorController.onReady();
+        await pumpEventQueue();
+        edit();
+        identityCreatorController.onUnloadBrowserListener(Event(''));
+        await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
+          any,
+          any,
+          identityCache: anyNamed('identityCache'),
+        ));
+
+        final cache = verify(mockSaveIdentityCacheOnWebInteractor.execute(
+          any,
+          any,
+          identityCache: captureAnyNamed('identityCache'),
+        )).captured.single as IdentityCache;
+        return cache.identity?.htmlSignature?.value ?? '';
+      }
+
+      test(
+        'should keep the stored signature as is '
+        'when only the name changed',
+      () async {
+        final saved = await saveAfter(() => identityCreatorController
+            .updateNameIdentity(MockBuildContext(), 'Renamed'));
+
+        expect(saved, storedSignature);
+      });
+
+      test(
+        'should sanitize the signature '
+        'when the user changed it',
+      () async {
+        final saved = await saveAfter(() => identityCreatorController
+            .updateContentHtmlEditor('<p>New</p><img src="https://x/a.png" onerror="alert(1)">'));
+
+        expect(saved, contains('New'));
+        expect(saved, isNot(contains('onerror')));
+      });
     });
   });
 }

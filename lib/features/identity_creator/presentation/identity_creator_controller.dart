@@ -111,6 +111,12 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
+
+  /// The stored signature and the sanitized copy given to the editor. While
+  /// the editor still holds that copy, the user has not touched the
+  /// signature and saving keeps the stored one as is.
+  String? _storedSignature;
+  String? _sanitizedStoredSignature;
   AccountId? accountId;
   Session? session;
   Identity? identity;
@@ -138,7 +144,13 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (_contentHtmlEditor != null) {
       return _contentHtmlEditor ?? '';
     } else {
-      return arguments?.identity?.signatureAsString ?? '';
+      // The web editor reads this as its initialText on the first build, before
+      // onReady sanitizes the stored copy. The signature may come from another
+      // client or provisioning, so sanitize the fallback too: the editor iframe
+      // is same origin and evaluates inline handlers and scripts.
+      return EditorHtmlSanitizer.sanitize(
+        arguments?.identity?.signatureAsString ?? '',
+      );
     }
   }
 
@@ -322,9 +334,9 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (identity?.signatureAsString.isNotEmpty == true) {
       // The stored signature may come from another client or from
       // provisioning: sanitize it before the editor renders it.
-      final signature = EditorHtmlSanitizer.sanitize(
-        arguments?.identity?.signatureAsString ?? '',
-      );
+      _storedSignature = arguments?.identity?.signatureAsString ?? '';
+      final signature = EditorHtmlSanitizer.sanitize(_storedSignature!);
+      _sanitizedStoredSignature = signature;
       updateContentHtmlEditor(signature);
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText(signature);
@@ -532,9 +544,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     PublicAssetsInIdentityArguments publicAssetsInIdentityArguments
   })> _generateIdentityAndPublicAssetArguments({bool forCache = false}) async {
     // The signature is inserted into every composed email: store it clean.
-    final signatureHtmlText = EditorHtmlSanitizer.sanitize(
-      PlatformInfo.isWeb ? contentHtmlEditor : await _getSignatureHtmlText(),
-    );
+    // An untouched stored signature (e.g. only the name was edited) is kept
+    // as is, so saving does not strip formatting the user never changed;
+    // the composer and the viewers sanitize it anyway.
+    final editorSignature =
+        PlatformInfo.isWeb ? contentHtmlEditor : await _getSignatureHtmlText();
+    final signatureHtmlText = editorSignature == _sanitizedStoredSignature
+        ? _storedSignature!
+        : EditorHtmlSanitizer.sanitize(editorSignature);
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
         ? {bccOfIdentity.value!}
         : <EmailAddress>{};
