@@ -2066,7 +2066,6 @@ class MailboxDashBoardController extends ReloadableController
       arguments: ManageAccountArguments(
         sessionCurrent,
         previousUri: RouteUtils.baseUri,
-        quota: octetsQuota.value,
       ),
     );
 
@@ -2148,7 +2147,6 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent,
         menuSettingCurrent: AccountMenuItem.vacation,
         previousUri: RouteUtils.baseUri,
-        quota: octetsQuota.value,
       )
     );
 
