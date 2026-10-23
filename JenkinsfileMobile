@@ -42,7 +42,7 @@ pipeline {
 
                 // Tear down the backend Docker stack if it is still running and belongs to this workspace.
                 sh '''
-                    flock -o /tmp/tmail-patrol-backend.lock bash -c '
+                    flock -n -o /tmp/tmail-patrol-backend.lock bash -c '
                         cd backend-docker || exit 0
                         owner=$(docker inspect tmail-backend --format "{{ index .Config.Labels \\"com.docker.compose.project.working_dir\\" }}" 2>/dev/null || true)
                         if [ -n "$owner" ] && [ "$(realpath "$owner" 2>/dev/null)" = "$(pwd -P)" ]; then
@@ -50,7 +50,7 @@ pipeline {
                         else
                             echo "tmail-backend not owned by this workspace (${owner:-none}); skip teardown."
                         fi
-                    ' || true
+                    ' || echo "agent backend lock held by another job; skip teardown."
                 '''
             }
             deleteDir() /* clean up our workspace */
