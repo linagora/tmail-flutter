@@ -17,6 +17,9 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
   @override
   Future<void> enterRuleName(String name) async {
     await $(RuleFilterCreatorView).$(TextField).enterText(name);
+    // The keyboard covers the action slot below the name field
+    FocusManager.instance.primaryFocus?.unfocus();
+    await $.pumpAndTrySettle();
   }
 
   @override
@@ -24,7 +27,10 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     String actionName,
     String selectActionHint,
   ) async {
-    await $(find.text(selectActionHint)).tap();
+    // The keyboard can stay up after unfocus and push the slot out of view
+    final actionSlot = $(find.text(selectActionHint));
+    await actionSlot.scrollTo();
+    await actionSlot.tap();
     await $.pumpAndTrySettle();
     await $(find.text(actionName)).tap();
   }
