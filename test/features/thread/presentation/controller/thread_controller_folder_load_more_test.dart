@@ -738,6 +738,55 @@ void main() {
         expect(controller.canLoadMore, isFalse);
         expect(controller.loadingMoreStatus.value, LoadingMoreStatus.idle);
       });
+
+      test('loads more only once the refresh has replaced the list', () async {
+        final listed = makeEmails(40, mailboxId: otherMailboxId);
+        final refreshed = makeEmails(40, from: 100, mailboxId: otherMailboxId);
+        final controller = createController(mailbox: PresentationMailbox.favoriteFolder);
+        answerRefresh(listed);
+        final pendingRead = StreamController<Either<Failure, Success>>();
+        addTearDown(pendingRead.close);
+        answerGetAll(() => pendingRead.stream);
+        await startAndList(controller, listed);
+
+        await pushEmailStateChange();
+        controller.handleLoadMoreEmailsRequest();
+        await pumpEventQueue();
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+
+        pendingRead.add(Right(GetAllEmailSuccess(emailList: refreshed)));
+        await pendingRead.close();
+        await pumpEventQueue();
+
+        final request = capturedLoadMoreRequests().single;
+        expect(request.lastEmailId, refreshed.last.id);
+      });
+
+      test('sends again a page dropped by the refresh, from the refreshed list', () async {
+        final listed = makeEmails(40, mailboxId: otherMailboxId);
+        final refreshed = makeEmails(40, from: 100, mailboxId: otherMailboxId);
+        final stalePage = makeEmails(pageSize, from: 40, mailboxId: otherMailboxId);
+        final controller = createController(mailbox: PresentationMailbox.favoriteFolder);
+        answerRefresh(listed);
+        answerGetAll(() => Stream.value(Right(GetAllEmailSuccess(emailList: refreshed))));
+        await startAndList(controller, listed);
+        final pendingPage = StreamController<Either<Failure, Success>>();
+        addTearDown(pendingPage.close);
+        var call = 0;
+        answerLoadMore(() => ++call == 1 ? pendingPage.stream : const Stream.empty());
+        controller.handleLoadMoreEmailsRequest();
+        await pumpEventQueue();
+
+        await pushEmailStateChange();
+        pendingPage.add(Right(LoadMoreEmailsSuccess(stalePage, serverEmailCount: pageSize)));
+        await pumpEventQueue();
+
+        expect(displayedEmails.map((email) => email.id), refreshed.map((email) => email.id));
+        final requests = capturedLoadMoreRequests();
+        expect(requests.length, 2);
+        expect(requests.last.lastEmailId, refreshed.last.id);
+      });
     });
 
     group('user refresh actions', () {
@@ -796,7 +845,7 @@ void main() {
         verifyGetAll(forceEmailQuery: false, collapseThreads: false).called(1);
       });
 
-      test('keeps appending a page requested before the folder was reloaded', () async {
+      test('drops a page requested before the folder was reloaded', () async {
         final listed = makeEmails(pageSize);
         final page = makeEmails(pageSize, from: pageSize);
         final controller = createController(listed: listed);
@@ -811,7 +860,8 @@ void main() {
         pending.add(Right(LoadMoreEmailsSuccess(page, serverEmailCount: pageSize)));
         await pumpEventQueue();
 
-        expect(displayedEmails.last.id, page.last.id);
+        expect(displayedEmails.map((email) => email.id), listed.map((email) => email.id));
+        expect(controller.loadingMoreStatus.value, LoadingMoreStatus.idle);
       });
     });
   });
