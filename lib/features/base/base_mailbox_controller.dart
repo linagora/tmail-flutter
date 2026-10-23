@@ -50,7 +50,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -371,12 +370,11 @@ abstract class BaseMailboxController extends BaseController
   }
 
   Future<void> moveMailboxAction(
-    PresentationMailbox mailboxSelected,
-    MailboxDashBoardController dashBoardController, {
+    PresentationMailbox mailboxSelected, {
+    required AccountId? accountId,
+    required Session? session,
     required MovingMailboxActionCallback onMovingMailboxAction
   }) async {
-    final accountId = dashBoardController.accountId.value;
-    final session = dashBoardController.sessionCurrent;
     if (accountId == null || session == null) {
       consumeState(Stream.value(Left(MoveMailboxFailure(
         accountId == null
