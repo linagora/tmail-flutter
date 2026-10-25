@@ -95,6 +95,7 @@ patrol test -v \
     --web-server-timeout=300 \
     --web-global-timeout=4500000 \
     --show-flutter-logs \
+    --flutter-command="flutter -v" \
     --web-video=retain-on-failure \
     --web-results-dir="$CI_LOGS/web-results" \
     --web-report-dir="$CI_LOGS/playwright-report" \
@@ -104,7 +105,7 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee "$PATROL_LOG"
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | grep --line-buffered -v 'MetadataProvider: Loaded debug metadata' | tee "$PATROL_LOG"
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 
 exit $TEST_EXIT_CODE
