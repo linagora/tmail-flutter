@@ -95,7 +95,7 @@ patrol test -v \
     --web-server-timeout=300 \
     --web-global-timeout=4500000 \
     --show-flutter-logs \
-    --flutter-command="flutter -v" \
+    --flutter-command="bash scripts/ci-flutter-verbose-run.sh" \
     --web-video=retain-on-failure \
     --web-results-dir="$CI_LOGS/web-results" \
     --web-report-dir="$CI_LOGS/playwright-report" \
