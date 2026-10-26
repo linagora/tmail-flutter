@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/oidc/token_id.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_interaction_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 
@@ -102,6 +103,33 @@ void main() {
       );
 
       expect(authClient.handleException(error), same(error));
+    });
+  });
+
+  group('AuthenticationClientInteractionMixin::getEndSessionUrl', () {
+    test('builds a standard RP-Initiated Logout request', () {
+      final url = Uri.parse(authClient.getEndSessionUrl(
+        'https://sign-up.twake.app/oauth2/logout',
+        TokenId('an-id-token'),
+        'twakemail.mobile://redirect',
+      ));
+
+      expect(url.origin + url.path, 'https://sign-up.twake.app/oauth2/logout');
+      expect(url.queryParameters, {
+        'id_token_hint': 'an-id-token',
+        'post_logout_redirect_uri': 'twakemail.mobile://redirect',
+      });
+    });
+
+    test('keeps a query already on the endpoint', () {
+      final url = Uri.parse(authClient.getEndSessionUrl(
+        'https://sign-up.twake.app/oauth2/logout?confirm=1',
+        TokenId('an-id-token'),
+        'twakemail.mobile://redirect',
+      ));
+
+      expect(url.queryParameters['confirm'], '1');
+      expect(url.queryParameters['id_token_hint'], 'an-id-token');
     });
   });
 }

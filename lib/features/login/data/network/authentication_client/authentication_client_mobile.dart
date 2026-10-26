@@ -1,5 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -55,6 +57,13 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     OIDCConfiguration config,
     OIDCDiscoveryResponse discoveryResponse,
   ) async {
+    final endSessionEndpoint = discoveryResponse.endSessionEndpoint;
+    if (config.isTWP && PlatformInfo.isIOS && endSessionEndpoint != null) {
+      return _logoutTwakeWorkplace(
+        getEndSessionUrl(endSessionEndpoint, tokenId, config.logoutRedirectUrl),
+        Uri.parse(config.logoutRedirectUrl).scheme,
+      );
+    }
     final endSessionRequest = getEndSessionRequest(
       tokenId,
       config,
@@ -63,6 +72,30 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     final endSession = await _appAuth.endSession(endSessionRequest);
     log('$runtimeType::logoutOidc(): ${endSession.state}');
     return endSession.state?.isNotEmpty == true;
+  }
+
+  // Signs out in the same browser session as signInTwakeWorkplace: AppAuth's
+  // ephemeral session cannot see the SSO cookies, so they survived (#5038).
+  // If the portal does not return to the app, the user closes the page, which
+  // still ends the session and reports end_session_failed.
+  Future<bool> _logoutTwakeWorkplace(String url, String callbackUrlScheme) async {
+    try {
+      await FlutterWebAuth2.authenticate(
+        url: url,
+        callbackUrlScheme: callbackUrlScheme,
+        options: const FlutterWebAuth2Options(intentFlags: ephemeralIntentFlags),
+      );
+      log('$runtimeType::_logoutTwakeWorkplace(): callback received');
+      return true;
+    } on PlatformException catch (e) {
+      if (e.code == 'CANCELED') {
+        throw PlatformException(
+          code: OIDCConstant.endSessionFailedCode,
+          message: e.message,
+        );
+      }
+      rethrow;
+    }
   }
 
   @override
