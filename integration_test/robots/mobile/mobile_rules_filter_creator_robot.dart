@@ -6,6 +6,8 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_rules_filter_creator_robot.dart';
 
 class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
@@ -37,12 +39,13 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     FocusManager.instance.primaryFocus?.unfocus();
     await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
     final view = $.tester.view;
-    for (var i = 0; i < 20 && view.viewInsets.bottom > 0; i++) {
-      await $.tester.pump(const Duration(milliseconds: 250));
-    }
-    if (view.viewInsets.bottom > 0) {
-      throw StateError('Keyboard still open after 5 s (inset ${view.viewInsets.bottom})');
-    }
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return view.viewInsets.bottom == 0;
+      },
+      timeout: TestTimeouts.short,
+    );
   }
 
   @override
