@@ -23,7 +23,15 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
   Completer<void>? _cancellation;
 
   @override
-  AccountSwitchState build() => const AccountSwitchIdle();
+  AccountSwitchState build() {
+    ref.listen<ActiveAccount?>(activeAccountProvider, (previous, next) {
+      if (state.isSwitching || previous == null || next == null) return;
+      if (_sameShownAccount(previous, next)) return;
+
+      state = AccountSwitchIdle(lastAttemptId: state.currentAttemptId + 1);
+    });
+    return const AccountSwitchIdle();
+  }
 
   ActiveAccountNotifier get _activeAccountNotifier =>
       ref.read(activeAccountProvider.notifier);
@@ -44,7 +52,10 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
       final preparationFailure = _prepareView(view);
       final result = preparationFailure ??
           await _showTarget(view, targetAccountId, cancellation);
-      if (result is! AccountSwitched) {
+      if (state is AccountSwitchEndingSession) {
+        return const AccountSwitchCancelled();
+      }
+      if (result is! AccountSwitched && _shownAccount != null) {
         _fallBackTo(
           previousAccount,
           targetAccountId,
@@ -54,8 +65,9 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
       }
       return result;
     } finally {
+      final endingSession = state is AccountSwitchEndingSession;
       _cancellation = null;
-      _runViewStep('unblockInput', view.unblockInput);
+      if (!endingSession) _runViewStep('unblockInput', view.unblockInput);
       state = AccountSwitchIdle(lastAttemptId: state.currentAttemptId);
     }
   }
@@ -65,6 +77,27 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     if (cancellation != null && !cancellation.isCompleted) {
       cancellation.complete();
     }
+  }
+
+  /// Drops in-flight view results of the current attempt. The id only increases,
+  /// so a late result of a previous session cannot match a later attempt.
+  void endSession() {
+    if (state is AccountSwitchEndingSession) return;
+
+    final nextAttemptId = state.currentAttemptId + 1;
+    if (state.isSwitching) {
+      state = AccountSwitchEndingSession(nextAttemptId);
+      cancel();
+    } else {
+      state = AccountSwitchIdle(lastAttemptId: nextAttemptId);
+    }
+
+    _activeAccountNotifier.clear();
+  }
+
+  bool _sameShownAccount(ActiveAccount previous, ActiveAccount next) {
+    return previous.accountId == next.accountId &&
+        previous.session.username == next.session.username;
   }
 
   AccountSwitchRefusal? _findRefusal(
@@ -170,7 +203,8 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     final isSwitchToPersonal = targetAccountId == previousAccount.personalAccountId;
     final restoresPreviousAccount = !isSwitchToPersonal &&
         _activeAccountNotifier.canSelect(previousAccount.accountId);
-    final shownAccount = _shownAccount!;
+    final shownAccount = _shownAccount;
+    if (shownAccount == null) return;
 
     _startAttempt(
       from: shownAccount.accountId,

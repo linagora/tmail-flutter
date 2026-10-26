@@ -7,7 +7,8 @@ sealed class AccountSwitchState with EquatableMixin {
   /// The attempt a view result is stamped with when it is requested.
   int get currentAttemptId;
 
-  bool get isSwitching => this is AccountSwitching;
+  bool get isSwitching =>
+      this is AccountSwitching || this is AccountSwitchEndingSession;
 }
 
 class AccountSwitchIdle extends AccountSwitchState {
@@ -32,4 +33,16 @@ class AccountSwitching extends AccountSwitchState {
 
   @override
   List<Object?> get props => [attempt];
+}
+
+class AccountSwitchEndingSession extends AccountSwitchState {
+  final int lastAttemptId;
+
+  const AccountSwitchEndingSession(this.lastAttemptId);
+
+  @override
+  int get currentAttemptId => lastAttemptId;
+
+  @override
+  List<Object?> get props => [lastAttemptId];
 }

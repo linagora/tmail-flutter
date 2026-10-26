@@ -45,4 +45,7 @@ class ActiveAccountNotifier extends _$ActiveAccountNotifier {
     final session = state?.session;
     if (session != null) state = ActiveAccount.personal(session);
   }
+
+  /// Clears the in-memory selection when the signed-in session ends.
+  void clear() => state = null;
 }

@@ -10,6 +10,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -26,6 +27,8 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -48,6 +51,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/compo
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
@@ -428,6 +432,72 @@ void main() {
 
       verify(mockDeleteCredentialInteractor.execute()).called(1);
       verifyNever(mockDeleteAuthorityOidcInteractor.execute());
+    });
+
+    testWidgets('ends delegation state in the widget provider scope before clearing session data', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      BuildContext? providerContext;
+      final session = DelegationFixtures.session();
+      final activeAccountNotifier = container.read(activeAccountProvider.notifier);
+      activeAccountNotifier.applySession(session);
+      activeAccountNotifier.select(DelegationFixtures.bobAccountId);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) {
+                providerContext = context;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+      expect(providerContext, isNotNull);
+      expect(
+        ProviderScope.containerOf(providerContext!, listen: false),
+        same(container),
+      );
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData(
+        context: providerContext,
+      );
+
+      expect(container.read(activeAccountProvider), isNull);
+      expect(
+        container.read(accountSwitchProvider).currentAttemptId,
+        1,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('continues clearing session data if no provider scope is available', (tester) async {
+      BuildContext? contextWithoutScope;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              contextWithoutScope = context;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(contextWithoutScope, isNotNull);
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData(
+        context: contextWithoutScope,
+      );
+
+      verify(mockDeleteCredentialInteractor.execute()).called(1);
+      verify(mockCachingManager.clearAll()).called(1);
     });
   });
 
