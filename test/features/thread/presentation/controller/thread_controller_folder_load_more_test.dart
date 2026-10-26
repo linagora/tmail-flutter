@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -46,6 +47,11 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
@@ -59,7 +65,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
-import 'thread_controller_test.mocks.dart';
+import 'thread_controller_folder_load_more_test.mocks.dart';
 
 /// Thread view off, set explicitly so these tests never depend on
 /// FORCE_EMAIL_QUERY or the local thread setting.
@@ -76,6 +82,39 @@ class _ThreadViewOffController extends ThreadController {
   bool get shouldCollapseThreads => false;
 }
 
+mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
+const fallbackGenerators = {
+  #onStart: mockControllerCallback,
+  #onDelete: mockControllerCallback,
+};
+
+@GenerateNiceMocks([
+  // Base controller mock specs
+  MockSpec<CachingManager>(),
+  MockSpec<LanguageCacheManager>(),
+  MockSpec<AuthorizationInterceptors>(),
+  MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<DeleteCredentialInteractor>(),
+  MockSpec<LogoutOidcInteractor>(),
+  MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<AppToast>(),
+  MockSpec<ImagePaths>(),
+  MockSpec<ResponsiveUtils>(),
+  MockSpec<Uuid>(),
+  MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
+  // Thread controller mock specs
+  MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<SearchController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<GetEmailsInMailboxInteractor>(),
+  MockSpec<RefreshChangesEmailsInMailboxInteractor>(),
+  MockSpec<LoadMoreEmailsInMailboxInteractor>(),
+  MockSpec<SearchEmailInteractor>(),
+  MockSpec<SearchMoreEmailInteractor>(),
+  MockSpec<GetEmailByIdInteractor>(),
+  MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+])
 /// Pins how folder load-more behaves with thread view off. These tests must
 /// keep passing unchanged when the load-more code is restructured.
 void main() {
