@@ -13,4 +13,5 @@ abstract class AbstractThreadAssertionRobot {
     String subjectPrefix,
   );
   Future<void> expectListedThreadCountBelow(int n, String subjectPrefix);
+  Future<void> expectListedThreadCountAbove(int n, String subjectPrefix);
 }

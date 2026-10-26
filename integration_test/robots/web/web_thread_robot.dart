@@ -16,6 +16,7 @@ import '../thread_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import 'web_fire_on_tap.dart';
+import 'web_thread_viewport_robot.dart';
 
 /// Web-specific empty-trash robot: tapping the banner requires firing the
 /// [TapGestureRecognizer] of a [TextSpan] directly, because [RichText] spans
@@ -45,7 +46,11 @@ class WebThreadEmptyTrashRobot extends ThreadEmptyTrashRobot {
 
 class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   WebThreadRobot(PatrolIntegrationTester $)
-      : super($, emptyTrashRobot: WebThreadEmptyTrashRobot($));
+      : super(
+          $,
+          emptyTrashRobot: WebThreadEmptyTrashRobot($),
+          viewport: WebThreadViewportRobot($),
+        );
 
   static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
   static const Duration _emailListRefreshInterval = Duration(seconds: 5);

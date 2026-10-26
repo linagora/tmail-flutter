@@ -95,6 +95,18 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
   }
 
   @override
+  Future<void> expectListedThreadCountAbove(
+    int n,
+    String subjectPrefix,
+  ) async {
+    expect(
+      _listedThreads(subjectPrefix).length,
+      greaterThan(n),
+      reason: 'the list must load more on its own to fill the viewport',
+    );
+  }
+
+  @override
   Future<void> expectEmptyTrashThreadView() async {
     // The empty view only appears once the post-empty-trash email reload returns.
     // waitUntilVisible's frame-only retry loop does not yield to the browser event
