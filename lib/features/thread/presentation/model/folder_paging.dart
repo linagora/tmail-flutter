@@ -76,6 +76,9 @@ final class FolderPagingByPosition extends FolderPaging {
   void reset() => _skippedRows = 0;
 
   /// A collapsed row stands for its whole thread, so rows match by thread.
+  /// `threadId` is optional on [PresentationEmail]; rows without one fall
+  /// back to their email id. Sharing a null key would make every such row
+  /// after the first count as a duplicate and be dropped.
   @override
   Object? rowKey(PresentationEmail email) => email.threadId ?? email.id;
 }
