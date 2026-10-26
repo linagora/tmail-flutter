@@ -57,6 +57,20 @@ void main() {
       expect(stateOf(), ActiveAccount.personal(otherUserSession));
     });
 
+    test(
+      'same user signing in after logout starts on mine, not the previous delegated account',
+      () {
+        notifierOf().applySession(DelegationFixtures.session());
+        notifierOf().select(DelegationFixtures.bobAccountId);
+
+        notifierOf().clear();
+        final signInSession = DelegationFixtures.session(state: 'state-2');
+        notifierOf().applySession(signInSession);
+
+        expect(stateOf(), ActiveAccount.personal(signInSession));
+      },
+    );
+
     test('stays on my own account when it was shown', () {
       notifierOf().applySession(DelegationFixtures.session());
       final reReadSession = DelegationFixtures.session(state: 'state-2');

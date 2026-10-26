@@ -532,16 +532,36 @@ void main() {
       expect(shownAccountOf(), ActiveAccount.delegated(refreshedSession, bob));
     });
 
-    test('a target leaving after the switch ended cancels nothing', () async {
-      await showBobMailbox();
+    test(
+      'a target leaving after the switch ended starts a new attempt, so in-flight results of it fail the stale check',
+      () async {
+        await showBobMailbox();
 
-      final sessionWithoutBob = DelegationFixtures.session(listsBob: false, state: 'state-2');
-      activeAccountNotifierOf().applySession(sessionWithoutBob);
+        final sessionWithoutBob =
+            DelegationFixtures.session(listsBob: false, state: 'state-2');
+        activeAccountNotifierOf().applySession(sessionWithoutBob);
 
-      expect(shownAccountOf(), ActiveAccount.personal(sessionWithoutBob));
-      expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 1));
-      expect(view.calls, isEmpty);
-    });
+        expect(shownAccountOf(), ActiveAccount.personal(sessionWithoutBob));
+        expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
+        expect(view.calls, isEmpty);
+      },
+    );
+
+    test(
+      'another user signing in starts a new attempt even when the personal account id is reused',
+      () async {
+        final otherUserSession = DelegationFixtures.session(
+          username: DelegationFixtures.carolAddress,
+          state: 'state-2',
+        );
+
+        switchNotifierOf();
+        activeAccountNotifierOf().applySession(otherUserSession);
+
+        expect(shownAccountOf(), ActiveAccount.personal(otherUserSession));
+        expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 1));
+      },
+    );
 
     test('a cancelled switch also comes back to the previous account with a new attempt', () async {
       await showBobMailbox();
@@ -652,6 +672,44 @@ void main() {
         'unblockInput',
       ]);
     });
+  });
+
+  group('logout', () {
+    test(
+      'same user signing in after logout starts on mine with a new attempt, not the previous delegated account',
+      () async {
+        await showBobMailbox();
+
+        switchNotifierOf().endSession();
+        final signInSession = DelegationFixtures.session(state: 'state-2');
+        activeAccountNotifierOf().applySession(signInSession);
+
+        expect(shownAccountOf(), ActiveAccount.personal(signInSession));
+        expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
+      },
+    );
+
+    test(
+      'during a switch: does not roll back or catch up, and late load results keep a stale attempt id',
+      () async {
+        final switching = switchNotifierOf().switchTo(bob, view);
+
+        switchNotifierOf().endSession();
+        expect(switchStateOf(), const AccountSwitchEndingSession(2));
+        final result = await switching;
+        view.loadings.single.complete();
+        await pumpEventQueue();
+
+        expect(result, const AccountSwitchCancelled());
+        expect(shownAccountOf(), isNull);
+        expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
+        expect(view.calls, isNot(contains('restoreSelectionAndSearch')));
+        expect(
+          view.calls.where((call) => call.startsWith('catchUpAccount')),
+          isEmpty,
+        );
+      },
+    );
   });
 
   group('cancel', () {
