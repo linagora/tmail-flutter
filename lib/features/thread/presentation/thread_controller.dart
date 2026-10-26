@@ -122,7 +122,9 @@ class ThreadController extends BaseController with EmailActionController {
   final openingEmail = RxBool(false);
   final loadingMoreStatus = Rx(LoadingMoreStatus.idle);
 
-  final _folderLoadMore = FolderLoadMore();
+  late final _folderLoadMore = FolderLoadMore(
+    collapseThreads: () => shouldCollapseThreads,
+  );
 
   bool get canLoadMore => _folderLoadMore.hasMore;
 
@@ -714,9 +716,9 @@ class ThreadController extends BaseController with EmailActionController {
       'EmailState = ${success.currentEmailState?.value}',
     );
     mailboxDashBoardController.updateEmailList(newListEmail);
-    if (shouldCollapseThreads) {
-      // Collapsed pages count rows from the top, so a page requested against
-      // the previous rows would not line up with the new ones.
+    if (_folderLoadMore.paging.pagesByPosition) {
+      // Pages counted by position start from the top again, so a page
+      // requested against the previous rows would not line up with the new ones.
       _folderLoadMore.listLoadedFromTop();
       _syncLoadMoreStatus();
     }
@@ -942,10 +944,11 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
     final collapseThreads = shouldCollapseThreads;
-    // A collapsed refresh reads the first rows again from the server and
-    // replaces the list, so load-more waits for it. Without collapsing, the
-    // date cursor stays valid and a running page is kept.
-    if (collapseThreads) _holdLoadMoreForRefresh();
+    // A refresh replaces the list from the top, which shifts pages counted by
+    // position, so load-more waits for it. A date cursor stays valid and a
+    // running page is kept.
+    final holdLoadMore = _folderLoadMore.paging.pagesByPosition;
+    if (holdLoadMore) _holdLoadMoreForRefresh();
     try {
       final refreshViewState = await _refreshChangeListEmailCache(
         collapseThreads: collapseThreads,
@@ -962,7 +965,7 @@ class ThreadController extends BaseController with EmailActionController {
         onDataFailureViewState(refreshState);
       }
     } finally {
-      if (collapseThreads) _releaseLoadMoreAfterRefresh();
+      if (holdLoadMore) _releaseLoadMoreAfterRefresh();
     }
   }
 
@@ -1035,18 +1038,18 @@ class ThreadController extends BaseController with EmailActionController {
       final collapseThreads = shouldCollapseThreads;
       final request = _folderLoadMore.begin(
         mailboxDashBoardController.emailsInCurrentMailbox,
-        collapseThreads: collapseThreads,
       );
       if (request == null) return;
 
-      final oldestEmail = request.oldestEmail;
+      final cursor = request.cursor;
+      final oldestEmail = cursor.oldestEmail;
       final useCache = selectedMailbox?.isCacheable ?? false;
       final filterOption = mailboxDashBoardController.filterMessageOption.value;
 
       logTrace(
         'ThreadController::_loadMoreEmails: '
         'OldestEmailID = ${oldestEmail?.id?.asString}, '
-        'Position = ${request.position}, '
+        'Position = ${cursor.position}, '
         'useCache = $useCache, '
         'filterOption = ${filterOption.name}',
       );
@@ -1057,7 +1060,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
-          position: request.position,
+          position: cursor.position,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
@@ -1084,11 +1087,6 @@ class ThreadController extends BaseController with EmailActionController {
     return email.mailboxIds != null && email.mailboxIds!.keys.contains(selectedMailboxId);
   }
 
-  /// A collapsed row stands for its whole thread, so rows match by thread.
-  Object? _rowKey(PresentationEmail email, {required bool collapseThreads}) {
-    return collapseThreads ? (email.threadId ?? email.id) : email.id;
-  }
-
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
     final emailList = success.emailList;
     final appendableList = validateListEmailsLoadMore(emailList);
@@ -1106,7 +1104,6 @@ class ThreadController extends BaseController with EmailActionController {
     _folderLoadMore.pageLoaded(
       serverCount: success.serverEmailCount,
       appendedCount: appendableList.length,
-      collapseThreads: shouldCollapseThreads,
     );
     _syncLoadMoreStatus();
     if (_isAutoLoadMore && canLoadMore) {
@@ -1116,15 +1113,15 @@ class ThreadController extends BaseController with EmailActionController {
 
   List<PresentationEmail> validateListEmailsLoadMore(List<PresentationEmail> emailList) {
     log('ThreadController::validateListEmailsLoadMore: BEFORE_EMAIL_LIST = ${emailList.length}');
-    final collapseThreads = shouldCollapseThreads;
+    final paging = _folderLoadMore.paging;
     final listedKeys = {
       for (final email in mailboxDashBoardController.emailsInCurrentMailbox)
-        _rowKey(email, collapseThreads: collapseThreads),
+        paging.rowKey(email),
     };
     final appendableList = emailList
       .where((email) =>
           _belongsToSelectedList(email) &&
-          !listedKeys.contains(_rowKey(email, collapseThreads: collapseThreads)))
+          !listedKeys.contains(paging.rowKey(email)))
       .toList()
       .syncPresentationEmail(
         mapMailboxById: mailboxDashBoardController.mapMailboxById,

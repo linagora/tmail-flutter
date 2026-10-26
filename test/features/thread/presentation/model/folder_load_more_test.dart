@@ -4,14 +4,18 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/folder_load_more.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/folder_paging.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 
 void main() {
   const pageSize = ThreadConstants.maxCountEmails;
 
+  FolderLoadMore byDate() => FolderLoadMore(collapseThreads: () => false);
+  FolderLoadMore byPosition() => FolderLoadMore(collapseThreads: () => true);
+
   group('FolderLoadMore', () {
     test('starts idle with more to load', () {
-      final loadMore = FolderLoadMore();
+      final loadMore = byDate();
 
       expect(loadMore.state, isA<FolderLoadMoreIdle>());
       expect(loadMore.status, LoadingMoreStatus.idle);
@@ -20,9 +24,9 @@ void main() {
 
     group('begin', () {
       test('from idle returns a token and runs', () {
-        final loadMore = FolderLoadMore();
+        final loadMore = byDate();
 
-        final token = loadMore.begin(const [], collapseThreads: false);
+        final token = loadMore.begin(const []);
 
         expect(token, isNotNull);
         expect(loadMore.state, isA<FolderLoadMoreInFlight>());
@@ -31,33 +35,33 @@ void main() {
       });
 
       test('from idle with nothing more returns null', () {
-        final loadMore = FolderLoadMore()..hasMore = false;
+        final loadMore = byDate()..hasMore = false;
 
-        expect(loadMore.begin(const [], collapseThreads: false), isNull);
+        expect(loadMore.begin(const []), isNull);
         expect(loadMore.status, LoadingMoreStatus.idle);
       });
 
       test('while running returns null and keeps the running token', () {
-        final loadMore = FolderLoadMore();
-        final token = loadMore.begin(const [], collapseThreads: false)!.token;
+        final loadMore = byDate();
+        final token = loadMore.begin(const [])!.token;
 
-        expect(loadMore.begin(const [], collapseThreads: false), isNull);
+        expect(loadMore.begin(const []), isNull);
         expect(loadMore.accepts(token), isTrue);
       });
 
       test('while held returns null and records the request', () {
-        final loadMore = FolderLoadMore()..holdForRefresh();
+        final loadMore = byDate()..holdForRefresh();
 
-        expect(loadMore.begin(const [], collapseThreads: false), isNull);
+        expect(loadMore.begin(const []), isNull);
         expect(loadMore.releaseAfterRefresh(), isTrue);
       });
 
       test('gives each request its own token', () {
-        final loadMore = FolderLoadMore();
-        final first = loadMore.begin(const [], collapseThreads: false)!.token;
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize, collapseThreads: false);
+        final loadMore = byDate();
+        final first = loadMore.begin(const [])!.token;
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize);
 
-        final second = loadMore.begin(const [], collapseThreads: false)!.token;
+        final second = loadMore.begin(const [])!.token;
 
         expect(loadMore.accepts(first), isFalse);
         expect(loadMore.accepts(second), isTrue);
@@ -66,73 +70,77 @@ void main() {
 
     group('pageLoaded', () {
       test('a full page with new emails completes with more to load', () {
-        final loadMore = FolderLoadMore()..begin(const [], collapseThreads: false);
+        final loadMore = byDate()..begin(const []);
 
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize, collapseThreads: false);
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize);
 
+        expect(loadMore.state, isA<FolderLoadMoreDone>());
         expect(loadMore.status, LoadingMoreStatus.completed);
         expect(loadMore.hasMore, isTrue);
       });
 
       test('a short page ends the folder', () {
-        final loadMore = FolderLoadMore()..begin(const [], collapseThreads: false);
+        final loadMore = byDate()..begin(const []);
 
-        loadMore.pageLoaded(serverCount: pageSize - 1, appendedCount: pageSize - 1, collapseThreads: false);
+        loadMore.pageLoaded(serverCount: pageSize - 1, appendedCount: pageSize - 1);
 
         expect(loadMore.hasMore, isFalse);
       });
 
       test('a full page without new emails ends the folder', () {
-        final loadMore = FolderLoadMore()..begin(const [], collapseThreads: false);
+        final loadMore = byDate()..begin(const []);
 
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: 0, collapseThreads: false);
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: 0);
 
         expect(loadMore.hasMore, isFalse);
       });
 
       test('drops the running token', () {
-        final loadMore = FolderLoadMore();
-        final token = loadMore.begin(const [], collapseThreads: false)!.token;
+        final loadMore = byDate();
+        final token = loadMore.begin(const [])!.token;
 
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize, collapseThreads: false);
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize);
 
         expect(loadMore.accepts(token), isFalse);
       });
     });
 
     test('pageFailed completes and allows a retry', () {
-      final loadMore = FolderLoadMore()
+      final loadMore = byDate()
         ..hasMore = false
-        ..begin(const [], collapseThreads: false);
+        ..begin(const []);
 
       loadMore.pageFailed();
 
+      expect(loadMore.state, isA<FolderLoadMoreDone>());
       expect(loadMore.status, LoadingMoreStatus.completed);
       expect(loadMore.hasMore, isTrue);
     });
 
     group('abort', () {
       test('stops a running request and drops its token', () {
-        final loadMore = FolderLoadMore();
-        final token = loadMore.begin(const [], collapseThreads: false)!.token;
+        final loadMore = byDate();
+        final token = loadMore.begin(const [])!.token;
 
         loadMore.abort();
 
+        expect(loadMore.state, isA<FolderLoadMoreIdle>());
         expect(loadMore.status, LoadingMoreStatus.idle);
         expect(loadMore.accepts(token), isFalse);
       });
 
       test('keeps a completed status', () {
-        final loadMore = FolderLoadMore()..begin(const [], collapseThreads: false);
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize, collapseThreads: false);
+        final loadMore = byDate()..begin(const []);
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: pageSize);
 
         loadMore.abort();
 
+        expect(loadMore.state, isA<FolderLoadMoreDone>());
         expect(loadMore.status, LoadingMoreStatus.completed);
       });
 
       test('keeps a hold', () {
-        final loadMore = FolderLoadMore()..holdForRefresh();
+        final loadMore = byDate()..holdForRefresh();
 
         loadMore.abort();
 
@@ -141,8 +149,8 @@ void main() {
     });
 
     test('resetList drops the running token and goes idle, keeping hasMore', () {
-      final loadMore = FolderLoadMore()..hasMore = true;
-      final token = loadMore.begin(const [], collapseThreads: false)!.token;
+      final loadMore = byDate()..hasMore = true;
+      final token = loadMore.begin(const [])!.token;
       loadMore.hasMore = false;
 
       loadMore.resetList();
@@ -154,15 +162,15 @@ void main() {
 
     group('holdForRefresh', () {
       test('from idle holds with nothing pending', () {
-        final loadMore = FolderLoadMore()..holdForRefresh();
+        final loadMore = byDate()..holdForRefresh();
 
         expect(loadMore.status, LoadingMoreStatus.idle);
         expect(loadMore.releaseAfterRefresh(), isFalse);
       });
 
       test('while running drops the token and records the dropped request', () {
-        final loadMore = FolderLoadMore();
-        final token = loadMore.begin(const [], collapseThreads: false)!.token;
+        final loadMore = byDate();
+        final token = loadMore.begin(const [])!.token;
 
         loadMore.holdForRefresh();
 
@@ -171,7 +179,7 @@ void main() {
       });
 
       test('a second hold keeps what the first recorded', () {
-        final loadMore = FolderLoadMore()..begin(const [], collapseThreads: false);
+        final loadMore = byDate()..begin(const []);
         loadMore.holdForRefresh();
 
         loadMore.holdForRefresh();
@@ -182,17 +190,17 @@ void main() {
 
     group('releaseAfterRefresh', () {
       test('goes idle and allows a new request', () {
-        final loadMore = FolderLoadMore()..holdForRefresh();
+        final loadMore = byDate()..holdForRefresh();
 
         loadMore.releaseAfterRefresh();
 
         expect(loadMore.status, LoadingMoreStatus.idle);
-        expect(loadMore.begin(const [], collapseThreads: false), isNotNull);
+        expect(loadMore.begin(const []), isNotNull);
       });
 
       test('without a hold changes nothing', () {
-        final loadMore = FolderLoadMore();
-        final token = loadMore.begin(const [], collapseThreads: false)!.token;
+        final loadMore = byDate();
+        final token = loadMore.begin(const [])!.token;
 
         expect(loadMore.releaseAfterRefresh(), isFalse);
         expect(loadMore.accepts(token), isTrue);
@@ -208,45 +216,45 @@ void main() {
       test('by date starts after the oldest listed email', () {
         final emails = listed(3);
 
-        final request = FolderLoadMore().begin(emails, collapseThreads: false)!;
+        final request = byDate().begin(emails)!;
 
-        expect(request.oldestEmail, emails.last);
-        expect(request.position, isNull);
+        expect(request.cursor.oldestEmail, emails.last);
+        expect(request.cursor.position, isNull);
       });
 
       test('by date with nothing listed has no bound', () {
-        final request = FolderLoadMore().begin(const [], collapseThreads: false)!;
+        final request = byDate().begin(const [])!;
 
-        expect(request.oldestEmail, isNull);
-        expect(request.position, isNull);
+        expect(request.cursor.oldestEmail, isNull);
+        expect(request.cursor.position, isNull);
       });
 
       test('collapsed starts after the listed rows', () {
-        final request = FolderLoadMore().begin(listed(pageSize), collapseThreads: true)!;
+        final request = byPosition().begin(listed(pageSize))!;
 
-        expect(request.position, pageSize);
-        expect(request.oldestEmail, isNull);
+        expect(request.cursor.position, pageSize);
+        expect(request.cursor.oldestEmail, isNull);
       });
 
       test('collapsed moves past rows of a page that were not appended', () {
-        final loadMore = FolderLoadMore()
-          ..begin(listed(pageSize), collapseThreads: true);
-        loadMore.pageLoaded(serverCount: pageSize, appendedCount: 15, collapseThreads: true);
+        final loadMore = byPosition()
+          ..begin(listed(pageSize));
+        loadMore.pageLoaded(serverCount: pageSize, appendedCount: 15);
 
-        final request = loadMore.begin(listed(pageSize + 15), collapseThreads: true)!;
+        final request = loadMore.begin(listed(pageSize + 15))!;
 
-        expect(request.position, 2 * pageSize);
+        expect(request.cursor.position, 2 * pageSize);
       });
 
       /// A collapsed list of one page whose next page held only listed rows.
       FolderLoadMore afterPageOfDuplicates() {
-        return FolderLoadMore()
-          ..begin(listed(pageSize), collapseThreads: true)
-          ..pageLoaded(serverCount: pageSize, appendedCount: 0, collapseThreads: true);
+        return byPosition()
+          ..begin(listed(pageSize))
+          ..pageLoaded(serverCount: pageSize, appendedCount: 0);
       }
 
       int? nextPosition(FolderLoadMore loadMore) =>
-          loadMore.begin(listed(pageSize), collapseThreads: true)!.position;
+          loadMore.begin(listed(pageSize))!.cursor.position;
 
       test('collapsed keeps going after a page of duplicates only', () {
         final loadMore = afterPageOfDuplicates();
@@ -256,10 +264,10 @@ void main() {
       });
 
       test('collapsed ends on a short page', () {
-        final loadMore = FolderLoadMore()
-          ..begin(listed(pageSize), collapseThreads: true);
+        final loadMore = byPosition()
+          ..begin(listed(pageSize));
 
-        loadMore.pageLoaded(serverCount: pageSize - 1, appendedCount: 0, collapseThreads: true);
+        loadMore.pageLoaded(serverCount: pageSize - 1, appendedCount: 0);
 
         expect(loadMore.hasMore, isFalse);
       });
@@ -285,8 +293,8 @@ void main() {
       });
 
       test('a list loaded from the top keeps a refresh hold', () {
-        final loadMore = FolderLoadMore()
-          ..begin(listed(pageSize), collapseThreads: true)
+        final loadMore = byPosition()
+          ..begin(listed(pageSize))
           ..holdForRefresh();
 
         loadMore.listLoadedFromTop();
@@ -296,15 +304,63 @@ void main() {
       });
 
       test('a failed collapsed page does not move the offset', () {
-        final loadMore = FolderLoadMore()
-          ..begin(listed(pageSize), collapseThreads: true);
+        final loadMore = byPosition()
+          ..begin(listed(pageSize));
 
         loadMore.pageFailed();
 
         expect(
-          loadMore.begin(listed(pageSize), collapseThreads: true)!.position,
+          loadMore.begin(listed(pageSize))!.cursor.position,
           pageSize,
         );
+      });
+
+      test('follows the collapse mode on every read', () {
+        var collapse = false;
+        final loadMore = FolderLoadMore(collapseThreads: () => collapse);
+
+        expect(loadMore.paging, isA<FolderPagingByDate>());
+        collapse = true;
+        expect(loadMore.paging, isA<FolderPagingByPosition>());
+      });
+
+      test('a reset in one mode also resets the other', () {
+        var collapse = true;
+        final loadMore = FolderLoadMore(collapseThreads: () => collapse)
+          ..begin(listed(pageSize))
+          ..pageLoaded(serverCount: pageSize, appendedCount: 0);
+        collapse = false;
+
+        loadMore.resetList();
+        collapse = true;
+
+        expect(nextPosition(loadMore), pageSize);
+      });
+
+      group('row keys', () {
+        final email = PresentationEmail(
+          id: EmailId(Id('e1')),
+          threadId: ThreadId(Id('t1')),
+        );
+
+        test('by date match by email', () {
+          expect(FolderPagingByDate().rowKey(email), email.id);
+        });
+
+        test('by position match by thread', () {
+          expect(FolderPagingByPosition().rowKey(email), email.threadId);
+        });
+
+        test('by position falls back to the email without a thread', () {
+          final orphan = PresentationEmail(id: EmailId(Id('e2')));
+
+          expect(FolderPagingByPosition().rowKey(orphan), orphan.id);
+        });
+      });
+
+      test('only position paging is shifted by a reload from the top', () {
+        expect(FolderPagingByPosition().pagesByPosition, isTrue);
+        expect(FolderPagingByDate().pagesByPosition, isFalse);
       });
     });
   });
