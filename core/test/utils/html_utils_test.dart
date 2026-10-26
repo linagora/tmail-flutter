@@ -591,6 +591,17 @@ void main() {
   });
 
   group('HtmlUtils.wrapPlainTextLinks', () {
+    test('keeps a leading style element and does not link URLs inside it', () {
+      const input = '<style>p{background:url(https://a.example/x.png)}</style>'
+          '<p>see https://b.example</p>';
+      final result = HtmlUtils.wrapPlainTextLinks(input);
+      expect(
+        result,
+        contains('<style>p{background:url(https://a.example/x.png)}</style>'),
+      );
+      expect(result, contains('href="https://b.example"'));
+    });
+
     test('wraps plain text link inside <p>', () {
       const input = '<div><p>https://google.com</p></div>';
       final result = HtmlUtils.wrapPlainTextLinks(input);

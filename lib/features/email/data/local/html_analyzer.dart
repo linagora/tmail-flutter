@@ -67,9 +67,9 @@ class HtmlAnalyzer {
     required Map<String, Attachment> inlineAttachments,
     required Uri? uploadUri,
   }) async {
-    final document = parse(emailContent);
-    final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
-    final cidImgTags = document.querySelectorAll('img[src^="$cidPrefixKey"]');
+    final fragment = parseFragment(emailContent);
+    final listImgTag = fragment.querySelectorAll('img[src^="data:image/"]');
+    final cidImgTags = fragment.querySelectorAll('img[src^="$cidPrefixKey"]');
 
     log('HtmlAnalyzer::replaceImageBase64ToImageCID:listImgTagLength = ${listImgTag.length} | inlineAttachments = ${inlineAttachments.length}');
 
@@ -98,7 +98,7 @@ class HtmlAnalyzer {
       inlineAttachmentsSet: inlineAttachmentsSet,
     );
 
-    return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);
+    return Tuple2(fragment.outerHtml, inlineAttachmentsSet);
   }
 
   Future<EmailBodyPart?> _processBase64ImageTag({
@@ -153,8 +153,8 @@ class HtmlAnalyzer {
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
     try {
-      final document = parse(emailContent);
-      final signatureElements = document.querySelectorAll('.tmail-signature');
+      final fragment = parseFragment(emailContent);
+      final signatureElements = fragment.querySelectorAll('.tmail-signature');
       await Future.wait(signatureElements.map((signatureTag) async {
         final signatureChildren = signatureTag.children;
         for (var child in signatureChildren) {
@@ -165,7 +165,7 @@ class HtmlAnalyzer {
           }
         }
       }));
-      return document.body?.innerHtml ?? emailContent;
+      return fragment.outerHtml;
     } catch (e) {
       logWarning('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect:Exception = $e');
       return emailContent;
@@ -202,8 +202,8 @@ class HtmlAnalyzer {
 
   Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent}) async {
     try {
-      final document = parse(emailContent);
-      final imgElements = document.querySelectorAll('img[style], img[loading]');
+      final fragment = parseFragment(emailContent);
+      final imgElements = fragment.querySelectorAll('img[style], img[loading]');
       await Future.wait(imgElements.map((img) async {
         String? style = img.attributes['style'];
         if (style != null) {
@@ -219,7 +219,7 @@ class HtmlAnalyzer {
           img.attributes.remove('loading');
         }
       }));
-      return document.body?.innerHtml ?? emailContent;
+      return fragment.outerHtml;
     } catch (e) {
       logWarning('HtmlAnalyzer::removeStyleLazyLoadDisplayInlineImages:Exception = $e');
       return emailContent;

@@ -1018,14 +1018,11 @@ class HtmlUtils {
 
   static String wrapPlainTextLinks(String htmlString) {
     try {
-      final document = parser.parse(htmlString);
-      final container = document.body;
+      final fragment = parser.parseFragment(htmlString);
 
-      if (container == null) return htmlString;
+      _processNode(fragment, _urlRegex);
 
-      _processNode(container, _urlRegex);
-
-      return container.innerHtml;
+      return fragment.outerHtml;
     } catch (e) {
       logWarning('HtmlUtils::wrapPlainTextLinks:Exception = $e');
       return htmlString;
@@ -1040,6 +1037,7 @@ class HtmlUtils {
     'source',
     'link',
     'script',
+    'style',
     'iframe',
     'code',
     'pre',
@@ -1048,7 +1046,7 @@ class HtmlUtils {
   static void _processNode(dom.Node node, RegExp urlRegex) {
     for (var child in node.nodes.toList()) {
       // Skip if node or parent node is in tag to skip
-      final parentTag = child.parent?.localName;
+      final parentTag = node is dom.Element ? node.localName : null;
       if (parentTag != null && _skipTags.contains(parentTag.toLowerCase())) {
         continue;
       }
@@ -1094,11 +1092,10 @@ class HtmlUtils {
           nodes.add(dom.Text(text.substring(lastIndex)));
         }
 
-        final parent = child.parent!;
-        final index = parent.nodes.indexOf(child);
+        final index = node.nodes.indexOf(child);
 
-        parent.nodes.removeAt(index);
-        parent.nodes.insertAll(index, nodes);
+        node.nodes.removeAt(index);
+        node.nodes.insertAll(index, nodes);
       } else {
         _processNode(child, urlRegex);
       }
