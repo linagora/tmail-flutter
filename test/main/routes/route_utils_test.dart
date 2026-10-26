@@ -210,6 +210,24 @@ void main() {
       expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
     });
 
+    // RFC 6068: a reserved character inside a header value is percent-encoded
+    // once, and `+` is a literal plus (not a space). The URI must be decoded
+    // once only, otherwise `%2B` becomes a space and `%26` splits the value.
+    test('should keep a percent-encoded plus sign in the body', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test@example.com?body=1%2B1%3D2');
+
+      expect(result[RouteUtils.paramBody], '1+1=2');
+    });
+
+    test('should keep a percent-encoded ampersand in the subject and body', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test@example.com?subject=Q%26A&body=salt%20%26%20pepper');
+
+      expect(result[RouteUtils.paramSubject], 'Q&A');
+      expect(result[RouteUtils.paramBody], 'salt & pepper');
+    });
+
     test('should parse a valid mailto URI encoded', () {
       final result = RouteUtils.parseMapMailtoFromUri(
         'mailto:test%40example.com%3Fsubject=Hello');
