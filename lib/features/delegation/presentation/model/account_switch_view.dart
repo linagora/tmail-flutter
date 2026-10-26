@@ -11,7 +11,13 @@ abstract interface class AccountSwitchView {
 
   void restoreSelectionAndSearch();
 
+  /// Loads [account] from cache, then runs `/changes` and completes only after
+  /// that catch-up. Pushes for the target are skipped until Idle, so a change
+  /// that arrived during the switch is applied here. A failure of `/changes`
+  /// fails the switch.
   Future<void> loadAccount(ActiveAccount account, int switchAttemptId);
 
+  /// Runs `/changes` on an account that is already on screen (rollback after
+  /// failure, cancel or timeout).
   void catchUpAccount(ActiveAccount account, int switchAttemptId);
 }
