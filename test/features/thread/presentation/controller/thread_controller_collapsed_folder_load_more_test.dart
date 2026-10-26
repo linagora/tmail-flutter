@@ -554,15 +554,39 @@ void main() {
     });
 
     group('websocket refresh of a folder', () {
-      test('reads the server with the listed count capped at the session get limit', () async {
-        final listed = makeEmails(600);
-        final controller = createController();
-        answerRefresh(listed.take(500).toList());
+      /// Lists [count] rows, pushes a state change, and returns the limit and
+      /// the collapse flag the refresh sent.
+      Future<List<dynamic>> refreshArgumentsAfterListing(
+        int count, {
+        Session? session,
+      }) async {
+        final listed = makeEmails(count);
+        final controller = createController(session: session);
+        answerRefresh(listed);
         await startAndList(controller, listed);
-
         await pushEmailStateChange();
+        return capturedRefreshArguments();
+      }
 
-        expect(capturedRefreshArguments(), [UnsignedInt(500), true]);
+      test('reads the server with the listed count capped at the session get limit', () async {
+        expect(await refreshArgumentsAfterListing(600), [UnsignedInt(500), true]);
+      });
+
+      test('reads the server with the listed count while it is under the session get limit', () async {
+        expect(
+          await refreshArgumentsAfterListing(3 * pageSize),
+          [UnsignedInt(3 * pageSize), true],
+        );
+      });
+
+      test('reads the server with the listed count when the session sets no get limit', () async {
+        expect(
+          await refreshArgumentsAfterListing(
+            600,
+            session: SessionFixtures.aliceSessionWithoutAICapability,
+          ),
+          [UnsignedInt(600), true],
+        );
       });
 
       test('sends again a page dropped by the refresh, after the refreshed rows', () async {
@@ -680,6 +704,18 @@ void main() {
     });
 
     group('websocket refresh of the starred folder', () {
+      test('reads the server with the listed count capped at the session get limit', () async {
+        final listed = makeEmails(600, mailboxId: otherMailboxId);
+        final controller = createController(mailbox: PresentationMailbox.favoriteFolder);
+        answerRefresh(listed);
+        answerGetAll(() => const Stream.empty());
+        await startAndList(controller, listed);
+
+        await pushEmailStateChange();
+
+        verifyGetAll(limit: UnsignedInt(500)).called(1);
+      });
+
       test('forces the collapsed server query', () async {
         final listed = makeEmails(40, mailboxId: otherMailboxId);
         final controller = createController(mailbox: PresentationMailbox.favoriteFolder);
