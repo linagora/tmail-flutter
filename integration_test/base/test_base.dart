@@ -1,9 +1,11 @@
 import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:tmail_ui_user/main/main_entry.dart';
+import 'package:tmail_ui_user/main.dart';
+import 'package:tmail_ui_user/main/main_entry.dart' show runTmailPreload;
 
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
@@ -41,20 +43,27 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        await setupTest();
-        await scenarioBuilder($, createRobotFactory($)).execute();
+        final scenario = await setupTest(
+          () => scenarioBuilder($, createRobotFactory($)),
+        );
+        await scenario.execute();
       },
     );
   }
 
-  Future<void> setupTest() async {
+  Future<BaseScenario> setupTest(BaseScenario Function() buildScenario) async {
     await EnvLoader.loadEnvFile();
-    await runTmail();
+    await runTmailPreload();
+    final scenario = buildScenario();
+    await scenario.prepare();
+    runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {
       originalOnError(details);
     };
+
+    return scenario;
   }
 
   Future<void> _setup() async {
