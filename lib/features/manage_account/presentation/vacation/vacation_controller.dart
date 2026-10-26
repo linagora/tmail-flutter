@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -94,11 +95,12 @@ class VacationController extends BaseController {
   void _initializeValueForVacation(VacationPresentation newVacation) {
     vacationPresentation.value = newVacation;
     subjectTextController.text = newVacation.subject ?? '';
-    updateMessageHtmlText(newVacation.messageHtmlText ?? '');
+    final message = EditorHtmlSanitizer.sanitize(newVacation.messageHtmlText ?? '');
+    updateMessageHtmlText(message);
     if (PlatformInfo.isWeb) {
-      richTextControllerForWeb?.editorController.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForWeb?.editorController.setText(message);
     } else {
-      richTextControllerForMobile?.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForMobile?.htmlEditorApi?.setText(message);
     }
   }
 
