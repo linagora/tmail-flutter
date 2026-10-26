@@ -4,6 +4,10 @@ abstract class AbstractThreadAssertionRobot {
   Future<void> expectTrashBannerInvisible();
   Future<void> expectEmptyTrashThreadView();
   Future<void> expectThreadsListedOnce(List<int> threads, String subjectPrefix);
+  Future<void> expectEachThreadListedOnce(
+    List<int> threads,
+    String subjectPrefix,
+  );
   Future<void> expectListedThreadsArePrefixOf(
     List<int> threads,
     String subjectPrefix,

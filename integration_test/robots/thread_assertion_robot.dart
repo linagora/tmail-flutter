@@ -52,6 +52,24 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
   }
 
   @override
+  Future<void> expectEachThreadListedOnce(
+    List<int> threads,
+    String subjectPrefix,
+  ) async {
+    final listed = _listedThreads(subjectPrefix);
+    expect(
+      listed.toSet().length,
+      listed.length,
+      reason: 'no thread may be listed twice; listed: $listed',
+    );
+    expect(
+      listed.toSet(),
+      threads.toSet(),
+      reason: 'every thread must be listed, in any order',
+    );
+  }
+
+  @override
   Future<void> expectListedThreadsArePrefixOf(
     List<int> threads,
     String subjectPrefix,
