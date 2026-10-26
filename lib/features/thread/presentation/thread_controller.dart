@@ -1112,24 +1112,25 @@ class ThreadController extends BaseController with EmailActionController {
 
   List<PresentationEmail> validateListEmailsLoadMore(List<PresentationEmail> emailList) {
     log('ThreadController::validateListEmailsLoadMore: BEFORE_EMAIL_LIST = ${emailList.length}');
-    final paging = _folderLoadMore.paging;
-    final listedKeys = {
-      for (final email in mailboxDashBoardController.emailsInCurrentMailbox)
-        paging.rowKey(email),
-    };
-    final appendableList = emailList
-      .where((email) =>
-          _belongsToSelectedList(email) &&
-          !listedKeys.contains(paging.rowKey(email)))
-      .toList()
-      .syncPresentationEmail(
-        mapMailboxById: mailboxDashBoardController.mapMailboxById,
-        selectedMailbox: selectedMailbox,
-        searchQuery: searchController.searchQuery,
-        isSearchEmailRunning: searchController.isSearchEmailRunning
-      );
+    final appendableList = _withoutListedRows(
+      emailList.where(_belongsToSelectedList),
+    ).syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      selectedMailbox: selectedMailbox,
+      searchQuery: searchController.searchQuery,
+      isSearchEmailRunning: searchController.isSearchEmailRunning,
+    );
     log('ThreadController::validateListEmailsLoadMore: AFTER_EMAIL_LIST = ${appendableList.length}');
     return appendableList;
+  }
+
+  /// Keeps the [rows] that match no listed row, by the row key of the
+  /// current paging.
+  List<PresentationEmail> _withoutListedRows(Iterable<PresentationEmail> rows) {
+    final rowKey = _folderLoadMore.paging.rowKey;
+    final listedKeys =
+        mailboxDashBoardController.emailsInCurrentMailbox.map(rowKey).toSet();
+    return rows.where((row) => !listedKeys.contains(rowKey(row))).toList();
   }
 
   SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {
