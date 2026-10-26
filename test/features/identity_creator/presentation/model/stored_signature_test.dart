@@ -1,0 +1,26 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/stored_signature.dart';
+
+void main() {
+  const raw = '<p>Hi</p><script>x</script>';
+
+  group('StoredSignature', () {
+    test('sanitized equals the sanitizer output of the raw signature', () {
+      expect(StoredSignature(raw).sanitized, EditorHtmlSanitizer.sanitize(raw));
+    });
+
+    test('resolveForSave returns the raw signature when the editor is untouched', () {
+      final stored = StoredSignature(raw);
+
+      expect(stored.resolveForSave(stored.sanitized), raw);
+    });
+
+    test('resolveForSave sanitizes a signature edited in the editor', () {
+      final result = StoredSignature(raw).resolveForSave('<p>Bye</p><script>x</script>');
+
+      expect(result, EditorHtmlSanitizer.sanitize('<p>Bye</p><script>x</script>'));
+      expect(result, isNot(contains('<script')));
+    });
+  });
+}

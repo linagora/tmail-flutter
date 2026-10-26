@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_ca
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/stored_signature.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -112,11 +113,8 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   String? _nameIdentity;
   String? _contentHtmlEditor;
 
-  /// The stored signature and the sanitized copy given to the editor. While
-  /// the editor still holds that copy, the user has not touched the
-  /// signature and saving keeps the stored one as is.
-  String? _storedSignature;
-  String? _sanitizedStoredSignature;
+  /// Set when editing an identity that has a signature. See [StoredSignature].
+  StoredSignature? _storedSignature;
   AccountId? accountId;
   Session? session;
   Identity? identity;
@@ -334,12 +332,11 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (identity?.signatureAsString.isNotEmpty == true) {
       // The stored signature may come from another client or from
       // provisioning: sanitize it before the editor renders it.
-      _storedSignature = arguments?.identity?.signatureAsString ?? '';
-      final signature = EditorHtmlSanitizer.sanitize(_storedSignature!);
-      _sanitizedStoredSignature = signature;
-      updateContentHtmlEditor(signature);
+      final storedSignature = StoredSignature(arguments?.identity?.signatureAsString ?? '');
+      _storedSignature = storedSignature;
+      updateContentHtmlEditor(storedSignature.sanitized);
       if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText(signature);
+        richTextWebController?.editorController.setText(storedSignature.sanitized);
       }
     }
     _initPublicAssetController();
@@ -549,9 +546,8 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     // the composer and the viewers sanitize it anyway.
     final editorSignature =
         PlatformInfo.isWeb ? contentHtmlEditor : await _getSignatureHtmlText();
-    final signatureHtmlText = editorSignature == _sanitizedStoredSignature
-        ? _storedSignature!
-        : EditorHtmlSanitizer.sanitize(editorSignature);
+    final signatureHtmlText = _storedSignature?.resolveForSave(editorSignature)
+        ?? EditorHtmlSanitizer.sanitize(editorSignature);
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
         ? {bccOfIdentity.value!}
         : <EmailAddress>{};
