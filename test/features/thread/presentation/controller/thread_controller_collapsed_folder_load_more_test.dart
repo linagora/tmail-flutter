@@ -84,6 +84,7 @@ void main() {
   late MockLoadMoreEmailsInMailboxInteractor mockLoadMoreEmailsInMailboxInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
   late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
+  late MockResponsiveUtils mockResponsiveUtils;
 
   setUpAll(() {
     Get.testMode = true;
@@ -101,7 +102,8 @@ void main() {
     Get.put<DeleteAuthorityOidcInteractor>(MockDeleteAuthorityOidcInteractor());
     Get.put<AppToast>(MockAppToast());
     Get.put<ImagePaths>(MockImagePaths());
-    Get.put<ResponsiveUtils>(MockResponsiveUtils());
+    mockResponsiveUtils = MockResponsiveUtils();
+    Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(MockUuid());
     Get.put<ToastManager>(MockToastManager());
     Get.put<TwakeAppManager>(MockTwakeAppManager());
@@ -579,6 +581,62 @@ void main() {
         await pumpEventQueue();
 
         expect(capturedLoadMoreRequests().single.position, pageSize);
+      });
+
+      testWidgets('does not resume a held page once a search has started',
+          (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(true);
+        final listed = makeEmails(pageSize);
+        final controller = createController();
+        final pendingRefresh = StreamController<Either<Failure, Success>>();
+        addTearDown(pendingRefresh.close);
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => pendingRefresh.stream);
+        await tester.runAsync(() => startAndList(controller, listed));
+
+        await tester.runAsync(pushEmailStateChange);
+        controller.handleLoadMoreEmailsRequest();
+        ThreadSearchExecutionObserver(controller).onNewSearchStarted();
+        pendingRefresh.add(Right(RefreshChangesAllEmailSuccess(
+          emailList: listed,
+          currentMailboxId: inboxId,
+          currentEmailState: jmap.State('new-state'),
+        )));
+        await tester.runAsync(pendingRefresh.close);
+        await tester.runAsync(pumpEventQueue);
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+      });
+
+      testWidgets('drops a running page once a search has started',
+          (tester) async {
+        await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+        when(mockResponsiveUtils.isWebDesktop(any)).thenReturn(true);
+        final controller = createController(listed: makeEmails(pageSize));
+        final pendingPage = StreamController<Either<Failure, Success>>();
+        addTearDown(pendingPage.close);
+        answerLoadMore(() => pendingPage.stream);
+        controller.handleLoadMoreEmailsRequest();
+        await tester.runAsync(pumpEventQueue);
+
+        ThreadSearchExecutionObserver(controller).onNewSearchStarted();
+        pendingPage.add(Right(LoadMoreEmailsSuccess(
+          makeEmails(pageSize, from: pageSize),
+          serverEmailCount: pageSize,
+        )));
+        await tester.runAsync(pumpEventQueue);
+
+        expect(displayedEmails, isEmpty);
       });
     });
 
