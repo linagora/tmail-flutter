@@ -436,6 +436,16 @@
       "count": {}
     }
   },
+  "sharedFilesCannotBeRead": "{count,plural, =1{A shared file could not be read and was not added}other{{count} shared files could not be read and were not added}}",
+  "@sharedFilesCannotBeRead": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Attachments uploaded successfully",
   "@attachments_uploaded_successfully": {
     "type": "text",

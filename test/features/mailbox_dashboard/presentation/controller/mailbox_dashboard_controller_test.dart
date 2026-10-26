@@ -7,6 +7,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -685,6 +686,156 @@ void main() {
     );
     expect(sentryManager.isSentryReportingAllowed, isFalse);
     await tester.pumpAndSettle();
+  });
+
+  // Kept before the groups that Get.put controllers without pumping a frame:
+  // a testWidgets pump runs every onReady they queued.
+  group('handleReceivingFileSharing unreadable files toast:', () {
+    late Directory tempShareDir;
+
+    setUp(() {
+      PlatformInfo.isTestingForWeb = true;
+      tempShareDir = Directory.systemTemp.createTempSync('shared_media_test');
+      // onReady, queued by Get.put, reads dotenv on the first frame.
+      dotenv.testLoad(mergeWith: {'APP_GRID_AVAILABLE': 'unsupported'});
+      when(emailReceiveManager.pendingSharedFileInfo)
+          .thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction)
+          .thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      when(mockTwakeAppManager.hasComposer).thenReturn(false);
+
+      Get.put(mailboxDashboardController);
+
+      clearInteractions(composerManager);
+      clearInteractions(emailReceiveManager);
+    });
+
+    tearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+      Get.deleteAll();
+      tempShareDir.deleteSync(recursive: true);
+    });
+
+    SharedMediaFile textShare(String path) => SharedMediaFile(
+          path: path,
+          type: SharedMediaType.text,
+          mimeType: 'text/plain',
+        );
+
+    SharedMediaFile fileShare(String fileName) {
+      final file = File('${tempShareDir.path}/$fileName')
+        ..writeAsStringSync('file content');
+      return SharedMediaFile(
+        path: file.path,
+        type: SharedMediaType.text,
+        mimeType: 'text/calendar',
+      );
+    }
+
+    ComposerArguments capturedComposerArguments() =>
+        verify(composerManager.addComposer(captureAny)).captured.single
+            as ComposerArguments;
+
+    Future<void> pumpShareToastApp(WidgetTester tester) async {
+      await pumpLocalizedApp(tester);
+      clearInteractions(appToast);
+    }
+
+    SharedMediaFile unreadableShare() => SharedMediaFile(
+          path: 'content://media/external/file/1',
+          type: SharedMediaType.unreadable,
+        );
+
+    testWidgets(
+      'an unreadable-only share shows one toast and opens no composer, but is '
+      'still consumed from the manager',
+      (tester) async {
+        await pumpShareToastApp(tester);
+        clearInteractions(emailReceiveManager);
+
+        mailboxDashboardController
+            .handleReceivingFileSharing([unreadableShare()]);
+
+        final message = verify(
+          appToast.showToastErrorMessage(any, captureAny),
+        ).captured.single;
+        expect(message, 'A shared file could not be read and was not added');
+        verifyNever(composerManager.addComposer(any));
+        verify(emailReceiveManager.clearPendingFileInfo()).called(1);
+      },
+    );
+
+    testWidgets(
+      'an unreadable file next to a readable one shows a toast and still '
+      'opens the composer with the readable file',
+      (tester) async {
+        await pumpShareToastApp(tester);
+        final readable = fileShare('event.ics');
+
+        mailboxDashboardController
+            .handleReceivingFileSharing([unreadableShare(), readable]);
+
+        verify(appToast.showToastErrorMessage(any, any)).called(1);
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, readable.path);
+      },
+    );
+
+    testWidgets(
+      'an unreadable file next to shared text shows a toast and still opens '
+      'the composer from the text',
+      (tester) async {
+        await pumpShareToastApp(tester);
+
+        mailboxDashboardController.handleReceivingFileSharing([
+          unreadableShare(),
+          textShare('hi'),
+        ]);
+
+        verify(appToast.showToastErrorMessage(any, any)).called(1);
+        final arguments = capturedComposerArguments();
+        expect(
+          arguments.emailActionType,
+          EmailActionType.composeFromContentShared,
+        );
+        expect(arguments.emailContents, 'hi');
+      },
+    );
+
+    testWidgets(
+      'several unreadable files show a single toast with the pluralized count',
+      (tester) async {
+        await pumpShareToastApp(tester);
+        final readable = fileShare('event.ics');
+
+        mailboxDashboardController.handleReceivingFileSharing([
+          unreadableShare(),
+          unreadableShare(),
+          readable,
+        ]);
+
+        final message = verify(
+          appToast.showToastErrorMessage(any, captureAny),
+        ).captured.single;
+        expect(message, '2 shared files could not be read and were not added');
+        expect(capturedComposerArguments().listSharedMediaFile?.length, 1);
+      },
+    );
+
+    testWidgets(
+      'a share with only readable files shows no unreadable toast',
+      (tester) async {
+        await pumpShareToastApp(tester);
+
+        mailboxDashboardController.handleReceivingFileSharing([
+          fileShare('contact.vcf'),
+        ]);
+
+        verifyNever(appToast.showToastErrorMessage(any, any));
+      },
+    );
   });
 
   group('search/sort/filter feature:', () {
