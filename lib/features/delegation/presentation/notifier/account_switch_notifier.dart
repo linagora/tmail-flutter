@@ -25,7 +25,8 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
   @override
   AccountSwitchState build() {
     ref.listen<ActiveAccount?>(activeAccountProvider, (previous, next) {
-      if (state.isSwitching || previous == null || next == null) return;
+      if (state.isSwitching) return;
+      if (previous == null || next == null) return;
       if (_sameShownAccount(previous, next)) return;
 
       state = AccountSwitchIdle(lastAttemptId: state.currentAttemptId + 1);
