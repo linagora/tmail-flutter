@@ -12,8 +12,37 @@ set -e
 
 ROOT_DIR="$PWD"
 CI_LOGS="$ROOT_DIR/ci-logs"
-RESET_SERVER_LOG="/tmp/backend-reset-server.log"
 mkdir -p "$CI_LOGS"
+# Per-run paths: /tmp is host-wide, a neighbor job must never read our tunnel ports.
+RESET_SERVER_LOG="$CI_LOGS/backend-reset-server.log"
+BORE_BACKEND_LOG="$CI_LOGS/bore-backend.log"
+BORE_RESET_LOG="$CI_LOGS/bore-reset.log"
+
+# Ports the backend (80, 8000) and reset server (9999) bind on the host.
+BACKEND_PORTS_FILTER='( sport = :80 or sport = :8000 or sport = :9999 )'
+command -v ss >/dev/null || { echo "ERROR: ss not found; cannot check agent ports."; exit 1; }
+
+# Busy if a port is bound, the container is running, or docker cannot answer.
+# A stopped leftover shares nothing; compose recreates it.
+agent_busy() {
+    ss -Hltn "$BACKEND_PORTS_FILTER" | grep -q . && return 0
+    local ids
+    ids=$(docker ps -q --filter 'name=^tmail-backend$') || return 0
+    [ -n "$ids" ]
+}
+
+# Wait while a job without the agent lock still holds the backend.
+deadline=$(( SECONDS + 2700 ))
+while agent_busy; do
+    if (( SECONDS >= deadline )); then
+        echo "ERROR: agent backend still busy after 45 min:"
+        ss -Hltnp "$BACKEND_PORTS_FILTER" || true
+        docker ps -a --filter 'name=^tmail-backend$' --format '{{.Names}} {{.Status}} {{.Label "com.docker.compose.project.working_dir"}}' || true
+        exit 1
+    fi
+    echo "Agent backend busy (ports 80/8000/9999 or tmail-backend); waiting..."
+    sleep 15
+done
 
 cleanup() {
     echo "Cleaning up..."
@@ -23,9 +52,13 @@ cleanup() {
     # Reap them so their ports are free before the agent lock is released.
     wait "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" 2>/dev/null || true
     cd "$ROOT_DIR/backend-docker" || return 0
-    docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
-    cp "$RESET_SERVER_LOG" /tmp/bore-backend.log /tmp/bore-reset.log "$CI_LOGS/" 2>/dev/null || true
-    docker compose down --remove-orphans 2>/dev/null || true
+    owner=$(docker inspect tmail-backend --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null || true)
+    if [ -n "$owner" ] && [ "$(realpath "$owner" 2>/dev/null)" = "$(pwd -P)" ]; then
+        docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
+        docker compose down --remove-orphans 2>/dev/null || true
+    else
+        echo "tmail-backend not owned by this workspace (${owner:-none}); skip teardown."
+    fi
     cd "$ROOT_DIR"
 }
 trap cleanup EXIT
@@ -35,10 +68,14 @@ dart pub global activate patrol_cli 4.3.1
 
 # ── bore tunnel setup ─────────────────────────────────────────────────────────
 echo "Starting bore tunnels..."
-nohup bore local 80 --to bore.pub > /tmp/bore-backend.log 2>&1 &
+nohup bore local 80 --to bore.pub > "$BORE_BACKEND_LOG" 2>&1 &
 BORE_BACKEND_PID=$!
-nohup bore local 9999 --to bore.pub > /tmp/bore-reset.log 2>&1 &
+nohup bore local 9999 --to bore.pub > "$BORE_RESET_LOG" 2>&1 &
 BORE_RESET_PID=$!
+
+bore_port() {
+    grep -oE 'listening at bore\.pub:[0-9]+' "$1" 2>/dev/null | head -1 | cut -d: -f2
+}
 
 echo "Waiting for bore tunnels..."
 BORE_BACKEND_PORT=""
@@ -48,35 +85,14 @@ until [ -n "$BORE_BACKEND_PORT" ] && [ -n "$BORE_RESET_PORT" ]; do
     if (( SECONDS >= deadline )); then
         echo "ERROR: bore tunnels did not connect within 20s."
         echo "--- backend log ---"
-        cat /tmp/bore-backend.log
+        cat "$BORE_BACKEND_LOG"
         echo "--- reset log ---"
-        cat /tmp/bore-reset.log
+        cat "$BORE_RESET_LOG"
         exit 1
     fi
 
-    BORE_BACKEND_PORT=$(python3 -c "
-import os, re
-path = '/tmp/bore-backend.log'
-if os.path.exists(path):
-    with open(path) as f:
-        for line in f:
-            m = re.search(r'listening at bore\.pub:(\d+)', line)
-            if m:
-                print(m.group(1))
-                break
-" 2>/dev/null)
-
-    BORE_RESET_PORT=$(python3 -c "
-import os, re
-path = '/tmp/bore-reset.log'
-if os.path.exists(path):
-    with open(path) as f:
-        for line in f:
-            m = re.search(r'listening at bore\.pub:(\d+)', line)
-            if m:
-                print(m.group(1))
-                break
-" 2>/dev/null)
+    BORE_BACKEND_PORT=$(bore_port "$BORE_BACKEND_LOG")
+    BORE_RESET_PORT=$(bore_port "$BORE_RESET_LOG")
 
     sleep 1
 done
@@ -127,6 +143,16 @@ BACKUP_ZIP="$PWD/provisioning/integration_test/backup.zip" \
     RESET_PORT="$RESET_PORT" \
     python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
+
+deadline=$(( SECONDS + 15 ))
+until grep -q 'Listening on port' "$RESET_SERVER_LOG"; do
+    if ! kill -0 "$RESET_SERVER_PID" 2>/dev/null || (( SECONDS >= deadline )); then
+        echo "ERROR: backend reset server did not start:"
+        cat "$RESET_SERVER_LOG"
+        exit 1
+    fi
+    sleep 1
+done
 
 echo "Running Patrol tests..."
 flutter build apk --config-only --quiet
