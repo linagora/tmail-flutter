@@ -1544,6 +1544,38 @@ void main() {
         verifyNever(composerManager.addComposer(any));
       },
     );
+
+    test(
+      'a file share opens the composer from the shared file '
+      '(composeFromFileShared)',
+      () {
+        final share = SharedMediaFile(
+          path: '${tempShareDir.path}/report.pdf',
+          type: SharedMediaType.file,
+          mimeType: 'application/pdf',
+        );
+
+        mailboxDashboardController.handleReceivingFileSharing([share]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, share.path);
+      },
+    );
+
+    test(
+      'a mailto-type share with a valid address opens the composer to that '
+      'recipient (composeFromEmailAddress)',
+      () {
+        mailboxDashboardController.handleReceivingFileSharing([
+          SharedMediaFile(path: 'user@example.com', type: SharedMediaType.mailto),
+        ]);
+
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromEmailAddress);
+        expect(arguments.listEmailAddress?.single.email, 'user@example.com');
+      },
+    );
   });
 
   group('handleGetAllComposerCacheSuccess:', () {
