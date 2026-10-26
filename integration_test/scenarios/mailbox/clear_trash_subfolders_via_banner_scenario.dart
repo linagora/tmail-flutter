@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_email.dart';
+import '../../utils/wait_for_mailbox_total_emails.dart';
 
 class ClearTrashSubfoldersViaBannerScenario extends BaseTestScenario {
   const ClearTrashSubfoldersViaBannerScenario(super.$, super.robots);
@@ -22,6 +23,8 @@ class ClearTrashSubfoldersViaBannerScenario extends BaseTestScenario {
     await robots.commonRobot().provisionEmail([
       ProvisioningEmail(toEmail: emailUser, subject: subject, content: subject),
     ], folderLocationRole: PresentationMailbox.roleTrash);
+
+    await waitForMailboxTotalEmails(PresentationMailbox.roleTrash);
 
     final trashFolder = mailboxMenuRobot.mailboxItemByName(appLocalizations.trashMailboxDisplayName);
     await threadRobot.openMailbox();
