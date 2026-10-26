@@ -53,7 +53,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
@@ -144,6 +143,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_receiving_file_sharing_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/handle_team_mailbox_mixin.dart';
@@ -697,64 +697,7 @@ class MailboxDashBoardController extends ReloadableController
       final sharedMediaFile = listSharedMediaFile.first;
       if (sharedMediaFile.path.trim().isEmpty) return;
 
-      switch (sharedMediaFile.type) {
-        case SharedMediaType.image:
-        case SharedMediaType.video:
-        case SharedMediaType.file:
-          openComposer(
-            ComposerArguments.fromFileShared([sharedMediaFile]),
-          );
-          break;
-        case SharedMediaType.text:
-          // Android delivers both a shared sentence (EXTRA_TEXT) and a shared
-          // text-format file such as .vcf/.ics/.csv (EXTRA_STREAM) with a
-          // text/* mime type and SharedMediaType.text, so the mime type alone
-          // cannot tell them apart. Only a file share leaves a real file on
-          // disk behind `path` — literal text arrives as the characters
-          // themselves — so route files to attachments and literal text to
-          // the email body.
-          if (sharedMediaFile.isFileShare) {
-            openComposer(
-              ComposerArguments.fromFileShared([sharedMediaFile]),
-            );
-          } else {
-            openComposer(
-              ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
-            );
-          }
-          break;
-        case SharedMediaType.url:
-          if (sharedMediaFile.path.startsWith(RouteUtils.mailtoPrefix)) {
-            final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(sharedMediaFile.path);
-            openComposer(
-              ComposerArguments.fromMailtoUri(
-                listEmailAddress: navigationRouter.listEmailAddress,
-                subject: navigationRouter.subject,
-                body: navigationRouter.body,
-              ),
-            );
-          } else if (PlatformInfo.isIOS) {
-            // On iOS a url-type event can only originate from the share
-            // extension (the plugin ignores every other URL), so a non-mailto
-            // link share goes into the email body. On Android, shared links
-            // arrive as text/plain and never reach here — its url-type events
-            // are deep-link VIEW intents (e.g. twakemail.mobile://openApp)
-            // owned by DeepLinksManager and must stay ignored.
-            openComposer(
-              ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
-            );
-          }
-          break;
-        case SharedMediaType.mailto:
-          if (EmailUtils.isEmailAddressValid(sharedMediaFile.path)) {
-            openComposer(
-              ComposerArguments.fromEmailAddress(
-                EmailAddress(null, sharedMediaFile.path),
-              ),
-            );
-          }
-          break;
-      }
+      openComposerFromSingleShare(sharedMediaFile);
       return;
     }
 
