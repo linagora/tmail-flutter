@@ -140,7 +140,10 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
     bool useJmapClear, {
     EmptyFolderProgressCallback? onProgress,
   }) async {
-    if (mailbox.countTotalEmails == 0) {
+    // The mailbox count can lag the server, so a clearable mailbox always gets
+    // Mailbox/clear (idempotent); other paths trust the count.
+    final canClear = useJmapClear && mailbox.role != null;
+    if (!canClear && mailbox.countTotalEmails == 0) {
       return _ClearEmailSuccess(emailIds: const []);
     }
     if (useJmapClear) return _clearMailbox(session, accountId, mailbox);

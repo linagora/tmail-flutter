@@ -53,6 +53,12 @@ void main() {
     name: MailboxName('Trash'),
     role: PresentationMailbox.roleTrash,
   );
+  final zeroCountTrashMailbox = PresentationMailbox(
+    trashMailboxId,
+    name: MailboxName('Trash'),
+    role: PresentationMailbox.roleTrash,
+    totalEmails: TotalEmails(UnsignedInt(0)),
+  );
   final childIds = [MailboxId(Id('child-1')), MailboxId(Id('child-2'))];
   final emailIds = [EmailId(Id('email-1'))];
 
@@ -201,26 +207,56 @@ void main() {
         },
       );
 
-      test('deletes subfolders even when mailbox has no emails', () async {
-        stubSubfoldersResult(Right(DeleteMultipleMailboxAllSuccess(childIds)));
+      for (final (label, mailbox) in [
+        ('no count', emptyTrashMailbox),
+        ('count 0', zeroCountTrashMailbox),
+      ]) {
+        test(
+          'clears the mailbox and deletes subfolders when the cached count is missing ($label)',
+          () async {
+            stubClearSuccess();
+            stubSubfoldersResult(
+              Right(DeleteMultipleMailboxAllSuccess(childIds)),
+            );
 
-        await notifier.execute(
-          session,
-          accountId,
-          emptyTrashMailbox,
-          childIds,
-          true,
-        );
+            await notifier.execute(session, accountId, mailbox, childIds, true);
 
-        expect(
-          readSuccess().subfoldersStatus,
-          SubfoldersDeleteStatus.allDeleted,
+            expect(
+              readSuccess().subfoldersStatus,
+              SubfoldersDeleteStatus.allDeleted,
+            );
+            verify(mockClearInteractor.execute(any, any, any, any)).called(1);
+            verifyNever(
+              mockEmailDeletionInteractor.execute(any, any, any, any, any),
+            );
+          },
         );
-        verifyNever(mockClearInteractor.execute(any, any, any, any));
-        verifyNever(
-          mockEmailDeletionInteractor.execute(any, any, any, any, any),
-        );
-      });
+      }
+
+      test(
+        'skips the clear and deletes subfolders for a role-less mailbox with count 0',
+        () async {
+          stubSubfoldersResult(Right(DeleteMultipleMailboxAllSuccess(childIds)));
+          final rolelessMailbox = PresentationMailbox(
+            trashMailboxId,
+            name: MailboxName('Trash'),
+          );
+
+          await notifier.execute(
+            session,
+            accountId,
+            rolelessMailbox,
+            childIds,
+            true,
+          );
+
+          expect(
+            readSuccess().subfoldersStatus,
+            SubfoldersDeleteStatus.allDeleted,
+          );
+          verifyNever(mockClearInteractor.execute(any, any, any, any));
+        },
+      );
 
       group('with successful email clear', () {
         setUp(stubClearSuccess);
@@ -363,6 +399,27 @@ void main() {
           expect(lastProgress.countEmailsDeleted, 5);
         },
       );
+
+      test('skips the interactor and deletes subfolders when count is 0', () async {
+        stubSubfoldersResult(Right(DeleteMultipleMailboxAllSuccess(childIds)));
+
+        await notifier.execute(
+          session,
+          accountId,
+          emptyTrashMailbox,
+          childIds,
+          false,
+        );
+
+        expect(
+          readSuccess().subfoldersStatus,
+          SubfoldersDeleteStatus.allDeleted,
+        );
+        verifyNever(
+          mockEmailDeletionInteractor.execute(any, any, any, any, any),
+        );
+        verifyNever(mockClearInteractor.execute(any, any, any, any));
+      });
 
     });
 
