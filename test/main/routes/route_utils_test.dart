@@ -333,4 +333,54 @@ void main() {
       expect(RouteUtils.getRootDomain(hostname: 'service.example.co.uk'), 'co.uk');
     });
   });
+
+  // A mailto link clicked in an email opens the composer through
+  // generateNavigationRouterFromMailtoLink. RFC 6068 percent-encodes
+  // reserved characters in header values exactly once: the composer must
+  // receive them as written by the sender.
+  group('generateNavigationRouterFromMailtoLink header values (RFC 6068)', () {
+    NavigationRouter open(String query) =>
+        RouteUtils.generateNavigationRouterFromMailtoLink('mailto:alice@example.com?$query');
+
+    test('should keep a plus sign in the body', () {
+      expect(open('body=1%2B1%3D2').body, '1+1=2');
+    });
+
+    test('should keep an ampersand in the subject', () {
+      expect(open('subject=Q%26A&body=x').subject, 'Q&A');
+    });
+
+    test('should keep the text after an ampersand in the body', () {
+      expect(open('body=salt%20%26%20pepper').body, 'salt & pepper');
+    });
+
+    test('should keep a percent sign in the body', () {
+      expect(open('body=100%25%20done').body, '100% done');
+    });
+
+    test('should keep an equals sign and a question mark in the body', () {
+      expect(open('body=a%3Db%3Fc').body, 'a=b?c');
+    });
+
+    test('should keep line breaks in the body', () {
+      expect(open('body=line1%0D%0Aline2').body, 'line1\r\nline2');
+    });
+
+    test('should keep the recipient when the body holds an encoded ampersand', () {
+      final router = open('body=a%26to%3Deve%40example.com');
+
+      expect(
+        router.listEmailAddress?.map((address) => address.email),
+        ['alice@example.com'],
+      );
+      expect(router.body, 'a&to=eve@example.com');
+    });
+
+    test('should not add a bcc recipient from an encoded ampersand in the body', () {
+      final router = open('body=hi%26bcc%3Deve%40example.com');
+
+      expect(router.bcc ?? [], isEmpty);
+      expect(router.body, 'hi&bcc=eve@example.com');
+    });
+  });
 }
