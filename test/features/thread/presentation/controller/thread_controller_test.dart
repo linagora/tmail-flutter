@@ -1251,8 +1251,8 @@ void main() {
         'GIVEN collapseThreads returns a partial page (< maxCountEmails threads) '
         'AND the list content does not fill the viewport (maxScrollExtent = 0) '
         'WHEN getAllEmail stream completes '
-        'THEN auto-load-more IS triggered to fill the viewport '
-        'AND canLoadMore reflects the subsequent load-more server response',
+        'THEN auto-load-more SHOULD NOT be triggered — the server collapses '
+        'before applying the limit, so the folder is exhausted',
       (tester) async {
         final controller = createController(collapseThreads: true);
 
@@ -1262,11 +1262,7 @@ void main() {
           emailCount: 15, // fewer than maxCountEmails = 20
         );
 
-        // Load-more interactor MUST be called to attempt filling the viewport.
-        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
-
-        // After the empty load-more response (serverEmailCount = 0 < maxCountEmails),
-        // canLoadMore is set to false by _loadMoreEmailsSuccess.
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
         expect(controller.canLoadMore, isFalse);
       });
 
@@ -1519,7 +1515,7 @@ void main() {
         'AND the list content does not fill the viewport (maxScrollExtent = 0) '
         'WHEN the email state changes '
         'THEN the folder query SHOULD use collapseThreads = true '
-        'AND auto-load-more IS triggered once',
+        'AND auto-load-more SHOULD NOT be triggered — the folder is exhausted',
       (tester) async {
         await refreshAfterEmailStateChange(
           tester,
@@ -1528,7 +1524,7 @@ void main() {
         );
 
         verifyVirtualFolderQuery(collapseThreads: true);
-        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
       });
 
       testWidgets(

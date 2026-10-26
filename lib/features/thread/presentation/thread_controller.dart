@@ -737,12 +737,11 @@ class ThreadController extends BaseController with EmailActionController {
     }
     final emailList = success.emailList;
     log('ThreadController::_handleOnDoneGetAllEmailSuccess: EmailCount = ${emailList.length}');
+    // The server collapses threads before applying the limit, so a short
+    // first page means the folder is exhausted, collapsed or not.
     final hasMore = emailList.length >= ThreadConstants.maxCountEmails;
     canLoadMore = hasMore;
-    // collapseThreads can return < limit although more emails remain. Without
-    // collapsing, a short page means the mailbox is exhausted.
-    final mayHaveMoreCollapsedThreads = shouldCollapseThreads && emailList.isNotEmpty;
-    if (_isAutoLoadMore && (hasMore || mayHaveMoreCollapsedThreads)) {
+    if (_isAutoLoadMore && hasMore) {
       // Re-enable so _loadMoreEmails guard passes.
       // _loadMoreEmailsSuccess will reset canLoadMore from serverEmailCount afterward.
       canLoadMore = true;
