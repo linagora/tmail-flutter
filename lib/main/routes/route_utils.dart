@@ -225,22 +225,22 @@ abstract class RouteUtils {
     final mapMailto = <String, dynamic>{
       RouteUtils.paramRouteName: AppRoutes.mailtoURL,
     };
-    mailtoUri = mailtoUri == null ? null : Uri.decodeFull(mailtoUri); 
+    mailtoUri = mailtoUri == null ? null : _decodeFullyEncodedMailtoUri(mailtoUri);
     final parsedMailToUri = Uri.tryParse(mailtoUri ?? '');
 
     if (parsedMailToUri?.scheme == mailtoPrefix) {
       final to = <String>{
-        ...?parsedMailToUri?.path.split(ADDRESS_SEPARATOR),
-        ...?parsedMailToUri?.queryParameters[paramTo]?.split(ADDRESS_SEPARATOR)
+        ...Uri.decodeComponent(parsedMailToUri!.path).split(ADDRESS_SEPARATOR),
+        ...?parsedMailToUri.queryParameters[paramTo]?.split(ADDRESS_SEPARATOR)
       }.toList();
       final cc = {
-        ...?parsedMailToUri?.queryParameters[paramCc]?.split(ADDRESS_SEPARATOR),
+        ...?parsedMailToUri.queryParameters[paramCc]?.split(ADDRESS_SEPARATOR),
       }.toList();
       final bcc = {
-        ...?parsedMailToUri?.queryParameters[paramBcc]?.split(ADDRESS_SEPARATOR),
+        ...?parsedMailToUri.queryParameters[paramBcc]?.split(ADDRESS_SEPARATOR),
       }.toList();
-      final subject = parsedMailToUri?.queryParameters[paramSubject];
-      final body = parsedMailToUri?.queryParameters[paramBody];
+      final subject = parsedMailToUri.queryParameters[paramSubject];
+      final body = parsedMailToUri.queryParameters[paramBody];
       mapMailto[paramMailtoAddress] = to;
       mapMailto[paramCc] = cc;
       mapMailto[paramBcc] = bcc;
@@ -285,6 +285,11 @@ abstract class RouteUtils {
 
     return mapMailto;
   }
+
+  // Only a fully encoded URI (`mailto:a%40b.com%3Fsubject=x`) is decoded here;
+  // otherwise queryParameters decodes each value once (RFC 6068).
+  static String _decodeFullyEncodedMailtoUri(String mailtoUri) =>
+      mailtoUri.contains('?') ? mailtoUri : Uri.decodeFull(mailtoUri);
 
   static NavigationRouter generateNavigationRouterFromMailtoLink(String mailtoLink) {
     final mailtoMap = parseMapMailtoFromUri(mailtoLink);
