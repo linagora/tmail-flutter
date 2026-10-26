@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/shared_m
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
@@ -53,16 +54,8 @@ extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
 
   void _openComposerFromUrl(SharedMediaFile sharedMediaFile) {
     if (sharedMediaFile.path.startsWith(RouteUtils.mailtoPrefix)) {
-      final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(sharedMediaFile.path);
-      openComposer(
-        ComposerArguments.fromMailtoUri(
-          listEmailAddress: navigationRouter.listEmailAddress,
-          cc: navigationRouter.cc,
-          bcc: navigationRouter.bcc,
-          subject: navigationRouter.subject,
-          body: navigationRouter.body,
-        ),
-      );
+      final uri = Uri.tryParse(sharedMediaFile.path);
+      if (uri != null) openComposerFromMailToLink(uri);
     } else if (PlatformInfo.isIOS) {
       // On iOS a url-type event can only originate from the share
       // extension (the plugin ignores every other URL), so a non-mailto
