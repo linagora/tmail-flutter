@@ -2768,7 +2768,7 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     spamFolderId ??= spamMailboxId;
-    final accountId = this.accountId.value;
+    final accountId = activeAccountId;
 
     if (accountId == null || sessionCurrent == null) {
       consumeState(Stream.value(Left(EmptySpamFolderFailure(NotFoundSessionException()))));
