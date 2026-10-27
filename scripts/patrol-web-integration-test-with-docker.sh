@@ -128,7 +128,9 @@ KEEPER_PID=$!
 
 # Full output goes to $PATROL_LOG (archived as patrol-console.log.gz); the console drops per-page dwds metadata and cumulative teardown lines.
 timing "patrol tests started"
+# Allow page setup time so the Dart timeout can report first.
 patrol test -v \
+    --web-timeout=300000 \
     --tags=web \
     --device=chrome \
     --web-port=3000 \

@@ -13,6 +13,7 @@ import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
 
 class TestBase {
+  static const Duration _testTimeout = Duration(minutes: 4);
   static final TestBase _instance = TestBase._internal();
   factory TestBase() => _instance;
 
@@ -29,6 +30,8 @@ class TestBase {
 
     patrolTest(
       description,
+      // Fail stuck tests before they consume the CI build timeout.
+      timeout: const Timeout(_testTimeout),
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
         existsTimeout: Duration(seconds: 30),
