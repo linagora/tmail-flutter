@@ -36,5 +36,30 @@ void main() {
       expect(result, isNot(contains('<iframe')));
       expect(result, isNot(contains('<script')));
     });
+
+    test('resolveForSave does not keep a raw signature whose wrapper sanitizes to an empty element', () {
+      final stored = StoredSignature('<div><script>alert(1)</script></div>');
+
+      expect(stored.resolveForSave(stored.sanitized), stored.sanitized);
+    });
+
+    test('resolveForSave keeps an untouched raw signature made only of an image', () {
+      const imageOnly = '<div><img src="https://example.com/logo.png" onerror="x()"></div>';
+      final stored = StoredSignature(imageOnly);
+
+      expect(stored.resolveForSave(stored.sanitized), imageOnly);
+    });
+
+    test('resolveForSave does not keep a raw signature that sanitizes to only a style element', () {
+      final stored = StoredSignature('<div><style>p{color:red}</style><script>x</script></div>');
+
+      expect(stored.resolveForSave(stored.sanitized), isNot(contains('<script')));
+    });
+
+    test('resolveForSave keeps the raw signature when the mobile editor wraps it in newlines', () {
+      final stored = StoredSignature(raw);
+
+      expect(stored.resolveForSave('\n${stored.sanitized}\n'), raw);
+    });
   });
 }
