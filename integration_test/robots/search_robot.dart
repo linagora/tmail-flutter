@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchController;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
@@ -30,6 +34,39 @@ import 'search_suggestion_robot.dart';
 import 'search_viewport_robot.dart';
 
 class SearchRobot extends CoreRobot implements AbstractSearchRobot {
+  static const _focusSearchFieldAttempts = 3;
+
+  @override
+  Future<void> focusSearchField() async {
+    for (var attempt = 0; attempt < _focusSearchFieldAttempts; attempt++) {
+      await tapOnSearchInput();
+      await $.pumpAndTrySettle();
+      if (_searchFieldHasFocus) return;
+    }
+    await _expectSearchFieldFocus(true);
+  }
+
+  @override
+  Future<void> expectSearchFieldUnfocused() async {
+    await _expectSearchFieldFocus(false);
+  }
+
+  Future<void> _expectSearchFieldFocus(bool hasFocus) async {
+    try {
+      await waitForCondition(() => _searchFieldHasFocus == hasFocus);
+    } on TimeoutException {
+      // Fall through: the exact comparison below reports the focus state.
+    }
+    expect(_searchFieldHasFocus, hasFocus, reason: 'search field focus');
+  }
+
+  /// Puts the caret in the search input without starting a search.
+  @protected
+  Future<void> tapOnSearchInput() => tapOnSearchField();
+
+  bool get _searchFieldHasFocus =>
+      Get.find<SearchController>().searchFocus.hasFocus;
+
   @override
   final AbstractSearchSuggestionRobot suggestion;
 

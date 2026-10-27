@@ -1,3 +1,4 @@
+import '../robots/abstract/abstract_hardware_keyboard_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
 import '../robots/abstract/abstract_email_rules_setting_robot.dart';
@@ -22,4 +23,7 @@ abstract class RobotFactory {
   AbstractEmailRobot emailRobot();
   AbstractSearchRobot searchRobot();
   AbstractSettingsRobot settingsRobot();
+
+  /// Web only: real key presses. Null where no host keyboard is wired.
+  AbstractHardwareKeyboardRobot? hardwareKeyboardRobot();
 }

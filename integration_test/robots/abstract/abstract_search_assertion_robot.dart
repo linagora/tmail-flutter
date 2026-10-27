@@ -1,5 +1,6 @@
 abstract class AbstractSearchAssertionRobot {
   Future<void> verifySearchSuggestionHighlights(String keyword);
+  Future<void> expectSearchFieldUnfocused();
   Future<void> expectSortBySearchFilterButtonVisible();
   // On web, showMenu popup has no container key — asserts via PopupMenuItemActionWidget.
   Future<void> expectSortOrderMenuVisible();

@@ -1,5 +1,6 @@
 import 'package:patrol/patrol.dart';
 
+import '../robots/abstract/abstract_hardware_keyboard_robot.dart';
 import '../robots/abstract/abstract_common_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/web/web_common_robot.dart';
@@ -22,6 +23,7 @@ import '../robots/web/web_rules_filter_creator_robot.dart';
 import '../robots/web/web_search_robot.dart';
 import '../robots/web/web_settings_robot.dart';
 import '../robots/web/web_thread_robot.dart';
+import '../robots/web/web_hardware_keyboard_robot.dart';
 import 'robot_factory.dart';
 
 class WebRobotFactory implements RobotFactory {
@@ -61,4 +63,8 @@ class WebRobotFactory implements RobotFactory {
 
   @override
   AbstractSettingsRobot settingsRobot() => WebSettingsRobot($);
+
+  @override
+  AbstractHardwareKeyboardRobot hardwareKeyboardRobot() =>
+      WebHardwareKeyboardRobot($);
 }

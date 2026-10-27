@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -117,4 +118,18 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
       return emptyThreadView.visible;
     });
   }
+
+  @override
+  Future<void> expectThreadDetailOpened() async {
+    await waitForCondition(
+      () => _dashboardRoute == DashboardRoutes.threadDetailed,
+    );
+  }
+
+  @override
+  Future<void> expectThreadDetailClosed() async {
+    await waitForCondition(() => _dashboardRoute == DashboardRoutes.thread);
+  }
+
+  DashboardRoutes get _dashboardRoute => _dashboard.dashboardRoute.value;
 }

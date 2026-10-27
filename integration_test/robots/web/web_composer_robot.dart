@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import '../../utils/wait_for_condition.dart';
 import '../mobile/mobile_composer_robot.dart';
 import 'web_composer_code_view_robot.dart';
 import 'web_composer_controller_finder.dart';
@@ -30,6 +31,16 @@ class WebComposerRobot extends MobileComposerRobot {
   @override
   Future<void> expectComposerViewVisible() async {
     await $.waitUntilVisible($(ComposerView));
+  }
+
+  @override
+  Future<void> expectComposerClosedDiscardingChanges() async {
+    final discardButton = $(AppLocalizations().discardChanges);
+    await waitForCondition(
+      () => discardButton.exists || !$(ComposerView).exists,
+    );
+    if (discardButton.exists) await tapDiscardChanges();
+    await waitForCondition(() => !$(ComposerView).exists);
   }
 
   @override
