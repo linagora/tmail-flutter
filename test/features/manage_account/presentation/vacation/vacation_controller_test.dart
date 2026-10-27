@@ -9,6 +9,7 @@ import 'package:html_editor_enhanced/html_editor.dart' show HtmlEditorController
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:rich_text_composer/rich_text_composer.dart' show HtmlEditorApi, RichTextController;
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -133,6 +134,24 @@ void main() {
       expect(vacationController.vacationMessageHtmlText, contains('Out of office'));
       expect(vacationController.vacationMessageHtmlText, isNot(contains('onerror')));
     });
+
+    test(
+      'SHOULD give the mobile editor the message without its event handlers',
+    () async {
+      PlatformInfo.isTestingForWeb = false;
+      final mobileEditorApi = _RecordingHtmlEditorApi();
+      vacationController.richTextControllerForMobile = RichTextController()
+        ..htmlEditorApi = mobileEditorApi;
+
+      vacationResponse.value = VacationResponse(
+        isEnabled: false,
+        htmlBody: storedMessage,
+      );
+      await pumpEventQueue();
+
+      expect(mobileEditorApi.text, contains('Out of office'));
+      expect(mobileEditorApi.text, isNot(contains('onerror')));
+    });
   });
 }
 
@@ -141,6 +160,13 @@ class _RecordingHtmlEditorController extends Fake implements HtmlEditorControlle
 
   @override
   void setText(String text) => this.text = text;
+}
+
+class _RecordingHtmlEditorApi extends Fake implements HtmlEditorApi {
+  String? text;
+
+  @override
+  Future<void> setText(String text) async => this.text = text;
 }
 
 class _FakeRichTextWebController extends RichTextWebController {
