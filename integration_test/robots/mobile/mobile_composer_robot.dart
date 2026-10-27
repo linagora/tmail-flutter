@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../mocks/fake_file_picker.dart';
+import '../abstract/abstract_composer_code_view_robot.dart';
 import '../abstract/abstract_composer_editor_keyboard_robot.dart';
 import '../abstract/abstract_composer_recipient_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
@@ -29,11 +30,15 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerEditorKeyboardRobot? editorKeyboard;
 
+  @override
+  final AbstractComposerCodeViewRobot? codeView;
+
   MobileComposerRobot(
     PatrolIntegrationTester $, {
     AbstractComposerRecipientRobot? recipientRobot,
     this.reload,
     this.editorKeyboard,
+    this.codeView,
   })  : recipient = recipientRobot ?? ComposerRecipientRobot($),
         super($);
 

@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_edi
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../mobile/mobile_composer_robot.dart';
+import 'web_composer_code_view_robot.dart';
 import 'web_composer_controller_finder.dart';
 import 'web_composer_editor_keyboard_robot.dart';
 import 'web_composer_recipient_robot.dart';
@@ -23,6 +24,7 @@ class WebComposerRobot extends MobileComposerRobot {
           recipientRobot: WebComposerRecipientRobot($),
           reload: WebComposerReloadRobot($),
           editorKeyboard: WebComposerEditorKeyboardRobot($),
+          codeView: WebComposerCodeViewRobot($),
         );
 
   @override
