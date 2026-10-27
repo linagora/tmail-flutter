@@ -6,23 +6,29 @@ const fs = require('fs');
 const path = require('path');
 const { pathToFileURL, fileURLToPath } = require('url');
 
-const [baseUrl, projectRoot, browserArgsJson, flutterLogPath] = process.argv.slice(2);
+const printDir = process.argv[2] === '--web-runner-dir';
+const [baseUrl, projectRoot, browserArgsJson, flutterLogPath] = printDir
+  ? [null, process.argv[3]]
+  : process.argv.slice(2);
 const pollMs = 2000;
 const deadlineMs = 30 * 60 * 1000;
 const mainStartTimeoutMs = 10 * 60 * 1000;
+// The setup page's DDC load can stall navigation past the 30 s default
+const navTimeoutMs = 2 * 60 * 1000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const readyLine = 'Flutter run key commands.';
 const shutdownTimeoutMs = 10 * 1000;
 let currentBrowser = null;
 let stopping = false;
 
-function playwrightPath() {
+function webRunnerDir() {
+  if (!projectRoot) throw new Error('projectRoot missing');
   const configDir = path.join(projectRoot, '.dart_tool');
   const config = JSON.parse(fs.readFileSync(path.join(configDir, 'package_config.json'), 'utf8'));
   const patrol = config.packages.find((p) => p.name === 'patrol');
   if (!patrol) throw new Error('patrol not in package_config.json');
   const root = fileURLToPath(new URL(patrol.rootUri, pathToFileURL(configDir + path.sep)));
-  return path.join(root, 'web_runner', 'node_modules', '@playwright', 'test');
+  return path.join(root, 'web_runner');
 }
 
 // Resolves true once flutter_tools listens for pages, false at the deadline or on shutdown.
@@ -50,8 +56,8 @@ function shutdown() {
 
 // Resolves with the page once dwds has connected it and run its main; the browser stays open.
 async function holdPage() {
-  // Patrol installs Playwright and its browser only after the dev server is up
-  const { chromium } = require(playwrightPath());
+  // The CI script pre-installs web_runner deps; Patrol itself installs them only after the dev server is up
+  const { chromium } = require(path.join(webRunnerDir(), 'node_modules', '@playwright', 'test'));
   const browser = await chromium.launch({
     args: JSON.parse(browserArgsJson || '[]'),
     // Its own signal handlers close the browser but keep Node alive, so cleanup's wait would block
@@ -68,7 +74,7 @@ async function holdPage() {
     });
     // Closing the browser on a failed goto rejects this promise with no awaiter left
     mainStarted.catch(() => {});
-    const response = await page.goto(baseUrl);
+    const response = await page.goto(baseUrl, { timeout: navTimeoutMs });
     if (!response || !response.ok()) throw new Error(`HTTP ${response && response.status()}`);
     await mainStarted;
     return page;
@@ -104,6 +110,10 @@ async function holdUntilDisconnected() {
 }
 
 async function main() {
+  if (printDir) {
+    console.log(webRunnerDir());
+    return;
+  }
   if (!flutterLogPath) {
     console.error('[keeper] usage: <baseUrl> <projectRoot> <browserArgsJson> <flutterLogPath>');
     process.exit(2);

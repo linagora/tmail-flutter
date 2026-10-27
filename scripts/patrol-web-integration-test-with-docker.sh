@@ -77,6 +77,12 @@ echo "Copying integration_test/integration_test_env.file to env.file..."
 cp integration_test/integration_test_env.file env.file
 
 echo "Building the app and running tests..."
+# Keeper must hold a page before Patrol's setup page leaves; Patrol installs these only after the dev server is up
+WEB_RUNNER_DIR=$(node scripts/ci-web-dev-server-keeper.js --web-runner-dir "$ROOT_DIR") || { echo "web_runner lookup failed"; exit 1; }
+[ -d "$WEB_RUNNER_DIR" ] || { echo "web_runner dir missing: '$WEB_RUNNER_DIR'"; exit 1; }
+echo "Pre-installing Patrol web_runner deps in $WEB_RUNNER_DIR..."
+# Same commands as patrol_cli 4.3.1 _ensureNodeDependencies, so its own run is a no-op
+(cd "$WEB_RUNNER_DIR" && npm install && npx playwright install) || { echo "web_runner deps install failed"; exit 1; }
 : > "$PATROL_LOG"
 bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" &
 WATCHDOG_PID=$!
