@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Readers of `MailboxDashBoardController.accountId`, which stays my own account (ADR-0114).
 /// A reader of the shown mailbox uses `ActiveAccountReader` instead, so a new reader here
-/// must say why it needs my own account.
+/// must say why it needs my own account. Receivers are matched by name, so an alias of the
+/// dashboard escapes the scan: a guard until these readers move to Riverpod.
 const _personalAccountReaders = <String, int>{
   // Composer, identities and drafts: moved to the shown account in T-02.4, drafts in T-04.
   'lib/features/composer/presentation/composer_controller.dart': 13,
@@ -16,9 +17,6 @@ const _personalAccountReaders = <String, int>{
   'lib/features/composer/presentation/manager/web_composer_reload_snapshot_builder.dart': 1,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_composer_restore_on_mobile_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart': 1,
-  // Session setup, settings, vacation, identities, composer cache, contact autocomplete,
-  // sending queue and notification taps (T-02.3, T-02.4, T-02.5, T-04).
-  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 38,
   // Settings, filters, preferences and premium: always my own account.
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 1,
   'lib/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart': 1,
@@ -47,6 +45,41 @@ const _personalAccountReaders = <String, int>{
   // First load of a new dashboard: the trigger of everShownAccount, which then loads the shown account.
   'lib/features/mailbox/presentation/mailbox_controller.dart': 1,
   'lib/features/quotas/presentation/quotas_controller.dart': 1,
+};
+
+const _dashboardControllerPath = 'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+
+/// Readers of my own account inside `MailboxDashBoardController`, per member, so a misplaced
+/// one shows up by name.
+const _dashboardPersonalAccountReaders = <String, int>{
+  // Session setup and logout.
+  '_setUpComponentsFromSession': 1,
+  '_handleLogOutAndSignInNewAccount': 2,
+  // Vacation: a setting of my own account.
+  '_getVacationResponse': 2,
+  'disableVacationResponder': 2,
+  // Label setting after Settings, bound to my own account until T-02.4 and T-03.
+  'goToSettings': 2,
+  'goToVacationSetting': 2,
+  // Composer, its cache, identities and drafts: moved in T-02.4, drafts in T-04.
+  '_handleComposerCache': 2,
+  '_handleIdentityCache': 2,
+  '_getAllIdentities': 2,
+  '_discardEmail': 1,
+  'deleteEmailPermanentlyInBackground': 1,
+  'maxSizeAttachmentsPerEmail': 2,
+  'removeComposerCacheById': 2,
+  'removeAllComposerCache': 2,
+  // Sending queue: each mail keeps the account it was written in (T-04).
+  'getAllSendingEmails': 2,
+  '_handleSendEmailSuccess': 2,
+  // Contact autocomplete and the contact pickers of the search filter: my own contacts.
+  'getContactSuggestion': 2,
+  '_setUpMinInputLengthAutocomplete': 2,
+  'selectFromSearchFilter': 2,
+  'selectToSearchFilter': 2,
+  // Notification taps: my own account until T-03.
+  '_handleNotificationMessageFromEmailId': 1,
 };
 
 /// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. T-02.4 moves the
@@ -96,9 +129,12 @@ final _foundDashboardAccountIdRead = RegExp(r'<MailboxDashBoardController>\(\)\.
 final _ownAccountIdRead = RegExp(r'(?<![\w.])accountId\.value\b|\bthis\.accountId\.value\b');
 final _ownEmailAddressRead = RegExp(r'\bownEmailAddress\.value\b|\bgetOwnEmailAddress\w*\(');
 final _shownAccountUse = RegExp(r'\b(ActiveAccountReader|ActiveAccountBridge|activeAccountProvider|activeAccountId)\b');
+final _classMemberStart = RegExp(r'^  [^\s}@)\]]');
+final _memberName = RegExp(r'\b(?:get\s+)?(\w+)\s*[(=;{]');
 
 void main() {
   test('every reader of the dashboard accountId is listed with why it needs my own account', _expectListedAccountIdReaders);
+  test('every reader inside MailboxDashBoardController is listed per member', _expectListedDashboardMemberReaders);
   test('every reader of ownEmailAddress and getOwnEmailAddress* is listed', _expectListedOwnEmailAddressReaders);
   test('Settings never reads the shown account', _expectSettingsNeverReadsShownAccount);
 }
@@ -106,8 +142,20 @@ void main() {
 void _expectListedAccountIdReaders() {
   expect(
     _countPerFile(_countDashboardAccountIdReads),
-    _personalAccountReaders,
+    {
+      ..._personalAccountReaders,
+      _dashboardControllerPath: _dashboardPersonalAccountReaders.values.reduce((sum, count) => sum + count),
+    },
     reason: 'Read the shown mailbox through ActiveAccountReader. '
+        'Add a reader of my own account to the list with the reason it needs it.',
+  );
+}
+
+void _expectListedDashboardMemberReaders() {
+  expect(
+    _countPerMember(File(_dashboardControllerPath).readAsStringSync().replaceAll(_lineComment, '')),
+    _dashboardPersonalAccountReaders,
+    reason: 'Read the shown mailbox through activeAccountId. '
         'Add a reader of my own account to the list with the reason it needs it.',
   );
 }
@@ -128,14 +176,30 @@ void _expectSettingsNeverReadsShownAccount() {
   );
 }
 
+int _countDashboardReceiverReads(String source) => _accountIdReceiver.allMatches(source).where((match) {
+      final receiver = match.group(1)!;
+      return _dashboardName.hasMatch(receiver) && !_settingsDashboardName.hasMatch(receiver);
+    }).length;
+
 int _countDashboardAccountIdReads(String source) {
-  final receiverReads = _accountIdReceiver.allMatches(source).where((match) {
-    final receiver = match.group(1)!;
-    return _dashboardName.hasMatch(receiver) && !_settingsDashboardName.hasMatch(receiver);
-  }).length;
+  final receiverReads = _countDashboardReceiverReads(source);
   final ownReads = _dashboardOwner.hasMatch(source) ? _ownAccountIdRead.allMatches(source).length : 0;
   final viewReads = _dashboardView.hasMatch(source) ? _viewControllerAccountIdRead.allMatches(source).length : 0;
   return receiverReads + ownReads + viewReads + _foundDashboardAccountIdRead.allMatches(source).length;
+}
+
+/// Counts the reads of my own account in each member of a class body indented by two spaces.
+Map<String, int> _countPerMember(String source) {
+  final counts = <String, int>{};
+  var member = '';
+  for (final line in source.split('\n')) {
+    if (_classMemberStart.hasMatch(line)) {
+      member = _memberName.firstMatch(line)?.group(1) ?? line.trim();
+    }
+    final found = _countDashboardReceiverReads(line) + _ownAccountIdRead.allMatches(line).length;
+    if (found > 0) counts.update(member, (count) => count + found, ifAbsent: () => found);
+  }
+  return counts;
 }
 
 Map<String, int> _countPerFile(SourceCounter count, {String folder = 'lib'}) {
