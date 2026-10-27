@@ -26,8 +26,8 @@ Proposed
 
 ## Decision
 
-- `MainActivity.dispatchKeyEvent` offers each non-system key
-  to `currentFocus` when it is a `WebView` editing text
+- `MainActivity.dispatchKeyEvent` delegates to `EditorKeyDispatch`,
+  which offers each non-system key to `currentFocus` when it is a `WebView` editing text
   (`onCheckIsTextEditor()`).
 - Handled by the WebView: dispatch stops; Flutter never sees the key.
 - Unhandled, non-WebView or read-only WebView focus, or system keys
@@ -46,9 +46,12 @@ Proposed
   so hardware-keyboard navigation still works.
 - Workaround for a Flutter engine defect; removable once Flutter
   drops `lastInputConnection` together with the client.
-- `WebViewKeyboardTest` (androidTest) covers the routing.
+- `WebViewKeyboardTest` (androidTest) covers `EditorKeyDispatch`
+  through the debug-only `KeyboardTestActivity`,
+  which needs no Flutter engine or Patrol app.
   It runs with every Android Patrol run (local and Firebase Test Lab),
   next to the Dart tests.
+- The `MainActivity` delegation is one line and has no test.
 - Physical Bluetooth keyboards are not verified.
 
 [issue]: https://github.com/linagora/tmail-flutter/issues/4980
