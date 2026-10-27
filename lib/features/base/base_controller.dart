@@ -673,6 +673,7 @@ abstract class BaseController extends GetxController
         );
       }
     }
+    // Also covers a logout without context, where endDelegationSession never runs.
     getBinding<ActiveAccountBridge>()?.clear();
     await _clearSentryForSessionEnd();
     try {
