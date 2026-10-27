@@ -211,7 +211,7 @@ class VacationController extends BaseController {
       final editorMessage = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
       final messageHtmlText = _storedMessage?.resolveForSave(editorMessage)
           ?? EditorHtmlSanitizer.sanitize(editorMessage);
-      if (messageHtmlText.isEmpty && context.mounted) {
+      if (messageHtmlText.hasNoTextContent) {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(
             currentOverlayContext!,
