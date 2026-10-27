@@ -413,6 +413,8 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   void onInit() {
+    // A new dashboard starts without a shown account, so its readers load once its session is applied.
+    _activeAccountWriter.clear();
     if (PlatformInfo.isMobile) {
       _sentryEcosystem = getBinding<SentryEcosystem>();
       _registerReceivingFileSharingStream();
@@ -889,9 +891,10 @@ class MailboxDashBoardController extends ReloadableController
     final currentAccountId = session.accountId;
     _isFirstSessionLoad = true;
     sessionCurrent = session;
-    _activeAccountWriter.applySession(session);
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
+    // Readers load the shown account synchronously here, so the dashboard must already hold my account.
+    _activeAccountWriter.applySession(session);
 
     final sentryUser = SentryUser(
       id: currentAccountId.asString,

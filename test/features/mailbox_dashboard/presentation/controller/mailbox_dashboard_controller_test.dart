@@ -1589,6 +1589,32 @@ void main() {
       expect(mailboxDashboardController.activeAccountSource.activeAccount,
           ActiveAccount.personal(DelegationFixtures.session()));
     });
+
+    test('a new dashboard starts without the account shown before', () {
+      final source = ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      mailboxDashboardController.onInit();
+
+      expect(source.activeAccount, isNull);
+    });
+
+    test('a reader loads the shown account only once the dashboard holds my account and own address', () {
+      final source = ActiveAccountSourceFixtures.putEmpty();
+      mailboxDashboardController.accountId.value = null;
+      mailboxDashboardController.ownEmailAddress.value = '';
+      final dashboardStateOnLoad = <(AccountId?, String)>[];
+      addTearDown(source.watchShown((_) => dashboardStateOnLoad.add((
+            mailboxDashboardController.accountId.value,
+            mailboxDashboardController.ownEmailAddress.value,
+          ))));
+
+      mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+
+      expect(dashboardStateOnLoad, [(DelegationFixtures.aliceAccountId, DelegationFixtures.aliceAddress)]);
+    });
   });
 
   group('restored messages polling:', () {
