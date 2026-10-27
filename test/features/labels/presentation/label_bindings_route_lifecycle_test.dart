@@ -11,6 +11,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/labels/data/datasource/label_datasource.dart';
+import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/labels/domain/repository/label_repository.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -60,18 +62,26 @@ Future<LabelController> _injectBindingsUnderClosedComposer(
   return labelController;
 }
 
-Future<WeakReference<LabelRepository>> _openAndCloseCreateLabelModal(
+Future<List<WeakReference<Object>>> _openAndCloseCreateLabelModal(
   WidgetTester tester,
   LabelController labelController,
 ) async {
   labelController.openCreateNewLabelModal(accountId: AccountId(Id('a')));
   await tester.pumpAndSettle();
   expect(find.byKey(const Key('create_new_label_modal')), findsOneWidget);
-  final repository = WeakReference(Get.find<LabelRepository>());
+  // Not prepared means the modal built the instance, not the Get.find below.
+  expect(Get.isPrepared<LabelRepository>(), isFalse);
+  expect(Get.isPrepared<LabelDatasource>(), isFalse);
+  expect(Get.isPrepared<LabelApi>(), isFalse);
+  final labelChain = <WeakReference<Object>>[
+    WeakReference(Get.find<LabelRepository>()),
+    WeakReference(Get.find<LabelDatasource>()),
+    WeakReference(Get.find<LabelApi>()),
+  ];
 
   Get.back();
   await tester.pumpAndSettle();
-  return repository;
+  return labelChain;
 }
 
 void main() {
@@ -116,20 +126,20 @@ void main() {
   );
 
   testWidgets(
-    'label repository rebuilt for each create label modal is released after the modal closes',
+    'label repository chain rebuilt for each create label modal is released after the modal closes',
     (tester) async {
       await _pumpHostApp(tester);
       final labelController = await _injectBindingsUnderClosedComposer(tester);
 
-      final repositories = <WeakReference<LabelRepository>>[];
+      final labelChains = <WeakReference<Object>>[];
       for (var attempt = 0; attempt < 3; attempt++) {
-        repositories.add(
+        labelChains.addAll(
           await _openAndCloseCreateLabelModal(tester, labelController),
         );
       }
       await tester.runAsync(GarbageCollectionFixtures.forceGarbageCollection);
 
-      expect(repositories.where((repository) => repository.target != null), isEmpty);
+      expect(labelChains.where((instance) => instance.target != null), isEmpty);
     },
   );
 }
