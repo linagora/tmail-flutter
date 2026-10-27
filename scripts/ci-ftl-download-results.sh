@@ -1,9 +1,10 @@
 #!/bin/bash
-# Usage: ci-ftl-download-results.sh <ftl-output> <results-dir> <firebase-project-id>
+# Usage: ci-ftl-download-results.sh <ftl-output> <results-dir> <firebase-project-id> [<expected-shards>]
 # Copies FTL test_result XML and logcat from GCS into ftl-results/, keeping per-device sub-paths.
 FTL_OUTPUT="$1"
 RESULTS_DIR="$2"
 FIREBASE_PROJECT_ID="$3"
+EXPECTED_SHARDS="${4:-1}"
 
 echo "Downloading test results from Firebase Test Lab..."
 
@@ -44,11 +45,10 @@ if [ -n "$GCS_PATH" ]; then
           done || true
 
     xml_count=$(find ftl-results -name 'test_result_*.xml' | wc -l)
-    if [ "$xml_count" -gt 0 ]; then
-        echo "Downloaded $xml_count result file(s)"
-    else
-        echo "Warning: no test_result XML files found at $GCS_PATH"
-    fi
+    echo "Downloaded $xml_count result file(s), expected at least $EXPECTED_SHARDS"
+    # A missing shard result would hide its failures, so the caller must see this.
+    [ "$xml_count" -ge "$EXPECTED_SHARDS" ] || { echo "ERROR: fewer result files than shards at $GCS_PATH"; exit 1; }
 else
-    echo "Warning: could not determine GCS results path"
+    echo "ERROR: could not determine GCS results path"
+    exit 1
 fi
