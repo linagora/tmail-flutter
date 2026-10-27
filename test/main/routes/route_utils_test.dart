@@ -228,6 +228,25 @@ void main() {
       expect(result[RouteUtils.paramBody], 'salt & pepper');
     });
 
+    test('should decode an encoded address followed by a query', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test%40example.com?subject=Hello');
+
+      expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
+    });
+
+    // The browser mailto handler (`/mailto/?uri=%s`) percent-encodes the
+    // whole mailto URL once more: header values arrive encoded twice and must
+    // still be decoded once into the value the sender wrote.
+    test('should decode header values once in a mailto URL from the browser handler', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'https://example.com/mailto/?uri=mailto%3Atest%40example.com'
+        '%3Fsubject%3D1%252B1%26body%3Dsalt%2520%2526%2520pepper');
+
+      expectParsedMailto(result, address: 'test@example.com', subject: '1+1');
+      expect(result[RouteUtils.paramBody], 'salt & pepper');
+    });
+
     test('should parse a valid mailto URI encoded', () {
       final result = RouteUtils.parseMapMailtoFromUri(
         'mailto:test%40example.com%3Fsubject=Hello');
