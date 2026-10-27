@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 
-import '../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../fixtures/active_account_source_fixtures.dart';
 import '../../../fixtures/base_controller_fixtures.dart';
 import '../../../fixtures/delegation_fixtures.dart';
 import 'thread_detail_controller_test.mocks.dart';
@@ -52,7 +52,7 @@ void main() {
     Get.put<NetworkConnectionController>(MockNetworkConnectionController());
     Get.put<ThreadDetailManager>(MockThreadDetailManager());
     Get.put<DownloadManager>(MockDownloadManager());
-    ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+    ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
   });
 
   tearDown(Get.reset);
