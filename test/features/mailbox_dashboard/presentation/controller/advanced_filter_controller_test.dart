@@ -56,7 +56,7 @@ import 'package:uuid/uuid.dart';
 
 import 'advanced_filter_controller_test.mocks.dart';
 
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
 
@@ -197,7 +197,7 @@ void main() {
         .thenReturn(SearchEmailFilter.defaultSortOrder);
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
-    ActiveAccountBridgeFixtures.putShowing(null);
+    ActiveAccountSourceFixtures.putShowing(null);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
     Get.put<StoreEmailSortOrderInteractor>(mockStoreEmailSortOrderInteractor);
 
@@ -732,7 +732,7 @@ void main() {
 
   group('AdvancedFilterController::selectedMailBox', () {
     testWidgets('opens the folder picker on the shown account, not on my own', (tester) async {
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
       when(mockMailboxDashBoardController.sessionCurrent).thenReturn(DelegationFixtures.session());
       final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
 

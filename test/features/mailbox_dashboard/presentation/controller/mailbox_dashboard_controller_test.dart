@@ -9,7 +9,6 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/parse_email_by_blob_id_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -192,7 +191,7 @@ import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
 
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
 
@@ -439,7 +438,7 @@ void main() {
         refreshAllMailboxInteractor,
       );
 
-  setUp(() => ActiveAccountBridgeFixtures.putShowing(null));
+  setUp(() => ActiveAccountSourceFixtures.putShowing(null));
 
   setUp(() {
     Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
@@ -805,7 +804,7 @@ void main() {
       mailboxDashboardController.sessionCurrent = testSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = testAccountId;
-      mailboxDashboardController.activeAccountBridge.accountId.value = testAccountId;
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).show(testAccountId);
     });
 
     test('WHEN user search email by keyword, '
@@ -1426,27 +1425,29 @@ void main() {
     // Get.put in a later group would keep this dashboard registered.
     tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
 
-    test('loads the folders of my account once, when a new dashboard sets it up', () {
+    test('loads the folders of my account once, when a new dashboard applies its session', () {
+      final session = DelegationFixtures.session();
+      mailboxDashboardController.sessionCurrent = session;
+      final source = ActiveAccountSourceFixtures.putEmpty();
       startMailboxController();
+      verifyNever(getAllMailboxInteractor.execute(any, any));
 
-      ActiveAccountBridgeFixtures.showForThisTest(testAccountId);
-      mailboxDashboardController.accountId.value = testAccountId;
+      source.applySession(session);
 
-      verify(getAllMailboxInteractor.execute(testSession, testAccountId)).called(1);
+      verify(getAllMailboxInteractor.execute(session, DelegationFixtures.aliceAccountId)).called(1);
     });
 
-    test('loads the folders of a new dashboard that shows the account already shown before', () {
-      ActiveAccountBridgeFixtures.showForThisTest(testAccountId);
+    test('does not load the folders of a shown account before the dashboard has its session', () {
+      mailboxDashboardController.sessionCurrent = null;
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
       startMailboxController();
 
-      mailboxDashboardController.accountId.value = testAccountId;
-
-      verify(getAllMailboxInteractor.execute(testSession, testAccountId)).called(1);
+      verifyNever(getAllMailboxInteractor.execute(any, any));
     });
 
-    test('loads the folders of the shown account at once when my account was set before it started', () {
-      mailboxDashboardController.accountId.value = testAccountId;
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    test('loads the folders of the shown account at once when it starts after the session was applied', () {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
 
       startMailboxController();
 
@@ -1454,17 +1455,28 @@ void main() {
     });
 
     test('loads the folders of a newly shown account', () {
-      mailboxDashboardController.accountId.value = testAccountId;
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
       startMailboxController();
 
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      source.show(DelegationFixtures.bobAccountId);
 
       verify(getAllMailboxInteractor.execute(testSession, DelegationFixtures.bobAccountId)).called(1);
     });
 
+    test('does not reload the folders on a session re-read of the same account', () {
+      mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      final source = ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+      startMailboxController();
+      clearInteractions(getAllMailboxInteractor);
+
+      source.applySession(DelegationFixtures.session(state: 'state-2'));
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
+    });
+
     testWidgets('moving a folder opens the folder picker on the shown account, not on my own', (tester) async {
       mailboxDashboardController.accountId.value = testAccountId;
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
       startMailboxController();
       final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
 
@@ -1482,7 +1494,7 @@ void main() {
       clearInteractions(subaddressingInteractor);
       when(subaddressingInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
       mailboxDashboardController.accountId.value = testAccountId;
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
       startMailboxController();
       await pumpLocalizedApp(tester);
 
@@ -1510,7 +1522,7 @@ void main() {
               mailboxList: [PresentationMailbox(MailboxId(Id('folder-1')), name: MailboxName('Folder'))],
               currentMailboxState: State('mailbox-state'),
             ))));
-        ActiveAccountBridgeFixtures.put(DelegationFixtures.session(), shownAccountId: shownAccountId);
+        ActiveAccountSourceFixtures.put(DelegationFixtures.session(), shownAccountId: shownAccountId);
         // A real tree, so the loaded folders go through the same path as in the app.
         mailboxController = newMailboxController(mailboxTreeBuilder: TreeBuilder())..onInit();
         mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
@@ -1558,11 +1570,11 @@ void main() {
     });
 
     test('a closed MailboxController no longer loads the folders of a newly shown account', () {
-      mailboxDashboardController.accountId.value = testAccountId;
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
       startMailboxController();
       mailboxController.onClose();
 
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      source.show(DelegationFixtures.bobAccountId);
 
       verifyNever(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId));
     });
@@ -1570,24 +1582,12 @@ void main() {
 
   group('session setup:', () {
     test('a new dashboard shows my account of the session it sets up', () {
-      ActiveAccountBridgeFixtures.put(DelegationFixtures.session(username: 'someone@else.tld'));
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session(username: 'someone@else.tld'));
 
       mailboxDashboardController.handleReloaded(DelegationFixtures.session());
 
-      expect(mailboxDashboardController.activeAccountBridge.activeAccount,
+      expect(mailboxDashboardController.activeAccountSource.activeAccount,
           ActiveAccount.personal(DelegationFixtures.session()));
-    });
-
-    test('a reader of a new dashboard loads only the account its session shows, not the one shown before', () {
-      ActiveAccountBridgeFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
-      mailboxDashboardController.accountId.value = null;
-      final loadedAccountIds = <AccountId>[];
-      final worker = _ShownAccountReader().everShownAccount(mailboxDashboardController.accountId, loadedAccountIds.add);
-      addTearDown(worker.dispose);
-
-      mailboxDashboardController.handleReloaded(DelegationFixtures.session(listsBob: false));
-
-      expect(loadedAccountIds, [DelegationFixtures.aliceAccountId]);
     });
   });
 
@@ -1599,7 +1599,7 @@ void main() {
     });
 
     test('stops once a logout cleared the shown account', () {
-      ActiveAccountBridgeFixtures.putShowing(null);
+      ActiveAccountSourceFixtures.putShowing(null);
 
       mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
           EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1')))));
@@ -1617,7 +1617,7 @@ void main() {
     });
 
     test('never falls back to my own account once a logout cleared the shown account', () {
-      ActiveAccountBridgeFixtures.putShowing(null);
+      ActiveAccountSourceFixtures.putShowing(null);
 
       mailboxDashboardController.emptySpamFolderAction(spamFolderId: MailboxId(Id('spam')), totalEmails: 2);
 
@@ -1669,7 +1669,7 @@ void main() {
       mailboxDashboardController.mapMailboxById = {
         testMailboxId: PresentationMailbox(testMailboxId),
       };
-      ActiveAccountBridgeFixtures.putShowing(bob);
+      ActiveAccountSourceFixtures.putShowing(bob);
       clearInteractions(appToast);
       for (final interactor in [
         deleteEmailPermanentlyInteractor,
@@ -2307,7 +2307,7 @@ void main() {
     setUp(() {
       mailboxDashboardController.sessionCurrent = testSession;
       mailboxDashboardController.accountId.value = testAccountId;
-      ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
       when(quickSearchEmailInteractor.execute(
         any,
         any,
@@ -2376,4 +2376,3 @@ void main() {
 
 class _FakeBuildContext extends Fake implements BuildContext {}
 
-class _ShownAccountReader with ActiveAccountReader {}

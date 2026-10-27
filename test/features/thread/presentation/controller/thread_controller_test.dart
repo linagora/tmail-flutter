@@ -78,7 +78,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
 import '../../../../fixtures/session_fixtures.dart';
@@ -254,9 +254,9 @@ void main() {
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
-    final bridge = ActiveAccountBridgeFixtures.put(SessionFixtures.aliceSession);
+    final source = ActiveAccountSourceFixtures.put(SessionFixtures.aliceSession);
     when(mockMailboxDashBoardController.activeAccountId)
-        .thenAnswer((_) => bridge.accountId.value);
+        .thenAnswer((_) => source.accountId);
     // The central executor resolves these via Get.find, not the controller ctor.
     Get.put<SearchEmailInteractor>(mockSearchEmailInteractor);
     Get.put<SearchMoreEmailInteractor>(mockSearchMoreEmailInteractor);
@@ -607,7 +607,7 @@ void main() {
       });
 
       test('should fetch the emails of the shown account, not of my own', () async {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
 
         await changeSelectedMailbox();
 
@@ -617,7 +617,7 @@ void main() {
 
     group('email actions in the shown account:', () {
       test('moveToSpam moves the email of the shown account, not of my own', () {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.spamMailboxId).thenReturn(MailboxId(Id('spam-id')));
 
@@ -635,7 +635,7 @@ void main() {
       });
 
       test('moveToTrash moves the email of the shown account, not of my own', () {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.mapDefaultMailboxIdByRole)
             .thenReturn({PresentationMailbox.roleTrash: MailboxId(Id('trash-id'))});
@@ -654,7 +654,7 @@ void main() {
       });
 
       test('unSpam moves the email of the shown account back to its inbox, not of my own', () {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.spamMailboxId).thenReturn(MailboxId(Id('spam-id')));
         when(mockMailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox))
@@ -671,7 +671,7 @@ void main() {
       });
 
       testWidgets('moveToMailbox opens the folder picker on the shown account, not on my own', (tester) async {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
 
@@ -685,7 +685,7 @@ void main() {
       });
 
       test('pull to refresh reloads the emails of the shown account, not of my own', () async {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn());
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
