@@ -1,6 +1,7 @@
 # 92. Upgrade flutter_riverpod to 3.x
 
 Date: 2026-05-28
+Updated: 2026-10-27
 
 ## Status
 
