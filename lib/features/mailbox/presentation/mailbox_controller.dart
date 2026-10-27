@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dar
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -136,7 +137,7 @@ class MailboxController extends BaseMailboxController
   NavigationRouter? _navigationRouter;
   WebSocketQueueHandler? _webSocketQueueHandler;
   Worker? isLabelsLoadedWorker;
-  Worker? _shownAccountWorker;
+  CancelShownAccountWatch? _cancelShownAccountWatch;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
@@ -151,7 +152,7 @@ class MailboxController extends BaseMailboxController
   /// The shown account when it is my own: default folders and the iOS notification keychain are
   /// kept for my own account only.
   AccountId? get _shownPersonalAccountId =>
-      activeAccountBridge.activeAccount?.isDelegated == false ? accountId : null;
+      activeAccountSource.activeAccount?.isDelegated == false ? accountId : null;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
@@ -208,8 +209,8 @@ class MailboxController extends BaseMailboxController
     _webSocketQueueHandler?.dispose();
     isLabelsLoadedWorker?.dispose();
     isLabelsLoadedWorker = null;
-    _shownAccountWorker?.dispose();
-    _shownAccountWorker = null;
+    _cancelShownAccountWatch?.call();
+    _cancelShownAccountWatch = null;
     super.onClose();
   }
 
@@ -303,12 +304,9 @@ class MailboxController extends BaseMailboxController
   }
 
   void _registerObxStreamListener() {
-    _shownAccountWorker = everShownAccount(
-      mailboxDashBoardController.accountId,
-      (accountId) {
-        if (session != null) getAllMailbox(session!, accountId);
-      },
-    );
+    _cancelShownAccountWatch = activeAccountSource.watchShown((accountId) {
+      if (session != null) getAllMailbox(session!, accountId);
+    });
 
     ever<Map<String, dynamic>?>(
       mailboxDashBoardController.routerParameters,

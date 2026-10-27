@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -12,13 +13,14 @@ import 'package:jmap_dart_client/jmap/quotas/data_types.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_bridge.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 
-import '../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../fixtures/active_account_source_fixtures.dart';
 import '../../../fixtures/base_controller_fixtures.dart';
 import '../../../fixtures/delegation_fixtures.dart';
 import 'quotas_controller_test.mocks.dart';
@@ -36,25 +38,26 @@ const fallbackGenerators = {
 void main() {
   late MockGetQuotasInteractor getQuotasInteractor;
   late MockMailboxDashBoardController dashboard;
-  late ActiveAccountBridge bridge;
-  late Rxn<AccountId> personalAccountId;
+  late ProviderContainer container;
+  late RiverpodActiveAccountSource source;
 
   setUp(() {
     BaseControllerFixtures.registerDependencies();
     dashboard = MockMailboxDashBoardController();
     when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
-    personalAccountId = Rxn<AccountId>(DelegationFixtures.aliceAccountId);
-    when(dashboard.accountId).thenReturn(personalAccountId);
     Get.put<MailboxDashBoardController>(dashboard);
-    bridge = ActiveAccountBridgeFixtures.put(DelegationFixtures.session());
+    container = ActiveAccountSourceFixtures.newContainer();
+    source = ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
     getQuotasInteractor = MockGetQuotasInteractor();
     when(getQuotasInteractor.execute(any)).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(Get.reset);
 
+  void show(AccountId accountId) => container.read(activeAccountProvider.notifier).select(accountId);
+
   test('loads the quota of the shown account, not of my own', () {
-    bridge.accountId.value = DelegationFixtures.bobAccountId;
+    show(DelegationFixtures.bobAccountId);
 
     QuotasController(getQuotasInteractor).reloadQuota();
 
@@ -64,20 +67,37 @@ void main() {
   test('reloads the quota when another account is shown', () {
     QuotasController(getQuotasInteractor).onInit();
 
-    bridge.accountId.value = DelegationFixtures.bobAccountId;
+    show(DelegationFixtures.bobAccountId);
 
     verify(getQuotasInteractor.execute(DelegationFixtures.bobAccountId)).called(1);
   });
 
-  test('loads the quota of a new dashboard that shows the account already shown before', () {
-    personalAccountId.value = null;
+  test('loads the quota of the shown account at once when it starts', () {
     final controller = QuotasController(getQuotasInteractor)..onInit();
-
-    bridge.applySession(DelegationFixtures.session());
-    personalAccountId.value = DelegationFixtures.aliceAccountId;
+    addTearDown(controller.onClose);
 
     verify(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).called(1);
-    controller.onClose();
+  });
+
+  test('does not load the quota before a new dashboard applies its session, then loads it once', () {
+    source.clear();
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+    verifyNever(getQuotasInteractor.execute(any));
+
+    source.applySession(DelegationFixtures.session());
+
+    verify(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).called(1);
+  });
+
+  test('does not reload the quota on a session re-read of the same account', () {
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+    clearInteractions(getQuotasInteractor);
+
+    source.applySession(DelegationFixtures.session(state: 'state-2'));
+
+    verifyNever(getQuotasInteractor.execute(any));
   });
 
   test('a closed QuotasController no longer reloads the quota of a newly shown account', () {
@@ -85,7 +105,7 @@ void main() {
       ..onInit()
       ..onClose();
 
-    bridge.accountId.value = DelegationFixtures.bobAccountId;
+    show(DelegationFixtures.bobAccountId);
 
     verifyNever(getQuotasInteractor.execute(DelegationFixtures.bobAccountId));
   });
@@ -101,7 +121,7 @@ void main() {
     final controller = QuotasController(getQuotasInteractor)..onInit();
     addTearDown(controller.onClose);
 
-    bridge.accountId.value = DelegationFixtures.bobAccountId;
+    show(DelegationFixtures.bobAccountId);
     await pumpEventQueue();
     myQuotaRequest.add(Right(GetQuotasSuccess([_storageQuota('alice-storage')])));
     await pumpEventQueue();

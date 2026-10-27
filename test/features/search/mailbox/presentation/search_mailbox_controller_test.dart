@@ -36,7 +36,7 @@ import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbo
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/base_controller_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
@@ -73,7 +73,7 @@ void main() {
     when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
     when(dashboard.accountId).thenReturn(Rxn(DelegationFixtures.aliceAccountId));
     Get.put<MailboxDashBoardController>(dashboard);
-    ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+    ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
   });
 
   tearDown(Get.reset);

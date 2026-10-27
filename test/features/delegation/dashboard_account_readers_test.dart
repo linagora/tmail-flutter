@@ -42,9 +42,6 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 2,
   // Send queue: each mail keeps the account it was written in (T-04).
   'lib/features/sending_queue/presentation/sending_queue_controller.dart': 2,
-  // First load of a new dashboard: the trigger of everShownAccount, which then loads the shown account.
-  'lib/features/mailbox/presentation/mailbox_controller.dart': 1,
-  'lib/features/quotas/presentation/quotas_controller.dart': 1,
 };
 
 const _dashboardControllerPath = 'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -128,7 +125,7 @@ final _viewControllerAccountIdRead = RegExp(r'\bcontroller\.accountId\b');
 final _foundDashboardAccountIdRead = RegExp(r'<MailboxDashBoardController>\(\)\.accountId\b');
 final _ownAccountIdRead = RegExp(r'(?<![\w.])accountId\.value\b|\bthis\.accountId\.value\b');
 final _ownEmailAddressRead = RegExp(r'\bownEmailAddress\.value\b|\bgetOwnEmailAddress\w*\(');
-final _shownAccountUse = RegExp(r'\b(ActiveAccountReader|ActiveAccountBridge|activeAccountProvider|activeAccountId)\b');
+final _shownAccountUse = RegExp(r'\b(ActiveAccountReader|ActiveAccountSource|activeAccountProvider|activeAccountId)\b');
 final _classMemberStart = RegExp(r'^  [^\s}@)\]]');
 final _memberName = RegExp(r'\b(?:get\s+)?(\w+)\s*[(=;{]');
 
