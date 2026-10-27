@@ -70,7 +70,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
 import 'single_email_controller_test.mocks.dart';
@@ -177,7 +177,7 @@ void main() {
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
-    ActiveAccountBridgeFixtures.putShowing(testAccountId);
+    ActiveAccountSourceFixtures.putShowing(testAccountId);
     when(uuid.v4()).thenReturn(testTaskId);
   });
 
@@ -234,7 +234,7 @@ void main() {
       });
 
       test('should accept the event in the shown account, not in my own', () async {
-        ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
 
         await replyYesToCalendarEvent();
 
@@ -595,7 +595,7 @@ void main() {
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
       singleEmailController.onInit();
       mailboxDashboardController.accountId.refresh();
     });
@@ -632,7 +632,7 @@ void main() {
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
-      ActiveAccountBridgeFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
     });
 
     testWidgets('quickCreatingRule creates the rule in my own account, not in the shown one', (tester) async {
