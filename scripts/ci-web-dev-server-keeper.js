@@ -79,7 +79,7 @@ async function holdPage() {
   }
 }
 
-// Holds one page until its browser goes away; a failed attempt waits before the next one.
+// Holds one page until its browser goes away; resolves true if a page was held, false after a failed attempt.
 async function holdUntilDisconnected() {
   try {
     const browser = await holdPage();
@@ -87,9 +87,12 @@ async function holdUntilDisconnected() {
     await new Promise((resolve) => browser.on('disconnected', resolve));
     currentBrowser = null;
     if (!stopping) console.error('[keeper] browser disconnected, reopening');
+    await sleep(pollMs);
+    return true;
   } catch (e) {
     if (!stopping) console.error(`[keeper] not ready: ${e.message.split('\n')[0]}`);
     await sleep(pollMs);
+    return false;
   }
 }
 
@@ -100,15 +103,16 @@ async function main() {
   }
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
-  const deadline = Date.now() + deadlineMs;
+  let deadline = Date.now() + deadlineMs;
   if (await waitForFlutterReady(deadline)) {
     console.log('[keeper] flutter_tools ready, opening page');
   }
   while (!stopping && Date.now() < deadline) {
-    await holdUntilDisconnected();
+    // A held page restarts the clock, so a late disconnect still gets 30 min of reopen attempts
+    if (await holdUntilDisconnected()) deadline = Date.now() + deadlineMs;
   }
   if (stopping) return;
-  console.error('[keeper] gave up after 30 min');
+  console.error('[keeper] gave up: no page held for 30 min');
   process.exit(1);
 }
 
