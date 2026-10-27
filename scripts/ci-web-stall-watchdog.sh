@@ -1,11 +1,13 @@
 #!/bin/bash
-# Usage: ci-web-stall-watchdog.sh <patrol-console-log> <dump-file> <root-pid>
+# Usage: ci-web-stall-watchdog.sh <patrol-console-log> <dump-file> <root-pid> [<reset-server-log>]
 # Once Playwright runs under <root-pid>, a console with no new test/step marker
+# (or, with parallel workers, no new account lease/release in <reset-server-log>)
 # for STALL_MINUTES gets its process/socket/HTTP state dumped and Playwright
 # interrupted, so a stuck run fails fast with evidence.
 PATROL_LOG="$1"
 DUMP_FILE="$2"
 ROOT_PID="$3"
+RESET_LOG="${4:-}"
 STALL_MINUTES="${STALL_MINUTES:-15}"
 POLL_SECONDS="${POLL_SECONDS:-30}"
 GRACE_SECONDS="${GRACE_SECONDS:-60}"
@@ -27,8 +29,14 @@ playwright_pids() {
     done
 }
 
+# Parallel workers hide Patrol's per-test markers; leases and releases still show progress.
 count_markers() {
-    LC_ALL=C grep -acE '✅|❌' "$PATROL_LOG" 2>/dev/null || true
+    local markers leases=0
+    markers=$(LC_ALL=C grep -acE '✅|❌' "$PATROL_LOG" 2>/dev/null || true)
+    if [ -n "$RESET_LOG" ]; then
+        leases=$(grep -acE 'lease pair|release pair' "$RESET_LOG" 2>/dev/null || true)
+    fi
+    echo $(( ${markers:-0} + ${leases:-0} ))
 }
 
 dump_state() {
