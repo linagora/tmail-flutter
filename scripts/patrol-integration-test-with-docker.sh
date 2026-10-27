@@ -151,14 +151,18 @@ FTL_OUTPUT=$(mktemp)
 # BUILD_TAG holds the job name, so PR jobs with the same build number do not share a GCS dir.
 RESULTS_DIR="jenkins/$(printf '%s' "${BUILD_TAG:-local-$(date +%s)}" | tr -c 'A-Za-z0-9._-' '_')"
 
+# Shards run in parallel on separate devices; each leases its own account pair from the reset server.
+FTL_SHARDS="${FTL_SHARDS:-3}"
+
 set +e
-gcloud firebase test android run \
+gcloud beta firebase test android run \
     --type instrumentation \
     --app "$APP_APK" \
     --test "$TEST_APK" \
     --device model=MediumPhone.arm,version=34 \
     --timeout 60m \
     --use-orchestrator \
+    --num-uniform-shards="$FTL_SHARDS" \
     --environment-variables clearPackageData=true \
     --no-record-video \
     --results-bucket="gs://$RESULTS_BUCKET" \
@@ -167,6 +171,8 @@ gcloud firebase test android run \
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 set -e
 
-bash "$ROOT_DIR/scripts/ci-ftl-download-results.sh" "$FTL_OUTPUT" "$RESULTS_DIR" "$FIREBASE_PROJECT_ID"
+DOWNLOAD_EXIT_CODE=0
+bash "$ROOT_DIR/scripts/ci-ftl-download-results.sh" "$FTL_OUTPUT" "$RESULTS_DIR" "$FIREBASE_PROJECT_ID" "$FTL_SHARDS" || DOWNLOAD_EXIT_CODE=$?
 
-exit $TEST_EXIT_CODE
+[ "$TEST_EXIT_CODE" -ne 0 ] && exit "$TEST_EXIT_CODE"
+exit "$DOWNLOAD_EXIT_CODE"
