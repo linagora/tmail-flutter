@@ -1,3 +1,61 @@
+def isPrImageEligible() {
+    if (!env.CHANGE_ID) {
+        return false
+    }
+    if (env.CHANGE_FORK) {
+      def forkOwner = env.CHANGE_FORK.split('/')[0]
+      def memberStatus = sh(
+        script: """curl -s -o /dev/null -w "%{http_code}" \
+          -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
+          "https://api.github.com/orgs/linagora/members/${forkOwner}" """,
+        returnStdout: true
+      ).trim()
+      echo "GitHub org membership check returned HTTP ${memberStatus} for '${forkOwner}'"
+      if (memberStatus == '204') {
+        echo "Fork owner '${forkOwner}' is a linagora org member, proceeding."
+      } else if (memberStatus == '404') {
+        echo "Fork owner '${forkOwner}' is not a member of the linagora organization."
+        def approvedByMember = false
+        def commentsStatus = sh(
+          script: """curl -s -o /tmp/pr_comments_${CHANGE_ID}.json -w "%{http_code}" \
+            -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
+            "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments" """,
+          returnStdout: true
+        ).trim()
+        if (commentsStatus != '200') {
+          error("GitHub API error ${commentsStatus} while fetching PR comments for approval check")
+        }
+        def commentsJson = readFile("/tmp/pr_comments_${CHANGE_ID}.json")
+        def comments = new groovy.json.JsonSlurper().parseText(commentsJson)
+        for (comment in comments) {
+          if (comment.body.trim().toLowerCase() == 'build this please') {
+            def commenter = comment.user.login
+            def commenterStatus = sh(
+              script: """curl -s -o /dev/null -w "%{http_code}" \
+                -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
+                "https://api.github.com/orgs/linagora/members/${commenter}" """,
+              returnStdout: true
+            ).trim()
+            if (commenterStatus == '204') {
+              echo "Build approved by linagora member '${commenter}', proceeding."
+              approvedByMember = true
+              break
+            }
+          }
+        }
+        if (!approvedByMember) {
+          echo "No linagora member approval found. Skipping PR image delivery."
+          return false
+        }
+      } else if (memberStatus == '401' || memberStatus == '403') {
+        error("Authentication/permission error validating fork owner: ${memberStatus}")
+      } else {
+        error("GitHub API error ${memberStatus} while checking membership for '${forkOwner}'")
+      }
+    }
+    return true
+}
+
 pipeline {
     agent {
         label 'flutter-web'
@@ -18,22 +76,41 @@ pipeline {
     }
 
     stages {
-        stage('Prebuild') {
+        stage('Run web tests and build PR image') {
             steps {
-                sh './scripts/prebuild.sh'
-            }
-        }
-
-        stage('Run Patrol Web Integration Tests') {
-            steps {
-                // One Patrol job per agent: the backend container and its ports are host-wide.
-                sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
+                script {
+                    env.PR_IMAGE_BUILT = 'false'
+                    parallel(
+                        tests: {
+                            sh './scripts/prebuild.sh'
+                            // One Patrol job per agent: the backend container and its ports are host-wide.
+                            sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
+                        },
+                        image: {
+                            if (env.CHANGE_ID) {
+                                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GITHUB_CREDENTIAL_USR', passwordVariable: 'GITHUB_CREDENTIAL_PSW')]) {
+                                    if (isPrImageEligible()) {
+                                        // A tracked-files snapshot: the workspace is being written by prebuild meanwhile.
+                                        sh '''
+                                            git archive --format=tar HEAD | docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
+                                        '''
+                                        env.PR_IMAGE_BUILT = 'true'
+                                    }
+                                }
+                            }
+                        },
+                        failFast: false
+                    )
+                }
             }
         }
 
         stage('Deliver Docker image for PR') {
           when {
-            changeRequest()
+            allOf {
+              changeRequest()
+              expression { env.PR_IMAGE_BUILT == 'true' }
+            }
           }
           environment {
             DOCKER_HUB_CREDENTIAL = credentials('dockerHub')
@@ -41,59 +118,7 @@ pipeline {
           }
           steps {
             script {
-              if (env.CHANGE_FORK) {
-                def forkOwner = env.CHANGE_FORK.split('/')[0]
-                def memberStatus = sh(
-                  script: """curl -s -o /dev/null -w "%{http_code}" \
-                    -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-                    "https://api.github.com/orgs/linagora/members/${forkOwner}" """,
-                  returnStdout: true
-                ).trim()
-                echo "GitHub org membership check returned HTTP ${memberStatus} for '${forkOwner}'"
-                if (memberStatus == '204') {
-                  echo "Fork owner '${forkOwner}' is a linagora org member, proceeding."
-                } else if (memberStatus == '404') {
-                  echo "Fork owner '${forkOwner}' is not a member of the linagora organization."
-                  def approvedByMember = false
-                  def commentsStatus = sh(
-                    script: """curl -s -o /tmp/pr_comments_${CHANGE_ID}.json -w "%{http_code}" \
-                      -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-                      "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments" """,
-                    returnStdout: true
-                  ).trim()
-                  if (commentsStatus != '200') {
-                    error("GitHub API error ${commentsStatus} while fetching PR comments for approval check")
-                  }
-                  def commentsJson = readFile("/tmp/pr_comments_${CHANGE_ID}.json")
-                  def comments = new groovy.json.JsonSlurper().parseText(commentsJson)
-                  for (comment in comments) {
-                    if (comment.body.trim().toLowerCase() == 'build this please') {
-                      def commenter = comment.user.login
-                      def commenterStatus = sh(
-                        script: """curl -s -o /dev/null -w "%{http_code}" \
-                          -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-                          "https://api.github.com/orgs/linagora/members/${commenter}" """,
-                        returnStdout: true
-                      ).trim()
-                      if (commenterStatus == '204') {
-                        echo "Build approved by linagora member '${commenter}', proceeding."
-                        approvedByMember = true
-                        break
-                      }
-                    }
-                  }
-                  if (!approvedByMember) {
-                    echo "No linagora member approval found. Skipping PR image delivery."
-                    return
-                  }
-                } else if (memberStatus == '401' || memberStatus == '403') {
-                  error("Authentication/permission error validating fork owner: ${memberStatus}")
-                } else {
-                  error("GitHub API error ${memberStatus} while checking membership for '${forkOwner}'")
-                }
-              }
-
-              // Build and push the web Docker image tagged with the PR number to ease testing.
+              // Publish only after the parallel tests and image build succeed.
               sh '''
                 set -eu
                 export DOCKER_CONFIG="$(mktemp -d)"
@@ -102,7 +127,6 @@ pipeline {
                   rm -rf "$DOCKER_CONFIG"
                 }
                 trap cleanup EXIT
-                docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID .
                 echo "$DOCKER_HUB_CREDENTIAL_PSW" | docker login -u "$DOCKER_HUB_CREDENTIAL_USR" --password-stdin
                 docker push linagora/tmail-web-pr:$CHANGE_ID
               '''
