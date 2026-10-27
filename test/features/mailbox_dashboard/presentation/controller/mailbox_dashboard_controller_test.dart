@@ -44,6 +44,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -1614,6 +1617,24 @@ void main() {
       mailboxContain: PresentationMailbox(testMailboxId),
     );
 
+    void stubInteractorsWithEmptyStreams() {
+      when(deleteEmailPermanentlyInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(deleteMultipleEmailsPermanentlyInteractor.execute(any, any, any, any))
+          .thenAnswer((_) => const Stream.empty());
+      when(markAsEmailReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsStarEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsMultipleEmailReadInteractor.execute(any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsStarMultipleEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(markAsMailboxReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(moveToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(moveMultipleEmailToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(unsubscribeEmailInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(restoreDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(getRestoredDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(emptySpamFolderInteractor.execute(any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
+      when(clearMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
+    }
+
     setUp(() {
       mailboxDashboardController.sessionCurrent = testSession;
       mailboxDashboardController.accountId.value = testAccountId;
@@ -1645,6 +1666,8 @@ void main() {
         unsubscribeEmailInteractor,
         restoreDeletedMessageInteractor,
         getRestoredDeletedMessageInteractor,
+        emptySpamFolderInteractor,
+        clearMailboxInteractor,
         spamReportController,
         downloadAttachmentForWebInteractor,
         parseEmailByBlobIdInteractor,
@@ -1668,19 +1691,7 @@ void main() {
         sourceView: anyNamed('sourceView'),
       )).thenAnswer((_) => const Stream.empty());
       when(parseEmailByBlobIdInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(deleteEmailPermanentlyInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(deleteMultipleEmailsPermanentlyInteractor.execute(any, any, any, any))
-          .thenAnswer((_) => const Stream.empty());
-      when(markAsEmailReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(markAsStarEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(markAsMultipleEmailReadInteractor.execute(any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(markAsStarMultipleEmailInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(markAsMailboxReadInteractor.execute(any, any, any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(moveToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(moveMultipleEmailToMailboxInteractor.execute(any, any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(unsubscribeEmailInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(restoreDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
-      when(getRestoredDeletedMessageInteractor.execute(any, any, any)).thenAnswer((_) => const Stream.empty());
+      stubInteractorsWithEmptyStreams();
     });
 
     /// Runs [act] in a localized app, then taps the undo action of the move toast it shows.
@@ -1896,6 +1907,40 @@ void main() {
         name: 'unsubscribeMail',
         act: (_) async => mailboxDashboardController.unsubscribeMail(email.id!),
         expectShownAccount: () => verify(unsubscribeEmailInteractor.execute(any, bob, any)).called(1),
+      ),
+      (
+        name: 'emptySpamFolderAction without Mailbox/clear',
+        act: (_) async => mailboxDashboardController.emptySpamFolderAction(totalEmails: 2),
+        expectShownAccount: () =>
+            verify(emptySpamFolderInteractor.execute(any, bob, MailboxId(Id('spam')), 2, any)).called(1),
+      ),
+      (
+        name: 'emptySpamFolderAction with Mailbox/clear in the shown account only',
+        act: (_) async {
+          mailboxDashboardController.sessionCurrent = Session(
+            {},
+            {
+              testAccountId: Account(AccountName('me'), true, false, {}),
+              bob: Account(AccountName('bob'), false, false, {
+                CapabilityIdentifier.jmapMailboxClear: DefaultCapability(<String, dynamic>{}),
+              }),
+            },
+            {},
+            UserName('data'),
+            google,
+            google,
+            google,
+            google,
+            State('1'),
+          );
+          mailboxDashboardController.emptySpamFolderAction();
+        },
+        expectShownAccount: () => verify(clearMailboxInteractor.execute(
+              any,
+              bob,
+              MailboxId(Id('spam')),
+              PresentationMailbox.roleSpam,
+            )).called(1),
       ),
       (
         name: 'handleRestoreEmailAction',

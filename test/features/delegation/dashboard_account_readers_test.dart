@@ -18,7 +18,7 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart': 1,
   // Session setup, settings, vacation, identities, composer cache, contact autocomplete,
   // sending queue and notification taps (T-02.3, T-02.4, T-02.5, T-04).
-  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 39,
+  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 38,
   // Settings, filters, preferences and premium: always my own account.
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 1,
   'lib/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart': 1,
