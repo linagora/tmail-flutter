@@ -19,6 +19,7 @@ import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
 import '../composer_recipient_robot.dart';
 import '../composer_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot {
   @override
@@ -45,6 +46,16 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   Future<void> expectComposerViewVisible() async {
     await $.waitUntilVisible($(ComposerView));
+  }
+
+  @override
+  Future<void> expectComposerClosedDiscardingChanges() async {
+    final discardButton = $(AppLocalizations().discardChanges);
+    await waitForCondition(
+      () => discardButton.exists || !$(ComposerView).exists,
+    );
+    if (discardButton.exists) await tapDiscardChanges();
+    await waitForCondition(() => !$(ComposerView).exists);
   }
 
   @override

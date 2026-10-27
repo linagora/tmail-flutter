@@ -21,5 +21,7 @@ class LeaveEmbedCodeWithEscapeScenario extends BaseTestScenario {
     await codeViewRobot.pressEscape();
 
     await codeViewRobot.expectActiveContentDidNotRun();
+    // Escape in the code view never closes the composer.
+    await composerRobot.expectComposerViewVisible();
   }
 }

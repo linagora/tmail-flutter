@@ -43,6 +43,12 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         desktopAction: _tapOnDesktopSearchField,
       );
 
+  @override
+  Future<void> tapOnSearchInput() => _runForCurrentSearchLayout(
+        responsiveAction: _responsiveSearchRobot.tapOnSearchField,
+        desktopAction: () => $(SearchInputFormWidget).$(TextField).tap(),
+      );
+
   Future<void> _tapOnDesktopSearchField() async {
     await $(SearchInputFormWidget).$(TextField).tap();
     // Tap the search icon button so isSearchEmailRunning becomes true and filter

@@ -22,6 +22,8 @@ abstract class AbstractComposerRobot {
   AbstractComposerCodeViewRobot? get codeView;
 
   Future<void> expectComposerViewVisible();
+  /// Discards the draft if closing asks to keep it.
+  Future<void> expectComposerClosedDiscardingChanges();
   Future<void> grantContactPermission();
   Future<void> addRecipient(PrefixEmailAddress prefix, String email);
   Future<void> addSubject(String subject);
