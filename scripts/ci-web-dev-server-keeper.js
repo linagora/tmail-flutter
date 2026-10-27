@@ -48,7 +48,7 @@ function shutdown() {
     .finally(() => process.exit(0));
 }
 
-// Resolves once dwds has connected the page and run its main; the browser stays open.
+// Resolves with the page once dwds has connected it and run its main; the browser stays open.
 async function holdPage() {
   // Patrol installs Playwright and its browser only after the dev server is up
   const { chromium } = require(playwrightPath());
@@ -71,7 +71,7 @@ async function holdPage() {
     const response = await page.goto(baseUrl);
     if (!response || !response.ok()) throw new Error(`HTTP ${response && response.status()}`);
     await mainStarted;
-    return browser;
+    return page;
   } catch (e) {
     currentBrowser = null;
     await browser.close();
@@ -79,14 +79,22 @@ async function holdPage() {
   }
 }
 
-// Holds one page until its browser goes away; resolves true if a page was held, false after a failed attempt.
+// Holds one page until it or its browser goes away; resolves true if a page was held, false after a failed attempt.
 async function holdUntilDisconnected() {
   try {
-    const browser = await holdPage();
+    const page = await holdPage();
+    const browser = page.context().browser();
     console.log(`[keeper] holding ${baseUrl}, app main started`);
-    await new Promise((resolve) => browser.on('disconnected', resolve));
+    await new Promise((resolve) => {
+      browser.on('disconnected', resolve);
+      // A crashed or closed page leaves Chromium connected, so dwds would lose its only page
+      page.on('close', resolve);
+      page.on('crash', resolve);
+    });
     currentBrowser = null;
-    if (!stopping) console.error('[keeper] browser disconnected, reopening');
+    // Not awaited: close can take ~30 s, longer than the 15 s dwds teardown window
+    browser.close().catch(() => {});
+    if (!stopping) console.error('[keeper] page lost, reopening');
     await sleep(pollMs);
     return true;
   } catch (e) {
