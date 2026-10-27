@@ -1,4 +1,7 @@
-import 'package:flutter/rendering.dart';
+import 'dart:async';
+
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -11,6 +14,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
 
 import '../base/core_robot.dart';
+import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 import 'abstract/abstract_mailbox_assertion_robot.dart';
@@ -96,6 +100,37 @@ class MailboxAssertionRobot extends CoreRobot implements AbstractMailboxAssertio
   @override
   Future<void> expectLabelSelected(PatrolFinder label) async {
     final selectedLabel = label.which<SidebarLabelItem>((w) => w.isSelected);
+    if (PlatformInfo.isMobile) {
+      try {
+        await waitForCondition(
+          () async {
+            await $.pump();
+            return getBinding<MailboxDashBoardController>()?.isDrawerOpen == true
+                && $(Drawer).visible;
+          },
+          timeout: TestTimeouts.short,
+        );
+      } on TimeoutException {
+        fail('Mailbox drawer was not shown within 15 seconds');
+      }
+      await label.scrollTo(
+        scrollDirection: AxisDirection.down,
+        view: $(Drawer).$(Scrollable).first,
+        settlePolicy: SettlePolicy.noSettle,
+      );
+      try {
+        await waitForCondition(
+          () async {
+            await $.pump();
+            return selectedLabel.exists;
+          },
+          timeout: TestTimeouts.medium,
+        );
+      } on TimeoutException {
+        fail('Label was not selected within 30 seconds: $label');
+      }
+      return;
+    }
     await $(selectedLabel).scrollTo(scrollDirection: AxisDirection.down);
     await waitForCondition(() => selectedLabel.exists);
   }

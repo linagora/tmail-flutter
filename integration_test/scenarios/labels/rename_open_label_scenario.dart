@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 
 class RenameOpenLabelScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
@@ -9,6 +14,31 @@ class RenameOpenLabelScenario extends BaseTestScenario
 
   static const _labelName = 'Rename open tag';
   static const _newLabelName = 'Renamed open tag';
+
+  @override
+  Future<void> execute() async {
+    if (!PlatformInfo.isAndroid) {
+      await super.execute();
+      return;
+    }
+
+    // Provisioning streams and nested scroll waits must not exhaust the FTL budget.
+    try {
+      await waitForCondition(
+        () async {
+          await super.execute();
+          return true;
+        },
+        timeout: TestTimeouts.long,
+      );
+    } on TimeoutException catch (error) {
+      throw TimeoutException(
+        'rename_open_label_test: credential seeding, label provisioning or '
+        'rename flow timed out: ${error.message}',
+        error.duration,
+      );
+    }
+  }
 
   @override
   Future<void> runTestLogic() async {

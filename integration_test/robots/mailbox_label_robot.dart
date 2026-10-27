@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -9,6 +12,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../utils/test_timeouts.dart';
+import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_mailbox_label_robot.dart';
 
 class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
@@ -36,7 +41,21 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
   Future<void> openLabelContextMenu(PatrolFinder label) async {
     await ensureLabelReady(label);
     await label.longPress();
-    await $.pumpAndSettle();
+    if (PlatformInfo.isMobile) {
+      try {
+        await waitForCondition(
+          () async {
+            await $.pump();
+            return $(ContextMenuDialogItem).visible;
+          },
+          timeout: TestTimeouts.short,
+        );
+      } on TimeoutException {
+        fail('Label context menu was not shown within 15 seconds');
+      }
+    } else {
+      await $.pumpAndSettle();
+    }
   }
 
   @override
@@ -59,5 +78,18 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     final button = $(CreateNewLabelModal).$(#save_label_button_action);
     await button.scrollTo();
     await button.tap();
+    if (PlatformInfo.isMobile) {
+      try {
+        await waitForCondition(
+          () async {
+            await $.pump();
+            return !$(CreateNewLabelModal).exists;
+          },
+          timeout: TestTimeouts.medium,
+        );
+      } on TimeoutException {
+        fail('Label modal did not close after saving within 30 seconds');
+      }
+    }
   }
 }
