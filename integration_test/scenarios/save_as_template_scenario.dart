@@ -37,7 +37,7 @@ class SaveAsTemplateScenario extends BaseTestScenario {
 
     await threadRobot.openEmailWithSubject('test subject');
     await composerRobot.addSubject('test subject updated');
-    hideKeyboard();
+    await composerRobot.hideKeyboard();
     await $.pumpAndTrySettle(duration: const Duration(seconds: 1));
     await composerRobot.saveAsTemplate();
     await $.pumpAndTrySettle();

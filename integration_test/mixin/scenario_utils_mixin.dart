@@ -5,7 +5,6 @@ import 'dart:io' hide HttpClient;
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -334,10 +333,6 @@ mixin ScenarioUtilsMixin {
     if (created == null || created.isEmpty) {
       throw StateError('provisionTrashSubfolder: mailbox creation failed for "$name"');
     }
-  }
-
-  void hideKeyboard() {
-    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   Future<void> mobileBack(PatrolIntegrationTester $) async {

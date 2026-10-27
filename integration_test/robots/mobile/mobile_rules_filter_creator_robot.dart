@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 
-import '../../utils/test_timeouts.dart';
-import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_rules_filter_creator_robot.dart';
 
 class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
@@ -27,25 +24,10 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     String actionName,
     String selectActionHint,
   ) async {
-    await _hideKeyboard();
+    await hideKeyboard();
     await $(find.text(selectActionHint)).tap();
     await $.pumpAndTrySettle();
     await $(find.text(actionName)).tap();
-  }
-
-  // The creator autofocuses the name field; patrol_finders 3.2.0 enterText leaves its mock text input registered, which swallows every hide
-  Future<void> _hideKeyboard() async {
-    $.tester.testTextInput.unregister();
-    FocusManager.instance.primaryFocus?.unfocus();
-    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
-    final view = $.tester.view;
-    await waitForCondition(
-      () async {
-        await $.pump();
-        return view.viewInsets.bottom == 0;
-      },
-      timeout: TestTimeouts.short,
-    );
   }
 
   @override
