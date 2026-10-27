@@ -84,7 +84,7 @@ echo "Pre-installing Patrol web_runner deps in $WEB_RUNNER_DIR..."
 # Same commands as patrol_cli 4.3.1 _ensureNodeDependencies, so its own run is a no-op
 (cd "$WEB_RUNNER_DIR" && npm install && npx playwright install) || { echo "web_runner deps install failed"; exit 1; }
 : > "$PATROL_LOG"
-bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" &
+bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" "$RESET_SERVER_LOG" &
 WATCHDOG_PID=$!
 
 WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]'
@@ -99,6 +99,7 @@ patrol test -v \
     --web-headless=true \
     --web-server-timeout=300 \
     --web-global-timeout=4500000 \
+    --web-workers="${WEB_WORKERS:-3}" \
     --show-flutter-logs \
     --flutter-command="bash scripts/ci-flutter-verbose-run.sh" \
     --web-video=retain-on-failure \
