@@ -204,7 +204,7 @@ class VacationController extends BaseController {
       }
 
       final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
-      if (messageHtmlText.isEmpty && context.mounted) {
+      if (messageHtmlText.hasNoTextContent && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(
             currentOverlayContext!,

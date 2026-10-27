@@ -33,4 +33,28 @@ void main() {
           '&lt;a onclick=&quot;alert(&#39;unclosed event)&gt;Click&lt;&#47;a&gt;');
     });
   });
+
+  group('HtmlExtension::hasNoTextContent', () {
+    test('returns true for empty string', () {
+      expect(''.hasNoTextContent, isTrue);
+    });
+
+    test('returns true for markup that only holds line breaks', () {
+      expect('<p><br></p>'.hasNoTextContent, isTrue);
+      expect('<div><br></div>'.hasNoTextContent, isTrue);
+      expect('<br>'.hasNoTextContent, isTrue);
+    });
+
+    test('returns true for whitespace and nbsp only', () {
+      expect('<div> &nbsp; \u00a0 </div>'.hasNoTextContent, isTrue);
+    });
+
+    test('returns false when the markup holds text', () {
+      expect('<p>Hello</p>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false when the markup holds an image', () {
+      expect('<div><img src="a.png"></div>'.hasNoTextContent, isFalse);
+    });
+  });
 }
