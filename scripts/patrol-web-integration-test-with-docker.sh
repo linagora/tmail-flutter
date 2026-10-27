@@ -85,6 +85,7 @@ WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable
 node scripts/ci-web-dev-server-keeper.js "http://localhost:3000" "$ROOT_DIR" "$WEB_BROWSER_ARGS" "$PATROL_LOG" > "$CI_LOGS/dev-server-keeper.log" 2>&1 &
 KEEPER_PID=$!
 
+# Full output goes to $PATROL_LOG (archived as patrol-console.log.gz); the console drops per-page dwds metadata and cumulative teardown lines.
 patrol test -v \
     --tags=web \
     --device=chrome \
@@ -103,7 +104,7 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | grep --line-buffered -v 'MetadataProvider: Loaded debug metadata' | tee "$PATROL_LOG"
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee "$PATROL_LOG" | grep --line-buffered -v -E 'Loaded debug metadata|PatrolBinding: tearDown\(\): count'
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 
 exit $TEST_EXIT_CODE
