@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/labels/domain/repository/label_repository.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -26,7 +27,52 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../fixtures/garbage_collection_fixtures.dart';
 import '../../base/base_controller_test.mocks.dart';
+
+Future<void> _pumpHostApp(WidgetTester tester) async {
+  await tester.pumpWidget(
+    const GetMaterialApp(
+      supportedLocales: LocalizationService.supportedLocales,
+      localizationsDelegates: [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: Scaffold(body: SizedBox()),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// A share cold start opens the composer before the label bindings are injected.
+Future<LabelController> _injectBindingsUnderClosedComposer(
+  WidgetTester tester,
+) async {
+  final labelController = Get.put(LabelController(), permanent: true);
+  Get.to(() => const Scaffold(body: Text('composer')));
+  await tester.pumpAndSettle();
+  labelController.injectLabelsBindings();
+
+  Get.back();
+  await tester.pumpAndSettle();
+  return labelController;
+}
+
+Future<WeakReference<LabelRepository>> _openAndCloseCreateLabelModal(
+  WidgetTester tester,
+  LabelController labelController,
+) async {
+  labelController.openCreateNewLabelModal(accountId: AccountId(Id('a')));
+  await tester.pumpAndSettle();
+  expect(find.byKey(const Key('create_new_label_modal')), findsOneWidget);
+  final repository = WeakReference(Get.find<LabelRepository>());
+
+  Get.back();
+  await tester.pumpAndSettle();
+  return repository;
+}
 
 void main() {
   setUp(() {
@@ -57,28 +103,8 @@ void main() {
   testWidgets(
     'create label modal renders after the route that first injected the label bindings is closed',
     (tester) async {
-      await tester.pumpWidget(
-        const GetMaterialApp(
-          supportedLocales: LocalizationService.supportedLocales,
-          localizationsDelegates: [
-            AppLocalizationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          home: Scaffold(body: SizedBox()),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final labelController = Get.put(LabelController(), permanent: true);
-
-      // A share cold start opens the composer before the label bindings are injected.
-      Get.to(() => const Scaffold(body: Text('composer')));
-      await tester.pumpAndSettle();
-      labelController.injectLabelsBindings();
-
-      Get.back();
-      await tester.pumpAndSettle();
+      await _pumpHostApp(tester);
+      final labelController = await _injectBindingsUnderClosedComposer(tester);
 
       labelController.openCreateNewLabelModal(accountId: AccountId(Id('a')));
       await tester.pumpAndSettle();
@@ -86,6 +112,24 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.byKey(const Key('create_new_label_modal')), findsOneWidget);
       expect(find.byType(TextField), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'label repository rebuilt for each create label modal is released after the modal closes',
+    (tester) async {
+      await _pumpHostApp(tester);
+      final labelController = await _injectBindingsUnderClosedComposer(tester);
+
+      final repositories = <WeakReference<LabelRepository>>[];
+      for (var attempt = 0; attempt < 3; attempt++) {
+        repositories.add(
+          await _openAndCloseCreateLabelModal(tester, labelController),
+        );
+      }
+      await tester.runAsync(GarbageCollectionFixtures.forceGarbageCollection);
+
+      expect(repositories.where((repository) => repository.target != null), isEmpty);
     },
   );
 }
