@@ -10,6 +10,11 @@
 #   ./scripts/patrol-integration-test-with-docker.sh
 set -e
 
+SCRIPT_STARTED=$SECONDS
+timing() {
+    echo "[timing $(date -u '+%Y-%m-%dT%H:%M:%SZ')] +$(( SECONDS - SCRIPT_STARTED ))s $*"
+}
+
 ROOT_DIR="$PWD"
 CI_LOGS="$ROOT_DIR/ci-logs"
 mkdir -p "$CI_LOGS"
@@ -18,24 +23,64 @@ RESET_SERVER_LOG="$CI_LOGS/backend-reset-server.log"
 BORE_BACKEND_LOG="$CI_LOGS/bore-backend.log"
 BORE_RESET_LOG="$CI_LOGS/bore-reset.log"
 
+FTL_SHARDS="${FTL_SHARDS:-4}"
+POOL_SIZE="${POOL_SIZE:-4}"
+if ! [[ "$FTL_SHARDS" =~ ^[1-9][0-9]*$ && "$POOL_SIZE" =~ ^[1-9][0-9]*$ ]] || [ "$FTL_SHARDS" -gt "$POOL_SIZE" ]; then
+    echo "ERROR: FTL_SHARDS ($FTL_SHARDS) and POOL_SIZE ($POOL_SIZE) must be positive integers with POOL_SIZE >= FTL_SHARDS."
+    exit 1
+fi
+
+timing "agent backend wait start"
 bash "$ROOT_DIR/scripts/ci-wait-agent-backend-free.sh"
+timing "agent backend wait end"
+
+PATROL_BUILD_PID=""
+BACKEND_TEARDOWN_PID=""
+BACKEND_TORN_DOWN=0
+BORE_BACKEND_PID=""
+BORE_RESET_PID=""
+RESET_SERVER_PID=""
+
+stop_services() {
+    local pid
+    for pid in "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
+        [ -z "$pid" ] || kill "$pid" 2>/dev/null || true
+    done
+    # Reap services before releasing the backend lock.
+    for pid in "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
+        [ -z "$pid" ] || wait "$pid" 2>/dev/null || true
+    done
+    BORE_BACKEND_PID=""
+    BORE_RESET_PID=""
+    RESET_SERVER_PID=""
+}
 
 cleanup() {
+    local exit_code=$?
     echo "Cleaning up..."
-    kill "$BORE_BACKEND_PID" 2>/dev/null || true
-    kill "$BORE_RESET_PID" 2>/dev/null || true
-    kill "$RESET_SERVER_PID" 2>/dev/null || true
-    # Reap them so their ports are free before the agent lock is released.
-    wait "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" 2>/dev/null || true
-    bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
+    if [ -n "$PATROL_BUILD_PID" ]; then
+        # Stop the whole build group before releasing the backend lock.
+        kill -- "-$PATROL_BUILD_PID" 2>/dev/null || true
+        wait "$PATROL_BUILD_PID" 2>/dev/null || true
+    fi
+    if [ -n "$BACKEND_TEARDOWN_PID" ]; then
+        kill -- "-$BACKEND_TEARDOWN_PID" 2>/dev/null || true
+        wait "$BACKEND_TEARDOWN_PID" 2>/dev/null || true
+    fi
+    stop_services
+    if [ "$BACKEND_TORN_DOWN" -ne 1 ]; then
+        bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
+    fi
+    timing "cleanup end (exit $exit_code)"
+    exit "$exit_code"
 }
 trap cleanup EXIT
-
-echo "Installing patrol CLI..."
-dart pub global activate patrol_cli 4.3.1
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 # ── bore tunnel setup ─────────────────────────────────────────────────────────
 echo "Starting bore tunnels..."
+timing "bore tunnels start"
 nohup bore local 80 --to bore.pub > "$BORE_BACKEND_LOG" 2>&1 &
 BORE_BACKEND_PID=$!
 nohup bore local 9999 --to bore.pub > "$BORE_RESET_LOG" 2>&1 &
@@ -71,9 +116,45 @@ BORE_WS_URL="ws://bore.pub:$BORE_BACKEND_PORT"
 
 echo "bore backend tunnel:   $BORE_BACKEND_URL"
 echo "bore reset tunnel:     $BORE_RESET_URL"
+timing "bore tunnels ready"
+
+export BOB="bob"
+export ALICE="alice"
+export DOMAIN="example.com"
+export BASIC_AUTH_URL="$BORE_BACKEND_URL"
+export RESET_PORT=9999
+
+# Job control gives cleanup a process group containing Patrol and its build children.
+set -m
+(
+    trap - EXIT INT TERM
+    timing "patrol CLI check start"
+    if command -v patrol >/dev/null 2>&1 && [ "$(CI=true PATROL_ANALYTICS_ENABLED=false patrol --version 2>/dev/null)" = 'patrol_cli v4.3.1' ]; then
+        echo "Using installed patrol_cli 4.3.1."
+    else
+        dart pub global activate patrol_cli 4.3.1
+    fi
+    timing "patrol CLI ready"
+    timing "Patrol/Gradle build start (android-arm64)"
+    build_started=$SECONDS
+    # Patrol runs config-only itself and forwards inherited JVM options to both Gradle builds.
+    GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.project.target-platform=android-arm64" \
+        patrol build android -v \
+        --tags=android \
+        --dart-define=USERNAME="$BOB" \
+        --dart-define=PASSWORD="$BOB" \
+        --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
+        --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
+        --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
+        --dart-define=RESET_SERVER_URL="$BORE_RESET_URL"
+    timing "Patrol/Gradle build end ($(( SECONDS - build_started ))s)"
+) &
+PATROL_BUILD_PID=$!
+set +m
 
 # ── Backend ──────────────────────────────────────────────────────────────────
 
+timing "backend setup start"
 cd backend-docker
 
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey 2>/dev/null
@@ -95,20 +176,15 @@ until docker compose logs tmail-backend 2>/dev/null | grep -qi "JAMES server sta
     sleep 2
 done
 
-export BOB="bob"
-export ALICE="alice"
-export DOMAIN="example.com"
-
-docker exec tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
+docker exec -e POOL_SIZE="$POOL_SIZE" tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
 
 cd ..
-
-export BASIC_AUTH_URL="$BORE_BACKEND_URL"
-export RESET_PORT=9999
+timing "backend provisioned"
 
 echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
 BACKUP_ZIP="$PWD/provisioning/integration_test/backup.zip" \
     RESET_PORT="$RESET_PORT" \
+    POOL_SIZE="$POOL_SIZE" \
     python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
 
@@ -122,20 +198,16 @@ until grep -q 'Listening on port' "$RESET_SERVER_LOG"; do
     sleep 1
 done
 
-echo "Running Patrol tests..."
-flutter build apk --config-only --quiet
-patrol build android -v \
-    --tags=android \
-    --dart-define=USERNAME="$BOB" \
-    --dart-define=PASSWORD="$BOB" \
-    --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
-    --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
-    --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="$BORE_RESET_URL"
+timing "backend reset server ready"
 
 echo "google cli auth"
+timing "gcloud auth start"
 gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-gcloud config set project "$FIREBASE_PROJECT_ID"
+timing "gcloud auth end"
+
+wait "$PATROL_BUILD_PID"
+PATROL_BUILD_PID=""
+kill -0 "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"
 
 # AGP 8.12 puts the APKs under android/app/build, not ../build
 APP_APK=$(find build android/app/build -path '*/apk/debug/app-debug.apk' 2>/dev/null | head -1)
@@ -146,16 +218,18 @@ if [ ! -f "$APP_APK" ] || [ ! -f "$TEST_APK" ]; then
     exit 1
 fi
 
-echo "start firebase tests"
-FTL_OUTPUT=$(mktemp)
+FTL_OUTPUT="$CI_LOGS/firebase-test-lab.log"
 # BUILD_TAG holds the job name, so PR jobs with the same build number do not share a GCS dir.
 RESULTS_DIR="jenkins/$(printf '%s' "${BUILD_TAG:-local-$(date +%s)}" | tr -c 'A-Za-z0-9._-' '_')"
 
-# Shards run in parallel on separate devices; each leases its own account pair from the reset server.
-FTL_SHARDS="${FTL_SHARDS:-3}"
+# Seed the results path so result discovery does not depend on gcloud output.
+printf 'Results GCS path: gs://%s/%s/\n' "$RESULTS_BUCKET" "$RESULTS_DIR" | tee "$FTL_OUTPUT"
 
+timing "FTL start ($FTL_SHARDS shards)"
+ftl_started=$SECONDS
 set +e
 gcloud beta firebase test android run \
+    --project="$FIREBASE_PROJECT_ID" \
     --type instrumentation \
     --app "$APP_APK" \
     --test "$TEST_APK" \
@@ -165,14 +239,38 @@ gcloud beta firebase test android run \
     --num-uniform-shards="$FTL_SHARDS" \
     --environment-variables clearPackageData=true \
     --no-record-video \
+    --no-performance-metrics \
+    --num-flaky-test-attempts=0 \
     --results-bucket="gs://$RESULTS_BUCKET" \
     --results-dir="$RESULTS_DIR" \
-    2>&1 | tee "$FTL_OUTPUT"
+    2>&1 | tee -a "$FTL_OUTPUT"
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 set -e
+timing "FTL end ($(( SECONDS - ftl_started ))s, exit $TEST_EXIT_CODE)"
+SERVICES_EXIT_CODE=0
+kill -0 "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" || SERVICES_EXIT_CODE=$?
+stop_services
 
+# Devices have finished, so backend teardown can overlap artifact downloads.
+set -m
+(
+    trap - EXIT INT TERM
+    timing "backend teardown start"
+    bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
+    timing "backend teardown end"
+) &
+BACKEND_TEARDOWN_PID=$!
+set +m
+
+timing "result download start"
 DOWNLOAD_EXIT_CODE=0
 bash "$ROOT_DIR/scripts/ci-ftl-download-results.sh" "$FTL_OUTPUT" "$RESULTS_DIR" "$FIREBASE_PROJECT_ID" "$FTL_SHARDS" || DOWNLOAD_EXIT_CODE=$?
+timing "result download end (exit $DOWNLOAD_EXIT_CODE)"
+
+wait "$BACKEND_TEARDOWN_PID"
+BACKEND_TEARDOWN_PID=""
+BACKEND_TORN_DOWN=1
 
 [ "$TEST_EXIT_CODE" -ne 0 ] && exit "$TEST_EXIT_CODE"
+[ "$SERVICES_EXIT_CODE" -ne 0 ] && exit "$SERVICES_EXIT_CODE"
 exit "$DOWNLOAD_EXIT_CODE"
