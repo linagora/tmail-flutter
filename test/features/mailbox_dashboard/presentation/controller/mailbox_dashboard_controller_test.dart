@@ -825,6 +825,30 @@ void main() {
     );
 
     testWidgets(
+      'an unreadable file between several readable files opens the composer '
+      'with only the readable files, in order',
+      (tester) async {
+        await pumpShareToastApp(tester);
+        final calendar = fileShare('event.ics');
+        final contact = fileShare('contact.vcf');
+
+        mailboxDashboardController.handleReceivingFileSharing([
+          calendar,
+          unreadableShare(),
+          contact,
+        ]);
+
+        verify(appToast.showToastErrorMessage(any, any)).called(1);
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(
+          arguments.listSharedMediaFile?.map((file) => file.path).toList(),
+          [calendar.path, contact.path],
+        );
+      },
+    );
+
+    testWidgets(
       'a share with only readable files shows no unreadable toast',
       (tester) async {
         await pumpShareToastApp(tester);
