@@ -91,7 +91,6 @@ async function holdUntilDisconnected() {
       page.on('close', resolve);
       page.on('crash', resolve);
     });
-    currentBrowser = null;
     // Not awaited: close can take ~30 s, longer than the 15 s dwds teardown window
     browser.close().catch(() => {});
     if (!stopping) console.error('[keeper] page lost, reopening');
