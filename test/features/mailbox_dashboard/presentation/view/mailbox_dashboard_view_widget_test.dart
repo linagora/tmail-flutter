@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
@@ -149,7 +150,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
@@ -527,7 +528,7 @@ void main() {
     }
 
     void createDashboardController() {
-      ActiveAccountBridgeFixtures.putShowing(null);
+      ActiveAccountSourceFixtures.putShowing(null);
       mailboxDashboardController = MailboxDashBoardController(
         moveToMailboxInteractor,
         deleteEmailPermanentlyInteractor,
@@ -609,7 +610,7 @@ void main() {
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
-      mailboxDashboardController.activeAccountBridge.applySession(SessionFixtures.aliceSession);
+      Get.find<ActiveAccountWriter>().applySession(SessionFixtures.aliceSession);
     });
 
     testWidgets('MailboxController loads the folders of the shown account when it changes',
@@ -617,7 +618,7 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
 
-      mailboxDashboardController.activeAccountBridge.accountId.value = DelegationFixtures.bobAccountId;
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).show(DelegationFixtures.bobAccountId);
 
       expect(mailboxController.accountId, DelegationFixtures.bobAccountId);
       verify(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId)).called(1);

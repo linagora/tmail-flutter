@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/compose_actio
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -372,6 +373,8 @@ class MailboxDashBoardController extends ReloadableController
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
+
+  ActiveAccountWriter get _activeAccountWriter => Get.find<ActiveAccountWriter>();
 
   bool get isFirstSessionLoad => _isFirstSessionLoad;
 
@@ -886,7 +889,7 @@ class MailboxDashBoardController extends ReloadableController
     final currentAccountId = session.accountId;
     _isFirstSessionLoad = true;
     sessionCurrent = session;
-    activeAccountBridge.applySession(session);
+    _activeAccountWriter.applySession(session);
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
 

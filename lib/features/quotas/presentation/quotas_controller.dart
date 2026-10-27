@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
@@ -23,7 +24,7 @@ class QuotasController extends BaseController with ActiveAccountReader {
 
   final isBannerEnabled = RxBool(false);
 
-  late Worker accountIdListener;
+  CancelShownAccountWatch? _cancelShownAccountWatch;
 
   StreamSubscription<Either<Failure, Success>>? _quotaRequest;
 
@@ -42,11 +43,8 @@ class QuotasController extends BaseController with ActiveAccountReader {
     isBannerEnabled.value = true;
   }
 
-  void _initWorker() {
-    accountIdListener = everShownAccount(
-      mailboxDashBoardController.accountId,
-      (_) => reloadQuota(),
-    );
+  void _watchShownAccount() {
+    _cancelShownAccountWatch = activeAccountSource.watchShown((_) => reloadQuota());
   }
 
   bool get isStorageCapabilitySupported {
@@ -74,13 +72,14 @@ class QuotasController extends BaseController with ActiveAccountReader {
 
   @override
   void onInit() {
-    _initWorker();
+    _watchShownAccount();
     super.onInit();
   }
 
   @override
   void onClose() {
-    accountIdListener.dispose();
+    _cancelShownAccountWatch?.call();
+    _cancelShownAccountWatch = null;
     _quotaRequest?.cancel();
     super.onClose();
   }

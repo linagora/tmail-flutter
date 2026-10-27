@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
-import '../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../fixtures/active_account_source_fixtures.dart';
 import '../../../fixtures/base_controller_fixtures.dart';
 import '../../../fixtures/delegation_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -49,7 +49,7 @@ void main() {
   }
 
   test('Settings opened from a delegated mailbox loads the quota of my own account', () {
-    ActiveAccountBridgeFixtures.put(
+    ActiveAccountSourceFixtures.put(
       DelegationFixtures.session(),
       shownAccountId: DelegationFixtures.bobAccountId,
     );

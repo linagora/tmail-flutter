@@ -35,7 +35,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../fixtures/active_account_bridge_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/widget_fixtures.dart';
 import 'spam_report_controller_test.mocks.dart';
@@ -211,7 +211,7 @@ void main() {
       final dashboard = MockMailboxDashBoardController();
       when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
       Get.put<MailboxDashBoardController>(dashboard);
-      ActiveAccountBridgeFixtures.putShowing(DelegationFixtures.bobAccountId);
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
       controller.setSpamPresentationMailbox(makeMailboxWithUnread(3));
       late BuildContext context;
       await tester.pumpWidget(WidgetFixtures.makeTestableWidget(
