@@ -1608,6 +1608,24 @@ void main() {
     });
   });
 
+  group('empty spam folder:', () {
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+      clearInteractions(emptySpamFolderInteractor);
+      clearInteractions(clearMailboxInteractor);
+    });
+
+    test('never falls back to my own account once a logout cleared the shown account', () {
+      ActiveAccountBridgeFixtures.putShowing(null);
+
+      mailboxDashboardController.emptySpamFolderAction(spamFolderId: MailboxId(Id('spam')), totalEmails: 2);
+
+      verifyNever(emptySpamFolderInteractor.execute(any, any, any, any, any));
+      verifyNever(clearMailboxInteractor.execute(any, any, any, any));
+    });
+  });
+
   group('readers of the shown account:', () {
     final bob = DelegationFixtures.bobAccountId;
     final destinationId = MailboxId(Id('destination'));
