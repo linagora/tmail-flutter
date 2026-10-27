@@ -1,11 +1,16 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' show HtmlEditorController;
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -59,6 +64,7 @@ void main() {
 
   late MockManageAccountDashBoardController mockDashboardController;
   late Rxn<VacationResponse> vacationResponse;
+  late MockUpdateVacationInteractor mockUpdateVacationInteractor;
   late VacationController vacationController;
   late _RecordingHtmlEditorController webEditorController;
 
@@ -89,7 +95,8 @@ void main() {
     Get.put<SettingsController>(MockSettingsController());
 
     PlatformInfo.isTestingForWeb = true;
-    vacationController = VacationController(MockUpdateVacationInteractor());
+    mockUpdateVacationInteractor = MockUpdateVacationInteractor();
+    vacationController = VacationController(mockUpdateVacationInteractor);
     vacationController.onInit();
     webEditorController = _RecordingHtmlEditorController();
     vacationController.richTextControllerForWeb =
@@ -153,6 +160,90 @@ void main() {
       expect(mobileEditorApi.text, isNot(contains('onerror')));
     });
   });
+
+  group('VacationController saving the stored vacation message:', () {
+    // The stored message may carry markup the display sanitizer drops (here
+    // float): saving without touching the editor must not rewrite it.
+    const storedMessage = '<div style="float:right">Back on Monday</div>';
+
+    Future<BuildContext> pumpContext(WidgetTester tester) async {
+      late BuildContext context;
+      await tester.pumpWidget(MaterialApp(home: Builder(builder: (c) {
+        context = c;
+        return const SizedBox();
+      })));
+      return context;
+    }
+
+    Future<VacationResponse> save(WidgetTester tester) async {
+      when(mockDashboardController.accountId)
+          .thenReturn(Rxn(AccountId(Id('account-id'))));
+      when(mockUpdateVacationInteractor.execute(any, any))
+          .thenAnswer((_) => const Stream.empty());
+      vacationResponse.value = VacationResponse(
+        isEnabled: true,
+        fromDate: UTCDate(DateTime.utc(2026, 1, 1)),
+        htmlBody: storedMessage,
+      );
+      await tester.pump();
+      final context = await pumpContext(tester);
+
+      vacationController.saveVacation(context);
+      await tester.pump();
+
+      return verify(mockUpdateVacationInteractor.execute(any, captureAny))
+          .captured
+          .single as VacationResponse;
+    }
+
+    testWidgets(
+      'SHOULD save the stored message unchanged when the web editor is untouched',
+    (tester) async {
+      expect(EditorHtmlSanitizer.sanitize(storedMessage), isNot(storedMessage));
+
+      final saved = await save(tester);
+
+      expect(saved.htmlBody, storedMessage);
+    });
+
+    testWidgets(
+      'SHOULD save the stored message unchanged when the mobile editor is untouched',
+    (tester) async {
+      PlatformInfo.isTestingForWeb = false;
+      vacationController.richTextControllerForMobile = RichTextController()
+        ..htmlEditorApi = _RecordingHtmlEditorApi(wrapGetTextInNewlines: true);
+
+      final saved = await save(tester);
+
+      expect(saved.htmlBody, storedMessage);
+    });
+
+    testWidgets(
+      'SHOULD save the edited message without active content',
+    (tester) async {
+      when(mockDashboardController.accountId)
+          .thenReturn(Rxn(AccountId(Id('account-id'))));
+      when(mockUpdateVacationInteractor.execute(any, any))
+          .thenAnswer((_) => const Stream.empty());
+      vacationResponse.value = VacationResponse(
+        isEnabled: true,
+        fromDate: UTCDate(DateTime.utc(2026, 1, 1)),
+        htmlBody: storedMessage,
+      );
+      await tester.pump();
+      final context = await pumpContext(tester);
+      vacationController.updateMessageHtmlText('<p>New</p><script>x</script>');
+
+      vacationController.saveVacation(context);
+      await tester.pump();
+
+      final saved = verify(mockUpdateVacationInteractor.execute(any, captureAny))
+          .captured
+          .single as VacationResponse;
+      expect(saved.htmlBody, contains('New'));
+      expect(saved.htmlBody, isNot(contains('<script')));
+    });
+  });
 }
 
 class _RecordingHtmlEditorController extends Fake implements HtmlEditorController {
@@ -163,10 +254,17 @@ class _RecordingHtmlEditorController extends Fake implements HtmlEditorControlle
 }
 
 class _RecordingHtmlEditorApi extends Fake implements HtmlEditorApi {
+  _RecordingHtmlEditorApi({this.wrapGetTextInNewlines = false});
+
+  // The mobile editor template wraps its content in newlines.
+  final bool wrapGetTextInNewlines;
   String? text;
 
   @override
   Future<void> setText(String text) async => this.text = text;
+
+  @override
+  Future<String> getText() async => wrapGetTextInNewlines ? '\n$text\n' : text ?? '';
 }
 
 class _FakeRichTextWebController extends RichTextWebController {

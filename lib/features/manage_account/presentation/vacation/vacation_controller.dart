@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
+import 'package:core/presentation/utils/html_transformer/stored_editor_html.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,6 +41,7 @@ class VacationController extends BaseController {
 
   VacationResponse? currentVacation;
   String? _vacationMessageHtmlText;
+  StoredEditorHtml? _storedMessage;
 
   RichTextController? richTextControllerForMobile;
   RichTextWebController? richTextControllerForWeb;
@@ -95,7 +97,8 @@ class VacationController extends BaseController {
   void _initializeValueForVacation(VacationPresentation newVacation) {
     vacationPresentation.value = newVacation;
     subjectTextController.text = newVacation.subject ?? '';
-    final message = EditorHtmlSanitizer.sanitize(newVacation.messageHtmlText ?? '');
+    _storedMessage = StoredEditorHtml(newVacation.messageHtmlText ?? '');
+    final message = _storedMessage!.sanitized;
     updateMessageHtmlText(message);
     if (PlatformInfo.isWeb) {
       richTextControllerForWeb?.editorController.setText(message);
@@ -205,7 +208,9 @@ class VacationController extends BaseController {
         return;
       }
 
-      final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
+      final editorMessage = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
+      final messageHtmlText = _storedMessage?.resolveForSave(editorMessage)
+          ?? EditorHtmlSanitizer.sanitize(editorMessage);
       if (messageHtmlText.isEmpty && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(

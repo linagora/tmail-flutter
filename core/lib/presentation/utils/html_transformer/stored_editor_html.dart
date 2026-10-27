@@ -1,11 +1,11 @@
 import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:html/parser.dart' show parseFragment;
 
-/// A signature loaded from the server and the sanitized copy given to the
+/// HTML loaded from the server and the sanitized copy given to the
 /// editor. While the editor still holds that copy, saving keeps the stored one,
 /// unless that copy shows nothing.
-class StoredSignature {
-  StoredSignature(this.raw) : sanitized = EditorHtmlSanitizer.sanitize(raw);
+class StoredEditorHtml {
+  StoredEditorHtml(this.raw) : sanitized = EditorHtmlSanitizer.sanitize(raw);
 
   final String raw;
   final String sanitized;

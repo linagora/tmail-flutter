@@ -45,7 +45,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_ca
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/model/stored_signature.dart';
+import 'package:core/presentation/utils/html_transformer/stored_editor_html.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -113,8 +113,8 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   String? _nameIdentity;
   String? _contentHtmlEditor;
 
-  /// Set when editing an identity that has a signature. See [StoredSignature].
-  StoredSignature? _storedSignature;
+  /// Set when editing an identity that has a signature. See [StoredEditorHtml].
+  StoredEditorHtml? _storedSignature;
   AccountId? accountId;
   Session? session;
   Identity? identity;
@@ -332,7 +332,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (identity?.signatureAsString.isNotEmpty == true) {
       // The stored signature may come from another client or from
       // provisioning: sanitize it before the editor renders it.
-      final storedSignature = StoredSignature(arguments?.identity?.signatureAsString ?? '');
+      final storedSignature = StoredEditorHtml(arguments?.identity?.signatureAsString ?? '');
       _storedSignature = storedSignature;
       updateContentHtmlEditor(storedSignature.sanitized);
       if (PlatformInfo.isWeb) {
