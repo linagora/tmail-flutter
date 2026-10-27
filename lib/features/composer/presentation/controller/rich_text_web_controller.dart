@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/utils/composer_code_view_sanitizer.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RichTextWebController extends GetxController {
@@ -28,9 +29,13 @@ class RichTextWebController extends GetxController {
   static const int fontSizeDefault = 16;
 
   final HtmlEditorController editorController;
+  final ComposerCodeViewSanitizer _codeViewSanitizer;
 
-  RichTextWebController({HtmlEditorController? editorController})
-    : editorController = editorController ?? HtmlEditorController();
+  RichTextWebController({
+    HtmlEditorController? editorController,
+    ComposerCodeViewSanitizer codeViewSanitizer = const ComposerCodeViewSanitizer(),
+  }) : editorController = editorController ?? HtmlEditorController(),
+       _codeViewSanitizer = codeViewSanitizer;
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
@@ -255,6 +260,8 @@ class RichTextWebController extends GetxController {
 
   Future<bool> get isActivatedCodeView => editorController.isActivatedCodeView();
 
+  bool _codeViewToggleInFlight = false;
+
   void setEnableCodeView() async {
     final isActivated = await isActivatedCodeView;
     if (codeViewEnabled && !isActivated) {
@@ -263,18 +270,36 @@ class RichTextWebController extends GetxController {
   }
 
   void toggleCodeView() async {
-    final isActivated = await isActivatedCodeView;
-    final newCodeViewState = isActivated ? CodeViewState.disabled : CodeViewState.enabled;
-    codeViewState.value = newCodeViewState;
-    editorController.toggleCodeView();
-
-    if (codeViewEnabled) {
-      formattingOptionsState.value = FormattingOptionsState.disabled;
-    } else {
-      editorController.evaluateJavascriptWeb(
-        HtmlUtils.recalculateEditorHeight().name,
-      );
+    if (_codeViewToggleInFlight) return;
+    _codeViewToggleInFlight = true;
+    try {
+      final isActivated = await isActivatedCodeView;
+      if (isActivated) {
+        await _sanitizeAndLeaveCodeView();
+      } else {
+        codeViewState.value = CodeViewState.enabled;
+        editorController.toggleCodeView();
+        formattingOptionsState.value = FormattingOptionsState.disabled;
+      }
+    } finally {
+      _codeViewToggleInFlight = false;
     }
+  }
+
+  Future<void> _sanitizeAndLeaveCodeView() async {
+    try {
+      final rawHtml = await editorController.getText();
+      editorController.setText(_codeViewSanitizer.sanitize(rawHtml));
+    } catch (e) {
+      logWarning('RichTextWebController::toggleCodeView: $e');
+      return;
+    }
+
+    codeViewState.value = CodeViewState.disabled;
+    editorController.toggleCodeView();
+    editorController.evaluateJavascriptWeb(
+      HtmlUtils.recalculateEditorHeight().name,
+    );
   }
 
   void applyHeaderStyle(HeaderStyleType? newStyle) {
