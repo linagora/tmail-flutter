@@ -18,31 +18,7 @@ RESET_SERVER_LOG="$CI_LOGS/backend-reset-server.log"
 BORE_BACKEND_LOG="$CI_LOGS/bore-backend.log"
 BORE_RESET_LOG="$CI_LOGS/bore-reset.log"
 
-# Ports the backend (80, 8000) and reset server (9999) bind on the host.
-BACKEND_PORTS_FILTER='( sport = :80 or sport = :8000 or sport = :9999 )'
-command -v ss >/dev/null || { echo "ERROR: ss not found; cannot check agent ports."; exit 1; }
-
-# Busy if a port is bound, the container is running, or docker cannot answer.
-# A stopped leftover shares nothing; compose recreates it.
-agent_busy() {
-    ss -Hltn "$BACKEND_PORTS_FILTER" | grep -q . && return 0
-    local ids
-    ids=$(docker ps -q --filter 'name=^tmail-backend$') || return 0
-    [ -n "$ids" ]
-}
-
-# Wait while a job without the agent lock still holds the backend.
-deadline=$(( SECONDS + 2700 ))
-while agent_busy; do
-    if (( SECONDS >= deadline )); then
-        echo "ERROR: agent backend still busy after 45 min:"
-        ss -Hltnp "$BACKEND_PORTS_FILTER" || true
-        docker ps -a --filter 'name=^tmail-backend$' --format '{{.Names}} {{.Status}} {{.Label "com.docker.compose.project.working_dir"}}' || true
-        exit 1
-    fi
-    echo "Agent backend busy (ports 80/8000/9999 or tmail-backend); waiting..."
-    sleep 15
-done
+bash "$ROOT_DIR/scripts/ci-wait-agent-backend-free.sh"
 
 cleanup() {
     echo "Cleaning up..."
@@ -51,15 +27,7 @@ cleanup() {
     kill "$RESET_SERVER_PID" 2>/dev/null || true
     # Reap them so their ports are free before the agent lock is released.
     wait "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" 2>/dev/null || true
-    cd "$ROOT_DIR/backend-docker" || return 0
-    owner=$(docker inspect tmail-backend --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null || true)
-    if [ -n "$owner" ] && [ "$(realpath "$owner" 2>/dev/null)" = "$(pwd -P)" ]; then
-        docker compose logs --no-color --timestamps > "$CI_LOGS/backend.log" 2>&1 || true
-        docker compose down --remove-orphans 2>/dev/null || true
-    else
-        echo "tmail-backend not owned by this workspace (${owner:-none}); skip teardown."
-    fi
-    cd "$ROOT_DIR"
+    bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
 }
 trap cleanup EXIT
 
@@ -199,52 +167,6 @@ gcloud firebase test android run \
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 set -e
 
-echo "Downloading test results from Firebase Test Lab..."
-
-# Strategy 1: parse gs:// URL directly from gcloud output
-GCS_PATH=$(grep -oP "gs://[^\s\"'\[\]]+" "$FTL_OUTPUT" | head -1)
-
-# Strategy 2: parse GCS browser URL and convert to gs://
-if [ -z "$GCS_PATH" ]; then
-    GCS_BROWSER=$(grep -oP "console\.(cloud|developers)\.google\.com/storage/browser/\K[^\s\"'\[\]]+" "$FTL_OUTPUT" | head -1)
-    if [ -n "$GCS_BROWSER" ]; then
-        GCS_PATH="gs://${GCS_BROWSER}"
-        echo "Extracted GCS path from console URL: $GCS_PATH"
-    fi
-fi
-
-# Strategy 3: fallback to listing project buckets
-if [ -z "$GCS_PATH" ]; then
-    echo "GCS path not in gcloud output, trying project bucket lookup..."
-    FTL_BUCKET=$(gsutil ls -p "$FIREBASE_PROJECT_ID" 2>/dev/null \
-        | grep 'test-lab' | head -1 || true)
-    if [ -n "$FTL_BUCKET" ]; then
-        GCS_PATH="${FTL_BUCKET}${RESULTS_DIR}"
-    fi
-fi
-
-if [ -n "$GCS_PATH" ]; then
-    mkdir -p ftl-results
-    echo "Results GCS path: $GCS_PATH"
-    gsutil ls -r "${GCS_PATH}" 2>/dev/null \
-        | grep -E '(test_result_.*\.xml|/logcat)$' \
-        | while read -r gcs_file; do
-            echo "  $gcs_file"
-            # Keep the GCS sub-path so per-device files do not overwrite each other.
-            rel="${gcs_file#"${GCS_PATH%/}"/}"
-            [ "$rel" = "$gcs_file" ] && rel="${gcs_file#gs://}"
-            mkdir -p "ftl-results/$(dirname "$rel")"
-            gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null || true
-          done || true
-
-    xml_count=$(find ftl-results -name 'test_result_*.xml' | wc -l)
-    if [ "$xml_count" -gt 0 ]; then
-        echo "Downloaded $xml_count result file(s)"
-    else
-        echo "Warning: no test_result XML files found at $GCS_PATH"
-    fi
-else
-    echo "Warning: could not determine GCS results path"
-fi
+bash "$ROOT_DIR/scripts/ci-ftl-download-results.sh" "$FTL_OUTPUT" "$RESULTS_DIR" "$FIREBASE_PROJECT_ID"
 
 exit $TEST_EXIT_CODE
