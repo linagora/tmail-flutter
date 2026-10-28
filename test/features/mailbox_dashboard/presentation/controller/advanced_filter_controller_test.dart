@@ -16,11 +16,13 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -743,6 +745,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+    });
+  });
+
+  group('AdvancedFilterController::getAutoCompleteSuggestion', () {
+    test('suggests the contacts of the shown account, not of my own', () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(DelegationFixtures.aliceAccountId));
+      addTearDown(() => when(mockMailboxDashBoardController.accountId).thenReturn(Rxn<AccountId>()));
+      when(mockGetAutoCompleteInteractor.execute(any))
+          .thenAnswer((_) async => Right(GetAutoCompleteSuccess([])));
+
+      await advancedFilterController.getAutoCompleteSuggestion('car');
+
+      final pattern = verify(mockGetAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
+      expect(pattern.accountId, DelegationFixtures.bobAccountId);
     });
   });
 }
