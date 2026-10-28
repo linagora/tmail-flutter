@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
@@ -98,32 +97,27 @@ class MailboxAssertionRobot extends CoreRobot implements AbstractMailboxAssertio
   @override
   Future<void> expectLabelSelected(PatrolFinder label) async {
     final selectedLabel = label.which<SidebarLabelItem>((w) => w.isSelected);
-    if (PlatformInfo.isMobile) {
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return getBinding<MailboxDashBoardController>()?.isDrawerOpen == true
-              && $(Drawer).visible;
-        },
-        timeout: TestTimeouts.short,
-        reason: 'Mailbox drawer was not shown',
-      );
-      await label.scrollTo(
-        scrollDirection: AxisDirection.down,
-        view: $(Drawer).$(Scrollable).first,
-        settlePolicy: SettlePolicy.noSettle,
-      );
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return selectedLabel.exists;
-        },
-        timeout: TestTimeouts.medium,
-        reason: 'Label was not selected: $label',
-      );
-      return;
-    }
-    await $(selectedLabel).scrollTo(scrollDirection: AxisDirection.down);
-    await waitForCondition(() => selectedLabel.exists);
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return getBinding<MailboxDashBoardController>()?.isDrawerOpen == true
+            && $(Drawer).visible;
+      },
+      timeout: TestTimeouts.short,
+      reason: 'Mailbox drawer was not shown',
+    );
+    await label.scrollTo(
+      scrollDirection: AxisDirection.down,
+      view: $(Drawer).$(Scrollable).first,
+      settlePolicy: SettlePolicy.noSettle,
+    );
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return selectedLabel.exists;
+      },
+      timeout: TestTimeouts.medium,
+      reason: 'Label was not selected: $label',
+    );
   }
 }

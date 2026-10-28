@@ -1,6 +1,5 @@
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -39,18 +38,14 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
   Future<void> openLabelContextMenu(PatrolFinder label) async {
     await ensureLabelReady(label);
     await label.longPress();
-    if (PlatformInfo.isMobile) {
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return $(ContextMenuDialogItem).visible;
-        },
-        timeout: TestTimeouts.short,
-        reason: 'Label context menu was not shown',
-      );
-    } else {
-      await $.pumpAndSettle();
-    }
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return $(ContextMenuDialogItem).visible;
+      },
+      timeout: TestTimeouts.short,
+      reason: 'Label context menu was not shown',
+    );
   }
 
   @override
@@ -67,9 +62,8 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
   Future<void> enterLabelName(String name) async {
     final input = $(#label_name_input_field).$(TextFieldBuilder);
     // The real Android IME restores its own text over patrol's mock input
-    if (PlatformInfo.isMobile) await hideKeyboard();
+    await hideKeyboard();
     await input.enterText(name);
-    if (!PlatformInfo.isMobile) return;
     await waitForCondition(
       () async {
         await $.pump();
@@ -89,15 +83,13 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     final button = $(CreateNewLabelModal).$(#save_label_button_action);
     await button.scrollTo();
     await button.tap();
-    if (PlatformInfo.isMobile) {
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return !$(CreateNewLabelModal).exists;
-        },
-        timeout: TestTimeouts.medium,
-        reason: 'Label modal did not close after saving',
-      );
-    }
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return !$(CreateNewLabelModal).exists;
+      },
+      timeout: TestTimeouts.medium,
+      reason: 'Label modal did not close after saving',
+    );
   }
 }
