@@ -9,7 +9,8 @@ extension HtmlExtension on String {
   // An empty contenteditable holds markup like <div><br></div>, not ''.
   bool get hasNoTextContent {
     if (RegExp(r'<img\b', caseSensitive: false).hasMatch(this)) return false;
-    return replaceAll(RegExp(r'<[^>]*>'), '')
+    // Excluding '<' keeps the match linear on a run of unclosed '<'.
+    return replaceAll(RegExp(r'<[^<>]*>'), '')
         .replaceAll('&nbsp;', ' ')
         .replaceAll('\u00a0', ' ')
         .trim()
