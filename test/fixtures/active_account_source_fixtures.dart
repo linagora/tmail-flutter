@@ -81,12 +81,15 @@ class ActiveAccountSourceFixtures {
 }
 
 /// Shows an account the session may not list. It has an [activeAccount] only for my own account of
-/// an applied session.
+/// an applied session. Each change of the shown account is a new switch attempt.
 class FakeActiveAccountSource implements ActiveAccountSource, ActiveAccountWriter {
   final _watchers = <OnShownAccount>[];
 
   AccountId? _accountId;
   ActiveAccount? _activeAccount;
+
+  @override
+  int currentSwitchAttemptId = 0;
 
   FakeActiveAccountSource(this._accountId);
 
@@ -119,6 +122,7 @@ class FakeActiveAccountSource implements ActiveAccountSource, ActiveAccountWrite
     _activeAccount = activeAccount;
     if (_accountId == accountId) return;
     _accountId = accountId;
+    currentSwitchAttemptId++;
     for (final onShown in List.of(_watchers)) {
       onShown(accountId);
     }
