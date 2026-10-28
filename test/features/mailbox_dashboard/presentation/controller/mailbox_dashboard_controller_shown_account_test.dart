@@ -540,6 +540,42 @@ void main() {
       });
     }
 
+    for (final switched in [false, true]) {
+      testWidgets('Open on a restore finished on bob ${switched ? 'does nothing once carol is shown' : 'opens its folder'}',
+          (tester) async {
+        await pumpLocalizedApp(tester);
+        clearInteractions(appToast);
+        final source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
+        mailboxDashboardController.mailboxUIAction.value = null;
+        mailboxDashboardController.handleSuccessViewState(GetRestoredDeletedMessageCompleted(
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))),
+          DelegationFixtures.bobAccountId,
+          recoveredMailbox: Mailbox(id: MailboxId(Id('bob-restored'))),
+        ));
+        final open = verify(appToast.showToastMessage(
+          any,
+          any,
+          actionName: anyNamed('actionName'),
+          onActionClick: captureAnyNamed('onActionClick'),
+          actionIcon: anyNamed('actionIcon'),
+          leadingSVGIcon: anyNamed('leadingSVGIcon'),
+          leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
+          backgroundColor: anyNamed('backgroundColor'),
+          textColor: anyNamed('textColor'),
+        )).captured.single as Function;
+
+        if (switched) source.show(DelegationFixtures.carolAccountId);
+        open();
+
+        final action = mailboxDashboardController.mailboxUIAction.value;
+        if (switched) {
+          expect(action, isNull);
+        } else {
+          expect((action as OpenMailboxAction).presentationMailbox.id, MailboxId(Id('bob-restored')));
+        }
+      });
+    }
+
     test('keeps polling the account the restore started on while it is in progress', () {
       ActiveAccountSourceFixtures.putShowing(DelegationFixtures.carolAccountId);
       final recoveryAction = EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1')));
