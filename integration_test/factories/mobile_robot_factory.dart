@@ -1,5 +1,6 @@
 import 'package:patrol/patrol.dart';
 
+import '../robots/abstract/abstract_hardware_keyboard_robot.dart';
 import '../robots/abstract/abstract_common_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
 import '../robots/mobile/mobile_common_robot.dart';
@@ -61,4 +62,7 @@ class MobileRobotFactory implements RobotFactory {
   
   @override
   AbstractSettingsRobot settingsRobot() => MobileSettingsRobot($);
+
+  @override
+  AbstractHardwareKeyboardRobot? hardwareKeyboardRobot() => null;
 }

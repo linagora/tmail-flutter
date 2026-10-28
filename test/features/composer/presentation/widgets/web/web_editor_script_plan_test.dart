@@ -1,3 +1,4 @@
+import 'package:core/utils/html/editor_script/code_view_escape_guard_script.dart';
 import 'package:core/utils/html/editor_script/list_keyboard_handler_script.dart';
 import 'package:core/utils/html/editor_script/quoted_reply_enter_handler_script.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -81,6 +82,7 @@ void main() {
         HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true).name,
         const QuotedReplyEnterHandlerScript().name,
         const ListKeyboardHandlerScript().name,
+        const CodeViewEscapeGuardScript().name,
         HtmlUtils.registerFileLinkCardClickHandler(isWebPlatform: true).name,
         WorkplaceScripts.registerDriveCardDeleteOverlay(
           _driveCardRemoveLabel,
@@ -101,6 +103,7 @@ void main() {
       HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true).name,
       const QuotedReplyEnterHandlerScript().name,
       const ListKeyboardHandlerScript().name,
+      const CodeViewEscapeGuardScript().name,
       HtmlUtils.registerFileLinkCardClickHandler(isWebPlatform: true).name,
       WorkplaceScripts.registerDriveCardDeleteOverlay(
         _driveCardRemoveLabel,

@@ -12,12 +12,14 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../mocks/fake_file_picker.dart';
+import '../abstract/abstract_composer_code_view_robot.dart';
 import '../abstract/abstract_composer_editor_keyboard_robot.dart';
 import '../abstract/abstract_composer_recipient_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
 import '../composer_recipient_robot.dart';
 import '../composer_robot.dart';
+import '../../utils/wait_for_condition.dart';
 
 class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot {
   @override
@@ -29,17 +31,31 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerEditorKeyboardRobot? editorKeyboard;
 
+  @override
+  final AbstractComposerCodeViewRobot? codeView;
+
   MobileComposerRobot(
     PatrolIntegrationTester $, {
     AbstractComposerRecipientRobot? recipientRobot,
     this.reload,
     this.editorKeyboard,
+    this.codeView,
   })  : recipient = recipientRobot ?? ComposerRecipientRobot($),
         super($);
 
   @override
   Future<void> expectComposerViewVisible() async {
     await $.waitUntilVisible($(ComposerView));
+  }
+
+  @override
+  Future<void> expectComposerClosedDiscardingChanges() async {
+    final discardButton = $(AppLocalizations().discardChanges);
+    await waitForCondition(
+      () => discardButton.exists || !$(ComposerView).exists,
+    );
+    if (discardButton.exists) await tapDiscardChanges();
+    await waitForCondition(() => !$(ComposerView).exists);
   }
 
   @override

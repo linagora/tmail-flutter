@@ -5,6 +5,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import 'abstract_composer_code_view_robot.dart';
 import 'abstract_composer_editor_keyboard_robot.dart';
 import 'abstract_composer_recipient_robot.dart';
 import 'abstract_composer_reload_robot.dart';
@@ -17,7 +18,12 @@ abstract class AbstractComposerRobot {
   /// Web only: real key presses in the Summernote editor.
   AbstractComposerEditorKeyboardRobot? get editorKeyboard;
 
+  /// Web only: the "Embed code" HTML source view.
+  AbstractComposerCodeViewRobot? get codeView;
+
   Future<void> expectComposerViewVisible();
+  /// Discards the draft if closing asks to keep it.
+  Future<void> expectComposerClosedDiscardingChanges();
   Future<void> grantContactPermission();
   Future<void> addRecipient(PrefixEmailAddress prefix, String email);
   Future<void> addSubject(String subject);
