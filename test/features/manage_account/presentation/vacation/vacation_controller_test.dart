@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -90,6 +92,13 @@ class _FakeHtmlEditorApi extends Fake implements HtmlEditorApi {
   Future<String> getText() async => html;
 }
 
+class _PendingHtmlEditorApi extends Fake implements HtmlEditorApi {
+  final completer = Completer<String>();
+
+  @override
+  Future<String> getText() => completer.future;
+}
+
 @GenerateNiceMocks([MockSpec<AppToast>()])
 void main() {
   late MockAppToast appToast;
@@ -174,6 +183,23 @@ void main() {
           any,
           AppLocalizations.of(context).errorMessageWhenMessageVacationIsEmpty,
         )).called(1);
+        expect(updateVacationInteractor.savedVacations, isEmpty);
+      },
+    );
+
+    testWidgets(
+      'rejects an empty mobile editor even when the view unmounts while reading it',
+      (tester) async {
+        final context = await pumpApp(tester);
+        setUpVacation(status: VacationResponderStatus.activated, editorHtml: '');
+        final editorApi = _PendingHtmlEditorApi();
+        controller.richTextControllerForMobile!.htmlEditorApi = editorApi;
+
+        controller.saveVacation(context);
+        await tester.pumpWidget(const SizedBox());
+        editorApi.completer.complete('<div><br></div>');
+        await tester.pumpAndSettle();
+
         expect(updateVacationInteractor.savedVacations, isEmpty);
       },
     );
