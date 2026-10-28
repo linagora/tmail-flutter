@@ -165,4 +165,56 @@ void main() {
       expect(viewResults.hasListener, isFalse);
     });
   });
+
+  group('retryActionOf:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> retry;
+    late _Reader reader;
+
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      retry = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
+
+    test('a retry tapped while its attempt is current loads the shown account again', () async {
+      final retryAction = reader.retryActionOf(retry.stream);
+      final loaded = Right<Failure, Success>(_Loaded());
+
+      retryAction();
+      retry.add(loaded);
+      await pumpEventQueue();
+
+      expect(reader.results, [loaded]);
+    });
+
+    test('a retry tapped once another account is shown never runs', () {
+      final retryAction = reader.retryActionOf(retry.stream);
+      source.show(DelegationFixtures.bobAccountId);
+
+      retryAction();
+
+      expect(retry.hasListener, isFalse);
+    });
+
+    test('a retry built once another account is shown runs on a tap', () {
+      source.show(DelegationFixtures.bobAccountId);
+      final retryAction = reader.retryActionOf(retry.stream);
+
+      retryAction();
+
+      expect(retry.hasListener, isTrue);
+    });
+
+    test('a retry that resolves once another account is shown is dropped', () async {
+      final retryAction = reader.retryActionOf(retry.stream);
+      retryAction();
+
+      source.show(DelegationFixtures.bobAccountId);
+      retry.add(Right(_Loaded()));
+      await pumpEventQueue();
+
+      expect(reader.results, isEmpty);
+    });
+  });
 }
