@@ -389,6 +389,34 @@ void main() {
       );
     });
 
+    test('the invitation of an account shown before never reaches the opened email once another one is shown',
+        () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+      final bobInvitation = Completer<List<BlobCalendarEvent>>();
+      when(calendarEventDataSource.parse(any, any)).thenAnswer((_) => bobInvitation.future);
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      singleEmailController.onInit();
+      final blobId = Id('bob-invitation');
+      singleEmailController.parseCalendarEventAction(
+        accountId: DelegationFixtures.bobAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+
+      source.show(DelegationFixtures.carolAccountId);
+      bobInvitation.complete([
+        BlobCalendarEvent(blobId: blobId, calendarEventList: [CalendarEvent(description: 'bob event')]),
+      ]);
+      await pumpEventQueue();
+
+      expect(singleEmailController.blobCalendarEvent.value, isNull);
+    });
+
     test(
       'should transform all calendar event description url to a tag '
       'and all new line to <br> tag '
