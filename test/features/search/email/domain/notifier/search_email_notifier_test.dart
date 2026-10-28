@@ -789,7 +789,7 @@ void main() {
       answerSearch((_) => Stream.fromFuture(pending.future));
       final future = runExecute(container, const NewSearchIntent());
 
-      // Showing another account resets the search session while this search is running.
+      // Leaving the search resets its session while this search is running.
       resetSearchResultSession(container);
       pending.complete(Right(SearchEmailSuccess([emailWith('late')])));
       await future;
