@@ -21,6 +21,10 @@ services:
       - "8000:8000"
     environment:
       - DOMAIN=example.com
+    # openpaas.properties names hosts that do not exist here; refuse at once instead of waiting on DNS (4 s SERVFAIL per flagged email on CI)
+    extra_hosts:
+      - "esn:127.0.0.1"
+      - "esn_sabre:127.0.0.1"
     networks:
       - tmail
 
