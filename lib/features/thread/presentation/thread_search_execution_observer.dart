@@ -28,6 +28,9 @@ class ThreadSearchExecutionObserver implements SearchExecutionObserver {
     appProviderContainer
         .read(searchEmailPresentationProvider.notifier)
         .resetSearchMore();
+    // Search results replace the folder rows, so a folder page running or
+    // held for a refresh must not be appended to them.
+    _controller._folderLoadMore.resetList();
     _controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
     _controller.searchController.activateSimpleSearch();
   }

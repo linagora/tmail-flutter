@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -87,6 +88,7 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_th
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/folder_load_more.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
@@ -120,7 +122,14 @@ class ThreadController extends BaseController with EmailActionController {
   final openingEmail = RxBool(false);
   final loadingMoreStatus = Rx(LoadingMoreStatus.idle);
 
-  bool canLoadMore = true;
+  late final _folderLoadMore = FolderLoadMore(
+    collapseThreads: () => shouldCollapseThreads,
+  );
+
+  bool get canLoadMore => _folderLoadMore.hasMore;
+
+  set canLoadMore(bool value) => _folderLoadMore.hasMore = value;
+
   ProviderSubscription<SearchStatus>? _searchStateSubscription;
   MailboxId? _currentMemoryMailboxId;
   int _peakEmailCount = 0;
@@ -158,7 +167,6 @@ class ThreadController extends BaseController with EmailActionController {
   bool get _isCollapseThreadsEnabled =>
       appProviderContainer.read(localSettingsProvider).threadConfig.isEnabled;
 
-  @visibleForTesting
   bool get shouldCollapseThreads => forceEmailQuery && _isCollapseThreadsEnabled;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
@@ -254,8 +262,8 @@ class ThreadController extends BaseController with EmailActionController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is LoadMoreEmailsFailure) {
-      loadingMoreStatus.value = LoadingMoreStatus.completed;
-      canLoadMore = true;
+      _folderLoadMore.pageFailed();
+      _syncLoadMoreStatus();
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
       popAndPush(AppRoutes.unknownRoutePage);
@@ -304,6 +312,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _resetLoadingMore() {
+    _folderLoadMore.abort();
     if (loadingMoreStatus.value == LoadingMoreStatus.running) {
       loadingMoreStatus.value = LoadingMoreStatus.idle;
     }
@@ -659,11 +668,12 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.emailsInCurrentMailbox.clear();
     mailboxDashBoardController.listEmailSelected.clear();
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
+    _folderLoadMore.resetList();
     canLoadMore = true;
     appProviderContainer
         .read(searchEmailPresentationProvider.notifier)
         .resetSearchMore();
-    loadingMoreStatus.value = LoadingMoreStatus.idle;
+    _syncLoadMoreStatus();
   }
 
   @visibleForTesting
@@ -706,6 +716,12 @@ class ThreadController extends BaseController with EmailActionController {
       'EmailState = ${success.currentEmailState?.value}',
     );
     mailboxDashBoardController.updateEmailList(newListEmail);
+    if (_folderLoadMore.paging.pagesByPosition) {
+      // Pages counted by position start from the top again, so a page
+      // requested against the previous rows would not line up with the new ones.
+      _folderLoadMore.listLoadedFromTop();
+      _syncLoadMoreStatus();
+    }
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
@@ -721,12 +737,11 @@ class ThreadController extends BaseController with EmailActionController {
     }
     final emailList = success.emailList;
     log('ThreadController::_handleOnDoneGetAllEmailSuccess: EmailCount = ${emailList.length}');
+    // The server collapses threads before applying the limit, so a short
+    // first page means the folder is exhausted, collapsed or not.
     final hasMore = emailList.length >= ThreadConstants.maxCountEmails;
     canLoadMore = hasMore;
-    // collapseThreads can return < limit although more emails remain. Without
-    // collapsing, a short page means the mailbox is exhausted.
-    final mayHaveMoreCollapsedThreads = shouldCollapseThreads && emailList.isNotEmpty;
-    if (_isAutoLoadMore && (hasMore || mayHaveMoreCollapsedThreads)) {
+    if (_isAutoLoadMore && hasMore) {
       // Re-enable so _loadMoreEmails guard passes.
       // _loadMoreEmailsSuccess will reset canLoadMore from serverEmailCount afterward.
       canLoadMore = true;
@@ -798,6 +813,8 @@ class ThreadController extends BaseController with EmailActionController {
     bool forceEmailQuery = false,
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
+    _folderLoadMore.resetList();
+    _syncLoadMoreStatus();
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
@@ -848,6 +865,18 @@ class ThreadController extends BaseController with EmailActionController {
         : UnsignedInt(_peakEmailCount);
   }
 
+  /// [limitEmailFetched] for a read that goes to the server, which rejects
+  /// more ids than the session's maxObjectsInGet. The local cache has no cap.
+  UnsignedInt get _networkLimitEmailFetched {
+    final session = _session;
+    final accountId = _accountId;
+    final cap = session != null && accountId != null
+        ? session.getMaxObjectsInGet(accountId)?.value.toInt()
+        : null;
+    if (cap == null) return limitEmailFetched;
+    return UnsignedInt(min(limitEmailFetched.value.toInt(), cap));
+  }
+
   void _refreshEmailChanges({required jmap.State newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (_accountId == null) return;
@@ -885,7 +914,8 @@ class ThreadController extends BaseController with EmailActionController {
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
       sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-      limit: limitEmailFetched,
+      // A collapsed refresh reads the server; the others read the cache.
+      limit: collapseThreads ? _networkLimitEmailFetched : limitEmailFetched,
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
         _accountId!,
@@ -912,59 +942,91 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
-    final refreshViewState = await _refreshChangeListEmailCache(
-      collapseThreads: shouldCollapseThreads,
-    );
+    final collapseThreads = shouldCollapseThreads;
+    // A refresh replaces the list from the top, which shifts pages counted by
+    // position, so load-more waits for it. A date cursor stays valid and a
+    // running page is kept.
+    final holdLoadMore = _folderLoadMore.paging.pagesByPosition;
+    if (holdLoadMore) _holdLoadMoreForRefresh();
+    try {
+      final refreshViewState = await _refreshChangeListEmailCache(
+        collapseThreads: collapseThreads,
+      );
 
-    final refreshState = refreshViewState
-        .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
+      final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
 
-    dispatchState(refreshViewState);
+      dispatchState(refreshViewState);
 
-    if (refreshState is RefreshChangesAllEmailSuccess) {
-      _refreshChangesAllEmailSuccess(refreshState);
-    } else if (refreshState != null) {
-      onDataFailureViewState(refreshState);
+      if (refreshState is RefreshChangesAllEmailSuccess) {
+        _refreshChangesAllEmailSuccess(refreshState);
+      } else if (refreshState != null) {
+        onDataFailureViewState(refreshState);
+      }
+    } finally {
+      if (holdLoadMore) _releaseLoadMoreAfterRefresh();
     }
   }
 
   Future<void> _refreshChangeListEmailsInVirtualFolder() async {
     log('ThreadController::_refreshChangeListEmailsInVirtualFolder:');
+    // The refresh replaces the whole list, so a page appended meanwhile would
+    // be overwritten. Load-more waits for it and runs once it has landed.
+    _holdLoadMoreForRefresh();
+    try {
+      await _refreshChangeListEmailCache();
 
-    await _refreshChangeListEmailCache();
-
-    final viewState = await _getEmailsInMailboxInteractor
-        .execute(
-          _session!,
-          _accountId!,
-          limit: limitEmailFetched,
-          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-          emailFilter: getEmailFilterForLoadMailbox(),
-          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+      final viewState = await _getEmailsInMailboxInteractor
+          .execute(
             _session!,
             _accountId!,
-          ),
-          propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
-            _session!,
-            _accountId!,
-          ),
-          useCache: false,
-          collapseThreads: shouldCollapseThreads,
-        )
-        .last;
+            limit: _networkLimitEmailFetched,
+            sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+            emailFilter: getEmailFilterForLoadMailbox(),
+            propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+              _session!,
+              _accountId!,
+            ),
+            propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+              _session!,
+              _accountId!,
+            ),
+            useCache: false,
+            forceEmailQuery: shouldCollapseThreads,
+            collapseThreads: shouldCollapseThreads,
+          )
+          .last;
 
-    dispatchState(viewState);
+      dispatchState(viewState);
 
-    final emailSuccessState = viewState
-        .foldSuccessWithResult<GetAllEmailSuccess>();
+      final emailSuccessState = viewState
+          .foldSuccessWithResult<GetAllEmailSuccess>();
 
-    if (emailSuccessState is GetAllEmailSuccess) {
-      _getAllEmailSuccess(emailSuccessState, shouldJumpToFirstEmail: false);
-      _handleOnDoneGetAllEmailSuccess(emailSuccessState);
-    } else if (emailSuccessState != null) {
-      onDataFailureViewState(emailSuccessState);
-      _handleOnDoneGetAllEmailFailure();
+      if (emailSuccessState is GetAllEmailSuccess) {
+        _getAllEmailSuccess(emailSuccessState, shouldJumpToFirstEmail: false);
+        _handleOnDoneGetAllEmailSuccess(emailSuccessState);
+      } else if (emailSuccessState != null) {
+        onDataFailureViewState(emailSuccessState);
+        _handleOnDoneGetAllEmailFailure();
+      }
+    } finally {
+      _releaseLoadMoreAfterRefresh();
     }
+  }
+
+  void _syncLoadMoreStatus() {
+    loadingMoreStatus.value = _folderLoadMore.status;
+  }
+
+  void _holdLoadMoreForRefresh() {
+    _folderLoadMore.holdForRefresh();
+    _syncLoadMoreStatus();
+  }
+
+  void _releaseLoadMoreAfterRefresh() {
+    final resume = _folderLoadMore.releaseAfterRefresh();
+    _syncLoadMoreStatus();
+    if (resume) _loadMoreEmails();
   }
 
   void _loadMoreEmails() {
@@ -972,35 +1034,41 @@ class ThreadController extends BaseController with EmailActionController {
     if (!canLoadMore || loadingMoreStatus.value.isRunning) return;
 
     if (_session != null && _accountId != null) {
-      final currentListEmail =
-          mailboxDashBoardController.emailsInCurrentMailbox;
-      final oldestEmail =
-          currentListEmail.isNotEmpty ? currentListEmail.last : null;
+      final collapseThreads = shouldCollapseThreads;
+      final request = _folderLoadMore.begin(
+        mailboxDashBoardController.emailsInCurrentMailbox,
+      );
+      if (request == null) return;
+
+      final cursor = request.cursor;
+      final oldestEmail = cursor.oldestEmail;
       final useCache = selectedMailbox?.isCacheable ?? false;
       final filterOption = mailboxDashBoardController.filterMessageOption.value;
 
       logTrace(
         'ThreadController::_loadMoreEmails: '
         'OldestEmailID = ${oldestEmail?.id?.asString}, '
+        'Position = ${cursor.position}, '
         'useCache = $useCache, '
         'filterOption = ${filterOption.name}',
       );
 
-      loadingMoreStatus.value = LoadingMoreStatus.running;
+      _syncLoadMoreStatus();
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
+          position: cursor.position,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
-          collapseThreads: shouldCollapseThreads,
+          collapseThreads: collapseThreads,
         )
-      ));
+      ).where((_) => _folderLoadMore.accepts(request.token)));
     } else {
       consumeState(
         Stream.value(Left(LoadMoreEmailsFailure(NotFoundSessionException()))),
@@ -1008,21 +1076,14 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  bool _validatePresentationEmail(PresentationEmail email) {
-    return (_belongToCurrentMailboxId(email) ||
-            selectedMailbox?.isVirtualFolder == true ||
-            selectedMailbox?.isLabelMailbox == true) &&
-        _notDuplicatedInCurrentList(email);
+  bool _belongsToSelectedList(PresentationEmail email) {
+    return _belongToCurrentMailboxId(email) ||
+        selectedMailbox?.isVirtualFolder == true ||
+        selectedMailbox?.isLabelMailbox == true;
   }
 
   bool _belongToCurrentMailboxId(PresentationEmail email) {
     return email.mailboxIds != null && email.mailboxIds!.keys.contains(selectedMailboxId);
-  }
-
-  bool _notDuplicatedInCurrentList(PresentationEmail email) {
-    final emailsInCurrentMailbox = mailboxDashBoardController.emailsInCurrentMailbox;
-    return emailsInCurrentMailbox.isEmpty ||
-      !emailsInCurrentMailbox.map((element) => element.id).contains(email.id);
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
@@ -1039,11 +1100,11 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
 
-    // Without an appendable email the oldest-email cursor does not move, so
-    // another automatic request would repeat the same full page forever.
-    canLoadMore = appendableList.isNotEmpty &&
-        success.serverEmailCount >= ThreadConstants.maxCountEmails;
-    loadingMoreStatus.value = LoadingMoreStatus.completed;
+    _folderLoadMore.pageLoaded(
+      serverCount: success.serverEmailCount,
+      appendedCount: appendableList.length,
+    );
+    _syncLoadMoreStatus();
     if (_isAutoLoadMore && canLoadMore) {
       _performAutomaticallyLoadMoreEmails();
     }
@@ -1051,17 +1112,25 @@ class ThreadController extends BaseController with EmailActionController {
 
   List<PresentationEmail> validateListEmailsLoadMore(List<PresentationEmail> emailList) {
     log('ThreadController::validateListEmailsLoadMore: BEFORE_EMAIL_LIST = ${emailList.length}');
-    final appendableList = emailList
-      .where(_validatePresentationEmail)
-      .toList()
-      .syncPresentationEmail(
-        mapMailboxById: mailboxDashBoardController.mapMailboxById,
-        selectedMailbox: selectedMailbox,
-        searchQuery: searchController.searchQuery,
-        isSearchEmailRunning: searchController.isSearchEmailRunning
-      );
+    final appendableList = _withoutListedRows(
+      emailList.where(_belongsToSelectedList),
+    ).syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      selectedMailbox: selectedMailbox,
+      searchQuery: searchController.searchQuery,
+      isSearchEmailRunning: searchController.isSearchEmailRunning,
+    );
     log('ThreadController::validateListEmailsLoadMore: AFTER_EMAIL_LIST = ${appendableList.length}');
     return appendableList;
+  }
+
+  /// Keeps the [rows] that match no listed row, by the row key of the
+  /// current paging.
+  List<PresentationEmail> _withoutListedRows(Iterable<PresentationEmail> rows) {
+    final rowKey = _folderLoadMore.paging.rowKey;
+    final listedKeys =
+        mailboxDashBoardController.emailsInCurrentMailbox.map(rowKey).toSet();
+    return rows.where((row) => !listedKeys.contains(rowKey(row))).toList();
   }
 
   SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {

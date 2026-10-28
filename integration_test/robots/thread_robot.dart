@@ -13,16 +13,19 @@ import '../base/core_robot.dart';
 import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_thread_assertion_robot.dart';
 import 'abstract/abstract_thread_empty_trash_robot.dart';
+import 'abstract/abstract_thread_viewport_robot.dart';
 import 'thread_assertion_robot.dart';
 import 'thread_empty_trash_robot.dart';
 
 class ThreadRobot extends CoreRobot {
   final AbstractThreadAssertionRobot assertion;
   final AbstractThreadEmptyTrashRobot emptyTrash;
+  final AbstractThreadViewportRobot? viewport;
 
   ThreadRobot(
     PatrolIntegrationTester $, {
     AbstractThreadEmptyTrashRobot? emptyTrashRobot,
+    this.viewport,
   })  : assertion = ThreadAssertionRobot($),
         emptyTrash = emptyTrashRobot ?? ThreadEmptyTrashRobot($),
         super($);
@@ -99,6 +102,16 @@ class ThreadRobot extends CoreRobot {
       $(subject),
       const Offset(0, 300),
       1000,
+    );
+    await $.pumpAndSettle();
+  }
+
+  Future<void> deepPullToRefreshByEmailSubject(String subject) async {
+    await $(subject).waitUntilVisible();
+    await $.tester.fling(
+      $(subject),
+      const Offset(0, 400),
+      2000,
     );
     await $.pumpAndSettle();
   }
