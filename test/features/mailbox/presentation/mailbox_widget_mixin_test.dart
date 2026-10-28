@@ -19,6 +19,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class _MailboxWidgetMixinHolder with MailboxWidgetMixin {}
 
+class _DelegatedFoldersHolder with MailboxWidgetMixin {
+  @override
+  bool get canCreateFilter => false;
+}
+
 void main() {
   group('MailboxWidgetMixin::isSubaddressingSupported::test', () {
 
@@ -145,5 +150,57 @@ void main() {
         );
       },
     );
+  });
+
+  group('MailboxWidgetMixin::createFilter', () {
+    final inbox = PresentationMailbox(
+      MailboxId(Id('inbox')),
+      role: PresentationMailbox.roleInbox,
+    );
+    final personalFolder = PresentationMailbox(MailboxId(Id('personal-folder')));
+
+    List<MailboxActions> contextMenuActionsOf(MailboxWidgetMixin mixinHolder, PresentationMailbox mailbox) =>
+        mixinHolder
+            .listContextMenuItemAction(
+              mailbox,
+              false,
+              false,
+              false,
+              ImagePaths(),
+              AppLocalizations(),
+            )
+            .map((item) => item.action)
+            .toList();
+
+    List<MailboxActions> popupMenuActionsOf(MailboxWidgetMixin mixinHolder, PresentationMailbox mailbox) =>
+        mixinHolder
+            .getListPopupMenuItemAction(
+              AppLocalizations(),
+              ImagePaths(),
+              mailbox,
+              false,
+              false,
+              false,
+            )
+            .map((item) => item.action)
+            .whereType<MailboxActions>()
+            .toList();
+
+    test('should offer create filter on a default and a personal folder by default', () {
+      final holder = _MailboxWidgetMixinHolder();
+
+      expect(contextMenuActionsOf(holder, inbox), [MailboxActions.newSubfolder, MailboxActions.createFilter]);
+      expect(contextMenuActionsOf(holder, personalFolder), contains(MailboxActions.createFilter));
+      expect(popupMenuActionsOf(holder, personalFolder), contains(MailboxActions.createFilter));
+    });
+
+    test('should not offer create filter on any folder when the holder turns it off', () {
+      final holder = _DelegatedFoldersHolder();
+
+      expect(contextMenuActionsOf(holder, inbox), [MailboxActions.newSubfolder]);
+      expect(contextMenuActionsOf(holder, personalFolder), isNot(contains(MailboxActions.createFilter)));
+      expect(popupMenuActionsOf(holder, inbox), [MailboxActions.newSubfolder]);
+      expect(popupMenuActionsOf(holder, personalFolder), isNot(contains(MailboxActions.createFilter)));
+    });
   });
 }
