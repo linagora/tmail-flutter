@@ -172,7 +172,7 @@ class AdvancedFilterController extends BaseController with ActiveAccountReader {
       ?.execute(AutoCompletePattern(
           word: word,
           limit: limit,
-          accountId: _mailboxDashBoardController.accountId.value,
+          accountId: activeAccountId,
       )).then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess
