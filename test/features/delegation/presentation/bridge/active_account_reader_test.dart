@@ -1,33 +1,68 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 
 import '../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../fixtures/base_controller_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 
-class _Reader with ActiveAccountReader {}
+class _Reader extends BaseController with ActiveAccountReader, ShownAccountStateConsumer {
+  final results = <Either<Failure, Success>>[];
+  final errors = <Object>[];
+  int doneCount = 0;
+
+  @override
+  void onData(Either<Failure, Success> newState) => results.add(newState);
+
+  @override
+  void onError(dynamic error, StackTrace stackTrace) => errors.add(error);
+
+  @override
+  void onDone() => doneCount++;
+}
+
+class _Loaded extends UIState {}
 
 void main() {
-  tearDown(ActiveAccountSourceFixtures.unregister);
+  setUp(BaseControllerFixtures.registerDependencies);
+  tearDown(Get.reset);
 
-  test('reads the shown account of the registered source', () {
-    ActiveAccountSourceFixtures.put(
-      DelegationFixtures.session(),
-      shownAccountId: DelegationFixtures.bobAccountId,
-    );
+  group('shown account:', () {
+    test('reads the shown account of the registered source', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
 
-    expect(_Reader().activeAccountId, DelegationFixtures.bobAccountId);
-  });
+      expect(_Reader().activeAccountId, DelegationFixtures.bobAccountId);
+    });
 
-  test('follows a switch made after the reader was created', () {
-    final reader = _Reader();
-    final container = ActiveAccountSourceFixtures.newContainer();
-    ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
-    expect(reader.activeAccountId, DelegationFixtures.aliceAccountId);
+    test('follows a switch made after the reader was created', () {
+      final reader = _Reader();
+      final container = ActiveAccountSourceFixtures.newContainer();
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
+      expect(reader.activeAccountId, DelegationFixtures.aliceAccountId);
 
-    container.read(activeAccountProvider.notifier).select(DelegationFixtures.carolAccountId);
+      container.read(activeAccountProvider.notifier).select(DelegationFixtures.carolAccountId);
 
-    expect(reader.activeAccountId, DelegationFixtures.carolAccountId);
+      expect(reader.activeAccountId, DelegationFixtures.carolAccountId);
+    });
+
+    test('reads the source registered at the time of the read', () {
+      final reader = _Reader();
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
+
+      expect(reader.activeAccountId, DelegationFixtures.bobAccountId);
+    });
   });
 
   group('isDelegatedAccountShown', () {
@@ -53,12 +88,81 @@ void main() {
     });
   });
 
-  test('reads the source registered at the time of the read', () {
-    final reader = _Reader();
-    ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+  group('consumeShownAccountState:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> viewResults;
+    late _Reader reader;
 
-    ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      viewResults = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
 
-    expect(reader.activeAccountId, DelegationFixtures.bobAccountId);
+    test('forwards every result and the end while its attempt is current', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+      final first = Right<Failure, Success>(_Loaded());
+      final second = Right<Failure, Success>(_Loaded());
+
+      viewResults
+        ..add(first)
+        ..add(second);
+      await viewResults.close();
+
+      expect(reader.results, [first, second]);
+      expect(reader.doneCount, 1);
+    });
+
+    test('forwards an error while its attempt is current', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+      final error = StateError('stream failed');
+
+      viewResults.addError(error);
+      await pumpEventQueue();
+
+      expect(reader.errors, [error]);
+    });
+
+    test('drops every result once another account is shown and stops listening', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+      source.show(DelegationFixtures.bobAccountId);
+
+      viewResults.add(Right(_Loaded()));
+      await pumpEventQueue();
+
+      expect(reader.results, isEmpty);
+      expect(viewResults.hasListener, isFalse);
+    });
+
+    test('drops an error that arrives once another account is shown', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+      source.show(DelegationFixtures.bobAccountId);
+
+      viewResults.addError(StateError('late failure'));
+      await pumpEventQueue();
+
+      expect(reader.errors, isEmpty);
+      expect(viewResults.hasListener, isFalse);
+    });
+
+    test('drops the end of a load that arrives once another account is shown', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+      source.show(DelegationFixtures.bobAccountId);
+
+      await viewResults.close();
+
+      expect(reader.doneCount, 0);
+    });
+
+    test('a closed reader gets no more results', () async {
+      reader.consumeShownAccountState(viewResults.stream);
+
+      reader.onClose();
+      viewResults.add(Right(_Loaded()));
+      await pumpEventQueue();
+
+      expect(reader.results, isEmpty);
+      expect(viewResults.hasListener, isFalse);
+    });
   });
 }
