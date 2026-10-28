@@ -72,5 +72,9 @@ void main() {
     test('returns false for escaped markup typed as text', () {
       expect('<p>&lt;br&gt;</p>'.hasNoTextContent, isFalse);
     });
+
+    test('returns false for text holding an unclosed angle bracket', () {
+      expect('<div>< </div>'.hasNoTextContent, isFalse);
+    });
   });
 }
