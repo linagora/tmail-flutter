@@ -55,4 +55,9 @@ class UiKeys {
   // Email detail labels
   static const String emailDetailedMoreButton = 'email_detailed_more_button';
   static const String addLabelToEmailModal = 'add_label_to_email_modal';
+
+  // Vacation settings
+  static const String vacationResponderSwitch = 'vacation_responder_switch';
+  static const String vacationMessageEditorMobile = 'vacation_message_editor_mobile';
+  static const String vacationSaveButton = 'vacation_save_button';
 }
