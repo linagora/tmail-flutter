@@ -168,6 +168,27 @@ void main() {
       expect(mailboxController.currentMailboxState, isNull);
     });
 
+    for (final switched in [false, true]) {
+      testWidgets('Retry on a failed folder load ${switched ? 'does nothing once another account is shown' : 'loads the folders again'}',
+          (tester) async {
+        await pumpLocalizedApp(tester);
+        // Never closed: a stream nobody listens to never completes its close.
+        final retry = StreamController<Either<Failure, Success>>();
+        when(getAllMailboxInteractor.execute(testSession, testAccountId)).thenAnswer((_) => Stream.value(
+            Left(GetAllMailboxFailure(Exception(), onRetry: retry.stream))));
+        final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+        clearInteractions(appToast);
+        startMailboxController();
+        await tester.pump();
+        final retryAction = _retryActionOfToast(appToast);
+
+        if (switched) source.show(DelegationFixtures.bobAccountId);
+        retryAction();
+
+        expect(retry.hasListener, !switched);
+      });
+    }
+
     test('a folder refresh of an account shown before never reaches the view once another one is shown', () async {
       final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
       startMailboxController();
@@ -1027,6 +1048,18 @@ void main() {
 }
 
 class _FakeBuildContext extends Fake implements BuildContext {}
+
+Function _retryActionOfToast(MockAppToast appToast) {
+  final actions = verify(appToast.showToastMessageWithMultipleActions(
+    any,
+    any,
+    actions: captureAnyNamed('actions'),
+    backgroundColor: anyNamed('backgroundColor'),
+    textColor: anyNamed('textColor'),
+    infinityToast: anyNamed('infinityToast'),
+  )).captured.single as List<({String? actionName, Function? onActionClick, Widget? actionIcon})>;
+  return actions.first.onActionClick!;
+}
 
 void _showToastWithAction(MockAppToast appToast) => appToast.showToastMessage(
       any,
