@@ -4,6 +4,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/switch_attempt_stamp.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 
 typedef OnViewResult = void Function(Either<Failure, Success> viewResult);
 typedef OnViewError = void Function(dynamic error, StackTrace stackTrace);
@@ -18,9 +19,12 @@ class ShownAccountStateSubscription {
   final OnViewDone _onDone;
   final OnStaleViewResult _onStale;
   final OnSubscriptionEnded _onEnded;
+  final _result = Completer<ShownAccountLoadResult>();
 
   StreamSubscription<Either<Failure, Success>>? _subscription;
-  bool _ended = false;
+  Either<Failure, Success>? _lastResult;
+  Object? _streamError;
+  StackTrace? _streamStackTrace;
 
   ShownAccountStateSubscription({
     required this.stamp,
@@ -35,6 +39,8 @@ class ShownAccountStateSubscription {
         _onStale = onStale,
         _onEnded = onEnded;
 
+  ShownAccountLoad get load => ShownAccountLoad(attemptId: stamp.attemptId, result: _result.future);
+
   void listen(Stream<Either<Failure, Success>> viewResults) {
     _subscription = viewResults.listen(_handleData, onError: _handleError, onDone: _handleDone);
   }
@@ -42,7 +48,7 @@ class ShownAccountStateSubscription {
   void cancel() {
     // A request that fails after the cancel ends the load with its error in the cancel future.
     _subscription?.cancel().catchError((Object error) => _onStale(error: error));
-    _end();
+    _end(const ShownAccountLoadDropped());
   }
 
   void _handleData(Either<Failure, Success> viewResult) {
@@ -50,6 +56,7 @@ class ShownAccountStateSubscription {
       _onStale(viewResult: viewResult);
       return;
     }
+    _lastResult = viewResult;
     _onData(viewResult);
   }
 
@@ -58,13 +65,18 @@ class ShownAccountStateSubscription {
       _onStale(error: error);
       return;
     }
+    _streamError = error;
+    _streamStackTrace = stackTrace;
     _onError(error, stackTrace);
   }
 
   void _handleDone() {
     if (_cancelIfStale()) return;
-    _end();
-    _onDone();
+    try {
+      _onDone();
+    } finally {
+      _end(_doneResult());
+    }
   }
 
   bool _cancelIfStale() {
@@ -73,9 +85,17 @@ class ShownAccountStateSubscription {
     return true;
   }
 
-  void _end() {
-    if (_ended) return;
-    _ended = true;
+  ShownAccountLoadResult _doneResult() {
+    final streamError = _streamError;
+    if (streamError != null) return ShownAccountLoadFailed(streamError, _streamStackTrace);
+
+    final failure = _lastResult?.fold((failure) => failure, (_) => null);
+    return failure != null ? ShownAccountLoadFailed(failure) : const ShownAccountLoaded();
+  }
+
+  void _end(ShownAccountLoadResult loadResult) {
+    if (_result.isCompleted) return;
+    _result.complete(loadResult);
     _onEnded(this);
   }
 }

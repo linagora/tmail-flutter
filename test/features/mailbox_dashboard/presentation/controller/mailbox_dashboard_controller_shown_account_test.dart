@@ -39,6 +39,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' show UncontrolledProvide
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -154,6 +155,37 @@ void main() {
       expect(newMailboxController().canCreateFilter, isTrue);
     });
 
+    test('reports the folder load of the shown account with its switch attempt', () {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+
+      startMailboxController();
+
+      final (kind, load) = source.reportedLoads.single;
+      expect(kind, ShownAccountLoadKind.folders);
+      expect(load.attemptId, source.currentSwitchAttemptId);
+    });
+
+    test('loads the folders of the shown account again when a switch attempt asks for it', () {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      clearInteractions(getAllMailboxInteractor);
+
+      source.requestReload();
+
+      verify(getAllMailboxInteractor.execute(testSession, testAccountId)).called(1);
+    });
+
+    test('a closed MailboxController no longer reloads the folders when a switch attempt asks for it', () {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      mailboxController.onClose();
+      clearInteractions(getAllMailboxInteractor);
+
+      source.requestReload();
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
+    });
+
     test('the folders of an account shown before never reach the view once another one is shown', () async {
       final myFolders = StreamController<Either<Failure, Success>>();
       addTearDown(myFolders.close);
@@ -166,6 +198,7 @@ void main() {
       await pumpEventQueue();
 
       expect(mailboxController.currentMailboxState, isNull);
+      expect(await source.reportedLoads.first.$2.result, isA<ShownAccountLoadDropped>());
     });
 
     for (final switched in [false, true]) {
@@ -298,6 +331,17 @@ void main() {
       expect(mailboxController.allMailboxes, isEmpty);
       expect(mailboxController.currentMailboxState, isNull);
       expect(mailboxDashboardController.mapMailboxById, isEmpty);
+    });
+
+    test('a reload of the account still shown keeps its folders on screen while they load', () {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      final aliceInbox = PresentationMailbox(MailboxId(Id('alice-inbox')));
+      mailboxController.allMailboxes = [aliceInbox];
+
+      source.requestReload();
+
+      expect(mailboxController.allMailboxes, [aliceInbox]);
     });
 
     testWidgets('moving a folder opens the folder picker on the shown account, not on my own', (tester) async {
