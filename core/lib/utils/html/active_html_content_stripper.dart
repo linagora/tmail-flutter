@@ -49,17 +49,17 @@ class ActiveHtmlContentStripper {
   static void _stripAttributes(Element element) {
     final attributeKeys = element.attributes.keys.toList();
     for (final key in attributeKeys) {
-      final name = '$key'.toLowerCase();
       final value = element.attributes[key] ?? '';
-
-      final isEventHandler = name.startsWith('on');
-      final isFrameContent = name == 'srcdoc';
-      final isUnsafeUrl = _urlAttributes.contains(name) && !_isSafeUrl(name, value);
-
-      if (isEventHandler || isFrameContent || isUnsafeUrl) {
+      if (_isActiveAttribute('$key'.toLowerCase(), value)) {
         element.attributes.remove(key);
       }
     }
+  }
+
+  static bool _isActiveAttribute(String name, String value) {
+    if (name.startsWith('on')) return true;
+    if (name == 'srcdoc') return true;
+    return _urlAttributes.contains(name) && !_isSafeUrl(name, value);
   }
 
   static bool _isSafeUrl(String attributeName, String value) {
