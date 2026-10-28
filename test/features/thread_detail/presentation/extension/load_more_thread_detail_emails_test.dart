@@ -65,6 +65,22 @@ void main() {
     )).called(1);
   });
 
+  test('loads the emails through the check that drops them once another account is shown', () {
+    when(controller.emailIdsPresentation).thenReturn({EmailId(Id('1')): null}.obs);
+    when(controller.currentExpandedEmailId).thenReturn(Rxn());
+    when(controller.session).thenReturn(SessionFixtures.aliceSession);
+    when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
+    when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+    when(controller.additionalProperties).thenReturn(Properties.empty());
+    when(controller.mailboxDashBoardController).thenReturn(mailboxDashBoardController);
+    when(mailboxDashBoardController.selectedEmail).thenReturn(Rxn());
+
+    controller.loadMoreThreadDetailEmails(loadMoreIndex: 0, loadMoreCount: 1);
+
+    verify(controller.consumeShownAccountState(any)).called(1);
+    verifyNever(controller.consumeState(any));
+  });
+
   test('No getEmailsByIdsInteractor.execute call if emailIdsToLoadMetaData is empty', () async {
     // Arrange
     when(controller.emailIdsPresentation).thenReturn(<EmailId, PresentationEmail?>{}.obs);

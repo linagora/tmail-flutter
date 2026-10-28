@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:http_parser/http_parser.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/restore_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_attachment_extension.dart';
@@ -28,11 +30,12 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:dartz/dartz.dart' show Left, Right;
+import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart' show UncontrolledProviderScope;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -53,6 +56,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -145,6 +149,102 @@ void main() {
       ActiveAccountSourceFixtures.put(DelegationFixtures.session());
 
       expect(newMailboxController().canCreateFilter, isTrue);
+    });
+
+    test('the folders of an account shown before never reach the view once another one is shown', () async {
+      final myFolders = StreamController<Either<Failure, Success>>();
+      addTearDown(myFolders.close);
+      when(getAllMailboxInteractor.execute(testSession, testAccountId)).thenAnswer((_) => myFolders.stream);
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+
+      source.show(DelegationFixtures.bobAccountId);
+      myFolders.add(Right(GetAllMailboxSuccess(mailboxList: [], currentMailboxState: State('alice-state'))));
+      await pumpEventQueue();
+
+      expect(mailboxController.currentMailboxState, isNull);
+    });
+
+    test('a folder refresh of an account shown before never reaches the view once another one is shown', () async {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      final myFolders = StreamController<Either<Failure, Success>>();
+      addTearDown(myFolders.close);
+      when(getAllMailboxInteractor.execute(testSession, testAccountId)).thenAnswer((_) => myFolders.stream);
+      await mailboxController.refreshAllMailbox();
+
+      source.show(DelegationFixtures.bobAccountId);
+      myFolders.add(Right(GetAllMailboxSuccess(mailboxList: [], currentMailboxState: State('alice-state'))));
+      await pumpEventQueue();
+
+      expect(mailboxController.currentMailboxState, isNull);
+    });
+
+    test('the folder changes of an account shown before never reach the view once another one is shown', () async {
+      final myChanges = StreamController<Either<Failure, Success>>();
+      when(refreshAllMailboxInteractor.execute(any, any, any, properties: anyNamed('properties')))
+          .thenAnswer((_) => myChanges.stream);
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      mailboxController.currentMailboxState = State('alice-state');
+      mailboxDashboardController.dispatchMailboxUIAction(
+          RefreshChangeMailboxAction(newState: State('alice-new-state')));
+      await pumpEventQueue();
+
+      source.show(DelegationFixtures.bobAccountId);
+      myChanges.add(Right(RefreshChangesAllMailboxSuccess(
+        mailboxList: [],
+        currentMailboxState: State('alice-refreshed-state'),
+      )));
+      await myChanges.close();
+      await pumpEventQueue();
+
+      expect(mailboxController.currentMailboxState, isNull);
+    });
+
+    for (final switched in [false, true]) {
+      testWidgets('a failed folder changes refresh ${switched ? 'of an account shown before shows no error' : 'shows its error'}',
+          (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        await pumpLocalizedApp(tester);
+        final myChanges = StreamController<Either<Failure, Success>>();
+        when(refreshAllMailboxInteractor.execute(any, any, any, properties: anyNamed('properties')))
+            .thenAnswer((_) => myChanges.stream);
+        final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+        startMailboxController();
+        mailboxController.currentMailboxState = State('alice-state');
+        mailboxDashboardController.dispatchMailboxUIAction(
+            RefreshChangeMailboxAction(newState: State('alice-new-state')));
+        await tester.pump();
+        clearInteractions(appToast);
+
+        if (switched) source.show(DelegationFixtures.bobAccountId);
+        myChanges.addError(const ConnectionError());
+        await myChanges.close();
+        await tester.pump();
+
+        if (switched) {
+          verifyNever(appToast.showToastErrorMessage(any, any));
+        } else {
+          verify(appToast.showToastErrorMessage(any, any)).called(1);
+        }
+      });
+    }
+
+    test('the folders of the account shown before are cleared once another one is shown', () {
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      startMailboxController();
+      final aliceInbox = PresentationMailbox(MailboxId(Id('alice-inbox')));
+      mailboxController.allMailboxes = [aliceInbox];
+      mailboxController.currentMailboxState = State('alice-state');
+      mailboxDashboardController.setMapMailboxById({aliceInbox.id: aliceInbox});
+
+      source.show(DelegationFixtures.bobAccountId);
+
+      expect(mailboxController.allMailboxes, isEmpty);
+      expect(mailboxController.currentMailboxState, isNull);
+      expect(mailboxDashboardController.mapMailboxById, isEmpty);
     });
 
     testWidgets('moving a folder opens the folder picker on the shown account, not on my own', (tester) async {
@@ -853,4 +953,3 @@ void main() {
 }
 
 class _FakeBuildContext extends Fake implements BuildContext {}
-
