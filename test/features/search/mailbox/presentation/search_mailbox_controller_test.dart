@@ -191,6 +191,18 @@ void main() {
     expect(controller.isDeletedMessageVaultSupported, isFalse);
     expect(controller.isSubAddressingSupported, isFalse);
   });
+
+  test('the folder menu offers no filter while a delegated account is shown', () {
+    ActiveAccountSourceFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
+
+    expect(_newController().canCreateFilter, isFalse);
+  });
+
+  test('the folder menu offers a filter while my own account is shown', () {
+    ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+    expect(_newController().canCreateFilter, isTrue);
+  });
 }
 
 /// Alice is my own account and bob the shown one: only [accountId] gets the deleted messages

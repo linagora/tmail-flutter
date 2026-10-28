@@ -115,6 +115,8 @@ class SearchMailboxController extends BaseMailboxController
 
   bool get isSubAddressingSupported => session?.isSubAddressingSupported(accountId) ?? false;
 
+  bool get canCreateFilter => !isDelegatedAccountShown;
+
   SearchMailboxController(
     this._searchMailboxInteractor,
     this._renameMailboxInteractor,

@@ -10,6 +10,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/popup_menu_ite
 
 mixin MailboxWidgetMixin {
 
+  /// A filter is a rule of my own account: the folder views of a delegated account turn it off.
+  bool get canCreateFilter => true;
+
   MailboxActions _mailboxActionForSpam(bool spamReportEnabled) {
     return spamReportEnabled
       ? MailboxActions.disableSpamReport
@@ -108,6 +111,23 @@ mixin MailboxWidgetMixin {
   }
 
   List<MailboxActions> _listActionForAllMailboxType(
+    PresentationMailbox mailbox,
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported,
+    bool isSubAddressingSupported,
+  ) {
+    final actions = _listActionForMailboxType(
+      mailbox,
+      spamReportEnabled,
+      deletedMessageVaultSupported,
+      isSubAddressingSupported,
+    );
+    if (canCreateFilter) return actions;
+
+    return actions.where((action) => action != MailboxActions.createFilter).toList();
+  }
+
+  List<MailboxActions> _listActionForMailboxType(
     PresentationMailbox mailbox,
     bool spamReportEnabled,
     bool deletedMessageVaultSupported,
