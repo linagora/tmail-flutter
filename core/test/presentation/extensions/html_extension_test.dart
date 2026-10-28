@@ -56,5 +56,21 @@ void main() {
     test('returns false when the markup holds an image', () {
       expect('<div><img src="a.png"></div>'.hasNoTextContent, isFalse);
     });
+
+    test('returns false when the image tag is upper case', () {
+      expect('<DIV><IMG SRC="a.png"></DIV>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns true for nbsp entities without any tag', () {
+      expect('&nbsp;&nbsp;'.hasNoTextContent, isTrue);
+    });
+
+    test('returns false for plain text without any tag', () {
+      expect('Back soon'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false for escaped markup typed as text', () {
+      expect('<p>&lt;br&gt;</p>'.hasNoTextContent, isFalse);
+    });
   });
 }
