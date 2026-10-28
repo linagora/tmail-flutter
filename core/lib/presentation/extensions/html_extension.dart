@@ -12,7 +12,6 @@ extension HtmlExtension on String {
     // Excluding '<' keeps the match linear on a run of unclosed '<'.
     return replaceAll(RegExp(r'<[^<>]*>'), '')
         .replaceAll('&nbsp;', ' ')
-        .replaceAll('\u00a0', ' ')
         .trim()
         .isEmpty;
   }
