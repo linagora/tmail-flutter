@@ -550,7 +550,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is UnsubscribeEmailSuccess) {
       _handleUnsubscribeMailSuccess(success.emailId);
     } else if (success is RestoreDeletedMessageSuccess) {
-      _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
+      _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!, success.accountId);
     } else if (success is GetRestoredDeletedMessageSuccess) {
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
@@ -3212,18 +3212,23 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleRestoreDeletedMessageSuccess(EmailRecoveryActionId emailRecoveryActionId) async {
+  void _handleRestoreDeletedMessageSuccess(
+    EmailRecoveryActionId emailRecoveryActionId,
+    AccountId restoringAccountId,
+  ) async {
     log('MailboxDashBoardController::_handleRestoreDeletedMessageSuccess():emailRecoveryActionId: $emailRecoveryActionId');
-    _getRestoredDeletedMessage(emailRecoveryActionId);
+    _getRestoredDeletedMessage(emailRecoveryActionId, restoringAccountId);
   }
 
-  /// Polled after a delay, so a logout may have cleared the shown account meanwhile.
-  void _getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+  /// Polls the account the restore started on, and stops once a logout cleared the shown account.
+  void _getRestoredDeletedMessage(
+    EmailRecoveryActionId emailRecoveryActionId,
+    AccountId restoringAccountId,
+  ) {
     final session = sessionCurrent;
-    final shownAccountId = activeAccountId;
-    if (session == null || shownAccountId == null) return;
+    if (session == null || activeAccountId == null) return;
 
-    consumeState(_getRestoredDeletedMessageInteractor.execute(session, shownAccountId, emailRecoveryActionId));
+    consumeState(_getRestoredDeletedMessageInteractor.execute(session, restoringAccountId, emailRecoveryActionId));
   }
 
   void _handleRestoreDeletedMessageFailed() {
@@ -3246,7 +3251,9 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
-    if (selectedMailbox.value != null && selectedMailbox.value!.isRecovered) {
+    // A restore polled on an account no longer shown must not refresh or open the shown one.
+    final isRestoringShownAccount = success.accountId == activeAccountId;
+    if (isRestoringShownAccount && selectedMailbox.value?.isRecovered == true) {
       dispatchEmailUIAction(RefreshChangeEmailAction(
         newState: jmap.State('restored-deleted-message-success-state-${DateTime.now().millisecondsSinceEpoch}'),
       ));
@@ -3254,7 +3261,7 @@ class MailboxDashBoardController extends ReloadableController
 
     if (success is GetRestoredDeletedMessageCompleted) {
       isRecoveringDeletedMessage.value = false;
-      if (success.recoveredMailbox != null) {
+      if (isRestoringShownAccount && success.recoveredMailbox != null) {
         appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).restoreDeletedMessageSuccess,
@@ -3277,7 +3284,7 @@ class MailboxDashBoardController extends ReloadableController
       }
     } else if (success is GetRestoredDeletedMessageInProgress || success is GetRestoredDeletedMessageWaiting) {
       await Future.delayed(const Duration(seconds: 2));
-      _getRestoredDeletedMessage(success.emailRecoveryAction.id!);
+      _getRestoredDeletedMessage(success.emailRecoveryAction.id!, success.accountId);
     } else if (success is GetRestoredDeletedMessageCanceled) {
       isRecoveringDeletedMessage.value = false;
       appToast.showToastMessage(
