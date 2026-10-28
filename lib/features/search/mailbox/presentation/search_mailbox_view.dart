@@ -35,6 +35,9 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }) : super(key: key);
 
   @override
+  bool get canCreateFilter => controller.canCreateFilter;
+
+  @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
       return Scaffold(

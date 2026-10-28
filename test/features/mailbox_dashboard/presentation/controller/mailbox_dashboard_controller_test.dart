@@ -1474,6 +1474,18 @@ void main() {
       verifyNever(getAllMailboxInteractor.execute(any, any));
     });
 
+    test('the folder menu offers no filter while a delegated account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
+
+      expect(newMailboxController().canCreateFilter, isFalse);
+    });
+
+    test('the folder menu offers a filter while my own account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      expect(newMailboxController().canCreateFilter, isTrue);
+    });
+
     testWidgets('moving a folder opens the folder picker on the shown account, not on my own', (tester) async {
       mailboxDashboardController.accountId.value = testAccountId;
       ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
