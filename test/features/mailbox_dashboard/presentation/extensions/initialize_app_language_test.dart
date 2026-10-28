@@ -1,4 +1,6 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
@@ -25,6 +27,7 @@ void main() {
 
   setUp(() {
     Get.testMode = true;
+    dotenv.testLoad();
     Get.locale = const Locale('fr', 'FR');
     Get.put<LanguageCacheManager>(languageCacheManager);
   });
@@ -33,6 +36,7 @@ void main() {
     Get.reset();
     Get.locale = null;
     Get.testMode = false;
+    TestWidgetsFlutterBinding.instance.platformDispatcher.clearLocaleTestValue();
     TestWidgetsFlutterBinding.instance.reset();
   });
 
@@ -421,6 +425,186 @@ void main() {
       
       // assert
       expect(Get.locale, LocalizationService.defaultLocale);
+    });
+  });
+
+  group('initialize app language with ALLOWED_LANGUAGES test:', () {
+    void allowLanguages(String value) =>
+        dotenv.testLoad(mergeWith: {'ALLOWED_LANGUAGES': value});
+
+    setUp(() => PlatformInfo.isTestingForWeb = true);
+
+    tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+    testWidgets(
+      'should apply a language that is not allowed '
+      'when the app does not run on web',
+    (tester) async {
+      // arrange
+      PlatformInfo.isTestingForWeb = false;
+      allowLanguages('mn,en');
+      Locale? appliedServerLocale;
+
+      // act
+      LocalizationService.initializeAppLanguage(
+        serverLanguage: LanguageCodeConstants.vietnamese,
+        onServerLanguageApplied: (locale) => appliedServerLocale = locale,
+      );
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(appliedServerLocale, const Locale('vi', 'VN'));
+      expect(Get.locale, const Locale('vi', 'VN'));
+    });
+
+    testWidgets(
+      'should not apply nor persist server language '
+      'when server language is not allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,en');
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('mn', 'MN');
+      Locale? appliedServerLocale;
+
+      // act
+      LocalizationService.initializeAppLanguage(
+        serverLanguage: LanguageCodeConstants.vietnamese,
+        onServerLanguageApplied: (locale) => appliedServerLocale = locale,
+      );
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(appliedServerLocale, isNull);
+      expect(Get.locale, const Locale('mn', 'MN'));
+    });
+
+    testWidgets(
+      'should apply server language '
+      'when server language is allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,en');
+      Locale? appliedServerLocale;
+
+      // act
+      LocalizationService.initializeAppLanguage(
+        serverLanguage: LanguageCodeConstants.mongolian,
+        onServerLanguageApplied: (locale) => appliedServerLocale = locale,
+      );
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(appliedServerLocale, const Locale('mn', 'MN'));
+      expect(Get.locale, const Locale('mn', 'MN'));
+    });
+
+    testWidgets(
+      'should apply English '
+      'when server, cached, device and current languages are not allowed '
+      'and English is allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,en');
+      when(languageCacheManager.getStoredLanguage())
+        .thenReturn(const Locale('vi', 'VN'));
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('fr', 'FR');
+
+      // act
+      LocalizationService.initializeAppLanguage(
+        serverLanguage: LanguageCodeConstants.russian,
+      );
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, LocalizationService.defaultLocale);
+    });
+
+    testWidgets(
+      'should apply the first allowed language '
+      'when server, cached, device and current languages are not allowed '
+      'and English is not allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,vi');
+      when(languageCacheManager.getStoredLanguage())
+        .thenReturn(const Locale('de', 'DE'));
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('fr', 'FR');
+
+      // act
+      LocalizationService.initializeAppLanguage();
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, const Locale('mn', 'MN'));
+    });
+
+    testWidgets(
+      'should keep the device region '
+      'when device language is allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('fr,en');
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('fr', 'CA');
+
+      // act
+      LocalizationService.initializeAppLanguage();
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, const Locale('fr', 'CA'));
+    });
+
+    testWidgets(
+      'should keep the device region '
+      'when ALLOWED_LANGUAGES is not set',
+    (tester) async {
+      // arrange
+      when(languageCacheManager.getStoredLanguage()).thenReturn(null);
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('en', 'GB');
+
+      // act
+      LocalizationService.initializeAppLanguage();
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, const Locale('en', 'GB'));
+    });
+
+    testWidgets(
+      'getInitialLocale should skip a cached language '
+      'that is not allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,en');
+      when(languageCacheManager.getStoredLanguage())
+        .thenReturn(const Locale('vi', 'VN'));
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('fr', 'FR');
+
+      // act
+      final initialLocale = LocalizationService.getInitialLocale();
+
+      // assert
+      expect(initialLocale, LocalizationService.defaultLocale);
     });
   });
 }
