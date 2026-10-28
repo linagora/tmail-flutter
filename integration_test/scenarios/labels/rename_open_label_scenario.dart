@@ -31,11 +31,14 @@ class RenameOpenLabelScenario extends BaseTestScenario
         },
         timeout: TestTimeouts.long,
       );
-    } on TimeoutException catch (error) {
-      throw TimeoutException(
-        'rename_open_label_test: credential seeding, label provisioning or '
-        'rename flow timed out: ${error.message}',
-        error.duration,
+    } on TimeoutException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        TimeoutException(
+          'rename_open_label_test: credential seeding, label provisioning or '
+          'rename flow timed out: ${error.message}',
+          error.duration,
+        ),
+        stackTrace,
       );
     }
   }

@@ -70,7 +70,26 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
 
   @override
   Future<void> enterLabelName(String name) async {
-    await $(#label_name_input_field).$(TextFieldBuilder).enterText(name);
+    final input = $(#label_name_input_field).$(TextFieldBuilder);
+    // The real Android IME restores its own text over patrol's mock input
+    if (PlatformInfo.isMobile) await hideKeyboard();
+    await input.enterText(name);
+    if (!PlatformInfo.isMobile) return;
+    try {
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return $.tester
+                  .widget<EditableText>(input.$(EditableText))
+                  .controller
+                  .text ==
+              name;
+        },
+        timeout: TestTimeouts.short,
+      );
+    } on TimeoutException {
+      fail('Label name input did not keep "$name" within 15 seconds');
+    }
   }
 
   @override
