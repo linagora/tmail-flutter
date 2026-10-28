@@ -1,8 +1,5 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
@@ -31,8 +28,7 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
-    await composerRobot.tapSaveAsTemplateButton();
-    await _expectSaveTemplateSuccessToast(l10n);
+    await _saveTemplateAndWaitForNewId(composerRobot);
     await $.pumpAndTrySettle();
     await composerRobot.tapCloseComposer();
     await $.pumpAndTrySettle();
@@ -50,10 +46,17 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
-    final composer = _currentComposer();
+    await _saveTemplateAndWaitForNewId(composerRobot);
+  }
+
+  // The 3 s success toast can expire while the save action settles
+  Future<void> _saveTemplateAndWaitForNewId(
+    AbstractComposerRobot composerRobot,
+  ) async {
+    final composer = composerRobot.findComposerController();
+    if (composer == null) fail('No open composer to save as a template');
     final previousTemplateId = composer.currentTemplateEmailId;
     await composerRobot.tapSaveAsTemplateButton();
-    // The 3 s success toast can expire while the save action settles
     await waitForCondition(
       () async {
         await $.pump();
@@ -61,19 +64,7 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
         return templateId != null && templateId != previousTemplateId;
       },
       timeout: TestTimeouts.long,
+      reason: 'Template was not saved',
     );
-  }
-
-  ComposerController _currentComposer() {
-    if (!PlatformInfo.isWeb) return Get.find<ComposerController>();
-    final composerManager =
-        Get.find<MailboxDashBoardController>().composerManager;
-    return composerManager
-        .getComposerView(composerManager.composerIdsQueue.last)
-        .controller;
-  }
-
-  Future<void> _expectSaveTemplateSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(l10n.saveMessageToTemplateSuccess));
   }
 }
