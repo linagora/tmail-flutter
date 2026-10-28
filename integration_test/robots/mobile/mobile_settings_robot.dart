@@ -21,11 +21,13 @@ class MobileSettingsRobot extends SettingRobot
 
   @override
   Future<void> openSettingsDetail(AccountMenuItem accountMenuItem) async {
-    await $(SettingFirstLevelTileBuilder)
+    final settingTile = $(SettingFirstLevelTileBuilder)
         .which<SettingFirstLevelTileBuilder>(
           (widget) =>
               widget.title == accountMenuItem.getName(AppLocalizations()),
-        )
-        .tap();
+        );
+    // Lower tiles (e.g. Language & region) are off screen on phones
+    await settingTile.scrollTo();
+    await settingTile.tap();
   }
 }
