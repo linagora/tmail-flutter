@@ -43,11 +43,15 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         desktopAction: _tapOnDesktopSearchField,
       );
 
+  // The responsive layout opens SearchEmailView, whose input has its own focus
+  // node and no Escape shortcut, so only the desktop search bar is supported.
   @override
-  Future<void> tapOnSearchInput() => _runForCurrentSearchLayout(
-        responsiveAction: _responsiveSearchRobot.tapOnSearchField,
-        desktopAction: () => $(SearchInputFormWidget).$(TextField).tap(),
-      );
+  Future<void> tapOnSearchInput() async {
+    if (_isResponsiveSearchLayout) {
+      throw StateError('tapOnSearchInput supports the desktop search bar only');
+    }
+    await $(SearchInputFormWidget).$(TextField).tap();
+  }
 
   Future<void> _tapOnDesktopSearchField() async {
     await $(SearchInputFormWidget).$(TextField).tap();
