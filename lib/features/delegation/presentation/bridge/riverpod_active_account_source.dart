@@ -3,20 +3,27 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 
-/// Forwards [ActiveAccountSource] and [ActiveAccountWriter] to [activeAccountProvider], the single
+/// Forwards [ActiveAccountSource] and [ActiveAccountWriter] to the delegation providers, the single
 /// source of truth. It keeps no state of its own.
 class RiverpodActiveAccountSource implements ActiveAccountSource, ActiveAccountWriter {
   final ProviderContainer _container;
 
-  RiverpodActiveAccountSource(this._container);
+  RiverpodActiveAccountSource(this._container) {
+    // Built first, so its listener bumps the attempt before a watchShown callback stamps a request.
+    _container.read(accountSwitchProvider);
+  }
 
   @override
   AccountId? get accountId => activeAccount?.accountId;
 
   @override
   ActiveAccount? get activeAccount => _container.read(activeAccountProvider);
+
+  @override
+  int get currentSwitchAttemptId => _container.read(accountSwitchProvider).currentAttemptId;
 
   @override
   void applySession(Session session) {
