@@ -25,7 +25,7 @@ pipeline {
         stage('Run Patrol Mobile Integration Tests') {
             steps {
                 withCredentials([file(credentialsId: 'firebase-testlab-sa', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    // One Patrol job per agent: the backend container, ports and /tmp logs are host-wide.
+                    // One Patrol job per agent: the backend container and its ports are host-wide.
                     sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-integration-test-with-docker.sh'
                 }
             }

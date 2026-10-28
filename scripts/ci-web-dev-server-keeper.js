@@ -1,3 +1,4 @@
+// TODO: delete this file on the next Flutter upgrade if its dwds no longer tears the isolate down (flutter/flutter#178549).
 // dwds 25.1.0+2 (Flutter 3.38.9) tears its isolate down 15 s after the last page leaves,
 // then no new page runs main (flutter/flutter#178549). Patrol closes its setup page before
 // the first test page opens, so this page stays connected for the whole run.
