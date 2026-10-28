@@ -337,8 +337,9 @@ class RichTextWebController extends GetxController {
   }
 
   /// Builds the inline `<img>` tag inserted into the signature editor.
-  /// The file name comes from the user's local file picker and is
-  /// attribute-escaped before being written into `data-filename`.
+  /// The file name and the MIME type derived from its extension come from the
+  /// user's local file picker and are attribute-escaped before being written
+  /// into the tag.
   static String buildInlineImageHtml({
     required String base64Data,
     required String mimeType,
@@ -346,7 +347,8 @@ class RichTextWebController extends GetxController {
     int? maxWidth,
   }) {
     const attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
-    return '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${attributeEscape.convert(fileName)}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>';
+    final escapedMimeType = attributeEscape.convert(mimeType);
+    return '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: escapedMimeType)}" data-filename="${attributeEscape.convert(fileName)}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$escapedMimeType"/>';
   }
 
   void toggleFormattingOptions() {

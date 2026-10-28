@@ -63,5 +63,17 @@ void main() {
 
       expect(html, contains('data-filename="signature.png"'));
     });
+
+    test('escapes the MIME type before it is written to the src and data-mimetype attributes', () {
+      final html = RichTextWebController.buildInlineImageHtml(
+        base64Data: 'AAAA',
+        mimeType: 'image/png" onerror="alert(1)',
+        fileName: 'signature.png',
+      );
+
+      expect(html, isNot(contains('" onerror="')));
+      expect(html, contains('data-mimetype="image/png&quot; onerror=&quot;alert(1)"'));
+      expect(html, contains('src="data:image/png&quot; onerror=&quot;alert(1);base64,AAAA"'));
+    });
   });
 }
