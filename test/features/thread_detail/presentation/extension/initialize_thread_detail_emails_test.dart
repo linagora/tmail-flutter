@@ -82,5 +82,25 @@ void main() {
 
       expect((captured[2] as List<EmailId>).length, 2);
     });
+
+    test('loads the emails through the check that drops them once another account is shown', () {
+      final emailIds = [EmailId(Id('email1')), EmailId(Id('email2'))];
+      when(threadDetailController.emailIdsPresentation).thenReturn(
+        Map.fromEntries(emailIds.map((emailId) => MapEntry(emailId, null))).obs,
+      );
+      when(threadDetailController.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+      when(threadDetailController.additionalProperties).thenReturn(Properties.empty());
+      when(threadDetailController.accountId).thenReturn(AccountId(Id('accountId')));
+      when(threadDetailController.session).thenReturn(SessionFixtures.aliceSession);
+      when(threadDetailController.isThreadDetailEnabled).thenReturn(true);
+      when(threadDetailController.networkConnected).thenReturn(true);
+      when(threadDetailController.mailboxDashBoardController).thenReturn(mailboxDashboardController);
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail(id: emailIds[0])));
+
+      threadDetailController.initializeThreadDetailEmails(GetThreadByIdSuccess(emailIds, threadId: null));
+
+      verify(threadDetailController.consumeShownAccountState(any)).called(1);
+      verifyNever(threadDetailController.consumeState(any));
+    });
   });
 }

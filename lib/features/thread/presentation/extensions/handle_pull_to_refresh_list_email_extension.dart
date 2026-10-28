@@ -47,7 +47,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
       return;
     }
 
-    consumeState(cleanAndGetEmailsInMailboxInteractor.execute(
+    consumeShownAccountState(cleanAndGetEmailsInMailboxInteractor.execute(
       session,
       accountId,
       limit: ThreadConstants.defaultLimit,

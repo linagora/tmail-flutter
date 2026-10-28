@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/search/email/domain/execution/search_execution_intent.dart';
 import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_session_reset.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
@@ -780,6 +781,20 @@ void main() {
 
       // The late result must be dropped silently, not throw UnmountedRefException.
       await expectLater(future, completes);
+    });
+
+    test('a response arriving after the search session is reset never reaches the next session', () async {
+      final container = containerForSort(EmailSortOrderType.relevance);
+      final pending = Completer<Either<Failure, Success>>();
+      answerSearch((_) => Stream.fromFuture(pending.future));
+      final future = runExecute(container, const NewSearchIntent());
+
+      // Showing another account resets the search session while this search is running.
+      resetSearchResultSession(container);
+      pending.complete(Right(SearchEmailSuccess([emailWith('late')])));
+      await future;
+
+      expect(container.read(searchEmailProvider), AsyncData(SearchEmailResult.empty()));
     });
 
     test('a stale response never overwrites a newer result', () async {

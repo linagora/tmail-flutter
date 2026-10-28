@@ -44,7 +44,11 @@ class QuotasController extends BaseController with ActiveAccountReader {
   }
 
   void _watchShownAccount() {
-    _cancelShownAccountWatch = activeAccountSource.watchShown((_) => reloadQuota());
+    _cancelShownAccountWatch = activeAccountSource.watchShown((_) {
+      // The quota of the account shown before never stays, also while the new one loads or fails.
+      mailboxDashBoardController.octetsQuota.value = null;
+      reloadQuota();
+    });
   }
 
   bool get isStorageCapabilitySupported {

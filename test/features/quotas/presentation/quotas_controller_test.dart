@@ -40,11 +40,14 @@ void main() {
   late MockMailboxDashBoardController dashboard;
   late ProviderContainer container;
   late RiverpodActiveAccountSource source;
+  late Rxn<Quota> octetsQuota;
 
   setUp(() {
     BaseControllerFixtures.registerDependencies();
     dashboard = MockMailboxDashBoardController();
+    octetsQuota = Rxn<Quota>();
     when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
+    when(dashboard.octetsQuota).thenReturn(octetsQuota);
     Get.put<MailboxDashBoardController>(dashboard);
     container = ActiveAccountSourceFixtures.newContainer();
     source = ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
@@ -114,7 +117,6 @@ void main() {
       () async {
     final myQuotaRequest = StreamController<Either<Failure, Success>>();
     addTearDown(myQuotaRequest.close);
-    when(dashboard.octetsQuota).thenReturn(Rxn<Quota>());
     when(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).thenAnswer((_) => myQuotaRequest.stream);
     when(getQuotasInteractor.execute(DelegationFixtures.bobAccountId))
         .thenAnswer((_) => Stream.value(Right(GetQuotasSuccess([_storageQuota('bob-storage')]))));
@@ -128,6 +130,17 @@ void main() {
 
     expect(dashboard.octetsQuota.value?.id, Id('bob-storage'));
   });
+
+  test('the quota of the account shown before is cleared while the new one loads', () {
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+    octetsQuota.value = _storageQuota('alice-storage');
+
+    show(DelegationFixtures.bobAccountId);
+
+    expect(octetsQuota.value, isNull);
+  });
+
 }
 
 Quota _storageQuota(String id) => Quota(Id(id), ResourceType.octets, Scope.account, 'Storage', used: UnsignedInt(1));

@@ -110,7 +110,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SingleEmailController extends BaseController
-    with AppLoaderMixin, ActiveAccountReader {
+    with AppLoaderMixin, ActiveAccountReader, ShownAccountStateConsumer {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -501,7 +501,7 @@ class SingleEmailController extends BaseController
         TransformConfiguration transformConfiguration =
           TransformConfiguration.forPreviewEmailOnPlatform();
 
-        consumeState(_getEmailContentInteractor.execute(
+        consumeShownAccountState(_getEmailContentInteractor.execute(
           session!,
           accountId!,
           emailId,
