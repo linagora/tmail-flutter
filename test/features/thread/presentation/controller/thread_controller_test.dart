@@ -1826,6 +1826,66 @@ void main() {
         verifyNever(mockMailboxDashBoardController.updateEmailList(any));
       });
 
+      testWidgets('an email change queued before an account switch is dropped once the switch cleared the email state',
+          (tester) async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        PlatformInfo.isTestingForWeb = false;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: false,
+        );
+        addTearDown(controller.onClose);
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(height: 600, child: ListView(controller: controller.listEmailController)),
+        ));
+        final emails = makeEmails(3, inboxMailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(inboxMailbox, emails, emailAction);
+        stubInteractorsForEmailStateChange(emails, inboxMailbox.id);
+        final bobChanges = StreamController<Either<Failure, Success>>();
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => bobChanges.stream);
+        clearInteractions(mockRefreshChangesEmailsInMailboxInteractor);
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('new-state'));
+        await tester.pump();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('newer-state'));
+        await tester.pump();
+        clearInteractions(mockAppToast);
+
+        source.show(DelegationFixtures.carolAccountId);
+        when(mockMailboxDashBoardController.currentEmailState).thenReturn(null);
+        await bobChanges.close();
+        await tester.pumpAndSettle();
+
+        verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).called(1);
+        verifyNever(mockAppToast.showToastErrorMessage(any, any));
+      });
+
       for (final switched in [false, true]) {
         testWidgets('a failed email changes refresh ${switched ? 'of an account shown before is ignored' : 'clears the stale cache'}',
             (tester) async {
