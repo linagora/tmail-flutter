@@ -114,6 +114,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
             ),
             visible: isVisible,
             child: Obx(() => TMailDropDownWidget(
+              key: const Key('language_drop_down_button'),
               text: _languageAndRegionController
                 .languageSelected
                 .value
