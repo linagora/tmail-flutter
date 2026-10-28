@@ -738,13 +738,11 @@ class SearchEmailController extends BaseController
   ) async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    // Contact autocomplete runs on my own account, also when another mailbox is shown.
-    final personalAccountId = mailboxDashBoardController.accountId.value;
-    if (personalAccountId == null || session == null) return;
+    if (accountId == null || session == null) return;
 
     final selectedContactList = searchEmailFilter.getContactApplied(prefixEmailAddress);
     final arguments = ContactArguments(
-      accountId: personalAccountId,
+      accountId: accountId!,
       session: session!,
       selectedContactList: selectedContactList,
       contactViewTitle: '${AppLocalizations.of(context).findEmails} ${prefixEmailAddress.asName(context).toLowerCase()}'

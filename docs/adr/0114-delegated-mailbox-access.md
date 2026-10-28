@@ -1,6 +1,7 @@
 # 114. Delegation: use the mailboxes delegated to me
 
 Date: 2026-10-20
+Updated: 2026-10-28
 
 ## Status
 
@@ -71,9 +72,9 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 
 | Area | Account | Why my own account does not regress |
 |---|---|---|
-| Mailbox view: folders, emails, search, flag, move, delete, labels, spam, quota | `active` | Same value while `active` = `mine` |
+| Mailbox view: folders, emails, search, flag, move, delete, labels, spam, quota, contact autocomplete | `active` | Same value while `active` = `mine` |
 | Composer, identities, "me" in views and filters | `active`: the owner's identities and folders, reply-all leaves every address of `ownerEmailAddresses` out | Same, plus my aliases now count as "me" |
-| Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, Drive attachments, contact autocomplete | `mine`, and Settings is hidden while a delegated account is shown (see Settings) | Untouched, so the owner's settings are unreachable |
+| Settings, vacation, filters, forwarding, server settings, AI Scribe, ecosystem, Drive attachments | `mine`, and Settings and the rule filter entries of the mailbox view are hidden while a delegated account is shown (see Settings) | Untouched, so the owner's settings are unreachable |
 | Notification tap, share and `mailto` intents (mobile) | The account of the notification, `mine` for an intent: a tap while another account is shown switches to the notification's account first, then opens the email (see Sync). A share or `mailto` intent switches to `mine`, then opens the composer. A refused switch drops the tap or intent with a toast | Unchanged when `active` = `mine` and delegation is off |
 | Web URL and history | Every URL of a delegated account carries `account=<accountId>` next to its mailbox and email ids, the `.eml` preview tab included. Reload, Back, a new tab and "Open in new tab" then show the same account, folder and email. A switch pushes the target's Inbox URL once it succeeds. A refused or rolled-back switch leaves the URL unchanged. Back or Forward to an entry of another account runs the normal switch (refused while a composer is open, the URL is put back). An entry whose account is no longer delegated is handled like a start (see Start on a delegated account) | Unchanged on `mine`: its URLs carry no `account`. A URL without `account` has to mean `mine` anyway (bookmarks, links and history entries from before delegation), so adding it on `mine` would only give the same page a second URL. It also keeps a reload after another user signs in on the same browser on that user's own mailbox |
 
