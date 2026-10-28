@@ -86,10 +86,10 @@ class WebComposerCodeViewRobot extends CoreRobot
     );
     // A browser can refuse to run the handler, so also check the editable
     // itself: active markup must never reach it, whatever the exit path.
+    final editable = _editorDocument()?.querySelector('div.note-editable');
+    expect(editable, isNotNull, reason: 'the editor is missing after leaving code view');
     expect(
-      _editorDocument()
-          ?.querySelector('div.note-editable')
-          ?.querySelector(_activeContentSelector),
+      editable?.querySelector(_activeContentSelector),
       isNull,
       reason: 'active markup from the code view reached the editor',
     );
