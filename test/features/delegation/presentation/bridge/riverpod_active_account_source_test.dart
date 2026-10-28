@@ -141,4 +141,44 @@ void main() {
       expect(shownAccountIds, isEmpty);
     });
   });
+
+  group('switch attempts:', () {
+    test('a request stamped while another account is shown outside a switch stays current', () {
+      source.applySession(DelegationFixtures.session());
+      final stampedAttemptIds = <int>[];
+      addTearDown(source.watchShown((_) => stampedAttemptIds.add(source.currentSwitchAttemptId)));
+
+      select(DelegationFixtures.bobAccountId);
+
+      expect(stampedAttemptIds.last, source.currentSwitchAttemptId);
+    });
+
+    test('a request stamped in a watch registered before the first session stays current', () {
+      final stampedAttemptIds = <int>[];
+      addTearDown(source.watchShown((_) => stampedAttemptIds.add(source.currentSwitchAttemptId)));
+      source.applySession(DelegationFixtures.session());
+
+      select(DelegationFixtures.bobAccountId);
+
+      expect(stampedAttemptIds.last, source.currentSwitchAttemptId);
+    });
+
+    test('another account shown outside a switch starts a new attempt', () {
+      source.applySession(DelegationFixtures.session());
+      final attemptBefore = source.currentSwitchAttemptId;
+
+      select(DelegationFixtures.bobAccountId);
+
+      expect(source.currentSwitchAttemptId, attemptBefore + 1);
+    });
+
+    test('a session re-read of the same account keeps the attempt', () {
+      source.applySession(DelegationFixtures.session());
+      final attemptBefore = source.currentSwitchAttemptId;
+
+      source.applySession(DelegationFixtures.session(state: 'state-2'));
+
+      expect(source.currentSwitchAttemptId, attemptBefore);
+    });
+  });
 }
