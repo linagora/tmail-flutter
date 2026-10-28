@@ -3,6 +3,8 @@ const ghsaEmbedCodeXssPayload =
     '<a href="javascript:alert(3)">clickme</a>'
     '<svg onload=alert(4)></svg><p>visible text</p>';
 
+const scriptOnlyEmbedCodePayload = '<script>alert(1)</script>';
+
 const youtubeIframeEmbed =
     '<iframe width="560" height="315" '
     'src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>'

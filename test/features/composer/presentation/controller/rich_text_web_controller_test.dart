@@ -190,6 +190,23 @@ void main() {
     );
 
     test(
+      'writes an empty paragraph when sanitizing removes all the code view HTML',
+      () async {
+        when(
+          editorController.isActivatedCodeView(),
+        ).thenAnswer((_) async => true);
+        when(
+          editorController.getText(),
+        ).thenAnswer((_) async => scriptOnlyEmbedCodePayload);
+
+        controller.toggleCodeView();
+        await untilCalled(editorController.toggleCodeView());
+
+        verify(editorController.setText('<p><br></p>')).called(1);
+      },
+    );
+
+    test(
       'does not leave code view when the editor HTML cannot be read',
       () async {
         when(
