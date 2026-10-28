@@ -33,9 +33,12 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dartz/dartz.dart' show Either, Left, Right;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' hide State;
+import 'package:fake_async/fake_async.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show UncontrolledProviderScope;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -454,9 +457,80 @@ void main() {
       ActiveAccountSourceFixtures.putShowing(null);
 
       mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
-          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1')))));
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))), testAccountId));
 
       verifyNever(getRestoredDeletedMessageInteractor.execute(any, any, any));
+    });
+
+    test('polls the account the restore started on, even once another account is shown', () {
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.carolAccountId);
+
+      mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))),
+          DelegationFixtures.bobAccountId));
+
+      verify(getRestoredDeletedMessageInteractor.execute(any, DelegationFixtures.bobAccountId, any))
+          .called(1);
+    });
+
+    for (final (shownAccountId, refreshes) in [
+      (DelegationFixtures.bobAccountId, true),
+      (DelegationFixtures.carolAccountId, false),
+    ]) {
+      test('a restore polled on bob ${refreshes ? 'refreshes' : 'does not refresh'} the restored messages '
+          'folder while ${shownAccountId.id.value} is shown', () {
+        ActiveAccountSourceFixtures.putShowing(shownAccountId);
+        mailboxDashboardController.selectedMailbox.value =
+            PresentationMailbox(MailboxId(Id('restored')), role: PresentationMailbox.roleRecovered);
+        mailboxDashboardController.emailUIAction.value = null;
+
+        mailboxDashboardController.handleSuccessViewState(GetRestoredDeletedMessageInProgress(
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))),
+          DelegationFixtures.bobAccountId,
+        ));
+
+        expect(mailboxDashboardController.emailUIAction.value, refreshes ? isA<RefreshChangeEmailAction>() : isNull);
+      });
+    }
+
+    for (final (shownAccountId, offersOpen) in [
+      (DelegationFixtures.bobAccountId, true),
+      (DelegationFixtures.carolAccountId, false),
+    ]) {
+      testWidgets('a restore finished on bob ${offersOpen ? 'offers' : 'offers no'} button to open its folder '
+          'while ${shownAccountId.id.value} is shown', (tester) async {
+        await pumpLocalizedApp(tester);
+        clearInteractions(appToast);
+        ActiveAccountSourceFixtures.putShowing(shownAccountId);
+
+        mailboxDashboardController.handleSuccessViewState(GetRestoredDeletedMessageCompleted(
+          EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))),
+          DelegationFixtures.bobAccountId,
+          recoveredMailbox: Mailbox(id: MailboxId(Id('bob-restored'))),
+        ));
+
+        if (offersOpen) {
+          verify(_showToastWithAction(appToast)).called(1);
+          verifyNever(appToast.showToastSuccessMessage(any, any));
+        } else {
+          verifyNever(_showToastWithAction(appToast));
+          verify(appToast.showToastSuccessMessage(any, any)).called(1);
+        }
+      });
+    }
+
+    test('keeps polling the account the restore started on while it is in progress', () {
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.carolAccountId);
+      final recoveryAction = EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1')));
+
+      fakeAsync((async) {
+        mailboxDashboardController.handleSuccessViewState(
+            GetRestoredDeletedMessageInProgress(recoveryAction, DelegationFixtures.bobAccountId));
+        async.elapse(const Duration(seconds: 2));
+      });
+
+      verify(getRestoredDeletedMessageInteractor.execute(any, DelegationFixtures.bobAccountId, any))
+          .called(1);
     });
   });
 
@@ -820,7 +894,7 @@ void main() {
       (
         name: 'polling the restored messages',
         act: (_) async => mailboxDashboardController.handleSuccessViewState(RestoreDeletedMessageSuccess(
-            EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))))),
+            EmailRecoveryAction(id: EmailRecoveryActionId(Id('recovery-1'))), bob)),
         expectShownAccount: () => verify(getRestoredDeletedMessageInteractor.execute(any, bob, any)).called(1),
       ),
     ];
@@ -953,3 +1027,15 @@ void main() {
 }
 
 class _FakeBuildContext extends Fake implements BuildContext {}
+
+void _showToastWithAction(MockAppToast appToast) => appToast.showToastMessage(
+      any,
+      any,
+      actionName: anyNamed('actionName'),
+      onActionClick: anyNamed('onActionClick'),
+      actionIcon: anyNamed('actionIcon'),
+      leadingSVGIcon: anyNamed('leadingSVGIcon'),
+      leadingSVGIconColor: anyNamed('leadingSVGIconColor'),
+      backgroundColor: anyNamed('backgroundColor'),
+      textColor: anyNamed('textColor'),
+    );
