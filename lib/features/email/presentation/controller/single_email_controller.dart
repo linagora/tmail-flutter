@@ -1241,7 +1241,7 @@ class SingleEmailController extends BaseController
     required Set<Id> blobIds,
   }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
-    consumeState(_parseCalendarEventInteractor!.execute(
+    consumeShownAccountState(_parseCalendarEventInteractor!.execute(
       accountId,
       blobIds,
       TransformConfiguration.forCalendarEvent()
