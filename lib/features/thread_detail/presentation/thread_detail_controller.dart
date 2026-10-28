@@ -66,7 +66,8 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ThreadDetailController extends BaseController with ActiveAccountReader {
+class ThreadDetailController extends BaseController
+    with ActiveAccountReader, ShownAccountStateConsumer {
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -109,7 +110,7 @@ class ThreadDetailController extends BaseController with ActiveAccountReader {
     checkEquality: false,
     onChanged: (value) {
       if (_validateLoadThread(value?.threadId)) {
-        consumeState(_getEmailIdsByThreadIdInteractor.execute(
+        consumeShownAccountState(_getEmailIdsByThreadIdInteractor.execute(
           value!.threadId!,
           session!,
           accountId!,
