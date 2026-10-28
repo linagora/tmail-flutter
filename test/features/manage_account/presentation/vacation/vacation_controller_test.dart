@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -322,6 +324,23 @@ void main() {
     );
 
     testWidgets(
+      'rejects an empty mobile editor even when the view unmounts while reading it',
+      (tester) async {
+        final context = await pumpApp(tester);
+        setUpVacation(status: VacationResponderStatus.activated, editorHtml: '');
+        final editorApi = _PendingHtmlEditorApi();
+        vacationController.richTextControllerForMobile!.htmlEditorApi = editorApi;
+
+        vacationController.saveVacation(context);
+        await tester.pumpWidget(const SizedBox());
+        editorApi.completer.complete('<div><br></div>');
+        await tester.pumpAndSettle();
+
+        verifyNever(mockUpdateVacationInteractor.execute(any, any));
+      },
+    );
+
+    testWidgets(
       'rejects an enabled vacation whose mobile editor returns an empty string',
       (tester) async {
         final context = await pumpApp(tester);
@@ -428,4 +447,11 @@ class _FakeHtmlEditorApi extends Fake implements HtmlEditorApi {
 
   @override
   Future<String> getText() async => html;
+}
+
+class _PendingHtmlEditorApi extends Fake implements HtmlEditorApi {
+  final completer = Completer<String>();
+
+  @override
+  Future<String> getText() => completer.future;
 }
