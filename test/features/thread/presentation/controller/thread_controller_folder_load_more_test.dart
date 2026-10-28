@@ -64,6 +64,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import 'thread_controller_folder_load_more_test.mocks.dart';
 
@@ -163,6 +164,7 @@ void main() {
     Get.put<NetworkConnectionController>(MockNetworkConnectionController());
     Get.put<SearchController>(mockSearchController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    ActiveAccountSourceFixtures.put(SessionFixtures.aliceSession);
     Get.put<SearchEmailInteractor>(MockSearchEmailInteractor());
     Get.put<SearchMoreEmailInteractor>(MockSearchMoreEmailInteractor());
   });
