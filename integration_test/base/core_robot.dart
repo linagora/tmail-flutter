@@ -26,6 +26,7 @@ abstract class CoreRobot {
         return view.viewInsets.bottom == 0;
       },
       timeout: TestTimeouts.short,
+      reason: 'Keyboard was not hidden',
     );
   }
 }

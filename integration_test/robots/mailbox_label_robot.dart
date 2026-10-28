@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -42,17 +40,14 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     await ensureLabelReady(label);
     await label.longPress();
     if (PlatformInfo.isMobile) {
-      try {
-        await waitForCondition(
-          () async {
-            await $.pump();
-            return $(ContextMenuDialogItem).visible;
-          },
-          timeout: TestTimeouts.short,
-        );
-      } on TimeoutException {
-        fail('Label context menu was not shown within 15 seconds');
-      }
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return $(ContextMenuDialogItem).visible;
+        },
+        timeout: TestTimeouts.short,
+        reason: 'Label context menu was not shown',
+      );
     } else {
       await $.pumpAndSettle();
     }
@@ -75,21 +70,18 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     if (PlatformInfo.isMobile) await hideKeyboard();
     await input.enterText(name);
     if (!PlatformInfo.isMobile) return;
-    try {
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return $.tester
-                  .widget<EditableText>(input.$(EditableText))
-                  .controller
-                  .text ==
-              name;
-        },
-        timeout: TestTimeouts.short,
-      );
-    } on TimeoutException {
-      fail('Label name input did not keep "$name" within 15 seconds');
-    }
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return $.tester
+                .widget<EditableText>(input.$(EditableText))
+                .controller
+                .text ==
+            name;
+      },
+      timeout: TestTimeouts.short,
+      reason: 'Label name input did not keep "$name"',
+    );
   }
 
   @override
@@ -98,17 +90,14 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     await button.scrollTo();
     await button.tap();
     if (PlatformInfo.isMobile) {
-      try {
-        await waitForCondition(
-          () async {
-            await $.pump();
-            return !$(CreateNewLabelModal).exists;
-          },
-          timeout: TestTimeouts.medium,
-        );
-      } on TimeoutException {
-        fail('Label modal did not close after saving within 30 seconds');
-      }
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return !$(CreateNewLabelModal).exists;
+        },
+        timeout: TestTimeouts.medium,
+        reason: 'Label modal did not close after saving',
+      );
     }
   }
 }

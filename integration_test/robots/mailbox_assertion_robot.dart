@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,34 +99,28 @@ class MailboxAssertionRobot extends CoreRobot implements AbstractMailboxAssertio
   Future<void> expectLabelSelected(PatrolFinder label) async {
     final selectedLabel = label.which<SidebarLabelItem>((w) => w.isSelected);
     if (PlatformInfo.isMobile) {
-      try {
-        await waitForCondition(
-          () async {
-            await $.pump();
-            return getBinding<MailboxDashBoardController>()?.isDrawerOpen == true
-                && $(Drawer).visible;
-          },
-          timeout: TestTimeouts.short,
-        );
-      } on TimeoutException {
-        fail('Mailbox drawer was not shown within 15 seconds');
-      }
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return getBinding<MailboxDashBoardController>()?.isDrawerOpen == true
+              && $(Drawer).visible;
+        },
+        timeout: TestTimeouts.short,
+        reason: 'Mailbox drawer was not shown',
+      );
       await label.scrollTo(
         scrollDirection: AxisDirection.down,
         view: $(Drawer).$(Scrollable).first,
         settlePolicy: SettlePolicy.noSettle,
       );
-      try {
-        await waitForCondition(
-          () async {
-            await $.pump();
-            return selectedLabel.exists;
-          },
-          timeout: TestTimeouts.medium,
-        );
-      } on TimeoutException {
-        fail('Label was not selected within 30 seconds: $label');
-      }
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return selectedLabel.exists;
+        },
+        timeout: TestTimeouts.medium,
+        reason: 'Label was not selected: $label',
+      );
       return;
     }
     await $(selectedLabel).scrollTo(scrollDirection: AxisDirection.down);
