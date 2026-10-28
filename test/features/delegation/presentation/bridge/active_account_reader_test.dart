@@ -30,6 +30,29 @@ void main() {
     expect(reader.activeAccountId, DelegationFixtures.carolAccountId);
   });
 
+  group('isDelegatedAccountShown', () {
+    test('is true while a delegated account is shown', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      expect(_Reader().isDelegatedAccountShown, isTrue);
+    });
+
+    test('is false while my own account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      expect(_Reader().isDelegatedAccountShown, isFalse);
+    });
+
+    test('is false while no account is shown yet', () {
+      ActiveAccountSourceFixtures.putEmpty();
+
+      expect(_Reader().isDelegatedAccountShown, isFalse);
+    });
+  });
+
   test('reads the source registered at the time of the read', () {
     final reader = _Reader();
     ActiveAccountSourceFixtures.put(DelegationFixtures.session());

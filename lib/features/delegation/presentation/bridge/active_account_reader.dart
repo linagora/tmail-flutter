@@ -8,4 +8,7 @@ mixin ActiveAccountReader {
   ActiveAccountSource get activeAccountSource => Get.find<ActiveAccountSource>();
 
   AccountId? get activeAccountId => activeAccountSource.accountId;
+
+  /// Personal-only actions, such as an email rule filter, are hidden while this is true.
+  bool get isDelegatedAccountShown => activeAccountSource.activeAccount?.isDelegated == true;
 }
