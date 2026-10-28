@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -36,6 +37,16 @@ mixin ShownAccountStateConsumer on BaseController, ActiveAccountReader {
     );
     _shownAccountSubscriptions.add(subscription);
     subscription.listen(viewResults);
+  }
+
+  /// The retry stream is bound to the account of the failed request, so a tap after its attempt
+  /// ended only closes the toast.
+  @override
+  VoidCallback retryActionOf(Stream<Either<Failure, Success>> retry) {
+    final stamp = stampShownAccountRequest();
+    return () {
+      if (stamp.isCurrent) consumeShownAccountState(retry);
+    };
   }
 
   @override
