@@ -1257,7 +1257,7 @@ void main() {
     expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
   });
 
-  testWidgets('picking contacts for the filter reads the contacts of my own account, not of the shown one',
+  testWidgets('picking contacts for the filter reads the contacts of the shown account, not of my own',
       (tester) async {
     ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
     final ref = await pumpWidgetRef(tester);
@@ -1266,6 +1266,6 @@ void main() {
     unawaited(controller.selectContactForSearchFilter(ref, recorder.context, PrefixEmailAddress.from));
     await tester.pumpAndSettle();
 
-    expect((recorder.arguments as ContactArguments).accountId, AccountFixtures.aliceAccountId);
+    expect((recorder.arguments as ContactArguments).accountId, DelegationFixtures.bobAccountId);
   });
 }
