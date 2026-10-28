@@ -38,7 +38,7 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
     if (emailIdsToLoadMetaData.isEmpty) {
       return;
     }
-    consumeState(getEmailsByIdsInteractor.execute(
+    consumeShownAccountState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
       emailIdsToLoadMetaData,
