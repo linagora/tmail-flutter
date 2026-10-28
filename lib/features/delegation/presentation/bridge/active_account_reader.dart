@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/shown_account_state_subscription.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/switch_attempt_stamp.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 
 /// For a GetX class that reads the shown mailbox. Settings and other personal areas use my own
@@ -28,7 +29,10 @@ mixin ShownAccountStateConsumer on BaseController, ActiveAccountReader {
   SwitchAttemptStamp _stampShownAccountRequest() => SwitchAttemptStamp(activeAccountSource);
 
   /// Drops what arrives once its switch attempt ended or this controller closed.
-  ShownAccountStateSubscription consumeShownAccountState(Stream<Either<Failure, Success>> viewResults) {
+  ShownAccountStateSubscription consumeShownAccountState(
+    Stream<Either<Failure, Success>> viewResults, {
+    ShownAccountLoadKind? reportAs,
+  }) {
     final subscription = ShownAccountStateSubscription(
       stamp: _stampShownAccountRequest(),
       onData: onData,
@@ -39,6 +43,9 @@ mixin ShownAccountStateConsumer on BaseController, ActiveAccountReader {
     );
     _shownAccountSubscriptions.add(subscription);
     subscription.listen(viewResults);
+    if (reportAs != null) {
+      Get.find<ShownAccountLoadReporter>().reportLoad(reportAs, subscription.load);
+    }
     return subscription;
   }
 

@@ -7,6 +7,7 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 
 class ActiveAccountSourceFixtures {
@@ -22,7 +23,7 @@ class ActiveAccountSourceFixtures {
     if (shownAccountId != null) {
       sourceContainer.read(activeAccountProvider.notifier).select(shownAccountId);
     }
-    _register(source, source);
+    _register(source, source, source);
     return source;
   }
 
@@ -30,7 +31,7 @@ class ActiveAccountSourceFixtures {
   /// the one a new dashboard starts from.
   static RiverpodActiveAccountSource putEmpty() {
     final source = RiverpodActiveAccountSource(newContainer());
-    _register(source, source);
+    _register(source, source, source);
     return source;
   }
 
@@ -38,7 +39,7 @@ class ActiveAccountSourceFixtures {
   /// does not list that account.
   static FakeActiveAccountSource putShowing(AccountId? accountId) {
     final source = FakeActiveAccountSource(accountId);
-    _register(source, source);
+    _register(source, source, source);
     return source;
   }
 
@@ -58,6 +59,7 @@ class ActiveAccountSourceFixtures {
   static void unregister() {
     Get.delete<ActiveAccountSource>(force: true);
     Get.delete<ActiveAccountWriter>(force: true);
+    Get.delete<ShownAccountLoadReporter>(force: true);
   }
 
   static ProviderContainer newContainer() {
@@ -69,21 +71,30 @@ class ActiveAccountSourceFixtures {
   static void _restoreAfterThisTest() {
     final previousSource = Get.find<ActiveAccountSource>();
     final previousWriter = Get.find<ActiveAccountWriter>();
-    addTearDown(() => _register(previousSource, previousWriter));
+    final previousReporter = Get.find<ShownAccountLoadReporter>();
+    addTearDown(() => _register(previousSource, previousWriter, previousReporter));
   }
 
   /// Replaces a source left registered by an earlier test, which [Get.put] would keep.
-  static void _register(ActiveAccountSource source, ActiveAccountWriter writer) {
+  static void _register(
+    ActiveAccountSource source,
+    ActiveAccountWriter writer,
+    ShownAccountLoadReporter reporter,
+  ) {
     unregister();
     Get.put<ActiveAccountSource>(source);
     Get.put<ActiveAccountWriter>(writer);
+    Get.put<ShownAccountLoadReporter>(reporter);
   }
 }
 
 /// Shows an account the session may not list. It has an [activeAccount] only for my own account of
 /// an applied session. Each change of the shown account is a new switch attempt.
-class FakeActiveAccountSource implements ActiveAccountSource, ActiveAccountWriter {
+class FakeActiveAccountSource
+    implements ActiveAccountSource, ActiveAccountWriter, ShownAccountLoadReporter {
   final _watchers = <OnShownAccount>[];
+  final _reloadWatchers = <OnShownAccount>[];
+  final reportedLoads = <(ShownAccountLoadKind, ShownAccountLoad)>[];
 
   AccountId? _accountId;
   ActiveAccount? _activeAccount;
@@ -114,6 +125,23 @@ class FakeActiveAccountSource implements ActiveAccountSource, ActiveAccountWrite
     final shownAccountId = _accountId;
     if (shownAccountId != null) onShown(shownAccountId);
     return () => _watchers.remove(onShown);
+  }
+
+  @override
+  CancelShownAccountWatch watchShownReload(OnShownAccount onReload) {
+    _reloadWatchers.add(onReload);
+    return () => _reloadWatchers.remove(onReload);
+  }
+
+  @override
+  void reportLoad(ShownAccountLoadKind kind, ShownAccountLoad load) => reportedLoads.add((kind, load));
+
+  void requestReload() {
+    final shownAccountId = _accountId;
+    if (shownAccountId == null) return;
+    for (final onReload in List.of(_reloadWatchers)) {
+      onReload(shownAccountId);
+    }
   }
 
   void show(AccountId accountId) => _show(accountId, null);
