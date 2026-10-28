@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
@@ -8,6 +7,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
+import '../utils/describe_failure.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
@@ -29,11 +29,10 @@ mixin ProvisioningLabelScenarioMixin {
     if (dashboardController == null ||
         createLabelInteractor == null ||
         accountId == null) {
-      log(
-        'ProvisioningLabelScenarioMixin::provisionLabels '
-        'skipped: missing dashboardController, CreateNewLabelInteractor, or accountId',
+      throw StateError(
+        'Provisioning labels: missing dashboardController, '
+        'CreateNewLabelInteractor, or accountId',
       );
-      return [];
     }
 
     // Sequential: concurrent Label/set races in the memory backend
@@ -44,11 +43,6 @@ mixin ProvisioningLabelScenarioMixin {
         accountId,
         provisioningLabel,
       );
-      if (label == null) {
-        throw StateError(
-          'Failed to provision label ${provisioningLabel.displayName}',
-        );
-      }
       createdLabels.add(label);
     }
 
@@ -57,7 +51,7 @@ mixin ProvisioningLabelScenarioMixin {
     return createdLabels;
   }
 
-  Future<Label?> _createLabel(
+  Future<Label> _createLabel(
     CreateNewLabelInteractor createLabelInteractor,
     AccountId accountId,
     ProvisioningLabel provisioningLabel,
@@ -67,8 +61,16 @@ mixin ProvisioningLabelScenarioMixin {
         .last;
 
     return result.fold(
-      (_) => null,
-      (success) => success is CreateNewLabelSuccess ? success.newLabel : null,
+      (failure) => throw StateError(
+        'Failed to provision label ${provisioningLabel.displayName}: '
+        '${describeFailure(failure)}',
+      ),
+      (success) => success is CreateNewLabelSuccess
+          ? success.newLabel
+          : throw StateError(
+              'Label ${provisioningLabel.displayName} ended in '
+              '${success.runtimeType}',
+            ),
     );
   }
 

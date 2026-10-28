@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 
 import '../../base/core_robot.dart';
 import '../../models/provisioning_email.dart';
+import '../../utils/describe_failure.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_mailbox_ready.dart' as wait_for_mailbox_ready;
 
@@ -48,7 +49,9 @@ abstract class AbstractCommonRobot extends CoreRobot {
 
     final identity = await _getIdentity();
 
-    if (identity == null) return;
+    if (identity == null) {
+      throw StateError('Provisioning: no identity for the current account');
+    }
 
     // Provision emails
     for (final provisioningEmail in provisioningEmails) {
@@ -112,12 +115,12 @@ abstract class AbstractCommonRobot extends CoreRobot {
         .last;
     result.fold(
       (failure) => throw StateError(
-        'Provisioning email "${provisioningEmail.subject}" was not sent: $failure',
+        'Provisioning email "${provisioningEmail.subject}" was not sent: ${describeFailure(failure)}',
       ),
       (success) {
         if (success is! SendEmailSuccess) {
           throw StateError(
-            'Provisioning email "${provisioningEmail.subject}" ended in $success',
+            'Provisioning email "${provisioningEmail.subject}" ended in ${success.runtimeType}',
           );
         }
       },
