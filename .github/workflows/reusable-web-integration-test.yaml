@@ -44,5 +44,5 @@ jobs:
         with:
           name: web-integration-test-logs
           path: ci-logs/
-          retention-days: 14
+          retention-days: 5
           if-no-files-found: ignore
