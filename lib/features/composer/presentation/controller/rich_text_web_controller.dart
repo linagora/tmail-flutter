@@ -27,6 +27,7 @@ class RichTextWebController extends GetxController {
 
   static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
   static const int fontSizeDefault = 16;
+  static const String _emptyEditorHtml = '<p><br></p>';
 
   final HtmlEditorController editorController;
   final ComposerCodeViewSanitizer _codeViewSanitizer;
@@ -289,7 +290,9 @@ class RichTextWebController extends GetxController {
   Future<void> _sanitizeAndLeaveCodeView() async {
     try {
       final rawHtml = await editorController.getText();
-      editorController.setText(_codeViewSanitizer.sanitize(rawHtml));
+      final sanitizedHtml = _codeViewSanitizer.sanitize(rawHtml);
+      // In code view, Summernote ignores an empty value and would keep the raw HTML.
+      editorController.setText(sanitizedHtml.trim().isEmpty ? _emptyEditorHtml : sanitizedHtml);
     } catch (e) {
       logWarning('RichTextWebController::toggleCodeView: $e');
       return;
