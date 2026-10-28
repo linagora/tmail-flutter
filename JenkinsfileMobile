@@ -6,6 +6,7 @@ pipeline {
     options {
         timeout(time: 180, unit: 'MINUTES')
         disableConcurrentBuilds()
+        buildDiscarder(logRotator(daysToKeepStr: '5', artifactDaysToKeepStr: '5'))
     }
 
     environment {
@@ -24,7 +25,8 @@ pipeline {
         stage('Run Patrol Mobile Integration Tests') {
             steps {
                 withCredentials([file(credentialsId: 'firebase-testlab-sa', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    sh './scripts/patrol-integration-test-with-docker.sh'
+                    // One Patrol job per agent: the backend container and its ports are host-wide.
+                    sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-integration-test-with-docker.sh'
                 }
             }
         }
@@ -36,13 +38,14 @@ pipeline {
                 echo 'Running post-build cleanup...'
 
                 echo 'Archiving Firebase Test Lab results...'
-                archiveArtifacts artifacts: 'ftl-results/**/test_result_*.xml', allowEmptyArchive: true, fingerprint: true
+                archiveArtifacts artifacts: 'ftl-results/**, ci-logs/**', allowEmptyArchive: true, fingerprint: true
                 junit testResults: 'ftl-results/**/test_result_*.xml', allowEmptyResults: true
 
-                // Tear down the backend Docker stack if it is still running.
+                // Tear down the backend Docker stack if it is still running and belongs to this workspace.
                 sh '''
-                    cd backend-docker
-                    docker compose down --remove-orphans 2>/dev/null || true
+                    [ -f scripts/ci-backend-teardown.sh ] || exit 0
+                    flock -n -o /tmp/tmail-patrol-backend.lock bash scripts/ci-backend-teardown.sh \
+                        || echo "agent backend lock held by another job; skip teardown."
                 '''
             }
             deleteDir() /* clean up our workspace */

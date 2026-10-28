@@ -24,6 +24,7 @@ class MobileRulesFilterCreatorRobot extends AbstractRulesFilterCreatorRobot {
     String actionName,
     String selectActionHint,
   ) async {
+    await hideKeyboard();
     await $(find.text(selectActionHint)).tap();
     await $.pumpAndTrySettle();
     await $(find.text(actionName)).tap();

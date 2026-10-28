@@ -3,4 +3,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <activity android:name="com.linagora.android.tmail.KeyboardTestActivity" android:exported="false" />
+    </application>
 </manifest>

@@ -12,7 +12,9 @@ import android.widget.FrameLayout;
 import androidx.test.core.app.ActivityScenario;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -27,13 +29,16 @@ public class WebViewKeyboardTest {
     private static final String EDITOR = "document.getElementById('editor')";
     private static final String EDITOR_TEXT = EDITOR + ".textContent";
 
-    private ActivityScenario<MainActivity> scenario;
+    private ActivityScenario<KeyboardTestActivity> scenario;
     private KeyConsumingLayout parent;
     private WebView webView;
 
+    @Rule
+    public final Timeout timeout = Timeout.seconds(60);
+
     @Before
     public void setUp() {
-        scenario = ActivityScenario.launch(MainActivity.class);
+        scenario = ActivityScenario.launch(KeyboardTestActivity.class);
         scenario.onActivity(activity -> {
             parent = new KeyConsumingLayout(activity);
             activity.setContentView(parent);
@@ -42,6 +47,7 @@ public class WebViewKeyboardTest {
 
     @After
     public void tearDown() {
+        if (scenario == null) return;
         scenario.onActivity(activity -> {
             parent.removeAllViews();
             if (webView != null) webView.destroy();
@@ -125,7 +131,7 @@ public class WebViewKeyboardTest {
         });
     }
 
-    private RecordingWebView focusEditor(MainActivity activity, boolean handled) {
+    private RecordingWebView focusEditor(KeyboardTestActivity activity, boolean handled) {
         RecordingWebView editor = new RecordingWebView(activity, handled);
         webView = editor;
         focus(editor);
@@ -179,7 +185,7 @@ public class WebViewKeyboardTest {
         return text;
     }
 
-    private static void assertDispatchedTo(MainActivity activity, List<KeyEvent> recorded, KeyEvent... events) {
+    private static void assertDispatchedTo(KeyboardTestActivity activity, List<KeyEvent> recorded, KeyEvent... events) {
         for (KeyEvent event : events) assertTrue(activity.dispatchKeyEvent(event));
         assertEquals(events.length, recorded.size());
         for (int i = 0; i < events.length; i++) assertSame(events[i], recorded.get(i));

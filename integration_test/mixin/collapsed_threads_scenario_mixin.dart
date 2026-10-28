@@ -8,6 +8,8 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -75,7 +77,27 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
   }
 
   Future<void> reloadFolder() async {
+    // An earlier first-page load sets the same success state as the refresh.
+    await $.pump();
+    await waitForStep(
+      'earlier load settled',
+      () => threadController.viewState.value.fold(
+        (_) => true,
+        (state) => state is! GetAllEmailLoading,
+      ),
+      timeout: TestTimeouts.long,
+    );
     await dashboardController.refreshMailboxAction();
+    // The refresh starts after a delay and a cache clear; rows from the earlier
+    // load already satisfy "threads listed", so wait for the refresh itself.
+    await waitForStep(
+      'folder refreshed',
+      () => dashboardController.refreshingAllEmailState.value.fold(
+        (_) => false,
+        (state) => state is RefreshAllEmailSuccess,
+      ),
+      timeout: TestTimeouts.long,
+    );
     await waitForStep('threads listed', () => listedThreads.isNotEmpty);
     await waitForLoadMoreIdle();
   }

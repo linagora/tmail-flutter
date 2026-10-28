@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 
+import '../abstract/abstract_mailbox_assertion_robot.dart';
 import '../abstract/abstract_mailbox_label_robot.dart';
 import '../abstract/abstract_mailbox_menu_robot.dart';
 import '../abstract/abstract_mailbox_navigation_robot.dart';
@@ -12,7 +13,13 @@ class MobileMailboxMenuRobot extends MailboxMenuRobot implements AbstractMailbox
     PatrolIntegrationTester $, {
     AbstractMailboxNavigationRobot? navigationRobot,
     AbstractMailboxLabelRobot? labelRobot,
-  }) : super($, navigationRobot: navigationRobot, labelRobot: labelRobot);
+    AbstractMailboxAssertionRobot? assertionRobot,
+  }) : super(
+          $,
+          navigationRobot: navigationRobot,
+          labelRobot: labelRobot,
+          assertionRobot: assertionRobot,
+        );
 
   @override
   Future<void> openSetting() async {

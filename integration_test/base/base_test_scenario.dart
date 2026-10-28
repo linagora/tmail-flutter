@@ -11,6 +11,7 @@ import '../mixin/scenario_utils_mixin.dart';
 import 'base_scenario.dart';
 
 abstract class BaseTestScenario extends BaseScenario with ScenarioUtilsMixin {
+  @override
   final RobotFactory robots;
 
   const BaseTestScenario(super.$, this.robots);

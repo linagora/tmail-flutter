@@ -10,6 +10,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
@@ -23,6 +24,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 
 import '../../base/core_robot.dart';
 import '../../models/provisioning_email.dart';
+import '../../utils/describe_failure.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_mailbox_ready.dart' as wait_for_mailbox_ready;
 
@@ -43,46 +45,23 @@ abstract class AbstractCommonRobot extends CoreRobot {
     ComposerBindings().dependencies();
 
     await waitForMailboxReady();
-    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final createNewAndSendEmailInteractor =
-        Get.find<CreateNewAndSendEmailInteractor>();
     final threadController = Get.find<ThreadController>();
 
     final identity = await _getIdentity();
 
-    if (identity == null) return;
+    if (identity == null) {
+      throw StateError('Provisioning: no identity for the current account');
+    }
 
     // Provision emails
-    await Future.wait(provisioningEmails.map((provisioningEmail) async {
-      final attachments =
-          await Future.wait(provisioningEmail.fileInfos.map(uploadAttachments));
-
-      // Create and send email
-      return await createNewAndSendEmailInteractor
-          .execute(
-            createEmailRequest: CreateEmailRequest(
-              session: mailboxDashBoardController.sessionCurrent!,
-              accountId: mailboxDashBoardController.accountId.value!,
-              emailActionType: EmailActionType.compose,
-              ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
-              subject: provisioningEmail.subject,
-              emailContent: provisioningEmail.content,
-              toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
-              outboxMailboxId:
-                  mailboxDashBoardController.outboxMailbox?.mailboxId,
-              sentMailboxId: folderLocationRole != null
-                  ? mailboxDashBoardController
-                      .mapDefaultMailboxIdByRole[folderLocationRole]
-                  : mailboxDashBoardController
-                      .mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-              identity: identity,
-              attachments: attachments,
-              hasRequestReadReceipt: requestReadReceipt,
-              keywords: provisioningEmail.labels.keywords,
-            ),
-          )
-          .last;
-    }));
+    for (final provisioningEmail in provisioningEmails) {
+      await _sendProvisioningEmail(
+        provisioningEmail,
+        identity: identity,
+        requestReadReceipt: requestReadReceipt,
+        folderLocationRole: folderLocationRole,
+      );
+    }
 
     // Web e2e browser storage can retain mailbox data from a preceding test.
     // A normal refresh may return that cache while the server-side provisioning
@@ -94,6 +73,58 @@ abstract class AbstractCommonRobot extends CoreRobot {
     }
 
     ComposerBindings().dispose();
+  }
+
+  // A swallowed send failure otherwise surfaces 90 s later as a missing tile
+  Future<void> _sendProvisioningEmail(
+    ProvisioningEmail provisioningEmail, {
+    required Identity identity,
+    required bool requestReadReceipt,
+    Role? folderLocationRole,
+  }) async {
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+    final createNewAndSendEmailInteractor =
+        Get.find<CreateNewAndSendEmailInteractor>();
+    // The memory backend stores uploads in a plain HashMap, so keep them sequential.
+    final attachments = <Attachment>[];
+    for (final fileInfo in provisioningEmail.fileInfos) {
+      attachments.add(await uploadAttachments(fileInfo));
+    }
+    final result = await createNewAndSendEmailInteractor
+        .execute(
+          createEmailRequest: CreateEmailRequest(
+            session: mailboxDashBoardController.sessionCurrent!,
+            accountId: mailboxDashBoardController.accountId.value!,
+            emailActionType: EmailActionType.compose,
+            ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+            subject: provisioningEmail.subject,
+            emailContent: provisioningEmail.content,
+            toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
+            outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
+            sentMailboxId: folderLocationRole != null
+                ? mailboxDashBoardController
+                    .mapDefaultMailboxIdByRole[folderLocationRole]
+                : mailboxDashBoardController
+                    .mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+            identity: identity,
+            attachments: attachments,
+            hasRequestReadReceipt: requestReadReceipt,
+            keywords: provisioningEmail.labels.keywords,
+          ),
+        )
+        .last;
+    result.fold(
+      (failure) => throw StateError(
+        'Provisioning email "${provisioningEmail.subject}" was not sent: ${describeFailure(failure)}',
+      ),
+      (success) {
+        if (success is! SendEmailSuccess) {
+          throw StateError(
+            'Provisioning email "${provisioningEmail.subject}" ended in ${success.runtimeType}',
+          );
+        }
+      },
+    );
   }
 
   Future<Identity?> _getIdentity() async {

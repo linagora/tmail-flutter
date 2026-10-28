@@ -10,6 +10,7 @@ pipeline {
     options {
         timeout(time: 180, unit: 'MINUTES')
         disableConcurrentBuilds()
+        buildDiscarder(logRotator(daysToKeepStr: '5', artifactDaysToKeepStr: '5'))
     }
 
     environment {
@@ -25,7 +26,8 @@ pipeline {
 
         stage('Run Patrol Web Integration Tests') {
             steps {
-                sh './scripts/patrol-web-integration-test-with-docker.sh'
+                // One Patrol job per agent: the backend container and its ports are host-wide.
+                sh 'flock -o /tmp/tmail-patrol-backend.lock ./scripts/patrol-web-integration-test-with-docker.sh'
             }
         }
 
@@ -125,10 +127,13 @@ pipeline {
             script {
                 echo 'Running post-build cleanup...'
 
-                // Tear down the backend Docker stack if it is still running.
+                archiveArtifacts artifacts: 'ci-logs/**', allowEmptyArchive: true
+
+                // Tear down the backend Docker stack if it is still running and belongs to this workspace.
                 sh '''
-                    cd backend-docker
-                    docker compose down --remove-orphans 2>/dev/null || true
+                    [ -f scripts/ci-backend-teardown.sh ] || exit 0
+                    flock -n -o /tmp/tmail-patrol-backend.lock bash scripts/ci-backend-teardown.sh \
+                        || echo "agent backend lock held by another job; skip teardown."
                 '''
             }
             deleteDir() /* clean up our workspace */

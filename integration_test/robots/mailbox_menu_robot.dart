@@ -47,11 +47,12 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     PatrolIntegrationTester $, {
     AbstractMailboxNavigationRobot? navigationRobot,
     AbstractMailboxLabelRobot? labelRobot,
+    AbstractMailboxAssertionRobot? assertionRobot,
   })  : navigation = navigationRobot ?? MailboxNavigationRobot($),
         folder = MailboxFolderRobot($),
         emptyTrash = MailboxEmptyTrashRobot($),
         label = labelRobot ?? MailboxLabelRobot($),
-        assertion = MailboxAssertionRobot($),
+        assertion = assertionRobot ?? MailboxAssertionRobot($),
         super($);
 
   final _l10n = AppLocalizations();

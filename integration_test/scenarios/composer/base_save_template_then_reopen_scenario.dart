@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../robots/abstract/abstract_composer_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 import 'base_save_and_reopen_scenario.dart';
 
 abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScenario {
@@ -26,8 +28,7 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
-    await composerRobot.tapSaveAsTemplateButton();
-    await _expectSaveTemplateSuccessToast(l10n);
+    await _saveTemplateAndWaitForNewId(composerRobot);
     await $.pumpAndTrySettle();
     await composerRobot.tapCloseComposer();
     await $.pumpAndTrySettle();
@@ -45,15 +46,25 @@ abstract class BaseSaveTemplateThenReopenScenario extends BaseSaveAndReopenScena
     AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
+    await _saveTemplateAndWaitForNewId(composerRobot);
+  }
+
+  // The 3 s success toast can expire while the save action settles
+  Future<void> _saveTemplateAndWaitForNewId(
+    AbstractComposerRobot composerRobot,
+  ) async {
+    final composer = composerRobot.findComposerController();
+    if (composer == null) fail('No open composer to save as a template');
+    final previousTemplateId = composer.currentTemplateEmailId;
     await composerRobot.tapSaveAsTemplateButton();
-    await _expectUpdateTemplateSuccessToast(l10n);
-  }
-
-  Future<void> _expectSaveTemplateSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(l10n.saveMessageToTemplateSuccess));
-  }
-
-  Future<void> _expectUpdateTemplateSuccessToast(AppLocalizations l10n) async {
-    await expectViewVisible($(l10n.updateMessageToTemplateSuccess));
+    await waitForCondition(
+      () async {
+        await $.pump();
+        final templateId = composer.currentTemplateEmailId;
+        return templateId != null && templateId != previousTemplateId;
+      },
+      timeout: TestTimeouts.long,
+      reason: 'Template was not saved',
+    );
   }
 }

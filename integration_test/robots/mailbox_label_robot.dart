@@ -9,6 +9,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../utils/test_timeouts.dart';
+import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_mailbox_label_robot.dart';
 
 class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
@@ -36,7 +38,14 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
   Future<void> openLabelContextMenu(PatrolFinder label) async {
     await ensureLabelReady(label);
     await label.longPress();
-    await $.pumpAndSettle();
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return $(ContextMenuDialogItem).visible;
+      },
+      timeout: TestTimeouts.short,
+      reason: 'Label context menu was not shown',
+    );
   }
 
   @override
@@ -51,7 +60,22 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
 
   @override
   Future<void> enterLabelName(String name) async {
-    await $(#label_name_input_field).$(TextFieldBuilder).enterText(name);
+    final input = $(#label_name_input_field).$(TextFieldBuilder);
+    // The real Android IME restores its own text over patrol's mock input
+    await hideKeyboard();
+    await input.enterText(name);
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return $.tester
+                .widget<EditableText>(input.$(EditableText))
+                .controller
+                .text ==
+            name;
+      },
+      timeout: TestTimeouts.short,
+      reason: 'Label name input did not keep "$name"',
+    );
   }
 
   @override
@@ -59,5 +83,13 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
     final button = $(CreateNewLabelModal).$(#save_label_button_action);
     await button.scrollTo();
     await button.tap();
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return !$(CreateNewLabelModal).exists;
+      },
+      timeout: TestTimeouts.medium,
+      reason: 'Label modal did not close after saving',
+    );
   }
 }
