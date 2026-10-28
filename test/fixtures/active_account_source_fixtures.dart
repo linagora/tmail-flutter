@@ -44,10 +44,15 @@ class ActiveAccountSourceFixtures {
 
   /// Shows [accountId] until the end of the current test, then registers the source shown before.
   static void showForThisTest(AccountId accountId) {
-    final previousSource = Get.find<ActiveAccountSource>();
-    final previousWriter = Get.find<ActiveAccountWriter>();
+    _restoreAfterThisTest();
     putShowing(accountId);
-    addTearDown(() => _register(previousSource, previousWriter));
+  }
+
+  /// Shows [shownAccountId] of [session] until the end of the current test, then registers the
+  /// source shown before.
+  static void putForThisTest(Session session, {required AccountId shownAccountId}) {
+    _restoreAfterThisTest();
+    put(session, shownAccountId: shownAccountId);
   }
 
   static void unregister() {
@@ -59,6 +64,12 @@ class ActiveAccountSourceFixtures {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     return container;
+  }
+
+  static void _restoreAfterThisTest() {
+    final previousSource = Get.find<ActiveAccountSource>();
+    final previousWriter = Get.find<ActiveAccountWriter>();
+    addTearDown(() => _register(previousSource, previousWriter));
   }
 
   /// Replaces a source left registered by an earlier test, which [Get.put] would keep.

@@ -25,8 +25,6 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart': 2,
   'lib/features/manage_account/presentation/menu/manage_account_menu_controller.dart': 1,
-  'lib/features/email/presentation/controller/single_email_controller.dart': 1,
-  'lib/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart': 1,
   'lib/features/thread_detail/presentation/thread_detail_controller.dart': 1,
   // AI Scribe, ecosystem and Drive: my own services.
   'lib/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart': 1,

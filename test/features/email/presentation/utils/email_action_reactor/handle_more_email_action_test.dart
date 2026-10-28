@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:labels/model/label.dart';
 import 'package:mockito/annotations.dart';
 import 'package:model/email/email_action_type.dart';
@@ -22,6 +23,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
+import '../../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../../fixtures/delegation_fixtures.dart';
 import 'handle_more_email_action_test.mocks.dart';
 
 /// TF-4894: on desktop the reading pane more menu dropped the « Label as »
@@ -34,7 +37,10 @@ import 'handle_more_email_action_test.mocks.dart';
   MockSpec<GetEmailContentInteractor>(),
 ])
 void main() {
-  setUp(() => Get.testMode = true);
+  setUp(() {
+    Get.testMode = true;
+    ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+  });
   tearDown(Get.reset);
 
   group('EmailActionReactor.handleMoreEmailAction on desktop', () {
@@ -54,6 +60,33 @@ void main() {
       variant: desktop,
     );
   });
+
+  group('EmailActionReactor.handleMoreEmailAction « Create a rule »', () {
+    testWidgets(
+      'should list « Create a rule » for an email with a sender while my own account is shown',
+      (tester) async {
+        await openMoreMenu(tester, handled: []);
+
+        expect(menuItemKey(EmailActionType.createRule), findsWidgets);
+      },
+      variant: desktop,
+    );
+    testWidgets(
+      'should not list « Create a rule » while a delegated account is shown',
+      (tester) async {
+        ActiveAccountSourceFixtures.put(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.bobAccountId,
+        );
+
+        await openMoreMenu(tester, handled: []);
+
+        expect(menuItemKey(EmailActionType.markAsUnread), findsWidgets);
+        expect(menuItemKey(EmailActionType.createRule), findsNothing);
+      },
+      variant: desktop,
+    );
+  });
 }
 
 /// `flutter_test` defaults to Android, where the old guard let `labelAs` through
@@ -61,7 +94,10 @@ final desktop = TargetPlatformVariant.desktop();
 
 typedef HandledAction = (PresentationEmail, EmailActionType);
 
-final email = PresentationEmail(id: EmailId(Id('email-1')));
+final email = PresentationEmail(
+  id: EmailId(Id('email-1')),
+  from: {EmailAddress('Sender', 'sender@example.com')},
+);
 final label = Label(id: Id('label-1'), displayName: 'Work');
 
 Future<void> openMoreMenu(
