@@ -31,8 +31,9 @@ cleanup() {
     kill "${RESET_SERVER_PID:-}" 2>/dev/null || true
     kill "${WATCHDOG_PID:-}" 2>/dev/null || true
     kill "${KEEPER_PID:-}" 2>/dev/null || true
+    kill "${BOOT_PROBE_PID:-}" 2>/dev/null || true
     # Reap them so their ports are free before the agent lock is released.
-    wait "$VMSTAT_PID" "${RESET_SERVER_PID:-}" "${WATCHDOG_PID:-}" "${KEEPER_PID:-}" 2>/dev/null || true
+    wait "$VMSTAT_PID" "${RESET_SERVER_PID:-}" "${WATCHDOG_PID:-}" "${KEEPER_PID:-}" "${BOOT_PROBE_PID:-}" 2>/dev/null || true
     rm -f "$BACKEND_READY_FIFO"
     [ -z "${BACKEND_READY_DIR:-}" ] || rmdir "$BACKEND_READY_DIR"
     bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
@@ -121,6 +122,8 @@ timing "backend reset server ready"
 : > "$PATROL_LOG"
 bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" "$RESET_SERVER_LOG" &
 WATCHDOG_PID=$!
+bash scripts/ci-web-boot-stall-probe.sh "$PATROL_LOG" "$CI_LOGS/boot-stall-dump.log" "http://localhost:3000" &
+BOOT_PROBE_PID=$!
 
 WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]'
 node scripts/ci-web-dev-server-keeper.js "http://localhost:3000" "$ROOT_DIR" "$WEB_BROWSER_ARGS" "$PATROL_LOG" > "$CI_LOGS/dev-server-keeper.log" 2>&1 &
@@ -149,7 +152,7 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee "$PATROL_LOG" | grep --line-buffered -v -E 'Loaded debug metadata|PatrolBinding: tearDown\(\): count'
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee >(perl -MPOSIX -pe 'BEGIN { $| = 1 } $_ = strftime("%T ", localtime) . $_' > "$PATROL_LOG") | grep --line-buffered -v -E 'Loaded debug metadata|PatrolBinding: tearDown\(\): count'
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 timing "patrol tests finished (exit $TEST_EXIT_CODE)"
 
