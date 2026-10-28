@@ -816,7 +816,12 @@ void main() {
     () async {
       // The web editor reads contentHtmlEditor as its initialText during the
       // first build, which happens before onReady sanitizes the stored copy.
-      identityCreatorController.arguments = IdentityCreatorArguments(
+      final controller = IdentityCreatorController(
+        mockVerifyNameInteractor,
+        mockGetAllIdentitiesInteractor,
+        mockSaveIdentityCacheOnWebInteractor,
+        mockIdentityUtils);
+      controller.arguments = IdentityCreatorArguments(
         accountId,
         session,
         ownEmailAddress,
@@ -830,8 +835,8 @@ void main() {
         actionType: IdentityActionType.edit,
       );
 
-      expect(identityCreatorController.contentHtmlEditor, contains('Sig'));
-      expect(identityCreatorController.contentHtmlEditor, isNot(contains('onerror')));
+      expect(controller.contentHtmlEditor, contains('Sig'));
+      expect(controller.contentHtmlEditor, isNot(contains('onerror')));
     });
 
     test(
@@ -877,19 +882,25 @@ void main() {
     () async {
       PlatformInfo.isTestingForWeb = true;
       addTearDown(() => PlatformInfo.isTestingForWeb = false);
-      identityCreatorController.arguments = IdentityCreatorArguments(
+      final controller = IdentityCreatorController(
+        mockVerifyNameInteractor,
+        mockGetAllIdentitiesInteractor,
+        mockSaveIdentityCacheOnWebInteractor,
+        mockIdentityUtils);
+      addTearDown(controller.onClose);
+      controller.arguments = IdentityCreatorArguments(
         accountId,
         session,
         ownEmailAddress,
       );
       when(mockVerifyNameInteractor.execute(any, any)).thenAnswer((_) => Right(VerifyNameViewState()));
 
-      identityCreatorController.onReady();
-      identityCreatorController.updateNameIdentity(MockBuildContext(), 'test');
-      identityCreatorController.updateContentHtmlEditor(
+      controller.onReady();
+      controller.updateNameIdentity(MockBuildContext(), 'test');
+      controller.updateContentHtmlEditor(
         '<p>Sig</p><img src="https://x/a.png" onerror="alert(1)">',
       );
-      identityCreatorController.onUnloadBrowserListener(Event(''));
+      controller.onUnloadBrowserListener(Event(''));
       await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
         any,
         any,
