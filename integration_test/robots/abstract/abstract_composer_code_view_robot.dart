@@ -13,6 +13,9 @@ abstract class AbstractComposerCodeViewRobot {
 
   Future<void> pressEscape();
 
+  /// Minimizes the composer, then shows it again (rebuilds the editor).
+  Future<void> minimizeAndRestoreComposer();
+
   /// Checks both that nothing ran and that the editor holds no active markup.
   Future<void> expectActiveContentDidNotRun();
 }

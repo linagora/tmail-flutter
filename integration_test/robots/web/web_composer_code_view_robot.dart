@@ -51,6 +51,15 @@ class WebComposerCodeViewRobot extends CoreRobot
   }
 
   @override
+  Future<void> minimizeAndRestoreComposer() async {
+    await $(find.byTooltip(AppLocalizations().minimize)).tap();
+    await $.pumpAndSettle();
+    await $(find.byTooltip(AppLocalizations().show)).tap();
+    await $.pumpAndSettle();
+    await waitForCondition(() => _editorDocument() != null);
+  }
+
+  @override
   Future<void> typeActiveContentPayload() => _typeInCodeView(_payload);
 
   @override
