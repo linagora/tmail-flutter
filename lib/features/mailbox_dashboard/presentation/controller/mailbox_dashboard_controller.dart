@@ -3252,7 +3252,11 @@ class MailboxDashBoardController extends ReloadableController
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).restoreDeletedMessageSuccess,
           actionName: AppLocalizations.of(currentContext!).open,
-          onActionClick: () => openMailboxAction(success.recoveredMailbox!.toPresentationMailbox()),
+          onActionClick: () {
+            // Open may be tapped once another account is shown, where this folder does not exist.
+            if (success.accountId != activeAccountId) return;
+            openMailboxAction(success.recoveredMailbox!.toPresentationMailbox());
+          },
           leadingSVGIcon: imagePaths.icRecoverDeletedMessages,
           leadingSVGIconColor: Colors.white,
           backgroundColor: AppColor.toastSuccessBackgroundColor,
