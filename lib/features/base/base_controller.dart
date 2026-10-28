@@ -722,6 +722,9 @@ abstract class BaseController extends GetxController
     return minInputLength?.value.toInt() ?? AppConfig.defaultMinInputLengthAutocomplete;
   }
 
+  /// Built when the retry toast shows, which may be long before Retry is tapped.
+  VoidCallback retryActionOf(Stream<Either<Failure, Success>> retry) => () => consumeState(retry);
+
   void showRetryToast(FeatureFailure failure) {
     if (currentOverlayContext == null || currentContext == null) return;
 
@@ -737,7 +740,7 @@ abstract class BaseController extends GetxController
         if (failure.onRetry != null)
           (
             actionName: AppLocalizations.of(currentContext!).retry,
-            onActionClick: () => consumeState(failure.onRetry!),
+            onActionClick: retryActionOf(failure.onRetry!),
             actionIcon: SvgPicture.asset(imagePaths.icUndo),
           ),
         (
