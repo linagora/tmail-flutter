@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:core/utils/html/html_utils.dart';
@@ -119,6 +120,44 @@ void main() {
       expect(controller.codeViewEnabled, isTrue);
       verifyNever(editorController.setText(any));
       verifyNever(editorController.toggleCodeView());
+    });
+
+    group('when the editor never answers', () {
+      const replyTimeout = Duration(milliseconds: 10);
+
+      setUp(() {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: replyTimeout,
+        );
+      });
+
+      test('gives up on the code view state and accepts a later toggle', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
+        controller.toggleCodeView();
+        await untilCalled(editorController.toggleCodeView());
+
+        expect(controller.codeViewEnabled, isTrue);
+        verify(editorController.toggleCodeView()).called(1);
+      });
+
+      test('stays in code view when reading the HTML times out', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) => Completer<String>().future);
+        controller.codeViewState.value = CodeViewState.enabled;
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        expect(controller.codeViewEnabled, isTrue);
+        verifyNever(editorController.setText(any));
+        verifyNever(editorController.toggleCodeView());
+      });
     });
   });
 }
