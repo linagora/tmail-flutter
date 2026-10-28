@@ -51,13 +51,14 @@ abstract class AbstractCommonRobot extends CoreRobot {
     if (identity == null) return;
 
     // Provision emails
-    await Future.wait(provisioningEmails.map((provisioningEmail) =>
-        _sendProvisioningEmail(
-          provisioningEmail,
-          identity: identity,
-          requestReadReceipt: requestReadReceipt,
-          folderLocationRole: folderLocationRole,
-        )));
+    for (final provisioningEmail in provisioningEmails) {
+      await _sendProvisioningEmail(
+        provisioningEmail,
+        identity: identity,
+        requestReadReceipt: requestReadReceipt,
+        folderLocationRole: folderLocationRole,
+      );
+    }
 
     // Web e2e browser storage can retain mailbox data from a preceding test.
     // A normal refresh may return that cache while the server-side provisioning
@@ -81,8 +82,11 @@ abstract class AbstractCommonRobot extends CoreRobot {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewAndSendEmailInteractor =
         Get.find<CreateNewAndSendEmailInteractor>();
-    final attachments =
-        await Future.wait(provisioningEmail.fileInfos.map(uploadAttachments));
+    // The memory backend stores uploads in a plain HashMap, so keep them sequential.
+    final attachments = <Attachment>[];
+    for (final fileInfo in provisioningEmail.fileInfos) {
+      attachments.add(await uploadAttachments(fileInfo));
+    }
     final result = await createNewAndSendEmailInteractor
         .execute(
           createEmailRequest: CreateEmailRequest(
