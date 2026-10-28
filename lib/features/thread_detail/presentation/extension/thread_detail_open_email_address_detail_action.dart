@@ -6,13 +6,11 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension ThreadDetailOpenEmailAddressDetailAction on ThreadDetailController {
   void openEmailAddressDetailAction(EmailAddress emailAddress) {
-    // The quick rule of this dialog is an email rule filter of my own account.
-    final personalAccountId = mailboxDashBoardController.accountId.value;
-    if (session == null || personalAccountId == null) return;
+    if (session == null || accountId == null) return;
 
     emailActionReactor.openEmailAddressDialog(
       session!,
-      personalAccountId,
+      accountId!,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,

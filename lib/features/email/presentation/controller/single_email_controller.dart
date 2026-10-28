@@ -174,9 +174,6 @@ class SingleEmailController extends BaseController
 
   AccountId? get accountId => activeAccountId;
 
-  /// Email rule filters belong to my own account, also when another mailbox is shown.
-  AccountId? get _personalAccountId => mailboxDashBoardController.accountId.value;
-
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
   String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
@@ -423,7 +420,7 @@ class SingleEmailController extends BaseController
   }
 
   void _injectAndGetInteractorBindings(Session? session, AccountId accountId) {
-    injectRuleFilterBindings(session, _personalAccountId);
+    injectRuleFilterBindings(session, accountId);
     injectMdnBindings(session, accountId);
     _injectCalendarEventBindings(session, accountId);
 
@@ -970,11 +967,11 @@ class SingleEmailController extends BaseController
   }
 
   void openEmailAddressDialog(EmailAddress emailAddress) {
-    if (session == null || _personalAccountId == null) return;
+    if (session == null || accountId == null) return;
 
     emailActionReactor.openEmailAddressDialog(
       session!,
-      _personalAccountId!,
+      accountId!,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
@@ -1195,10 +1192,10 @@ class SingleEmailController extends BaseController
   void quickCreatingRule(EmailAddress emailAddress) {
     popBack();
 
-    if (_personalAccountId != null && session != null) {
+    if (accountId != null && session != null) {
       consumeState(emailActionReactor.quickCreateRule(
         session!,
-        _personalAccountId!,
+        accountId!,
         emailAddress: emailAddress,
       ));
     }

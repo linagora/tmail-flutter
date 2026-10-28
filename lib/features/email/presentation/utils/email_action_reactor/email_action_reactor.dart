@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -88,7 +89,11 @@ typedef OnHandleEmailByActionType = void Function(
   PresentationMailbox? mailboxContain,
 );
 
-class EmailActionReactor with LabelSubMenuMixin {
+typedef OnQuickCreateRuleRequest = void Function(
+  Stream<Either<Failure, Success>> quickCreateRuleStream,
+);
+
+class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
   EmailActionReactor(
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -551,7 +556,7 @@ class EmailActionReactor with LabelSubMenuMixin {
           EmailActionType.unSpam
         else
           EmailActionType.moveToSpam,
-      if (presentationEmail.from?.isNotEmpty == true)
+      if (!isDelegatedAccountShown && presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
       if (!presentationEmail.isSubscribed && presentationEmail.listUnsubscribe != null)
         EmailActionType.unsubscribe,
@@ -645,7 +650,7 @@ class EmailActionReactor with LabelSubMenuMixin {
     required ImagePaths imagePaths,
     required AppToast appToast,
     required void Function(EmailAddress emailAddress) onComposeEmailFromEmailAddressRequest,
-    required void Function(Stream<Either<Failure, Success>> quickCreateRuleStream) onQuickCreateRuleRequest,
+    required OnQuickCreateRuleRequest onQuickCreateRuleRequest,
   }) async {
     if (currentContext?.mounted != true) return;
     if (PlatformInfo.isWeb) {
@@ -662,9 +667,10 @@ class EmailActionReactor with LabelSubMenuMixin {
               _copyEmailAddress(currentContext!, emailAddress, appToast),
           onComposeEmailAction: (emailAddress) =>
               onComposeEmailFromEmailAddressRequest(emailAddress),
-          onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-              onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
+          onQuickCreatingRuleEmailDialogAction: _quickCreatingRuleDialogAction(
+            session,
+            accountId,
+            onQuickCreateRuleRequest,
           ),
         ),
         useRootNavigator: true,
@@ -688,9 +694,10 @@ class EmailActionReactor with LabelSubMenuMixin {
               _copyEmailAddress(currentContext!, emailAddress, appToast),
           onComposeEmailAction: (emailAddress) =>
               onComposeEmailFromEmailAddressRequest(emailAddress),
-          onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-              onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
+          onQuickCreatingRuleEmailDialogAction: _quickCreatingRuleDialogAction(
+            session,
+            accountId,
+            onQuickCreateRuleRequest,
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -698,6 +705,18 @@ class EmailActionReactor with LabelSubMenuMixin {
     }
 
     _isEmailAddressDialogOpened.value = false;
+  }
+
+  OnQuickCreatingRuleEmailDialogAction? _quickCreatingRuleDialogAction(
+    Session session,
+    AccountId accountId,
+    OnQuickCreateRuleRequest onQuickCreateRuleRequest,
+  ) {
+    if (isDelegatedAccountShown) return null;
+
+    return (emailAddress) => onQuickCreateRuleRequest(
+      quickCreateRule(session, accountId, emailAddress: emailAddress),
+    );
   }
 
   void _copyEmailAddress(
