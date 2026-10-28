@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -623,7 +624,7 @@ void main() {
     });
   });
 
-  group('email rule filters of my own account:', () {
+  group('quick rule filter:', () {
     setUp(() {
       when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
       when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
@@ -631,11 +632,9 @@ void main() {
       when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
-      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
     });
 
-    testWidgets('quickCreatingRule creates the rule in my own account, not in the shown one', (tester) async {
+    testWidgets('quickCreatingRule creates the rule in my own account while it is shown', (tester) async {
       singleEmailController.onInit();
       final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
       // quickCreatingRule and the rule creation each close what opened them first.
@@ -649,7 +648,7 @@ void main() {
       expect((recorder.arguments as RulesFilterCreatorArguments).accountId, testAccountId);
     });
 
-    testWidgets('the quick rule of the email address dialog is created in my own account, not in the shown one',
+    testWidgets('the quick rule of the email address dialog is created in my own account while it is shown',
         (tester) async {
       singleEmailController.onInit();
       final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
@@ -660,6 +659,43 @@ void main() {
       await tester.pumpAndSettle();
 
       expect((recorder.arguments as RulesFilterCreatorArguments).accountId, testAccountId);
+    });
+
+    testWidgets('the email address dialog has no quick rule while a delegated account is shown',
+        (tester) async {
+      ActiveAccountSourceFixtures.putForThisTest(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+      singleEmailController.onInit();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
+      final localizations = AppLocalizations.of(recorder.context);
+
+      singleEmailController.openEmailAddressDialog(EmailAddress('Carol', DelegationFixtures.carolAddress));
+      await tester.pumpAndSettle();
+
+      expect(find.text(localizations.compose_email), findsOneWidget);
+      expect(find.text(localizations.quickCreatingRule), findsNothing);
+    });
+
+    testWidgets('the email address bottom sheet has no quick rule while a delegated account is shown',
+        (tester) async {
+      when(responsiveUtils.isScreenWithShortestSide(any)).thenReturn(true);
+      addTearDown(() => when(responsiveUtils.isScreenWithShortestSide(any)).thenReturn(false));
+      ActiveAccountSourceFixtures.putForThisTest(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+      singleEmailController.onInit();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
+      final localizations = AppLocalizations.of(recorder.context);
+
+      singleEmailController.openEmailAddressDialog(EmailAddress('Carol', DelegationFixtures.carolAddress));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EmailAddressBottomSheetBuilder), findsOneWidget);
+      expect(find.text(localizations.compose_email), findsOneWidget);
+      expect(find.text(localizations.quickCreatingRule), findsNothing);
     });
   });
 }
