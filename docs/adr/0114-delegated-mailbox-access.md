@@ -103,9 +103,9 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 ### Switching
 
 1. Refused while a composer is open or another switch runs. The switcher stays disabled until the switch ends.
-2. Input is blocked, so no action on the old list goes out with the new account. The current selection and search are saved, and `active` is set to the target.
+2. Input is blocked and every open dialog, sheet and menu closes, so no action on the old list goes out with the new account. The selected folder, the opened email and the search are cleared, so the target opens on its Inbox, and `active` is set to the target.
 3. Folders and the first page of emails load from cache first, then `/changes`. Identities load from the server. A modal loading dialog appears after 300 ms, stays at least 500 ms and offers Cancel (no design yet).
-4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch.
+4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account, opened on its Inbox, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch. Its folder and search are not restored (see the optional T-20 below).
 
 - A switch to `mine` (toggle off, revocation, notification tap of `mine`, intent) never rolls back to a delegated account. On failure, cancel or timeout `mine` is shown from cache with the error toast, and a pending tap or intent is dropped.
 - The switch state is `Idle(lastAttemptId)` or `Switching(attempt)`, where `SwitchAttempt(id, from, to)` is one try to change the shown account. Going back after a failure, cancel or timeout is a new attempt too. Every view result (load more, search, opened email, refresh) is stamped with the id of the attempt it was requested in, or of the last one when no switch runs. One check where view results are consumed drops a result whose attempt is no longer current, so a cancelled or timed-out switch never paints stale data into a later one, even to the same account.
@@ -143,6 +143,8 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 | T-10 | `DelegatedAccount/get\|set` extension + data layer | — |
 | T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-10, DS-1, DS-4 |
 | T-12 | E2E scenarios, with each release | — |
+
+Optional, not part of this plan: **T-20** brings back the folder and search of the previous account after a failed, cancelled or timed-out switch. It is discussed before anyone decides to build it.
 
 Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour apart from my aliases counting as "me" (T-02). The switch flow of T-01 is reached only from the entry points. The toggle (T-06) merges with its first reader, the session re-read, right before the entry points. The entry points (T-07, T-08, T-09) merge last, after T-02: without T-02, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 

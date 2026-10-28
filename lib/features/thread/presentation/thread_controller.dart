@@ -894,7 +894,7 @@ class ThreadController extends BaseController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
-    // An account switch clears the email state it leaves, so a message queued before it has nothing to refresh.
+    // Cleared while another account is shown, until its first email list sets it.
     if (mailboxDashBoardController.currentEmailState == null) return;
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
