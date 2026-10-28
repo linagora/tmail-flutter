@@ -27,7 +27,7 @@ mixin ShownAccountStateConsumer on BaseController, ActiveAccountReader {
   SwitchAttemptStamp stampShownAccountRequest() => SwitchAttemptStamp(activeAccountSource);
 
   /// Drops what arrives once its switch attempt ended or this controller closed.
-  void consumeShownAccountState(Stream<Either<Failure, Success>> viewResults) {
+  ShownAccountStateSubscription consumeShownAccountState(Stream<Either<Failure, Success>> viewResults) {
     final subscription = ShownAccountStateSubscription(
       stamp: stampShownAccountRequest(),
       onData: onData,
@@ -37,6 +37,7 @@ mixin ShownAccountStateConsumer on BaseController, ActiveAccountReader {
     );
     _shownAccountSubscriptions.add(subscription);
     subscription.listen(viewResults);
+    return subscription;
   }
 
   /// The retry stream is bound to the account of the failed request, so a tap after its attempt
