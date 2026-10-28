@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/shown_account_state_subscription.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
@@ -16,7 +17,8 @@ import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class QuotasController extends BaseController with ActiveAccountReader {
+class QuotasController extends BaseController
+    with ActiveAccountReader, ShownAccountStateConsumer {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -26,7 +28,7 @@ class QuotasController extends BaseController with ActiveAccountReader {
 
   CancelShownAccountWatch? _cancelShownAccountWatch;
 
-  StreamSubscription<Either<Failure, Success>>? _quotaRequest;
+  ShownAccountStateSubscription? _quotaRequest;
 
   QuotasController(this._getQuotasInteractor);
 
@@ -34,7 +36,7 @@ class QuotasController extends BaseController with ActiveAccountReader {
   /// result of the one still running.
   void _requestQuota(Stream<Either<Failure, Success>> request) {
     _quotaRequest?.cancel();
-    _quotaRequest = request.listen(onData, onError: onError, onDone: onDone);
+    _quotaRequest = consumeShownAccountState(request);
   }
 
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
@@ -84,7 +86,6 @@ class QuotasController extends BaseController with ActiveAccountReader {
   void onClose() {
     _cancelShownAccountWatch?.call();
     _cancelShownAccountWatch = null;
-    _quotaRequest?.cancel();
     super.onClose();
   }
 
