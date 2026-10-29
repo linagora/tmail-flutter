@@ -50,6 +50,17 @@ class WebComposerCodeViewRobot extends CoreRobot
     );
   }
 
+  // Fullscreen itself trips a Flutter web semantics assertion under Patrol,
+  // so this replays its getText/setText round trip directly.
+  @override
+  Future<void> writeBackEditorHtml() async {
+    final editor = findWebComposerController($)!.richTextWebController!.editorController;
+    editor.setText(await editor.getText());
+    // setText reports back through the editor's change event.
+    await Future.delayed(_scriptGracePeriod);
+    await $.pumpAndTrySettle();
+  }
+
   @override
   Future<void> minimizeAndRestoreComposer() async {
     await $(find.byTooltip(AppLocalizations().minimize)).tap();
@@ -101,6 +112,18 @@ class WebComposerCodeViewRobot extends CoreRobot
       editable?.querySelector(_activeContentSelector),
       isNull,
       reason: 'active markup from the code view reached the editor',
+    );
+  }
+
+  @override
+  Future<void> expectCachedBodyHasNoActiveContent() async {
+    final body = findWebComposerController($)?.textEditorWeb;
+    expect(body, isNotNull, reason: 'the composer has no cached body');
+    expect(body, contains('visible text'));
+    expect(
+      body!.toLowerCase(),
+      isNot(anyOf(contains('onerror'), contains('onload'), contains('<script'))),
+      reason: 'raw code view HTML reached the cached body',
     );
   }
 
