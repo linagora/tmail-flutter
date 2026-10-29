@@ -1,10 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../../base/base_test_scenario.dart';
+import '../../../robots/vacation_assertion_robot.dart';
 import '../../../robots/vacation_robot.dart';
 
 class SaveVacationWithEmptyMessageScenario extends BaseTestScenario {
@@ -13,7 +10,7 @@ class SaveVacationWithEmptyMessageScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     final vacationRobot = VacationRobot($);
-    final appLocalizations = AppLocalizations();
+    final vacationAssertionRobot = VacationAssertionRobot($);
 
     await robots.mailboxMenuRobot().openSetting();
     await robots.settingsRobot().openSettingsDetail(AccountMenuItem.vacation);
@@ -24,13 +21,8 @@ class SaveVacationWithEmptyMessageScenario extends BaseTestScenario {
     await vacationRobot.pickStartTime();
     await vacationRobot.tapSave();
 
-    await expectViewVisible(
-      $(find.text(appLocalizations.errorMessageWhenMessageVacationIsEmpty)),
-    );
-    await expectViewInvisible($(find.text(appLocalizations.vacationSettingSaved)));
-    expect(
-      Get.find<ManageAccountDashBoardController>().vacationResponse.value?.isEnabled,
-      isNot(true),
-    );
+    await vacationAssertionRobot.expectEmptyMessageToastVisible();
+    vacationAssertionRobot.expectSavedToastAbsent();
+    vacationAssertionRobot.expectResponderNotEnabled();
   }
 }
