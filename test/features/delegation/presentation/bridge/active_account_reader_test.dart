@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/base_controller_fixtures.dart';
@@ -16,19 +18,77 @@ import '../../../../fixtures/delegation_fixtures.dart';
 class _Reader extends BaseController with ActiveAccountReader, ShownAccountStateConsumer {
   final results = <Either<Failure, Success>>[];
   final errors = <Object>[];
+  final urgentErrors = <Object?>[];
   int doneCount = 0;
 
   @override
   void onData(Either<Failure, Success> newState) => results.add(newState);
 
   @override
-  void onError(dynamic error, StackTrace stackTrace) => errors.add(error);
+  void handleErrorViewState(Object error, StackTrace stackTrace) => errors.add(error);
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) => urgentErrors.add(exception);
 
   @override
   void onDone() => doneCount++;
+
+  /// Runs [pending] the way a controller awaits a load: an error goes to [onError].
+  Future<Either<Failure, Success>?> awaitLoad(Future<Either<Failure, Success>> pending) async {
+    try {
+      return await pending;
+    } catch (error, stackTrace) {
+      onError(error, stackTrace);
+      return null;
+    }
+  }
 }
 
 class _Loaded extends UIState {}
+
+class _LoadFailure extends FeatureFailure {
+  _LoadFailure(dynamic exception) : super(exception: exception);
+}
+
+typedef _StaleArrival = ({
+  String arrival,
+  void Function(StreamController<Either<Failure, Success>> viewResults) arrive,
+  List<Object> urgentErrors,
+});
+
+const _badCredentials = BadCredentialsException();
+final _refreshTokenFailed = RefreshTokenFailedException();
+
+final _staleResult = (
+  arrival: 'a result',
+  arrive: (StreamController<Either<Failure, Success>> viewResults) => viewResults.add(Right(_Loaded())),
+  urgentErrors: <Object>[],
+);
+
+final List<_StaleArrival> _staleArrivals = [
+  (
+    arrival: 'an error',
+    arrive: (viewResults) => viewResults.addError(StateError('late failure')),
+    urgentErrors: [],
+  ),
+  (
+    arrival: 'a connection error',
+    arrive: (viewResults) => viewResults.addError(const ConnectionError()),
+    urgentErrors: [],
+  ),
+  (
+    arrival: 'a session failure',
+    arrive: (viewResults) => viewResults.add(Left(_LoadFailure(_badCredentials))),
+    urgentErrors: [_badCredentials],
+  ),
+  (
+    arrival: 'a session error',
+    arrive: (viewResults) => viewResults.addError(_refreshTokenFailed),
+    urgentErrors: [_refreshTokenFailed],
+  ),
+];
+
+String _staleOutcome(List<Object> urgentErrors) => urgentErrors.isEmpty ? 'is dropped' : 'still ends the session';
 
 void main() {
   setUp(BaseControllerFixtures.registerDependencies);
@@ -154,6 +214,20 @@ void main() {
       expect(reader.doneCount, 0);
     });
 
+    for (final (:arrival, :arrive, :urgentErrors) in _staleArrivals) {
+      test('$arrival that arrives once another account is shown ${_staleOutcome(urgentErrors)}', () async {
+        reader.consumeShownAccountState(viewResults.stream);
+        source.show(DelegationFixtures.bobAccountId);
+
+        arrive(viewResults);
+        await pumpEventQueue();
+
+        expect(reader.results, isEmpty);
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
+
     test('a closed reader gets no more results', () async {
       reader.consumeShownAccountState(viewResults.stream);
 
@@ -164,6 +238,57 @@ void main() {
       expect(reader.results, isEmpty);
       expect(viewResults.hasListener, isFalse);
     });
+  });
+
+  group('awaitShownAccountState:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> viewResults;
+    late _Reader reader;
+
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      viewResults = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
+
+    test('returns the last result while its attempt is current', () async {
+      final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+      final last = Right<Failure, Success>(_Loaded());
+
+      viewResults
+        ..add(Right(_Loaded()))
+        ..add(last);
+      await viewResults.close();
+
+      expect(await pending, last);
+      expect(reader.errors, isEmpty);
+    });
+
+    test('throws an error to the caller while its attempt is current', () async {
+      final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+      final error = StateError('load failed');
+
+      viewResults.addError(error);
+      await viewResults.close();
+
+      expect(await pending, isNull);
+      expect(reader.errors, [error]);
+    });
+
+    for (final (:arrival, :arrive, :urgentErrors) in [..._staleArrivals, _staleResult]) {
+      test('$arrival that arrives once another account is shown stops the caller and ${_staleOutcome(urgentErrors)}',
+          () async {
+        final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+        source.show(DelegationFixtures.bobAccountId);
+
+        arrive(viewResults);
+        await viewResults.close();
+
+        expect(await pending, isNull);
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
   });
 
   group('retryActionOf:', () {
