@@ -1,7 +1,7 @@
 # 114. Delegation: use the mailboxes delegated to me
 
 Date: 2026-10-20
-Updated: 2026-10-28
+Updated: 2026-10-29
 
 ## Status
 
@@ -103,7 +103,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 ### Switching
 
 1. Refused while a composer is open or another switch runs. The switcher stays disabled until the switch ends.
-2. Input is blocked and every open dialog, sheet and menu closes, so no action on the old list goes out with the new account. The selected folder, the opened email and the search are cleared, so the target opens on its Inbox, and `active` is set to the target.
+2. Input is blocked and every open dialog, sheet, menu and page above the dashboard closes, such as the destination picker, so no action on the old list goes out with the new account. The selected folder, the opened email and the search are cleared, so the target opens on its Inbox, and `active` is set to the target.
 3. Folders and the first page of emails load from cache first, then `/changes`. Identities load from the server. A modal loading dialog appears after 300 ms, stays at least 500 ms and offers Cancel (no design yet).
 4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account, opened on its Inbox, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch. Its folder and search are not restored (see the optional T-20 below).
 

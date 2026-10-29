@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/view/shown_mailbox_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -9,9 +11,9 @@ class DashboardShownMailboxSelection implements ShownMailboxSelection {
 
   const DashboardShownMailboxSelection(this._dashboard);
 
-  /// A mobile composer is its own route, checked with the notification tap that can reach it.
+  /// A mobile composer is its own route, whose controller is registered without a tag while it is open.
   @override
-  bool get hasOpenComposer => _dashboard.composerManager.hasComposer;
+  bool get hasOpenComposer => _dashboard.composerManager.hasComposer || Get.isRegistered<ComposerController>();
 
   /// Like opening a folder, so no filter, search field or opened email of the old account stays.
   @override
