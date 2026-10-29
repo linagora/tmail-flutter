@@ -66,7 +66,8 @@ class ThreadAssertionRobot extends CoreRobot implements AbstractThreadAssertionR
     expect(
       listed.toSet(),
       threads.toSet(),
-      reason: 'every thread must be listed, in any order',
+      reason: 'every thread must be listed, in any order; listed: $listed, '
+          'rows: ${_dashboard.emailsInCurrentMailbox.length}',
     );
   }
 
