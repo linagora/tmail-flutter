@@ -35,14 +35,15 @@ if [ -n "$GCS_PATH" ]; then
     echo "Results GCS path: $GCS_PATH"
     gsutil ls -r "${GCS_PATH}" 2>/dev/null \
         | grep -E '(test_result_.*\.xml|/logcat)$' \
-        | while read -r gcs_file; do
+        | { while read -r gcs_file; do
             echo "  $gcs_file"
             # Keep the GCS sub-path so per-device files do not overwrite each other.
             rel="${gcs_file#"${GCS_PATH%/}"/}"
             [ "$rel" = "$gcs_file" ] && rel="${gcs_file#gs://}"
             mkdir -p "ftl-results/$(dirname "$rel")"
-            gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null || true
-          done || true
+            # One small file per call: gsutil start-up dominates, so copy them concurrently.
+            { gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null || true; } &
+          done; wait; } || true
 
     xml_count=$(find ftl-results -name 'test_result_*.xml' | wc -l)
     echo "Downloaded $xml_count result file(s), expected at least $EXPECTED_SHARDS"
