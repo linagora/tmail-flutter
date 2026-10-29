@@ -19,7 +19,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/bridge/switch_attempt_stamp.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -896,18 +895,17 @@ class ThreadController extends BaseController
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     // An account switch clears the email state it leaves, so a message queued before it has nothing to refresh.
     if (mailboxDashBoardController.currentEmailState == null) return;
-    final stamp = stampShownAccountRequest();
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
-        await _refreshChangeListEmailCache(stamp);
+        await _refreshChangeListEmailCache();
       } else if (selectedMailbox?.isVirtualFolder == true) {
-        await _refreshChangeListEmailsInVirtualFolder(stamp);
+        await _refreshChangeListEmailsInVirtualFolder();
       } else {
-        await _refreshChangeListEmail(stamp);
+        await _refreshChangeListEmail();
       }
     } catch (e, stackTrace) {
       logWarning('ThreadController::_handleWebSocketMessage:Error processing state: $e');
-      if (stamp.isCurrent) onError(e, stackTrace);
+      onError(e, stackTrace);
     } finally {
       if (mailboxDashBoardController.currentEmailState != null) {
         _webSocketQueueHandler?.removeMessagesUpToCurrent(
@@ -916,12 +914,8 @@ class ThreadController extends BaseController
     }
   }
 
-  /// Null once [stamp] is stale, so the changes of an ended attempt never apply.
-  Future<Either<Failure, Success>?> _refreshChangeListEmailCache(
-    SwitchAttemptStamp stamp, {
-    bool collapseThreads = false,
-  }) async {
-    final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
+  Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
+    final refreshState = await awaitShownAccountState(_refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
@@ -938,8 +932,7 @@ class ThreadController extends BaseController
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
       collapseThreads: collapseThreads,
-    ).last;
-    if (!stamp.isCurrent) return null;
+    ));
 
     refreshState.fold(
       (failure) {},
@@ -953,7 +946,7 @@ class ThreadController extends BaseController
     return refreshState;
   }
 
-  Future<void> _refreshChangeListEmail(SwitchAttemptStamp stamp) async {
+  Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
     final collapseThreads = shouldCollapseThreads;
     // A refresh replaces the list from the top, which shifts pages counted by
@@ -963,10 +956,8 @@ class ThreadController extends BaseController
     if (holdLoadMore) _holdLoadMoreForRefresh();
     try {
       final refreshViewState = await _refreshChangeListEmailCache(
-        stamp,
         collapseThreads: collapseThreads,
       );
-      if (refreshViewState == null) return;
 
       final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
@@ -983,15 +974,15 @@ class ThreadController extends BaseController
     }
   }
 
-  Future<void> _refreshChangeListEmailsInVirtualFolder(SwitchAttemptStamp stamp) async {
+  Future<void> _refreshChangeListEmailsInVirtualFolder() async {
     log('ThreadController::_refreshChangeListEmailsInVirtualFolder:');
     // The refresh replaces the whole list, so a page appended meanwhile would
     // be overwritten. Load-more waits for it and runs once it has landed.
     _holdLoadMoreForRefresh();
     try {
-      if (await _refreshChangeListEmailCache(stamp) == null) return;
+      await _refreshChangeListEmailCache();
 
-      final viewState = await _getEmailsInMailboxInteractor
+      final viewState = await awaitShownAccountState(_getEmailsInMailboxInteractor
           .execute(
             _session!,
             _accountId!,
@@ -1009,9 +1000,7 @@ class ThreadController extends BaseController
             useCache: false,
             forceEmailQuery: shouldCollapseThreads,
             collapseThreads: shouldCollapseThreads,
-          )
-          .last;
-      if (!stamp.isCurrent) return;
+          ));
 
       dispatchState(viewState);
 

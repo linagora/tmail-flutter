@@ -226,6 +226,35 @@ void main() {
       expect(mailboxController.currentMailboxState, isNull);
     });
 
+    test('a folder change queued before another account is shown never runs once the folder state is cleared', () async {
+      final myChanges = StreamController<Either<Failure, Success>>();
+      when(refreshAllMailboxInteractor.execute(any, any, any, properties: anyNamed('properties')))
+          .thenAnswer((_) => myChanges.stream);
+      clearInteractions(refreshAllMailboxInteractor);
+      final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+      final controller = newMailboxController()..onInit();
+      mailboxController = controller;
+      controller.currentMailboxState = State('alice-state');
+      mailboxDashboardController.dispatchMailboxUIAction(
+          RefreshChangeMailboxAction(newState: State('alice-new-state')));
+      await pumpEventQueue();
+      mailboxDashboardController.dispatchMailboxUIAction(
+          RefreshChangeMailboxAction(newState: State('alice-newer-state')));
+      await pumpEventQueue();
+
+      source.show(DelegationFixtures.bobAccountId);
+      myChanges.add(Right(RefreshChangesAllMailboxSuccess(
+        mailboxList: [],
+        currentMailboxState: State('alice-refreshed-state'),
+      )));
+      await myChanges.close();
+      await pumpEventQueue();
+
+      verify(refreshAllMailboxInteractor.execute(any, any, any, properties: anyNamed('properties'))).called(1);
+      expect(controller.viewErrors, isEmpty);
+      expect(controller.currentMailboxState, isNull);
+    });
+
     for (final switched in [false, true]) {
       testWidgets('a failed folder changes refresh ${switched ? 'of an account shown before shows no error' : 'shows its error'}',
           (tester) async {

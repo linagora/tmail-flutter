@@ -192,22 +192,34 @@ Future<void> pumpLocalizedApp(WidgetTester tester) async {
   await tester.pump();
 }
 
+/// Keeps the errors that reach the view, which [MailboxController] only logs.
+class ErrorRecordingMailboxController extends MailboxController {
+  final viewErrors = <Object>[];
+
+  ErrorRecordingMailboxController(TreeBuilder mailboxTreeBuilder)
+      : super(
+          createNewMailboxInteractor,
+          deleteMultipleMailboxInteractor,
+          renameMailboxInteractor,
+          moveMailboxInteractor,
+          subscribeMailboxInteractor,
+          subscribeMultipleMailboxInteractor,
+          subaddressingInteractor,
+          createDefaultMailboxInteractor,
+          moveFolderContentInteractor,
+          mailboxTreeBuilder,
+          verifyNameInteractor,
+          getAllMailboxInteractor,
+          refreshAllMailboxInteractor,
+        );
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) => viewErrors.add(error);
+}
+
 /// onInit schedules onReady for the next frame, so a test that calls it never calls onReady too.
-MailboxController newMailboxController({TreeBuilder? mailboxTreeBuilder}) => MailboxController(
-      createNewMailboxInteractor,
-      deleteMultipleMailboxInteractor,
-      renameMailboxInteractor,
-      moveMailboxInteractor,
-      subscribeMailboxInteractor,
-      subscribeMultipleMailboxInteractor,
-      subaddressingInteractor,
-      createDefaultMailboxInteractor,
-      moveFolderContentInteractor,
-      mailboxTreeBuilder ?? treeBuilder,
-      verifyNameInteractor,
-      getAllMailboxInteractor,
-      refreshAllMailboxInteractor,
-    );
+ErrorRecordingMailboxController newMailboxController({TreeBuilder? mailboxTreeBuilder}) =>
+    ErrorRecordingMailboxController(mailboxTreeBuilder ?? treeBuilder);
 
 void setUpMailboxDashboardControllerTest() {
   setUp(() => ActiveAccountSourceFixtures.putShowing(null));

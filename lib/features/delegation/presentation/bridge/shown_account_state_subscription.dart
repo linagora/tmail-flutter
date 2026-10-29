@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/bridge/switch_att
 typedef OnViewResult = void Function(Either<Failure, Success> viewResult);
 typedef OnViewError = void Function(dynamic error, StackTrace stackTrace);
 typedef OnViewDone = void Function();
+typedef OnStaleViewResult = void Function({Either<Failure, Success>? viewResult, Object? error});
 typedef OnSubscriptionEnded = void Function(ShownAccountStateSubscription subscription);
 
 class ShownAccountStateSubscription {
@@ -15,6 +16,7 @@ class ShownAccountStateSubscription {
   final OnViewResult _onData;
   final OnViewError _onError;
   final OnViewDone _onDone;
+  final OnStaleViewResult _onStale;
   final OnSubscriptionEnded _onEnded;
 
   StreamSubscription<Either<Failure, Success>>? _subscription;
@@ -25,10 +27,12 @@ class ShownAccountStateSubscription {
     required OnViewResult onData,
     required OnViewError onError,
     required OnViewDone onDone,
+    required OnStaleViewResult onStale,
     required OnSubscriptionEnded onEnded,
   })  : _onData = onData,
         _onError = onError,
         _onDone = onDone,
+        _onStale = onStale,
         _onEnded = onEnded;
 
   void listen(Stream<Either<Failure, Success>> viewResults) {
@@ -41,12 +45,18 @@ class ShownAccountStateSubscription {
   }
 
   void _handleData(Either<Failure, Success> viewResult) {
-    if (_cancelIfStale()) return;
+    if (_cancelIfStale()) {
+      _onStale(viewResult: viewResult);
+      return;
+    }
     _onData(viewResult);
   }
 
   void _handleError(Object error, StackTrace stackTrace) {
-    if (_cancelIfStale()) return;
+    if (_cancelIfStale()) {
+      _onStale(error: error);
+      return;
+    }
     _onError(error, stackTrace);
   }
 
