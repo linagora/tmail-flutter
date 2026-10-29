@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// must say why it needs my own account. Receivers are matched by name, so an alias of the
 /// dashboard escapes the scan: a guard until these readers move to Riverpod.
 const _personalAccountReaders = <String, int>{
-  // Composer, identities and drafts: moved to the shown account in T-02.4, drafts in T-04.
+  // Composer, identities and drafts: moved to the shown account in T-02.5, drafts in T-04.
   'lib/features/composer/presentation/composer_controller.dart': 13,
   'lib/features/composer/presentation/extensions/composer_print_draft_extension.dart': 1,
   'lib/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart': 3,
@@ -36,7 +36,7 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart': 2,
   'lib/features/search/email/presentation/search_email_controller.dart': 2,
-  // Label setting and its WebSocket, bound to my own account until T-02.4 and T-03.
+  // Label setting and its WebSocket, bound to my own account until T-02.5 and T-03.
   'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 2,
   // Send queue: each mail keeps the account it was written in (T-04).
   'lib/features/sending_queue/presentation/sending_queue_controller.dart': 2,
@@ -53,10 +53,10 @@ const _dashboardPersonalAccountReaders = <String, int>{
   // Vacation: a setting of my own account.
   '_getVacationResponse': 2,
   'disableVacationResponder': 2,
-  // Label setting after Settings, bound to my own account until T-02.4 and T-03.
+  // Label setting after Settings, bound to my own account until T-02.5 and T-03.
   'goToSettings': 2,
   'goToVacationSetting': 2,
-  // Composer, its cache, identities and drafts: moved in T-02.4, drafts in T-04.
+  // Composer, its cache, identities and drafts: moved in T-02.5, drafts in T-04.
   '_handleComposerCache': 2,
   '_handleIdentityCache': 2,
   '_getAllIdentities': 2,
@@ -77,14 +77,14 @@ const _dashboardPersonalAccountReaders = <String, int>{
   '_handleNotificationMessageFromEmailId': 1,
 };
 
-/// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. T-02.4 moves the
+/// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. T-02.5 moves the
 /// ones of the shown mailbox to `ActiveAccount.ownerEmailAddress` (ADR-0114).
 const _ownEmailAddressReaders = <String, int>{
   // Definitions.
   'lib/features/base/mixin/own_email_address_mixin.dart': 4,
   'lib/features/delegation/domain/model/active_account.dart': 1,
   'lib/features/home/domain/extensions/session_extensions.dart': 1,
-  // Shown mailbox: moved in T-02.4.
+  // Shown mailbox: moved in T-02.5.
   'lib/features/composer/presentation/composer_controller.dart': 1,
   'lib/features/composer/presentation/extensions/composer_print_draft_extension.dart': 1,
   'lib/features/email/presentation/controller/single_email_controller.dart': 3,
