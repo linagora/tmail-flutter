@@ -25,6 +25,8 @@ import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_t
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
@@ -581,6 +583,48 @@ void main() {
 
       expect(dashboardStateOnLoad, [(DelegationFixtures.aliceAccountId, DelegationFixtures.aliceAddress)]);
     });
+  });
+
+  group('Settings entries:', () {
+    final settingsEntries = <(String, void Function())>[
+      ('Manage account', () => mailboxDashboardController.goToSettings()),
+      ('the vacation banner link', () => mailboxDashboardController.goToVacationSetting()),
+      (
+        'the identity restore after a web reload',
+        () => mailboxDashboardController.handleSuccessViewState(GetIdentityCacheOnWebSuccess(null)),
+      ),
+    ];
+
+    setUp(() => mailboxDashboardController.sessionCurrent = DelegationFixtures.session());
+
+    for (final (entry, open) in settingsEntries) {
+      testWidgets('$entry does not open Settings while a delegated account is shown', (tester) async {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.bobAccountId,
+        );
+        final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.settings);
+
+        open();
+        await tester.pumpAndSettle();
+
+        expect(recorder.arguments, isNull);
+        expect(Get.currentRoute, isNot(AppRoutes.settings));
+      });
+
+      testWidgets('$entry opens Settings on my own session while my own account is shown', (tester) async {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.aliceAccountId,
+        );
+        final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.settings);
+
+        open();
+        await tester.pumpAndSettle();
+
+        expect((recorder.arguments as ManageAccountArguments).session, DelegationFixtures.session());
+      });
+    }
   });
 
   group('restored messages polling:', () {
