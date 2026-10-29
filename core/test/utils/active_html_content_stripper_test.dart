@@ -100,6 +100,20 @@ void main() {
       }
     });
 
+    // The html package parses this style element as HTML raw text, but
+    // browsers parse it as MathML and turn its text into a live <img onerror>.
+    test('SHOULD not let a style element under MathML mglyph or malignmark serialize into live markup', () {
+      for (final html in [
+        '<math><mtext><table><mglyph><style><img src=x onerror=alert(1)>',
+        '<math><mtext><table><malignmark><style><img src=x onerror=alert(1)>',
+      ]) {
+        final out = strip('<p>Hi</p>$html');
+
+        expect(out, contains('<p>Hi</p>'));
+        expect(out.toLowerCase(), isNot(contains('onerror')));
+      }
+    });
+
     test('SHOULD keep benign HTML unchanged', () {
       const html = '<div style="color: red"><b>Hi</b> <a href="https://example.com">x</a></div>';
 
