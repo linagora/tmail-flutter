@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -9,7 +10,7 @@ class LanguageRobot extends CoreRobot {
   LanguageRobot(super.$);
 
   Future<void> openLanguageContextMenu() async {
-    await $(#language_drop_down_button).tap();
+    await $(const ValueKey(UiKeys.languageDropDownButton)).tap();
   }
 
   Future<void> selectLanguage(

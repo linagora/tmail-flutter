@@ -28,6 +28,9 @@ class UiKeys {
   static const String recipientCcButtonSuffix = '_recipient_cc_button';
   static const String recipientExpandButtonSuffix = '_recipient_expand_button';
 
+  // Language & region
+  static const String languageDropDownButton = 'language_drop_down_button';
+
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
   static const String emailRulesSettingMenuItem = 'setting_email_rules';
