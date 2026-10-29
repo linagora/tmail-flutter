@@ -11,20 +11,13 @@ import 'package:html/parser.dart' as parser;
 class ActiveHtmlContentStripper {
   const ActiveHtmlContentStripper._();
 
+  // svg and math are removed whole, as the editor paste sanitizer does: SMIL
+  // can animate an href to a javascript: URL, and the html package and
+  // browsers disagree on which of their raw-text children (e.g. style under
+  // mglyph) hold text or live markup.
   static const _activeElements =
       'script,iframe,frame,frameset,object,embed,applet,meta,base,link,'
-      'form,input,button,textarea,select,noscript,template,portal';
-
-  static const _svgAnimationElements = {
-    'animate', 'animatemotion', 'animatetransform', 'set',
-  };
-
-  // The serializer writes these elements' text unescaped in every namespace.
-  static const _rawTextElements = {
-    'style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript', 'plaintext',
-  };
-
-  static const _htmlNamespace = 'http://www.w3.org/1999/xhtml';
+      'form,input,button,textarea,select,noscript,template,portal,svg,math';
 
   static const _urlAttributes = {
     'href', 'src', 'xlink:href', 'action', 'formaction', 'background',
@@ -46,9 +39,6 @@ class ActiveHtmlContentStripper {
         element.remove();
       }
 
-      _removeSvgAnimations(fragment);
-      _removeForeignRawTextElements(fragment);
-
       for (final element in fragment.querySelectorAll('*')) {
         _stripAttributes(element);
       }
@@ -58,26 +48,6 @@ class ActiveHtmlContentStripper {
       logWarning('ActiveHtmlContentStripper::strip: Exception = $e');
       return html;
     }
-  }
-
-  // SMIL can animate an href to a javascript: URL, which attribute checks miss.
-  static void _removeSvgAnimations(DocumentFragment fragment) {
-    fragment
-        .querySelectorAll('*')
-        .where((element) => _svgAnimationElements.contains(element.localName?.toLowerCase()))
-        .toList()
-        .forEach((element) => element.remove());
-  }
-
-  // In SVG/MathML their text is entity-decoded, so `&lt;script&gt;` would serialize as a live tag.
-  static void _removeForeignRawTextElements(DocumentFragment fragment) {
-    fragment
-        .querySelectorAll('*')
-        .where((element) =>
-            element.namespaceUri != _htmlNamespace &&
-            _rawTextElements.contains(element.localName?.toLowerCase()))
-        .toList()
-        .forEach((element) => element.remove());
   }
 
   static void _stripAttributes(Element element) {
