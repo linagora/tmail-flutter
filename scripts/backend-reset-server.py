@@ -355,24 +355,30 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self._reply(204)
 
-    def do_POST(self):
+    def _handle_lease(self):
+        print(f"[reset-server] lease request at {time.monotonic():.3f}", flush=True)
+        leased = self.pool.lease(LEASE_TIMEOUT)
+        if leased is None:
+            self._reply(503, b"no free backend")
+            return
         try:
-            if self.path == "/lease":
-                print(f"[reset-server] lease request at {time.monotonic():.3f}", flush=True)
-                leased = self.pool.lease(LEASE_TIMEOUT)
-                if leased is None:
-                    self._reply(503, b"no free backend")
-                else:
-                    try:
-                        self._reply(200, json.dumps(leased).encode(), "application/json")
-                    except (BrokenPipeError, ConnectionResetError):
-                        # The client gave up while waiting; do not hold the slot until the TTL.
-                        self.pool.release(leased["token"])
-            elif self.path == "/release":
-                self.pool.release(str(self._read_json().get("token", "")))
-                self._reply(202, b"ok")
-            else:
-                self._reply(404)
+            self._reply(200, json.dumps(leased).encode(), "application/json")
+        except (BrokenPipeError, ConnectionResetError):
+            # The client gave up while waiting; do not hold the slot until the TTL.
+            self.pool.release(leased["token"])
+
+    def _handle_release(self):
+        self.pool.release(str(self._read_json().get("token", "")))
+        self._reply(202, b"ok")
+
+    def do_POST(self):
+        routes = {"/lease": self._handle_lease, "/release": self._handle_release}
+        handler = routes.get(self.path)
+        if handler is None:
+            self._reply(404)
+            return
+        try:
+            handler()
         except json.JSONDecodeError:
             self._reply(400, b"invalid JSON body")
         except Exception as exc:
