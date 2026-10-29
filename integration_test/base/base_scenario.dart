@@ -7,6 +7,9 @@ abstract class BaseScenario {
 
   const BaseScenario(this.$);
 
+  /// Runs after the app dependencies load and before the app mounts.
+  Future<void> prepare() async {}
+
   Future<void> execute();
 
   Future<void> expectViewVisible(
