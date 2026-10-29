@@ -1,9 +1,11 @@
 import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
@@ -55,8 +57,9 @@ class TestBase {
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
         try {
-          await setupTest();
-          await scenarioBuilder($, createRobotFactory($)).execute();
+          final scenario = scenarioBuilder($, createRobotFactory($));
+          await setupTest(scenario);
+          await scenario.execute();
         } catch (_) {
           dumpFailureState($);
           rethrow;
@@ -65,11 +68,13 @@ class TestBase {
     );
   }
 
-  Future<void> setupTest() async {
+  Future<void> setupTest(BaseScenario scenario) async {
     await EnvLoader.loadEnvFile();
-    await runTmail();
-    // runTmail reloads env.file, whose SERVER_URL the web login reads.
+    await runTmailPreload();
+    // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
+    await scenario.prepare();
+    runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {

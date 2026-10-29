@@ -17,7 +17,7 @@ abstract class BaseTestScenario extends BaseScenario with ScenarioUtilsMixin {
 
   const BaseTestScenario(super.$, this.robots);
 
-  // Seeds credentials directly into app storage so HomeController skips login.
+  // Seeds credentials directly into app storage before mount so HomeController skips login.
   // Tests run in the same process as the app, so Get.find<> works here.
   Future<void> _seedTestCredentials() async {
     final hostUrl = TestBackend.current.url;
@@ -40,10 +40,10 @@ abstract class BaseTestScenario extends BaseScenario with ScenarioUtilsMixin {
   }
 
   @override
-  Future<void> execute() async {
-    await _seedTestCredentials();
-    await runTestLogic();
-  }
+  Future<void> prepare() => _seedTestCredentials();
+
+  @override
+  Future<void> execute() => runTestLogic();
 
   Future<void> runTestLogic();
 }
