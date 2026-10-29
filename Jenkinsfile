@@ -92,7 +92,27 @@ pipeline {
                                     if (isPrImageEligible()) {
                                         // A tracked-files snapshot: the workspace is being written by prebuild meanwhile.
                                         sh '''
-                                            git archive --format=tar HEAD | docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
+                                            QUOTA=${PR_IMAGE_CPU_QUOTA:-200000}
+                                            case $QUOTA in ''|*[!0-9]*) QUOTA=200000 ;; esac
+                                            # The quota is part of the name: an existing builder keeps the limits it was created with.
+                                            BUILDER=tmail-pr-image-q$QUOTA
+                                            CAPPED=0
+                                            if docker buildx version >/dev/null 2>&1; then
+                                                # Low CPU cap: the image build must not starve the parallel Patrol tests.
+                                                if flock /tmp/tmail-pr-image-builder.lock sh -c "docker buildx inspect $BUILDER >/dev/null 2>&1 || \
+                                                    docker buildx create --name $BUILDER --driver docker-container \
+                                                    --driver-opt cpu-period=100000 --driver-opt cpu-quota=$QUOTA"; then
+                                                    CAPPED=1
+                                                fi
+                                            fi
+                                            if [ "$CAPPED" = 1 ]; then
+                                                echo "PR image build: capped, builder $BUILDER"
+                                                git archive --format=tar HEAD | docker buildx build --builder "$BUILDER" --load \
+                                                    --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
+                                            else
+                                                echo "PR image build: UNCAPPED (no buildx or builder unavailable)"
+                                                git archive --format=tar HEAD | docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
+                                            fi
                                         '''
                                         env.PR_IMAGE_BUILT = 'true'
                                     }
