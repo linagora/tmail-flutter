@@ -69,11 +69,16 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
+import 'package:model/extensions/mailbox_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
 
 import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/mailbox_fixtures.dart';
 import '../../../../fixtures/route_arguments_recorder.dart';
 import 'mailbox_dashboard_controller_test_harness.dart';
 
@@ -317,6 +322,44 @@ void main() {
         }
       });
     }
+
+    test('the folders report the email list of the Inbox they open in the same attempt, before their own load ends',
+        () async {
+      final bobFolders = StreamController<Either<Failure, Success>>();
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => bobFolders.stream);
+      final source = ActiveAccountSourceFixtures.putShowing(null);
+      // A real tree and a real ThreadController, so the Inbox opens and its list loads as in the app.
+      mailboxController = newMailboxController(mailboxTreeBuilder: TreeBuilder())..onInit();
+      getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+      Get.put<SearchEmailInteractor>(searchEmailInteractor);
+      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
+      threadController = Get.put(ThreadController(
+        getEmailsInMailboxInteractor,
+        refreshChangesEmailsInMailboxInteractor,
+        loadMoreEmailsInMailboxInteractor,
+        getEmailByIdInteractor,
+        cleanAndGetEmailsInMailboxInteractor,
+      ));
+      addTearDown(() => Get.delete<ThreadController>(force: true));
+      List<(ShownAccountLoadKind, int)>? reportedWhenFoldersEnded;
+
+      source.show(DelegationFixtures.bobAccountId);
+      final (_, folders) = source.reportedLoads.single;
+      unawaited(folders.result.then((_) => reportedWhenFoldersEnded = [
+            for (final (kind, load) in source.reportedLoads) (kind, load.attemptId),
+          ]));
+      bobFolders.add(Right(GetAllMailboxSuccess(
+        mailboxList: [MailboxFixtures.inboxMailbox.toPresentationMailbox()],
+        currentMailboxState: State('bob-state'),
+      )));
+      await bobFolders.close();
+      await pumpEventQueue();
+
+      expect(reportedWhenFoldersEnded, [
+        (ShownAccountLoadKind.folders, folders.attemptId),
+        (ShownAccountLoadKind.emailList, folders.attemptId),
+      ]);
+    });
 
     test('the folders of the account shown before are cleared once another one is shown', () {
       final source = ActiveAccountSourceFixtures.putShowing(testAccountId);

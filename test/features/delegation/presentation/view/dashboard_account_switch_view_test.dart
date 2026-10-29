@@ -79,19 +79,34 @@ void main() {
       expect(find.text('dashboard'), findsOneWidget);
     });
 
-    testWidgets('blockInput keeps the pages open above the dashboard', (tester) async {
-      await tester.pumpWidget(MaterialApp(navigatorKey: navigatorKey, home: const Text('dashboard')));
-      unawaited(navigatorKey.currentState!.push(MaterialPageRoute<void>(builder: (_) => const Text('page'))));
-      await tester.pumpAndSettle();
-      unawaited(showDialog<void>(context: navigatorKey.currentContext!, builder: (_) => const Text('dialog')));
-      await tester.pumpAndSettle();
+    for (final dashboardRouteName in ['/dashboard', '/dashboard?context=inbox']) {
+      testWidgets('blockInput closes the pages and page menus above the dashboard at $dashboardRouteName',
+          (tester) async {
+        await tester.pumpWidget(MaterialApp(navigatorKey: navigatorKey, home: const Text('login')));
+        final navigator = navigatorKey.currentState!;
+        unawaited(navigator.push(MaterialPageRoute<void>(
+          settings: RouteSettings(name: dashboardRouteName),
+          builder: (_) => const Text('dashboard'),
+        )));
+        unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) => const Text('picker'))));
+        unawaited(navigator.push(PageRouteBuilder<void>(
+          opaque: false,
+          pageBuilder: (_, __, ___) => const Text('page menu'),
+        )));
+        await tester.pumpAndSettle();
+        unawaited(showDialog<void>(context: navigatorKey.currentContext!, builder: (_) => const Text('dialog')));
+        await tester.pumpAndSettle();
 
-      view.blockInput();
-      await tester.pumpAndSettle();
+        view.blockInput();
+        await tester.pumpAndSettle();
 
-      expect(find.text('dialog'), findsNothing);
-      expect(find.text('page'), findsOneWidget);
-    });
+        expect(find.text('dialog'), findsNothing);
+        expect(find.text('page menu'), findsNothing);
+        expect(find.text('picker', skipOffstage: false), findsNothing);
+        expect(find.text('dashboard'), findsOneWidget);
+        expect(find.text('login', skipOffstage: false), findsOneWidget);
+      });
+    }
 
     test('unblockInput lets taps through again', () {
       view.blockInput();

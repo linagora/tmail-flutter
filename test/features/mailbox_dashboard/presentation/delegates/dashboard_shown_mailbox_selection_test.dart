@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -78,6 +79,19 @@ void main() {
         when(composerManager.hasComposer).thenReturn(hasComposer);
 
         expect(selection.hasOpenComposer, hasComposer);
+      });
+    }
+
+    for (final (route, tag, isOpen) in [
+      ('the route of a mobile composer', null, true),
+      ('a web composer, registered under its id,', 'composer-1', false),
+    ]) {
+      test('is $isOpen while $route is open', () {
+        when(composerManager.hasComposer).thenReturn(false);
+        Get.lazyPut<ComposerController>(() => throw UnimplementedError('never built'), tag: tag);
+        addTearDown(() => Get.delete<ComposerController>(tag: tag, force: true));
+
+        expect(selection.hasOpenComposer, isOpen);
       });
     }
   });

@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_ac
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/shown_account_load_tracker.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/view/shown_mailbox_selection.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 /// Built by an entry point with the container and the navigator above it, so it owns no provider.
 class DashboardAccountSwitchView implements AccountSwitchView {
@@ -21,10 +22,11 @@ class DashboardAccountSwitchView implements AccountSwitchView {
   @override
   bool get hasOpenComposer => _selection.hasOpenComposer;
 
-  /// A dialog, sheet or menu sits above the blocked dashboard and still acts on the old account.
+  /// A dialog, sheet, menu or page such as the destination picker sits above the blocked dashboard
+  /// and still acts on the old account. A switch never starts while a composer is open.
   @override
   void blockInput() {
-    _navigatorKey.currentState?.popUntil(_isNotPopup);
+    _navigatorKey.currentState?.popUntil(_isDashboardOrBelow);
     _container.read(shownAccountInputBlockProvider.notifier).block();
   }
 
@@ -47,7 +49,8 @@ class DashboardAccountSwitchView implements AccountSwitchView {
     if (!_loads.hasFoldersLoad(switchAttemptId)) _requestReload(switchAttemptId);
   }
 
-  static bool _isNotPopup(Route<dynamic> route) => route is! PopupRoute;
+  static bool _isDashboardOrBelow(Route<dynamic> route) =>
+      route.isFirst || (route.settings.name?.startsWith(AppRoutes.dashboard) ?? false);
 
   void _requestReload(int switchAttemptId) {
     _container.read(shownAccountReloadProvider.notifier).request(switchAttemptId);
