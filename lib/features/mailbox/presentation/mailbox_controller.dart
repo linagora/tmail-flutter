@@ -78,6 +78,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
@@ -114,7 +115,8 @@ class MailboxController extends BaseMailboxController
         ContactSupportMixin,
         LauncherApplicationMixin,
         MailboxWidgetMixin,
-        ActiveAccountReader {
+        ActiveAccountReader,
+        ShownAccountStateConsumer {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final isMailboxListScrollable = false.obs;
@@ -307,9 +309,7 @@ class MailboxController extends BaseMailboxController
   }
 
   void _registerObxStreamListener() {
-    _cancelShownAccountWatch = activeAccountSource.watchShown((accountId) {
-      if (session != null) getAllMailbox(session!, accountId);
-    });
+    _cancelShownAccountWatch = activeAccountSource.watchShown(_showFoldersOf);
 
     ever<Map<String, dynamic>?>(
       mailboxDashBoardController.routerParameters,
@@ -594,10 +594,23 @@ class MailboxController extends BaseMailboxController
 
   Future<void> refreshAllMailbox() async {
     if (session != null && accountId != null) {
-      consumeState(getAllMailboxInteractor!.execute(session!, accountId!));
+      _loadFoldersOfShownAccount(accountId!);
     } else {
       consumeState(Stream.value(Left(GetAllMailboxFailure(NotFoundSessionException()))));
     }
+  }
+
+  /// The folders of the account shown before must not stay tappable while the new ones load.
+  void _showFoldersOf(AccountId shownAccountId) {
+    currentMailboxState = null;
+    updateMailboxTree(mailboxCollection: MailboxCollection.empty(), isRefreshTrigger: false);
+    _setMapMailbox();
+    _loadFoldersOfShownAccount(shownAccountId);
+  }
+
+  void _loadFoldersOfShownAccount(AccountId shownAccountId) {
+    if (session == null || getAllMailboxInteractor == null) return;
+    consumeShownAccountState(getAllMailboxInteractor!.execute(session!, shownAccountId));
   }
 
   void _refreshMailboxChanges({required jmap.State newState}) {
@@ -614,13 +627,15 @@ class MailboxController extends BaseMailboxController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    // An account switch clears the folder state it leaves, so a message queued before it has nothing to refresh.
+    if (currentMailboxState == null) return;
     try {
-      final refreshViewState = await refreshAllMailboxInteractor!.execute(
+      final refreshViewState = await awaitShownAccountState(refreshAllMailboxInteractor!.execute(
         session!,
         accountId!,
         currentMailboxState!,
         properties: MailboxConstants.propertiesDefault,
-      ).last;
+      ));
 
       final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllMailboxSuccess>();

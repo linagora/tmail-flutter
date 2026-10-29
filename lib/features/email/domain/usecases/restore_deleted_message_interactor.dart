@@ -22,7 +22,7 @@ class RestoredDeletedMessageInteractor {
     try {
       yield Right<Failure, Success>(RestoreDeletedMessageLoading());
       final emailRecovery = await _emailRepository.restoreDeletedMessage(newRecoveryRequest);
-      yield Right<Failure, Success>(RestoreDeletedMessageSuccess(emailRecovery));
+      yield Right<Failure, Success>(RestoreDeletedMessageSuccess(emailRecovery, accountId));
     } catch (e) {
       yield Left<Failure, Success>(RestoreDeletedMessageFailure(e));
     }

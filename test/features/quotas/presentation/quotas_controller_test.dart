@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
@@ -40,11 +41,14 @@ void main() {
   late MockMailboxDashBoardController dashboard;
   late ProviderContainer container;
   late RiverpodActiveAccountSource source;
+  late Rxn<Quota> octetsQuota;
 
   setUp(() {
     BaseControllerFixtures.registerDependencies();
     dashboard = MockMailboxDashBoardController();
+    octetsQuota = Rxn<Quota>();
     when(dashboard.sessionCurrent).thenReturn(DelegationFixtures.session());
+    when(dashboard.octetsQuota).thenReturn(octetsQuota);
     Get.put<MailboxDashBoardController>(dashboard);
     container = ActiveAccountSourceFixtures.newContainer();
     source = ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
@@ -114,7 +118,6 @@ void main() {
       () async {
     final myQuotaRequest = StreamController<Either<Failure, Success>>();
     addTearDown(myQuotaRequest.close);
-    when(dashboard.octetsQuota).thenReturn(Rxn<Quota>());
     when(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).thenAnswer((_) => myQuotaRequest.stream);
     when(getQuotasInteractor.execute(DelegationFixtures.bobAccountId))
         .thenAnswer((_) => Stream.value(Right(GetQuotasSuccess([_storageQuota('bob-storage')]))));
@@ -128,6 +131,48 @@ void main() {
 
     expect(dashboard.octetsQuota.value?.id, Id('bob-storage'));
   });
+
+  test('a quota arriving once a logout ended the session never reaches the view', () async {
+    final myQuotaRequest = StreamController<Either<Failure, Success>>();
+    addTearDown(myQuotaRequest.close);
+    when(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).thenAnswer((_) => myQuotaRequest.stream);
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+
+    container.read(accountSwitchProvider.notifier).endSession();
+    myQuotaRequest.add(Right(GetQuotasSuccess([_storageQuota('alice-storage')])));
+    await pumpEventQueue();
+
+    expect(octetsQuota.value, isNull);
+  });
+
+  test('a new quota request drops the result of the one still running', () async {
+    final firstRequest = StreamController<Either<Failure, Success>>();
+    addTearDown(firstRequest.close);
+    when(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId)).thenAnswer((_) => firstRequest.stream);
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+    when(getQuotasInteractor.execute(DelegationFixtures.aliceAccountId))
+        .thenAnswer((_) => Stream.value(Right(GetQuotasSuccess([_storageQuota('alice-storage-2')]))));
+
+    controller.reloadQuota();
+    await pumpEventQueue();
+    firstRequest.add(Right(GetQuotasSuccess([_storageQuota('alice-storage-1')])));
+    await pumpEventQueue();
+
+    expect(octetsQuota.value?.id, Id('alice-storage-2'));
+  });
+
+  test('the quota of the account shown before is cleared while the new one loads', () {
+    final controller = QuotasController(getQuotasInteractor)..onInit();
+    addTearDown(controller.onClose);
+    octetsQuota.value = _storageQuota('alice-storage');
+
+    show(DelegationFixtures.bobAccountId);
+
+    expect(octetsQuota.value, isNull);
+  });
+
 }
 
 Quota _storageQuota(String id) => Quota(Id(id), ResourceType.octets, Scope.account, 'Storage', used: UnsignedInt(1));

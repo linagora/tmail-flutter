@@ -108,7 +108,7 @@ typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
 class ThreadController extends BaseController
-    with EmailActionController, ActiveAccountReader {
+    with EmailActionController, ActiveAccountReader, ShownAccountStateConsumer {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -676,6 +676,8 @@ class ThreadController extends BaseController
         .read(searchEmailPresentationProvider.notifier)
         .resetSearchMore();
     _syncLoadMoreStatus();
+    // An email still opening for the folder left, or the account left, would hide the list forever.
+    openingEmail.value = false;
   }
 
   @visibleForTesting
@@ -818,7 +820,7 @@ class ThreadController extends BaseController
     _folderLoadMore.resetList();
     _syncLoadMoreStatus();
     if (_session != null &&_accountId != null) {
-      consumeState(_getEmailsInMailboxInteractor.execute(
+      consumeShownAccountState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
@@ -891,6 +893,8 @@ class ThreadController extends BaseController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    // An account switch clears the email state it leaves, so a message queued before it has nothing to refresh.
+    if (mailboxDashBoardController.currentEmailState == null) return;
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeListEmailCache();
@@ -911,7 +915,7 @@ class ThreadController extends BaseController
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
-    final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
+    final refreshState = await awaitShownAccountState(_refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
@@ -928,7 +932,7 @@ class ThreadController extends BaseController
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
       collapseThreads: collapseThreads,
-    ).last;
+    ));
 
     refreshState.fold(
       (failure) {},
@@ -978,7 +982,7 @@ class ThreadController extends BaseController
     try {
       await _refreshChangeListEmailCache();
 
-      final viewState = await _getEmailsInMailboxInteractor
+      final viewState = await awaitShownAccountState(_getEmailsInMailboxInteractor
           .execute(
             _session!,
             _accountId!,
@@ -996,8 +1000,7 @@ class ThreadController extends BaseController
             useCache: false,
             forceEmailQuery: shouldCollapseThreads,
             collapseThreads: shouldCollapseThreads,
-          )
-          .last;
+          ));
 
       dispatchState(viewState);
 
@@ -1056,7 +1059,7 @@ class ThreadController extends BaseController
       );
 
       _syncLoadMoreStatus();
-      consumeState(_loadMoreEmailsInMailboxInteractor.execute(
+      consumeShownAccountState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
           _accountId!,
@@ -1529,7 +1532,7 @@ class ThreadController extends BaseController
     }
   ) {
     if (_session != null && _accountId != null) {
-      consumeState(_getEmailByIdInteractor.execute(
+      consumeShownAccountState(_getEmailByIdInteractor.execute(
         _session!,
         _accountId!,
         emailId,

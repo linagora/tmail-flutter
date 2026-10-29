@@ -10,6 +10,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -48,6 +49,10 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_sta
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
@@ -548,8 +553,11 @@ void main() {
 
     group('_registerObxStreamListener test:', () {
       late ThreadController obxListenerController;
+      late Rxn<UIAction> dashBoardAction;
+      late Rxn<PresentationMailbox> selectedMailboxOfTest;
 
       setUp(() {
+        dashBoardAction = Rxn<UIAction>();
         obxListenerController = ThreadController(
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
@@ -561,6 +569,30 @@ void main() {
 
       tearDown(() {
         obxListenerController.onClose();
+        // Stubs of a stale-result test hand out closed single-use streams, so the next test resets them.
+        when(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any)).thenAnswer((_) => const Stream.empty());
+        when(mockLoadMoreEmailsInMailboxInteractor.execute(any)).thenAnswer((_) => const Stream.empty());
+        when(mockGetEmailByIdInteractor.execute(
+          any,
+          any,
+          any,
+          properties: anyNamed('properties'),
+          mailboxContain: anyNamed('mailboxContain'),
+        )).thenAnswer((_) => const Stream.empty());
+        when(mockCleanAndGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: anyNamed('useCache'),
+        )).thenAnswer((_) => const Stream.empty());
+        clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
+        clearInteractions(mockGetEmailByIdInteractor);
+        clearInteractions(mockCleanAndGetEmailsInMailboxInteractor);
       });
 
       Stream<Either<Failure, Success>> fetchEmailsOf(dynamic accountId) =>
@@ -579,12 +611,12 @@ void main() {
           );
 
       Future<void> changeSelectedMailbox() async {
-        final selectedMailbox = Rxn(PresentationMailbox(MailboxId(Id('mailbox-before-id'))));
+        final selectedMailbox = selectedMailboxOfTest = Rxn(PresentationMailbox(MailboxId(Id('mailbox-before-id'))));
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(selectedMailbox);
         when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
-        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(dashBoardAction);
         when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
         when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList());
@@ -612,6 +644,109 @@ void main() {
         await changeSelectedMailbox();
 
         verify(fetchEmailsOf(DelegationFixtures.bobAccountId));
+      });
+
+      test('the emails of an account shown before never reach the list once another one is shown', () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        final bobEmails = StreamController<Either<Failure, Success>>();
+        addTearDown(bobEmails.close);
+        when(fetchEmailsOf(any)).thenAnswer((_) => bobEmails.stream);
+        await changeSelectedMailbox();
+        clearInteractions(mockMailboxDashBoardController);
+
+        source.show(DelegationFixtures.carolAccountId);
+        bobEmails.add(Right(GetAllEmailSuccess(
+          emailList: [PresentationEmail(id: EmailId(Id('bob-email')))],
+          currentMailboxId: MailboxId(Id('mailbox-after-id')),
+        )));
+        await pumpEventQueue();
+
+        verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+      });
+
+      test('a pull to refresh of an account shown before never reaches the list once another one is shown',
+          () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        await changeSelectedMailbox();
+        final bobEmails = StreamController<Either<Failure, Success>>();
+        addTearDown(bobEmails.close);
+        when(mockCleanAndGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: anyNamed('useCache'),
+        )).thenAnswer((_) => bobEmails.stream);
+        await obxListenerController.cleanAndGetAllEmailAction();
+        clearInteractions(mockMailboxDashBoardController);
+
+        source.show(DelegationFixtures.carolAccountId);
+        bobEmails.add(Right(GetAllEmailSuccess(
+          emailList: [PresentationEmail(id: EmailId(Id('bob-email')))],
+          currentMailboxId: MailboxId(Id('mailbox-after-id')),
+        )));
+        await pumpEventQueue();
+
+        verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+      });
+
+      test('a page loaded for an account shown before is never added once another one is shown', () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        await changeSelectedMailbox();
+        final bobPage = StreamController<Either<Failure, Success>>();
+        addTearDown(bobPage.close);
+        when(mockLoadMoreEmailsInMailboxInteractor.execute(any)).thenAnswer((_) => bobPage.stream);
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+        obxListenerController.canLoadMore = true;
+        obxListenerController.handleLoadMoreEmailsRequest();
+        expect(obxListenerController.loadingMoreStatus.value, LoadingMoreStatus.running);
+
+        source.show(DelegationFixtures.carolAccountId);
+        bobPage.add(Right(LoadMoreEmailsSuccess([
+          PresentationEmail(
+            id: EmailId(Id('bob-older-email')),
+            mailboxIds: {MailboxId(Id('mailbox-after-id')): true},
+          ),
+        ], serverEmailCount: 1)));
+        await pumpEventQueue();
+
+        expect(mockMailboxDashBoardController.emailsInCurrentMailbox, isEmpty);
+      });
+
+      test('an email opened for an account shown before is never shown, and the list shows again', () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        await changeSelectedMailbox();
+        final bobEmail = StreamController<Either<Failure, Success>>();
+        addTearDown(bobEmail.close);
+        when(mockGetEmailByIdInteractor.execute(
+          any,
+          any,
+          any,
+          properties: anyNamed('properties'),
+          mailboxContain: anyNamed('mailboxContain'),
+        )).thenAnswer((_) => bobEmail.stream);
+        dashBoardAction.value = OpenEmailWithoutMailboxFromLocationBar(EmailId(Id('bob-email')));
+        bobEmail.add(Right(GetEmailByIdLoading()));
+        await pumpEventQueue();
+        expect(obxListenerController.openingEmail.value, isTrue);
+        clearInteractions(mockMailboxDashBoardController);
+
+        source.show(DelegationFixtures.carolAccountId);
+        selectedMailboxOfTest.value = null;
+        bobEmail.add(Right(GetEmailByIdSuccess(PresentationEmail(id: EmailId(Id('bob-email'))))));
+        await pumpEventQueue();
+
+        expect(obxListenerController.openingEmail.value, isFalse);
+        verifyNever(mockMailboxDashBoardController.setSelectedMailbox(any));
+        verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
       });
     });
 
@@ -1644,6 +1779,214 @@ void main() {
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
         expect(controller.canLoadMore, isFalse);
       });
+
+      testWidgets('the email changes of an account shown before never reach the list once another one is shown',
+          (tester) async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        PlatformInfo.isTestingForWeb = false;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: false,
+        );
+        addTearDown(controller.onClose);
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(height: 600, child: ListView(controller: controller.listEmailController)),
+        ));
+        final emails = makeEmails(3, inboxMailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(inboxMailbox, emails, emailAction);
+        stubInteractorsForEmailStateChange(emails, inboxMailbox.id);
+        final bobChanges = StreamController<Either<Failure, Success>>();
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => bobChanges.stream);
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('new-state'));
+        await tester.pump();
+        clearInteractions(mockMailboxDashBoardController);
+
+        source.show(DelegationFixtures.carolAccountId);
+        bobChanges.add(Right(RefreshChangesAllEmailSuccess(emailList: emails)));
+        await bobChanges.close();
+        await tester.pumpAndSettle();
+
+        verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+      });
+
+      testWidgets('an email change queued before an account switch is dropped once the switch cleared the email state',
+          (tester) async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        PlatformInfo.isTestingForWeb = false;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: false,
+        );
+        addTearDown(controller.onClose);
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(height: 600, child: ListView(controller: controller.listEmailController)),
+        ));
+        final emails = makeEmails(3, inboxMailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(inboxMailbox, emails, emailAction);
+        stubInteractorsForEmailStateChange(emails, inboxMailbox.id);
+        final bobChanges = StreamController<Either<Failure, Success>>();
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => bobChanges.stream);
+        clearInteractions(mockRefreshChangesEmailsInMailboxInteractor);
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('new-state'));
+        await tester.pump();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('newer-state'));
+        await tester.pump();
+        clearInteractions(mockAppToast);
+
+        source.show(DelegationFixtures.carolAccountId);
+        when(mockMailboxDashBoardController.currentEmailState).thenReturn(null);
+        await bobChanges.close();
+        await tester.pumpAndSettle();
+
+        verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).called(1);
+        verifyNever(mockAppToast.showToastErrorMessage(any, any));
+      });
+
+      for (final switched in [false, true]) {
+        testWidgets('a failed email changes refresh ${switched ? 'of an account shown before is ignored' : 'clears the stale cache'}',
+            (tester) async {
+          ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+          final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+          PlatformInfo.isTestingForWeb = false;
+          final controller = _ThreadControllerWithCollapseThreads(
+            mockGetEmailsInMailboxInteractor,
+            mockRefreshChangesEmailsInMailboxInteractor,
+            mockLoadMoreEmailsInMailboxInteractor,
+            mockGetEmailByIdInteractor,
+            mockCleanAndGetEmailsInMailboxInteractor,
+            collapseThreads: false,
+          );
+          addTearDown(controller.onClose);
+          await tester.pumpWidget(GetMaterialApp(
+            home: SizedBox(height: 600, child: ListView(controller: controller.listEmailController)),
+          ));
+          final emails = makeEmails(3, inboxMailbox.id);
+          final emailAction = Rxn<EmailUIAction>();
+          stubDashboardForEmailStateChange(inboxMailbox, emails, emailAction);
+          stubInteractorsForEmailStateChange(emails, inboxMailbox.id);
+          final bobChanges = StreamController<Either<Failure, Success>>();
+          when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          )).thenAnswer((_) => bobChanges.stream);
+          controller.onInit();
+          emailAction.value = RefreshChangeEmailAction(newState: jmap.State('new-state'));
+          await tester.pump();
+          clearInteractions(mockCachingManager);
+
+          if (switched) source.show(DelegationFixtures.carolAccountId);
+          bobChanges.addError(CannotCalculateChangesMethodResponseException());
+          await bobChanges.close();
+          await tester.pumpAndSettle();
+
+          if (switched) {
+            verifyNever(mockCachingManager.clearAllEmailAndStateCache());
+          } else {
+            verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+          }
+        });
+      }
+
+      testWidgets('the virtual folder emails of an account shown before never reach the list once another one is shown',
+          (tester) async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+        PlatformInfo.isTestingForWeb = false;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: false,
+        );
+        addTearDown(controller.onClose);
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(height: 600, child: ListView(controller: controller.listEmailController)),
+        ));
+        final emails = makeEmails(3, favoriteFolder.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(favoriteFolder, emails, emailAction);
+        stubInteractorsForEmailStateChange(emails, favoriteFolder.id);
+        final bobFolderEmails = StreamController<Either<Failure, Success>>();
+        when(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: false,
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => bobFolderEmails.stream);
+        addTearDown(() => stubInteractorsForEmailStateChange(emails, favoriteFolder.id));
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(newState: jmap.State('new-state'));
+        await tester.pump();
+        clearInteractions(mockMailboxDashBoardController);
+
+        source.show(DelegationFixtures.carolAccountId);
+        final bobFolderSuccess = GetAllEmailSuccess(emailList: emails, currentMailboxId: favoriteFolder.id);
+        bobFolderEmails.add(Right(bobFolderSuccess));
+        await bobFolderEmails.close();
+        await tester.pumpAndSettle();
+
+        expect(controller.viewState.value.getOrElse(() => UIState.idle), isNot(same(bobFolderSuccess)));
+      });
     });
 
     group('SearchLayoutCoordinator test:', () {
@@ -2513,3 +2856,21 @@ void main() {
     });
   });
 }
+
+Stream<Either<Failure, Success>> _fetchEmailsOf(
+  MockGetEmailsInMailboxInteractor interactor,
+  dynamic accountId,
+) =>
+    interactor.execute(
+      any,
+      accountId,
+      limit: anyNamed('limit'),
+      sort: anyNamed('sort'),
+      emailFilter: anyNamed('emailFilter'),
+      propertiesCreated: anyNamed('propertiesCreated'),
+      propertiesUpdated: anyNamed('propertiesUpdated'),
+      useCache: anyNamed('useCache'),
+      forceEmailQuery: anyNamed('forceEmailQuery'),
+      collapseThreads: anyNamed('collapseThreads'),
+      getLatestChanges: anyNamed('getLatestChanges'),
+    );

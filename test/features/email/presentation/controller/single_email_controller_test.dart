@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:mockito/annotations.dart';
@@ -26,6 +27,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -387,6 +389,34 @@ void main() {
       );
     });
 
+    test('the invitation of an account shown before never reaches the opened email once another one is shown',
+        () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+      final bobInvitation = Completer<List<BlobCalendarEvent>>();
+      when(calendarEventDataSource.parse(any, any)).thenAnswer((_) => bobInvitation.future);
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      singleEmailController.onInit();
+      final blobId = Id('bob-invitation');
+      singleEmailController.parseCalendarEventAction(
+        accountId: DelegationFixtures.bobAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+
+      source.show(DelegationFixtures.carolAccountId);
+      bobInvitation.complete([
+        BlobCalendarEvent(blobId: blobId, calendarEventList: [CalendarEvent(description: 'bob event')]),
+      ]);
+      await pumpEventQueue();
+
+      expect(singleEmailController.blobCalendarEvent.value, isNull);
+    });
+
     test(
       'should transform all calendar event description url to a tag '
       'and all new line to <br> tag '
@@ -621,6 +651,53 @@ void main() {
 
       verify(parseCalendarEventInteractor.execute(DelegationFixtures.bobAccountId, {calendarBlobId}, any)).called(1);
       verifyNoMoreInteractions(parseCalendarEventInteractor);
+    });
+  });
+
+  group('email content of the shown account:', () {
+    final openedEmailId = EmailId(Id('opened-email-id'));
+
+    setUp(() {
+      addTearDown(() {
+        when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
+        reset(getEmailContentInteractor);
+      });
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail(
+        id: openedEmailId,
+        keywords: {KeyWordIdentifier.emailSeen: true},
+      )));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
+      when(mailboxDashboardController.mapMailboxById).thenReturn({});
+      when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+    });
+
+    testWidgets('the content of an account shown before never reaches the opened email once another one is shown',
+        (tester) async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+      final bobContent = StreamController<Either<Failure, Success>>();
+      addTearDown(bobContent.close);
+      when(getEmailContentInteractor.execute(any, any, any, any, any)).thenAnswer((_) => bobContent.stream);
+      singleEmailController.onInit();
+      await tester.pumpWidget(const SizedBox());
+      verify(getEmailContentInteractor.execute(any, DelegationFixtures.bobAccountId, openedEmailId, any, any))
+          .called(1);
+
+      source.show(DelegationFixtures.carolAccountId);
+      bobContent.add(Right(GetEmailContentSuccess(
+        htmlEmailContent: 'content of bob',
+        emailCurrent: Email(id: openedEmailId),
+      )));
+      await tester.pump();
+
+      expect(singleEmailController.emailContents.value, isNull);
+      expect(
+        singleEmailController.emailLoadedViewState.value.fold((failure) => failure, (success) => success),
+        isA<GetEmailContentLoading>(),
+      );
     });
   });
 

@@ -44,7 +44,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       return;
     } 
 
-    consumeState(getEmailsByIdsInteractor.execute(
+    consumeShownAccountState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
       emailIdsToLoadMetaData,
