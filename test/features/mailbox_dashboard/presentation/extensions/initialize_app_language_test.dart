@@ -606,5 +606,50 @@ void main() {
       // assert
       expect(initialLocale, LocalizationService.defaultLocale);
     });
+
+    testWidgets(
+      'getInitialLocale should return the first allowed language '
+      'when cached and device languages are not allowed '
+      'and English is not allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,fr');
+      when(languageCacheManager.getStoredLanguage())
+        .thenReturn(const Locale('vi', 'VN'));
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('en', 'US');
+
+      // act
+      final initialLocale = LocalizationService.getInitialLocale();
+
+      // assert
+      expect(initialLocale, const Locale('mn', 'MN'));
+    });
+
+    testWidgets(
+      'should keep the current language '
+      'when server, cached and device languages are not allowed '
+      'and the current language is allowed',
+    (tester) async {
+      // arrange
+      allowLanguages('mn,fr');
+      when(languageCacheManager.getStoredLanguage())
+        .thenReturn(const Locale('vi', 'VN'));
+      TestWidgetsFlutterBinding
+        .instance
+        .platformDispatcher
+        .localeTestValue = const Locale('de', 'DE');
+
+      // act
+      LocalizationService.initializeAppLanguage(
+        serverLanguage: LanguageCodeConstants.russian,
+      );
+      await tester.pumpAndSettle();
+
+      // assert
+      expect(Get.locale, const Locale('fr', 'FR'));
+    });
   });
 }
