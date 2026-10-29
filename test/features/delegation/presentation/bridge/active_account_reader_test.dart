@@ -169,6 +169,29 @@ void main() {
     });
   });
 
+  group('shownAccountCapabilities', () {
+    test('do not open Settings while a delegated account is shown', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      expect(_Reader().shownAccountCapabilities.canOpenSettings, isFalse);
+    });
+
+    test('open Settings while my own account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      expect(_Reader().shownAccountCapabilities.canOpenSettings, isTrue);
+    });
+
+    test('open Settings while no account is shown yet', () {
+      ActiveAccountSourceFixtures.putEmpty();
+
+      expect(_Reader().shownAccountCapabilities.canOpenSettings, isTrue);
+    });
+  });
+
   group('consumeShownAccountState:', () {
     late FakeActiveAccountSource source;
     late StreamController<Either<Failure, Success>> viewResults;

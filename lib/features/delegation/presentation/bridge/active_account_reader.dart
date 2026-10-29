@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/shown_account_state_subscription.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/switch_attempt_stamp.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 
@@ -20,6 +21,10 @@ mixin ActiveAccountReader {
 
   /// Personal-only actions, such as an email rule filter, are hidden while this is true.
   bool get isDelegatedAccountShown => activeAccountSource.activeAccount?.isDelegated == true;
+
+  /// The GetX side of shownAccountCapabilitiesProvider.
+  ShownAccountCapabilities get shownAccountCapabilities =>
+      ShownAccountCapabilities.of(activeAccountSource.activeAccount);
 }
 
 /// For a controller that loads the shown mailbox into its view.
