@@ -1445,6 +1445,26 @@ void main() {
         expect(composerController?.restoringSignatureButton, isFalse);
         expect(composerController?.synchronizeInitDraftHash, isFalse);
       });
+
+      test(
+        'Should clear restoringSignatureButton\n'
+        'When the restored nested signature is not inserted',
+      () async {
+        // arrange
+        const contentWithQuotedSignature = '$emailContent'
+            '<blockquote><div class="tmail-signature">quoted signature</div></blockquote>';
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(
+                Left(TransformHtmlEmailContentFailure(Exception()))));
+
+        // act
+        await composerController?.restoreCollapsibleSignatureButton(
+          contentWithQuotedSignature,
+        );
+
+        // assert
+        expect(composerController?.restoringSignatureButton, isFalse);
+      });
     });
 
     group('applySignature test:', () {

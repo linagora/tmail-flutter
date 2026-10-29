@@ -1907,7 +1907,10 @@ class ComposerController extends BaseController
 
   Future<void> applySignature(String signature) async {
     final normalizedSignature = await _normalizeSignature(signature);
-    if (normalizedSignature == null) return;
+    if (normalizedSignature == null) {
+      restoringSignatureButton = false;
+      return;
+    }
     if (PlatformInfo.isWeb) {
       richTextWebController?.editorController.insertSignature(
         normalizedSignature,
