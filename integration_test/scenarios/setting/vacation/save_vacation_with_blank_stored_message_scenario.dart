@@ -21,6 +21,7 @@ class SaveVacationWithBlankStoredMessageScenario extends BaseTestScenario {
 
     await robots.mailboxMenuRobot().openSetting();
     await robots.settingsRobot().openSettingsDetail(AccountMenuItem.vacation);
+    await vacationRobot.waitForStoredMessageLoaded();
     await vacationRobot.turnOnResponder();
     await vacationRobot.pickStartDate();
     await vacationRobot.pickStartTime();
