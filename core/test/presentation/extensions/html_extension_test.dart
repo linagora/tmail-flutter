@@ -61,6 +61,10 @@ void main() {
       expect('<DIV><IMG SRC="a.png"></DIV>'.hasNoTextContent, isFalse);
     });
 
+    test('returns true for an empty tag whose name only starts with img', () {
+      expect('<imgx></imgx>'.hasNoTextContent, isTrue);
+    });
+
     test('returns true for nbsp entities without any tag', () {
       expect('&nbsp;&nbsp;'.hasNoTextContent, isTrue);
     });
