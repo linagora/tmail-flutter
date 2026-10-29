@@ -2065,9 +2065,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4839e56114675e060d441a4e6b1670132b598609"
-      resolved-ref: "4839e56114675e060d441a4e6b1670132b598609"
-      url: "https://github.com/tddang-linagora/receive_sharing_intent.git"
+      ref: "871522932827b5716d7906551cf5000a61106584"
+      resolved-ref: "871522932827b5716d7906551cf5000a61106584"
+      url: "https://github.com/linagora/receive_sharing_intent.git"
     source: git
     version: "1.8.1"
   rich_text_composer:
