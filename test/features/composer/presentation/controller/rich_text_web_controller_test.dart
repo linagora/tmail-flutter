@@ -221,6 +221,21 @@ void main() {
         verifyNever(editorController.toggleCodeView());
       });
 
+      testWidgets('does not show a toast when the composer closed while the toggle waited', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        controller.onDelete();
+        await tester.pump(_replyTimeout);
+
+        verifyNever(appToast.showToastErrorMessage(any, any));
+      });
+
       testWidgets('does not show a toast when leaving code view succeeds', (tester) async {
         await _pumpOverlayContext(tester);
         when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);

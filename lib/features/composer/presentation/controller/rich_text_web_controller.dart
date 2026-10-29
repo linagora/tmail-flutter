@@ -311,7 +311,7 @@ class RichTextWebController extends GetxController {
   }
 
   void _showCodeViewToggleError() {
-    if (!Get.isRegistered<AppToast>()) return;
+    if (isClosed || !Get.isRegistered<AppToast>()) return;
     final context = currentOverlayContext;
     if (context == null) return;
     Get.find<AppToast>().showToastErrorMessage(
