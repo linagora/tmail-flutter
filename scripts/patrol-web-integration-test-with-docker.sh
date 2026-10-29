@@ -143,7 +143,7 @@ patrol test -v \
     --web-workers="${WEB_WORKERS:-3}" \
     --show-flutter-logs \
     --flutter-command="bash scripts/ci-flutter-verbose-run.sh" \
-    --web-video=retain-on-failure \
+    --web-video="${WEB_VIDEO:-off}" \
     --web-results-dir="$CI_LOGS/web-results" \
     --web-report-dir="$CI_LOGS/playwright-report" \
     --web-browser-args="$WEB_BROWSER_ARGS" \
