@@ -50,12 +50,13 @@ class MailboxAppBar extends StatelessWidget {
               icon: imagePaths.icAppDashboard,
               onTapAction: openAppGridAction!,
             ),
-          UserAvatarBuilder(
-            key: const ValueKey(UiKeys.userAvatar),
-            username: username.firstLetterToUpperCase,
-            padding: const EdgeInsetsDirectional.only(start: 4),
-            onTapAction: openSettingsAction,
-          ),
+          if (openSettingsAction != null)
+            UserAvatarBuilder(
+              key: const ValueKey(UiKeys.userAvatar),
+              username: username.firstLetterToUpperCase,
+              padding: const EdgeInsetsDirectional.only(start: 4),
+              onTapAction: openSettingsAction,
+            ),
         ],
       ),
     );
