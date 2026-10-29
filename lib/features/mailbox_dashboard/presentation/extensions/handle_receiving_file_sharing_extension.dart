@@ -26,6 +26,8 @@ extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
       case SharedMediaType.mailto:
         _openComposerFromMailtoAddress(sharedMediaFile);
         break;
+      case SharedMediaType.unreadable:
+        break;
     }
   }
 

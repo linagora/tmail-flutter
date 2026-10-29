@@ -432,6 +432,16 @@ class AppLocalizations {
     );
   }
 
+  String sharedFilesCannotBeRead(int count) {
+    return Intl.plural(
+      count,
+      one: 'A shared file could not be read and was not added',
+      other: '$count shared files could not be read and were not added',
+      name: 'sharedFilesCannotBeRead',
+      args: [count],
+    );
+  }
+
   String get attachments_uploaded_successfully {
     return Intl.message(
       'Attachments uploaded successfully',
