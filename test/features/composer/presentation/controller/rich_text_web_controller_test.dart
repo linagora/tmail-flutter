@@ -1,19 +1,27 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../fixtures/code_view_html_fixtures.dart';
 import 'rich_text_web_controller_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<HtmlEditorController>()])
+@GenerateNiceMocks([MockSpec<HtmlEditorController>(), MockSpec<AppToast>()])
 void main() {
   group('RichTextWebController::insertImageAsBase64', () {
     late MockHtmlEditorController editorController;
@@ -159,5 +167,88 @@ void main() {
         verifyNever(editorController.toggleCodeView());
       });
     });
+
+    group('error toast', () {
+      late MockAppToast appToast;
+
+      setUp(() {
+        appToast = MockAppToast();
+        Get.put<AppToast>(appToast);
+        addTearDown(() => Get.delete<AppToast>());
+      });
+
+      testWidgets('shows an unknown error toast when the editor HTML cannot be read', (tester) async {
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) async => throw Exception('editor unavailable'));
+
+        controller.toggleCodeView();
+        await tester.pump();
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+      });
+
+      testWidgets('shows an unknown error toast when the code view state never comes back', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        await tester.pump(_replyTimeout);
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+      });
+
+      testWidgets('shows an unknown error toast and stays in code view when the HTML never comes back', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) => Completer<String>().future);
+        controller.codeViewState.value = CodeViewState.enabled;
+
+        controller.toggleCodeView();
+        await tester.pump(_replyTimeout);
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+        expect(controller.codeViewEnabled, isTrue);
+        verifyNever(editorController.setText(any));
+        verifyNever(editorController.toggleCodeView());
+      });
+
+      testWidgets('does not show a toast when leaving code view succeeds', (tester) async {
+        await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) async => benignComposerHtml);
+
+        controller.toggleCodeView();
+        await tester.pump();
+
+        verify(editorController.toggleCodeView()).called(1);
+        verifyNever(appToast.showToastErrorMessage(any, any));
+      });
+    });
   });
+}
+
+const _replyTimeout = Duration(seconds: 1);
+
+Future<BuildContext> _pumpOverlayContext(WidgetTester tester) async {
+  await tester.pumpWidget(const GetMaterialApp(
+    localizationsDelegates: [
+      AppLocalizationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: LocalizationService.supportedLocales,
+    home: SizedBox.shrink(),
+  ));
+  await tester.pumpAndSettle();
+  return currentOverlayContext!;
 }
