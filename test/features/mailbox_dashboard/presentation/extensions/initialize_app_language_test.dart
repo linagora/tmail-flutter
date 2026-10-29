@@ -635,6 +635,7 @@ void main() {
     (tester) async {
       // arrange
       allowLanguages('mn,fr');
+      Get.locale = const Locale('fr', 'FR');
       when(languageCacheManager.getStoredLanguage())
         .thenReturn(const Locale('vi', 'VN'));
       TestWidgetsFlutterBinding
