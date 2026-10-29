@@ -15,6 +15,7 @@ import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/label_border_button_field.dart';
@@ -50,22 +51,7 @@ class VacationView extends GetWidget<VacationController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(() {
-              final isVacationDeactivated = controller.isVacationDeactivated;
-
-              return SwitchLabelButtonWidget(
-                imagePaths: controller.imagePaths,
-                label: AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
-                isActive: !isVacationDeactivated,
-                padding: const EdgeInsets.only(top: 10),
-                onSwitchAction: () {
-                  final newStatus = isVacationDeactivated
-                      ? VacationResponderStatus.activated
-                      : VacationResponderStatus.deactivated;
-                  controller.updateVacationPresentation(newStatus: newStatus);
-                },
-              );
-            }),
+            _buildResponderSwitch(context),
             SizedBox(
               height: controller.responsiveUtils.isScreenWithShortestSide(context)
                 ? 24
@@ -376,6 +362,26 @@ class VacationView extends GetWidget<VacationController> {
     }
   }
 
+  Widget _buildResponderSwitch(BuildContext context) {
+    return Obx(() {
+      final isVacationDeactivated = controller.isVacationDeactivated;
+
+      return SwitchLabelButtonWidget(
+        key: const ValueKey(UiKeys.vacationResponderSwitch),
+        imagePaths: controller.imagePaths,
+        label: AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
+        isActive: !isVacationDeactivated,
+        padding: const EdgeInsets.only(top: 10),
+        onSwitchAction: () {
+          final newStatus = isVacationDeactivated
+              ? VacationResponderStatus.activated
+              : VacationResponderStatus.deactivated;
+          controller.updateVacationPresentation(newStatus: newStatus);
+        },
+      );
+    });
+  }
+
   Widget _buildVacationMessage(BuildContext context) {
     Widget overlayWidget = Obx(() {
       bool isOverlayEnabled = DateTimeDialogPicker().isOpened.isTrue ||
@@ -532,7 +538,9 @@ class VacationView extends GetWidget<VacationController> {
         ),
       );
     } else {
-      return HtmlEditor(
+      return KeyedSubtree(
+        key: const ValueKey(UiKeys.vacationMessageEditorMobile),
+        child: HtmlEditor(
           key: controller.htmlKey,
           minHeight: ConstantsUI.htmlContentMinHeight.toInt(),
           maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
@@ -540,6 +548,7 @@ class VacationView extends GetWidget<VacationController> {
           initialContent: controller.vacationMessageHtmlText ?? '',
           customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
+        ),
       );
     }
   }

@@ -33,4 +33,52 @@ void main() {
           '&lt;a onclick=&quot;alert(&#39;unclosed event)&gt;Click&lt;&#47;a&gt;');
     });
   });
+
+  group('HtmlExtension::hasNoTextContent', () {
+    test('returns true for empty string', () {
+      expect(''.hasNoTextContent, isTrue);
+    });
+
+    test('returns true for markup that only holds line breaks', () {
+      expect('<p><br></p>'.hasNoTextContent, isTrue);
+      expect('<div><br></div>'.hasNoTextContent, isTrue);
+      expect('<br>'.hasNoTextContent, isTrue);
+    });
+
+    test('returns true for whitespace and nbsp only', () {
+      expect('<div> &nbsp; \u00a0 </div>'.hasNoTextContent, isTrue);
+    });
+
+    test('returns false when the markup holds text', () {
+      expect('<p>Hello</p>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false when the markup holds an image', () {
+      expect('<div><img src="a.png"></div>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false when the image tag is upper case', () {
+      expect('<DIV><IMG SRC="a.png"></DIV>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns true for an empty tag whose name only starts with img', () {
+      expect('<imgx></imgx>'.hasNoTextContent, isTrue);
+    });
+
+    test('returns true for nbsp entities without any tag', () {
+      expect('&nbsp;&nbsp;'.hasNoTextContent, isTrue);
+    });
+
+    test('returns false for plain text without any tag', () {
+      expect('Back soon'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false for escaped markup typed as text', () {
+      expect('<p>&lt;br&gt;</p>'.hasNoTextContent, isFalse);
+    });
+
+    test('returns false for text holding an unclosed angle bracket', () {
+      expect('<div>< </div>'.hasNoTextContent, isFalse);
+    });
+  });
 }
