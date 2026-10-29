@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -644,6 +645,17 @@ void main() {
         await changeSelectedMailbox();
 
         verify(fetchEmailsOf(DelegationFixtures.bobAccountId));
+      });
+
+      test('reports the email list it loads with its switch attempt', () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+
+        await changeSelectedMailbox();
+
+        final (kind, load) = source.reportedLoads.last;
+        expect(kind, ShownAccountLoadKind.emailList);
+        expect(load.attemptId, source.currentSwitchAttemptId);
       });
 
       test('the emails of an account shown before never reach the list once another one is shown', () async {

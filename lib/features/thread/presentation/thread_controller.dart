@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -835,7 +836,7 @@ class ThreadController extends BaseController
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
         collapseThreads: shouldCollapseThreads,
-      ));
+      ), reportAs: ShownAccountLoadKind.emailList);
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
     }
@@ -893,7 +894,7 @@ class ThreadController extends BaseController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
-    // An account switch clears the email state it leaves, so a message queued before it has nothing to refresh.
+    // Cleared while another account is shown, until its first email list sets it.
     if (mailboxDashBoardController.currentEmailState == null) return;
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {

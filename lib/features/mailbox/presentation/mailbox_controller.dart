@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.d
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -140,6 +141,7 @@ class MailboxController extends BaseMailboxController
   WebSocketQueueHandler? _webSocketQueueHandler;
   Worker? isLabelsLoadedWorker;
   CancelShownAccountWatch? _cancelShownAccountWatch;
+  CancelShownAccountWatch? _cancelShownAccountReloadWatch;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
@@ -216,6 +218,8 @@ class MailboxController extends BaseMailboxController
     isLabelsLoadedWorker = null;
     _cancelShownAccountWatch?.call();
     _cancelShownAccountWatch = null;
+    _cancelShownAccountReloadWatch?.call();
+    _cancelShownAccountReloadWatch = null;
     super.onClose();
   }
 
@@ -310,6 +314,7 @@ class MailboxController extends BaseMailboxController
 
   void _registerObxStreamListener() {
     _cancelShownAccountWatch = activeAccountSource.watchShown(_showFoldersOf);
+    _cancelShownAccountReloadWatch = activeAccountSource.watchShownReload(_loadFoldersOfShownAccount);
 
     ever<Map<String, dynamic>?>(
       mailboxDashBoardController.routerParameters,
@@ -610,7 +615,10 @@ class MailboxController extends BaseMailboxController
 
   void _loadFoldersOfShownAccount(AccountId shownAccountId) {
     if (session == null || getAllMailboxInteractor == null) return;
-    consumeShownAccountState(getAllMailboxInteractor!.execute(session!, shownAccountId));
+    consumeShownAccountState(
+      getAllMailboxInteractor!.execute(session!, shownAccountId),
+      reportAs: ShownAccountLoadKind.folders,
+    );
   }
 
   void _refreshMailboxChanges({required jmap.State newState}) {

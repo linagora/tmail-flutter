@@ -57,12 +57,7 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
         return const AccountSwitchCancelled();
       }
       if (result is! AccountSwitched && _shownAccount != null) {
-        _fallBackTo(
-          previousAccount,
-          targetAccountId,
-          view,
-          restoresSelection: preparationFailure == null,
-        );
+        _fallBackTo(previousAccount, targetAccountId, view);
       }
       return result;
     } finally {
@@ -127,7 +122,7 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
   AccountSwitchFailed? _prepareView(AccountSwitchView view) {
     try {
       view.blockInput();
-      view.keepSelectionAndSearch();
+      view.clearSelectionAndSearch();
       return null;
     } catch (error, stackTrace) {
       return AccountSwitchFailed(error, stackTrace);
@@ -194,13 +189,12 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
         : result;
   }
 
-  /// A selection that was never kept is not restored.
+  /// The previous account opens on its Inbox, since its folder and search were cleared.
   void _fallBackTo(
     ActiveAccount previousAccount,
     AccountId targetAccountId,
-    AccountSwitchView view, {
-    required bool restoresSelection,
-  }) {
+    AccountSwitchView view,
+  ) {
     final isSwitchToPersonal = targetAccountId == previousAccount.personalAccountId;
     final restoresPreviousAccount = !isSwitchToPersonal &&
         _activeAccountNotifier.canSelect(previousAccount.accountId);
@@ -215,9 +209,6 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     );
     if (restoresPreviousAccount) {
       _activeAccountNotifier.select(previousAccount.accountId);
-      if (restoresSelection) {
-        _runViewStep('restoreSelectionAndSearch', view.restoreSelectionAndSearch);
-      }
     } else {
       _activeAccountNotifier.selectPersonal();
     }

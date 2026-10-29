@@ -26,4 +26,12 @@ void main() {
     expect(Get.isRegistered<ActiveAccountSource>(), isTrue);
     expect(Get.isRegistered<ActiveAccountWriter>(), isTrue);
   });
+
+  test('registers the same source as the load reporter of the switch, for the app lifetime', () async {
+    DelegationBindings().dependencies();
+
+    expect(Get.find<ShownAccountLoadReporter>(), same(Get.find<ActiveAccountSource>()));
+    expect(await Get.delete<ShownAccountLoadReporter>(), isFalse);
+    expect(Get.isRegistered<ShownAccountLoadReporter>(), isTrue);
+  });
 }

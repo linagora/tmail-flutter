@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
@@ -20,6 +21,7 @@ class _Reader extends BaseController with ActiveAccountReader, ShownAccountState
   final errors = <Object>[];
   final urgentErrors = <Object?>[];
   int doneCount = 0;
+  Object? errorThrownByOnDone;
 
   @override
   void onData(Either<Failure, Success> newState) => results.add(newState);
@@ -31,7 +33,11 @@ class _Reader extends BaseController with ActiveAccountReader, ShownAccountState
   void handleUrgentException({Failure? failure, Exception? exception}) => urgentErrors.add(exception);
 
   @override
-  void onDone() => doneCount++;
+  void onDone() {
+    doneCount++;
+    final error = errorThrownByOnDone;
+    if (error != null) throw error;
+  }
 
   /// Runs [pending] the way a controller awaits a load: an error goes to [onError].
   Future<Either<Failure, Success>?> awaitLoad(Future<Either<Failure, Success>> pending) async {
@@ -46,8 +52,17 @@ class _Reader extends BaseController with ActiveAccountReader, ShownAccountState
 
 class _Loaded extends UIState {}
 
-class _LoadFailure extends FeatureFailure {
-  _LoadFailure(dynamic exception) : super(exception: exception);
+class _LoadFailed extends FeatureFailure {
+  _LoadFailed([dynamic exception]) : super(exception: exception);
+}
+
+ShownAccountLoad _consumeReported(
+  _Reader reader,
+  StreamController<Either<Failure, Success>> viewResults,
+  FakeActiveAccountSource source,
+) {
+  reader.consumeShownAccountState(viewResults.stream, reportAs: ShownAccountLoadKind.folders);
+  return source.reportedLoads.single.$2;
 }
 
 typedef _StaleArrival = ({
@@ -78,7 +93,7 @@ final List<_StaleArrival> _staleArrivals = [
   ),
   (
     arrival: 'a session failure',
-    arrive: (viewResults) => viewResults.add(Left(_LoadFailure(_badCredentials))),
+    arrive: (viewResults) => viewResults.add(Left(_LoadFailed(_badCredentials))),
     urgentErrors: [_badCredentials],
   ),
   (
@@ -165,8 +180,8 @@ void main() {
       reader = _Reader();
     });
 
-    test('forwards every result and the end while its attempt is current', () async {
-      reader.consumeShownAccountState(viewResults.stream);
+    test('forwards every result while its attempt is current and counts the load as loaded', () async {
+      final load = _consumeReported(reader, viewResults, source);
       final first = Right<Failure, Success>(_Loaded());
       final second = Right<Failure, Success>(_Loaded());
 
@@ -175,48 +190,39 @@ void main() {
         ..add(second);
       await viewResults.close();
 
+      expect(await load.result, isA<ShownAccountLoaded>());
       expect(reader.results, [first, second]);
       expect(reader.doneCount, 1);
     });
 
-    test('forwards an error while its attempt is current', () async {
-      reader.consumeShownAccountState(viewResults.stream);
-      final error = StateError('stream failed');
-
-      viewResults.addError(error);
-      await pumpEventQueue();
-
-      expect(reader.errors, [error]);
-    });
-
-    test('drops every result once another account is shown and stops listening', () async {
-      reader.consumeShownAccountState(viewResults.stream);
+    test('drops every result once another account is shown and counts the load as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
       source.show(DelegationFixtures.bobAccountId);
 
       viewResults.add(Right(_Loaded()));
-      await pumpEventQueue();
 
+      expect(await load.result, isA<ShownAccountLoadDropped>());
       expect(reader.results, isEmpty);
       expect(viewResults.hasListener, isFalse);
     });
 
-    test('drops an error that arrives once another account is shown', () async {
-      reader.consumeShownAccountState(viewResults.stream);
+    test('drops an error that arrives once another account is shown and counts the load as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
       source.show(DelegationFixtures.bobAccountId);
 
       viewResults.addError(StateError('late failure'));
-      await pumpEventQueue();
 
+      expect(await load.result, isA<ShownAccountLoadDropped>());
       expect(reader.errors, isEmpty);
-      expect(viewResults.hasListener, isFalse);
     });
 
     test('drops the end of a load that arrives once another account is shown', () async {
-      reader.consumeShownAccountState(viewResults.stream);
+      final load = _consumeReported(reader, viewResults, source);
       source.show(DelegationFixtures.bobAccountId);
 
       await viewResults.close();
 
+      expect(await load.result, isA<ShownAccountLoadDropped>());
       expect(reader.doneCount, 0);
     });
 
@@ -252,15 +258,81 @@ void main() {
       });
     }
 
-    test('a closed reader gets no more results', () async {
-      reader.consumeShownAccountState(viewResults.stream);
+    test('a load whose last result is a failure counts as failed with that failure', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      final failure = _LoadFailed();
+
+      viewResults
+        ..add(Right(_Loaded()))
+        ..add(Left(failure));
+      await viewResults.close();
+
+      final result = await load.result;
+      expect(result, isA<ShownAccountLoadFailed>());
+      expect((result as ShownAccountLoadFailed).error, failure);
+    });
+
+    test('a load that fails then loads counts as loaded', () async {
+      final load = _consumeReported(reader, viewResults, source);
+
+      viewResults
+        ..add(Left(_LoadFailed()))
+        ..add(Right(_Loaded()));
+      await viewResults.close();
+
+      expect(await load.result, isA<ShownAccountLoaded>());
+    });
+
+    test('a load whose stream throws counts as failed with that error', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      final error = StateError('stream failed');
+
+      viewResults.addError(error);
+      await viewResults.close();
+
+      final result = await load.result;
+      expect((result as ShownAccountLoadFailed).error, error);
+      expect(reader.errors, [error]);
+    });
+
+    test('a load still ends when the controller fails while handling its end', () async {
+      final uncaught = <Object>[];
+      final load = runZonedGuarded(() {
+        reader.errorThrownByOnDone = StateError('onDone failed');
+        return _consumeReported(reader, viewResults, source);
+      }, (error, _) => uncaught.add(error))!;
+
+      await viewResults.close();
+
+      expect(await load.result, isA<ShownAccountLoaded>());
+      expect(uncaught, [isA<StateError>()]);
+    });
+
+    test('a closed reader gets no more results and its load counts as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
 
       reader.onClose();
       viewResults.add(Right(_Loaded()));
-      await pumpEventQueue();
 
+      expect(await load.result, isA<ShownAccountLoadDropped>());
       expect(reader.results, isEmpty);
       expect(viewResults.hasListener, isFalse);
+    });
+
+    test('reports the load with the attempt it was requested in', () {
+      final requestedInAttempt = source.currentSwitchAttemptId;
+
+      reader.consumeShownAccountState(viewResults.stream, reportAs: ShownAccountLoadKind.emailList);
+
+      final (kind, load) = source.reportedLoads.single;
+      expect(kind, ShownAccountLoadKind.emailList);
+      expect(load.attemptId, requestedInAttempt);
+    });
+
+    test('does not report a load without a kind', () {
+      reader.consumeShownAccountState(viewResults.stream);
+
+      expect(source.reportedLoads, isEmpty);
     });
   });
 
