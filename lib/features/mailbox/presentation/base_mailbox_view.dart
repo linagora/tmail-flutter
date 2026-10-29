@@ -10,6 +10,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
@@ -51,35 +52,38 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
   BaseMailboxView({Key? key}) : super(key: key);
 
   Widget buildMailboxAppBar() {
-    return Obx(() {
-      final dashboardController = controller.mailboxDashBoardController;
-      // My own menu, like the web navigation bar: contact support follows my account.
-      final accountId = dashboardController.accountId.value;
-      final session = dashboardController.sessionCurrent;
-      String username = dashboardController.ownEmailAddress.value;
-      if (username.trim().isEmpty) {
-        username = session?.getOwnEmailAddressOrUsername() ?? '';
-      }
+    return Consumer(builder: (context, ref, child) {
+      final canOpenSettings = ref.watch(shownAccountCapabilitiesProvider).canOpenSettings;
+      return Obx(() {
+        final dashboardController = controller.mailboxDashBoardController;
+        // My own menu, like the web navigation bar: contact support follows my account.
+        final accountId = dashboardController.accountId.value;
+        final session = dashboardController.sessionCurrent;
+        String username = dashboardController.ownEmailAddress.value;
+        if (username.trim().isEmpty) {
+          username = session?.getOwnEmailAddressOrUsername() ?? '';
+        }
 
-      final linagoraApps = dashboardController
-          .appGridDashboardController
-          .listLinagoraApp;
+        final linagoraApps = dashboardController
+            .appGridDashboardController
+            .listLinagoraApp;
 
-      final contactSupportCapability = accountId != null && session != null
-          ? session.getContactSupportCapability(accountId)
-          : null;
+        final contactSupportCapability = accountId != null && session != null
+            ? session.getContactSupportCapability(accountId)
+            : null;
 
-      return MailboxAppBar(
-        imagePaths: controller.imagePaths,
-        username: username,
-        openSettingsAction: dashboardController.goToSettings,
-        openAppGridAction: linagoraApps.isNotEmpty
-          ? () => controller.openAppGrid(linagoraApps)
-          : null,
-        openContactSupportAction: contactSupportCapability?.isAvailable == true
-          ? () => dashboardController.onGetHelpOrReportBug(contactSupportCapability!)
-          : null,
-      );
+        return MailboxAppBar(
+          imagePaths: controller.imagePaths,
+          username: username,
+          openSettingsAction: canOpenSettings ? dashboardController.goToSettings : null,
+          openAppGridAction: linagoraApps.isNotEmpty
+            ? () => controller.openAppGrid(linagoraApps)
+            : null,
+          openContactSupportAction: contactSupportCapability?.isAvailable == true
+            ? () => dashboardController.onGetHelpOrReportBug(contactSupportCapability!)
+            : null,
+        );
+      });
     });
   }
 

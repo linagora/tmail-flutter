@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_label_for_email_extension.dart';
@@ -158,16 +159,16 @@ class EmailView extends GetWidget<SingleEmailController> {
                           isPlatformSupportVacationVisible;
 
                   if (isVacationBannerVisible) {
-                    return VacationNotificationMessageWidget(
-                      margin: const EdgeInsetsDirectional.only(
-                        start: 12,
-                        end: 12,
-                        top: 8,
-                      ),
-                      vacationResponse: vacation!,
-                      actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                      actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
-                    );
+                    return Consumer(builder: (context, ref, child) => VacationNotificationMessageWidget(
+                        margin: const EdgeInsetsDirectional.only(
+                          start: 12,
+                          end: 12,
+                          top: 8,
+                        ),
+                        vacationResponse: vacation!,
+                        actionGotoVacationSetting: ref.watch(shownAccountCapabilitiesProvider).canOpenSettings ? controller.mailboxDashBoardController.goToVacationSetting : null,
+                        actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
+                    ));
                   } else {
                     return const SizedBox.shrink();
                   }
