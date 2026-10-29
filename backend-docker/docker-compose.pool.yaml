@@ -1,0 +1,28 @@
+# One lease slot of scripts/backend-reset-server.py; keep the image and mounts in sync with docker-compose.yaml.
+services:
+  tmail-backend:
+    image: linagora/tmail-backend:memory-1.0.22.2
+    labels:
+      - tmail.ci.pool=1
+    volumes:
+      - ${SLOT_JMAP_PROPERTIES}:/root/conf/jmap.properties
+      - ./jwt_publickey:/root/conf/jwt_publickey
+      - ./jwt_privatekey:/root/conf/jwt_privatekey
+      - ./mailetcontainer.xml:/root/conf/mailetcontainer.xml
+      - ./imapserver.xml:/root/conf/imapserver.xml
+      - ./deletedMessageVault.properties:/root/conf/deletedMessageVault.properties
+      - ./listeners.xml:/root/conf/listeners.xml
+      - ./linagora-ecosystem.properties:/root/conf/linagora-ecosystem.properties
+      - ./openpaas.properties:/root/conf/openpaas.properties
+      - ../provisioning/integration_test/provisioning.sh:/root/conf/integration_test/provisioning.sh
+      - ../provisioning/integration_test/backup.zip:/root/conf/integration_test/backup.zip
+    ports:
+      - "${SLOT_JMAP_PORT}:80"
+      - "${SLOT_WEBADMIN_PORT}:8000"
+    environment:
+      - DOMAIN=example.com
+      - JAVA_TOOL_OPTIONS=${POOL_JAVA_TOOL_OPTIONS}
+    # openpaas.properties names hosts that do not exist here; refuse at once instead of waiting on DNS
+    extra_hosts:
+      - "esn:127.0.0.1"
+      - "esn_sabre:127.0.0.1"

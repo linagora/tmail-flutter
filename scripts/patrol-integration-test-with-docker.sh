@@ -20,13 +20,12 @@ CI_LOGS="$ROOT_DIR/ci-logs"
 mkdir -p "$CI_LOGS"
 # Per-run paths: /tmp is host-wide, a neighbor job must never read our tunnel ports.
 RESET_SERVER_LOG="$CI_LOGS/backend-reset-server.log"
-BORE_BACKEND_LOG="$CI_LOGS/bore-backend.log"
 BORE_RESET_LOG="$CI_LOGS/bore-reset.log"
 
 FTL_SHARDS="${FTL_SHARDS:-4}"
-POOL_SIZE="${POOL_SIZE:-4}"
-if ! [[ "$FTL_SHARDS" =~ ^[1-9][0-9]*$ && "$POOL_SIZE" =~ ^[1-9][0-9]*$ ]] || [ "$FTL_SHARDS" -gt "$POOL_SIZE" ]; then
-    echo "ERROR: FTL_SHARDS ($FTL_SHARDS) and POOL_SIZE ($POOL_SIZE) must be positive integers with POOL_SIZE >= FTL_SHARDS."
+POOL_SIZE="${POOL_SIZE:-6}"
+if ! [[ "$FTL_SHARDS" =~ ^[1-9][0-9]*$ && "$POOL_SIZE" =~ ^[1-9][0-9]*$ ]] || [ "$FTL_SHARDS" -gt "$POOL_SIZE" ] || [ "$POOL_SIZE" -gt 16 ]; then
+    echo "ERROR: FTL_SHARDS ($FTL_SHARDS) and POOL_SIZE ($POOL_SIZE) must be positive integers with FTL_SHARDS <= POOL_SIZE <= 16."
     exit 1
 fi
 
@@ -37,20 +36,20 @@ timing "agent backend wait end"
 PATROL_BUILD_PID=""
 BACKEND_TEARDOWN_PID=""
 BACKEND_TORN_DOWN=0
-BORE_BACKEND_PID=""
+BORE_SLOT_PIDS=()
 BORE_RESET_PID=""
 RESET_SERVER_PID=""
 
 stop_services() {
     local pid
-    for pid in "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
+    for pid in "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
         [ -z "$pid" ] || kill "$pid" 2>/dev/null || true
     done
     # Reap services before releasing the backend lock.
-    for pid in "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
+    for pid in "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID"; do
         [ -z "$pid" ] || wait "$pid" 2>/dev/null || true
     done
-    BORE_BACKEND_PID=""
+    BORE_SLOT_PIDS=()
     BORE_RESET_PID=""
     RESET_SERVER_PID=""
 }
@@ -81,8 +80,11 @@ trap 'exit 143' TERM
 # ── bore tunnel setup ─────────────────────────────────────────────────────────
 echo "Starting bore tunnels..."
 timing "bore tunnels start"
-nohup bore local 80 --to bore.pub > "$BORE_BACKEND_LOG" 2>&1 &
-BORE_BACKEND_PID=$!
+# One tunnel per backend slot; the reset server hands each lease the slot's public URL.
+for (( n = 0; n < POOL_SIZE; n++ )); do
+    nohup bore local $(( 8100 + n )) --to bore.pub > "$CI_LOGS/bore-slot$n.log" 2>&1 &
+    BORE_SLOT_PIDS+=($!)
+done
 nohup bore local 9999 --to bore.pub > "$BORE_RESET_LOG" 2>&1 &
 BORE_RESET_PID=$!
 
@@ -91,37 +93,40 @@ bore_port() {
 }
 
 echo "Waiting for bore tunnels..."
-BORE_BACKEND_PORT=""
 BORE_RESET_PORT=""
-deadline=$(( SECONDS + 20 ))
-until [ -n "$BORE_BACKEND_PORT" ] && [ -n "$BORE_RESET_PORT" ]; do
+BORE_SLOT_PORTS=()
+deadline=$(( SECONDS + 40 ))
+until [ -n "$BORE_RESET_PORT" ] && [ "${#BORE_SLOT_PORTS[@]}" -eq "$POOL_SIZE" ]; do
     if (( SECONDS >= deadline )); then
-        echo "ERROR: bore tunnels did not connect within 20s."
-        echo "--- backend log ---"
-        cat "$BORE_BACKEND_LOG"
-        echo "--- reset log ---"
-        cat "$BORE_RESET_LOG"
+        echo "ERROR: bore tunnels did not connect within 40s."
+        for f in "$CI_LOGS"/bore-slot*.log "$BORE_RESET_LOG"; do
+            echo "--- $f ---"
+            cat "$f"
+        done
         exit 1
     fi
 
-    BORE_BACKEND_PORT=$(bore_port "$BORE_BACKEND_LOG")
     BORE_RESET_PORT=$(bore_port "$BORE_RESET_LOG")
+    BORE_SLOT_PORTS=()
+    for (( n = 0; n < POOL_SIZE; n++ )); do
+        port=$(bore_port "$CI_LOGS/bore-slot$n.log")
+        [ -z "$port" ] || BORE_SLOT_PORTS+=("$port")
+    done
 
     sleep 1
 done
 
-BORE_BACKEND_URL="http://bore.pub:$BORE_BACKEND_PORT"
 BORE_RESET_URL="http://bore.pub:$BORE_RESET_PORT"
-BORE_WS_URL="ws://bore.pub:$BORE_BACKEND_PORT"
-
-echo "bore backend tunnel:   $BORE_BACKEND_URL"
+POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://bore.pub:{p}" for p in sys.argv[1:]))' "${BORE_SLOT_PORTS[@]}")
+# Slots are numbered by their local port, so keep tunnel order = slot order.
+echo "bore backend tunnels:  $POOL_URLS"
 echo "bore reset tunnel:     $BORE_RESET_URL"
 timing "bore tunnels ready"
 
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
-export BASIC_AUTH_URL="$BORE_BACKEND_URL"
+export BASIC_AUTH_URL="${POOL_URLS%%,*}"
 export RESET_PORT=9999
 
 # Job control gives cleanup a process group containing Patrol and its build children.
@@ -160,31 +165,18 @@ cd backend-docker
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey 2>/dev/null
 openssl rsa -in jwt_privatekey -pubout -out jwt_publickey 2>/dev/null
 
-sed -i.bak "s|url.prefix=.*|url.prefix=${BORE_BACKEND_URL}|" jmap.properties
-sed -i.bak "s|websocket.url.prefix=.*|websocket.url.prefix=${BORE_WS_URL}|" jmap.properties
-
-echo "Starting tmail-backend..."
-docker compose up -d tmail-backend --quiet-pull
-deadline=$(( SECONDS + 180 ))
-until docker compose logs tmail-backend 2>/dev/null | grep -qi "JAMES server started"; do
-    if (( SECONDS >= deadline )); then
-        echo "tmail-backend did not start within 180s; recent logs:"
-        docker compose logs --tail=200 tmail-backend
-        exit 1
-    fi
-    echo "Waiting for tmail-backend..."
-    sleep 2
-done
-
-docker exec -e POOL_SIZE="$POOL_SIZE" tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
-
+# The reset server starts a fresh backend container per lease slot.
 cd ..
-timing "backend provisioned"
+timing "backend keys generated"
 
 echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
 BACKUP_ZIP="$PWD/provisioning/integration_test/backup.zip" \
     RESET_PORT="$RESET_PORT" \
     POOL_SIZE="$POOL_SIZE" \
+    POOL_URLS="$POOL_URLS" \
+    POOL_MIN_FREE="$FTL_SHARDS" \
+    POOL_LOG_DIR="$CI_LOGS" \
+    WORK_DIR="$ROOT_DIR" \
     python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
 
@@ -199,6 +191,16 @@ until grep -q 'Listening on port' "$RESET_SERVER_LOG"; do
 done
 
 timing "backend reset server ready"
+deadline=$(( SECONDS + 300 ))
+until grep -q "pool ready" "$RESET_SERVER_LOG"; do
+    if ! kill -0 "$RESET_SERVER_PID" 2>/dev/null || (( SECONDS >= deadline )); then
+        echo "ERROR: backend pool did not become ready:"
+        tail -n 50 "$RESET_SERVER_LOG"
+        exit 1
+    fi
+    sleep 1
+done
+timing "backend pool ready"
 
 echo "google cli auth"
 timing "gcloud auth start"
@@ -207,7 +209,7 @@ timing "gcloud auth end"
 
 wait "$PATROL_BUILD_PID"
 PATROL_BUILD_PID=""
-kill -0 "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID"
+kill -0 "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID"
 
 # AGP 8.12 puts the APKs under android/app/build, not ../build
 APP_APK=$(find build android/app/build -path '*/apk/debug/app-debug.apk' 2>/dev/null | head -1)
@@ -248,7 +250,7 @@ TEST_EXIT_CODE=${PIPESTATUS[0]}
 set -e
 timing "FTL end ($(( SECONDS - ftl_started ))s, exit $TEST_EXIT_CODE)"
 SERVICES_EXIT_CODE=0
-kill -0 "$BORE_BACKEND_PID" "$BORE_RESET_PID" "$RESET_SERVER_PID" || SERVICES_EXIT_CODE=$?
+kill -0 "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID" || SERVICES_EXIT_CODE=$?
 stop_services
 
 # Devices have finished, so backend teardown can overlap artifact downloads.

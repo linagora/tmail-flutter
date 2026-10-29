@@ -1,6 +1,7 @@
 import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
@@ -8,6 +9,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -66,6 +68,8 @@ class TestBase {
   Future<void> setupTest() async {
     await EnvLoader.loadEnvFile();
     await runTmail();
+    // runTmail reloads env.file, whose SERVER_URL the web login reads.
+    if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -75,10 +79,18 @@ class TestBase {
 
   Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
+    if (BackendResetClient.isEnabled) {
+      TestBackend.use(await BackendResetClient.lease());
+    }
   }
 
   Future<void> _tearDown() async {
     PlatformInfo.isIntegrationTesting = false;
-    await BackendResetClient.reset();
+    final leased = TestBackend.leased;
+    try {
+      if (leased != null) await BackendResetClient.release(leased);
+    } finally {
+      TestBackend.use(null);
+    }
   }
 }
