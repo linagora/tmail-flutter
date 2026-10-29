@@ -40,7 +40,8 @@ class ShownAccountStateSubscription {
   }
 
   void cancel() {
-    _subscription?.cancel();
+    // A request that fails after the cancel ends the load with its error in the cancel future.
+    _subscription?.cancel().catchError((Object error) => _onStale(error: error));
     _end();
   }
 
