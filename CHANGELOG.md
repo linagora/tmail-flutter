@@ -1,3 +1,7 @@
+## [0.40.3] - 2026-10-29
+### Changed
+- #5071 Restrict web languages with the ALLOWED_LANGUAGES option
+
 ## [0.40.2] - 2026-10-19
 ### Added
 - #4623 Pin the "no attending" row when nobody can be answered or mailed
