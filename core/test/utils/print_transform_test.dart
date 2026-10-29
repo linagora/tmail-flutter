@@ -1,16 +1,18 @@
 import 'dart:convert';
 
+import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'html_transform_text_html_test.mocks.dart';
+/// Fixtures have no cid map, so the pipelines never download.
+class _OfflineDioClient extends Fake implements DioClient {}
 
 void main() {
   late HtmlTransform htmlTransform;
 
   setUp(() {
-    htmlTransform = HtmlTransform(MockDioClient(), const HtmlEscape());
+    htmlTransform = HtmlTransform(_OfflineDioClient(), const HtmlEscape());
   });
 
   group('forPrintEmail (already sanitized display content)', () {
