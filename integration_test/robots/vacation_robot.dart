@@ -16,6 +16,18 @@ class VacationRobot extends CoreRobot {
     await waitForCondition(() =>
         $(const ValueKey(UiKeys.vacationMessageEditorMobile)).exists &&
         Get.find<VacationController>().richTextControllerForMobile?.htmlEditorApi != null);
+    // The API is published before loadData completes, so wait for the editor element too.
+    final editorApi = Get.find<VacationController>().richTextControllerForMobile!.htmlEditorApi!;
+    await waitForCondition(() async {
+      try {
+        final ready = await editorApi.webViewController.evaluateJavascript(
+          source: 'document.getElementById("editor") != null',
+        );
+        return ready == true;
+      } catch (_) {
+        return false;
+      }
+    });
   }
 
   Future<void> waitForStoredMessageLoaded() async {
