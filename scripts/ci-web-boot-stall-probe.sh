@@ -24,6 +24,7 @@ pending_boots() {
 }
 
 dump_state() {
+    local pages src
     {
         echo "=== boot stall $(date -u +%FT%TZ): $1 boot(s) pending > ${BOOT_STALL_SECONDS}s ==="
         echo "--- boot markers: started=$(count_log 'DDC is about to load 1/2 scripts') connected=$(count_log 'App connection established') running=$(count_log 'Starting application from main method') isolate-exits=$(count_log 'Isolate exit handled')"
@@ -44,6 +45,21 @@ dump_state() {
         echo "--- dev server responsiveness"
         curl -sS -m 20 -o /dev/null -w 'GET main.dart.js http=%{http_code} connect=%{time_connect}s ttfb=%{time_starttransfer}s total=%{time_total}s bytes=%{size_download}\n' "${SERVER_URL}/main.dart.js"
         curl -sS -m 20 -o /dev/null -w 'GET / http=%{http_code} total=%{time_total}s\n' "${SERVER_URL}/"
+        echo "--- tabs still booting (CDP)"
+        if [ -n "${WEB_RUNNER_DIR:-}" ]; then
+            pages=$(timeout 40 node "$(dirname "$0")/ci-web-boot-stall-pages.js" "$WEB_RUNNER_DIR" 2>&1) || true
+            printf '%s\n' "$pages"
+        else
+            echo "SKIP CDP: WEB_RUNNER_DIR unset"
+        fi
+        echo "--- pending and last script responsiveness"
+        while IFS= read -r src; do
+            [ -n "$src" ] || continue
+            curl -gsS -m 20 -o /dev/null -w 'http=%{http_code} connect=%{time_connect}s ttfb=%{time_starttransfer}s total=%{time_total}s bytes=%{size_download} ' -- "$src" || true
+            echo "$src"
+        done < <(printf '%s\n' "$pages" | sed -n 's/^\(PENDING\|LAST_SCRIPT\) //p' | awk '!seen[$0]++' | head -20) || true
+        echo "--- last finished test before the stall"
+        LC_ALL=C grep -a 'PatrolBinding: finished test' "$PATROL_LOG" | tail -1 | cut -c1-240 || true
     } >> "$DUMP_FILE" 2>&1
 }
 
