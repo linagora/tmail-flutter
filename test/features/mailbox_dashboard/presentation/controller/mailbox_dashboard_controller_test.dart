@@ -40,6 +40,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show UncontrolledProviderScope;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -1611,6 +1612,61 @@ void main() {
       mailboxDashboardController.onInit();
 
       expect(source.activeAccount, isNull);
+    });
+
+    testWidgets('a new dashboard started while its route builds does not modify a provider during the build',
+        (tester) async {
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      final container = ActiveAccountSourceFixtures.newContainer();
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+        container: container,
+      );
+      addTearDown(() => Get.delete<MailboxDashBoardController>(force: true));
+
+      await tester.pumpWidget(UncontrolledProviderScope(
+        container: container,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(builder: (_) {
+            // GetPage runs its bindings while the route builds, and Get.put calls onInit at once.
+            Get.put(mailboxDashboardController);
+            return const SizedBox();
+          }),
+        ),
+      ));
+
+      expect(tester.takeException(), isNull);
+    });
+
+    test('a reader put by the bindings of a new dashboard never loads the account shown before', () {
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      clearInteractions(getAllMailboxInteractor);
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
+      // MailboxDashBoardBindings registers the dashboard, then MailboxController, whose field
+      // initializer finds the dashboard and so runs its onInit first.
+      Get.lazyPut(() => mailboxDashboardController);
+      addTearDown(() => Get.delete<MailboxDashBoardController>(force: true));
+      mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      final source = ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      mailboxController = Get.put(newMailboxController());
+      addTearDown(() => Get.delete<MailboxController>(force: true));
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
+
+      source.applySession(DelegationFixtures.session());
+
+      verify(getAllMailboxInteractor.execute(any, DelegationFixtures.aliceAccountId)).called(1);
+      verifyNever(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId));
     });
 
     test('a reader loads the shown account only once the dashboard holds my account and own address', () {
