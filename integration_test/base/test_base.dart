@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -72,6 +73,8 @@ class TestBase {
     // loadEnvFile clears dotenv first, so overrides never leak between tests
     dotenv.env.addAll(envOverrides);
     await runTmail();
+    // runTmail reloads env.file, whose SERVER_URL the web login reads.
+    if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -81,10 +84,18 @@ class TestBase {
 
   Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
+    if (BackendResetClient.isEnabled) {
+      TestBackend.use(await BackendResetClient.lease());
+    }
   }
 
   Future<void> _tearDown() async {
     PlatformInfo.isIntegrationTesting = false;
-    await BackendResetClient.reset();
+    final leased = TestBackend.leased;
+    try {
+      if (leased != null) await BackendResetClient.release(leased);
+    } finally {
+      TestBackend.use(null);
+    }
   }
 }

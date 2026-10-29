@@ -1,6 +1,7 @@
 import '../../base/test_base.dart';
 import '../../models/test_tags.dart';
 import '../../scenarios/login_with_basic_auth_scenario.dart';
+import '../../utils/test_backend.dart';
 
 void main() {
   TestBase().runPatrolTest(
@@ -9,7 +10,7 @@ void main() {
       $,
       robots,
       username: const String.fromEnvironment('USERNAME'),
-      hostUrl: const String.fromEnvironment('BASIC_AUTH_URL'),
+      hostUrl: TestBackend.current.url,
       email: const String.fromEnvironment('BASIC_AUTH_EMAIL'),
       password: const String.fromEnvironment('PASSWORD'),
     ),

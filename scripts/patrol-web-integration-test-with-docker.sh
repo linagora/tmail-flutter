@@ -54,8 +54,8 @@ trap 'exit 143' TERM
 trap 'exit 130' INT
 
 # Forward traffic to tmail-backend
-export BASIC_AUTH_URL="http://localhost"
-export WEBSOCKET_URL="ws://localhost"
+export POOL_SIZE="${POOL_SIZE:-5}"
+export BASIC_AUTH_URL="http://localhost:8100"
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
@@ -66,25 +66,14 @@ start_backend() {
     trap 'exit 1' TERM INT
     timing "backend setup started"
     cd "$ROOT_DIR/backend-docker" || return 1
-    docker compose down || true
 
     echo "Generating keys for tmail-backend..."
     openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey || return 1
     openssl rsa -in jwt_privatekey -pubout -out jwt_publickey || return 1
 
-    # James must report URLs reachable by the browser.
-    sed -i.bak "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties || return 1
-    sed -i.bak "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties || return 1
-
-    echo "Starting services and adding users..."
-    docker compose up -d || return 1
-    until (docker compose logs tmail-backend | grep -i "JAMES server started"); do
-        echo "Waiting for tmail-backend to start..."
-        sleep 2
-    done
-    docker exec tmail-backend ./root/conf/integration_test/provisioning.sh || return 1
+    # The reset server starts a fresh backend container per lease slot.
     printf 'ready\n' > "$BACKEND_READY_FIFO" || return 1
-    timing "backend provisioned"
+    timing "backend keys generated"
 }
 
 BACKEND_READY_DIR=$(mktemp -d) || exit 1
@@ -97,6 +86,9 @@ BACKEND_SETUP_PID=$!
 (
     IFS= read -r ready < "$BACKEND_READY_FIFO" || exit 1
     [ "$ready" = ready ] || exit 1
+    export POOL_URLS
+    POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://localhost:{8100 + i}" for i in range(int(sys.argv[1]))))' "$POOL_SIZE") || exit 1
+    export POOL_MIN_FREE="${WEB_WORKERS:-3}" POOL_LOG_DIR="$CI_LOGS" WORK_DIR="$ROOT_DIR"
     exec python3 scripts/backend-reset-server.py
 ) > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
@@ -128,6 +120,13 @@ while ! grep -q "Listening on port $RESET_PORT" "$RESET_SERVER_LOG"; do
     sleep 1
 done
 timing "backend reset server ready"
+deadline=$(( SECONDS + 300 ))
+while ! grep -q "pool ready" "$RESET_SERVER_LOG"; do
+    kill -0 "$RESET_SERVER_PID" 2>/dev/null || { echo "backend pool failed to start"; tail -n 50 "$RESET_SERVER_LOG"; exit 1; }
+    (( SECONDS < deadline )) || { echo "backend pool not ready within 300s"; tail -n 50 "$RESET_SERVER_LOG"; exit 1; }
+    sleep 1
+done
+timing "backend pool ready"
 
 : > "$PATROL_LOG"
 bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" "$RESET_SERVER_LOG" &
