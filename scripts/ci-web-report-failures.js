@@ -22,19 +22,38 @@ function findReports(dir, reports) {
 
 const firstLine = (value) => String(value || '').replace(/\x1b\[[0-9;]*m/g, '').split(/\r?\n/)[0];
 
+function finalStatus(test, final) {
+  if (final) return final.status;
+  return test.status || 'unknown';
+}
+
+// A flaky test passed on retry but is still reported.
+function isReported(test, status) {
+  if (status === 'skipped') return false;
+  return status !== 'passed' || test.status === 'flaky';
+}
+
+function errorMessage(final) {
+  if (!final) return '';
+  const error = final.error || (final.errors || [])[0];
+  if (!error) return '';
+  return firstLine(error.message || error.value || error).slice(0, 200);
+}
+
+function printTest(suite, spec, test, prefix) {
+  const results = test.results || [];
+  const final = results[results.length - 1];
+  const status = finalStatus(test, final);
+  if (!isReported(test, status)) return;
+  const title = firstLine([...prefix, spec.title].filter(Boolean).join(' > '));
+  const label = test.status === 'flaky' ? 'flaky' : status;
+  console.log(`${label} ${spec.file || suite.file || '?'}:${spec.line || 0} ${title} | ${errorMessage(final)}`);
+}
+
 function printSuite(suite, titles = []) {
   const prefix = [...titles, suite.title].filter(Boolean);
   for (const spec of suite.specs || []) {
-    for (const test of spec.tests || []) {
-      const results = test.results || [];
-      const final = results[results.length - 1];
-      const status = final ? final.status : test.status || 'unknown';
-      if ((status === 'passed' && test.status !== 'flaky') || status === 'skipped') continue;
-      const error = final && (final.error || (final.errors || [])[0]);
-      const message = firstLine(error && (error.message || error.value || error)).slice(0, 200);
-      const title = firstLine([...prefix, spec.title].filter(Boolean).join(' > '));
-      console.log(`${test.status === 'flaky' ? 'flaky' : status} ${spec.file || suite.file || '?'}:${spec.line || 0} ${title} | ${message}`);
-    }
+    for (const test of spec.tests || []) printTest(suite, spec, test, prefix);
   }
   for (const child of suite.suites || []) printSuite(child, prefix);
 }
