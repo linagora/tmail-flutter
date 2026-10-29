@@ -1,8 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'abstract_language_assertion_robot.dart';
 
 abstract class AbstractLanguageRobot {
+  AbstractLanguageAssertionRobot get assertion;
+
   Future<void> openLanguagePicker();
-  Future<void> expectLanguagesListed(List<Locale> locales);
-  Future<void> expectLanguagesNotListed(List<Locale> locales);
-  Future<void> expectLanguageSelected(Locale locale);
 }

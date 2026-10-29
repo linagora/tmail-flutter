@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/tmail_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_controller.dart';
@@ -114,7 +115,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
             ),
             visible: isVisible,
             child: Obx(() => TMailDropDownWidget(
-              key: const Key('language_drop_down_button'),
+              key: const Key(UiKeys.languageDropDownButton),
               text: _languageAndRegionController
                 .languageSelected
                 .value
@@ -133,7 +134,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
 
   Widget _buildMobileLanguageMenu(BuildContext context) {
     return Obx(() => TMailDropDownWidget(
-      key: const Key('language_drop_down_button'),
+      key: const Key(UiKeys.languageDropDownButton),
       text: _languageAndRegionController
           .languageSelected
           .value

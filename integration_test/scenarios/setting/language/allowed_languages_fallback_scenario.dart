@@ -20,6 +20,8 @@ class AllowedLanguagesFallbackScenario extends BaseTestScenario {
     await mailboxMenuRobot.openSetting();
     await settingsRobot.openSettingsDetail(AccountMenuItem.languageAndRegion);
 
-    await settingsRobot.languageRobot.expectLanguageSelected(expectedLanguage);
+    await settingsRobot.languageRobot.assertion.expectLanguageSelected(
+      expectedLanguage,
+    );
   }
 }

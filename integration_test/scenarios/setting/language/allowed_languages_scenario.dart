@@ -24,7 +24,7 @@ class AllowedLanguagesScenario extends BaseTestScenario {
     await settingsRobot.openSettingsDetail(AccountMenuItem.languageAndRegion);
     await languageRobot.openLanguagePicker();
 
-    await languageRobot.expectLanguagesListed(listedLanguages);
-    await languageRobot.expectLanguagesNotListed(hiddenLanguages);
+    await languageRobot.assertion.expectLanguagesListed(listedLanguages);
+    await languageRobot.assertion.expectLanguagesNotListed(hiddenLanguages);
   }
 }
