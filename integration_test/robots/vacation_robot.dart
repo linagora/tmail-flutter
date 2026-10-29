@@ -18,6 +18,13 @@ class VacationRobot extends CoreRobot {
         Get.find<VacationController>().richTextControllerForMobile?.htmlEditorApi != null);
   }
 
+  Future<void> waitForStoredMessageLoaded() async {
+    // The web editor may normalize the stored body, so only wait for it to be non-empty.
+    await waitForCondition(
+      () => Get.find<VacationController>().vacationMessageHtmlText?.isNotEmpty == true,
+    );
+  }
+
   Future<void> turnOnResponder() async {
     await $(const ValueKey(UiKeys.vacationResponderSwitch)).$(InkWell).tap();
   }
